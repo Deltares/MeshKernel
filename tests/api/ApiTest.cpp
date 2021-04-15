@@ -461,7 +461,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
 
     // Execute
     int numberOfpolygonNodes;
-    auto errorCode = mkernel_count_offsetted_polygon(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
+    auto errorCode = mkernel_count_offset_polygon(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(4, numberOfpolygonNodes);
 
@@ -476,7 +476,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     geometryListOut.xCoordinates = xCoordinatesOut.get();
     geometryListOut.yCoordinates = yCoordinatesOut.get();
     geometryListOut.zCoordinates = zCoordinatesOut.get();
-    errorCode = mkernel_get_offsetted_polygon(meshKernelId, geometryListIn, false, 10.0, geometryListOut);
+    errorCode = mkernel_get_offset_polygon(meshKernelId, geometryListIn, false, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert

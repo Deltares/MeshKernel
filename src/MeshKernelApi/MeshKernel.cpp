@@ -1136,7 +1136,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_get_offset_polygon(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1161,7 +1161,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_count_offset_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1185,7 +1185,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
-                                                           const GeometryList& geometryListIn,
+                                                           const GeometryList& samples,
                                                            const InterpolationParameters& interpolationParameters,
                                                            const SampleRefineParameters& sampleRefineParameters)
     {
@@ -1201,7 +1201,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            auto samples = ConvertGeometryListToSampleVector(geometryListIn);
+            auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
             meshkernel::AveragingInterpolation::Method averagingMethod;
             if (sampleRefineParameters.RefinementType == 2)
@@ -1218,7 +1218,7 @@ namespace meshkernelapi
             const bool transformSamples = sampleRefineParameters.RefinementType == 3 ? true : false;
 
             const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                        samples,
+                                                                                        samplesVector,
                                                                                         averagingMethod,
                                                                                         meshkernel::MeshLocations::Faces,
                                                                                         1.0,
@@ -1263,7 +1263,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, double searchRadius, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1277,9 +1277,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto pointPosition = ConvertGeometryListToPointVector(point);
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0], searchRadius));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointPosition[0], searchRadius));
         }
         catch (...)
         {
@@ -1323,7 +1323,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId, const GeometryList& polygon, const GeometryList& pointsNative, GeometryList& selectedPointsNative)
+    MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
     {
         int exitCode = Success;
         try
@@ -1332,14 +1332,15 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            auto polygonNodes = ConvertGeometryListToPointVector(polygon);
+            auto const polygonVector = ConvertGeometryListToPointVector(selectingPolygon);
 
-            auto points = ConvertGeometryListToPointVector(pointsNative);
-            const meshkernel::Polygons localPolygon(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const points = ConvertGeometryListToPointVector(polygonToSelect);
+
+            const meshkernel::Polygons localPolygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             for (auto i = 0; i < points.size(); i++)
             {
-                selectedPointsNative.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
+                selectionResults.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
         }
         catch (...)

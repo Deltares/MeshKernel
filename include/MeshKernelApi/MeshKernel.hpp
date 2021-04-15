@@ -316,7 +316,7 @@ namespace meshkernelapi
                                                GeometryList& refinedPolygon);
 
         /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`.
-        /// This function should be used before `mkernel_refine_polygon` by clients for allocating \ref GeometryList containing the refinement result.
+        /// This function should be used by clients before `mkernel_refine_polygon` for allocating \ref GeometryList containing the refinement result.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The input polygon to refine
         /// @param[in] firstIndex     The first index of the refinement interval
@@ -356,7 +356,7 @@ namespace meshkernelapi
                                                          int** selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices.
-        /// This function should be used before `mkernel_nodes_in_polygons_mesh2d` by clients for allocating an integer array storing the selection results.
+        /// This function should be used by clients before `mkernel_nodes_in_polygons_mesh2d` for allocating an integer array storing the selection results.
         /// @param[in]  meshKernelId      The id of the mesh state
         /// @param[in]  geometryListIn    The input polygon
         /// @param[in]  inside            Selection of the nodes inside the polygon (1) or outside (0)
@@ -408,7 +408,7 @@ namespace meshkernelapi
 
         /// @brief Finds the closest mesh2d edge to a point.
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] point The coordinate of the point
+        /// @param[in] point          The coordinate of the point
         /// @param[out] edgeIndex     The found edge index
         /// @returns Error code
         MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex);
@@ -417,41 +417,45 @@ namespace meshkernelapi
         /// Offsetting can be done inward or outward the existing polygon.
         /// @param[in] meshKernelId     The id of the mesh state
         /// @param[in] geometryListIn   The polygon to offset
-        /// @param[in] inWard           Compute the inner offset (true) or outer offset (false)
+        /// @param[in] inWard           Compute the inner offset (true) or outer offset offset (false)
         /// @param[in] distance         The offset distance
         /// @param[out] geometryListOut The resulting offset polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_get_offsetted_polygon(int meshKernelId,
-                                                      const GeometryList& geometryListIn,
-                                                      bool inWard,
-                                                      double distance,
-                                                      GeometryList& geometryListOut);
+        MKERNEL_API int mkernel_get_offset_polygon(int meshKernelId,
+                                                   const GeometryList& geometryListIn,
+                                                   bool inWard,
+                                                   double distance,
+                                                   GeometryList& geometryListOut);
 
-        /// @brief Gets the number of nodes of the offsetted polygon  Count the number of nodes after polygon refinement
-        /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The polygon to be offsetted
-        /// @param[in] innerPolygon   Compute inner (true) or outer (false) polygon
-        /// @param[in] distance       The offset distance
-        /// @param[out] numberOfPolygonNodes The number of nodes of the generated polygon
+        /// @brief Counts the number of polygon nodes resulting from polygon offset.
+        /// This function should be used by clients before `mkernel_get_offset_polygon` for allocating the \ref GeometryList containing the offset result.
+        /// @param[in] meshKernelId          The id of the mesh state
+        /// @param[in] geometryListIn        The polygon to offset
+        /// @param[in] innerPolygon          Compute inner (true) or outer offset (false)
+        /// @param[in] distance              The offset distance
+        /// @param[out] numberOfPolygonNodes The number of nodes in the offset polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_count_offsetted_polygon(int meshKernelId,
-                                                        const GeometryList& geometryListIn,
-                                                        bool innerPolygon,
-                                                        double distance,
-                                                        int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_count_offset_polygon(int meshKernelId,
+                                                     const GeometryList& geometryListIn,
+                                                     bool innerPolygon,
+                                                     double distance,
+                                                     int& numberOfPolygonNodes);
 
-        /// @brief Refines a grid based on the samples contained in the geometry list
+        /// @brief Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.
+        /// The number of successive splits is indicated on the sample value.
+        /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
+        /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] geometryList            The sample set
+        /// @param[in] samples                 The sample set
         /// @param[in] interpolationParameters The interpolation parameters
         /// @param[in] sampleRefineParameters  The interpolation settings related to the samples
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
-                                                               const GeometryList& geometryList,
+                                                               const GeometryList& samples,
                                                                const InterpolationParameters& interpolationParameters,
                                                                const SampleRefineParameters& sampleRefineParameters);
 
-        /// @brief Refines a grid based on polygon
+        /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId            The id of the mesh state
         /// @param[in] geometryList            The closed polygon where to perform the refinement
         /// @param[in] interpolationParameters The interpolation parameters
@@ -460,29 +464,31 @@ namespace meshkernelapi
                                                                const GeometryList& geometryList,
                                                                const InterpolationParameters& interpolationParameters);
 
-        /// @brief Finds the node index closest to the input point
+        /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The input point from where starting the search
-        /// @param[in] searchRadius   The search radius to use for the search
+        /// @param[in] point          The coordinate of the point
+        /// @param[in] searchRadius   The search radius
         /// @param[out] nodeIndex     The index of the found node
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId,
-                                                      const GeometryList& geometryListIn,
+                                                      const GeometryList& point,
                                                       double searchRadius,
                                                       int& nodeIndex);
 
-        /// @brief Selects points in polygons
+        /// @brief Selects the polygon nodes within another polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
-        /// @param[in]  inputPolygon   The polygon(s) used for selection
-        /// @param[in]  inputPoints    The points to select
-        /// @param[out] selectedPoints The selected points in the zCoordinates field (0.0 not selected, 1.0 selected)
+        /// @param[in]  selectingPolygon   The selecting polygon
+        /// @param[in]  polygonToSelect    The polygon to select
+        /// @param[out] selectionResults   The selection result, contained in the in the zCoordinates field of \ref GeometryList (0.0 not selected, 1.0 selected).
+        /// Note that the selection selectionResults variable must be allocated by the client.
         /// @returns Error code
         MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId,
-                                                      const GeometryList& inputPolygon,
-                                                      const GeometryList& inputPoints,
-                                                      GeometryList& selectedPoints);
+                                                      const GeometryList& selectingPolygon,
+                                                      const GeometryList& polygonToSelect,
+                                                      GeometryList& selectionResults);
 
-        /// @brief Flips the edges
+        /// @brief Flips mesh2d edges, to optimize mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d`
+        /// or `mkernel_refine_based_on_polygon_mesh2d`. Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] isTriangulationRequired     The option to triangulate also non triangular cells (if activated squares becomes triangles)
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
