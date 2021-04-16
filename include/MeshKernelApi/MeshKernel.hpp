@@ -69,7 +69,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId);
 
-        /// @brief De-allocate mesh state
+        /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
@@ -189,6 +189,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_delete_hanging_edges_mesh2d(int meshKernelId);
 
         /// @brief Mesh2d orthogonalization.
+        ///
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
         /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernelapi::OrthogonalizationParameters::OrthogonalizationToSmoothingFactor
@@ -205,7 +206,8 @@ namespace meshkernelapi
                                                                  const GeometryList& landBoundaries);
 
         /// @brief Initialization of the \ref meshkernel::OrthogonalizationAndSmoothing algorithm.
-        /// This is the first function to call when using orthogonalization in interactive mode (visualizing the grid while is orthogonalizing),
+        ///
+        /// This is the first function to call when using orthogonalization in interactive mode (visualizing the grid while it is orthogonalizing),
         /// in order to set the internal state of the algorithm reused during the iterations.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
@@ -219,13 +221,15 @@ namespace meshkernelapi
                                                                     const GeometryList& geometryListPolygon,
                                                                     const GeometryList& geometryListLandBoundaries);
 
-        /// @brief Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified geometry (in interactive mode)
+        /// @brief Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified mesh geometry (in interactive mode).
+        ///
         /// `mkernel_initialize_orthogonalization_mesh2d` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_prepare_outer_iteration_orthogonalization_mesh2d(int meshKernelId);
 
         /// @brief Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode).
+        ///
         /// `mkernel_prepare_outer_iteration_orthogonalization_mesh2d` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
@@ -286,20 +290,21 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& samples);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
+        ///
         /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
         MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons);
 
-        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons
-        /// computed in function `mkernel_get_mesh_boundaries_to_polygon_mesh2d`
+        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_get_mesh_boundaries_to_polygon_mesh2d`
         /// @param[in]  meshKernelId         The id of the mesh state
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
         MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
+        ///
         /// The function is often used before `mkernel_make_mesh_from_polygon_mesh2d`, for generating a triangular mesh where edges have a desired length.
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  polygonToRefine    The input polygon to refine
@@ -316,6 +321,7 @@ namespace meshkernelapi
                                                GeometryList& refinedPolygon);
 
         /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`.
+        ///
         /// This function should be used by clients before `mkernel_refine_polygon` for allocating \ref GeometryList containing the refinement result.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The input polygon to refine
@@ -356,6 +362,7 @@ namespace meshkernelapi
                                                          int** selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices.
+        ///
         /// This function should be used by clients before `mkernel_nodes_in_polygons_mesh2d` for allocating an integer array storing the selection results.
         /// @param[in]  meshKernelId      The id of the mesh state
         /// @param[in]  geometryListIn    The input polygon
@@ -414,6 +421,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex);
 
         /// @brief Generate a new polygon from an existing one by offsetting the perimeter by a given distance.
+        ///
         /// Offsetting can be done inward or outward the existing polygon.
         /// @param[in] meshKernelId     The id of the mesh state
         /// @param[in] geometryListIn   The polygon to offset
@@ -428,6 +436,7 @@ namespace meshkernelapi
                                                    GeometryList& geometryListOut);
 
         /// @brief Counts the number of polygon nodes resulting from polygon offset.
+        ///
         /// This function should be used by clients before `mkernel_get_offset_polygon` for allocating the \ref GeometryList containing the offset result.
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] geometryListIn        The polygon to offset
@@ -442,6 +451,7 @@ namespace meshkernelapi
                                                      int& numberOfPolygonNodes);
 
         /// @brief Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.
+        ///
         /// The number of successive splits is indicated on the sample value.
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
@@ -487,8 +497,9 @@ namespace meshkernelapi
                                                       const GeometryList& polygonToSelect,
                                                       GeometryList& selectionResults);
 
-        /// @brief Flips mesh2d edges, to optimize the mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d`
-        /// or `mkernel_refine_based_on_polygon_mesh2d`. Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
+        /// @brief Flips mesh2d edges, to optimize the mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d` or `mkernel_refine_based_on_polygon_mesh2d`.
+        ///
+        /// Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] isTriangulationRequired     The option to triangulate also non triangular cells (if activated squares becomes triangles)
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
@@ -592,9 +603,9 @@ namespace meshkernelapi
                                                           const GeometryList& polygons,
                                                           double searchRadius);
 
-        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined defined by \p firstPoint and \p secondPoint.
-        /// Therefore, \p firstPoint and \p secondPoint must lie on the same grid line.
+        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by \p firstPoint and \p secondPoint.
         ///
+        /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param[in] meshKernelId            The id of the mesh state.
         /// @param[in] firstPoint              The first point defining the refinement zone.
         /// @param[in] secondPoint             The second point defining the refinement zone.
@@ -605,9 +616,9 @@ namespace meshkernelapi
                                                    const GeometryList& secondPoint,
                                                    int refinement);
 
-        /// @brief Directional curvilinear grid de-refinement. Gridlines are removed perpendicularly to the segment defined defined by \p firstPoint and \p secondPoint.
-        /// Therefore, \p firstPoint and \p secondPoint must lie on the same grid line.
+        /// @brief Directional curvilinear grid derefinement. Grid lines are removed perpendicularly to the segment defined by \p firstPoint and \p secondPoint.
         ///
+        /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param meshKernelId            The id of the mesh state.
         /// @param firstPoint              The first point defining the de-refinement zone.
         /// @param secondPoint             The second point defining the de-refinement zone.

@@ -1634,19 +1634,15 @@ namespace meshkernelapi
             }
 
             // Convert 1D node mask from int** to vector<bool>
-            auto num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
-            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
-                                                                        num1DNodes);
+            auto const num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
+            auto const meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask, num1DNodes);
 
             // Convert polygon date from GeometryList to Polygons
-            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
-            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
-                                                          meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const polygonPoints = ConvertGeometryListToPointVector(polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts->ComputeBoundaryContacts(meshKernel1DNodeMask,
-                                                                              meshKernelPolygons,
-                                                                              searchRadius);
+            meshKernelState[meshKernelId].m_contacts->ComputeBoundaryContacts(meshKernel1DNodeMask, meshKernelPolygons, searchRadius);
         }
         catch (...)
         {
