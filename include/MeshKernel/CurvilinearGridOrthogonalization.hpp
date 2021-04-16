@@ -54,10 +54,10 @@ namespace meshkernel
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
         void Solve();
 
-        /// @brief Project the m_m boundary nodes onto the original grid (BNDSMT)
+        /// @brief Project the m boundary nodes onto the original grid (BNDSMT)
         void ProjectHorizontalBoundaryGridNodes();
 
-        /// @brief Project the m_n boundary nodes onto the original grid (BNDSMT)
+        /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
         void ProjectVerticalBoundariesGridNodes();
 
         /// @brief Compute frozen grid points (FIXDDBOUNDARIES)
@@ -66,16 +66,18 @@ namespace meshkernel
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
 
-        /// @brief Computes the matrix coefficients for m_m-gridlines (SOMDIST)
+        /// @brief Computes the matrix coefficients for m-gridlines (SOMDIST)
         void ComputeHorizontalCoefficients();
 
-        /// @brief Compute the matrix coefficients for m_n-gridlines (SOMDIST)
+        /// @brief Compute the matrix coefficients for n-gridlines (SOMDIST)
         void ComputeVerticalCoefficients();
 
-        /// @brief Some nodes on m_m boundary grid lines
+        /// @brief Computes the invalid nodes on m boundary grid lines
+        /// @return A vector with true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
 
-        /// @brief Some nodes on m_n boundary grid lines
+        /// @brief Computes the invalid nodes on n boundary grid lines
+        /// @return A vector with true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes() const;
 
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters

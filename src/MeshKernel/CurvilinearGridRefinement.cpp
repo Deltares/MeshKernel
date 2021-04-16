@@ -39,7 +39,7 @@ CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<Curvi
     : CurvilinearGridAlgorithm(grid),
       m_refinement(refinement)
 {
-    // Store the m_m and m_n grid lines in separate vectors, and compute the spline derivatives for each gridline
+    // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
     m_splines = Splines(m_grid);
 }
 
@@ -97,7 +97,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridRefinement::Compute()
                 m_grid->m_gridNodes[currentM][currentN + 1].IsValid() &&
                 m_grid->m_gridNodes[currentM + 1][currentN + 1].IsValid())
             {
-                // Calculate m_m-direction spline points
+                // Calculate m-direction spline points
                 bottomRefinement.clear();
                 topRefinement.clear();
                 for (auto m = 0; m < localMRefinement + 1; ++m)
@@ -108,7 +108,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridRefinement::Compute()
                     topRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
 
-                // Calculate m_n-direction spline points
+                // Calculate m-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
                 for (auto n = 0; n < localNRefinement + 1; ++n)

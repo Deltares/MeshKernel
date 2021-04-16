@@ -44,7 +44,7 @@ CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGr
 
 void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
-    // Get the m_m and m_n indices from the point coordinates
+    // Get the m and n indices from the point coordinates
     auto const [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
 
     // Coinciding corner nodes, no valid area, nothing to do

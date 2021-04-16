@@ -50,7 +50,7 @@ namespace meshkernel
         std::shared_ptr<CurvilinearGrid> Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
-        /// The line must be an m_m or m_n grid line of the curvilinear grid.
+        /// The line must be an m or n grid line of the curvilinear grid.
         /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
         /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
         /// @return The smoothed grid

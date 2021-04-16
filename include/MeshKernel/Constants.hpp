@@ -35,10 +35,10 @@
 
 namespace meshkernel
 {
-    // missing value
-    const double innerOuterSeparator = -998.0;                           ///< Double value used to separate the inner part of a polygon from its outer part
-    const double doubleMissingValue = -999.0;                            ///< Double value used as missing value
-    const int intMissingValue = -999;                                    ///< Integer value used as missing value
+    // missing values
+    const double innerOuterSeparator = -998.0;                                     ///< Double value used to separate the inner part of a polygon from its outer part
+    const double doubleMissingValue = -999.0;                                      ///< Double value used as missing value
+    const int intMissingValue = -999;                                              ///< Integer value used as missing value
     const std::size_t sizetMissingValue = std::numeric_limits<std::size_t>::max(); ///< std::size_t missing value used for invalid indices
 
     // often used values
@@ -48,19 +48,19 @@ namespace meshkernel
     // geometric constants
     const double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
     const double raddeg_hp = 180.0 / M_PI;                   ///< Conversion factor from radians to degrees(180 / pi)
-    const double earth_radius = 6378137.0;                   ///< Earth radius(m_m)
-    const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m_m-1);
+    const double earth_radius = 6378137.0;                   ///< Earth radius(m)
+    const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
     const double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
     const double nearlyZero = 1e-16;                         ///< Used to determine if a length is zero
 
     // mesh constants
-    const double minimumDeltaCoordinate = 1e-14;                                  ///< Minimum delta coordinate
+    const double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
     const std::size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
     const std::size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
     const std::size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
     const std::size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-    const double minimumCellArea = 1e-12;                                         ///< Minimum cell area
-    const double weightCircumCenter = 1.0;                                        ///< Weight circum center
+    const double minimumCellArea = 1e-12;                                              ///< Minimum cell area
+    const double weightCircumCenter = 1.0;                                             ///< Weight circum center
     const std::size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
     const std::size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
 
@@ -74,7 +74,7 @@ namespace meshkernel
     const double mergingDistanceSquared = mergingDistance * mergingDistance; ///< Merging distance squared
 
     // physical constants
-    const double gravity = 9.81; ///< Gravitational acceleration on earth (m_m/s^2)
+    const double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
 
     ///@brief Operations averaging methods
     enum class AveragingMethod

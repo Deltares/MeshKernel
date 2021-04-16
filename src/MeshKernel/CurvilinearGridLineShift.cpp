@@ -37,7 +37,7 @@ using meshkernel::Point;
 CurvilinearGridLineShift::CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid) : CurvilinearGridAlgorithm(grid)
 
 {
-    // Compute the grid node types
+    // Store a copy of the original grid
     m_gridModified = std::make_shared<CurvilinearGrid>(m_grid->m_gridNodes, m_grid->m_projection);
 }
 
@@ -48,7 +48,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
         throw std::invalid_argument("CurvilinearGridLineShift::Compute No candidate line to shift has been selected");
     }
 
-    /// The first delta is
+    /// The first delta
     auto const previousNodeIndex = m_lines[0].m_startNode;
     auto previousDelta = m_gridModified->m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n] -
                          m_grid->m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n];

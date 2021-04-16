@@ -98,7 +98,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridOrthogonalization::Compute()
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
-    // m_m grid lines (horizontal)
+    // m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
     {
         size_t startM = sizetMissingValue;
@@ -177,7 +177,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
 void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
-    // m_n gridlines (vertical)
+    // m gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
     {
         size_t startN = sizetMissingValue;
@@ -482,7 +482,7 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     // Perform upper sum
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = int(m_upperRight.m_n) - 1; n >= int(m_lowerLeft.m_n); --n)
+        for (auto n = static_cast<int>(m_upperRight.m_n) - 1; n >= static_cast<int>(m_lowerLeft.m_n); --n)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&

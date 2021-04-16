@@ -68,8 +68,7 @@ void CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>>
-CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (!IsValid())
     {
@@ -172,7 +171,7 @@ bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 
 std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
-    // Get the m_m and m_n indices from the point coordinates
+    // Get the m and n indices from the point coordinates
     auto const firstNode = GetNodeIndices(firstCornerPoint);
     auto const secondNode = GetNodeIndices(secondCornerPoint);
 

@@ -66,7 +66,7 @@ namespace meshkernel
             NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
 
             /// @brief Determines if one of the indices  equals to \p missingValue
-            [[nodiscard]] bool IsValid(const double missingValue = sizetMissingValue) const
+            [[nodiscard]] bool IsValid(const size_t missingValue = sizetMissingValue) const
             {
                 const bool isInvalid = m_m == missingValue || m_n == missingValue;
                 return !isInvalid;
@@ -88,11 +88,7 @@ namespace meshkernel
             /// @return True if on the same grid line, false otherwise
             bool IsOnTheSameGridLine(const NodeIndices& rhs) const
             {
-                if (m_m == rhs.m_m || m_n == rhs.m_n)
-                {
-                    return true;
-                }
-                return false;
+                return m_m == rhs.m_m || m_n == rhs.m_n;
             }
 
             size_t m_m; ///< Columns
@@ -118,13 +114,13 @@ namespace meshkernel
         [[nodiscard]] bool IsValid() const;
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
-        /// @returns The nodes, the edges, and the original mapping (m_m and m_n indices for each node)
+        /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
         std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
 
-        /// @brief Get the m_m and m_n indices of the node closest to the point
+        /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
         NodeIndices GetNodeIndices(Point point);
 
@@ -137,13 +133,13 @@ namespace meshkernel
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
-        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m_m and m_n coordinates
+        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m and n coordinates
         /// @param[in] firstNode The node indices of the first node
         /// @param[in] secondNode The node indices of the second node
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
-        /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m_m and m_n coordinates
+        /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m and n coordinates
         /// @param[in] firstCornerPoint The first corner point
         /// @param[in] secondCornerPoint The second corner point
         /// @return The upper left and lower right nodes of the box
@@ -161,8 +157,8 @@ namespace meshkernel
                                                                                                    NodeIndices const& lowerLeftIndices,
                                                                                                    NodeIndices const& upperRightIndices);
 
-        size_t m_numM = 0;                                    ///< The number of m_m coordinates (vertical lines)
-        size_t m_numN = 0;                                    ///< The number of m_n coordinates (horizontal lines)
+        size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
         std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
         std::vector<std::vector<NodeType>> m_gridNodesMask;   ///< The grid node types

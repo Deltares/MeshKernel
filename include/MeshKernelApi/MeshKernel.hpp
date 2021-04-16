@@ -326,7 +326,7 @@ namespace meshkernelapi
                                                      double distance,
                                                      int& numberOfPolygonNodes);
 
-        /// @brief Merges nodes within a distance of 0.001 m_m, effectively removing small edges
+        /// @brief Merges nodes within a distance of 0.001 m, effectively removing small edges
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The polygon where to perform the operation
         /// @returns Error code
