@@ -1067,7 +1067,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
             }
         }
 
-        if (numNonBoundaryFaces == 0 || m_faceArea[face] / (averageOtherFacesArea / double(numNonBoundaryFaces)) > minFractionalAreaTriangles)
+        if (numNonBoundaryFaces == 0 || m_faceArea[face] / (averageOtherFacesArea / static_cast<double>(numNonBoundaryFaces)) > minFractionalAreaTriangles)
         {
             // no valid boundary faces, the area of the current triangle is larger enough compared to the neighbors
             continue;
