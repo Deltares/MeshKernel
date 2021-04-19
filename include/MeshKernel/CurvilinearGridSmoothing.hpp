@@ -47,12 +47,12 @@ namespace meshkernel
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
         /// @return The smoothed grid
-        std::shared_ptr<CurvilinearGrid> Compute() override;
+        CurvilinearGrid Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
         /// @return The smoothed grid
-        std::shared_ptr<CurvilinearGrid> ComputeDirectional();
+        CurvilinearGrid ComputeDirectional();
 
     private:
         /// @brief Solve one iteration of block smoothing

@@ -48,7 +48,7 @@ namespace meshkernel
                                          const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
-        std::shared_ptr<CurvilinearGrid> Compute() override;
+        CurvilinearGrid Compute() override;
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)

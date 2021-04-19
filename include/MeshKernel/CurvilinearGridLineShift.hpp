@@ -47,7 +47,7 @@ namespace meshkernel
 
         /// @brief Computes a new curvilinear grid with the line shift
         /// @return The shifted curvilinear grid
-        std::shared_ptr<CurvilinearGrid> Compute() override;
+        CurvilinearGrid Compute() override;
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_gridModified grid will be used
@@ -66,6 +66,6 @@ namespace meshkernel
         /// @return The new displacement
         Point TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool toLocal) const;
 
-        std::shared_ptr<CurvilinearGrid> m_gridModified; ///< The new grid, storing the new positions
+        CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
     };
 } // namespace meshkernel

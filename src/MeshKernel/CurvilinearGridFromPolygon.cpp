@@ -195,7 +195,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         // Interpolate fourth side
         for (auto i = 0; i < numNNodes; i++)
         {
-            const double fac = double(i) / double(numNNodes - 1);
+            const double fac = static_cast<double>(i) / static_cast<double>(numNNodes - 1);
             sideOne[i] = m_polygon->m_nodes[firstNode] * (1.0 - fac) +
                          m_polygon->m_nodes[fourthNode] * fac;
         }
@@ -309,9 +309,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     std::vector<size_t> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
 
     // compute triangle middle point
-    const auto xia = double(n1) / double(numPointsFirstSide);
-    const auto xib = double(n2) / double(numPointsSecondSide);
-    const auto xic = double(n3) / double(numPointsThirdSide);
+    const auto xia = static_cast<double>(n1) / static_cast<double>(numPointsFirstSide);
+    const auto xib = static_cast<double>(n2) / static_cast<double>(numPointsSecondSide);
+    const auto xic = static_cast<double>(n3) / static_cast<double>(numPointsThirdSide);
 
     const auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
                                  (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
@@ -373,14 +373,14 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         // fill side four
         for (auto i = 0; i < numM[t] + 1; ++i)
         {
-            double localXia = double(i) / double(numM[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
             sideFour[i] = m_polygon->m_nodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
         for (auto i = 0; i < numN[t] + 1; ++i)
         {
-            double localXia = double(i) / double(numN[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 

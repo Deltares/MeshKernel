@@ -37,15 +37,14 @@ using meshkernel::CurvilinearGridAlgorithm;
 using meshkernel::CurvilinearGridLine;
 
 CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid)
-    : m_grid(grid)
-
 {
+    m_grid = grid->CloneCurvilinearGrid();
 }
 
 void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
-    auto const [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
+    auto const [lowerLeft, upperRight] = m_grid.ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
 
     // Coinciding corner nodes, no valid area, nothing to do
     if (lowerLeft == upperRight)
@@ -60,7 +59,7 @@ void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point con
 void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& secondPoint)
 {
     // The selected nodes must be on the vertical or horizontal line
-    const auto [newLineLowerLeft, newLineUpperRight] = m_grid->ComputeBlockFromCornerPoints(firstPoint, secondPoint);
+    const auto [newLineLowerLeft, newLineUpperRight] = m_grid.ComputeBlockFromCornerPoints(firstPoint, secondPoint);
 
     // Coinciding nodes, no valid line, nothing to do
     if (newLineLowerLeft == newLineUpperRight)

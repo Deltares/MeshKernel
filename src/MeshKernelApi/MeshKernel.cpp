@@ -1680,7 +1680,7 @@ namespace meshkernelapi
             // Execute
             meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
             curvilinearGridRefinement.SetBlock(firstPoint[0], secondPoint[0]);
-            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridRefinement.Compute();
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridRefinement.Compute());
         }
         catch (...)
         {
@@ -1718,7 +1718,7 @@ namespace meshkernelapi
 
             curvilinearGridDeRefinement.SetBlock(firstPoint[0], secondPoint[0]);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridDeRefinement.Compute();
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
         }
         catch (...)
         {
@@ -2354,7 +2354,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: Curvilinear grid line shift algorithm instance is null.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
         }
         catch (...)
         {

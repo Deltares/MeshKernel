@@ -39,27 +39,27 @@ using meshkernel::Splines;
 
 Splines::Splines(Projection projection) : m_projection(projection){};
 
-Splines::Splines(std::shared_ptr<CurvilinearGrid> grid)
+Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
-    std::vector<std::vector<Point>> mGridLines(grid->m_numN, std::vector<Point>(grid->m_numM));
-    for (auto n = 0; n < grid->m_numN; ++n)
+    std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
+    for (auto n = 0; n < grid.m_numN; ++n)
     {
-        for (auto m = 0; m < grid->m_numM; ++m)
+        for (auto m = 0; m < grid.m_numM; ++m)
         {
-            mGridLines[n][m] = grid->m_gridNodes[m][n];
+            mGridLines[n][m] = grid.m_gridNodes[m][n];
         }
         AddSpline(mGridLines[n], 0, mGridLines[n].size());
     }
 
     // then the m_m m_n-gridlines
-    std::vector<std::vector<Point>> nGridLines(grid->m_numM, std::vector<Point>(grid->m_numN));
-    for (auto m = 0; m < grid->m_numM; ++m)
+    std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
+    for (auto m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid->m_gridNodes[m], 0, grid->m_gridNodes[m].size());
+        AddSpline(grid.m_gridNodes[m], 0, grid.m_gridNodes[m].size());
     }
 
-    m_projection = grid->m_projection;
+    m_projection = grid.m_projection;
 }
 
 /// add a new spline, return the index

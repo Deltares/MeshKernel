@@ -47,7 +47,7 @@ namespace meshkernel
         CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Executes the algorithm
-        virtual std::shared_ptr<CurvilinearGrid> Compute() = 0;
+        virtual CurvilinearGrid Compute() = 0;
 
         /// @brief Sets a block where the algorithm should execute
         /// @param[in] firstCornerPoint            The first point defining the bounding box
@@ -63,7 +63,7 @@ namespace meshkernel
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
-        std::shared_ptr<CurvilinearGrid> m_grid;   ///< A pointer to the curvilinear grid to modify
+        CurvilinearGrid m_grid;                    ///< A copy of the original grid, it will be modified by the algorithms
         std::vector<CurvilinearGridLine> m_lines;  ///< Selected grid lines
         CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the block
         CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the block

@@ -45,6 +45,6 @@ namespace meshkernel
         CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Refine the curvilinear grid
-        std::shared_ptr<CurvilinearGrid> Compute() override;
+        CurvilinearGrid Compute() override;
     };
 } // namespace meshkernel

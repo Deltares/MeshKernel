@@ -22,8 +22,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid->m_numM);
-    ASSERT_EQ(4, derefinedGrid->m_numN);
+    ASSERT_EQ(4, derefinedGrid.m_numM);
+    ASSERT_EQ(4, derefinedGrid.m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldDeRefineVerticalGridLines)
@@ -49,8 +49,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(6, derefinedGrid->m_numM);
-    ASSERT_EQ(4, derefinedGrid->m_numN);
+    ASSERT_EQ(6, derefinedGrid.m_numM);
+    ASSERT_EQ(4, derefinedGrid.m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizontalGridLines)
@@ -70,6 +70,6 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid->m_numM);
-    ASSERT_EQ(4, derefinedGrid->m_numN);
+    ASSERT_EQ(4, derefinedGrid.m_numM);
+    ASSERT_EQ(4, derefinedGrid.m_numN);
 }

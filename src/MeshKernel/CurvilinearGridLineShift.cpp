@@ -37,11 +37,11 @@ using meshkernel::Point;
 CurvilinearGridLineShift::CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid) : CurvilinearGridAlgorithm(grid)
 
 {
-    // Store a copy of the original grid
-    m_gridModified = grid->CloneCurvilinearGrid();
+    // store a deep copy of the grid for computing the displacements
+    m_originalGrid = m_grid.CloneCurvilinearGrid();
 }
 
-std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
+CurvilinearGrid CurvilinearGridLineShift::Compute()
 {
     if (m_lines.empty())
     {
@@ -50,8 +50,8 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
 
     /// The first delta
     auto const previousNodeIndex = m_lines[0].m_startNode;
-    auto previousDelta = m_gridModified->m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n] -
-                         m_grid->m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n];
+    auto previousDelta = m_grid.m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n] -
+                         m_originalGrid.m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n];
 
     const double eps = 1e-5;
     auto previousCoordinate = m_lines[0].m_startCoordinate;
@@ -59,8 +59,8 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
     {
         auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
-        auto const currentDelta = m_gridModified->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
-                                  m_grid->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
+        auto const currentDelta = m_grid.m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
+                                  m_originalGrid.m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
 
         if (std::abs(currentDelta.x) < eps && std::abs(currentDelta.y) < eps && i != m_lines[0].m_endCoordinate)
         {
@@ -79,8 +79,8 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
             auto const secondFactor = 1.0 - firstFactor;
 
             // Now distribute the shifting
-            m_gridModified->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_grid->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
-                                                                        previousDelta * secondFactor + currentDelta * firstFactor;
+            m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_originalGrid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
+                                                               previousDelta * secondFactor + currentDelta * firstFactor;
             // Field transformation on the influence area
             TransformGrid(nodeIndex);
         }
@@ -88,12 +88,12 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
         previousDelta = currentDelta;
     }
 
-    return m_gridModified;
+    return m_grid;
 }
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const& node)
 {
-    auto delta = m_gridModified->m_gridNodes[node.m_m][node.m_n] - m_grid->m_gridNodes[node.m_m][node.m_n];
+    auto delta = m_grid.m_gridNodes[node.m_m][node.m_n] - m_originalGrid.m_gridNodes[node.m_m][node.m_n];
     delta = TransformDisplacement(delta, node, true);
 
     auto const start = m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? m_lowerLeft.m_n : m_lowerLeft.m_m;
@@ -104,7 +104,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
         CurvilinearGrid::NodeIndices currentNode{m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? node.m_m : i,
                                                  m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? i : node.m_n};
 
-        if (!m_grid->m_gridNodes[currentNode.m_m][currentNode.m_n].IsValid())
+        if (!m_originalGrid.m_gridNodes[currentNode.m_m][currentNode.m_n].IsValid())
         {
             continue;
         }
@@ -121,24 +121,24 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
         }
 
         currentDelta = TransformDisplacement(currentDelta, currentNode, false);
-        m_gridModified->m_gridNodes[currentNode.m_m][currentNode.m_n] = m_grid->m_gridNodes[currentNode.m_m][currentNode.m_n] + currentDelta;
+        m_grid.m_gridNodes[currentNode.m_m][currentNode.m_n] = m_originalGrid.m_gridNodes[currentNode.m_m][currentNode.m_n] + currentDelta;
     }
 }
 
 Point CurvilinearGridLineShift::TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool isLocal) const
 {
-    Point left = m_grid->m_gridNodes[node.m_m][node.m_n];
-    Point right = m_grid->m_gridNodes[node.m_m][node.m_n];
-    if (node.m_m < m_grid->m_numM - 1 && m_grid->m_gridNodes[node.m_m + 1][node.m_n].IsValid())
+    Point left = m_originalGrid.m_gridNodes[node.m_m][node.m_n];
+    Point right = m_originalGrid.m_gridNodes[node.m_m][node.m_n];
+    if (node.m_m < m_originalGrid.m_numM - 1 && m_originalGrid.m_gridNodes[node.m_m + 1][node.m_n].IsValid())
     {
-        right = m_grid->m_gridNodes[node.m_m + 1][node.m_n];
+        right = m_originalGrid.m_gridNodes[node.m_m + 1][node.m_n];
     }
-    if (node.m_m > 0 && m_grid->m_gridNodes[node.m_m - 1][node.m_n].IsValid())
+    if (node.m_m > 0 && m_originalGrid.m_gridNodes[node.m_m - 1][node.m_n].IsValid())
     {
-        left = m_grid->m_gridNodes[node.m_m - 1][node.m_n];
+        left = m_originalGrid.m_gridNodes[node.m_m - 1][node.m_n];
     }
 
-    const auto horizontalDistance = ComputeDistance(right, left, m_grid->m_projection);
+    const auto horizontalDistance = ComputeDistance(right, left, m_originalGrid.m_projection);
     const auto horizontalDelta = right - left;
 
     if (isLocal && horizontalDistance > 0.0)
@@ -168,7 +168,7 @@ void CurvilinearGridLineShift::MoveNode(Point const& fromPoint, Point const& toP
     }
 
     // Get the index in the grid of the line to be shifted
-    auto const nodeIndex = m_gridModified->GetNodeIndices(fromPoint);
+    auto const nodeIndex = m_grid.GetNodeIndices(fromPoint);
 
     //Check the nodes are on the line to shift
     if (!m_lines[0].IsNodeOnLine(nodeIndex))
@@ -176,5 +176,5 @@ void CurvilinearGridLineShift::MoveNode(Point const& fromPoint, Point const& toP
         throw std::invalid_argument("CurvilinearGridLineShift::MoveNode The selected node does not belong to the line to be shifted");
     }
 
-    m_gridModified->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+    m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
 }

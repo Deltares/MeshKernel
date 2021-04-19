@@ -38,7 +38,7 @@ CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<Curvili
 {
 }
 
-std::shared_ptr<CurvilinearGrid> CurvilinearGridDeRefinement::Compute()
+CurvilinearGrid CurvilinearGridDeRefinement::Compute()
 {
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
@@ -51,10 +51,10 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridDeRefinement::Compute()
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
-    deRefinedGrid.reserve(m_grid->m_numM);
+    deRefinedGrid.reserve(m_grid.m_numM);
 
     size_t mIndexOriginalGrid = 0;
-    while (mIndexOriginalGrid < m_grid->m_numM)
+    while (mIndexOriginalGrid < m_grid.m_numM)
     {
         size_t localMDeRefinement = 1;
         if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
@@ -62,22 +62,22 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridDeRefinement::Compute()
             localMDeRefinement = numMToDeRefine;
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
-        deRefinedGrid.back().reserve(m_grid->m_numN);
+        deRefinedGrid.back().reserve(m_grid.m_numN);
 
         size_t nIndexOriginalGrid = 0;
-        while (nIndexOriginalGrid < m_grid->m_numN)
+        while (nIndexOriginalGrid < m_grid.m_numN)
         {
             size_t localNDeRefinement = 1;
             if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid->m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
+            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;
     }
 
     // substitute original grid with the derefined one
-    return std::make_shared<CurvilinearGrid>(std::move(deRefinedGrid), m_grid->m_projection);
+    return CurvilinearGrid(std::move(deRefinedGrid), m_grid.m_projection);
 }

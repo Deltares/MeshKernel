@@ -503,7 +503,7 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint
     return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
 }
 
-std::shared_ptr<CurvilinearGrid> CurvilinearGrid::CloneCurvilinearGrid()
+CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
 {
-    return std::make_shared<CurvilinearGrid>(m_gridNodes, m_projection);
+    return CurvilinearGrid(m_gridNodes, m_projection);
 }
