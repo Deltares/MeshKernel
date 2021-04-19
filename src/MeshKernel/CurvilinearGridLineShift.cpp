@@ -38,7 +38,7 @@ CurvilinearGridLineShift::CurvilinearGridLineShift(std::shared_ptr<CurvilinearGr
 
 {
     // Store a copy of the original grid
-    m_gridModified = std::make_shared<CurvilinearGrid>(m_grid->m_gridNodes, m_grid->m_projection);
+    m_gridModified = grid->CloneCurvilinearGrid();
 }
 
 std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
@@ -57,7 +57,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
     auto previousCoordinate = m_lines[0].m_startCoordinate;
     for (auto i = 1; i <= m_lines[0].m_endCoordinate; ++i)
     {
-        auto const currentNodeIndex = m_lines[0].GetNodeindexFromCoordinate(i);
+        auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
         auto const currentDelta = m_gridModified->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
                                   m_grid->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
@@ -73,7 +73,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
         for (auto j = previousCoordinate; j <= currentLastCoordinate; ++j)
         {
 
-            auto const nodeIndex = m_lines[0].GetNodeindexFromCoordinate(j);
+            auto const nodeIndex = m_lines[0].GetNodeIndexFromCoordinate(j);
 
             auto const firstFactor = static_cast<double>(j - previousCoordinate) / static_cast<double>(i - previousCoordinate);
             auto const secondFactor = 1.0 - firstFactor;

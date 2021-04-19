@@ -157,6 +157,10 @@ namespace meshkernel
                                                                                                    NodeIndices const& lowerLeftIndices,
                                                                                                    NodeIndices const& upperRightIndices);
 
+        /// @brief Clones the curvilinear grid instance
+        /// @return A pointer to a deep copy of current curvilinear grid instance
+        [[nodiscard]] std::shared_ptr<CurvilinearGrid> CloneCurvilinearGrid();
+
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid

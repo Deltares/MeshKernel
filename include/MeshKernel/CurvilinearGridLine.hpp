@@ -52,10 +52,10 @@ namespace meshkernel
         /// @return True if the node belongs to the grid line, false otherwise
         [[nodiscard]] bool IsNodeOnLine(CurvilinearGrid::NodeIndices const& node) const;
 
-        /// @brief Gets the NodeIndices of a node on the grid line
+        /// @brief Gets the indices of a node on the grid line
         /// @param[in] coordinate The one-dimensional coordinate along the grid line
         /// @return The node indices
-        [[nodiscard]] CurvilinearGrid::NodeIndices GetNodeindexFromCoordinate(size_t const& coordinate) const;
+        [[nodiscard]] CurvilinearGrid::NodeIndices GetNodeIndexFromCoordinate(size_t const& coordinate) const;
 
         CurvilinearGrid::NodeIndices m_startNode; ///<The start node of the grid line
         CurvilinearGrid::NodeIndices m_endNode;   ///<The end node of the grid line

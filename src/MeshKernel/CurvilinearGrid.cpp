@@ -182,7 +182,8 @@ std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> Curviline
 std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>
 CurvilinearGrid::ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)}, {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
+    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)},
+            {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
 }
 
 void CurvilinearGrid::ComputeGridFacesMask()
@@ -361,10 +362,10 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
-            const auto isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
-            const auto isTopRightFaceValid = m_gridFacesMask[m][n];
-            const auto isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
-            const auto isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
+            auto const isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
+            auto const isTopRightFaceValid = m_gridFacesMask[m][n];
+            auto const isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
+            auto const isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
 
             if (isTopRightFaceValid &&
                 isTopLeftFaceValid &&
@@ -500,4 +501,9 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint
     const auto mixedSmoothingFactor = std::sqrt(verticalSmoothingFactor * horizontalSmoothingFactor);
 
     return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
+}
+
+std::shared_ptr<CurvilinearGrid> CurvilinearGrid::CloneCurvilinearGrid()
+{
+    return std::make_shared<CurvilinearGrid>(m_gridNodes, m_projection);
 }
