@@ -552,4 +552,10 @@ namespace meshkernel
         return {{minx, miny}, {maxx, maxy}};
     }
 
+    /// @brief Calculates the absolute difference between to `size_t` numbers.
+    ///
+    /// @param[in] number_1 The first number
+    /// @param[in] number_2 The second number
+    size_t AbsoluteDifference(size_t number_1, size_t number_2);
+
 } // namespace meshkernel

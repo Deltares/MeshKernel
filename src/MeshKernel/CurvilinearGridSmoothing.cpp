@@ -109,14 +109,14 @@ void CurvilinearGridSmoothing::SolveDirectional()
     auto isInvalidValidNode = [this](auto const& m, auto const& n) {
         if (m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine)
         {
-            return m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid &&
-                   m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::Bottom &&
-                   m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::Up;
+            return m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::InternalValid &&
+                   m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::Bottom &&
+                   m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::Up;
         }
 
-        return m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid &&
-               m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::Left &&
-               m_grid.m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::Right;
+        return m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::InternalValid &&
+               m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::Left &&
+               m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::Right;
     };
 
     // Apply smoothing
@@ -190,17 +190,17 @@ void CurvilinearGridSmoothing::Solve()
         {
 
             // It is invalid or a corner point, skip smoothing
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Invalid ||
-                m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomLeft ||
-                m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperLeft ||
-                m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomRight ||
-                m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperRight)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Invalid ||
+                m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomLeft ||
+                m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperLeft ||
+                m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomRight ||
+                m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperRight)
             {
                 continue;
             }
 
             // Compute new position based on a smoothing operator
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::InternalValid)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::InternalValid)
             {
                 m_grid.m_gridNodes[m][n] = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n]) * 0.25 * b +
                                            (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1]) * 0.25 * b;
@@ -209,19 +209,19 @@ void CurvilinearGridSmoothing::Solve()
 
             // For the point on the boundaries first computed the new position
             Point newNodePosition;
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Bottom)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Bottom)
             {
                 newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n + 1]) * oneThird * b;
             }
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Up)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Up)
             {
                 newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n - 1]) * oneThird * b;
             }
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Right)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Right)
             {
                 newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m - 1][n]) * oneThird * b;
             }
-            if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Left)
+            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Left)
             {
                 newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * oneThird * b;
             }
@@ -236,12 +236,12 @@ void CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& po
     // Project the new position on the original boundary segment
     Point previousNode;
     Point nextNode;
-    if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Bottom || m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Up)
+    if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Bottom || m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Up)
     {
         previousNode = m_gridNodesCache[m - 1][n];
         nextNode = m_gridNodesCache[m + 1][n];
     }
-    if (m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Right || m_grid.m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Left)
+    if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Right || m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Left)
     {
         previousNode = m_gridNodesCache[m][n - 1];
         nextNode = m_gridNodesCache[m][n + 1];

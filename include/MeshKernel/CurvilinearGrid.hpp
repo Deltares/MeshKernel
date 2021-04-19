@@ -68,8 +68,7 @@ namespace meshkernel
             /// @brief Determines if one of the indices  equals to \p missingValue
             [[nodiscard]] bool IsValid(const size_t missingValue = sizetMissingValue) const
             {
-                const bool isInvalid = m_m == missingValue || m_n == missingValue;
-                return !isInvalid;
+                return m_m != missingValue && m_n != missingValue;
             }
 
             /// @brief Overloads equality with another NodeIndices
@@ -99,11 +98,6 @@ namespace meshkernel
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Rvalue constructor. Creates a new curvilinear grid from a given set of points
-        /// @param[in] grid       The input grid points
-        /// @param[in] projection The projection to use
-        explicit CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
-
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
@@ -115,7 +109,7 @@ namespace meshkernel
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
-        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
+        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<NodeIndices>> ConvertCurvilinearToNodesAndEdges();
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
@@ -124,14 +118,24 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         NodeIndices GetNodeIndices(Point point);
 
+        /// @brief From a point gets the node indices of the closest edges, by finding the closest edge middle point
+        /// @param[in] point
+        /// @return
+        std::tuple<NodeIndices, NodeIndices> GetEdgeNodeIndices(Point const& point);
+
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
 
-        /// @brief If the face is valid. A face is valid if all its nodes are valid.
+        /// @brief Determines if a face is valid.
+        /// A face is valid if all its nodes are valid.
         /// @param[in] m The m coordinate
         /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
+
+        /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
+        /// @param[in] point  The point used for finding the closest edge.
+        void InsertFace(Point const& point);
 
         /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m and n coordinates
         /// @param[in] firstNode The node indices of the first node
@@ -161,12 +165,12 @@ namespace meshkernel
         /// @return A pointer to a deep copy of current curvilinear grid instance
         [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
 
-        size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
-        std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesMask;   ///< The grid node types
-        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
+        size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
+        std::vector<std::vector<Point>> m_gridNodes;         ///< Member variable storing the grid
+        std::vector<std::vector<bool>> m_gridFacesMask;      ///< The mask of the grid faces (true/false)
+        std::vector<std::vector<NodeType>> m_gridNodesTypes; ///< The grid node types
+        std::vector<NodeIndices> m_gridIndices;              ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:
         /// @brief Remove invalid nodes.
@@ -181,5 +185,14 @@ namespace meshkernel
         /// @param[in] gridLine The input gridline
         /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
+
+        /// @brief Adds an edge at the boundary forming a new face. Increase the grid if required (MODGR1)
+        /// The position of the new edge depends on the type of \p firstNode or \p secondNode.
+        /// For example, if one of the node types is 'Left' the new edge will be inserted on the left.
+        /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
+        /// @param[in] firstNode The indices of the first new node in the modified grid.
+        /// @param[in] secondNode The indices of the second new node in the modified grid.
+        void AddEdge(NodeIndices const& firstNode,
+                     NodeIndices const& secondNode);
     };
 } // namespace meshkernel
