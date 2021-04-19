@@ -128,7 +128,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
 Point CurvilinearGridLineShift::TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool isLocal) const
 {
     Point left = m_originalGrid.m_gridNodes[node.m_m][node.m_n];
-    Point right = m_originalGrid.m_gridNodes[node.m_m][node.m_n];
+    Point right = left;
     if (node.m_m < m_originalGrid.m_numM - 1 && m_originalGrid.m_gridNodes[node.m_m + 1][node.m_n].IsValid())
     {
         right = m_originalGrid.m_gridNodes[node.m_m + 1][node.m_n];
