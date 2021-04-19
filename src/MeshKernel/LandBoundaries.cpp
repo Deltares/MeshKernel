@@ -317,8 +317,8 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, boo
                     throw AlgorithmError("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: No segment index found: cannot assign segment to mesh nodes.");
                 }
 
-                if ((nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
-                    (nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
+                if (nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][0] && edgeRatio < 0.0 ||
+                    nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0)
                 {
                     if (m_addLandboundaries)
                     {
