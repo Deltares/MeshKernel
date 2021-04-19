@@ -380,6 +380,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa43c22cc0cccf4815148e3bc39a9bf5b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa43c22cc0cccf4815148e3bc39a9bf5b">mkernel_finalize_line_shift_curvilinear</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:aa43c22cc0cccf4815148e3bc39a9bf5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the instance of the line shift algorithm in <a class="el" href="classmeshkernelapi_1_1_mesh_kernel_state.html" title="The class holding the state of the C API library.">MeshKernelState</a>.  <a href="namespacemeshkernelapi.html#aa43c22cc0cccf4815148e3bc39a9bf5b">More...</a><br /></td></tr>
 <tr class="separator:aa43c22cc0cccf4815148e3bc39a9bf5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc15c5d9bf7366879a1c278ef7963b9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7bc15c5d9bf7366879a1c278ef7963b9">mkernel_insert_face_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;point)</td></tr>
+<tr class="memdesc:a7bc15c5d9bf7366879a1c278ef7963b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a new face on a curvilinear grid. The new face will be inserted on top of the closest edge by linear extrapolation.  <a href="namespacemeshkernelapi.html#a7bc15c5d9bf7366879a1c278ef7963b9">More...</a><br /></td></tr>
+<tr class="separator:a7bc15c5d9bf7366879a1c278ef7963b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="memItemLeft" align="right" valign="top"><a id="a0c8a7a9f99cd5feedadca9b03aae4e4d"></a>
 MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0c8a7a9f99cd5feedadca9b03aae4e4d">mkernel_convert_curvilinear_to_mesh2d</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a curvilinear grid to an unstructured mesh. <br /></td></tr>
@@ -3062,6 +3065,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td>The index of the first node to connect </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td>The index of the second node to connect </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">newEdgeIndex</td><td>The index of the new generated edge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a7bc15c5d9bf7366879a1c278ef7963b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc15c5d9bf7366879a1c278ef7963b9">&#9670;&nbsp;</a></span>mkernel_insert_face_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_insert_face_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts a new face on a curvilinear grid. The new face will be inserted on top of the closest edge by linear extrapolation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The geometry list containing the point used for finding the closest edge. </td></tr>
   </table>
   </dd>
 </dl>
