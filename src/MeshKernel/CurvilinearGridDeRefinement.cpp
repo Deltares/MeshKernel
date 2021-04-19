@@ -27,66 +27,57 @@
 
 #pragma once
 
-#include <utility>
-
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Splines.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridDeRefinement;
 
-CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid, const Point& firstPoint, const Point& secondPoint)
-    : m_grid(std::move(grid)),
-      m_firstPoint(firstPoint),
-      m_secondPoint(secondPoint)
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid) : CurvilinearGridAlgorithm(grid)
 {
 }
 
 CurvilinearGrid CurvilinearGridDeRefinement::Compute()
 {
-    // Get the m and n indices from the point coordinates
-    auto const [firstNode, secondNode] = m_grid->ComputeBlockFromCornerPoints(m_firstPoint, m_secondPoint);
-
-    /// The points must lie on the same gridline
-    if (!firstNode.IsOnTheSameGridLine(secondNode))
+    if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
-        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: The selected curvilinear grid nodes are not on the same grid line");
+        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
     }
 
     /// estimate the dimension of the refined grid
-    const auto numMToDeRefine = secondNode.m > firstNode.m ? secondNode.m - firstNode.m : 1;
-    const auto numNToDeRefine = secondNode.n > firstNode.n ? secondNode.n - firstNode.n : 1;
+    const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m ? m_upperRight.m_m - m_lowerLeft.m_m : 1;
+    const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n ? m_upperRight.m_n - m_lowerLeft.m_n : 1;
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
-    deRefinedGrid.reserve(m_grid->m_numM);
+    deRefinedGrid.reserve(m_grid.m_numM);
 
     size_t mIndexOriginalGrid = 0;
-    while (mIndexOriginalGrid < m_grid->m_numM)
+    while (mIndexOriginalGrid < m_grid.m_numM)
     {
         size_t localMDeRefinement = 1;
-        if (mIndexOriginalGrid >= firstNode.m && mIndexOriginalGrid < secondNode.m)
+        if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
         {
             localMDeRefinement = numMToDeRefine;
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
-        deRefinedGrid.back().reserve(m_grid->m_numN);
+        deRefinedGrid.back().reserve(m_grid.m_numN);
 
         size_t nIndexOriginalGrid = 0;
-        while (nIndexOriginalGrid < m_grid->m_numN)
+        while (nIndexOriginalGrid < m_grid.m_numN)
         {
             size_t localNDeRefinement = 1;
-            if (nIndexOriginalGrid >= firstNode.n && nIndexOriginalGrid < secondNode.n)
+            if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid->m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
+            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;
     }
+
     // substitute original grid with the derefined one
-    return CurvilinearGrid(std::move(deRefinedGrid), m_grid->m_projection);
+    return CurvilinearGrid(std::move(deRefinedGrid), m_grid.m_projection);
 }

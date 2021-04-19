@@ -46,6 +46,20 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Project
     SetFlatCopies();
 }
 
+CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection) : m_gridNodes(grid)
+{
+    if (!IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid ");
+    }
+
+    m_projection = projection;
+    m_numM = m_gridNodes.size();
+    m_numN = m_gridNodes[0].size();
+
+    SetFlatCopies();
+}
+
 void CurvilinearGrid::SetFlatCopies()
 {
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
@@ -54,8 +68,7 @@ void CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>>
-CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (!IsValid())
     {
@@ -169,7 +182,8 @@ std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> Curviline
 std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>
 CurvilinearGrid::ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}};
+    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)},
+            {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
 }
 
 void CurvilinearGrid::ComputeGridFacesMask()
@@ -348,10 +362,10 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
-            const auto isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
-            const auto isTopRightFaceValid = m_gridFacesMask[m][n];
-            const auto isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
-            const auto isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
+            auto const isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
+            auto const isTopRightFaceValid = m_gridFacesMask[m][n];
+            auto const isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
+            auto const isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
 
             if (isTopRightFaceValid &&
                 isTopLeftFaceValid &&
@@ -465,4 +479,31 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
         }
     }
+}
+
+std::tuple<double, double, double>
+CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint,
+                                                    const NodeIndices& pointOnSmoothingLineIndices,
+                                                    const NodeIndices& lowerLeftIndices,
+                                                    const NodeIndices& upperRightIndices)
+{
+    // horizontal smoothing factor
+    const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
+    const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
+    const auto horizontalSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
+
+    // vertical smoothing factor
+    const auto verticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? gridpoint.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - gridpoint.m_n;
+    const auto maxVerticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? upperRightIndices.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - lowerLeftIndices.m_n;
+    const auto verticalSmoothingFactor = maxVerticalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
+
+    // mixed smoothing factor
+    const auto mixedSmoothingFactor = std::sqrt(verticalSmoothingFactor * horizontalSmoothingFactor);
+
+    return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
+}
+
+CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
+{
+    return CurvilinearGrid(m_gridNodes, m_projection);
 }

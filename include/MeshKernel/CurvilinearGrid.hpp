@@ -54,13 +54,28 @@ namespace meshkernel
             Invalid        //(0)
         };
 
-        /// @brief A struct describing the column and row indices of a node
+        /// @brief A struct describing a node in the curvilinear grid in terms of node indices
         struct NodeIndices
         {
+            /// @brief Default constructor sets the indices to invalid
+            NodeIndices() : m_m(sizetMissingValue), m_n(sizetMissingValue){};
+
+            /// @brief Constructor sets indices from values
+            /// @param[in] m The m index
+            /// @param[in] n The n index
+            NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
+
+            /// @brief Determines if one of the indices  equals to \p missingValue
+            [[nodiscard]] bool IsValid(const size_t missingValue = sizetMissingValue) const
+            {
+                const bool isInvalid = m_m == missingValue || m_n == missingValue;
+                return !isInvalid;
+            }
+
             /// @brief Overloads equality with another NodeIndices
             bool operator==(const NodeIndices& rhs) const
             {
-                return m == rhs.m && n == rhs.n;
+                return m_m == rhs.m_m && m_n == rhs.m_n;
             }
             /// @brief Overloads negation with another NodeIndices
             bool operator!=(const NodeIndices& rhs) const
@@ -73,25 +88,26 @@ namespace meshkernel
             /// @return True if on the same grid line, false otherwise
             bool IsOnTheSameGridLine(const NodeIndices& rhs) const
             {
-                if (m == rhs.m || n == rhs.n)
-                {
-                    return true;
-                }
-                return false;
+                return m_m == rhs.m_m || m_n == rhs.m_n;
             }
 
-            size_t m; ///< Columns
-            size_t n; ///< Rows
+            size_t m_m; ///< Columns
+            size_t m_n; ///< Rows
         };
 
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Creates a new curvilinear grid from a given set of points
+        /// @brief Rvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+        explicit CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+
+        /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
+        /// @param[in] grid       The input grid points
+        /// @param[in] projection The projection to use
+        explicit CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise
@@ -112,8 +128,8 @@ namespace meshkernel
         void ComputeGridNodeTypes();
 
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
-        /// @param[in] m the m coordinate
-        /// @param[in] n the n coordinate
+        /// @param[in] m The m coordinate
+        /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
@@ -123,11 +139,27 @@ namespace meshkernel
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
-        /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m and n coordinates
-        /// @param[in] firstCornerPoint The first point
-        /// @param[in] secondCornerPoint The second point
-        /// @return The upper left and lower right of the box defined by the two points
+        /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m and n coordinates
+        /// @param[in] firstCornerPoint The first corner point
+        /// @param[in] secondCornerPoint The second corner point
+        /// @return The upper left and lower right nodes of the box
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
+
+        /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
+        /// The smoothing factor is maximum at the line and 0 at the boundary of the smoothing zone.
+        /// @param[in] currentPointIndices The indices of the current point
+        /// @param[in] pointOnSmoothingLineIndices The indices of a point on the smoothing line
+        /// @param[in] lowerLeftIndices The lower left indices of the smoothing area
+        /// @param[in] upperRightIndices The upper right indices of the smoothing area
+        /// @return A tuple containing the horizontal, the vertical and mixed smoothing factors
+        [[nodiscard]] static std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(NodeIndices const& currentPointIndices,
+                                                                                                   NodeIndices const& pointOnSmoothingLineIndices,
+                                                                                                   NodeIndices const& lowerLeftIndices,
+                                                                                                   NodeIndices const& upperRightIndices);
+
+        /// @brief Clones the curvilinear grid instance
+        /// @return A pointer to a deep copy of current curvilinear grid instance
+        [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
 
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)

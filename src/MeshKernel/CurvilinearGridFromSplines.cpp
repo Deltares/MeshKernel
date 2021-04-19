@@ -369,7 +369,7 @@ void CurvilinearGridFromSplines::Initialize()
     m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, {doubleMissingValue, doubleMissingValue}));
     m_validFrontNodes.resize(m_numM, 1);
 
-    // Copy the first n in m_gridPoints
+    // Copy the first m point in m_gridPoints
     for (auto n = 0; n < m_numM; ++n)
     {
         m_gridPoints[0][n] = m_gridLine[n];

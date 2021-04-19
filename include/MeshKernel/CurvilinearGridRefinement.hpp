@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -37,29 +38,21 @@ namespace meshkernel
     class CurvilinearGrid;
 
     /// @brief A class implementing the curvilinear grid refinement algorithm
-    class CurvilinearGridRefinement
+    class CurvilinearGridRefinement : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         ///
         /// \p firstPoint and \p secondPoint must lie on the same gridline
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] firstPoint  The first node of the segment defining the refinement zone
-        /// @param[in] secondPoint The second node of the segment defining the refinement zone
-        /// @param[in] refinement  The number of refinement lines between \p firstPoint and \p secondPoint
-        CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid,
-                                  const Point& firstPoint,
-                                  const Point& secondPoint,
-                                  size_t refinement);
+        /// @param[in] refinement  The number of refinement lines between the points set by SetBlock()
+        CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, size_t refinement);
 
         /// @brief Refine the curvilinear grid
-        void Compute() const;
+        CurvilinearGrid Compute() override;
 
     private:
-        std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
-        Point m_firstPoint;                      ///< The first node of the segment defining the refinement zone
-        Point m_secondPoint;                     ///< The second node of the segment defining the refinement zone
-        size_t m_refinement;                     ///< The selected number of refinement lines
-        Splines m_splines;                       ///< An instance of the spline class storing the individual grid lines as splines
+        size_t m_refinement; ///< The selected number of refinement lines
+        Splines m_splines;   ///< An instance of the spline class storing the individual grid lines as splines
     };
 } // namespace meshkernel
