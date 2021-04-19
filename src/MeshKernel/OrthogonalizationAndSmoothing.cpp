@@ -40,23 +40,26 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
 
-meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh2D> mesh,
-                                                                         std::shared_ptr<Smoother> smoother,
-                                                                         std::shared_ptr<Orthogonalizer> orthogonalizer,
-                                                                         std::shared_ptr<Polygons> polygon,
-                                                                         std::shared_ptr<LandBoundaries> landBoundaries,
-                                                                         LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
-                                                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
-                                                                                                                                                          m_smoother(smoother),
-                                                                                                                                                          m_orthogonalizer(orthogonalizer),
-                                                                                                                                                          m_polygons(polygon),
-                                                                                                                                                          m_landBoundaries(landBoundaries),
-                                                                                                                                                          m_projectToLandBoundaryOption(projectToLandBoundaryOption),
-                                                                                                                                                          m_orthogonalizationParameters(orthogonalizationParameters)
+using meshkernel::Mesh2D;
+using meshkernel::OrthogonalizationAndSmoothing;
+
+OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh2D> mesh,
+                                                             std::shared_ptr<Smoother> smoother,
+                                                             std::shared_ptr<Orthogonalizer> orthogonalizer,
+                                                             std::shared_ptr<Polygons> polygon,
+                                                             std::shared_ptr<LandBoundaries> landBoundaries,
+                                                             LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                                             const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
+                                                                                                                                              m_smoother(smoother),
+                                                                                                                                              m_orthogonalizer(orthogonalizer),
+                                                                                                                                              m_polygons(polygon),
+                                                                                                                                              m_landBoundaries(landBoundaries),
+                                                                                                                                              m_projectToLandBoundaryOption(projectToLandBoundaryOption),
+                                                                                                                                              m_orthogonalizationParameters(orthogonalizationParameters)
 {
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::Initialize()
+void OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
     m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
@@ -101,7 +104,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::Compute()
+void OrthogonalizationAndSmoothing::Compute()
 {
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.OuterIterations; outerIter++)
     {
@@ -110,7 +113,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Compute()
         {
             for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.InnerIterations; innerIter++)
             {
-                InnerIteration();
+                Solve();
 
             } // inner iteration
         }     // boundary iter
@@ -120,7 +123,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Compute()
     } // outer iter
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::PrepareOuterIteration()
+void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 {
     // compute weights and rhs of orthogonalizer
     m_orthogonalizer->Compute();
@@ -135,7 +138,7 @@ void meshkernel::OrthogonalizationAndSmoothing::PrepareOuterIteration()
     ComputeLinearSystemTerms();
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
+void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 {
     // reallocate caches
     if (m_nodeCacheSize == 0)
@@ -162,7 +165,7 @@ void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
+void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
 
@@ -173,7 +176,7 @@ void meshkernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
+void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor);
 #pragma omp parallel for
@@ -226,7 +229,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
+void OrthogonalizationAndSmoothing::Solve()
 {
 #pragma omp parallel for
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
@@ -247,7 +250,7 @@ void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
     m_landBoundaries->SnapMeshToLandBoundaries();
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
+void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
     Point normalSecondPoint{doubleMissingValue, doubleMissingValue};
     Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
@@ -331,7 +334,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
+void OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     //TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
 
@@ -341,7 +344,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
+void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
 {
 
     double dx0 = 0.0;
@@ -390,7 +393,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nod
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
+void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
     const auto numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];

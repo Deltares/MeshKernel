@@ -35,12 +35,15 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridFromPolygon;
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                                            size_t secondNode,
-                                                                            size_t thirdNode,
-                                                                            bool useFourthSide) const
+CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
+
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                    size_t secondNode,
+                                                    size_t thirdNode,
+                                                    bool useFourthSide) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -192,7 +195,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
         // Interpolate fourth side
         for (auto i = 0; i < numNNodes; i++)
         {
-            const double fac = double(i) / double(numNNodes - 1);
+            const double fac = static_cast<double>(i) / static_cast<double>(numNNodes - 1);
             sideOne[i] = m_polygon->m_nodes[firstNode] * (1.0 - fac) +
                          m_polygon->m_nodes[fourthNode] * fac;
         }
@@ -216,9 +219,9 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
     return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                                            size_t secondNode,
-                                                                            size_t thirdNode) const
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                    size_t secondNode,
+                                                    size_t thirdNode) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -306,9 +309,9 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
     std::vector<size_t> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
 
     // compute triangle middle point
-    const auto xia = double(n1) / double(numPointsFirstSide);
-    const auto xib = double(n2) / double(numPointsSecondSide);
-    const auto xic = double(n3) / double(numPointsThirdSide);
+    const auto xia = static_cast<double>(n1) / static_cast<double>(numPointsFirstSide);
+    const auto xib = static_cast<double>(n2) / static_cast<double>(numPointsSecondSide);
+    const auto xic = static_cast<double>(n3) / static_cast<double>(numPointsThirdSide);
 
     const auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
                                  (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
@@ -370,14 +373,14 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
         // fill side four
         for (auto i = 0; i < numM[t] + 1; ++i)
         {
-            double localXia = double(i) / double(numM[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
             sideFour[i] = m_polygon->m_nodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
         for (auto i = 0; i < numN[t] + 1; ++i)
         {
-            double localXia = double(i) / double(numN[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 

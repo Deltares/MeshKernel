@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 
@@ -38,21 +38,17 @@ namespace meshkernel
     class CurvilinearGrid;
 
     /// @brief A class implementing the curvilinear grid orthogonalization algorithm
-    class CurvilinearGridOrthogonalization
+    class CurvilinearGridOrthogonalization : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
-        /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
-        /// @param[in] secondCornerPoint           The second point defining the orthogonalization bounding box
         CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters,
-                                         const Point& firstCornerPoint,
-                                         const Point& secondCornerPoint);
+                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
-        void Compute();
+        CurvilinearGrid Compute() override;
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
@@ -64,8 +60,8 @@ namespace meshkernel
         /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
         void ProjectVerticalBoundariesGridNodes();
 
-        /// @brief Freeze nodes with a specific flag (FIXDDBOUNDARIES)
-        void FreezeBoundaries() const;
+        /// @brief Compute frozen grid points (FIXDDBOUNDARIES)
+        void ComputeFrozenGridPoints();
 
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
@@ -76,21 +72,15 @@ namespace meshkernel
         /// @brief Compute the matrix coefficients for n-gridlines (SOMDIST)
         void ComputeVerticalCoefficients();
 
-        /// @brief Some nodes on m boundary grid lines
+        /// @brief Computes the invalid nodes on m boundary grid lines
+        /// @return A vector with true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
 
-        /// @brief Some nodes on n boundary grid lines
+        /// @brief Computes the invalid nodes on n boundary grid lines
+        /// @return A vector with true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes() const;
 
-        std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
-        Point m_firstCornerPoint;                                                 ///< The first point defining the orthogonalization bounding box
-        Point m_secondCornerPoint;                                                ///< The second point defining the orthogonalization bounding box
-
-        size_t m_minM; ///< The minimum m grid index of the orthogonalization bounding box
-        size_t m_minN; ///< The minimum n grid index of the orthogonalization bounding box
-        size_t m_maxM; ///< The maximum m grid index of the orthogonalization bounding box
-        size_t m_maxN; ///< The maximum n grid index of the orthogonalization bounding box
 
         std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
         std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation
@@ -98,6 +88,8 @@ namespace meshkernel
         std::vector<std::vector<double>> m_d;   ///< The d term of the orthogonalization equation
         std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
         std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
+
+        std::vector<std::vector<bool>> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
 
         Splines m_splines; ///< The grid lines stored as splines
     };

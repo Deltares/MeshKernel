@@ -35,10 +35,10 @@
 
 namespace meshkernel
 {
-    // missing value
-    const double innerOuterSeparator = -998.0;                           ///< Double value used to separate the inner part of a polygon from its outer part
-    const double doubleMissingValue = -999.0;                            ///< Double value used as missing value
-    const int intMissingValue = -999;                                    ///< Integer value used as missing value
+    // missing values
+    const double innerOuterSeparator = -998.0;                                     ///< Double value used to separate the inner part of a polygon from its outer part
+    const double doubleMissingValue = -999.0;                                      ///< Double value used as missing value
+    const int intMissingValue = -999;                                              ///< Integer value used as missing value
     const std::size_t sizetMissingValue = std::numeric_limits<std::size_t>::max(); ///< std::size_t missing value used for invalid indices
 
     // often used values
@@ -54,13 +54,13 @@ namespace meshkernel
     const double nearlyZero = 1e-16;                         ///< Used to determine if a length is zero
 
     // mesh constants
-    const double minimumDeltaCoordinate = 1e-14;                                  ///< Minimum delta coordinate
+    const double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
     const std::size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
     const std::size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
     const std::size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
     const std::size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-    const double minimumCellArea = 1e-12;                                         ///< Minimum cell area
-    const double weightCircumCenter = 1.0;                                        ///< Weight circum center
+    const double minimumCellArea = 1e-12;                                              ///< Minimum cell area
+    const double weightCircumCenter = 1.0;                                             ///< Weight circum center
     const std::size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
     const std::size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
 

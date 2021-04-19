@@ -27,20 +27,22 @@
 
 #pragma once
 
-#include "MeshKernel/CurvilinearGridCreateUniform.hpp"
-
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-meshkernel::CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& makeMeshParameters, std::shared_ptr<Polygons> polygons)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridCreateUniform;
+
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& makeMeshParameters, std::shared_ptr<Polygons> polygons)
     : m_makeMeshParameters(makeMeshParameters),
       m_polygons(polygons)
 {
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridCreateUniform::Compute() const
+CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
 {
     if (m_makeMeshParameters.GridType != 0)
     {

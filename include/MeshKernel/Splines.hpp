@@ -55,9 +55,9 @@ namespace meshkernel
         /// @returns
         explicit Splines(Projection projection);
 
-        /// @brief Ctor from grids, each gridline is converted to spline, first  the first n horizontal lines then the m vertical lines
+        /// @brief Ctor from grids, each gridline is converted to spline, first  the first m_n horizontal lines then the m_m vertical lines
         /// @brief[in] The curvilinear grid
-        explicit Splines(std::shared_ptr<CurvilinearGrid> grid);
+        explicit Splines(CurvilinearGrid const& grid);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points

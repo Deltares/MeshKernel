@@ -98,10 +98,14 @@ namespace meshkernel
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Creates a new curvilinear grid from a given set of points
+        /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+        explicit CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
+
+        /// @brief Check if current curvilinear grid instance is valid
+        /// @return True if valid, false otherwise
+        [[nodiscard]] bool IsValid() const;
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
@@ -132,6 +136,34 @@ namespace meshkernel
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
         void InsertFace(Point const& point);
+
+        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m and n coordinates
+        /// @param[in] firstNode The node indices of the first node
+        /// @param[in] secondNode The node indices of the second node
+        /// @return The upper left and lower right of the box defined by the two points
+        [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
+
+        /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m and n coordinates
+        /// @param[in] firstCornerPoint The first corner point
+        /// @param[in] secondCornerPoint The second corner point
+        /// @return The upper left and lower right nodes of the box
+        [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
+
+        /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
+        /// The smoothing factor is maximum at the line and 0 at the boundary of the smoothing zone.
+        /// @param[in] currentPointIndices The indices of the current point
+        /// @param[in] pointOnSmoothingLineIndices The indices of a point on the smoothing line
+        /// @param[in] lowerLeftIndices The lower left indices of the smoothing area
+        /// @param[in] upperRightIndices The upper right indices of the smoothing area
+        /// @return A tuple containing the horizontal, the vertical and mixed smoothing factors
+        [[nodiscard]] static std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(NodeIndices const& currentPointIndices,
+                                                                                                   NodeIndices const& pointOnSmoothingLineIndices,
+                                                                                                   NodeIndices const& lowerLeftIndices,
+                                                                                                   NodeIndices const& upperRightIndices);
+
+        /// @brief Clones the curvilinear grid instance
+        /// @return A pointer to a deep copy of current curvilinear grid instance
+        [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
 
         size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
