@@ -489,7 +489,7 @@ void CurvilinearGrid::InsertFace(Point const& point)
     // Add a new edge
     AddEdge(firstNode, secondNode);
 
-    // Add first node
+    // Re-compute quantities
     ComputeGridNodeTypes();
     m_numM = m_gridNodes.size();
     m_numN = m_gridNodes[0].size();
@@ -508,7 +508,7 @@ void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
         return !validIndex || m_gridNodes[first.m_m][first.m_n].IsValid() && !m_gridNodes[second.m_m][second.m_n].IsValid();
     };
 
-    // Otherwise we need to increment the grid depending on directions
+    // Allocation depends on directions
     if (m_gridNodesTypes[firstNode.m_m][firstNode.m_n] == NodeType::Left ||
         m_gridNodesTypes[secondNode.m_m][secondNode.m_n] == NodeType::Left)
     {
