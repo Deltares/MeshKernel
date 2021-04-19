@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/CurvilinearGridAlgorithm.hpp&gt;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Splines.hpp&gt;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/OrthogonalizationParameters.hpp&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
@@ -116,68 +116,55 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">class </span>CurvilinearGrid;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">   41</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">CurvilinearGridOrthogonalization</a></div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">   41</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">CurvilinearGridOrthogonalization</a> : <span class="keyword">public</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_algorithm.html">CurvilinearGridAlgorithm</a></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ab21b0ef3e75c436c397c68849f208035">CurvilinearGridOrthogonalization</a>(std::shared_ptr&lt;CurvilinearGrid&gt; grid,</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                         <span class="keyword">const</span> <a class="code" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a>&amp; orthogonalizationParameters);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ac4e8cc05e856b5f2ff7010b06a2433de">Compute</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#aef9c5f207ebd1a5e2236d2a224f0a70a">Compute</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#af2cd0647c4ccbaaa6d47e1b8d1b10cde">SetBlock</a>(<a class="code" href="structmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; firstCornerPoint, <a class="code" href="structmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; secondCornerPoint);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ad52f08892a08a4fca051614961ff20c9">SetFrozenLine</a>(<a class="code" href="structmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; firstPoint, <a class="code" href="structmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; secondPoint);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">void</span> Solve();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordtype">void</span> ProjectHorizontalBoundaryGridNodes();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordtype">void</span> ProjectVerticalBoundariesGridNodes();</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordtype">void</span> Solve();</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordtype">void</span> ProjectHorizontalBoundaryGridNodes();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordtype">void</span> ProjectVerticalBoundariesGridNodes();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordtype">void</span> ComputeFrozenGridPoints();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordtype">void</span> ComputeCoefficients();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordtype">void</span> ComputeFrozenGridPoints();</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordtype">void</span> ComputeCoefficients();</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordtype">void</span> ComputeHorizontalCoefficients();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordtype">void</span> ComputeVerticalCoefficients();</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;bool&gt;&gt; ComputeInvalidHorizontalBoundaryNodes() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordtype">void</span> ComputeHorizontalCoefficients();</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordtype">void</span> ComputeVerticalCoefficients();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;bool&gt;&gt; ComputeInvalidVerticalBoundaryNodes() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <a class="code" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> m_orthogonalizationParameters; </div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        std::tuple&lt;size_t, size_t, size_t, size_t&gt; OrderCoordinates(<span class="keywordtype">size_t</span> firstPointM, <span class="keywordtype">size_t</span> firstPointN, <span class="keywordtype">size_t</span> secondPointM, <span class="keywordtype">size_t</span> secondPointN) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;bool&gt;&gt; ComputeInvalidHorizontalBoundaryNodes() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;bool&gt;&gt; ComputeInvalidVerticalBoundaryNodes() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        std::shared_ptr&lt;CurvilinearGrid&gt; m_grid;                                  </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <a class="code" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> m_orthogonalizationParameters; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <a class="code" href="structmeshkernel_1_1_curvilinear_grid_1_1_node_indices.html">CurvilinearGrid::NodeIndices</a> m_lowerLeft;  </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <a class="code" href="structmeshkernel_1_1_curvilinear_grid_1_1_node_indices.html">CurvilinearGrid::NodeIndices</a> m_upperRight; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_a;   </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_b;   </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_c;   </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_d;   </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_e;   </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_atp; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        std::vector&lt;std::tuple&lt;CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices&gt;&gt; m_frozenLines; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        std::vector&lt;std::vector&lt;bool&gt;&gt; m_isGridNodeFrozen;                                                 </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classmeshkernel_1_1_splines.html">Splines</a> m_splines; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    };</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_a;   </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_b;   </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_c;   </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_d;   </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_e;   </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_atp; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        std::vector&lt;std::vector&lt;bool&gt;&gt; m_isGridNodeFrozen; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <a class="code" href="classmeshkernel_1_1_splines.html">Splines</a> m_splines; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    };</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html_af2cd0647c4ccbaaa6d47e1b8d1b10cde"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#af2cd0647c4ccbaaa6d47e1b8d1b10cde">meshkernel::CurvilinearGridOrthogonalization::SetBlock</a></div><div class="ttdeci">void SetBlock(Point const &amp;firstCornerPoint, Point const &amp;secondCornerPoint)</div><div class="ttdoc">Sets the orthogonalization block.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html_ac4e8cc05e856b5f2ff7010b06a2433de"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ac4e8cc05e856b5f2ff7010b06a2433de">meshkernel::CurvilinearGridOrthogonalization::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Orthogonalize the curvilinear grid (modifies the grid point by m_grid)</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html_ad52f08892a08a4fca051614961ff20c9"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ad52f08892a08a4fca051614961ff20c9">meshkernel::CurvilinearGridOrthogonalization::SetFrozenLine</a></div><div class="ttdeci">void SetFrozenLine(Point const &amp;firstPoint, Point const &amp;secondPoint)</div><div class="ttdoc">Sets a line in the grid that will not move during the orthogonalization process.</div></div>
-<div class="ttc" id="astructmeshkernel_1_1_point_html"><div class="ttname"><a href="structmeshkernel_1_1_point.html">meshkernel::Point</a></div><div class="ttdoc">A struct describing a point in a two-dimensional space.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:66</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_algorithm_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_algorithm.html">meshkernel::CurvilinearGridAlgorithm</a></div><div class="ttdoc">A class implementing the curvilinear grid orthogonalization algorithm.</div><div class="ttdef"><b>Definition:</b> CurvilinearGridAlgorithm.hpp:42</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid.html">meshkernel::CurvilinearGrid</a></div><div class="ttdoc">A class representing a curvilinear grid.</div><div class="ttdef"><b>Definition:</b> CurvilinearGrid.hpp:39</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html_aef9c5f207ebd1a5e2236d2a224f0a70a"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#aef9c5f207ebd1a5e2236d2a224f0a70a">meshkernel::CurvilinearGridOrthogonalization::Compute</a></div><div class="ttdeci">CurvilinearGrid Compute() override</div><div class="ttdoc">Orthogonalize the curvilinear grid (modifies the grid point by m_grid)</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:35</div></div>
 <div class="ttc" id="astructmeshkernelapi_1_1_orthogonalization_parameters_html"><div class="ttname"><a href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a></div><div class="ttdoc">A struct used to describe the orthogonalization parameters in a C-compatible manner.</div><div class="ttdef"><b>Definition:</b> OrthogonalizationParameters.hpp:33</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html_ab21b0ef3e75c436c397c68849f208035"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ab21b0ef3e75c436c397c68849f208035">meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization</a></div><div class="ttdeci">CurvilinearGridOrthogonalization(std::shared_ptr&lt; CurvilinearGrid &gt; grid, const meshkernelapi::OrthogonalizationParameters &amp;orthogonalizationParameters)</div><div class="ttdoc">Class constructor.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_orthogonalization_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">meshkernel::CurvilinearGridOrthogonalization</a></div><div class="ttdoc">A class implementing the curvilinear grid orthogonalization algorithm.</div><div class="ttdef"><b>Definition:</b> CurvilinearGridOrthogonalization.hpp:41</div></div>
-<div class="ttc" id="astructmeshkernel_1_1_curvilinear_grid_1_1_node_indices_html"><div class="ttname"><a href="structmeshkernel_1_1_curvilinear_grid_1_1_node_indices.html">meshkernel::CurvilinearGrid::NodeIndices</a></div><div class="ttdoc">A struct describing the column and row indices of a node.</div><div class="ttdef"><b>Definition:</b> CurvilinearGrid.hpp:58</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_splines_html"><div class="ttname"><a href="classmeshkernel_1_1_splines.html">meshkernel::Splines</a></div><div class="ttdoc">A class describing splines.</div><div class="ttdef"><b>Definition:</b> Splines.hpp:45</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

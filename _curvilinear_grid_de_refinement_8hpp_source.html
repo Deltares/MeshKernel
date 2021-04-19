@@ -105,36 +105,29 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//------------------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/CurvilinearGridAlgorithm.hpp&gt;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">class </span>CurvilinearGrid;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html">   40</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html">CurvilinearGridDeRefinement</a></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html">   40</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html">CurvilinearGridDeRefinement</a> : <span class="keyword">public</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_algorithm.html">CurvilinearGridAlgorithm</a></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a2750e8e3d28dd9267cbb7e060407581d">CurvilinearGridDeRefinement</a>(std::shared_ptr&lt;CurvilinearGrid&gt; grid,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                    <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_point.html">Point</a>&amp; firstPoint,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                    <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_point.html">Point</a>&amp; secondPoint);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a55e7c7ad5368571c10caef6ca9ef10b5">Compute</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        std::shared_ptr&lt;CurvilinearGrid&gt; m_grid; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <a class="code" href="structmeshkernel_1_1_point.html">Point</a> m_firstPoint;                      </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <a class="code" href="structmeshkernel_1_1_point.html">Point</a> m_secondPoint;                     </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    };</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a93470c9a211872849439eca7c07c977f">CurvilinearGridDeRefinement</a>(std::shared_ptr&lt;CurvilinearGrid&gt; grid);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a730f2e7eb361e75ec6c9b06e4fd50a26">Compute</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    };</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_algorithm_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_algorithm.html">meshkernel::CurvilinearGridAlgorithm</a></div><div class="ttdoc">A class implementing the curvilinear grid orthogonalization algorithm.</div><div class="ttdef"><b>Definition:</b> CurvilinearGridAlgorithm.hpp:42</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_de_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html">meshkernel::CurvilinearGridDeRefinement</a></div><div class="ttdoc">A class implementing the curvilinear grid de-refinement algorithm. A segment is defined by the first ...</div><div class="ttdef"><b>Definition:</b> CurvilinearGridDeRefinement.hpp:40</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid.html">meshkernel::CurvilinearGrid</a></div><div class="ttdoc">A class representing a curvilinear grid.</div><div class="ttdef"><b>Definition:</b> CurvilinearGrid.hpp:39</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_de_refinement_html_a2750e8e3d28dd9267cbb7e060407581d"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a2750e8e3d28dd9267cbb7e060407581d">meshkernel::CurvilinearGridDeRefinement::CurvilinearGridDeRefinement</a></div><div class="ttdeci">CurvilinearGridDeRefinement(std::shared_ptr&lt; CurvilinearGrid &gt; grid, const Point &amp;firstPoint, const Point &amp;secondPoint)</div><div class="ttdoc">Class constructor.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_de_refinement_html_a55e7c7ad5368571c10caef6ca9ef10b5"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a55e7c7ad5368571c10caef6ca9ef10b5">meshkernel::CurvilinearGridDeRefinement::Compute</a></div><div class="ttdeci">CurvilinearGrid Compute()</div><div class="ttdoc">Refine the curvilinear grid.</div></div>
-<div class="ttc" id="astructmeshkernel_1_1_point_html"><div class="ttname"><a href="structmeshkernel_1_1_point.html">meshkernel::Point</a></div><div class="ttdoc">A struct describing a point in a two-dimensional space.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:66</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:35</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_de_refinement_html_a730f2e7eb361e75ec6c9b06e4fd50a26"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a730f2e7eb361e75ec6c9b06e4fd50a26">meshkernel::CurvilinearGridDeRefinement::Compute</a></div><div class="ttdeci">CurvilinearGrid Compute() override</div><div class="ttdoc">Refine the curvilinear grid.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_de_refinement_html_a93470c9a211872849439eca7c07c977f"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_de_refinement.html#a93470c9a211872849439eca7c07c977f">meshkernel::CurvilinearGridDeRefinement::CurvilinearGridDeRefinement</a></div><div class="ttdeci">CurvilinearGridDeRefinement(std::shared_ptr&lt; CurvilinearGrid &gt; grid)</div><div class="ttdoc">Class constructor.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
