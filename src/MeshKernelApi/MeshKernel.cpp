@@ -2212,8 +2212,9 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
 
             curvilinearGridSmoothing.SetLine(firstNode[0], secondNode[0]);
+            curvilinearGridSmoothing.SetBlock(lowerLeft[0], upperRight[0]);
 
-            curvilinearGridSmoothing.Compute(lowerLeft[0], upperRight[0]);
+            curvilinearGridSmoothing.ComputeDirectional();
         }
         catch (...)
         {

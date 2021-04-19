@@ -46,7 +46,7 @@ namespace meshkernel
         /// @param[in] grid                        The input curvilinear grid
         CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid);
 
-        /// @brief Executes the algorithm, pure virtual
+        /// @brief Executes the algorithm
         virtual std::shared_ptr<CurvilinearGrid> Compute() = 0;
 
         /// @brief Sets a block where the algorithm should execute

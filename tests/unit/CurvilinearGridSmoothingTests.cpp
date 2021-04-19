@@ -202,9 +202,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
 
     meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
     curvilinearGridSmoothing.SetLine({80143, 367041}, {80333, 366553});
+    curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
 
     // Execute
-    const auto smoothedGrid = curvilinearGridSmoothing.Compute({80199, 366749}, {80480, 366869});
+    const auto smoothedGrid = curvilinearGridSmoothing.ComputeDirectional();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -237,9 +238,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
 
     meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
     curvilinearGridSmoothing.SetLine({80199, 366749}, {80480, 366869});
+    curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
 
     // Execute
-    const auto smoothedGrid = curvilinearGridSmoothing.Compute({80143, 367041}, {80333, 366553});
+    const auto smoothedGrid = curvilinearGridSmoothing.ComputeDirectional();
 
     // Assert
     constexpr double tolerance = 1e-6;

@@ -51,21 +51,15 @@ namespace meshkernel
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
-        /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
-        /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
         /// @return The smoothed grid
-        std::shared_ptr<CurvilinearGrid> Compute(Point const& lowerLeftCornerSmoothingArea,
-                                                 Point const& upperRightCornerSmootingArea);
+        std::shared_ptr<CurvilinearGrid> ComputeDirectional();
 
     private:
         /// @brief Solve one iteration of block smoothing
         void Solve();
 
         /// @brief Solve one iteration of directional smoothing
-        /// @param[in] lowerLeftCornerRegion The lower left corner of the smoothing region
-        /// @param[in] upperRightCornerSmoothingRegion The upper right corner of the smoothing region
-        void Solve(CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
-                   CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion);
+        void SolveDirectional();
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
