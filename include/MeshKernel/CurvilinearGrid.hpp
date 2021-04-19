@@ -66,10 +66,9 @@ namespace meshkernel
             NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
 
             /// @brief Determines if one of the indices  equals to \p missingValue
-            [[nodiscard]] bool IsValid(const double missingValue = sizetMissingValue) const
+            [[nodiscard]] bool IsValid(const size_t missingValue = sizetMissingValue) const
             {
-                const bool isInvalid = m_m == missingValue || m_n == missingValue;
-                return !isInvalid;
+                return m_m != missingValue && m_n != missingValue;
             }
 
             /// @brief Overloads equality with another NodeIndices
@@ -88,11 +87,7 @@ namespace meshkernel
             /// @return True if on the same grid line, false otherwise
             bool IsOnTheSameGridLine(const NodeIndices& rhs) const
             {
-                if (m_m == rhs.m_m || m_n == rhs.m_n)
-                {
-                    return true;
-                }
-                return false;
+                return m_m == rhs.m_m || m_n == rhs.m_n;
             }
 
             size_t m_m; ///< Columns
