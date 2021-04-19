@@ -50,13 +50,13 @@ namespace meshkernel
         CurvilinearGrid Compute() override;
 
         /// @brief Moves a node from one position to another
-        /// @param[in] fromPoint The input position, the closest node on the \ref m_gridModified grid will be used
+        /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
         /// @param[in] toPoint The coordinates of the new position
         void MoveNode(Point const& fromPoint, Point const& toPoint);
 
     private:
         /// @brief Distribute the displacement around the node on the influence zone.
-        /// @param[in] node The node to account for. The displacement around this not is calculated subtracting \ref m_gridModified to \ref m_grid
+        /// @param[in] node The node to account for. The displacement around this not is calculated subtracting \ref m_grid to \ref m_originalGrid
         void TransformGrid(CurvilinearGrid::NodeIndices const& node);
 
         /// @brief Transform the displacement around a node to local or global (TOLOCL)
