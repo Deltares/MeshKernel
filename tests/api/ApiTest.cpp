@@ -608,7 +608,6 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     geometryListIn.num_coordinates = 9;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    //interpolationParameters.display_interpolation_process = 0;
     interpolationParameters.max_num_refinement_iterations = 2;
     interpolationParameters.averaging_method = 1;
     interpolationParameters.minimum_num_points = 1;
@@ -617,13 +616,11 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     interpolationParameters.refine_intersected = 0;
 
     meshkernelapi::SampleRefineParameters samplesRefineParameters;
-    samplesRefineParameters.SampleVectorDimension = 1;
-    samplesRefineParameters.MinimumCellSize = 0.5;
-    samplesRefineParameters.DirectionalRefinement = 0;
-    samplesRefineParameters.RefinementType = 3;
-    samplesRefineParameters.ConnectHangingNodes = 1;
-    samplesRefineParameters.MaximumTimeStepInCourantGrid = 0.0;
-    samplesRefineParameters.AccountForSamplesOutside = 0;
+    samplesRefineParameters.min_face_size = 0.5;
+    samplesRefineParameters.refinement_type = 3;
+    samplesRefineParameters.connect_hanging_nodes = 1;
+    samplesRefineParameters.maximum_time_step = 0.0;
+    samplesRefineParameters.account_for_samples_outside = 0;
 
     // Execute
     auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, interpolationParameters, samplesRefineParameters);

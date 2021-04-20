@@ -1205,18 +1205,18 @@ namespace meshkernelapi
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
             meshkernel::AveragingInterpolation::Method averagingMethod;
-            if (sampleRefineParameters.RefinementType == 2)
+            if (sampleRefineParameters.refinement_type == 2)
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            if (sampleRefineParameters.RefinementType == 3)
+            if (sampleRefineParameters.refinement_type == 3)
             {
 
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
             }
 
-            const bool refineOutsideFace = sampleRefineParameters.AccountForSamplesOutside == 1 ? true : false;
-            const bool transformSamples = sampleRefineParameters.RefinementType == 3 ? true : false;
+            const bool refineOutsideFace = sampleRefineParameters.account_for_samples_outside == 1 ? true : false;
+            const bool transformSamples = sampleRefineParameters.refinement_type == 3 ? true : false;
 
             const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
                                                                                         samplesVector,

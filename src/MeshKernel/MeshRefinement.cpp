@@ -50,7 +50,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                                                                                         m_sampleRefineParameters(sampleRefineParameters),
                                                                                                         m_interpolationParameters(interpolationParameters)
 {
-    m_refinementType = static_cast<RefinementType>(m_sampleRefineParameters.RefinementType);
+    m_refinementType = static_cast<RefinementType>(m_sampleRefineParameters.refinement_type);
 };
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -194,7 +194,7 @@ void MeshRefinement::Compute()
     }
 
     //remove isolated hanging nodes and connect if needed
-    if (m_sampleRefineParameters.ConnectHangingNodes == 1)
+    if (m_sampleRefineParameters.connect_hanging_nodes == 1)
     {
         ConnectHangingNodes();
         m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
@@ -330,7 +330,7 @@ void MeshRefinement::ConnectHangingNodes()
             edgeEndNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
             if (edgeEndNodeCache[numNonHangingNodes] == sizetMissingValue)
             {
-                throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
+                throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
             }
 
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
@@ -338,7 +338,7 @@ void MeshRefinement::ConnectHangingNodes()
                 hangingNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
                 if (hangingNodeCache[numNonHangingNodes] == sizetMissingValue)
                 {
-                    throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
+                    throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
                 }
             }
             numNonHangingNodes++;
@@ -446,7 +446,7 @@ void MeshRefinement::ConnectHangingNodes()
         }
         else
         {
-            throw std::invalid_argument("MeshRefinement::ConnectHangingNodes: The number of non-hanging nodes is neither 3 nor 4.");
+            throw std::invalid_argument("MeshRefinement::connect_hanging_nodes: The number of non-hanging nodes is neither 3 nor 4.");
         }
     }
 }
@@ -880,8 +880,8 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
         {
             const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
             const double c = std::sqrt(gravity * std::abs(refinementValue));
-            const double waveCourant = c * (m_sampleRefineParameters.MinimumCellSize / std::sqrt(gravity)) / m_mesh->m_edgeLengths[edgeIndex];
-            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_sampleRefineParameters.MinimumCellSize) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_sampleRefineParameters.MinimumCellSize);
+            const double waveCourant = c * (m_sampleRefineParameters.min_face_size / std::sqrt(gravity)) / m_mesh->m_edgeLengths[edgeIndex];
+            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_sampleRefineParameters.min_face_size) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_sampleRefineParameters.min_face_size);
         }
 
         // based on refinement levels

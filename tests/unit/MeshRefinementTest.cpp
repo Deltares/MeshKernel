@@ -29,11 +29,11 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.32;
-    sampleRefineParameters.MinimumCellSize = 1.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 0.32;
+    sampleRefineParameters.min_face_size = 1.0;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 1;
@@ -122,11 +122,11 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.64;
-    sampleRefineParameters.MinimumCellSize = 2.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 0.64;
+    sampleRefineParameters.min_face_size = 2.0;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 4;
@@ -224,11 +224,11 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 15.97;
-    sampleRefineParameters.MinimumCellSize = 50.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 15.97;
+    sampleRefineParameters.min_face_size = 50.0;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 1;
@@ -352,11 +352,11 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParameters.MinimumCellSize = 3.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 0.96;
+    sampleRefineParameters.min_face_size = 3.0;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 2;
@@ -423,11 +423,11 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParameters.MinimumCellSize = 3.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 0.96;
+    sampleRefineParameters.min_face_size = 3.0;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 4;
@@ -490,11 +490,11 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
                                                                                 true);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParameters.MinimumCellSize = 0.5;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 3;
+    sampleRefineParameters.maximum_time_step = 0.96;
+    sampleRefineParameters.min_face_size = 0.5;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 3;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 10;
@@ -649,11 +649,11 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
                                                                                 false);
 
     meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.000527;
-    sampleRefineParameters.MinimumCellSize = 0.00165;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
+    sampleRefineParameters.maximum_time_step = 0.000527;
+    sampleRefineParameters.min_face_size = 0.00165;
+    sampleRefineParameters.account_for_samples_outside = 0;
+    sampleRefineParameters.connect_hanging_nodes = 1;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 1;
