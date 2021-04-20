@@ -609,14 +609,13 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     geometryListIn.num_coordinates = 9;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.InterpolationType = 1;
-    interpolationParameters.DisplayInterpolationProcess = 0;
-    interpolationParameters.MaxNumberOfRefinementIterations = 2;
-    interpolationParameters.AveragingMethod = 1;
-    interpolationParameters.MinimumNumberOfPoints = 1;
-    interpolationParameters.RelativeSearchRadius = 1.01;
-    interpolationParameters.InterpolateTo = 3;
-    interpolationParameters.RefineIntersected = 0;
+    //interpolationParameters.display_interpolation_process = 0;
+    interpolationParameters.max_num_refinement_iterations = 2;
+    interpolationParameters.averaging_method = 1;
+    interpolationParameters.minimum_num_points = 1;
+    interpolationParameters.relative_search_radius = 1.01;
+    interpolationParameters.interpolate_to = 3;
+    interpolationParameters.refine_intersected = 0;
 
     meshkernelapi::SampleRefineParameters samplesRefineParameters;
     samplesRefineParameters.SampleVectorDimension = 1;
@@ -690,14 +689,12 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     geometryListIn.num_coordinates = 9;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.InterpolationType = 1;
-    interpolationParameters.DisplayInterpolationProcess = 0;
-    interpolationParameters.MaxNumberOfRefinementIterations = 2;
-    interpolationParameters.AveragingMethod = 1;
-    interpolationParameters.MinimumNumberOfPoints = 1;
-    interpolationParameters.RelativeSearchRadius = 1.01;
-    interpolationParameters.InterpolateTo = 3;
-    interpolationParameters.RefineIntersected = 0;
+    interpolationParameters.max_num_refinement_iterations = 2;
+    interpolationParameters.averaging_method = 1;
+    interpolationParameters.minimum_num_points = 1;
+    interpolationParameters.relative_search_radius = 1.01;
+    interpolationParameters.interpolate_to = 3;
+    interpolationParameters.refine_intersected = 0;
 
     // Execute
     auto errorCode = mkernel_refine_based_on_polygon_mesh2d(meshKernelId, geometryListIn, interpolationParameters);

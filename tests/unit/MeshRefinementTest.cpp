@@ -36,9 +36,9 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
 
@@ -129,9 +129,9 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 4;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 4;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
     meshRefinement.Compute();
@@ -231,9 +231,9 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
 
@@ -273,9 +273,9 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
     meshRefinement.Compute();
@@ -359,9 +359,9 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 2;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 2;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
 
@@ -430,9 +430,9 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 4;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 4;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
 
@@ -497,9 +497,9 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     sampleRefineParameters.RefinementType = 3;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 10;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 10;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
     meshRefinement.Compute();
@@ -557,9 +557,9 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
 
@@ -615,9 +615,9 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 2;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 2;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
     meshRefinement.Compute();
@@ -656,9 +656,9 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     sampleRefineParameters.RefinementType = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
     meshRefinement.Compute();
@@ -697,9 +697,9 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     auto mesh = MakeCurvilinearGridForTesting();
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 1;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 1;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::Polygons polygon;
     meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
@@ -732,9 +732,9 @@ TEST(MeshRefinement, RefineElongatedFaces)
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.MaxNumberOfRefinementIterations = 2;
-    interpolationParameters.RefineIntersected = 0;
-    interpolationParameters.UseMassCenterWhenRefining = 0;
+    interpolationParameters.max_num_refinement_iterations = 2;
+    interpolationParameters.refine_intersected = 0;
+    interpolationParameters.use_mass_center_when_refining = 0;
 
     meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
 

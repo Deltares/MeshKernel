@@ -80,7 +80,7 @@ void MeshRefinement::Compute()
 
     // select the nodes to refine
     const auto isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
-    if (!isRefinementBasedOnSamples && m_interpolationParameters.RefineIntersected == 1)
+    if (!isRefinementBasedOnSamples && m_interpolationParameters.refine_intersected == 1)
     {
         m_mesh->MaskFaceEdgesInPolygon(m_polygons, false, true);
         m_mesh->ComputeNodeMaskFromEdgeMask();
@@ -96,7 +96,7 @@ void MeshRefinement::Compute()
     ComputeNodeMaskAtPolygonPerimeter();
 
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
-    for (auto level = 0; level < m_interpolationParameters.MaxNumberOfRefinementIterations; level++)
+    for (auto level = 0; level < m_interpolationParameters.max_num_refinement_iterations; level++)
     {
         if (level > 0)
         {
@@ -613,7 +613,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
 
         // quads
         Point splittingNode(m_mesh->m_facesMassCenters[f]);
-        if (localEdgesNumFaces.size() == numNodesQuads && m_interpolationParameters.UseMassCenterWhenRefining == 0)
+        if (localEdgesNumFaces.size() == numNodesQuads && m_interpolationParameters.use_mass_center_when_refining == 0)
         {
             // close the polygon before computing the face circumcenter
             facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
