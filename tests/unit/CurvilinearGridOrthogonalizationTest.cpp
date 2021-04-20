@@ -17,10 +17,10 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.OuterIterations = 1;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
 
@@ -77,10 +77,10 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.OuterIterations = 2;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     // Execute
@@ -136,10 +136,10 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.OuterIterations = 2;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
 
@@ -216,10 +216,10 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCr
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.OuterIterations = 2;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
@@ -234,10 +234,10 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.OuterIterations = 2;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});

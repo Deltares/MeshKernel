@@ -75,7 +75,7 @@ void OrthogonalizationAndSmoothing::Initialize()
     }
 
     // TODO: calculate volume weights for areal smoother
-    m_mumax = (1.0 - m_orthogonalizationParameters.SmoothAngleOrSmoothArea) * 0.5;
+    m_mumax = (1.0 - m_orthogonalizationParameters.areal_to_angle_smoothing_factor) * 0.5;
     m_mu = std::min(1e-2, m_mumax);
 
     // back-up original nodes, for projection on original mesh boundary
@@ -88,7 +88,7 @@ void OrthogonalizationAndSmoothing::Initialize()
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        if (m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor < 1.0)
+        if (m_orthogonalizationParameters.orthogonalization_to_smoothing_factor < 1.0)
         {
             PrepareOuterIteration();
         }
@@ -106,12 +106,12 @@ void OrthogonalizationAndSmoothing::Initialize()
 
 void OrthogonalizationAndSmoothing::Compute()
 {
-    for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.OuterIterations; outerIter++)
+    for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
         PrepareOuterIteration();
-        for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationParameters.BoundaryIterations; boundaryIter++)
+        for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationParameters.boundary_iterations; boundaryIter++)
         {
-            for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.InnerIterations; innerIter++)
+            for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.inner_iterations; innerIter++)
             {
                 Solve();
 
@@ -178,7 +178,7 @@ void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
-    const double max_aptf = std::max(m_orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor);
+    const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary, m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
 #pragma omp parallel for
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
@@ -191,7 +191,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             continue;
         }
 
-        const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
+        const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
         const double atpf1Loc = 1.0 - atpfLoc;
         const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];

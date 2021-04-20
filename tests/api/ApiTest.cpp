@@ -246,10 +246,10 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
 
     // Prepare
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
-    orthogonalizationParameters.OuterIterations = 1;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     meshkernelapi::GeometryList geometryList{};
     meshkernelapi::GeometryList landBoundaries{};
@@ -1196,10 +1196,10 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
-    orthogonalizationParameters.OuterIterations = 1;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     meshkernelapi::GeometryList geometryList{};
     meshkernelapi::GeometryList landBoundaries{};
@@ -1675,10 +1675,10 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     secondPoint.num_coordinates = 1;
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
-    orthogonalizationParameters.OuterIterations = 1;
-    orthogonalizationParameters.BoundaryIterations = 25;
-    orthogonalizationParameters.InnerIterations = 25;
-    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
     auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);

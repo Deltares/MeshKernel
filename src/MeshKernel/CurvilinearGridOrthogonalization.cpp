@@ -82,10 +82,10 @@ CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
     ComputeFrozenGridPoints();
 
     // Compute the matrix coefficients
-    for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)
+    for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.outer_iterations; ++outerIterations)
     {
         ComputeCoefficients();
-        for (auto boundaryIterations = 0; boundaryIterations < m_orthogonalizationParameters.BoundaryIterations; ++boundaryIterations)
+        for (auto boundaryIterations = 0; boundaryIterations < m_orthogonalizationParameters.boundary_iterations; ++boundaryIterations)
         {
             Solve();
             ProjectHorizontalBoundaryGridNodes();
@@ -268,7 +268,7 @@ void CurvilinearGridOrthogonalization::Solve()
     const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.m_numM - 1);
     const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.m_numN - 1);
 
-    for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.InnerIterations; ++innerIterations)
+    for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.inner_iterations; ++innerIterations)
     {
         for (auto m = minMInternal; m < maxMInternal; ++m)
         {
@@ -345,7 +345,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     ComputeVerticalCoefficients();
 
     // Normalize
-    const auto smoothingFactor = 1.0 - m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
+    const auto smoothingFactor = 1.0 - m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
@@ -355,9 +355,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
                 continue;
             }
             m_atp[m][n] = m_atp[m][n] * m_a[m][n] / m_c[m][n];
-            m_atp[m][n] = m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor * m_atp[m][n] + smoothingFactor * m_a[m][n];
+            m_atp[m][n] = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_atp[m][n] + smoothingFactor * m_a[m][n];
             m_e[m][n] = m_e[m][n] * m_b[m][n] / m_d[m][n];
-            m_e[m][n] = m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor * m_e[m][n] + smoothingFactor * m_b[m][n];
+            m_e[m][n] = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_e[m][n] + smoothingFactor * m_b[m][n];
 
             m_a[m][n] = m_atp[m][n];
             m_b[m][n] = m_e[m][n];
