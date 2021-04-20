@@ -32,8 +32,8 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
@@ -107,8 +107,8 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = false;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
     curvilinearGridFromSplines.ComputeSplineProperties(false);
@@ -146,8 +146,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
@@ -224,8 +224,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = false;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
@@ -302,8 +302,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 10;
-    curvilinearParameters.NRefinement = 20;
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -434,8 +434,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 10;
-    curvilinearParameters.NRefinement = 20;
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -541,8 +541,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
     splinesToCurvilinearParameters.GrowGridOutside = 1;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -621,8 +621,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 10;
-    curvilinearParameters.NRefinement = 20;
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -702,8 +702,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 3;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 3;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -793,8 +793,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
-    curvilinearParameters.MRefinement = 20;
-    curvilinearParameters.NRefinement = 3;
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 3;
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
@@ -908,8 +908,8 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     meshkernelapi::CurvilinearParameters curvilinearParameters;
 
-    curvilinearParameters.MRefinement = 200;
-    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.m_refinement = 200;
+    curvilinearParameters.n_refinement = 40;
     splinesToCurvilinearParameters.AspectRatio = 0.5;
     splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.0;
     splinesToCurvilinearParameters.AverageWidth = 400.0;

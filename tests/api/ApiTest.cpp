@@ -95,7 +95,7 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
 
     // Get the dimensions
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert dimensions
@@ -121,7 +121,7 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     mesh2d.edge_y = edge_y.get();
     mesh2d.face_x = face_x.get();
     mesh2d.face_y = face_y.get();
-    errorCode = meshkernelapi::mkernel_get_data_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     /*  1---4---7---10
@@ -171,7 +171,7 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -192,7 +192,7 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
     ASSERT_EQ(17, newEdgeIndex);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -211,7 +211,7 @@ TEST_F(ApiTests, MergeTwoNodesThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -231,7 +231,7 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1500,11 +1500,11 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 
     geometryListIn.num_coordinates = 13;
     meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.MRefinement = 10;
-    curvilinearParameters.NRefinement = 10;
-    curvilinearParameters.SmoothingIterations = 10;
-    curvilinearParameters.SmoothingParameter = 0.5;
-    curvilinearParameters.AttractionParameter = 0.0;
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 10;
+    curvilinearParameters.smoothing_iterations = 10;
+    curvilinearParameters.smoothing_parameter = 0.5;
+    curvilinearParameters.attraction_parameter = 0.0;
 
     // Execute
     auto errorCode = mkernel_compute_transfinite_from_splines_curvilinear(meshKernelId,
@@ -1544,8 +1544,8 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     geometryListIn.num_coordinates = 6;
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.MRefinement = 40;
-    curvilinearParameters.NRefinement = 10;
+    curvilinearParameters.m_refinement = 40;
+    curvilinearParameters.n_refinement = 10;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     splinesToCurvilinearParameters.AspectRatio = 0.1;
     splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
@@ -1568,7 +1568,7 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Grow grid, from the second layer
-    for (auto layer = 1; layer <= curvilinearParameters.NRefinement; ++layer)
+    for (auto layer = 1; layer <= curvilinearParameters.n_refinement; ++layer)
     {
         errorCode = meshkernelapi::mkernel_iterate_orthogonal_grid_from_splines_curvilinear(meshKernelId, layer);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);

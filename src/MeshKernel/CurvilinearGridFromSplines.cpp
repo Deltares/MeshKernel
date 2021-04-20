@@ -115,7 +115,7 @@ CurvilinearGrid CurvilinearGridFromSplines::Compute()
     Initialize();
 
     // Grow grid, from the second layer
-    for (auto layer = 1; layer <= m_curvilinearParameters.NRefinement; ++layer)
+    for (auto layer = 1; layer <= m_curvilinearParameters.n_refinement; ++layer)
     {
         Iterate(layer);
     }
@@ -364,7 +364,7 @@ void CurvilinearGridFromSplines::Initialize()
     ComputeEdgeVelocities();
 
     // Increase curvilinear grid
-    const auto numGridLayers = m_curvilinearParameters.NRefinement + 1;
+    const auto numGridLayers = m_curvilinearParameters.n_refinement + 1;
     // The layer by coordinate to grow
     m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, {doubleMissingValue, doubleMissingValue}));
     m_validFrontNodes.resize(m_numM, 1);
@@ -476,9 +476,9 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         mIndicesOtherSide[0][1] = mIndicesOtherSide[0][0] + (mIndicesThisSide[0][1] - mIndicesThisSide[0][0]);
         bool isConnected = true;
 
-        size_t minN = m_curvilinearParameters.NRefinement;
+        size_t minN = m_curvilinearParameters.n_refinement;
         size_t maxN = 0;
-        size_t minNOther = m_curvilinearParameters.NRefinement;
+        size_t minNOther = m_curvilinearParameters.n_refinement;
         size_t maxNOther = 0;
         //check if this part is connected to another part
         for (auto i = mIndicesThisSide[0][0]; i < mIndicesThisSide[0][1] + 1; ++i)
@@ -1170,7 +1170,7 @@ void CurvilinearGridFromSplines::ComputeEdgeVelocities()
         size_t numNLeftExponential = 0;
         if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
         {
-            numNLeftExponential = std::min(ComputeNumberExponentialLayers(hh0LeftMaxRatio), static_cast<size_t>(m_curvilinearParameters.NRefinement));
+            numNLeftExponential = std::min(ComputeNumberExponentialLayers(hh0LeftMaxRatio), static_cast<size_t>(m_curvilinearParameters.n_refinement));
         }
         for (auto i = startGridLineLeft; i < endGridLineLeft; ++i)
         {
@@ -1181,7 +1181,7 @@ void CurvilinearGridFromSplines::ComputeEdgeVelocities()
         size_t numNRightExponential = 0;
         if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
         {
-            numNRightExponential = std::min(ComputeNumberExponentialLayers(hh0RightMaxRatio), static_cast<size_t>(m_curvilinearParameters.NRefinement));
+            numNRightExponential = std::min(ComputeNumberExponentialLayers(hh0RightMaxRatio), static_cast<size_t>(m_curvilinearParameters.n_refinement));
         }
         for (auto i = startGridLineRight; i < endGridLineRight; ++i)
         {
@@ -1350,8 +1350,8 @@ void CurvilinearGridFromSplines::ComputeGridHeights()
     m_gridHeights.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1));
     std::fill(m_gridHeights.begin(), m_gridHeights.end(), std::vector<double>(m_numM - 1, doubleMissingValue));
 
-    std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.MRefinement, 0.0));
-    std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.MRefinement, 0.0));
+    std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.m_refinement, 0.0));
+    std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.m_refinement, 0.0));
     std::vector<double> edgesCenterPoints(m_numM, 0.0);
     std::vector<double> crossingSplinesDimensionalCoordinates(numSplines, 0.0);
     std::vector<double> localSplineDerivatives(numSplines, 0.0);
@@ -1598,7 +1598,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
         }
 
         // upper bound of m_gridLine size, with two sides of spline and two missing values added
-        const auto sizeGridLine = gridLineIndex + 1 + 2 * (m_curvilinearParameters.MRefinement + 1) + 2;
+        const auto sizeGridLine = gridLineIndex + 1 + 2 * (m_curvilinearParameters.m_refinement + 1) + 2;
         m_gridLine.resize(sizeGridLine);
         m_gridLineDimensionalCoordinates.resize(sizeGridLine);
 
@@ -1640,7 +1640,7 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
 {
     // first estimation of nodes along m
     auto numM = 1 + static_cast<size_t>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.AverageWidth));
-    numM = std::min(numM, static_cast<size_t>(m_curvilinearParameters.MRefinement));
+    numM = std::min(numM, static_cast<size_t>(m_curvilinearParameters.m_refinement));
 
     const auto endSplineAdimensionalCoordinate = static_cast<double>(m_splines->m_splineNodes[splineIndex].size()) - 1;
     const auto splineLength = m_splines->ComputeSplineLength(splineIndex,
@@ -1677,7 +1677,7 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
 
         // a gridline is computed
         if (currentMaxWidth < m_splinesToCurvilinearParameters.AverageWidth ||
-            numM == static_cast<size_t>(m_curvilinearParameters.MRefinement))
+            numM == static_cast<size_t>(m_curvilinearParameters.m_refinement))
         {
             break;
         }
@@ -1685,9 +1685,9 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
         // room for sub-division
         if (currentMaxWidth > m_splinesToCurvilinearParameters.AverageWidth)
         {
-            numM = std::min(std::max(static_cast<size_t>(m_curvilinearParameters.MRefinement / m_maximumGridHeights[splineIndex] * static_cast<double>(numM)),
+            numM = std::min(std::max(static_cast<size_t>(m_curvilinearParameters.m_refinement / m_maximumGridHeights[splineIndex] * static_cast<double>(numM)),
                                      numM + static_cast<size_t>(1)),
-                            static_cast<size_t>(m_curvilinearParameters.MRefinement));
+                            static_cast<size_t>(m_curvilinearParameters.m_refinement));
 
             distances.resize(numM);
             adimensionalDistances.resize(numM);
