@@ -444,21 +444,21 @@ namespace meshkernelapi
             }
 
             // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(polygons.numberOfCoordinates);
-            for (auto i = 0; i < polygons.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> nodes(polygons.num_coordinates);
+            for (auto i = 0; i < polygons.num_coordinates; i++)
             {
-                nodes[i].x = polygons.xCoordinates[i];
-                nodes[i].y = polygons.yCoordinates[i];
+                nodes[i].x = polygons.coordinates_x[i];
+                nodes[i].y = polygons.coordinates_y[i];
             }
 
             auto meshKernelPolygons = std::make_shared<meshkernel::Polygons>(nodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // build land boundary
-            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.numberOfCoordinates);
-            for (auto i = 0; i < landBoundaries.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.num_coordinates);
+            for (auto i = 0; i < landBoundaries.num_coordinates; i++)
             {
-                landBoundariesPoints[i].x = landBoundaries.xCoordinates[i];
-                landBoundariesPoints[i].y = landBoundaries.yCoordinates[i];
+                landBoundariesPoints[i].x = landBoundaries.coordinates_x[i];
+                landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
             }
 
             const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
@@ -502,19 +502,19 @@ namespace meshkernelapi
             }
 
             // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> nodes(geometryListPolygon.num_coordinates);
+            for (auto i = 0; i < geometryListPolygon.num_coordinates; i++)
             {
-                nodes[i].x = geometryListPolygon.xCoordinates[i];
-                nodes[i].y = geometryListPolygon.yCoordinates[i];
+                nodes[i].x = geometryListPolygon.coordinates_x[i];
+                nodes[i].y = geometryListPolygon.coordinates_y[i];
             }
 
             // build land boundary
-            std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.num_coordinates);
+            for (auto i = 0; i < geometryListLandBoundaries.num_coordinates; i++)
             {
-                landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
-                landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
+                landBoundaries[i].x = geometryListLandBoundaries.coordinates_x[i];
+                landBoundaries[i].y = geometryListLandBoundaries.coordinates_y[i];
             }
 
             auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
@@ -651,9 +651,9 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
 
-            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            for (auto i = 0; i < geometryList.num_coordinates; ++i)
             {
-                geometryList.zCoordinates[i] = result[i];
+                geometryList.values[i] = result[i];
             }
         }
         catch (...)
@@ -680,9 +680,9 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            for (auto i = 0; i < geometryList.num_coordinates; ++i)
             {
-                geometryList.zCoordinates[i] = result[i];
+                geometryList.values[i] = result[i];
             }
         }
         catch (...)
@@ -699,16 +699,16 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (geometryListIn.numberOfCoordinates == 0)
+            if (geometryListIn.num_coordinates == 0)
             {
                 throw std::invalid_argument("MeshKernel: The number of coordinates of the given geometry is zero.");
             }
 
-            std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
-            for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> splines(geometryListIn.num_coordinates);
+            for (auto i = 0; i < geometryListIn.num_coordinates; i++)
             {
-                splines[i].x = geometryListIn.xCoordinates[i];
-                splines[i].y = geometryListIn.yCoordinates[i];
+                splines[i].x = geometryListIn.coordinates_x[i];
+                splines[i].y = geometryListIn.coordinates_y[i];
             }
 
             const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
@@ -732,20 +732,20 @@ namespace meshkernelapi
                             break;
                         }
 
-                        geometryListOut.xCoordinates[index] = pointCoordinate.x;
-                        geometryListOut.yCoordinates[index] = pointCoordinate.y;
-                        geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
+                        geometryListOut.coordinates_x[index] = pointCoordinate.x;
+                        geometryListOut.coordinates_y[index] = pointCoordinate.y;
+                        geometryListOut.values[index] = meshkernel::doubleMissingValue;
                         index++;
                     }
                 }
 
-                geometryListOut.xCoordinates[index] = meshkernel::doubleMissingValue;
-                geometryListOut.yCoordinates[index] = meshkernel::doubleMissingValue;
-                geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
+                geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
+                geometryListOut.values[index] = meshkernel::doubleMissingValue;
                 index++;
             }
 
-            geometryListOut.numberOfCoordinates = index - 1;
+            geometryListOut.num_coordinates = index - 1;
         }
         catch (...)
         {
@@ -1303,7 +1303,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            if (node.numberOfCoordinates <= 0)
+            if (node.num_coordinates <= 0)
             {
                 throw std::invalid_argument("MeshKernel: The output-geometry has no coordinates.");
             }
@@ -1341,7 +1341,7 @@ namespace meshkernelapi
 
             for (auto i = 0; i < points.size(); i++)
             {
-                selectionResults.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
+                selectionResults.values[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
         }
         catch (...)

@@ -489,7 +489,7 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId   The id of the mesh state
         /// @param[in]  selectingPolygon   The selecting polygon
         /// @param[in]  polygonToSelect    The polygon to select
-        /// @param[out] selectionResults   The selection result, contained in the in the zCoordinates field of \ref GeometryList (0.0 not selected, 1.0 selected).
+        /// @param[out] selectionResults   The selection result, contained in the in the values field of \ref GeometryList (0.0 not selected, 1.0 selected).
         /// Note that the selection selectionResults variable must be allocated by the client.
         /// @returns Error code
         MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId,
@@ -516,7 +516,7 @@ namespace meshkernelapi
 
         /// @brief Gets the mass centers of obtuse mesh2d triangles. Obtuse triangles are those having one edge longer than the sum of the other two.
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[out] result        The coordinates of the obtuse triangles mass centers stored in xCoordinates and yCoordinates of a \ref GeometryList
+        /// @param[out] result        The coordinates of the obtuse triangles mass centers stored in coordinates_x and coordinates_y of a \ref GeometryList
         /// @return Error code
         MKERNEL_API int mkernel_get_obtuse_triangles_mass_centers_mesh2d(int meshKernelId, GeometryList& result);
 
@@ -532,7 +532,7 @@ namespace meshkernelapi
         /// @brief Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in] meshKernelId            The id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting a small flow edge
-        /// @param[out] result                 The middle points of the small flow edges, stored in xCoordinates and yCoordinates of a \ref GeometryList
+        /// @param[out] result                 The middle points of the small flow edges, stored in coordinates_x and coordinates_y of a \ref GeometryList
         /// @return Error code
         MKERNEL_API int mkernel_get_small_flow_edge_centers_mesh2d(int meshKernelId,
                                                                    double smallFlowEdgesThreshold,

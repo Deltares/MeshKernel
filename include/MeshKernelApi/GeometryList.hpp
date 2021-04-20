@@ -32,25 +32,22 @@ namespace meshkernelapi
     /// @brief A struct used to describe a list of geometries in a C-compatible manner
     struct GeometryList
     {
-        /// @brief To be detailed
-        int type;
-
-        /// @brief The value used as separator in xCoordinates, yCoordinates and zCoordinates
-        double geometrySeparator;
+        /// @brief The value used as separator in coordinates_x, coordinates_y and values
+        double geometry_separator;
 
         /// @brief The value used to separate the inner part of a polygon from its outer part
-        double innerOuterSeparator;
+        double inner_outer_separator;
 
         /// @brief The number of coordinate values present
-        int numberOfCoordinates;
+        int num_coordinates;
 
         /// @brief The x coordinate values
-        double* xCoordinates = nullptr;
+        double* coordinates_x = nullptr;
 
         /// @brief The y coordinate values
-        double* yCoordinates = nullptr;
+        double* coordinates_y = nullptr;
 
-        /// @brief The z coordinate values
-        double* zCoordinates = nullptr;
+        /// @brief The values at the point
+        double* values = nullptr;
     };
 } // namespace meshkernelapi
