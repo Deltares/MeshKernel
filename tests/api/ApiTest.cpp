@@ -1539,18 +1539,16 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 10;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = 1;
-    splinesToCurvilinearParameters.GrowGridOutside = 1;
-    splinesToCurvilinearParameters.MaximumNumberOfGridCellsInTheUniformPart = 5;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 0.0001;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = 0;
-    splinesToCurvilinearParameters.UniformGridSize = 0.0;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 1;
-    splinesToCurvilinearParameters.GrowGridOutside = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 1;
+    splinesToCurvilinearParameters.maximum_num_faces_in_uniform_part = 5;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 0.0001;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = 0;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 1;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
 
     // Execute
     auto errorCode = mkernel_initialize_orthogonal_grid_from_splines_curvilinear(meshKernelId,
@@ -1869,4 +1867,69 @@ TEST_F(ApiTests, ComputedLineShift_CurvilinearGrid_ShouldShift)
     ASSERT_EQ(2.5, curvilinearGrid.node_x[1]);
     ASSERT_EQ(17.5, curvilinearGrid.node_x[2]);
     ASSERT_EQ(30.0, curvilinearGrid.node_x[3]);
+}
+
+TEST_F(ApiTests, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryList{};
+
+    // Execute
+    auto errorCode = mkernel_delete_mesh2d(meshKernelId, geometryList, 0, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(0, mesh2d.num_nodes);
+    ASSERT_EQ(0, mesh2d.num_edges);
+}
+
+TEST_F(ApiTests, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+
+    std::vector<double> nodes_x{-16.1886410000000,
+                                -16.1464995876014,
+                                -16.1043581752028,
+                                -16.0622167628042,
+                                -15.7539488236928,
+                                -6.86476658679268,
+                                2.02441565010741,
+                                10.9135970000000};
+
+    std::vector<double> nodes_y{0.89018900000000,
+                                9.78201442138723,
+                                18.6738398427745,
+                                27.5656652641617,
+                                36.1966603330179,
+                                36.4175095626911,
+                                36.6383587923643,
+                                36.8592080000000};
+
+    std::vector<int> edges{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7};
+
+    meshkernelapi::Mesh1D mesh1d;
+    mesh1d.edge_nodes = &edges[0];
+    mesh1d.node_x = &nodes_x[0];
+    mesh1d.node_y = &nodes_y[0];
+    mesh1d.num_nodes = static_cast<int>(nodes_x.size());
+    mesh1d.num_edges = static_cast<int>(edges.size() * 0.5);
+
+    auto errorCode = mkernel_set_mesh1d(GetMeshKernelId(), mesh1d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Execute
+    meshkernelapi::Mesh1D mesh1dResults;
+    errorCode = mkernel_get_dimensions_mesh1d(meshKernelId, mesh1dResults);
+
+    // Assert
+    ASSERT_EQ(8, mesh1dResults.num_nodes);
+    ASSERT_EQ(7, mesh1dResults.num_edges);
 }

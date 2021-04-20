@@ -47,8 +47,8 @@ CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> 
                                                                                                                                               m_curvilinearParameters(curvilinearParameters),
                                                                                                                                               m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
 {
-    m_onTopOfEachOtherSquaredTolerance = m_splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance *
-                                         m_splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance;
+    m_onTopOfEachOtherSquaredTolerance = m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance *
+                                         m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance;
 };
 
 /// to be called after all splines have been stored
@@ -120,7 +120,7 @@ CurvilinearGrid CurvilinearGridFromSplines::Compute()
         Iterate(layer);
     }
 
-    const auto deleteSkinnyTriangles = m_splinesToCurvilinearParameters.DeleteSkinnyTriangles == 1 ? true : false;
+    const auto deleteSkinnyTriangles = m_splinesToCurvilinearParameters.remove_skinny_triangles == 1 ? true : false;
     if (deleteSkinnyTriangles)
     {
         DeleteSkinnyTriangles();
@@ -627,7 +627,7 @@ void CurvilinearGridFromSplines::GrowLayer(size_t layerIndex)
         const auto maximumGridLayerGrowTime = ComputeMaximumEdgeGrowTime(activeLayerPoints, velocityVectorAtGridPoints);
         localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
 
-        if (m_splinesToCurvilinearParameters.CheckFrontCollisions)
+        if (m_splinesToCurvilinearParameters.check_front_collisions)
         {
             // TODO: implement front collisions
             otherTimeStep = 0;
@@ -1146,7 +1146,7 @@ void CurvilinearGridFromSplines::ComputeEdgeVelocities()
                 maxHeight = e;
             }
         }
-        const double firstHeight = std::min(maxHeight, m_splinesToCurvilinearParameters.AspectRatio * m_splinesToCurvilinearParameters.AverageWidth);
+        const double firstHeight = std::min(maxHeight, m_splinesToCurvilinearParameters.aspect_ratio * m_splinesToCurvilinearParameters.average_width);
 
         for (auto iter = 0; iter < numIterations; ++iter)
         {
@@ -1163,12 +1163,12 @@ void CurvilinearGridFromSplines::ComputeEdgeVelocities()
             numRightHeights == 0 && numLeftHeights <= 1 ||
             numLeftHeights == 1 && numRightHeights == 1)
         {
-            m_splinesToCurvilinearParameters.GrowGridOutside = 1;
+            m_splinesToCurvilinearParameters.grow_grid_outside = 1;
         }
 
         // left part
         size_t numNLeftExponential = 0;
-        if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
+        if (m_splinesToCurvilinearParameters.grow_grid_outside == 1)
         {
             numNLeftExponential = std::min(ComputeNumberExponentialLayers(hh0LeftMaxRatio), static_cast<size_t>(m_curvilinearParameters.n_refinement));
         }
@@ -1179,7 +1179,7 @@ void CurvilinearGridFromSplines::ComputeEdgeVelocities()
 
         // right part
         size_t numNRightExponential = 0;
-        if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
+        if (m_splinesToCurvilinearParameters.grow_grid_outside == 1)
         {
             numNRightExponential = std::min(ComputeNumberExponentialLayers(hh0RightMaxRatio), static_cast<size_t>(m_curvilinearParameters.n_refinement));
         }
@@ -1270,10 +1270,10 @@ double CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRa
 
 size_t CurvilinearGridFromSplines::ComputeNumberExponentialLayers(const double heightRatio) const
 {
-    if (m_splinesToCurvilinearParameters.AspectRatioGrowFactor - 1.0 > 1e-8)
+    if (m_splinesToCurvilinearParameters.aspect_ratio_grow_factor - 1.0 > 1e-8)
     {
-        return size_t(std::floor(std::log((m_splinesToCurvilinearParameters.AspectRatioGrowFactor - 1.0) * heightRatio + 1.0) /
-                                 log(m_splinesToCurvilinearParameters.AspectRatioGrowFactor)));
+        return size_t(std::floor(std::log((m_splinesToCurvilinearParameters.aspect_ratio_grow_factor - 1.0) * heightRatio + 1.0) /
+                                 log(m_splinesToCurvilinearParameters.aspect_ratio_grow_factor)));
     }
     return size_t(std::floor(0.999 + heightRatio));
 }
@@ -1545,7 +1545,7 @@ void CurvilinearGridFromSplines::GetSplineIntersections(size_t splineIndex)
         double secondSplineRatio;
         bool crossing = m_splines->GetSplinesIntersection(splineIndex, s, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
 
-        if (std::abs(crossProductIntersection) < m_splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles)
+        if (std::abs(crossProductIntersection) < m_splinesToCurvilinearParameters.min_cosine_crossing_angles)
         {
             crossing = false;
         }
@@ -1639,7 +1639,7 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
                                                 size_t startingIndex)
 {
     // first estimation of nodes along m
-    auto numM = 1 + static_cast<size_t>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.AverageWidth));
+    auto numM = 1 + static_cast<size_t>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.average_width));
     numM = std::min(numM, static_cast<size_t>(m_curvilinearParameters.m_refinement));
 
     const auto endSplineAdimensionalCoordinate = static_cast<double>(m_splines->m_splineNodes[splineIndex].size()) - 1;
@@ -1647,14 +1647,14 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
                                                              0.0,
                                                              endSplineAdimensionalCoordinate,
                                                              10,
-                                                             m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
+                                                             m_splinesToCurvilinearParameters.curvature_adapted_grid_spacing,
                                                              m_maximumGridHeights[splineIndex]);
 
     m_gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
 
     auto currentMaxWidth = std::numeric_limits<double>::max();
     std::vector<double> distances(numM);
-    while (currentMaxWidth > m_splinesToCurvilinearParameters.AverageWidth)
+    while (currentMaxWidth > m_splinesToCurvilinearParameters.average_width)
     {
         currentMaxWidth = 0.0;
         for (auto n = 0; n < numM; ++n)
@@ -1664,7 +1664,7 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
 
         auto [points, adimensionalDistances] = m_splines->ComputePointOnSplineFromAdimensionalDistance(splineIndex,
                                                                                                        m_maximumGridHeights[splineIndex],
-                                                                                                       m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
+                                                                                                       m_splinesToCurvilinearParameters.curvature_adapted_grid_spacing,
                                                                                                        distances);
 
         for (auto n = 0; n < numM; ++n)
@@ -1676,14 +1676,14 @@ size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
         }
 
         // a gridline is computed
-        if (currentMaxWidth < m_splinesToCurvilinearParameters.AverageWidth ||
+        if (currentMaxWidth < m_splinesToCurvilinearParameters.average_width ||
             numM == static_cast<size_t>(m_curvilinearParameters.m_refinement))
         {
             break;
         }
 
         // room for sub-division
-        if (currentMaxWidth > m_splinesToCurvilinearParameters.AverageWidth)
+        if (currentMaxWidth > m_splinesToCurvilinearParameters.average_width)
         {
             numM = std::min(std::max(static_cast<size_t>(m_curvilinearParameters.m_refinement / m_maximumGridHeights[splineIndex] * static_cast<double>(numM)),
                                      numM + static_cast<size_t>(1)),
@@ -1796,7 +1796,7 @@ void CurvilinearGridFromSplines::ComputeHeights()
     {
         if (m_numCrossingSplines[s] == 0)
         {
-            m_maximumGridHeights[s] = m_splinesToCurvilinearParameters.AspectRatio * m_splines->m_splinesLength[s];
+            m_maximumGridHeights[s] = m_splinesToCurvilinearParameters.aspect_ratio * m_splines->m_splinesLength[s];
             continue;
         }
         double maximumHeight = 0.0;

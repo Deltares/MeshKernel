@@ -24,14 +24,14 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
@@ -99,14 +99,14 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = false;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = false;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
@@ -138,14 +138,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
@@ -216,14 +216,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = false;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = false;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
@@ -294,14 +294,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 20;
 
@@ -426,14 +426,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 20;
 
@@ -532,15 +532,15 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 50.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
-    splinesToCurvilinearParameters.GrowGridOutside = 1;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 50.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
+    splinesToCurvilinearParameters.grow_grid_outside = 1;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
@@ -613,14 +613,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 100.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 100.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 20;
 
@@ -694,14 +694,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.5;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 120.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.aspect_ratio = 0.5;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 120.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 3;
 
@@ -785,14 +785,14 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.AspectRatio = 0.5;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 120.0;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
+    splinesToCurvilinearParameters.aspect_ratio = 0.5;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 120.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.remove_skinny_triangles = true;
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 3;
 
@@ -910,17 +910,17 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
 
     curvilinearParameters.m_refinement = 200;
     curvilinearParameters.n_refinement = 40;
-    splinesToCurvilinearParameters.AspectRatio = 0.5;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.0;
-    splinesToCurvilinearParameters.AverageWidth = 400.0;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
-    splinesToCurvilinearParameters.GrowGridOutside = 0;
-    splinesToCurvilinearParameters.MaximumNumberOfGridCellsInTheUniformPart = 8;
+    splinesToCurvilinearParameters.aspect_ratio = 0.5;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.0;
+    splinesToCurvilinearParameters.average_width = 400.0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
+    splinesToCurvilinearParameters.maximum_num_faces_in_uniform_part = 8;
 
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = false;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.remove_skinny_triangles = true;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 

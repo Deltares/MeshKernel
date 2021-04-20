@@ -66,7 +66,7 @@ void FlipEdges::Compute() const
     const auto numEdges = m_mesh->GetNumEdges();
     size_t numFlippedEdges = sizetMissingValue;
 
-    for (auto iter = 0; iter < MaxIter; iter++)
+    for (auto iteration = 0; iteration < MaxIter; iteration++)
     {
         if (numFlippedEdges == 0)
         {
