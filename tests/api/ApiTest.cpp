@@ -56,16 +56,15 @@ public:
         meshkernelapi::MakeMeshParameters makeMeshParameters{};
         meshkernelapi::GeometryList geometryList{};
 
-        makeMeshParameters.GridType = 0;
-        makeMeshParameters.NumberOfColumns = numberOfColumns;
-        makeMeshParameters.NumberOfRows = numberOfRows;
-        makeMeshParameters.GridAngle = 0.0;
-        makeMeshParameters.GridBlockSize = 0.0;
-        makeMeshParameters.OriginXCoordinate = 0.0;
-        makeMeshParameters.OriginYCoordinate = 0.0;
-        makeMeshParameters.OriginZCoordinate = 0.0;
-        makeMeshParameters.XGridBlockSize = blockSize;
-        makeMeshParameters.YGridBlockSize = blockSize;
+        makeMeshParameters.grid_type = 0;
+        makeMeshParameters.num_columns = numberOfColumns;
+        makeMeshParameters.num_rows = numberOfRows;
+        makeMeshParameters.angle = 0.0;
+        makeMeshParameters.block_size = 0.0;
+        makeMeshParameters.origin_x = 0.0;
+        makeMeshParameters.origin_y = 0.0;
+        makeMeshParameters.block_size_x = blockSize;
+        makeMeshParameters.block_size_y = blockSize;
 
         auto errorCode = mkernel_make_uniform_curvilinear(m_meshKernelId, makeMeshParameters, geometryList);
         if (errorCode != 0)
@@ -1410,16 +1409,15 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     meshkernelapi::MakeMeshParameters makeMeshParameters{};
     meshkernelapi::GeometryList geometryList{};
 
-    makeMeshParameters.GridType = 0;
-    makeMeshParameters.NumberOfColumns = 3;
-    makeMeshParameters.NumberOfRows = 2;
-    makeMeshParameters.GridAngle = 0.0;
-    makeMeshParameters.GridBlockSize = 0.0;
-    makeMeshParameters.OriginXCoordinate = 0.0;
-    makeMeshParameters.OriginYCoordinate = 0.0;
-    makeMeshParameters.OriginZCoordinate = 0.0;
-    makeMeshParameters.XGridBlockSize = 1.0;
-    makeMeshParameters.YGridBlockSize = 1.0;
+    makeMeshParameters.grid_type = 0;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 2;
+    makeMeshParameters.angle = 0.0;
+    makeMeshParameters.block_size = 0.0;
+    makeMeshParameters.origin_x = 0.0;
+    makeMeshParameters.origin_y = 0.0;
+    makeMeshParameters.block_size_x = 1.0;
+    makeMeshParameters.block_size_y = 1.0;
 
     // Execute
     auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
