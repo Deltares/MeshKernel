@@ -2009,10 +2009,8 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
 
     // delete an edge at the lower left corner to create a new hanging edge
     meshkernelapi::GeometryList geometryList{};
-    std::vector<double> coordinates_x(1, 0.5);
-    std::vector<double> coordinates_y(1, 0.0);
-    geometryList.coordinates_x = &coordinates_x[0];
-    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.coordinates_x = &std::vector<double>(1, 0.5)[0];
+    geometryList.coordinates_y = &std::vector<double>(1, 0.0)[0];
     geometryList.num_coordinates = 1;
     auto errorCode = mkernel_delete_edge_mesh2d(meshKernelId, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2039,10 +2037,8 @@ TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHan
 
     // delete an edge at the lower left corner to create a new hanging edge
     meshkernelapi::GeometryList geometryList{};
-    std::vector<double> coordinates_x(1, 0.5);
-    std::vector<double> coordinates_y(1, 0.0);
-    geometryList.coordinates_x = &coordinates_x[0];
-    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.coordinates_x = &std::vector<double>(1, 0.5)[0];
+    geometryList.coordinates_y = &std::vector<double>(1, 0.0)[0];
     geometryList.num_coordinates = 1;
     auto errorCode = mkernel_delete_edge_mesh2d(meshKernelId, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2059,4 +2055,36 @@ TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHan
 
     // Assert
     ASSERT_EQ(mesh2d.num_edges, 15);
+}
+
+TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2d_ShouldOrthogonalize)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Before orthogonalization
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Execute
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+    // By using an empty polygon the entire mesh will be orthogonalized
+    meshkernelapi::GeometryList polygons{};
+    // No land boundaries accounted
+    meshkernelapi::GeometryList landBoundaries{};
+
+    errorCode = mkernel_compute_orthogonalization_mesh2d(meshKernelId, 1, orthogonalizationParameters, polygons, landBoundaries);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 }
