@@ -2007,7 +2007,7 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
 
-    // delete an edge at the lower left corner to create an hanging edge
+    // delete an edge at the lower left corner to create a new hanging edge
     meshkernelapi::GeometryList geometryList{};
     std::vector<double> coordinates_x(1, 0.5);
     std::vector<double> coordinates_y(1, 0.0);
@@ -2029,4 +2029,34 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
 
     // Assert
     ASSERT_EQ(hangingEdges[0], 8);
+}
+
+TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // delete an edge at the lower left corner to create a new hanging edge
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(1, 0.5);
+    std::vector<double> coordinates_y(1, 0.0);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = 1;
+    auto errorCode = mkernel_delete_edge_mesh2d(meshKernelId, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Before deletion
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(mesh2d.num_edges, 16);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_delete_hanging_edges_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(mesh2d.num_edges, 15);
 }

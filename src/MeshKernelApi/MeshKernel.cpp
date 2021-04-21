@@ -374,7 +374,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->AdministrateNodesEdges();
+            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdges);
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             numHangingEdges = static_cast<int>(hangingEdges.size());
         }
