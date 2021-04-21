@@ -1,6 +1,7 @@
 #include <exception>
 #include <memory>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <MeshKernelApi/CurvilinearGrid.hpp>
@@ -1932,4 +1933,70 @@ TEST_F(ApiTests, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
     // Assert
     ASSERT_EQ(8, mesh1dResults.num_nodes);
     ASSERT_EQ(7, mesh1dResults.num_edges);
+}
+
+TEST_F(ApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    std::vector<double> nodes_x{-16.1886410000000,
+                                -16.1464995876014,
+                                -16.1043581752028,
+                                -16.0622167628042,
+                                -15.7539488236928,
+                                -6.86476658679268,
+                                2.02441565010741,
+                                10.9135970000000};
+
+    std::vector<double> nodes_y{0.89018900000000,
+                                9.78201442138723,
+                                18.6738398427745,
+                                27.5656652641617,
+                                36.1966603330179,
+                                36.4175095626911,
+                                36.6383587923643,
+                                36.8592080000000};
+
+    std::vector<int> edges{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7};
+
+    meshkernelapi::Mesh1D mesh1d;
+    mesh1d.edge_nodes = &edges[0];
+    mesh1d.node_x = &nodes_x[0];
+    mesh1d.node_y = &nodes_y[0];
+    mesh1d.num_nodes = static_cast<int>(nodes_x.size());
+    mesh1d.num_edges = static_cast<int>(edges.size() * 0.5);
+
+    auto errorCode = mkernel_set_mesh1d(GetMeshKernelId(), mesh1d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Execute
+    meshkernelapi::Mesh1D mesh1dResults;
+    errorCode = mkernel_get_dimensions_mesh1d(meshKernelId, mesh1dResults);
+    std::vector<double> nodes_x_results(mesh1dResults.num_nodes);
+    std::vector<double> nodes_y_results(mesh1dResults.num_nodes);
+    std::vector<int> edges_results(mesh1dResults.num_edges * 2);
+    mesh1dResults.node_x = &nodes_x_results[0];
+    mesh1dResults.node_y = &nodes_y_results[0];
+    mesh1dResults.edge_nodes = &edges_results[0];
+    errorCode = mkernel_get_data_mesh1d(meshKernelId, mesh1dResults);
+
+    // Assert
+    ASSERT_THAT(nodes_x_results, ::testing::ContainerEq(nodes_x));
+    ASSERT_THAT(nodes_y_results, ::testing::ContainerEq(nodes_y));
+    ASSERT_THAT(edges_results, ::testing::ContainerEq(edges));
+}
+
+TEST_F(ApiTests, CountHangingEdgesMesh2D_WithMesh2D_ShouldCountEdges)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    int numHangingEdges;
+    auto const errorCode = meshkernelapi::mkernel_count_hanging_edges_mesh2d(meshKernelId, numHangingEdges);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(0, numHangingEdges);
 }
