@@ -104,24 +104,25 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     ASSERT_EQ(15, mesh2d.num_edges);
 
     // Allocate memory and get data
-    std::unique_ptr<int> edge_nodes(new int[mesh2d.num_edges * 2]);
-    std::unique_ptr<int> face_nodes(new int[mesh2d.num_face_nodes]);
-    std::unique_ptr<int> nodes_per_face(new int[mesh2d.num_faces]);
-    std::unique_ptr<double> node_x(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> node_y(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> edge_x(new double[mesh2d.num_edges]);
-    std::unique_ptr<double> edge_y(new double[mesh2d.num_edges]);
-    std::unique_ptr<double> face_x(new double[mesh2d.num_faces]);
-    std::unique_ptr<double> face_y(new double[mesh2d.num_faces]);
-    mesh2d.edge_nodes = edge_nodes.get();
-    mesh2d.face_nodes = face_nodes.get();
-    mesh2d.nodes_per_face = nodes_per_face.get();
-    mesh2d.node_x = node_x.get();
-    mesh2d.node_y = node_y.get();
-    mesh2d.edge_x = edge_x.get();
-    mesh2d.edge_y = edge_y.get();
-    mesh2d.face_x = face_x.get();
-    mesh2d.face_y = face_y.get();
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.face_nodes = &face_nodes[0];
+    mesh2d.nodes_per_face = &nodes_per_face[0];
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_x = &edge_x[0];
+    mesh2d.edge_y = &edge_y[0];
+    mesh2d.face_x = &face_x[0];
+    mesh2d.face_y = &face_y[0];
     errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -2206,4 +2207,49 @@ TEST_F(ApiTests, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
     errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(mesh2d.num_nodes, 13);
     ASSERT_EQ(mesh2d.num_edges, 18);
+}
+
+TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(1, -0.5);
+    std::vector<double> coordinates_y(1, -0.5);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = 1;
+
+    auto errorCode = mkernel_move_node_mesh2d(meshKernelId, geometryList, 0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.face_nodes = &face_nodes[0];
+    mesh2d.nodes_per_face = &nodes_per_face[0];
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_x = &edge_x[0];
+    mesh2d.edge_y = &edge_y[0];
+    mesh2d.face_x = &face_x[0];
+    mesh2d.face_y = &face_y[0];
+    errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(mesh2d.node_x[0], -0.5);
+    ASSERT_EQ(mesh2d.node_y[0], -0.5);
 }

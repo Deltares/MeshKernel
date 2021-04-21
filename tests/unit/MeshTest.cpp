@@ -259,8 +259,8 @@ TEST(Mesh, NodeMerging)
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
-    std::uniform_real_distribution<double> xDistrution(0.0, generatingDistance);
-    std::uniform_real_distribution<double> yDistrution(0.0, generatingDistance);
+    std::uniform_real_distribution<double> x_distribution(0.0, generatingDistance);
+    std::uniform_real_distribution<double> y_distribution(0.0, generatingDistance);
     std::random_device rand_dev;
     std::mt19937 generator(rand_dev());
 
@@ -271,7 +271,7 @@ TEST(Mesh, NodeMerging)
     {
         for (auto i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = {i + xDistrution(generator), j + yDistrution(generator)};
+            nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
             auto edge = mesh.m_edges[mesh.m_nodesEdges[originalNodeIndex][0]];
