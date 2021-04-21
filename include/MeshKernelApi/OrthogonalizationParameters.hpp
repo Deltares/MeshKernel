@@ -33,39 +33,21 @@ namespace meshkernelapi
     struct OrthogonalizationParameters
     {
         /// @brief Number of outer iterations in orthogonalization. Increase this parameter for complex grids (2)
-        int OuterIterations;
+        int outer_iterations;
 
         /// @brief Number of boundary iterations in grid/net orthogonalization within itatp (25)
-        int BoundaryIterations;
+        int boundary_iterations;
 
         /// @brief Number of inner iterations in grid/net orthogonalization within itbnd (25)
-        int InnerIterations;
+        int inner_iterations;
 
         /// @brief Factor from 0 to 1. between grid smoothing and grid orthogonality (0.975)
-        double OrthogonalizationToSmoothingFactor;
+        double orthogonalization_to_smoothing_factor;
 
         /// @brief Minimum ATPF on the boundary (1.0)
-        double OrthogonalizationToSmoothingFactorBoundary;
-
-        /// @brief Factor to weight between circumcenters 1.0 and masscentre 0.0 (1.0)
-        double CircumCenterOrMassCenter;
+        double orthogonalization_to_smoothing_factor_at_boundary;
 
         /// @brief Factor between smoother 1d0 and area-homogenizer 0d0 (1.0)
-        double SmoothAngleOrSmoothArea;
-
-        /// @brief Mesh2D-adaptation method; 0: Winslow, 1: arc-length, 2: harmonic map (1)
-        int AdaptMethod;
-
-        /// @brief Mesh2D-refinement factor; between 0d0 and 1d0 (0.0)
-        double AdaptBeta;
-
-        /// @brief Number of smoothing iterations of `solution` u in adaptation (0)
-        int AdaptNiterU;
-
-        /// @brief Number of smoothing iterations of monitor matrix G in adaptation (4)
-        int AdaptNiterG;
-
-        /// @brief Curvi-linear-like 0d0 or pure 1d0 orthogonalisation (0.5)
-        double OrthoPure;
+        double areal_to_angle_smoothing_factor;
     };
 } // namespace meshkernelapi

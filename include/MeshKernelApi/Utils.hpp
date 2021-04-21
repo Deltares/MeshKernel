@@ -51,16 +51,16 @@ namespace meshkernelapi
     static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
     {
         std::vector<meshkernel::Point> result;
-        if (geometryListIn.numberOfCoordinates == 0)
+        if (geometryListIn.num_coordinates == 0)
         {
             return result;
         }
 
-        result.resize(geometryListIn.numberOfCoordinates);
+        result.resize(geometryListIn.num_coordinates);
 
-        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
         {
-            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
+            result[i] = {geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]};
         }
         return result;
     }
@@ -70,16 +70,16 @@ namespace meshkernelapi
     /// @returns The converted vector of samples
     static std::vector<meshkernel::Sample> ConvertGeometryListToSampleVector(const GeometryList& geometryListIn)
     {
-        if (geometryListIn.numberOfCoordinates == 0)
+        if (geometryListIn.num_coordinates == 0)
         {
             throw std::invalid_argument("MeshKernel: The samples are empty.");
         }
         std::vector<meshkernel::Sample> result;
-        result.resize(geometryListIn.numberOfCoordinates);
+        result.resize(geometryListIn.num_coordinates);
 
-        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
         {
-            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};
+            result[i] = {geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i], geometryListIn.values[i]};
         }
         return result;
     }
@@ -89,15 +89,15 @@ namespace meshkernelapi
     /// @param[out] result      The converted geometry list
     static void ConvertPointVectorToGeometryList(std::vector<meshkernel::Point> pointVector, GeometryList& result)
     {
-        if (pointVector.size() < result.numberOfCoordinates)
+        if (pointVector.size() < result.num_coordinates)
         {
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
         }
 
-        for (auto i = 0; i < result.numberOfCoordinates; i++)
+        for (auto i = 0; i < result.num_coordinates; i++)
         {
-            result.xCoordinates[i] = pointVector[i].x;
-            result.yCoordinates[i] = pointVector[i].y;
+            result.coordinates_x[i] = pointVector[i].x;
+            result.coordinates_y[i] = pointVector[i].y;
         }
     }
 
@@ -106,7 +106,7 @@ namespace meshkernelapi
     /// @param[out] spline         The spline which will be set
     static void SetSplines(const GeometryList& geometryListIn, meshkernel::Splines& spline)
     {
-        if (geometryListIn.numberOfCoordinates == 0)
+        if (geometryListIn.num_coordinates == 0)
         {
             return;
         }

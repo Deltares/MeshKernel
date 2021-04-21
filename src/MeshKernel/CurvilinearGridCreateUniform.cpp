@@ -44,20 +44,20 @@ CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
 {
-    if (m_makeMeshParameters.GridType != 0)
+    if (m_makeMeshParameters.grid_type != 0)
     {
-        throw std::invalid_argument("CurvilinearGridCreateUniform::Compute m_makeMeshParameters.GridType can only be 0");
+        throw std::invalid_argument("CurvilinearGridCreateUniform::Compute m_makeMeshParameters.grid_type can only be 0");
     }
 
     // regular grid
-    auto numM = static_cast<size_t>(m_makeMeshParameters.NumberOfColumns + 1);
-    auto numN = static_cast<size_t>(m_makeMeshParameters.NumberOfRows + 1);
-    const double XGridBlockSize = m_makeMeshParameters.XGridBlockSize;
-    const double YGridBlockSize = m_makeMeshParameters.YGridBlockSize;
-    const double cosineAngle = std::cos(m_makeMeshParameters.GridAngle * degrad_hp);
-    const double sinAngle = std::sin(m_makeMeshParameters.GridAngle * degrad_hp);
-    double OriginXCoordinate = m_makeMeshParameters.OriginXCoordinate;
-    double OriginYCoordinate = m_makeMeshParameters.OriginYCoordinate;
+    auto numM = static_cast<size_t>(m_makeMeshParameters.num_columns + 1);
+    auto numN = static_cast<size_t>(m_makeMeshParameters.num_rows + 1);
+    const double XGridBlockSize = m_makeMeshParameters.block_size_x;
+    const double YGridBlockSize = m_makeMeshParameters.block_size_y;
+    const double cosineAngle = std::cos(m_makeMeshParameters.angle * degrad_hp);
+    const double sinAngle = std::sin(m_makeMeshParameters.angle * degrad_hp);
+    double OriginXCoordinate = m_makeMeshParameters.origin_x;
+    double OriginYCoordinate = m_makeMeshParameters.origin_y;
 
     // in case a polygon is there, re-compute parameters
     if (!m_polygons->IsEmpty())

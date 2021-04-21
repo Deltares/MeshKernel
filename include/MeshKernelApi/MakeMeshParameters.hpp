@@ -44,39 +44,30 @@ namespace meshkernelapi
         /// - triangular = 4
         ///
         /// Square is the suggested default.
-        int GridType;
+        int grid_type;
 
         /// @brief The number of columns in x direction
-        int NumberOfColumns;
+        int num_columns;
 
         /// @brief The number of columns in y direction
-        int NumberOfRows;
+        int num_rows;
 
         /// @brief The grid angle
-        double GridAngle;
+        double angle;
 
         /// @brief The grid block size, used in x and y direction
-        double GridBlockSize;
-
-        /// @brief The line thickness in mm (interactor setting)
-        double LineThickness;
-
-        /// @brief (interactor setting)
-        double hSize;
+        double block_size;
 
         /// @brief The x coordinate of the origin, located at the bottom left corner
-        double OriginXCoordinate;
+        double origin_x;
 
         /// @brief The y coordinate of the origin, located at the bottom left corner
-        double OriginYCoordinate;
-
-        /// @brief The z coordinate of the origin, located at the bottom left corner
-        double OriginZCoordinate;
+        double origin_y;
 
         /// @brief The grid block size in x dimension, used only for squared grids
-        double XGridBlockSize;
+        double block_size_x;
 
         /// @brief The grid block size in y dimension, used only for squared grids
-        double YGridBlockSize;
+        double block_size_y;
     };
 } // namespace meshkernelapi

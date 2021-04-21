@@ -33,36 +33,33 @@ namespace meshkernelapi
     struct SplinesToCurvilinearParameters
     {
         /// @brief Aspect ratio (mfacmax, 0.1)
-        double AspectRatio;
+        double aspect_ratio;
 
         /// @brief Grow factor of aspect ratio (1.1)
-        double AspectRatioGrowFactor;
+        double aspect_ratio_grow_factor;
 
         /// @brief Average mesh width on center spline (0.005)
-        double AverageWidth;
+        double average_width;
 
         /// @brief Curvature adapted grid spacing, 1 or not 0 (1)
-        int CurvatureAdaptedGridSpacing;
+        int curvature_adapted_grid_spacing;
 
         /// @brief Grow the grid outside the prescribed grid height (1)
-        int GrowGridOutside = 0;
+        int grow_grid_outside = 0;
 
         /// @brief Maximum number of layers in the uniform part (5)
-        int MaximumNumberOfGridCellsInTheUniformPart;
+        int maximum_num_faces_in_uniform_part;
 
         /// @brief On-top-of-each-other tolerance (0.0001)
-        double GridsOnTopOfEachOtherTolerance;
+        double nodes_on_top_of_each_other_tolerance;
 
         /// @brief Minimum allowed absolute value of crossing-angle cosine (0.95)
-        double MinimumCosineOfCrossingAngles;
+        double min_cosine_crossing_angles;
 
         /// @brief Check for collisions with other parts of the front, 1 or not 0 (0)
-        int CheckFrontCollisions;
+        int check_front_collisions;
 
-        /// @brief Uniform grid size, netboundary to grid only (0.0)
-        double UniformGridSize;
-
-        /// @brief Deletes skinny triangles (1)
-        int DeleteSkinnyTriangles;
+        /// @brief Remove skinny triangles (1)
+        int remove_skinny_triangles;
     };
 } // namespace meshkernelapi

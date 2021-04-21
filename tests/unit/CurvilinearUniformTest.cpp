@@ -22,15 +22,14 @@ TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::cartesian);
 
     meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.GridType = 0;
-    makeMeshParameters.GridAngle = 0.0;
-    makeMeshParameters.OriginXCoordinate = 0.0;
-    makeMeshParameters.OriginYCoordinate = 0.0;
-    makeMeshParameters.OriginZCoordinate = 0.0;
-    makeMeshParameters.NumberOfColumns = 3;
-    makeMeshParameters.NumberOfRows = 3;
-    makeMeshParameters.XGridBlockSize = 100.0;
-    makeMeshParameters.YGridBlockSize = 100.0;
+    makeMeshParameters.grid_type = 0;
+    makeMeshParameters.angle = 0.0;
+    makeMeshParameters.origin_x = 0.0;
+    makeMeshParameters.origin_y = 0.0;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = 100.0;
+    makeMeshParameters.block_size_y = 100.0;
 
     // 2 Execution
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
@@ -52,15 +51,14 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::spherical);
 
     meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.GridType = 0;
-    makeMeshParameters.GridAngle = 0.0;
-    makeMeshParameters.OriginXCoordinate = 0.0;
-    makeMeshParameters.OriginYCoordinate = 0.0;
-    makeMeshParameters.OriginZCoordinate = 0.0;
-    makeMeshParameters.NumberOfColumns = 3;
-    makeMeshParameters.NumberOfRows = 3;
-    makeMeshParameters.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeMeshParameters.YGridBlockSize = 5000000.0;
+    makeMeshParameters.grid_type = 0;
+    makeMeshParameters.angle = 0.0;
+    makeMeshParameters.origin_x = 0.0;
+    makeMeshParameters.origin_y = 0.0;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeMeshParameters.block_size_y = 5000000.0;
 
     // 2 Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
@@ -76,15 +74,14 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::spherical);
 
     meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.GridType = 0;
-    makeMeshParameters.GridAngle = 0.0;
-    makeMeshParameters.OriginXCoordinate = 0.0;
-    makeMeshParameters.OriginYCoordinate = 0.0;
-    makeMeshParameters.OriginZCoordinate = 0.0;
-    makeMeshParameters.NumberOfColumns = 3;
-    makeMeshParameters.NumberOfRows = 3;
-    makeMeshParameters.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeMeshParameters.YGridBlockSize = 5000000.0;
+    makeMeshParameters.grid_type = 0;
+    makeMeshParameters.angle = 0.0;
+    makeMeshParameters.origin_x = 0.0;
+    makeMeshParameters.origin_y = 0.0;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeMeshParameters.block_size_y = 5000000.0;
 
     // 2 Execution
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
@@ -98,19 +95,19 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 
     // x coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[1].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[2].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[3].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[1].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[2].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[3].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[4].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[5].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[6].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[7].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[5].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[6].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[7].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[8].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[9].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[10].x);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[11].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[9].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[10].x);
+    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[11].x);
 
     // y coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].y);
@@ -118,10 +115,10 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(0.0, mesh.m_nodes[2].y);
     ASSERT_EQ(0.0, mesh.m_nodes[3].y);
 
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[4].y);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[5].y);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[6].y);
-    ASSERT_EQ(makeMeshParameters.XGridBlockSize, mesh.m_nodes[7].y);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[4].y);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[5].y);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[6].y);
+    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[7].y);
 
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[8].y);
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[9].y);

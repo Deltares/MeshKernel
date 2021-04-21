@@ -32,31 +32,25 @@ namespace meshkernelapi
     /// @brief A struct used to describe the interpolation parameters in a C-compatible manner
     struct InterpolationParameters
     {
-        /// Actual interpolation type (1)
-        int InterpolationType;
-
-        /// Variable related to interactor behaviour (0)
-        int DisplayInterpolationProcess;
-
         /// Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10)
-        int MaxNumberOfRefinementIterations;
+        int max_num_refinement_iterations;
 
         /// Averaging method : 1 = simple averaging, 2 = closest point, 3 = max, 4 = min, 5 = inverse weighted distance, 6 = minabs, 7 = kdtree (1)
-        int AveragingMethod;
+        int averaging_method;
 
         /// Minimum number of points needed inside cell to handle the cell (1)
-        int MinimumNumberOfPoints;
+        int minimum_num_points;
 
         /// Relative search cell size, default 1= actual cell size, 2= twice as large, search radius can be larger than cell so more sample are included. (1.01)
-        double RelativeSearchRadius;
+        double relative_search_radius;
 
         /// Interpolation settings, 1=bathy, 2=zk, 3=s1, 4=Zc (2)
-        int InterpolateTo;
+        int interpolate_to;
 
         /// Whether to compute faces intersected by polygon (yes=1/no=0)
-        int RefineIntersected;
+        int refine_intersected;
 
         /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
-        int UseMassCenterWhenRefining;
+        int use_mass_center_when_refining;
     };
 } // namespace meshkernelapi

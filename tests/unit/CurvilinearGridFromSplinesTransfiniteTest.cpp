@@ -30,8 +30,8 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.NRefinement = 40;
-    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.n_refinement = 40;
+    curvilinearParameters.m_refinement = 20;
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
@@ -110,8 +110,8 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
     splines->AddSpline(thirdSpline, 0, thirdSpline.size());
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.NRefinement = 40;
-    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.n_refinement = 40;
+    curvilinearParameters.m_refinement = 20;
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
@@ -194,8 +194,8 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     splines->AddSpline(fifthSpline, 0, fifthSpline.size());
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.NRefinement = 40;
-    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.n_refinement = 40;
+    curvilinearParameters.m_refinement = 20;
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();

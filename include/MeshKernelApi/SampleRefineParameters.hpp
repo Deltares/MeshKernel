@@ -32,28 +32,22 @@ namespace meshkernelapi
     /// @brief A struct used to describe the sample refine parameters in a C-compatible manner
     struct SampleRefineParameters
     {
-        /// @brief Sample vector dimension
-        int SampleVectorDimension;
-
         /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted
-        int MaxNumberOfRefinementIterations;
+        int max_num_refinement_iterations;
 
         /// @brief Minimum cell size
-        double MinimumCellSize;
-
-        /// @brief Directional refinement, 1 yes 0 no
-        int DirectionalRefinement;
+        double min_face_size;
 
         /// @brief Refinement criterion type
-        int RefinementType;
+        int refinement_type;
 
         /// @brief Connect hanging nodes at the end of the iteration, 1 yes or 0 no
-        int ConnectHangingNodes = 1;
+        int connect_hanging_nodes = 1;
 
-        /// @brief Maximum time-step in courant grid
-        double MaximumTimeStepInCourantGrid;
+        /// @brief Maximum time-step in Courant grid
+        double maximum_time_step;
 
         /// @brief Take samples outside face into account , 1 yes 0 no
-        int AccountForSamplesOutside;
+        int account_for_samples_outside;
     };
 } // namespace meshkernelapi
