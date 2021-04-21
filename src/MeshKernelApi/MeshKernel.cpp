@@ -651,6 +651,11 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
 
+            if (geometryList.num_coordinates != result.size())
+            {
+                throw std::invalid_argument("MeshKernel: The value array has not the same size of the result array storing the orthogonality values at the edges");
+            }
+
             for (auto i = 0; i < geometryList.num_coordinates; ++i)
             {
                 geometryList.values[i] = result[i];

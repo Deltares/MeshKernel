@@ -2026,7 +2026,7 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(hangingEdges[0], 8);
+    ASSERT_EQ(hangingEdges[0], 0);
 }
 
 TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
@@ -2057,16 +2057,11 @@ TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHan
     ASSERT_EQ(mesh2d.num_edges, 15);
 }
 
-TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2d_ShouldOrthogonalize)
+TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
 {
     // Prepare
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
-
-    // Before orthogonalization
-    meshkernelapi::Mesh2D mesh2d{};
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
@@ -2081,9 +2076,28 @@ TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2d_ShouldOrtho
     // No land boundaries accounted
     meshkernelapi::GeometryList landBoundaries{};
 
-    errorCode = mkernel_compute_orthogonalization_mesh2d(meshKernelId, 1, orthogonalizationParameters, polygons, landBoundaries);
+    auto errorCode = mkernel_compute_orthogonalization_mesh2d(meshKernelId, 1, orthogonalizationParameters, polygons, landBoundaries);
+
+    // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+}
+
+TEST_F(ApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList edgeOrthogonality;
+    edgeOrthogonality.values = &std::vector<double>(mesh2d.num_edges)[0];
+    edgeOrthogonality.num_coordinates = mesh2d.num_edges;
+
+    // Execute
+    errorCode = mkernel_get_orthogonality_mesh2d(meshKernelId, edgeOrthogonality);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
