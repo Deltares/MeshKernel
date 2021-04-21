@@ -2146,7 +2146,7 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     std::vector<int> selectedNodes(mesh2d.num_nodes, -1);
     errorCode = mkernel_nodes_in_polygons_mesh2d(meshKernelId,
                                                  geometryListIn,
-                                                 true,
+                                                 1,
                                                  &selectedNodes[0]);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2155,4 +2155,26 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     std::vector<int> expectedResult(mesh2d.num_nodes);
     std::iota(expectedResult.begin(), expectedResult.end(), 0);
     ASSERT_THAT(selectedNodes, ::testing::ContainerEq(expectedResult));
+}
+
+TEST_F(ApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // By using an empty list, all nodes will be selected
+    const meshkernelapi::GeometryList geometryListIn{};
+
+    // execute
+    int numNodes;
+    const auto errorCode = mkernel_count_nodes_in_polygons_mesh2d(meshKernelId,
+                                                                  geometryListIn,
+                                                                  1,
+                                                                  numNodes);
+
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert all nodes have been selected
+    ASSERT_EQ(12, numNodes);
 }
