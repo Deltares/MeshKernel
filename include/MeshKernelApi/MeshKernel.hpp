@@ -359,7 +359,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
                                                          const GeometryList& geometryListIn,
                                                          int inside,
-                                                         int** selectedNodes);
+                                                         int* selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices.
         ///

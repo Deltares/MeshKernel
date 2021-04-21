@@ -948,7 +948,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
                                                      const GeometryList& geometryListIn,
                                                      int inside,
-                                                     int** selectedNodes)
+                                                     int* selectedNodes)
     {
         int exitCode = Success;
         try
@@ -970,7 +970,7 @@ namespace meshkernelapi
             {
                 if (meshKernelState[meshKernelId].m_mesh2d->m_nodeMask[i] > 0)
                 {
-                    (*selectedNodes)[index] = i;
+                    selectedNodes[index] = i;
                     index++;
                 }
             }

@@ -1,5 +1,6 @@
 #include <exception>
 #include <memory>
+#include <numeric>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -2122,4 +2123,32 @@ TEST_F(ApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+
+TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // By using an empty list, all nodes will be selected
+    const meshkernelapi::GeometryList geometryListIn{};
+
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // execute
+    std::vector<int> selectedNodes(mesh2d.num_nodes, -1);
+    errorCode = mkernel_nodes_in_polygons_mesh2d(meshKernelId,
+                                                 geometryListIn,
+                                                 true,
+                                                 &selectedNodes[0]);
+
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert (all nodes indices will be selected)
+    std::vector<int> expectedResult(mesh2d.num_nodes);
+    std::iota(expectedResult.begin(), expectedResult.end(), 0);
+    ASSERT_THAT(selectedNodes, ::testing::ContainerEq(expectedResult));
 }
