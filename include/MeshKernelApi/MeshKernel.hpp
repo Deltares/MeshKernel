@@ -181,7 +181,7 @@ namespace meshkernelapi
         /// @param[in]     meshKernelId        The id of the mesh state
         /// @param[in,out] edges Pointer to memory where the indices of the hanging edges will be stored
         /// @returns Error code
-        MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** edges);
+        MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int* edges);
 
         /// @brief Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
