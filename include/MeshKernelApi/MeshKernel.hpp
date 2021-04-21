@@ -384,14 +384,10 @@ namespace meshkernelapi
 
         /// @brief Insert a new mesh2d node at a specific coordinate.
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[in]  xCoordinate  X-coordinate of the new node
-        /// @param[in]  yCoordinate  Y-coordinate of the new node
+        /// @param[in]  nodeCoordinate  The coordinate of the new node to insert
         /// @param[out] nodeIndex    The index of the new mesh node
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId,
-                                                   double xCoordinate,
-                                                   double yCoordinate,
-                                                   int& nodeIndex);
+        MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, GeometryList const& nodeCoordinate, int& nodeIndex);
 
         /// @brief Deletes a mesh2d node
         /// @param[in] meshKernelId The id of the mesh state

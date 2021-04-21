@@ -1036,20 +1036,19 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, GeometryList const& nodeCoordinate, int& nodeIndex)
     {
         int exitCode = Success;
         try
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                //create a valid instance, by default cartesian
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D();
-                meshKernelState[meshKernelId].m_mesh2d->m_projection = meshkernel::Projection::cartesian;
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            const meshkernel::Point newNode{xCoordinate, yCoordinate};
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(newNode));
+            auto const nodeCoordinateVector = ConvertGeometryListToPointVector(nodeCoordinate);
+
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector[0]));
         }
         catch (...)
         {

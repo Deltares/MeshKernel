@@ -2142,7 +2142,7 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // execute
+    // Execute
     std::vector<int> selectedNodes(mesh2d.num_nodes, -1);
     errorCode = mkernel_nodes_in_polygons_mesh2d(meshKernelId,
                                                  geometryListIn,
@@ -2166,15 +2166,44 @@ TEST_F(ApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
     // By using an empty list, all nodes will be selected
     const meshkernelapi::GeometryList geometryListIn{};
 
-    // execute
+    // Execute
     int numNodes;
     const auto errorCode = mkernel_count_nodes_in_polygons_mesh2d(meshKernelId,
                                                                   geometryListIn,
                                                                   1,
                                                                   numNodes);
-
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert all nodes have been selected
     ASSERT_EQ(12, numNodes);
+}
+
+TEST_F(ApiTests, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(1, -0.5);
+    std::vector<double> coordinates_y(1, -0.5);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = 1;
+
+    // Isolated nodes are removed by the administration done in mkernel_get_dimensions_mesh2d.
+    // The newly inserted node should be connected to another one to form an edge.
+    // In this manner, the edge will not be removed during the administration
+    int newNodeIndex;
+    auto errorCode = mkernel_insert_node_mesh2d(meshKernelId, geometryList, newNodeIndex);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    int newEdgeIndex;
+    errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(meshKernelId, newNodeIndex, 0, newEdgeIndex);
+
+    // Assert
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(mesh2d.num_nodes, 13);
+    ASSERT_EQ(mesh2d.num_edges, 18);
 }
