@@ -202,8 +202,8 @@ meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delt
         }
     }
 
-    mesh2d.num_nodes = nodeIndex;
-    mesh2d.num_edges = edgeIndex / 2;
+    mesh2d.num_nodes = static_cast<int>(nodeIndex);
+    mesh2d.num_edges = static_cast<int>(edgeIndex * 0.5);
 
     return mesh2d;
 }

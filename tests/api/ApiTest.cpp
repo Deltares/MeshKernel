@@ -42,8 +42,8 @@ public:
     void MakeMesh(int n = 4, int m = 3, double delta = 1.0)
     {
         // Set-up new mesh
-        auto mesh2d = MakeRectangularMeshForApiTesting(n, m, delta);
-        auto errorCode = mkernel_set_mesh2d(m_meshKernelId, mesh2d);
+        const auto mesh2d = MakeRectangularMeshForApiTesting(n, m, delta);
+        const auto errorCode = mkernel_set_mesh2d(m_meshKernelId, mesh2d);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not set mesh2d");
@@ -2010,8 +2010,10 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
 
     // delete an edge at the lower left corner to create a new hanging edge
     meshkernelapi::GeometryList geometryList{};
-    geometryList.coordinates_x = &std::vector<double>(1, 0.5)[0];
-    geometryList.coordinates_y = &std::vector<double>(1, 0.0)[0];
+    std::vector<double> coordinates_x(1, 0.5);
+    std::vector<double> coordinates_y(1, 0.0);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
     geometryList.num_coordinates = 1;
     auto errorCode = mkernel_delete_edge_mesh2d(meshKernelId, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2027,7 +2029,7 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(hangingEdges[0], 0);
+    ASSERT_EQ(hangingEdges[0], 8);
 }
 
 TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
@@ -2038,8 +2040,10 @@ TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHan
 
     // delete an edge at the lower left corner to create a new hanging edge
     meshkernelapi::GeometryList geometryList{};
-    geometryList.coordinates_x = &std::vector<double>(1, 0.5)[0];
-    geometryList.coordinates_y = &std::vector<double>(1, 0.0)[0];
+    std::vector<double> coordinates_x(1, 0.5);
+    std::vector<double> coordinates_y(1, 0.0);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
     geometryList.num_coordinates = 1;
     auto errorCode = mkernel_delete_edge_mesh2d(meshKernelId, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
