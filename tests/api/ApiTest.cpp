@@ -2102,3 +2102,24 @@ TEST_F(ApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 }
+
+TEST_F(ApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList edgeSmoothness;
+    edgeSmoothness.values = &std::vector<double>(mesh2d.num_edges)[0];
+    edgeSmoothness.num_coordinates = mesh2d.num_edges;
+
+    // Execute
+    errorCode = mkernel_get_smoothness_mesh2d(meshKernelId, edgeSmoothness);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
