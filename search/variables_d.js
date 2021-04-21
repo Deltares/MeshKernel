@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['raddeg_5fhp_1054',['raddeg_hp',['../namespacemeshkernel.html#a64209ad0c58850d197b587a0f42a524a',1,'meshkernel']]],
-  ['refineintersected_1055',['RefineIntersected',['../structmeshkernelapi_1_1_interpolation_parameters.html#a904a880ca6cde2586c610883b3de8199',1,'meshkernelapi::InterpolationParameters']]],
-  ['refinementtype_1056',['RefinementType',['../structmeshkernelapi_1_1_sample_refine_parameters.html#ab7fa47696223d76552c5ef9f36b3b38e',1,'meshkernelapi::SampleRefineParameters']]],
-  ['relativesearchradius_1057',['RelativeSearchRadius',['../structmeshkernelapi_1_1_interpolation_parameters.html#ae04437a491827725acb579e48d017766',1,'meshkernelapi::InterpolationParameters']]]
+  ['use_5fmass_5fcenter_5fwhen_5frefining_1045',['use_mass_center_when_refining',['../structmeshkernelapi_1_1_interpolation_parameters.html#a38437f8bfd87f52926798577ce1cfe1a',1,'meshkernelapi::InterpolationParameters']]]
 ];

@@ -1,8 +1,8 @@
 var searchData=
 [
   ['generatepoints_132',['GeneratePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa97f35f197df956a37084d39c32d97ebf',1,'meshkernel::TriangulationWrapper']]],
-  ['geometrylist_133',['GeometryList',['../structmeshkernelapi_1_1_geometry_list.html',1,'meshkernelapi']]],
-  ['geometryseparator_134',['geometrySeparator',['../structmeshkernelapi_1_1_geometry_list.html#a09bd5b004c21214637c712795f9819b6',1,'meshkernelapi::GeometryList']]],
+  ['geometry_5fseparator_133',['geometry_separator',['../structmeshkernelapi_1_1_geometry_list.html#ae9f007e7e6475e4a0f783666173324b3',1,'meshkernelapi::GeometryList']]],
+  ['geometrylist_134',['GeometryList',['../structmeshkernelapi_1_1_geometry_list.html',1,'meshkernelapi']]],
   ['getboundingbox_135',['GetBoundingBox',['../namespacemeshkernel.html#a732234767e8f5cae9f50ea3cad683350',1,'meshkernel']]],
   ['getconnectednodeindex_136',['GetConnectedNodeIndex',['../classmeshkernel_1_1_smoother.html#add1756cf58ed932305e36726467d2c31',1,'meshkernel::Smoother']]],
   ['getdx_137',['GetDx',['../namespacemeshkernel.html#ad844f35f613267b0de16948a5f2e5942',1,'meshkernel']]],
@@ -33,10 +33,7 @@ var searchData=
   ['getsplinesintersection_162',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb',1,'meshkernel::Splines']]],
   ['getweight_163',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a9757819524c86e1f5c817f15cfeeb939',1,'meshkernel::Smoother::GetWeight()']]],
   ['gravity_164',['gravity',['../namespacemeshkernel.html#a0a6334ee0cd66333a5ae4bff56c0165d',1,'meshkernel']]],
-  ['gridangle_165',['GridAngle',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a66326e448458401de5721548ecec9484',1,'meshkernelapi::MakeMeshParameters']]],
-  ['gridblocksize_166',['GridBlockSize',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a4635af86e49c2b79e11481920a97b15c',1,'meshkernelapi::MakeMeshParameters']]],
-  ['gridlinetype_167',['GridLineType',['../structmeshkernel_1_1_curvilinear_grid_line.html#a70d143e14eee7400757b1c2803fbb8ee',1,'meshkernel::CurvilinearGridLine']]],
-  ['gridsontopofeachothertolerance_168',['GridsOnTopOfEachOtherTolerance',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#ac8f9d331bd77e3e90a842537711fef07',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['gridtype_169',['GridType',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a0e0bf117675821965d818602d07e3188',1,'meshkernelapi::MakeMeshParameters']]],
-  ['growgridoutside_170',['GrowGridOutside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a5e83ef6d28ccd4d7be36552e870630fd',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
+  ['grid_5ftype_165',['grid_type',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a7ede12c68e5457060c75ad11f04b8cd9',1,'meshkernelapi::MakeMeshParameters']]],
+  ['gridlinetype_166',['GridLineType',['../structmeshkernel_1_1_curvilinear_grid_line.html#a70d143e14eee7400757b1c2803fbb8ee',1,'meshkernel::CurvilinearGridLine']]],
+  ['grow_5fgrid_5foutside_167',['grow_grid_outside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aae19f194cd5cd79a1bd19e43bce54e84',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
 ];

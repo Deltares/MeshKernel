@@ -785,7 +785,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 </div><div class="memdoc">
 
 <p>Mesh2d orthogonalization. </p>
-<p>The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters. The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas). The parameter to regulate the amount of orthogonalization is contained in <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html#a5ffb52364fd8c379dda2bb37c24200c4">meshkernelapi::OrthogonalizationParameters::OrthogonalizationToSmoothingFactor</a> </p><dl class="params"><dt>Parameters</dt><dd>
+<p>The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters. The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas). The parameter to regulate the amount of orthogonalization is contained in <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html#ab60568df173267aea4eab7e4ce77d59e">meshkernelapi::OrthogonalizationParameters::orthogonalization_to_smoothing_factor</a> </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundaryOption</td><td>The option to determine how to snap to land boundaries </td></tr>
@@ -2539,7 +2539,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>The coordinates of the obtuse triangles mass centers stored in xCoordinates and yCoordinates of a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>The coordinates of the obtuse triangles mass centers stored in coordinates_x and coordinates_y of a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -2688,7 +2688,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">selectingPolygon</td><td>The selecting polygon </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygonToSelect</td><td>The polygon to select </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">selectionResults</td><td>The selection result, contained in the in the zCoordinates field of <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> (0.0 not selected, 1.0 selected). Note that the selection selectionResults variable must be allocated by the client. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">selectionResults</td><td>The selection result, contained in the in the values field of <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> (0.0 not selected, 1.0 selected). Note that the selection selectionResults variable must be allocated by the client. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2753,7 +2753,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">smallFlowEdgesThreshold</td><td>The configurable threshold for detecting a small flow edge </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>The middle points of the small flow edges, stored in xCoordinates and yCoordinates of a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>The middle points of the small flow edges, stored in coordinates_x and coordinates_y of a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> </td></tr>
   </table>
   </dd>
 </dl>

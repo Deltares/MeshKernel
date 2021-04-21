@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['weightcircumcenter_1068',['weightCircumCenter',['../namespacemeshkernel.html#a0749d5ac40719df6e147211e58f6083d',1,'meshkernel']]]
+  ['z_1051',['z',['../structmeshkernel_1_1_cartesian3_d_point.html#a9809dff7009adda018018aa1d12820ec',1,'meshkernel::Cartesian3DPoint']]]
 ];
