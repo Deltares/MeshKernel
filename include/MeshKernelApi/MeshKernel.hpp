@@ -117,8 +117,7 @@ namespace meshkernelapi
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId,
-                                                Mesh2D& mesh2d);
+        MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId, Mesh2D& mesh2d);
 
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
@@ -409,12 +408,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& point);
 
-        /// @brief Finds the closest mesh2d edge to a point.
+        /// @brief Gets the closest mesh2d edge to a point.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] point          The coordinate of the point
         /// @param[out] edgeIndex     The found edge index
         /// @returns Error code
-        MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex);
+        MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex);
 
         /// @brief Generate a new polygon from an existing one by offsetting the perimeter by a given distance.
         ///
@@ -473,12 +472,10 @@ namespace meshkernelapi
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] point          The coordinate of the point
-        /// @param[in] searchRadius   The search radius
         /// @param[out] nodeIndex     The index of the found node
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId,
                                                       const GeometryList& point,
-                                                      double searchRadius,
                                                       int& nodeIndex);
 
         /// @brief Selects the polygon nodes within another polygon.

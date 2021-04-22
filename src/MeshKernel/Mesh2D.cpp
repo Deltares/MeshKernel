@@ -583,7 +583,7 @@ void Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
     // merge the closest nodes
     for (auto i = 0; i < filteredNodes.size(); i++)
     {
-        nodesRtree.NearestNeighborsOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree.NodesWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)

@@ -29,7 +29,7 @@
 
 using meshkernel::RTree;
 
-void RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
+void RTree::NodesWithinSearchRadius(Point node, double searchRadiusSquared)
 {
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
@@ -38,10 +38,9 @@ void RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSqu
 
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
-    m_rtree2D.query(
-        bgi::within(box) &&
-            bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
-        std::back_inserter(m_queryCache));
+    m_rtree2D.query(bgi::within(box) &&
+                        bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
+                    std::back_inserter(m_queryCache));
 
     m_queryIndices.reserve(m_queryCache.size());
     m_queryIndices.clear();
@@ -76,8 +75,3 @@ void RTree::DeleteNode(size_t position)
     m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
 }
 
-void RTree::InsertNode(const Point& node)
-{
-    m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
-    m_rtree2D.insert(m_points.end() - 1, m_points.end());
-}

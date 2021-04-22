@@ -384,14 +384,14 @@ size_t Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
     return edgeIndex;
 }
 
-size_t Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
+size_t Mesh::FindNodeCloseToAPoint(Point const& point)
 {
     if (GetNumNodes() <= 0)
     {
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    SearchNearestNeighboursOnSquaredDistance(point, searchRadius * searchRadius, MeshLocations::Nodes);
+    SearchNearestNeighbors(point, MeshLocations::Nodes);
 
     if (GetNumNearestNeighbors(MeshLocations::Nodes) > 0)
     {
@@ -614,17 +614,17 @@ void Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, double squaredR
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_nodesRTree.NodesWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_edgesRTree.NodesWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_facesRTree.NodesWithinSearchRadius(point, squaredRadius);
     }
 }
 

@@ -221,8 +221,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId,
-                                            Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -1120,7 +1119,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
+    MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1268,7 +1267,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1282,9 +1281,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            auto pointPosition = ConvertGeometryListToPointVector(point);
+            auto const pointVector = ConvertGeometryListToPointVector(point);
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointPosition[0], searchRadius));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointVector[0]));
         }
         catch (...)
         {
@@ -1314,7 +1313,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(point);
 
-            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
+            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0]);
 
             // Set the node coordinate
             std::vector<meshkernel::Point> nodeVector;

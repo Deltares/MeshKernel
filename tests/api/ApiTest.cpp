@@ -2253,3 +2253,47 @@ TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     ASSERT_EQ(mesh2d.node_x[0], -0.5);
     ASSERT_EQ(mesh2d.node_y[0], -0.5);
 }
+
+TEST_F(ApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(1, -0.5);
+    std::vector<double> coordinates_y(1, -0.5);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = 1;
+
+    int edgeIndex;
+    const auto errorCode = mkernel_get_edge_mesh2d(meshKernelId, geometryList, edgeIndex);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(edgeIndex, 9);
+}
+
+TEST_F(ApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(1, 3.0);
+    std::vector<double> coordinates_y(1, 3.0);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = 1;
+
+    int nodeIndex;
+    const auto errorCode = mkernel_get_node_index_mesh2d(meshKernelId, geometryList, nodeIndex);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(nodeIndex, 11);
+}
