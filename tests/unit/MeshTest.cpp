@@ -505,8 +505,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
         {2, 0},
     };
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();

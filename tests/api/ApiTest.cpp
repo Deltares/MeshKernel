@@ -2297,3 +2297,28 @@ TEST_F(ApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
     // Assert
     ASSERT_EQ(nodeIndex, 11);
 }
+
+TEST_F(ApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
+{
+    // Prepare a mesh with two triangles
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{0.0, 1.0, 1.0, 1.0};
+    std::vector<double> node_y{0.0, 0.0, 0.3, -0.3};
+    std::vector<int> edge_nodes{0, 3, 3, 1, 1, 0, 1, 2, 2, 0};
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = node_x.size();
+
+    const auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    int numSmallFlowEdges;
+    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, 100, numSmallFlowEdges);
+    ASSERT_EQ(1, numSmallFlowEdges);
+}

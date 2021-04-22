@@ -162,9 +162,9 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            *(meshKernelState[meshKernelId].m_mesh2d) = meshkernel::Mesh2D(edges2d,
-                                                                           nodes2d,
-                                                                           meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
+                                                                         nodes2d,
+                                                                         meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -1574,7 +1574,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
                                                                         num1DNodes);
@@ -1606,7 +1606,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
                                                                         num1DNodes);
@@ -1637,7 +1637,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto const num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto const meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask, num1DNodes);
 
