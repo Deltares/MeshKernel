@@ -391,7 +391,7 @@ size_t Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    SearchPointsWithinSquaredRadius(point, searchRadius * searchRadius, MeshLocations::Nodes);
+    SearchNearestPointWithinSquaredRadius(point, searchRadius * searchRadius, MeshLocations::Nodes);
 
     if (GetNumNearestNeighbors(MeshLocations::Nodes) > 0)
     {
@@ -609,7 +609,7 @@ void Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
     }
 }
 
-void Mesh::SearchPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
