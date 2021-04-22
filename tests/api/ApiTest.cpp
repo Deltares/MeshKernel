@@ -2311,6 +2311,7 @@ TEST_F(ApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
     mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
     mesh2d.num_nodes = node_x.size();
 
+    // Get the meshkernel id
     const auto meshKernelId = GetMeshKernelId();
 
     // Execute
@@ -2319,6 +2320,47 @@ TEST_F(ApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
 
     // Assert
     int numSmallFlowEdges;
-    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, 100, numSmallFlowEdges);
+    double smallFlowEdgesThreshold = 100;
+    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
     ASSERT_EQ(1, numSmallFlowEdges);
+}
+
+TEST_F(ApiTests, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
+{
+    // Prepare a mesh with two triangles
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{0.0, 1.0, 1.0, 1.0};
+    std::vector<double> node_y{0.0, 0.0, 0.3, -0.3};
+    std::vector<int> edge_nodes{0, 3, 3, 1, 1, 0, 1, 2, 2, 0};
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = node_x.size();
+
+    // Get the meshkernel id
+    const auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    int numSmallFlowEdges;
+    double smallFlowEdgesThreshold = 100;
+    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+
+    meshkernelapi::GeometryList result{};
+    std::vector<double> coordinates_x(numSmallFlowEdges);
+    std::vector<double> coordinates_y(numSmallFlowEdges);
+    result.coordinates_x = &coordinates_x[0];
+    result.coordinates_y = &coordinates_y[0];
+    result.num_coordinates = numSmallFlowEdges;
+
+    errorCode = mkernel_get_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, result);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(result.coordinates_x[0], 0.5, tolerance);
+    ASSERT_NEAR(result.coordinates_y[0], 0.0, tolerance);
 }
