@@ -178,8 +178,9 @@ namespace meshkernel
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
+        /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
-        [[nodiscard]] size_t FindNodeCloseToAPoint(Point const& point);
+        [[nodiscard]] size_t FindNodeCloseToAPoint(Point const& point, double searchRadius);
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
@@ -234,14 +235,14 @@ namespace meshkernel
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation);
+        void SearchPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation);
 
-        /// @brief Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @brief Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchPointsWithinSquaredRadius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
         size_t GetNumNearestNeighbors(MeshLocations meshLocation) const;
 
-        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchPointsWithinSquaredRadius.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.

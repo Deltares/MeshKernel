@@ -438,7 +438,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5});
+    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());

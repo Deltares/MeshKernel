@@ -1267,7 +1267,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, double searchRadius, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1283,7 +1283,7 @@ namespace meshkernelapi
 
             auto const pointVector = ConvertGeometryListToPointVector(point);
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointVector[0]));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointVector[0], searchRadius));
         }
         catch (...)
         {
@@ -1313,7 +1313,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(point);
 
-            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0]);
+            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
 
             // Set the node coordinate
             std::vector<meshkernel::Point> nodeVector;

@@ -54,7 +54,7 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     start = std::chrono::steady_clock::now();
     for (auto i = 0; i < nodes.size(); ++i)
     {
-        rtree.NodesWithinSearchRadius(nodes[i], 1e-8);
+        rtree.PointsWithinSearchRadius(nodes[i], 1e-8);
         ASSERT_EQ(rtree.GetQueryResultSize(), 1);
     }
     end = std::chrono::steady_clock::now();
@@ -84,11 +84,11 @@ TEST(RTree, FindNodesInSquare)
     // large search size, node found
     meshkernel::Point const pointToSearch{(n - 1.0) * 0.5, (n - 1.0) * 0.5};
     double squaredDistance = 0.708 * 0.708;
-    rtree.NodesWithinSearchRadius(pointToSearch, squaredDistance);
+    rtree.PointsWithinSearchRadius(pointToSearch, squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 4);
 
     // smaller search size, node not found
     squaredDistance = 0.700 * 0.700;
-    rtree.NodesWithinSearchRadius(pointToSearch, squaredDistance);
+    rtree.PointsWithinSearchRadius(pointToSearch, squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 0);
 }

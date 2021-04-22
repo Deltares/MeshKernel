@@ -472,10 +472,12 @@ namespace meshkernelapi
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] point          The coordinate of the point
+        /// @param[in] searchRadius   The search radius
         /// @param[out] nodeIndex     The index of the found node
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId,
                                                       const GeometryList& point,
+                                                      double searchRadius,
                                                       int& nodeIndex);
 
         /// @brief Selects the polygon nodes within another polygon.

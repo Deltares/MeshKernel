@@ -265,7 +265,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
         throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon search radius <= 0");
     }
 
-    m_samplesRtree.NodesWithinSearchRadius(interpolationPoint, searchRadiusSquared);
+    m_samplesRtree.PointsWithinSearchRadius(interpolationPoint, searchRadiusSquared);
     if (!m_samplesRtree.HasQueryResults() && m_useClosestSampleIfNoneAvailable)
     {
         m_samplesRtree.NearestNeighbors(interpolationPoint);

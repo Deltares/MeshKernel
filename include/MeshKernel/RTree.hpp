@@ -54,7 +54,7 @@ namespace meshkernel
     /// The mesh class stores two RTree class instances, used for inquiring the closest mesh nodes and edge to a point.
     /// RTree is a class wrapping the boost::geometry::index::rtree code,
     /// adding an interface for performing common queries
-    /// such as inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::NodesWithinSearchRadius`)
+    /// such as inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::PointsWithinSearchRadius`)
     /// or a vector of the nearest neighbors (`meshkernel::RTree::NearestNeighbors`).
     /// RTee has a `m_queryCache`, a vector used for collecting all query results
     /// and avoid frequent re-allocations when the number of results changes.
@@ -90,12 +90,17 @@ namespace meshkernel
             m_rtree2D = RTree2D(m_points.begin(), m_points.end());
         }
 
-        /// @brief Gets all nodes in the search radius
+        /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
-        void NodesWithinSearchRadius(Point node, double searchRadiusSquared);
+        void PointsWithinSearchRadius(Point node, double searchRadiusSquared);
 
-        /// @brief Determines the nearest neighbor
+        /// @brief Finds the nearest node in the search radius and stores the results in the query cache, to be inquired later
+        /// @param[in] node The node
+        /// @param[in] searchRadiusSquared The squared search radius around the node
+        void NearestNeighborWithinSearchRadius(Point node, double searchRadiusSquared);
+
+        /// @brief Gets the nearest of all nodes
         /// @param[in] node The node
         void NearestNeighbors(Point node);
 

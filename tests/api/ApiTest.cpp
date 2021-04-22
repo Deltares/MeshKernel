@@ -2291,7 +2291,7 @@ TEST_F(ApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
     geometryList.num_coordinates = 1;
 
     int nodeIndex;
-    const auto errorCode = mkernel_get_node_index_mesh2d(meshKernelId, geometryList, nodeIndex);
+    const auto errorCode = mkernel_get_node_index_mesh2d(meshKernelId, geometryList, 10.0, nodeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
