@@ -2388,3 +2388,40 @@ TEST_F(ApiTests, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldCountO
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(1, numObtuseTriangles);
 }
+
+TEST_F(ApiTests, GetObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtuseTriangles)
+{
+    // Prepare a mesh with one obtuse triangle
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{0.0, 3.0, -1.0, 1.5};
+    std::vector<double> node_y{0.0, 0.0, 2.0, -2.0};
+    std::vector<int> edge_nodes{0, 1, 1, 2, 2, 0, 0, 3, 3, 1};
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = static_cast<int>(node_x.size());
+    const auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    int numObtuseTriangles;
+    errorCode = meshkernelapi::mkernel_count_obtuse_triangles_mesh2d(meshKernelId, numObtuseTriangles);
+    meshkernelapi::GeometryList geometryList{};
+    std::vector<double> coordinates_x(numObtuseTriangles);
+    std::vector<double> coordinates_y(numObtuseTriangles);
+    geometryList.coordinates_x = &coordinates_x[0];
+    geometryList.coordinates_y = &coordinates_y[0];
+    geometryList.num_coordinates = numObtuseTriangles;
+    errorCode = mkernel_get_obtuse_triangles_mass_centers_mesh2d(meshKernelId, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(1, numObtuseTriangles);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(coordinates_x[0], 0.66666666666666652, tolerance);
+    ASSERT_NEAR(coordinates_y[0], 0.66666666666666652, tolerance);
+}
+
+//mkernel_delete_small_flow_edges_and_small_triangles_mesh2d

@@ -162,7 +162,7 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            meshKernelState[meshKernelId].m_mesh2d.reset(new meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_mesh2d = std::make_shared<meshkernel::Mesh2D>(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -188,7 +188,7 @@ namespace meshkernelapi
                                                                   mesh1d.node_x,
                                                                   mesh1d.node_y);
 
-            meshKernelState[meshKernelId].m_mesh1d.reset(new meshkernel::Mesh1D(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_mesh1d = std::make_shared<meshkernel::Mesh1D>(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -1522,8 +1522,8 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts.reset(new meshkernel::Contacts(meshKernelState[meshKernelId].m_mesh1d,
-                                                                                    meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelState[meshKernelId].m_contacts = std::make_shared<meshkernel::Contacts>(meshKernelState[meshKernelId].m_mesh1d,
+                                                                                              meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask,
                                                                             meshKernelPolygons);
         }
@@ -1551,8 +1551,8 @@ namespace meshkernelapi
                                                                         num1DNodes);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts.reset(new meshkernel::Contacts(meshKernelState[meshKernelId].m_mesh1d,
-                                                                                    meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelState[meshKernelId].m_contacts = std::make_shared<meshkernel::Contacts>(meshKernelState[meshKernelId].m_mesh1d,
+                                                                                              meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeMultipleContacts(meshKernel1DNodeMask);
         }
         catch (...)
@@ -1585,8 +1585,8 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts.reset(new meshkernel::Contacts(meshKernelState[meshKernelId].m_mesh1d,
-                                                                                    meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelState[meshKernelId].m_contacts = std::make_shared<meshkernel::Contacts>(meshKernelState[meshKernelId].m_mesh1d,
+                                                                                              meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPolygons(meshKernel1DNodeMask,
                                                                                   meshKernelPolygons);
         }
@@ -1616,8 +1616,8 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Point vector
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
-            meshKernelState[meshKernelId].m_contacts.reset(new meshkernel::Contacts(meshKernelState[meshKernelId].m_mesh1d,
-                                                                                    meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelState[meshKernelId].m_contacts = std::make_shared<meshkernel::Contacts>(meshKernelState[meshKernelId].m_mesh1d,
+                                                                                              meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask,
                                                                                 meshKernelPoints);
         }
@@ -1650,8 +1650,8 @@ namespace meshkernelapi
             const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts.reset(new meshkernel::Contacts(meshKernelState[meshKernelId].m_mesh1d,
-                                                                                    meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelState[meshKernelId].m_contacts = std::make_shared<meshkernel::Contacts>(meshKernelState[meshKernelId].m_mesh1d,
+                                                                                              meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeBoundaryContacts(meshKernel1DNodeMask, meshKernelPolygons, searchRadius);
         }
         catch (...)
