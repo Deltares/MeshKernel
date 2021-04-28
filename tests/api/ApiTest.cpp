@@ -498,10 +498,10 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
 
     std::unique_ptr<double> xCoordinatesOut(new double[numberOfpolygonNodes]);
     std::unique_ptr<double> yCoordinatesOut(new double[numberOfpolygonNodes]);
-    std::unique_ptr<double> zCoordinatesOut(new double[numberOfpolygonNodes]);
+    std::unique_ptr<double> valuesOut(new double[numberOfpolygonNodes]);
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = zCoordinatesOut.get();
+    geometryListOut.values = valuesOut.get();
     errorCode = mkernel_get_offset_polygon(meshKernelId, geometryListIn, false, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -550,10 +550,10 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
     std::unique_ptr<double> xCoordinatesOut(new double[numberOfpolygonNodes]);
     std::unique_ptr<double> yCoordinatesOut(new double[numberOfpolygonNodes]);
-    std::unique_ptr<double> zCoordinatesOut(new double[numberOfpolygonNodes]);
+    std::unique_ptr<double> valuesOut(new double[numberOfpolygonNodes]);
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = zCoordinatesOut.get();
+    geometryListOut.values = valuesOut.get();
     errorCode = mkernel_refine_polygon(meshKernelId, geometryListIn, false, 0, 2, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -1170,10 +1170,10 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     int numberOfPointsBetweenNodes = 20;
     std::unique_ptr<double> xCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
     std::unique_ptr<double> yCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
-    std::unique_ptr<double> zCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    std::unique_ptr<double> valuesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = zCoordinatesOut.get();
+    geometryListOut.values = valuesOut.get();
 
     // Execute
     auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
@@ -1323,10 +1323,10 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
     geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
     std::unique_ptr<double> xCoordinatesOut(new double[1]{meshkernel::doubleMissingValue});
     std::unique_ptr<double> yCoordinatesOut(new double[1]{meshkernel::doubleMissingValue});
-    std::unique_ptr<double> zCoordinatesOut(new double[1]{meshkernel::doubleMissingValue});
+    std::unique_ptr<double> valuesOut(new double[1]{meshkernel::doubleMissingValue});
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = zCoordinatesOut.get();
+    geometryListOut.values = valuesOut.get();
     geometryListOut.num_coordinates = 1;
 
     // Execute
