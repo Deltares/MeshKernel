@@ -2452,3 +2452,115 @@ TEST_F(ApiTests, DeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTria
     // One edge is removed
     ASSERT_EQ(4, newMesh2d.num_edges);
 }
+
+TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearGrid)
+{
+    //Setup
+    meshkernelapi::GeometryList splines{};
+    double geometrySeparator = meshkernelapi::mkernel_get_separator();
+
+    std::vector<double> coordinates_x{
+        7.7979524E+04,
+        7.7979524E+04,
+        7.8302860E+04,
+        7.9732343E+04,
+        8.0889543E+04,
+        8.0668314E+04,
+        7.9579184E+04,
+        geometrySeparator,
+        7.6618112E+04,
+        7.6754253E+04,
+        7.7179694E+04,
+        7.8404966E+04,
+        7.9681290E+04,
+        8.0140766E+04,
+        7.9477078E+04,
+        7.8779354E+04,
+        geometrySeparator,
+        7.7281800E+04,
+        7.7366889E+04,
+        7.7928471E+04,
+        7.9153742E+04,
+        8.0242872E+04,
+        8.0481119E+04,
+        7.9970590E+04,
+        7.9579184E+04,
+        7.9170760E+04,
+        geometrySeparator,
+        7.613792E+04,
+        7.831719E+04,
+        geometrySeparator,
+        7.857202E+04,
+        8.003072E+04};
+
+    std::vector<double> coordinates_y{
+        3.7127829E+05,
+        3.7025723E+05,
+        3.6898090E+05,
+        3.6809598E+05,
+        3.6698984E+05,
+        3.6578158E+05,
+        3.6419894E+05,
+        geometrySeparator,
+        3.7136337E+05,
+        3.7005301E+05,
+        3.6874265E+05,
+        3.6780668E+05,
+        3.6721107E+05,
+        3.6636018E+05,
+        3.6544123E+05,
+        3.6452228E+05,
+        geometrySeparator,
+        3.7144846E+05,
+        3.6984880E+05,
+        3.6874265E+05,
+        3.6792581E+05,
+        3.6722808E+05,
+        3.6641124E+05,
+        3.6542421E+05,
+        3.6484561E+05,
+        3.6431806E+05,
+        geometrySeparator,
+        3.712157E+05,
+        3.710751E+05,
+        geometrySeparator,
+        3.649151E+05,
+        3.641506E+05};
+
+    splines.coordinates_x = &coordinates_x[0];
+    splines.coordinates_y = &coordinates_y[0];
+    splines.num_coordinates = coordinates_x.size();
+
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
+    splinesToCurvilinearParameters.aspect_ratio = 0.5;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.0;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = true;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
+    splinesToCurvilinearParameters.maximum_num_faces_in_uniform_part = 8;
+
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    splinesToCurvilinearParameters.check_front_collisions = false;
+    splinesToCurvilinearParameters.remove_skinny_triangles = true;
+
+    // Execute, with large length threshold
+    const auto meshKernelId = GetMeshKernelId();
+    auto errorCode = mkernel_compute_orthogonal_grid_from_splines_curvilinear(meshKernelId,
+                                                                              splines,
+                                                                              curvilinearParameters,
+                                                                              splinesToCurvilinearParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert one curvilinear grid is produced
+    ASSERT_GT(curvilinearGrid.num_edges, 0);
+}
