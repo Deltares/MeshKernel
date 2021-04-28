@@ -2424,4 +2424,31 @@ TEST_F(ApiTests, GetObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtus
     ASSERT_NEAR(coordinates_y[0], 0.66666666666666652, tolerance);
 }
 
-//mkernel_delete_small_flow_edges_and_small_triangles_mesh2d
+TEST_F(ApiTests, DeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTriangle_ShouldNotDeleteMesh)
+{
+    // Prepare a mesh with one obtuse triangle
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{0.0, 3.0, -1.0, 1.5};
+    std::vector<double> node_y{0.0, 0.0, 2.0, -2.0};
+    std::vector<int> edge_nodes{0, 1, 1, 2, 2, 0, 0, 3, 3, 1};
+    mesh2d.node_x = &node_x[0];
+    mesh2d.node_y = &node_y[0];
+    mesh2d.edge_nodes = &edge_nodes[0];
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = static_cast<int>(node_x.size());
+    const auto meshKernelId = GetMeshKernelId();
+
+    // Execute, with large length threshold
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(meshKernelId, 1.0, 0.01);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    meshkernelapi::Mesh2D newMesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, newMesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // One edge is removed
+    ASSERT_EQ(4, newMesh2d.num_edges);
+}
