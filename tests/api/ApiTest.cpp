@@ -475,7 +475,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
         1.0,
         1.0});
 
-    std::unique_ptr<double> zCoordinatesIn(new double[4]{
+    std::unique_ptr<double> valuesIn(new double[4]{
         0.0,
         0.0,
         0.0,
@@ -483,7 +483,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
 
     // Execute
     int numberOfpolygonNodes;
@@ -530,14 +530,14 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
         91.126541,
         490.130554});
 
-    std::unique_ptr<double> zCoordinatesIn(new double[3]{
+    std::unique_ptr<double> valuesIn(new double[3]{
         0.0,
         0.0,
         0.0});
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
 
     // Execute
     int numberOfpolygonNodes;
@@ -593,7 +593,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
         250.0,
         250.0});
 
-    std::unique_ptr<double> zCoordinatesIn(new double[9]{
+    std::unique_ptr<double> valuesIn(new double[9]{
         2.0,
         2.0,
         2.0,
@@ -606,7 +606,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
 
     geometryListIn.num_coordinates = 9;
 
@@ -670,7 +670,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
         250.0,
         250.0});
 
-    std::unique_ptr<double> zCoordinatesIn(new double[9]{
+    std::unique_ptr<double> valuesIn(new double[9]{
         2.0,
         2.0,
         2.0,
@@ -683,7 +683,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
 
     geometryListIn.num_coordinates = 9;
 
@@ -1159,10 +1159,10 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     std::unique_ptr<double> xCoordinatesIn(new double[3]{10.0, 20.0, 30.0});
     std::unique_ptr<double> yCoordinatesIn(new double[3]{-5.0, 5.0, -5.0});
-    std::unique_ptr<double> zCoordinatesIn(new double[3]{0.0, 0.0, 0.0});
+    std::unique_ptr<double> valuesIn(new double[3]{0.0, 0.0, 0.0});
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
     geometryListIn.num_coordinates = 3;
     geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
 
@@ -1265,7 +1265,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
         494.630615,
         493.130615});
 
-    std::unique_ptr<double> zCoordinatesIn(new double[9]{
+    std::unique_ptr<double> valuesIn(new double[9]{
         0.0,
         0.0,
         0.0,
@@ -1278,7 +1278,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
     geometryListIn.num_coordinates = 9;
 
     // Execute
@@ -1313,10 +1313,10 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
     geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
     std::unique_ptr<double> xCoordinatesIn(new double[1]{-5.0});
     std::unique_ptr<double> yCoordinatesIn(new double[1]{5.0});
-    std::unique_ptr<double> zCoordinatesIn(new double[1]{0.0});
+    std::unique_ptr<double> valuesIn(new double[1]{0.0});
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
     geometryListIn.num_coordinates = 1;
 
     meshkernelapi::GeometryList geometryListOut;
@@ -1367,7 +1367,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         324.653687,
         377.836578,
         436.746857});
-    std::unique_ptr<double> zCoordinatesIn(new double[10]{
+    std::unique_ptr<double> valuesIn(new double[10]{
         0.0,
         0.0,
         0.0,
@@ -1380,7 +1380,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         0.0});
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = zCoordinatesIn.get();
+    geometryListIn.values = valuesIn.get();
     geometryListIn.num_coordinates = 10;
 
     // Execute
