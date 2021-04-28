@@ -32,4 +32,6 @@
 
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
-                           Projection projection) : Mesh(edges, nodes, projection){};
+                           Projection projection) : Mesh(edges, nodes, projection)
+{
+};

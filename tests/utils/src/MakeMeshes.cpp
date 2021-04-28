@@ -173,7 +173,7 @@ meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delt
 
             mesh2d.node_x[nodeIndex] = i * delta;
             mesh2d.node_y[nodeIndex] = j * delta;
-            indicesValues[i][j] = i * m + j;
+            indicesValues[i][j] = static_cast<size_t>(i) * m + j;
             nodeIndex++;
         }
     }
