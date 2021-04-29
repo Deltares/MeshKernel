@@ -2532,7 +2532,7 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
     splines.num_coordinates = coordinates_x.size();
 
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::CurvilinearParameters curvilinearParameters{};
 
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
@@ -2564,3 +2564,84 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
     // Assert one curvilinear grid is produced
     ASSERT_GT(curvilinearGrid.num_edges, 0);
 }
+
+TEST_F(ApiTests, SetFrozenLines_OnCurvilinearGrid_ShouldSetFrozenLines)
+{
+    //Setup
+    MakeUniformCurvilinearGrid();
+    const auto meshKernelId = GetMeshKernelId();
+    meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
+
+    auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList firstGridLineNode{};
+    std::vector<double> firstGridNodeCoordinateX(1, 20.0);
+    std::vector<double> firstGridNodeCoordinateY(1, 0.0);
+
+    firstGridLineNode.coordinates_x = &firstGridNodeCoordinateX[0];
+    firstGridLineNode.coordinates_y = &firstGridNodeCoordinateY[0];
+    firstGridLineNode.num_coordinates = static_cast<int>(firstGridNodeCoordinateX.size());
+
+    meshkernelapi::GeometryList secondGridLineNode{};
+    std::vector<double> secondGridNodeCoordinateX(1, 20.0);
+    std::vector<double> secondGridNodeCoordinateY(1, 40.0);
+
+    secondGridLineNode.coordinates_x = &secondGridNodeCoordinateX[0];
+    secondGridLineNode.coordinates_y = &secondGridNodeCoordinateY[0];
+    secondGridLineNode.num_coordinates = static_cast<int>(secondGridNodeCoordinateX.size());
+
+    //Execute
+    errorCode = mkernel_set_frozen_lines_orthogonalize_curvilinear(meshKernelId, firstGridLineNode, secondGridLineNode);
+
+    //Asset
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+
+TEST_F(ApiTests, FinalizeOrthogonalizeCurvilinear_OnCurvilinearGrid_ShouldFinalize)
+{
+    //Setup
+    MakeUniformCurvilinearGrid();
+    const auto meshKernelId = GetMeshKernelId();
+    meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
+
+    auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    //Execute
+    errorCode = meshkernelapi::mkernel_finalize_orthogonalize_curvilinear(meshKernelId);
+
+    //Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+
+TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
+{
+    //Setup
+    MakeUniformCurvilinearGrid();
+    const auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList firstGridLineNode{};
+    std::vector<double> firstGridNodeCoordinateX(1, -5.0);
+    std::vector<double> firstGridNodeCoordinateY(1, 5.0);
+
+    firstGridLineNode.coordinates_x = &firstGridNodeCoordinateX[0];
+    firstGridLineNode.coordinates_y = &firstGridNodeCoordinateY[0];
+    firstGridLineNode.num_coordinates = static_cast<int>(firstGridNodeCoordinateX.size());
+
+    //Execute
+    auto errorCode = mkernel_insert_face_curvilinear(meshKernelId, firstGridLineNode);
+
+    //Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert two extra nodes have been inserted (before it was 5 by 5 = 25 nodes, not it is 25+ 2 = 27)
+    ASSERT_EQ(curvilinearGrid.num_nodes, 27);
+}
+
+//averaging
+//triangulation
