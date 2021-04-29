@@ -300,7 +300,7 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId         The id of the mesh state
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_mesh_boundaries_as_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_count_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///

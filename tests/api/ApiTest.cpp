@@ -427,7 +427,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     MakeMesh();
     auto meshKernelId = GetMeshKernelId();
     int numberOfpolygonNodes;
-    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_as_polygon_mesh2d(meshKernelId, numberOfpolygonNodes);
+    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_as_polygons_mesh2d(meshKernelId, numberOfpolygonNodes);
     ASSERT_EQ(11, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 

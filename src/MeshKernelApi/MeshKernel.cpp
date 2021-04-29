@@ -826,7 +826,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_mesh_boundaries_as_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_count_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
