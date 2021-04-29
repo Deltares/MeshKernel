@@ -827,7 +827,7 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in]  mesh2d             The id of the mesh state
+        /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  samples            The samples coordinates and values
         /// @param[in]  locationType       The location type (see MeshLocations enum)
         /// @param[in]  results            The interpolation results with x and y coordinates

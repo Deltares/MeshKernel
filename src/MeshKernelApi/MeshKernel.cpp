@@ -718,15 +718,19 @@ namespace meshkernelapi
             int index = 0;
             for (auto s = 0; s < numSplines; s++)
             {
-                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
-                const int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
+                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + static_cast<int>(indices[s][1]) + 1);
+                const int numNodes = static_cast<int>(indices[s][1]) - static_cast<int>(indices[s][0]) + 1;
                 const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {
-                    for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
+                    // Add the first point
+                    geometryListOut.coordinates_x[index] = coordinates[n].x;
+                    geometryListOut.coordinates_y[index] = coordinates[n].y;
+                    index++;
+                    for (auto p = 1; p <= numberOfPointsBetweenNodes; p++)
                     {
-                        const double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
+                        const double pointAdimensionalCoordinate = n + static_cast<double>(p) / static_cast<double>(numberOfPointsBetweenNodes + 1);
                         const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate);
                         if (!pointCoordinate.IsValid())
                         {
@@ -740,13 +744,16 @@ namespace meshkernelapi
                     }
                 }
 
+                geometryListOut.coordinates_x[index] = coordinates.back().x;
+                geometryListOut.coordinates_y[index] = coordinates.back().y;
+                geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                index++;
+
                 geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
                 geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
                 geometryListOut.values[index] = meshkernel::doubleMissingValue;
                 index++;
             }
-
-            geometryListOut.num_coordinates = index - 1;
         }
         catch (...)
         {

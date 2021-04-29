@@ -1157,30 +1157,37 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
 {
     // Prepare
     meshkernelapi::GeometryList geometryListIn;
-    std::unique_ptr<double> xCoordinatesIn(new double[3]{10.0, 20.0, 30.0});
-    std::unique_ptr<double> yCoordinatesIn(new double[3]{-5.0, 5.0, -5.0});
-    std::unique_ptr<double> valuesIn(new double[3]{0.0, 0.0, 0.0});
-    geometryListIn.coordinates_x = xCoordinatesIn.get();
-    geometryListIn.coordinates_y = yCoordinatesIn.get();
-    geometryListIn.values = valuesIn.get();
+    std::vector<double> splineCoordinatesX{10.0, 20.0, 30.0};
+    std::vector<double> splineCoordinatesY{-5.0, 5.0, -5.0};
+    std::vector<double> values{0.0, 0.0, 0.0};
+    geometryListIn.coordinates_x = &splineCoordinatesX[0];
+    geometryListIn.coordinates_y = &splineCoordinatesY[0];
+    geometryListIn.values = &values[0];
     geometryListIn.num_coordinates = 3;
     geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
 
     meshkernelapi::GeometryList geometryListOut;
-    int numberOfPointsBetweenNodes = 20;
-    std::unique_ptr<double> xCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
-    std::unique_ptr<double> yCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
-    std::unique_ptr<double> valuesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
-    geometryListOut.coordinates_x = xCoordinatesOut.get();
-    geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = valuesOut.get();
+    int const numberOfPointsBetweenNodes = 3;
+    size_t totalNumPoints = (numberOfPointsBetweenNodes + 2) * 2;
+    std::vector<double> xCoordinatesOut(totalNumPoints, 0.0);
+    std::vector<double> yCoordinatesOut(totalNumPoints, 0.0);
+    std::vector<double> valuesOut(totalNumPoints, 0.0);
+    geometryListOut.coordinates_x = &xCoordinatesOut[0];
+    geometryListOut.coordinates_y = &yCoordinatesOut[0];
+    geometryListOut.values = &valuesOut[0];
+    geometryListOut.num_coordinates = xCoordinatesOut.size();
+    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
 
     // Execute
     auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Assert
-    ASSERT_EQ((numberOfPointsBetweenNodes + 1) * 2, geometryListOut.num_coordinates);
+    // Assert. The last value is a geometry separator  to handle the case of multiple splines
+    ASSERT_EQ(totalNumPoints, geometryListOut.num_coordinates);
+    std::vector<double> ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, meshkernel::doubleMissingValue};
+    ASSERT_THAT(xCoordinatesOut, ::testing::ContainerEq(ValidCoordinatesX));
+    std::vector<double> ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000, meshkernel::doubleMissingValue};
+    ASSERT_THAT(yCoordinatesOut, ::testing::ContainerEq(ValidCoordinatesY));
 }
 
 TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
