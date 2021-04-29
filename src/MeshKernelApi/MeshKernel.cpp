@@ -2491,48 +2491,36 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    // ec_module dll (stateless)
-    MKERNEL_API int triangulation(const Mesh2D& mesh2d,
-                                  const double** samplesXCoordinate,
-                                  const double** samplesYCoordinate,
-                                  const double** samplesValue,
-                                  const int& numSamples,
-                                  const int& locationType,
-                                  const int& spherical,
-                                  const int& sphericalAccurate,
-                                  double** results)
+    MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
+                                                               const GeometryList& samples,
+                                                               const int& locationType,
+                                                               GeometryList& results)
     {
         int exitCode = Success;
         try
         {
-            // Projection
-            auto projection = meshkernel::Projection::cartesian;
-            if (spherical == 1)
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                projection = meshkernel::Projection::spherical;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
             }
-            if (sphericalAccurate == 1)
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                projection = meshkernel::Projection::sphericalAccurate;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
             }
 
             // Locations
-            const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-            const auto locations = ComputeLocations(mesh2d, location);
-
-            // Build the samples
-            const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
+            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
+            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
             // Execute triangulation
-            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
+            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, sampleValues, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             triangulationInterpolation.Compute();
 
             // Get the results and copy them back to the results vector
-            auto interpolationResults = triangulationInterpolation.GetResults();
-            for (auto i = 0; i < interpolationResults.size(); ++i)
-            {
-                (*results)[i] = interpolationResults[i];
-            }
+            auto const interpolationResults = triangulationInterpolation.GetResults();
+            ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)
         {

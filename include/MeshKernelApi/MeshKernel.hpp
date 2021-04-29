@@ -827,25 +827,15 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in]  mesh2d             The Mesh2D data
-        /// @param[in]  samplesXCoordinate The sample x-coordinates
-        /// @param[in]  samplesYCoordinate The sample y-coordinates
-        /// @param[in]  samplesValue       The sample values
-        /// @param[in]  numSamples         The number of samples
-        /// @param[in]  locationType       The location type
-        /// @param[in]  spherical          Current projection (0 cartesian, 1 spherical)
-        /// @param[in]  sphericalAccurate  Accurate spherical projection (0 default spherical, 1 spherical accurate)
-        /// @param[out] results            The interpolation results
+        /// @param[in]  mesh2d             The id of the mesh state
+        /// @param[in]  samples            The samples coordinates and values
+        /// @param[in]  locationType       The location type (see MeshLocations enum)
+        /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
-        MKERNEL_API int triangulation(const Mesh2D& mesh2d,
-                                      const double** samplesXCoordinate,
-                                      const double** samplesYCoordinate,
-                                      const double** samplesValue,
-                                      const int& numSamples,
-                                      const int& locationType,
-                                      const int& spherical,
-                                      const int& sphericalAccurate,
-                                      double** results);
+        MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
+                                                                   const GeometryList& samples,
+                                                                   const int& locationType,
+                                                                   GeometryList& results);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
         /// @param[in] meshKernelId           The id of the mesh state

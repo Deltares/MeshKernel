@@ -739,9 +739,14 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) co
         result.reserve(GetNumEdges());
         for (const auto& [firstNode, secondNode] : m_edges)
         {
+
             if (firstNode != sizetMissingValue && secondNode != sizetMissingValue)
             {
                 result.emplace_back((m_nodes[firstNode] + m_nodes[secondNode]) * 0.5);
+            }
+            else
+            {
+                result.emplace_back(Point{});
             }
         }
     }

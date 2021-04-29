@@ -2673,6 +2673,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     results.coordinates_x = &resultsCoordinateX[0];
     results.coordinates_y = &resultsCoordinateY[0];
     results.values = &resultsValues[0];
+    results.num_coordinates = mesh2d.num_nodes;
 
     //Execute
     errorCode = mkernel_averaging_interpolation_mesh2d(meshKernelId,
@@ -2682,8 +2683,50 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
                                                        relativeSearchSize,
                                                        results);
 
-    //Assert
+    //Assert the value has been interpolated
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(resultsValues[4], 3.0, tolerance);
 }
 
-//triangulation
+TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
+{
+    //Setup
+    MakeMesh();
+    const auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList samples{};
+    std::vector<double> firstGridNodeCoordinateX{1.0, 2.0, 3.0, 1.0};
+    std::vector<double> firstGridNodeCoordinateY{1.0, 3.0, 2.0, 4.0};
+    std::vector<double> values{3.0, 10, 04.0, 5.0};
+    samples.coordinates_x = &firstGridNodeCoordinateX[0];
+    samples.coordinates_y = &firstGridNodeCoordinateY[0];
+    samples.values = &values[0];
+    samples.num_coordinates = static_cast<int>(values.size());
+
+    int const locationType = 1; // Nodes
+
+    meshkernelapi::Mesh2D mesh2d;
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList results{};
+    std::vector<double> resultsCoordinateX(mesh2d.num_nodes);
+    std::vector<double> resultsCoordinateY(mesh2d.num_nodes);
+    std::vector<double> resultsValues(mesh2d.num_nodes);
+    results.coordinates_x = &resultsCoordinateX[0];
+    results.coordinates_y = &resultsCoordinateY[0];
+    results.values = &resultsValues[0];
+    results.num_coordinates = mesh2d.num_nodes;
+
+    //Execute
+    errorCode = mkernel_triangulation_interpolation_mesh2d(meshKernelId,
+                                                           samples,
+                                                           locationType,
+                                                           results);
+
+    //Assert the value has been interpolated
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(resultsValues[8], 5.6666666666666670, tolerance);
+}

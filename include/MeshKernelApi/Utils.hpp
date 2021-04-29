@@ -244,31 +244,6 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Computes locations from the given mesh geometry
-    /// @param[in]  mesh2d                 The input meshkernelapi::Mesh2D instance
-    /// @param[out] interpolationLocation  The computed interpolation location
-    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& mesh2d,
-                                                           meshkernel::MeshLocations interpolationLocation)
-    {
-        std::vector<meshkernel::Point> locations;
-        if (interpolationLocation == meshkernel::MeshLocations::Nodes)
-        {
-            locations = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-        }
-        if (interpolationLocation == meshkernel::MeshLocations::Edges)
-        {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-            locations = ComputeEdgeCenters(nodes, edges);
-        }
-        if (interpolationLocation == meshkernel::MeshLocations::Faces)
-        {
-            locations = meshkernel::ConvertToFaceCentersVector(mesh2d.num_faces, mesh2d.face_x, mesh2d.face_y);
-        }
-
-        return locations;
-    }
-
     /// @brief Converts an int array to a vector<bool>
     /// @param[in]  inputArray The data of the input array
     /// @param[in]  inputSize  The size of the input array
