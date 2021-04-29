@@ -427,7 +427,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     MakeMesh();
     auto meshKernelId = GetMeshKernelId();
     int numberOfpolygonNodes;
-    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_to_polygon_mesh2d(meshKernelId, numberOfpolygonNodes);
+    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_as_polygon_mesh2d(meshKernelId, numberOfpolygonNodes);
     ASSERT_EQ(11, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -444,7 +444,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     geometryListOut.values = zCoordinates.get();
 
     // Execute
-    errorCode = mkernel_get_mesh_boundaries_to_polygon_mesh2d(meshKernelId, geometryListOut);
+    errorCode = mkernel_get_mesh_boundaries_as_polygons_mesh2d(meshKernelId, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -2639,9 +2639,51 @@ TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
     errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Assert two extra nodes have been inserted (before it was 5 by 5 = 25 nodes, not it is 25+ 2 = 27)
+    // Assert two extra nodes have been inserted (before it was 5 by 5 = 25 nodes, not it is 25 + 2 = 27)
     ASSERT_EQ(curvilinearGrid.num_nodes, 27);
 }
 
-//averaging
+TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
+{
+    //Setup
+    MakeMesh();
+    const auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList samples{};
+    std::vector<double> firstGridNodeCoordinateX{1.0, 2.0, 3.0, 1.0};
+    std::vector<double> firstGridNodeCoordinateY{1.0, 3.0, 2.0, 4.0};
+    std::vector<double> values{3.0, 10, 04.0, 5.0};
+    samples.coordinates_x = &firstGridNodeCoordinateX[0];
+    samples.coordinates_y = &firstGridNodeCoordinateY[0];
+    samples.values = &values[0];
+    samples.num_coordinates = static_cast<int>(values.size());
+
+    int const locationType = 1;          // Nodes
+    int const averagingMethodType = 1;   // Simple averaging
+    int const relativeSearchSize = 1.01; // The relative search size
+
+    meshkernelapi::Mesh2D mesh2d;
+    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList results{};
+    std::vector<double> resultsCoordinateX(mesh2d.num_nodes);
+    std::vector<double> resultsCoordinateY(mesh2d.num_nodes);
+    std::vector<double> resultsValues(mesh2d.num_nodes);
+    results.coordinates_x = &resultsCoordinateX[0];
+    results.coordinates_y = &resultsCoordinateY[0];
+    results.values = &resultsValues[0];
+
+    //Execute
+    errorCode = mkernel_averaging_interpolation_mesh2d(meshKernelId,
+                                                       samples,
+                                                       locationType,
+                                                       averagingMethodType,
+                                                       relativeSearchSize,
+                                                       results);
+
+    //Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+
 //triangulation

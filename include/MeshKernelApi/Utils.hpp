@@ -91,13 +91,37 @@ namespace meshkernelapi
     {
         if (pointVector.size() < result.num_coordinates)
         {
-            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
+            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates in the result vector.");
         }
 
         for (auto i = 0; i < result.num_coordinates; i++)
         {
             result.coordinates_x[i] = pointVector[i].x;
             result.coordinates_y[i] = pointVector[i].y;
+        }
+    }
+
+    /// @brief Converts valuesCoordinates and values to a GeometryList result
+    /// @param[in]  valuesCoordinates The vector of coordinates
+    /// @param[in]  values            The vector of values at the coordinate locations
+    /// @param[out] result            The converted geometry list
+    static void ConvertSampleVectorToGeometryList(std::vector<meshkernel::Point> const& valuesCoordinates, std::vector<double> const& values, GeometryList& result)
+    {
+        if (valuesCoordinates.size() != values.size())
+        {
+            throw std::invalid_argument("MeshKernel: The size of the valuesCoordinates-vector is not equal to the size of the values-vector");
+        }
+
+        if (values.size() < result.num_coordinates)
+        {
+            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the value-vector size is smaller than the number of coordinates in the result vector.");
+        }
+
+        for (auto i = 0; i < result.num_coordinates; i++)
+        {
+            result.coordinates_x[i] = valuesCoordinates[i].x;
+            result.coordinates_y[i] = valuesCoordinates[i].y;
+            result.values[i] = values[i];
         }
     }
 

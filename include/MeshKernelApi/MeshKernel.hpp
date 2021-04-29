@@ -294,13 +294,13 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons);
+        MKERNEL_API int mkernel_get_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, GeometryList& boundaryPolygons);
 
-        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_get_mesh_boundaries_to_polygon_mesh2d`
+        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_get_mesh_boundaries_as_polygons_mesh2d`
         /// @param[in]  meshKernelId         The id of the mesh state
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_count_mesh_boundaries_as_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
@@ -848,35 +848,19 @@ namespace meshkernelapi
                                       double** results);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
-        /// @param[in] mesh2d             Mesh2D data
-        /// @param[in] startIndex         Mesh2D data start index (not used)
-        /// @param[in] samplesXCoordinate The sample x-coordinates
-        /// @param[in] samplesYCoordinate The sample y-coordinates
-        /// @param[in] samplesValue       The sample values
-        /// @param[in] numSamples         The number of samples
-        /// @param[out] results           The interpolation results
-        /// @param[in] locationType       The location type (see MeshLocations enum)
-        /// @param[in] Wu1Duni            A setting for 1d meshes (not used)
-        /// @param[in] averagingMethod    The averaging method (see Method enum)
-        /// @param[in] minNumberOfSamples The minimum amount of samples (not used)
-        /// @param[in] relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
-        /// @param[in] spherical          Current projection (0 cartesian, 1 spherical)
-        /// @param[in] sphericalAccurate  Accurate spherical computations (0 default spherical, 1 spherical accurate)
+        /// @param[in] meshKernelId           The id of the mesh state
+        /// @param[in] samples                The samples coordinates and values
+        /// @param[in] locationType           The location type (see MeshLocations enum)
+        /// @param[in] averagingMethodType    The averaging method (see Method enum)
+        /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
+        /// @param[in] results                The interpolation results with x and y coordinates
         /// @return Error code
-        MKERNEL_API int averaging(const Mesh2D& mesh2d,
-                                  const int& startIndex,
-                                  const double** samplesXCoordinate,
-                                  const double** samplesYCoordinate,
-                                  const double** samplesValue,
-                                  const int& numSamples,
-                                  double** results,
-                                  const int& locationType,
-                                  const double& Wu1Duni,
-                                  const int& averagingMethod,
-                                  const int& minNumberOfSamples,
-                                  const double& relativeSearchSize,
-                                  const int& spherical,
-                                  const int& sphericalAccurate);
+        MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
+                                                               const GeometryList& samples,
+                                                               const int& locationType,
+                                                               const int& averagingMethodType,
+                                                               const double& relativeSearchSize,
+                                                               GeometryList& results);
 
         /// @brief Gets pointer to error message.
         /// @param[out] error_message

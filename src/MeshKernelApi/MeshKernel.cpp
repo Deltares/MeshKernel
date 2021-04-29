@@ -804,7 +804,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_get_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
     {
         int exitCode = Success;
         try
@@ -826,7 +826,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_count_mesh_boundaries_as_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -2444,65 +2444,45 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int averaging(const Mesh2D& mesh2d,
-                              const int& startIndex,
-                              const double** samplesXCoordinate,
-                              const double** samplesYCoordinate,
-                              const double** samplesValue,
-                              const int& numSamples,
-                              double** results,
-                              const int& locationType,
-                              const double& Wu1Duni,
-                              const int& averagingMethod,
-                              const int& minNumberOfSamples,
-                              const double& relativeSearchSize,
-                              const int& spherical,
-                              const int& sphericalAccurate)
+    MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
+                                                           const GeometryList& samples,
+                                                           const int& locationType,
+                                                           const int& averagingMethodType,
+                                                           const double& relativeSearchSize,
+                                                           GeometryList& results)
     {
         int exitCode = Success;
         try
         {
-            // Projection
-            auto projection = meshkernel::Projection::cartesian;
-            if (spherical == 1)
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                projection = meshkernel::Projection::spherical;
-            }
-            if (sphericalAccurate == 1)
-            {
-                projection = meshkernel::Projection::sphericalAccurate;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
             }
 
-            // Set the mesh
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-            const auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
-
-            // Build the samples
-            std::vector<meshkernel::Sample> samples(numSamples);
-            for (auto i = 0; i < samples.size(); ++i)
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                samples[i].x = (*samplesXCoordinate)[i];
-                samples[i].y = (*samplesYCoordinate)[i];
-                samples[i].value = (*samplesValue)[i];
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
             }
 
-            // Execute averaging
-            meshkernel::AveragingInterpolation averaging(mesh,
-                                                         samples,
-                                                         static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod),
-                                                         static_cast<meshkernel::MeshLocations>(locationType),
+            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
+            auto const averagingMethod = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethodType);
+
+            meshkernel::AveragingInterpolation averaging(meshKernelState[meshKernelId].m_mesh2d,
+                                                         sampleValues,
+                                                         averagingMethod,
+                                                         meshLocation,
                                                          relativeSearchSize,
                                                          false,
                                                          false);
+            // Execute averaging
             averaging.Compute();
 
             // Get the results and copy them to the result vector
-            auto interpolationResults = averaging.GetResults();
-            for (auto i = 0; i < interpolationResults.size(); ++i)
-            {
-                (*results)[i] = interpolationResults[i];
-            }
+            auto const interpolationResults = averaging.GetResults();
+            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
+
+            ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)
         {

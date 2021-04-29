@@ -722,3 +722,36 @@ double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
 
     return maxEdgeLength;
 }
+
+std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) const
+{
+    std::vector<Point> result;
+    if (location == MeshLocations::Nodes)
+    {
+        result.reserve(GetNumNodes());
+        for (const auto& n : m_nodes)
+        {
+            result.emplace_back(n);
+        }
+    }
+    if (location == MeshLocations::Edges)
+    {
+        result.reserve(GetNumEdges());
+        for (const auto& [firstNode, secondNode] : m_edges)
+        {
+            if (firstNode != sizetMissingValue && secondNode != sizetMissingValue)
+            {
+                result.emplace_back((m_nodes[firstNode] + m_nodes[secondNode]) * 0.5);
+            }
+        }
+    }
+    if (location == MeshLocations::Faces)
+    {
+        result.reserve(GetNumFaces());
+        for (const auto& massCentre : m_facesMassCenters)
+        {
+            result.emplace_back(massCentre);
+        }
+    }
+    return result;
+}
