@@ -342,7 +342,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn);
 
-        /// @brief Merges two mesh2d nodes in one.
+        /// @brief Merges two mesh2d nodes into one.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] firstNode    The index of the first node to merge
         /// @param[in] secondNode   The index of the second node to merge
