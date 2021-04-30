@@ -2486,7 +2486,7 @@ namespace meshkernelapi
             averaging.Compute();
 
             // Get the results and copy them to the result vector
-            auto const interpolationResults = averaging.GetResults();
+            auto const& interpolationResults = averaging.GetResults();
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
             ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
@@ -2526,7 +2526,7 @@ namespace meshkernelapi
             triangulationInterpolation.Compute();
 
             // Get the results and copy them back to the results vector
-            auto const interpolationResults = triangulationInterpolation.GetResults();
+            auto const& interpolationResults = triangulationInterpolation.GetResults();
             ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)
