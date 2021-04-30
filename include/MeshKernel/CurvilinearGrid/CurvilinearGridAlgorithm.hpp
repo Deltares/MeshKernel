@@ -29,8 +29,8 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridLine.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 

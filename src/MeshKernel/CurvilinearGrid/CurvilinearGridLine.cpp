@@ -25,8 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridLine.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLine;

@@ -7,8 +7,14 @@ file(GLOB AVERAGING_STRATEGIES_HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_D
  
 file(GLOB AVERAGING_STRATEGIES_SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/MeshKernel/AveragingStrategies/*.cpp")
 
+file(GLOB CURVILINEAR_GRID_HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/MeshKernel/CurvilinearGrid/*.hpp")
+
+file(GLOB CURVILINEAR_GRID_SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/MeshKernel/CurvilinearGrid/*.cpp")
+
 # Create the static lib
-add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST} ${AVERAGING_STRATEGIES_HEADER_LIST} ${AVERAGING_STRATEGIES_SOURCE_LIST})
+add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST} 
+                              ${AVERAGING_STRATEGIES_HEADER_LIST} ${AVERAGING_STRATEGIES_SOURCE_LIST}
+                              ${CURVILINEAR_GRID_HEADER_LIST} ${CURVILINEAR_GRID_SOURCE_LIST})
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -43,3 +49,13 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/src/MeshKernel/AveragingStrategies"
   PREFIX "Source Files/AveragingStrategies"
   FILES ${AVERAGING_STRATEGIES_SOURCE_LIST})
+  
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/include/MeshKernel/CurvilinearGrid"
+  PREFIX "Header Files/CurvilinearGrid"
+  FILES ${CURVILINEAR_GRID_HEADER_LIST})
+  
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/src/MeshKernel/CurvilinearGrid"
+  PREFIX "Source Files/CurvilinearGrid"
+  FILES ${CURVILINEAR_GRID_SOURCE_LIST})

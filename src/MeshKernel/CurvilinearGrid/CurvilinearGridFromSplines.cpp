@@ -29,8 +29,8 @@
 #include <cassert>
 #include <vector>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>

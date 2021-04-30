@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 

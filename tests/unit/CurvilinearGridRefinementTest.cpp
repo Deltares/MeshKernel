@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 
 TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)

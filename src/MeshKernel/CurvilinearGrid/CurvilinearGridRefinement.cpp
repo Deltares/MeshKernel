@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridLineShift.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineShift.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 TEST(CurvilinearLineShift, Compute_OnMGridlineShiftingOneNode_ShouldShiftLine)

@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 
 namespace meshkernel
 {
