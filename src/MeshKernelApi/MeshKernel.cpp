@@ -948,10 +948,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
-                                                     const GeometryList& geometryListIn,
-                                                     int inside,
-                                                     int* selectedNodes)
+    MKERNEL_API int mkernel_get_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                         const GeometryList& geometryListIn,
+                                                         int inside,
+                                                         int* selectedNodes)
     {
         int exitCode = Success;
         try

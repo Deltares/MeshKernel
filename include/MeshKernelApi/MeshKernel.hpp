@@ -356,14 +356,14 @@ namespace meshkernelapi
         /// @param[in]  inside         Selection of the nodes inside the polygon (1) or outside (0)
         /// @param[out] selectedNodes  The selected nodes indices
         /// @returns Error code
-        MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
-                                                         const GeometryList& geometryListIn,
-                                                         int inside,
-                                                         int* selectedNodes);
+        MKERNEL_API int mkernel_get_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                             const GeometryList& geometryListIn,
+                                                             int inside,
+                                                             int* selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices.
         ///
-        /// This function should be used by clients before `mkernel_nodes_in_polygons_mesh2d` for allocating an integer array storing the selection results.
+        /// This function should be used by clients before `mkernel_get_nodes_in_polygons_mesh2d` for allocating an integer array storing the selection results.
         /// @param[in]  meshKernelId      The id of the mesh state
         /// @param[in]  geometryListIn    The input polygon
         /// @param[in]  inside            Selection of the nodes inside the polygon (1) or outside (0)

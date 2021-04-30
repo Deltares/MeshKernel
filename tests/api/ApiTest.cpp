@@ -2153,10 +2153,10 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
 
     // Execute
     std::vector<int> selectedNodes(mesh2d.num_nodes, -1);
-    errorCode = mkernel_nodes_in_polygons_mesh2d(meshKernelId,
-                                                 geometryListIn,
-                                                 1,
-                                                 &selectedNodes[0]);
+    errorCode = mkernel_get_nodes_in_polygons_mesh2d(meshKernelId,
+                                                     geometryListIn,
+                                                     1,
+                                                     &selectedNodes[0]);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
