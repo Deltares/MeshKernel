@@ -25,9 +25,9 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridDeRefinement.hpp>
-#include <MeshKernel/CurvilinearGridOrthogonalization.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>

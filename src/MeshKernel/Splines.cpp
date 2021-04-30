@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>

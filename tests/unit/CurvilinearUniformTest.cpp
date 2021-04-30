@@ -1,13 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "MeshKernel/CurvilinearGrid.hpp"
-#include "MeshKernel/CurvilinearGridCreateUniform.hpp"
-#include "MeshKernelApi/MakeMeshParameters.hpp"
-#include "TestUtils/MakeCurvilinearGrids.hpp"
-
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <TestUtils/MakeCurvilinearGrids.hpp>
 
 TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
 {

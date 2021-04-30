@@ -28,7 +28,7 @@
 #pragma once
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 
 /// @brief Makes a small, real world curvi grid
 /// See tests/CurvilinearGrids/Orthogonalization/small_curvi_grid.png for a plot of the grid

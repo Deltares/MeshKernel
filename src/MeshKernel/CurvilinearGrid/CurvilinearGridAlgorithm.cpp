@@ -27,9 +27,9 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGridLine.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
 using meshkernel::CurvilinearGrid;
