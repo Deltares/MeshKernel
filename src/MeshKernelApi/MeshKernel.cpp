@@ -907,7 +907,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn)
+    MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
         int exitCode = Success;
         try
@@ -921,7 +921,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance);
         }
         catch (...)
         {

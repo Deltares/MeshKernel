@@ -339,8 +339,9 @@ namespace meshkernelapi
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
+        /// @param[in] mergingDistance The distance below which two nodes will be merged
         /// @returns Error code
-        MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn);
+        MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
 
         /// @brief Merges two mesh2d nodes into one.
         /// @param[in] meshKernelId The id of the mesh state

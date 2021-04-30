@@ -258,7 +258,7 @@ TEST(Mesh, NodeMerging)
     mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
+    double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
     std::uniform_real_distribution<double> x_distribution(0.0, generatingDistance);
     std::uniform_real_distribution<double> y_distribution(0.0, generatingDistance);
     std::random_device rand_dev;
@@ -295,7 +295,7 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh.MergeNodesInPolygon(polygon);
+    mesh.MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
     ASSERT_EQ(mesh.GetNumNodes(), n * m);

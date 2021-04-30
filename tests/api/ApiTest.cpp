@@ -229,7 +229,7 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     meshkernelapi::GeometryList geometry_list{};
 
     // Execute
-    auto errorCode = mkernel_merge_nodes_mesh2d(meshKernelId, geometry_list);
+    auto errorCode = mkernel_merge_nodes_mesh2d(meshKernelId, geometry_list, 0.001);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};

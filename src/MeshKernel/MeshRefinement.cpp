@@ -862,7 +862,8 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
     }
 
     // compute all lengths
-    const auto numEdges = m_mesh->GetNumFaceEdges(face);
+    auto const numEdges = m_mesh->GetNumFaceEdges(face);
+    double const mergingDistance = 0.001;
     m_mesh->ComputeFaceClosedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
     for (auto i = 0; i < numEdges; i++)
     {
