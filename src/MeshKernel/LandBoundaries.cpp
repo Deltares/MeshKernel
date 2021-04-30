@@ -938,31 +938,31 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landboundaryIndex,
                 continue;
             }
 
-            const auto neighbouringNode = m_mesh->m_nodes[neighbouringNodeIndex];
+            const auto neighboringNode = m_mesh->m_nodes[neighbouringNodeIndex];
 
-            const auto [neighbouringNodeDistance,
-                        neighbouringNodeOnLandBoundary,
-                        neighbouringNodeLandBoundaryNodeIndex,
-                        neighbouringNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, neighbouringNode);
+            const auto [neighboringNodeDistance,
+                        neighboringNodeOnLandBoundary,
+                        neighboringNodeLandBoundaryNodeIndex,
+                        neighboringNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, neighboringNode);
 
-            double maximumDistance = std::max(currentNodeDistance, neighbouringNodeDistance);
+            double maximumDistance = std::max(currentNodeDistance, neighboringNodeDistance);
 
-            if (currentNodeLandBoundaryNodeIndex < neighbouringNodeLandBoundaryNodeIndex)
+            if (currentNodeLandBoundaryNodeIndex < neighboringNodeLandBoundaryNodeIndex)
             {
-                for (auto n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; ++n)
+                for (auto n = currentNodeLandBoundaryNodeIndex + 1; n < neighboringNodeLandBoundaryNodeIndex; ++n)
                 {
-                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection);
+                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->m_projection);
                     if (middlePointDistance > maximumDistance)
                     {
                         maximumDistance = middlePointDistance;
                     }
                 }
             }
-            else if (currentNodeLandBoundaryNodeIndex > neighbouringNodeLandBoundaryNodeIndex)
+            else if (currentNodeLandBoundaryNodeIndex > neighboringNodeLandBoundaryNodeIndex)
             {
-                for (auto n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
+                for (auto n = neighboringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
                 {
-                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection);
+                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->m_projection);
                     if (middlePointDistance > maximumDistance)
                     {
                         maximumDistance = middlePointDistance;
@@ -976,7 +976,7 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landboundaryIndex,
                 maximumDistance = 1e6 * maximumDistance;
             }
 
-            const double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);
+            const double edgeLength = ComputeDistance(currentNode, neighboringNode, m_mesh->m_projection);
             const double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
 
             if (correctedDistance < nodeDistances[neighbouringNodeIndex])

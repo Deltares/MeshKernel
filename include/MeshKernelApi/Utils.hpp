@@ -91,13 +91,37 @@ namespace meshkernelapi
     {
         if (pointVector.size() < result.num_coordinates)
         {
-            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
+            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates in the result vector.");
         }
 
         for (auto i = 0; i < result.num_coordinates; i++)
         {
             result.coordinates_x[i] = pointVector[i].x;
             result.coordinates_y[i] = pointVector[i].y;
+        }
+    }
+
+    /// @brief Converts valuesCoordinates and values to a GeometryList result
+    /// @param[in]  valuesCoordinates The vector of coordinates
+    /// @param[in]  values            The vector of values at the coordinate locations
+    /// @param[out] result            The converted geometry list
+    static void ConvertSampleVectorToGeometryList(std::vector<meshkernel::Point> const& valuesCoordinates, std::vector<double> const& values, GeometryList& result)
+    {
+        if (valuesCoordinates.size() != values.size())
+        {
+            throw std::invalid_argument("MeshKernel: The size of the valuesCoordinates-vector is not equal to the size of the values-vector");
+        }
+
+        if (values.size() < result.num_coordinates)
+        {
+            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the value-vector size is smaller than the number of coordinates in the result vector.");
+        }
+
+        for (auto i = 0; i < result.num_coordinates; i++)
+        {
+            result.coordinates_x[i] = valuesCoordinates[i].x;
+            result.coordinates_y[i] = valuesCoordinates[i].y;
+            result.values[i] = values[i];
         }
     }
 
@@ -218,31 +242,6 @@ namespace meshkernelapi
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].second);
             edgeIndex++;
         }
-    }
-
-    /// @brief Computes locations from the given mesh geometry
-    /// @param[in]  mesh2d                 The input meshkernelapi::Mesh2D instance
-    /// @param[out] interpolationLocation  The computed interpolation location
-    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& mesh2d,
-                                                           meshkernel::MeshLocations interpolationLocation)
-    {
-        std::vector<meshkernel::Point> locations;
-        if (interpolationLocation == meshkernel::MeshLocations::Nodes)
-        {
-            locations = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-        }
-        if (interpolationLocation == meshkernel::MeshLocations::Edges)
-        {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-            locations = ComputeEdgeCenters(nodes, edges);
-        }
-        if (interpolationLocation == meshkernel::MeshLocations::Faces)
-        {
-            locations = meshkernel::ConvertToFaceCentersVector(mesh2d.num_faces, mesh2d.face_x, mesh2d.face_y);
-        }
-
-        return locations;
     }
 
     /// @brief Converts an int array to a vector<bool>

@@ -54,7 +54,7 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     start = std::chrono::steady_clock::now();
     for (auto i = 0; i < nodes.size(); ++i)
     {
-        rtree.NearestNeighborsOnSquaredDistance(nodes[i], 1e-8);
+        rtree.PointsWithinSearchRadius(nodes[i], 1e-8);
         ASSERT_EQ(rtree.GetQueryResultSize(), 1);
     }
     end = std::chrono::steady_clock::now();
@@ -73,7 +73,7 @@ TEST(RTree, FindNodesInSquare)
     {
         for (auto i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = {(double)i, (double)j};
+            nodes[nodeIndex] = {static_cast<double>(i), static_cast<double>(j)};
             nodeIndex++;
         }
     }
@@ -82,13 +82,13 @@ TEST(RTree, FindNodesInSquare)
     rtree.BuildTree(nodes);
 
     // large search size, node found
-    std::vector<meshkernel::Point> pointToSearch(1, {(n - 1.0) / 2.0, (n - 1.0) / 2.0});
+    meshkernel::Point const pointToSearch{(n - 1.0) * 0.5, (n - 1.0) * 0.5};
     double squaredDistance = 0.708 * 0.708;
-    rtree.NearestNeighborsOnSquaredDistance(pointToSearch[0], squaredDistance);
+    rtree.PointsWithinSearchRadius(pointToSearch, squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 4);
 
     // smaller search size, node not found
     squaredDistance = 0.700 * 0.700;
-    rtree.NearestNeighborsOnSquaredDistance(pointToSearch[0], squaredDistance);
+    rtree.PointsWithinSearchRadius(pointToSearch, squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 0);
 }

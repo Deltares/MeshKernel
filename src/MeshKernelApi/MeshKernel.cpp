@@ -162,9 +162,8 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            *(meshKernelState[meshKernelId].m_mesh2d) = meshkernel::Mesh2D(edges2d,
-                                                                           nodes2d,
-                                                                           meshKernelState[meshKernelId].m_projection);
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -189,10 +188,8 @@ namespace meshkernelapi
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.node_x,
                                                                   mesh1d.node_y);
-
-            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d,
-                                                                         nodes1d,
-                                                                         meshKernelState[meshKernelId].m_projection);
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -221,8 +218,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId,
-                                            Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -374,7 +370,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-
+            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdges);
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             numHangingEdges = static_cast<int>(hangingEdges.size());
         }
@@ -385,7 +381,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** edges)
+    MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int* edges)
     {
         int exitCode = Success;
         try
@@ -397,7 +393,7 @@ namespace meshkernelapi
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
-                *edges[i] = static_cast<int>(hangingEdges[i]);
+                edges[i] = static_cast<int>(hangingEdges[i]);
             }
         }
         catch (...)
@@ -461,9 +457,9 @@ namespace meshkernelapi
                 landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
             }
 
-            const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
-            const auto smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
-            const auto meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, meshKernelPolygons);
+            auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
+            auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
+            auto const meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, meshKernelPolygons);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshKernelState[meshKernelId].m_mesh2d,
                                                                        smoother,
@@ -651,6 +647,11 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
 
+            if (geometryList.num_coordinates != result.size())
+            {
+                throw std::invalid_argument("MeshKernel: The value array has not the same size of the result array storing the orthogonality values at the edges");
+            }
+
             for (auto i = 0; i < geometryList.num_coordinates; ++i)
             {
                 geometryList.values[i] = result[i];
@@ -717,15 +718,19 @@ namespace meshkernelapi
             int index = 0;
             for (auto s = 0; s < numSplines; s++)
             {
-                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
-                const int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
+                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + static_cast<int>(indices[s][1]) + 1);
+                const int numNodes = static_cast<int>(indices[s][1]) - static_cast<int>(indices[s][0]) + 1;
                 const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {
-                    for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
+                    // Add the first point
+                    geometryListOut.coordinates_x[index] = coordinates[n].x;
+                    geometryListOut.coordinates_y[index] = coordinates[n].y;
+                    index++;
+                    for (auto p = 1; p <= numberOfPointsBetweenNodes; p++)
                     {
-                        const double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
+                        const double pointAdimensionalCoordinate = n + static_cast<double>(p) / static_cast<double>(numberOfPointsBetweenNodes + 1);
                         const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate);
                         if (!pointCoordinate.IsValid())
                         {
@@ -739,13 +744,16 @@ namespace meshkernelapi
                     }
                 }
 
+                geometryListOut.coordinates_x[index] = coordinates.back().x;
+                geometryListOut.coordinates_y[index] = coordinates.back().y;
+                geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                index++;
+
                 geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
                 geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
                 geometryListOut.values[index] = meshkernel::doubleMissingValue;
                 index++;
             }
-
-            geometryListOut.num_coordinates = index - 1;
         }
         catch (...)
         {
@@ -803,7 +811,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_get_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
     {
         int exitCode = Success;
         try
@@ -825,7 +833,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_count_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -899,7 +907,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn)
+    MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
         int exitCode = Success;
         try
@@ -913,7 +921,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance);
         }
         catch (...)
         {
@@ -940,10 +948,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
-                                                     const GeometryList& geometryListIn,
-                                                     int inside,
-                                                     int** selectedNodes)
+    MKERNEL_API int mkernel_get_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                         const GeometryList& geometryListIn,
+                                                         int inside,
+                                                         int* selectedNodes)
     {
         int exitCode = Success;
         try
@@ -965,7 +973,7 @@ namespace meshkernelapi
             {
                 if (meshKernelState[meshKernelId].m_mesh2d->m_nodeMask[i] > 0)
                 {
-                    (*selectedNodes)[index] = i;
+                    selectedNodes[index] = i;
                     index++;
                 }
             }
@@ -1031,20 +1039,19 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, GeometryList const& nodeCoordinate, int& nodeIndex)
     {
         int exitCode = Success;
         try
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                //create a valid instance, by default cartesian
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D();
-                meshKernelState[meshKernelId].m_mesh2d->m_projection = meshkernel::Projection::cartesian;
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            const meshkernel::Point newNode{xCoordinate, yCoordinate};
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(newNode));
+            auto const nodeCoordinateVector = ConvertGeometryListToPointVector(nodeCoordinate);
+
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector[0]));
         }
         catch (...)
         {
@@ -1116,7 +1123,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
+    MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1278,9 +1285,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            auto pointPosition = ConvertGeometryListToPointVector(point);
+            auto const pointVector = ConvertGeometryListToPointVector(point);
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointPosition[0], searchRadius));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointVector[0], searchRadius));
         }
         catch (...)
         {
@@ -1571,7 +1578,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
                                                                         num1DNodes);
@@ -1603,7 +1610,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
                                                                         num1DNodes);
@@ -1611,8 +1618,7 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Point vector
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
-            meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask,
-                                                                                meshKernelPoints);
+            meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask, meshKernelPoints);
         }
         catch (...)
         {
@@ -1634,7 +1640,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Convert 1D node mask from int** to vector<bool>
+            // Convert 1D node mask from int* to vector<bool>
             auto const num1DNodes = meshKernelState[meshKernelId].m_mesh1d->GetNumNodes();
             auto const meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask, num1DNodes);
 
@@ -2445,65 +2451,45 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int averaging(const Mesh2D& mesh2d,
-                              const int& startIndex,
-                              const double** samplesXCoordinate,
-                              const double** samplesYCoordinate,
-                              const double** samplesValue,
-                              const int& numSamples,
-                              double** results,
-                              const int& locationType,
-                              const double& Wu1Duni,
-                              const int& averagingMethod,
-                              const int& minNumberOfSamples,
-                              const double& relativeSearchSize,
-                              const int& spherical,
-                              const int& sphericalAccurate)
+    MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
+                                                           const GeometryList& samples,
+                                                           const int& locationType,
+                                                           const int& averagingMethodType,
+                                                           const double& relativeSearchSize,
+                                                           GeometryList& results)
     {
         int exitCode = Success;
         try
         {
-            // Projection
-            auto projection = meshkernel::Projection::cartesian;
-            if (spherical == 1)
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                projection = meshkernel::Projection::spherical;
-            }
-            if (sphericalAccurate == 1)
-            {
-                projection = meshkernel::Projection::sphericalAccurate;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
             }
 
-            // Set the mesh
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
-            const auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
-
-            // Build the samples
-            std::vector<meshkernel::Sample> samples(numSamples);
-            for (auto i = 0; i < samples.size(); ++i)
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                samples[i].x = (*samplesXCoordinate)[i];
-                samples[i].y = (*samplesYCoordinate)[i];
-                samples[i].value = (*samplesValue)[i];
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
             }
 
-            // Execute averaging
-            meshkernel::AveragingInterpolation averaging(mesh,
-                                                         samples,
-                                                         static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod),
-                                                         static_cast<meshkernel::MeshLocations>(locationType),
+            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
+            auto const averagingMethod = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethodType);
+
+            meshkernel::AveragingInterpolation averaging(meshKernelState[meshKernelId].m_mesh2d,
+                                                         sampleValues,
+                                                         averagingMethod,
+                                                         meshLocation,
                                                          relativeSearchSize,
                                                          false,
                                                          false);
+            // Execute averaging
             averaging.Compute();
 
             // Get the results and copy them to the result vector
-            auto interpolationResults = averaging.GetResults();
-            for (auto i = 0; i < interpolationResults.size(); ++i)
-            {
-                (*results)[i] = interpolationResults[i];
-            }
+            auto const& interpolationResults = averaging.GetResults();
+            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
+
+            ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)
         {
@@ -2512,48 +2498,36 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    // ec_module dll (stateless)
-    MKERNEL_API int triangulation(const Mesh2D& mesh2d,
-                                  const double** samplesXCoordinate,
-                                  const double** samplesYCoordinate,
-                                  const double** samplesValue,
-                                  const int& numSamples,
-                                  const int& locationType,
-                                  const int& spherical,
-                                  const int& sphericalAccurate,
-                                  double** results)
+    MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
+                                                               const GeometryList& samples,
+                                                               const int& locationType,
+                                                               GeometryList& results)
     {
         int exitCode = Success;
         try
         {
-            // Projection
-            auto projection = meshkernel::Projection::cartesian;
-            if (spherical == 1)
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                projection = meshkernel::Projection::spherical;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
             }
-            if (sphericalAccurate == 1)
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                projection = meshkernel::Projection::sphericalAccurate;
+                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
             }
 
             // Locations
-            const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-            const auto locations = ComputeLocations(mesh2d, location);
-
-            // Build the samples
-            const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
+            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
+            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
             // Execute triangulation
-            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
+            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, sampleValues, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             triangulationInterpolation.Compute();
 
             // Get the results and copy them back to the results vector
-            auto interpolationResults = triangulationInterpolation.GetResults();
-            for (auto i = 0; i < interpolationResults.size(); ++i)
-            {
-                (*results)[i] = interpolationResults[i];
-            }
+            auto const& interpolationResults = triangulationInterpolation.GetResults();
+            ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)
         {

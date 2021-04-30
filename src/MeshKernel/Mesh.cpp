@@ -384,14 +384,14 @@ size_t Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
     return edgeIndex;
 }
 
-size_t Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
+size_t Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)
 {
     if (GetNumNodes() <= 0)
     {
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    SearchNearestNeighboursOnSquaredDistance(point, searchRadius * searchRadius, MeshLocations::Nodes);
+    SearchNearestPointWithinSquaredRadius(point, searchRadius * searchRadius, MeshLocations::Nodes);
 
     if (GetNumNearestNeighbors(MeshLocations::Nodes) > 0)
     {
@@ -609,22 +609,22 @@ void Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
     }
 }
 
-void Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_nodesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_edgesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+        m_facesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
     }
 }
 
@@ -721,4 +721,42 @@ double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
     }
 
     return maxEdgeLength;
+}
+
+std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) const
+{
+    std::vector<Point> result;
+    if (location == MeshLocations::Nodes)
+    {
+        result.reserve(GetNumNodes());
+        for (const auto& n : m_nodes)
+        {
+            result.emplace_back(n);
+        }
+    }
+    if (location == MeshLocations::Edges)
+    {
+        result.reserve(GetNumEdges());
+        for (const auto& [firstNode, secondNode] : m_edges)
+        {
+
+            if (firstNode != sizetMissingValue && secondNode != sizetMissingValue)
+            {
+                result.emplace_back((m_nodes[firstNode] + m_nodes[secondNode]) * 0.5);
+            }
+            else
+            {
+                result.emplace_back(Point{});
+            }
+        }
+    }
+    if (location == MeshLocations::Faces)
+    {
+        result.reserve(GetNumFaces());
+        for (const auto& massCentre : m_facesMassCenters)
+        {
+            result.emplace_back(massCentre);
+        }
+    }
+    return result;
 }

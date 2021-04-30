@@ -558,7 +558,7 @@ void Mesh2D::ClassifyNodes()
     }
 }
 
-void Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
+void Mesh2D::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
@@ -581,9 +581,10 @@ void Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
     nodesRtree.BuildTree(filteredNodes);
 
     // merge the closest nodes
+    auto const mergingDistanceSquared = mergingDistance * mergingDistance;
     for (auto i = 0; i < filteredNodes.size(); i++)
     {
-        nodesRtree.NearestNeighborsOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)

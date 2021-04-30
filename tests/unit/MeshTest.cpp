@@ -258,9 +258,9 @@ TEST(Mesh, NodeMerging)
     mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
-    std::uniform_real_distribution<double> xDistrution(0.0, generatingDistance);
-    std::uniform_real_distribution<double> yDistrution(0.0, generatingDistance);
+    double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
+    std::uniform_real_distribution<double> x_distribution(0.0, generatingDistance);
+    std::uniform_real_distribution<double> y_distribution(0.0, generatingDistance);
     std::random_device rand_dev;
     std::mt19937 generator(rand_dev());
 
@@ -271,7 +271,7 @@ TEST(Mesh, NodeMerging)
     {
         for (auto i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = {i + xDistrution(generator), j + yDistrution(generator)};
+            nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
             auto edge = mesh.m_edges[mesh.m_nodesEdges[originalNodeIndex][0]];
@@ -295,7 +295,7 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh.MergeNodesInPolygon(polygon);
+    mesh.MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
     ASSERT_EQ(mesh.GetNumNodes(), n * m);
@@ -438,7 +438,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10);
+    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());
@@ -505,8 +505,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
         {2, 0},
     };
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();
