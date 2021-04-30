@@ -7,7 +7,7 @@ var searchData=
   ['innerproduct_173',['InnerProduct',['../namespacemeshkernel.html#af6338c4df9b1a0680f013b9624776d91',1,'meshkernel']]],
   ['innerproducttwosegments_174',['InnerProductTwoSegments',['../namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591',1,'meshkernel']]],
   ['insertface_175',['InsertFace',['../classmeshkernel_1_1_curvilinear_grid.html#a8f480b1b8893ab31f6799a2d967922a0',1,'meshkernel::CurvilinearGrid']]],
-  ['insertnode_176',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh::InsertNode()'],['../classmeshkernel_1_1_r_tree.html#a1ab37d5972d280a10b90f747c27c1ca3',1,'meshkernel::RTree::InsertNode()']]],
+  ['insertnode_176',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh']]],
   ['interpolate_5fto_177',['interpolate_to',['../structmeshkernelapi_1_1_interpolation_parameters.html#ae028664ae712feeee522530a2303bb9a',1,'meshkernelapi::InterpolationParameters']]],
   ['interpolationparameters_178',['InterpolationParameters',['../structmeshkernelapi_1_1_interpolation_parameters.html',1,'meshkernelapi']]],
   ['intmissingvalue_179',['intMissingValue',['../namespacemeshkernel.html#a0af5c04a2ceb3077471ebdca70bfe4a8',1,'meshkernel']]],

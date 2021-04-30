@@ -2,7 +2,7 @@ var searchData=
 [
   ['n_5frefinement_409',['n_refinement',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ac7b3f3478c5b473b2936c5547f24a58d',1,'meshkernelapi::CurvilinearParameters']]],
   ['nearestneighbors_410',['NearestNeighbors',['../classmeshkernel_1_1_r_tree.html#a0fd91e0e5ceea16769f52c9d2cb3864c',1,'meshkernel::RTree']]],
-  ['nearestneighborsonsquareddistance_411',['NearestNeighborsOnSquaredDistance',['../classmeshkernel_1_1_r_tree.html#a5d53548ef8f25ecd1c32ee9abbd58c8c',1,'meshkernel::RTree']]],
+  ['nearestneighborwithinsearchradius_411',['NearestNeighborWithinSearchRadius',['../classmeshkernel_1_1_r_tree.html#a5ada46048e235cf7a653aa1032ee315b',1,'meshkernel::RTree']]],
   ['nearlyzero_412',['nearlyZero',['../namespacemeshkernel.html#af6bed21f06b9c34716caf3c7aeffe91f',1,'meshkernel']]],
   ['nextcircularbackwardindex_413',['NextCircularBackwardIndex',['../namespacemeshkernel.html#af9e63a9340283b6689bfbd3c1d6e47b0',1,'meshkernel']]],
   ['nextcircularforwardindex_414',['NextCircularForwardIndex',['../namespacemeshkernel.html#a1ab16fb9b1292e8a70f954256d2d6f1d',1,'meshkernel']]],

@@ -161,9 +161,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a21b45fd9131625b769264f4b4e533d1e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a21b45fd9131625b769264f4b4e533d1e">FindNodeCloseToAPoint</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, const std::vector&lt; bool &gt; &amp;nodeMask)</td></tr>
 <tr class="memdesc:a21b45fd9131625b769264f4b4e533d1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a node close to a point.  <a href="classmeshkernel_1_1_mesh.html#a21b45fd9131625b769264f4b4e533d1e">More...</a><br /></td></tr>
 <tr class="separator:a21b45fd9131625b769264f4b4e533d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22ad7c92dcf24c68a502e5b65e3c4afc"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a22ad7c92dcf24c68a502e5b65e3c4afc">FindNodeCloseToAPoint</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, double searchRadius)</td></tr>
-<tr class="memdesc:a22ad7c92dcf24c68a502e5b65e3c4afc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a node close to a point.  <a href="classmeshkernel_1_1_mesh.html#a22ad7c92dcf24c68a502e5b65e3c4afc">More...</a><br /></td></tr>
-<tr class="separator:a22ad7c92dcf24c68a502e5b65e3c4afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13bf37401f505cb1df233cf6f1074c8b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a13bf37401f505cb1df233cf6f1074c8b">FindNodeCloseToAPoint</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;point, double searchRadius)</td></tr>
+<tr class="memdesc:a13bf37401f505cb1df233cf6f1074c8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a node close to a point.  <a href="classmeshkernel_1_1_mesh.html#a13bf37401f505cb1df233cf6f1074c8b">More...</a><br /></td></tr>
+<tr class="separator:a13bf37401f505cb1df233cf6f1074c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd44fab3e349b6f92793b53d7e377c2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#acd44fab3e349b6f92793b53d7e377c2b">DeleteEdge</a> (size_t edge)</td></tr>
 <tr class="memdesc:acd44fab3e349b6f92793b53d7e377c2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes an edge.  <a href="classmeshkernel_1_1_mesh.html#acd44fab3e349b6f92793b53d7e377c2b">More...</a><br /></td></tr>
 <tr class="separator:acd44fab3e349b6f92793b53d7e377c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,17 +202,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a0ed41638cbd948b4f6bf35888ab5e636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the rtree for the corresponding location.  <a href="classmeshkernel_1_1_mesh.html#a0ed41638cbd948b4f6bf35888ab5e636">More...</a><br /></td></tr>
 <tr class="separator:a0ed41638cbd948b4f6bf35888ab5e636"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc0dcbb20f890cee3aac4be53967bdd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">SearchNearestNeighbors</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
-<tr class="memdesc:afc0dcbb20f890cee3aac4be53967bdd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the locations sorted by proximity to a point.  <a href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">More...</a><br /></td></tr>
+<tr class="memdesc:afc0dcbb20f890cee3aac4be53967bdd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search all points sorted by proximity to another point.  <a href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">More...</a><br /></td></tr>
 <tr class="separator:afc0dcbb20f890cee3aac4be53967bdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a438f80fbcf9bad01d1c761605a275e7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a438f80fbcf9bad01d1c761605a275e7a">SearchNearestNeighboursOnSquaredDistance</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
-<tr class="memdesc:a438f80fbcf9bad01d1c761605a275e7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the locations sorted by proximity to a point and within a radius.  <a href="classmeshkernel_1_1_mesh.html#a438f80fbcf9bad01d1c761605a275e7a">More...</a><br /></td></tr>
-<tr class="separator:a438f80fbcf9bad01d1c761605a275e7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc470eb10ceeb93eefac4ddeca39f64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a8cc470eb10ceeb93eefac4ddeca39f64">SearchNearestPointWithinSquaredRadius</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
+<tr class="memdesc:a8cc470eb10ceeb93eefac4ddeca39f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the nearest point within a radius to another point.  <a href="classmeshkernel_1_1_mesh.html#a8cc470eb10ceeb93eefac4ddeca39f64">More...</a><br /></td></tr>
+<tr class="separator:a8cc470eb10ceeb93eefac4ddeca39f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add23793478123dca7df0a10facdbf138"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#add23793478123dca7df0a10facdbf138">GetNumNearestNeighbors</a> (<a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation) const</td></tr>
-<tr class="memdesc:add23793478123dca7df0a10facdbf138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.  <a href="classmeshkernel_1_1_mesh.html#add23793478123dca7df0a10facdbf138">More...</a><br /></td></tr>
+<tr class="memdesc:add23793478123dca7df0a10facdbf138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the search results. To be used after <a class="el" href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">SearchNearestNeighbors</a> or <a class="el" href="classmeshkernel_1_1_mesh.html#a8cc470eb10ceeb93eefac4ddeca39f64">SearchNearestPointWithinSquaredRadius</a>.  <a href="classmeshkernel_1_1_mesh.html#add23793478123dca7df0a10facdbf138">More...</a><br /></td></tr>
 <tr class="separator:add23793478123dca7df0a10facdbf138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acace8827e1760ce5a87696956125ac1b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">GetNearestNeighborIndex</a> (size_t index, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
-<tr class="memdesc:acace8827e1760ce5a87696956125ac1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.  <a href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">More...</a><br /></td></tr>
+<tr class="memdesc:acace8827e1760ce5a87696956125ac1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestPointWithinSquaredRadius.  <a href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">More...</a><br /></td></tr>
 <tr class="separator:acace8827e1760ce5a87696956125ac1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dbb10dd61580b4d81c8c297b77e602"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aa5dbb10dd61580b4d81c8c297b77e602">ComputeLocations</a> (<a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> location) const</td></tr>
+<tr class="memdesc:aa5dbb10dd61580b4d81c8c297b77e602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).  <a href="classmeshkernel_1_1_mesh.html#aa5dbb10dd61580b4d81c8c297b77e602">More...</a><br /></td></tr>
+<tr class="separator:aa5dbb10dd61580b4d81c8c297b77e602"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -324,7 +327,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <li>Moving a node</li>
 <li>Inserting edges</li>
 <li>Deleting edges</li>
-<li>Merging nodes (merging two nodes at <a class="el" href="namespacemeshkernel.html#a07704c8f796a8b98ac9772b30e74ff18" title="Merging distance.">meshkernel::mergingDistance</a>). This algorithm use an r-tree for inquiring adjacent nodes, see later.</li>
+<li>Merging nodes (merging two nodes at meshkernel::mergingDistance). This algorithm use an r-tree for inquiring adjacent nodes, see later.</li>
 </ul>
 </li>
 <li>Converting a curvilinear grid to an unstructured mesh (converting constructor).</li>
@@ -402,6 +405,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aa5dbb10dd61580b4d81c8c297b77e602"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dbb10dd61580b4d81c8c297b77e602">&#9670;&nbsp;</a></span>ComputeLocations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Mesh::ComputeLocations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>location</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">location</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The vector with the mesh locations. </dd></dl>
 
 </div>
 </div>
@@ -623,8 +653,46 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a13bf37401f505cb1df233cf6f1074c8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13bf37401f505cb1df233cf6f1074c8b">&#9670;&nbsp;</a></span>FindNodeCloseToAPoint() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Mesh::FindNodeCloseToAPoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>searchRadius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the index of a node close to a point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The starting point from where to start the search </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The search radius </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the closest node </dd></dl>
+
+</div>
+</div>
 <a id="a21b45fd9131625b769264f4b4e533d1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21b45fd9131625b769264f4b4e533d1e">&#9670;&nbsp;</a></span>FindNodeCloseToAPoint() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a21b45fd9131625b769264f4b4e533d1e">&#9670;&nbsp;</a></span>FindNodeCloseToAPoint() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -661,44 +729,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a22ad7c92dcf24c68a502e5b65e3c4afc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22ad7c92dcf24c68a502e5b65e3c4afc">&#9670;&nbsp;</a></span>FindNodeCloseToAPoint() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t meshkernel::Mesh::FindNodeCloseToAPoint </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
-          <td class="paramname"><em>point</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>searchRadius</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the index of a node close to a point. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The starting point from where to start the search </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The search radius </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The index of the closest node </dd></dl>
-
-</div>
-</div>
 <a id="acace8827e1760ce5a87696956125ac1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acace8827e1760ce5a87696956125ac1b">&#9670;&nbsp;</a></span>GetNearestNeighborIndex()</h2>
 
@@ -725,7 +755,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance. </p>
+<p>Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestPointWithinSquaredRadius. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>The closest neighbor index (index 0 corresponds to the closest). </td></tr>
@@ -879,7 +909,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance. </p>
+<p>Gets the search results. To be used after <a class="el" href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">SearchNearestNeighbors</a> or <a class="el" href="classmeshkernel_1_1_mesh.html#a8cc470eb10ceeb93eefac4ddeca39f64">SearchNearestPointWithinSquaredRadius</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
@@ -1142,7 +1172,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Search the locations sorted by proximity to a point. </p>
+<p>Search all points sorted by proximity to another point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The reference point. </td></tr>
@@ -1153,14 +1183,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a438f80fbcf9bad01d1c761605a275e7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a438f80fbcf9bad01d1c761605a275e7a">&#9670;&nbsp;</a></span>SearchNearestNeighboursOnSquaredDistance()</h2>
+<a id="a8cc470eb10ceeb93eefac4ddeca39f64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc470eb10ceeb93eefac4ddeca39f64">&#9670;&nbsp;</a></span>SearchNearestPointWithinSquaredRadius()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::Mesh::SearchNearestNeighboursOnSquaredDistance </td>
+          <td class="memname">void meshkernel::Mesh::SearchNearestPointWithinSquaredRadius </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
           <td class="paramname"><em>point</em>, </td>
@@ -1185,7 +1215,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Search the locations sorted by proximity to a point and within a radius. </p>
+<p>Search the nearest point within a radius to another point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The reference point. </td></tr>
