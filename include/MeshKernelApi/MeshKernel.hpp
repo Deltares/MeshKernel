@@ -498,11 +498,11 @@ namespace meshkernelapi
         /// Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] isTriangulationRequired     The option to triangulate also non triangular cells (if activated squares becomes triangles)
-        /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
+        /// @param[in] projectToLandBoundaryRequired The option to determine how to snap to land boundaries
         /// @returns Error code
         MKERNEL_API int mkernel_flip_edges_mesh2d(int meshKernelId,
                                                   int isTriangulationRequired,
-                                                  int projectToLandBoundaryOption);
+                                                  int projectToLandBoundaryRequired);
 
         /// @brief Gets the number of obtuse mesh2d triangles. Obtuse triangles are those having one edge longer than the sum of the other two.
         /// @param[in]  meshKernelId       The id of the mesh state
