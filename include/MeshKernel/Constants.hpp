@@ -69,10 +69,6 @@ namespace meshkernel
     const double curvilinearToOrthogonalRatio = 0.5;         ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
     const double orthogonalizationToSmoothingFactor = 0.975; ///< Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
 
-    // merging distance
-    const double mergingDistance = 0.001;                                    ///< Merging distance
-    const double mergingDistanceSquared = mergingDistance * mergingDistance; ///< Merging distance squared
-
     // physical constants
     const double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
 

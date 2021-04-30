@@ -107,7 +107,8 @@ namespace meshkernel
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
-        void MergeNodesInPolygon(const Polygons& polygons);
+        /// @param[in] mergingDistance The distance below which two nodes will be merged
+        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon
