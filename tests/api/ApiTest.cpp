@@ -2269,7 +2269,7 @@ TEST_F(ApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
 
     // Execute
     meshkernelapi::GeometryList geometryList{};
-    std::vector<double> coordinates_x(1, -0.5);
+    std::vector<double> coordinates_x(1, 0.5);
     std::vector<double> coordinates_y(1, -0.5);
     geometryList.coordinates_x = &coordinates_x[0];
     geometryList.coordinates_y = &coordinates_y[0];
@@ -2280,7 +2280,7 @@ TEST_F(ApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(edgeIndex, 9);
+    ASSERT_EQ(edgeIndex, 0);
 }
 
 TEST_F(ApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
