@@ -238,7 +238,7 @@ namespace meshkernel
         void SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation);
 
         /// @brief Gets the search results.
-        /// To be used after \ref SearchNearestNeighbors or \ref SearchNearestPointWithinSquaredRadius.\
+        /// To be used after \ref SearchNearestNeighbors or \ref SearchNearestPointWithinSquaredRadius.
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.

@@ -162,7 +162,7 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            // Do not change the pointer, just the object is pointing to
+            // Do not change the pointer, just the object it is pointing to
             *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
@@ -188,7 +188,7 @@ namespace meshkernelapi
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.node_x,
                                                                   mesh1d.node_y);
-            // Do not change the pointer, just the object is pointing to
+            // Do not change the pointer, just the object it is pointing to
             *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
