@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['rtree_561',['RTree',['../classmeshkernel_1_1_r_tree.html',1,'meshkernel']]]
+  ['sample_492',['Sample',['../structmeshkernel_1_1_sample.html',1,'meshkernel']]],
+  ['samplerefineparameters_493',['SampleRefineParameters',['../structmeshkernelapi_1_1_sample_refine_parameters.html',1,'meshkernelapi']]],
+  ['smoother_494',['Smoother',['../classmeshkernel_1_1_smoother.html',1,'meshkernel']]],
+  ['splines_495',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel']]],
+  ['splinestocurvilinearparameters_496',['SplinesToCurvilinearParameters',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html',1,'meshkernelapi']]]
 ];
