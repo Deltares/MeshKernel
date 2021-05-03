@@ -325,8 +325,8 @@ size_t Polygons::PolygonIndex(Point point) const
     bool inPolygon = false;
     for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
     {
-        auto polygonStartIndex = m_indices[polygonIndex][0];
-        auto polygonEndIndex = m_indices[polygonIndex][1];
+        auto const polygonStartIndex = m_indices[polygonIndex][0];
+        auto const polygonEndIndex = m_indices[polygonIndex][1];
 
         // Calculate the bounding box
         double XMin = std::numeric_limits<double>::max();

@@ -57,11 +57,13 @@ namespace meshkernel
             WholeMesh = 4
         };
 
-        /// @brief Default Ctor
-        /// @param[in] landBoundary
-        /// @param[in] mesh
-        /// @param[in] polygons
-        /// @returns
+        /// @brief Default constructor
+        LandBoundaries() = default;
+
+        /// @brief Default constructor
+        /// @param[in] landBoundary A vector of points defining the land boundary
+        /// @param[in] mesh The current 2d mesh
+        /// @param[in] polygons A polygon for selecting part of the land boundaries
         LandBoundaries(const std::vector<Point>& landBoundary,
                        std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<Polygons> polygons);

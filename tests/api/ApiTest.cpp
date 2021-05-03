@@ -169,7 +169,14 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
     // Execute
     const int isTriangulationRequired = 1;
     const int projectToLandBoundaryOption = 1;
-    auto errorCode = meshkernelapi::mkernel_flip_edges_mesh2d(meshKernelId, isTriangulationRequired, projectToLandBoundaryOption);
+    meshkernelapi::GeometryList selectingPolygon{};
+    meshkernelapi::GeometryList landBoundaries{};
+    auto errorCode = mkernel_flip_edges_mesh2d(meshKernelId,
+                                               isTriangulationRequired,
+                                               projectToLandBoundaryOption,
+                                               selectingPolygon,
+                                               landBoundaries);
+
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
