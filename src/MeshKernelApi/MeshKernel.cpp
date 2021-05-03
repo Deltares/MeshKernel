@@ -440,20 +440,10 @@ namespace meshkernelapi
             }
 
             // build the selecting polygon
-            std::vector<meshkernel::Point> polygonNodes(selectingPolygon.num_coordinates);
-            for (auto i = 0; i < selectingPolygon.num_coordinates; i++)
-            {
-                polygonNodes[i].x = selectingPolygon.coordinates_x[i];
-                polygonNodes[i].y = selectingPolygon.coordinates_y[i];
-            }
+            auto const polygonNodes = ConvertGeometryListToPointVector(selectingPolygon);
 
             // build the land boundary
-            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.num_coordinates);
-            for (auto i = 0; i < landBoundaries.num_coordinates; i++)
-            {
-                landBoundariesPoints[i].x = landBoundaries.coordinates_x[i];
-                landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
-            }
+            auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
             auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
@@ -498,26 +488,16 @@ namespace meshkernelapi
             }
 
             // build the selecting polygon
-            std::vector<meshkernel::Point> polygonNodes(selectingPolygon.num_coordinates);
-            for (auto i = 0; i < selectingPolygon.num_coordinates; i++)
-            {
-                polygonNodes[i].x = selectingPolygon.coordinates_x[i];
-                polygonNodes[i].y = selectingPolygon.coordinates_y[i];
-            }
+            auto const polygonNodesVector = ConvertGeometryListToPointVector(selectingPolygon);
 
             // build the land boundary
-            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.num_coordinates);
-            for (auto i = 0; i < landBoundaries.num_coordinates; i++)
-            {
-                landBoundariesPoints[i].x = landBoundaries.coordinates_x[i];
-                landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
-            }
+            auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
             auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
             auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
-            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
                                                                                                                                 smoother,
@@ -1374,24 +1354,14 @@ namespace meshkernelapi
             }
 
             // build the selecting polygon
-            std::vector<meshkernel::Point> polygonNodes(selectingPolygon.num_coordinates);
-            for (auto i = 0; i < selectingPolygon.num_coordinates; i++)
-            {
-                polygonNodes[i].x = selectingPolygon.coordinates_x[i];
-                polygonNodes[i].y = selectingPolygon.coordinates_y[i];
-            }
+            auto const polygonNodesVector = ConvertGeometryListToPointVector(selectingPolygon);
 
             // build the land boundary
-            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.num_coordinates);
-            for (auto i = 0; i < landBoundaries.num_coordinates; i++)
-            {
-                landBoundariesPoints[i].x = landBoundaries.coordinates_x[i];
-                landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
-            }
+            auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
-            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             const bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
             const bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
@@ -2534,7 +2504,7 @@ namespace meshkernelapi
             }
 
             // Locations
-            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const sampleValues = ConvertGeometryListToSampleVector(samples);
             auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
