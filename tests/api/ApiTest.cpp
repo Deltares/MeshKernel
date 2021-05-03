@@ -160,7 +160,7 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
 
-TEST_F(ApiTests, FlipEdgesThroughApi)
+TEST_F(ApiTests, FlipEdges_ShouldFlipEdges)
 {
     // Prepare
     MakeMesh();
@@ -169,7 +169,67 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
     // Execute
     const int isTriangulationRequired = 1;
     const int projectToLandBoundaryOption = 1;
-    auto errorCode = meshkernelapi::mkernel_flip_edges_mesh2d(meshKernelId, isTriangulationRequired, projectToLandBoundaryOption);
+    meshkernelapi::GeometryList selectingPolygon{};
+    meshkernelapi::GeometryList landBoundaries{};
+    auto errorCode = mkernel_flip_edges_mesh2d(meshKernelId,
+                                               isTriangulationRequired,
+                                               projectToLandBoundaryOption,
+                                               selectingPolygon,
+                                               landBoundaries);
+
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(23, mesh2d.num_edges);
+}
+
+TEST_F(ApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    const int isTriangulationRequired = 1;
+    const int projectToLandBoundaryOption = 1;
+    meshkernelapi::GeometryList selectingPolygon{};
+
+    std::unique_ptr<double> const xCoordinates(new double[4]{
+        -0.5,
+        -0.5,
+        4.0,
+        meshkernel::doubleMissingValue});
+
+    std::unique_ptr<double> const yCoordinates(new double[4]{
+        3.0,
+        -0.5,
+        -0.5,
+        meshkernel::doubleMissingValue});
+
+    std::unique_ptr<double> const zCoordinates(new double[4]{
+        0.0,
+        0.0,
+        0.0,
+        meshkernel::doubleMissingValue});
+
+    meshkernelapi::GeometryList landBoundaries{};
+    landBoundaries.geometry_separator = meshkernel::doubleMissingValue;
+    landBoundaries.coordinates_x = xCoordinates.get();
+    landBoundaries.coordinates_y = yCoordinates.get();
+    landBoundaries.values = zCoordinates.get();
+    landBoundaries.num_coordinates = 4;
+
+    auto errorCode = mkernel_flip_edges_mesh2d(meshKernelId,
+                                               isTriangulationRequired,
+                                               projectToLandBoundaryOption,
+                                               selectingPolygon,
+                                               landBoundaries);
+
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};

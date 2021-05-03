@@ -424,7 +424,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_compute_orthogonalization_mesh2d(int meshKernelId,
                                                              int projectToLandBoundaryOption,
                                                              const OrthogonalizationParameters& orthogonalizationParameters,
-                                                             const GeometryList& polygons,
+                                                             const GeometryList& selectingPolygon,
                                                              const GeometryList& landBoundaries)
     {
         int exitCode = Success;
@@ -439,33 +439,23 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The 2d mesh contains no nodes.");
             }
 
-            // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(polygons.num_coordinates);
-            for (auto i = 0; i < polygons.num_coordinates; i++)
-            {
-                nodes[i].x = polygons.coordinates_x[i];
-                nodes[i].y = polygons.coordinates_y[i];
-            }
+            // build the selecting polygon
+            auto const polygonNodes = ConvertGeometryListToPointVector(selectingPolygon);
 
-            auto meshKernelPolygons = std::make_shared<meshkernel::Polygons>(nodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            // build the land boundary
+            auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
 
-            // build land boundary
-            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.num_coordinates);
-            for (auto i = 0; i < landBoundaries.num_coordinates; i++)
-            {
-                landBoundariesPoints[i].x = landBoundaries.coordinates_x[i];
-                landBoundariesPoints[i].y = landBoundaries.coordinates_y[i];
-            }
-
-            auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
+            // Construct all dependencies
             auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
-            auto const meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, meshKernelPolygons);
+            auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshKernelState[meshKernelId].m_mesh2d,
                                                                        smoother,
                                                                        orthogonalizer,
-                                                                       meshKernelPolygons,
-                                                                       meshKernelLandBoundary,
+                                                                       polygon,
+                                                                       landBoundary,
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
             ortogonalization.Initialize();
@@ -481,8 +471,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_initialize_orthogonalization_mesh2d(int meshKernelId,
                                                                 int projectToLandBoundaryOption,
                                                                 OrthogonalizationParameters& orthogonalizationParameters,
-                                                                const GeometryList& geometryListPolygon,
-                                                                const GeometryList& geometryListLandBoundaries)
+                                                                const GeometryList& selectingPolygon,
+                                                                const GeometryList& landBoundaries)
     {
         int exitCode = Success;
         try
@@ -497,26 +487,17 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(geometryListPolygon.num_coordinates);
-            for (auto i = 0; i < geometryListPolygon.num_coordinates; i++)
-            {
-                nodes[i].x = geometryListPolygon.coordinates_x[i];
-                nodes[i].y = geometryListPolygon.coordinates_y[i];
-            }
+            // build the selecting polygon
+            auto const polygonNodesVector = ConvertGeometryListToPointVector(selectingPolygon);
 
-            // build land boundary
-            std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.num_coordinates);
-            for (auto i = 0; i < geometryListLandBoundaries.num_coordinates; i++)
-            {
-                landBoundaries[i].x = geometryListLandBoundaries.coordinates_x[i];
-                landBoundaries[i].y = geometryListLandBoundaries.coordinates_y[i];
-            }
+            // build the land boundary
+            auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
-            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
-            auto smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
-            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            // Construct all dependencies
+            auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
+            auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
                                                                                                                                 smoother,
@@ -1360,7 +1341,9 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_flip_edges_mesh2d(int meshKernelId,
                                               int isTriangulationRequired,
-                                              int projectToLandBoundaryRequired)
+                                              int projectToLandBoundaryRequired,
+                                              const GeometryList& selectingPolygon,
+                                              const GeometryList& landBoundaries)
     {
         int exitCode = Success;
         try
@@ -1370,15 +1353,19 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            //set landboundaries
-            auto polygon = std::make_shared<meshkernel::Polygons>();
+            // build the selecting polygon
+            auto const polygonNodesVector = ConvertGeometryListToPointVector(selectingPolygon);
 
-            std::vector<meshkernel::Point> landBoundary;
-            const auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            // build the land boundary
+            auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
-            const bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
-            const bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
-            const meshkernel::FlipEdges flipEdges(meshKernelState[meshKernelId].m_mesh2d, landBoundaries, triangulateFaces, projectToLandBoundary);
+            // construct all dependencies
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            bool const triangulateFaces = isTriangulationRequired == 0 ? false : true;
+            bool const projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
+
+            const meshkernel::FlipEdges flipEdges(meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
             flipEdges.Compute();
         }
@@ -2517,7 +2504,7 @@ namespace meshkernelapi
             }
 
             // Locations
-            auto sampleValues = ConvertGeometryListToSampleVector(samples);
+            auto const sampleValues = ConvertGeometryListToSampleVector(samples);
             auto const meshLocation = static_cast<meshkernel::MeshLocations>(locationType);
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 

@@ -51,16 +51,10 @@ namespace meshkernelapi
     static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
     {
         std::vector<meshkernel::Point> result;
-        if (geometryListIn.num_coordinates == 0)
-        {
-            return result;
-        }
-
-        result.resize(geometryListIn.num_coordinates);
-
+        result.reserve(geometryListIn.num_coordinates);
         for (auto i = 0; i < geometryListIn.num_coordinates; i++)
         {
-            result[i] = {geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]};
+            result.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
         }
         return result;
     }
@@ -75,11 +69,11 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: The samples are empty.");
         }
         std::vector<meshkernel::Sample> result;
-        result.resize(geometryListIn.num_coordinates);
+        result.reserve(geometryListIn.num_coordinates);
 
         for (auto i = 0; i < geometryListIn.num_coordinates; i++)
         {
-            result[i] = {geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i], geometryListIn.values[i]};
+            result.push_back({geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i], geometryListIn.values[i]});
         }
         return result;
     }
