@@ -195,8 +195,8 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters \ref meshkernelapi::OrthogonalizationParameters
-        /// @param[in] selectingPolygon                    The polygon where to perform the orthogonalization
-        /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process
+        /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization  (num_coordinates = 0 for an empty polygon)
+        /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
         MKERNEL_API int mkernel_compute_orthogonalization_mesh2d(int meshKernelId,
                                                                  int projectToLandBoundaryOption,
@@ -211,8 +211,8 @@ namespace meshkernelapi
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the user defined orthogonalization parameters
-        /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization
-        /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process
+        /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization (num_coordinates = 0 for an empty polygon)
+        /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process  (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
         MKERNEL_API int mkernel_initialize_orthogonalization_mesh2d(int meshKernelId,
                                                                     int projectToLandBoundaryOption,
@@ -483,7 +483,7 @@ namespace meshkernelapi
 
         /// @brief Selects the polygon nodes within another polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
-        /// @param[in]  selectingPolygon   The selecting polygon
+        /// @param[in]  selectingPolygon   The selecting polygon (num_coordinates = 0 for an empty polygon)
         /// @param[in]  polygonToSelect    The polygon to select
         /// @param[out] selectionResults   The selection result, contained in the in the values field of \ref GeometryList (0.0 not selected, 1.0 selected).
         /// Note that the selection selectionResults variable must be allocated by the client.
@@ -499,8 +499,8 @@ namespace meshkernelapi
         /// @param[in] meshKernelId                  The id of the mesh state
         /// @param[in] isTriangulationRequired       The option to triangulate also non triangular cells (if activated squares becomes triangles)
         /// @param[in] projectToLandBoundaryRequired The option to determine how to snap to land boundaries
-        /// @param[in] selectingPolygon              The polygon where to perform the edge flipping
-        /// @param[in] landBoundaries                The land boundaries to account for when flipping the edges
+        /// @param[in] selectingPolygon              The polygon where to perform the edge flipping (num_coordinates = 0 for an empty polygon)
+        /// @param[in] landBoundaries                The land boundaries to account for when flipping the edges (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
         MKERNEL_API int mkernel_flip_edges_mesh2d(int meshKernelId,
                                                   int isTriangulationRequired,

@@ -1359,12 +1359,12 @@ namespace meshkernelapi
             // build the land boundary
             auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
-            // Construct all dependencies
+            // construct all dependencies
             auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
+            bool const triangulateFaces = isTriangulationRequired == 0 ? false : true;
+            bool const projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
 
-            const bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
-            const bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
             const meshkernel::FlipEdges flipEdges(meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
             flipEdges.Compute();
