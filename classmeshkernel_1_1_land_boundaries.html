@@ -104,8 +104,12 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a84b2095aa34593790950362c082f6212"><td class="memItemLeft" align="right" valign="top"><a id="a84b2095aa34593790950362c082f6212"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212">LandBoundaries</a> ()=default</td></tr>
+<tr class="memdesc:a84b2095aa34593790950362c082f6212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:a84b2095aa34593790950362c082f6212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fa7ebec253f8be75b0fbcf69e224875"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875">LandBoundaries</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;landBoundary, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &gt; polygons)</td></tr>
-<tr class="memdesc:a1fa7ebec253f8be75b0fbcf69e224875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Ctor.  <a href="classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875">More...</a><br /></td></tr>
+<tr class="memdesc:a1fa7ebec253f8be75b0fbcf69e224875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875">More...</a><br /></td></tr>
 <tr class="separator:a1fa7ebec253f8be75b0fbcf69e224875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd944a488636576a08960528b1e10f73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">Administrate</a> ()</td></tr>
 <tr class="memdesc:abd944a488636576a08960528b1e10f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)  <a href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">More...</a><br /></td></tr>
@@ -164,16 +168,15 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 
-<p>Default Ctor. </p>
+<p>Default constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>A vector of points defining the land boundary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The current 2d mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>A polygon for selecting part of the land boundaries </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
