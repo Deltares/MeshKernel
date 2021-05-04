@@ -56,10 +56,14 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
         throw std::invalid_argument("CurvilinearGridLineAttraction::Compute The points defining the attraction area have the same direction of the attraction line.");
     }
 
-    /// The first delta
-    for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
+    auto const startM = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
+    auto const endM = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
+    auto const startN = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_lines[0].m_startCoordinate : m_lowerLeft.m_n;
+    auto const endN = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
+
+    for (auto m = startM; m <= endM; ++m)
     {
-        for (auto n = m_lowerLeft.m_n; n <= m_upperRight.m_n; ++n)
+        for (auto n = startN; n <= endN; ++n)
         {
             // Not a valid grid node
             if (!m_originalGrid.m_gridNodes[m][n].IsValid())
@@ -71,7 +75,7 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
 
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(nodeIndex, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
 
-            auto const distance = m_originalGrid.ComputeNodalDistanceAlongDirection(nodeIndex, m_lines[0].m_gridLineType);
+            auto const distance = m_originalGrid.ComputeNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
             auto displacement = Point{0.0, 0.0};
 
             if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection)
@@ -86,7 +90,7 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
             }
 
             // project transformation
-            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
+            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, true);
 
             // adjust nodes
             m_grid.m_gridNodes[m][n] = m_grid.m_gridNodes[m][n] + displacement;

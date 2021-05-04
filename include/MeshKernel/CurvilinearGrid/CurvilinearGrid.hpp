@@ -172,7 +172,7 @@ namespace meshkernel
         /// @param currentPointIndices
         /// @param direction
         /// @return
-        [[nodiscard]] double ComputeNodalDistanceAlongDirection(NodeIndices const& currentPointIndices, GridLineDirection direction);
+        [[nodiscard]] double ComputeNodalDistance(NodeIndices const& currentPointIndices, GridLineDirection direction);
 
         /// @brief Transform the displacement
         /// @param displacement

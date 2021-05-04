@@ -9,8 +9,8 @@ TEST(CurvilinearLineAttraction, Compute_OnNLinesAttraction_ShouldAtractLines)
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineAttraction curvilinearLineAttraction(curvilinearGrid, 0.5);
-    curvilinearLineAttraction.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineAttraction.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineAttraction.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
+    curvilinearLineAttraction.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
     // Execute
     const auto shiftedGrid = curvilinearLineAttraction.Compute();

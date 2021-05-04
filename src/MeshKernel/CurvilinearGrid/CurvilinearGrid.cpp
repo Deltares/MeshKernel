@@ -621,24 +621,46 @@ CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
     return CurvilinearGrid(m_gridNodes, m_projection);
 }
 
-double CurvilinearGrid::ComputeNodalDistanceAlongDirection(NodeIndices const& index, GridLineDirection direction)
+double CurvilinearGrid::ComputeNodalDistance(NodeIndices const& index, GridLineDirection direction)
 {
     if (index.m_m > m_gridNodes.size() || index.m_n > m_gridNodes[0].size())
     {
-        throw std::invalid_argument("CurvilinearGrid::ComputeNodalDistanceAlongDirection: invalid index coordinates");
+        throw std::invalid_argument("CurvilinearGrid::ComputeNodalDistance: invalid index coordinates");
     }
 
     if (direction == GridLineDirection::MDirection)
     {
-        double const leftDistance = m_gridNodes[index.m_m - 1][index.m_n].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection) : 0.0;
-        double const rightDistance = index.m_m + 1 < m_gridNodes.size() && m_gridNodes[index.m_m + 1][index.m_n].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m + 1][index.m_n], m_projection) : 0.0;
-        return (leftDistance + rightDistance) * 0.5;
+        double numEdges = 0.0;
+        double leftDistance = 0.0;
+        double rightDistance = 0.0;
+        if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid()) 
+        {
+            leftDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection);
+            numEdges += 1.0;
+        }
+        if (index.m_m + 1 < m_gridNodes.size() && m_gridNodes[index.m_m + 1][index.m_n].IsValid())
+        {
+            rightDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m + 1][index.m_n], m_projection);
+            numEdges += 1.0;
+        }
+        return (leftDistance + rightDistance) / numEdges;
     }
     if (direction == GridLineDirection::NDirection)
     {
-        double const bottomDistance = m_gridNodes[index.m_m][index.m_n - 1].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n - 1], m_projection) : 0.0;
-        double const upDistance = index.m_n + 1 < m_gridNodes[0].size() && m_gridNodes[index.m_m][index.m_n + 1].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n + 1], m_projection) : 0.0;
-        return (bottomDistance + upDistance) * 0.5;
+        double numEdges = 0.0;
+        double bottomDistance = 0.0;
+        double upDistance = 0.0;
+        if (index.m_n > 0 && m_gridNodes[index.m_m][index.m_n - 1].IsValid())
+        {
+            bottomDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n - 1], m_projection);
+            numEdges += 1.0;
+        }
+        if (index.m_n + 1 < m_gridNodes[0].size() && m_gridNodes[index.m_m][index.m_n + 1].IsValid())
+        {
+            upDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n + 1], m_projection);
+            numEdges += 1.0;
+        }
+        return (bottomDistance + upDistance) / numEdges;
     }
 
     return doubleMissingValue;
