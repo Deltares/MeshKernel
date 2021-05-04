@@ -35,13 +35,6 @@ namespace meshkernel
     /// @brief A struct describing a grid line in the curvilinear grid in terms of node indices
     struct CurvilinearGridLine
     {
-        /// @brief The type of grid line, if it is in m or n direction
-        enum class GridLineType
-        {
-            MGridLine,
-            NGridLine
-        };
-
         /// @brief CurvilinearGridLine constructor
         /// @param[in] startNode The start node of the grid line
         /// @param[in] endNode The end node of the grid line
@@ -57,11 +50,11 @@ namespace meshkernel
         /// @return The node indices
         [[nodiscard]] CurvilinearGrid::NodeIndices GetNodeIndexFromCoordinate(size_t const& coordinate) const;
 
-        CurvilinearGrid::NodeIndices m_startNode; ///<The start node of the grid line
-        CurvilinearGrid::NodeIndices m_endNode;   ///<The end node of the grid line
-        size_t m_startCoordinate;                 ///<The start coordinate. If it is an MGridLine, the start m otherwise the start n
-        size_t m_endCoordinate;                   ///<The end coordinate. If it is an MGridLine, the end m otherwise the end n
-        size_t m_constantCoordinate;              ///<The constant coordinate. If it is an MGridLine, the n coordinate, otherwise the m coordinate
-        GridLineType m_gridLineType;              ///<The grid line type
+        CurvilinearGrid::NodeIndices m_startNode;          ///<The start node of the grid line
+        CurvilinearGrid::NodeIndices m_endNode;            ///<The end node of the grid line
+        size_t m_startCoordinate;                          ///<The start coordinate. If it is an MDirection, the start m otherwise the start n
+        size_t m_endCoordinate;                            ///<The end coordinate. If it is an MDirection, the end m otherwise the end n
+        size_t m_constantCoordinate;                       ///<The constant coordinate. If it is an MDirection, the n coordinate, otherwise the m coordinate
+        CurvilinearGrid::GridLineDirection m_gridLineType; ///<The grid line type
     };
 } // namespace meshkernel

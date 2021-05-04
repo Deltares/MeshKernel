@@ -39,6 +39,13 @@ namespace meshkernel
     class CurvilinearGrid : public Mesh
     {
     public:
+        /// @brief The type of grid line, if it is in m or n direction
+        enum class GridLineDirection
+        {
+            MDirection,
+            NDirection
+        };
+
         /// @brief An enum for curvilinear node types
         enum class NodeType
         {
@@ -160,6 +167,19 @@ namespace meshkernel
                                                                                                    NodeIndices const& pointOnSmoothingLineIndices,
                                                                                                    NodeIndices const& lowerLeftIndices,
                                                                                                    NodeIndices const& upperRightIndices);
+
+        /// @brief (DXB)
+        /// @param currentPointIndices
+        /// @param direction
+        /// @return
+        [[nodiscard]] double ComputeNodalDistanceAlongDirection(NodeIndices const& currentPointIndices, GridLineDirection direction);
+
+        /// @brief Transform the displacement
+        /// @param displacement
+        /// @param node
+        /// @param isLocal
+        /// @return
+        [[nodiscard]] Point TransformDisplacement(Point const& displacement, NodeIndices const& node, bool isLocal) const;
 
         /// @brief Clones the curvilinear grid instance
         /// @return A pointer to a deep copy of current curvilinear grid instance

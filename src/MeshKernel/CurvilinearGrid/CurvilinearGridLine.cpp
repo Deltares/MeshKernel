@@ -40,21 +40,21 @@ CurvilinearGridLine::CurvilinearGridLine(CurvilinearGrid::NodeIndices const& sta
         throw std::invalid_argument("CurvilinearGridLine::CurvilinearGridLine Cannot construct a grid line with coinciding nodes.");
     }
 
-    m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::NGridLine : GridLineType::MGridLine;
-    m_startCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_n : m_startNode.m_m;
-    m_endCoordinate = m_gridLineType == GridLineType::NGridLine ? m_endNode.m_n : m_endNode.m_m;
-    m_constantCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_m : m_startNode.m_n;
+    m_gridLineType = m_startNode.m_m == m_endNode.m_m ? CurvilinearGrid::GridLineDirection::NDirection : CurvilinearGrid::GridLineDirection::MDirection;
+    m_startCoordinate = m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_startNode.m_n : m_startNode.m_m;
+    m_endCoordinate = m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_endNode.m_n : m_endNode.m_m;
+    m_constantCoordinate = m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_startNode.m_m : m_startNode.m_n;
 }
 
 bool CurvilinearGridLine::IsNodeOnLine(CurvilinearGrid::NodeIndices const& node) const
 {
     for (auto i = m_startCoordinate; i < m_endCoordinate; ++i)
     {
-        if (m_gridLineType == GridLineType::MGridLine && node.m_m == i && node.m_n == m_constantCoordinate)
+        if (m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection && node.m_m == i && node.m_n == m_constantCoordinate)
         {
             return true;
         }
-        if (m_gridLineType == GridLineType::NGridLine && node.m_n == i && node.m_m == m_constantCoordinate)
+        if (m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection && node.m_n == i && node.m_m == m_constantCoordinate)
         {
             return true;
         }
@@ -64,8 +64,8 @@ bool CurvilinearGridLine::IsNodeOnLine(CurvilinearGrid::NodeIndices const& node)
 
 CurvilinearGrid::NodeIndices CurvilinearGridLine::GetNodeIndexFromCoordinate(size_t const& coordinate) const
 {
-    auto const mCoordinate = m_gridLineType == GridLineType::MGridLine ? coordinate : m_constantCoordinate;
-    auto const nCoordinate = m_gridLineType == GridLineType::MGridLine ? m_constantCoordinate : coordinate;
+    auto const mCoordinate = m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? coordinate : m_constantCoordinate;
+    auto const nCoordinate = m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_constantCoordinate : coordinate;
 
     return {mCoordinate, nCoordinate};
 }

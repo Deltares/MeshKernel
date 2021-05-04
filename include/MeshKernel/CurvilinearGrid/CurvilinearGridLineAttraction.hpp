@@ -31,7 +31,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
 {
@@ -40,34 +39,20 @@ namespace meshkernel
     /// and the displacement gets distributed on the influence zone, set with SetBlock
     ///
     /// This option provides the possibility to fit the curvilinear grid’s edges to a land boundary.
-    class CurvilinearGridLineShift : public CurvilinearGridAlgorithm
+    class CurvilinearGridLineAttraction : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid);
+        CurvilinearGridLineAttraction(std::shared_ptr<CurvilinearGrid> grid, double attractionFactor);
 
         /// @brief Computes a new curvilinear grid with the line shift
         /// @return The shifted curvilinear grid
         CurvilinearGrid Compute() override;
 
-        /// @brief Moves a node from one position to another
-        /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
-        /// @param[in] toPoint The coordinates of the new position
-        void MoveNode(Point const& fromPoint, Point const& toPoint);
-
     private:
-        /// @brief Distribute the displacement around the node on the influence zone.
-        /// @param[in] node The node to account for. The displacement around this not is calculated subtracting \ref m_grid to \ref m_originalGrid
-        void TransformGrid(CurvilinearGrid::NodeIndices const& node);
-
-        /// @brief Transform the displacement around a node to local or global (TOLOCL)
-        /// @param[in] displacement The displacement to transform.
-        /// @param[in] node The node position
-        /// @param[in] toLocal A boolean to indicate whatever to transform the displacement to local grid (True) or to global grid (false)
-        /// @return The new displacement
-        Point TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool toLocal) const;
 
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
+        double m_attractionFactor;
     };
 } // namespace meshkernel

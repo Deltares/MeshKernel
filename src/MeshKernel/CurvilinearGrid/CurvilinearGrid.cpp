@@ -603,20 +603,73 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint
     // horizontal smoothing factor
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
     const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
-    const auto horizontalSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
+    const auto mSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor
     const auto verticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? gridpoint.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - gridpoint.m_n;
     const auto maxVerticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? upperRightIndices.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - lowerLeftIndices.m_n;
-    const auto verticalSmoothingFactor = maxVerticalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
+    const auto nSmoothingFactor = maxVerticalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
 
     // mixed smoothing factor
-    const auto mixedSmoothingFactor = std::sqrt(verticalSmoothingFactor * horizontalSmoothingFactor);
+    const auto mixedSmoothingFactor = std::sqrt(nSmoothingFactor * mSmoothingFactor);
 
-    return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
+    return {mSmoothingFactor, nSmoothingFactor, mixedSmoothingFactor};
 }
 
 CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
 {
     return CurvilinearGrid(m_gridNodes, m_projection);
+}
+
+double CurvilinearGrid::ComputeNodalDistanceAlongDirection(NodeIndices const& index, GridLineDirection direction)
+{
+    if (index.m_m > m_gridNodes.size() || index.m_n > m_gridNodes[0].size())
+    {
+        throw std::invalid_argument("CurvilinearGrid::ComputeNodalDistanceAlongDirection: invalid index coordinates");
+    }
+
+    if (direction == GridLineDirection::MDirection)
+    {
+        double const leftDistance = m_gridNodes[index.m_m - 1][index.m_n].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection) : 0.0;
+        double const rightDistance = index.m_m + 1 < m_gridNodes.size() && m_gridNodes[index.m_m + 1][index.m_n].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m + 1][index.m_n], m_projection) : 0.0;
+        return (leftDistance + rightDistance) * 0.5;
+    }
+    if (direction == GridLineDirection::NDirection)
+    {
+        double const bottomDistance = m_gridNodes[index.m_m][index.m_n - 1].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n - 1], m_projection) : 0.0;
+        double const upDistance = index.m_n + 1 < m_gridNodes[0].size() && m_gridNodes[index.m_m][index.m_n + 1].IsValid() ? ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n + 1], m_projection) : 0.0;
+        return (bottomDistance + upDistance) * 0.5;
+    }
+
+    return doubleMissingValue;
+}
+
+meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displacement, NodeIndices const& node, bool isLocal) const
+{
+    Point left = m_gridNodes[node.m_m][node.m_n];
+    Point right = left;
+    if (node.m_m < m_numM - 1 && m_gridNodes[node.m_m + 1][node.m_n].IsValid())
+    {
+        right = m_gridNodes[node.m_m + 1][node.m_n];
+    }
+    if (node.m_m > 0 && m_gridNodes[node.m_m - 1][node.m_n].IsValid())
+    {
+        left = m_gridNodes[node.m_m - 1][node.m_n];
+    }
+
+    const auto horizontalDistance = ComputeDistance(right, left, m_projection);
+    const auto horizontalDelta = right - left;
+
+    if (isLocal && horizontalDistance > 0.0)
+    {
+        return {(displacement.x * horizontalDelta.x + displacement.y * horizontalDelta.y) / horizontalDistance,
+                (displacement.y * horizontalDelta.x - displacement.x * horizontalDelta.y) / horizontalDistance};
+    }
+    if (!isLocal && horizontalDistance > 0.0)
+    {
+        return {(displacement.x * horizontalDelta.x - displacement.y * horizontalDelta.y) / horizontalDistance,
+                (displacement.x * horizontalDelta.y + displacement.y * horizontalDelta.x) / horizontalDistance};
+    }
+
+    return {0.0, 0.0};
 }
