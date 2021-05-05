@@ -80,7 +80,6 @@ namespace meshkernel
         /// @brief Enumerator describing the different refinement types
         enum class RefinementType
         {
-            RidgeRefinement = 1,
             WaveCourant = 2,
             RefinementLevels = 3
         };
