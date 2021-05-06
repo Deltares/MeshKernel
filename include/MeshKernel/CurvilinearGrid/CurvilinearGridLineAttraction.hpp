@@ -43,16 +43,16 @@ namespace meshkernel
     {
     public:
         /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
+        /// @param[in] grid             The input curvilinear grid
+        /// @param[in] attractionFactor The input attraction factor
         CurvilinearGridLineAttraction(std::shared_ptr<CurvilinearGrid> grid, double attractionFactor);
 
-        /// @brief Computes a new curvilinear grid with the line shift
+        /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
         /// @return The shifted curvilinear grid
         CurvilinearGrid Compute() override;
 
     private:
-
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
-        double m_attractionFactor;
+        double m_attractionFactor;      ///< The attraction factor. If 0.0 no line will be attracted to m_lines[0]
     };
 } // namespace meshkernel

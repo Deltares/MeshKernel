@@ -49,7 +49,7 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
         throw std::invalid_argument("CurvilinearGridLineAttraction::Compute No candidate line to shift has been selected");
     }
 
-    // Points are coinciding, this no smoothing zone
+    // Points are coinciding, no attraction/repulsion zone defined
     if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection && m_lowerLeft.m_n == m_upperRight.m_n ||
         m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection && m_lowerLeft.m_m == m_upperRight.m_m)
     {
@@ -73,6 +73,12 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
 
             CurvilinearGrid::NodeIndices const nodeIndex{m, n};
 
+            // Nodes on the line should not be moved
+            if (m_lines[0].IsNodeOnLine(nodeIndex))
+            {
+                continue;
+            }
+
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(nodeIndex, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
 
             auto const distance = m_originalGrid.ComputeNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
@@ -80,17 +86,17 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
 
             if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection)
             {
-                const auto increment = distance * m_attractionFactor * nSmoothing;
-                displacement.y = m_originalGrid.m_gridNodes[m][n].y + increment;
+                double const direction = n < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
+                displacement.y = distance * m_attractionFactor * nSmoothing * direction;
             }
             if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection)
             {
-                const auto increment = distance * m_attractionFactor * mSmoothing;
-                displacement.x = m_originalGrid.m_gridNodes[m][n].x + increment;
+                double const direction = m < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
+                displacement.x = distance * m_attractionFactor * mSmoothing * direction;
             }
 
             // project transformation
-            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, true);
+            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
 
             // adjust nodes
             m_grid.m_gridNodes[m][n] = m_grid.m_gridNodes[m][n] + displacement;

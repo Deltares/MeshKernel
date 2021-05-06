@@ -57,9 +57,9 @@ namespace meshkernel
     /// @brief Enumerator describing the supported projections
     enum class Projection
     {
-        cartesian,        // jsferic  = 0
-        spherical,        // jsferic  = 1
-        sphericalAccurate // jasfer3D = 1
+        cartesian = 0,        // jsferic  = 0
+        spherical = 1,        // jsferic  = 1
+        sphericalAccurate = 2 // jasfer3D = 1
     };
 
     /// @brief A struct describing a point in a two-dimensional space
