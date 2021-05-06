@@ -671,7 +671,6 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.minimum_num_points = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_face_size = 0.5;
     meshRefinementParameters.refinement_type = 3;
@@ -680,7 +679,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshRefinementParameters.account_for_samples_outside = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, meshRefinementParameters);
+    auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -743,7 +742,6 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.minimum_num_points = 1;
     meshRefinementParameters.refine_intersected = 0;
 
     // Execute
@@ -2755,6 +2753,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
                                                        locationType,
                                                        averagingMethodType,
                                                        relativeSearchSize,
+                                                       0,
                                                        results);
 
     //Assert the value has been interpolated

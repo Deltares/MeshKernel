@@ -1175,6 +1175,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                            const GeometryList& samples,
+                                                           double relativeSearchRadius,
+                                                           int minimumNumSamples,
                                                            const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
@@ -1209,9 +1211,10 @@ namespace meshkernelapi
                                                                                         samplesVector,
                                                                                         averagingMethod,
                                                                                         meshkernel::MeshLocations::Faces,
-                                                                                        1.0,
+                                                                                        relativeSearchRadius,
                                                                                         refineOutsideFace,
-                                                                                        transformSamples);
+                                                                                        transformSamples,
+                                                                                        static_cast<size_t>(minimumNumSamples));
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
             meshRefinement.Compute();
@@ -2439,9 +2442,10 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
                                                            const GeometryList& samples,
-                                                           const int& locationType,
-                                                           const int& averagingMethodType,
-                                                           const double& relativeSearchSize,
+                                                           int locationType,
+                                                           int averagingMethodType,
+                                                           double relativeSearchSize,
+                                                           size_t minNumSamples,
                                                            GeometryList& results)
     {
         int exitCode = Success;
@@ -2467,7 +2471,8 @@ namespace meshkernelapi
                                                          meshLocation,
                                                          relativeSearchSize,
                                                          false,
-                                                         false);
+                                                         false,
+                                                         minNumSamples);
             // Execute averaging
             averaging.Compute();
 
@@ -2486,7 +2491,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
-                                                               const int& locationType,
+                                                               int locationType,
                                                                GeometryList& results)
     {
         int exitCode = Success;

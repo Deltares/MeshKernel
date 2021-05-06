@@ -43,13 +43,15 @@ AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                                MeshLocations locationType,
                                                double relativeSearchRadius,
                                                bool useClosestSampleIfNoneAvailable,
-                                               bool transformSamples) : m_mesh(mesh),
-                                                                        m_samples(samples),
-                                                                        m_method(method),
-                                                                        m_interpolationLocation(locationType),
-                                                                        m_relativeSearchRadius(relativeSearchRadius),
-                                                                        m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
-                                                                        m_transformSamples(transformSamples)
+                                               bool transformSamples,
+                                               size_t minNumSamples) : m_mesh(mesh),
+                                                                       m_samples(samples),
+                                                                       m_method(method),
+                                                                       m_interpolationLocation(locationType),
+                                                                       m_relativeSearchRadius(relativeSearchRadius),
+                                                                       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
+                                                                       m_transformSamples(transformSamples),
+                                                                       m_minNumSamples(minNumSamples)
 {
 }
 
@@ -274,7 +276,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, interpolationPoint, m_mesh->m_projection);
+        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh->m_projection);
         return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
     }
 

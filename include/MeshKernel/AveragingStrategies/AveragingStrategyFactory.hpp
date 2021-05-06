@@ -36,11 +36,12 @@ namespace meshkernel::averaging
     struct AveragingStrategyFactory
     {
         /// @brief The static method returning the strategy
-        /// @param averagingMethod The averaging method enumeration value
-        /// @param interpolationPoint The interpolation point
-        /// @param projection  The projection to use
+        /// @param[in] averagingMethod The averaging method enumeration value
+        /// @param[in] interpolationPoint The interpolation point
+        /// @param[in] projection  The projection to use
         /// @return The interpolation strategy to use
         [[nodiscard]] std::unique_ptr<AveragingStrategy> static GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
+                                                                                     size_t minNumSamples,
                                                                                      Point const& interpolationPoint,
                                                                                      Projection projection);
     };

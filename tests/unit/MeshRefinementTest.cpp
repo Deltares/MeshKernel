@@ -25,7 +25,8 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -116,7 +117,8 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
@@ -216,7 +218,8 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -342,7 +345,8 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
@@ -411,7 +415,8 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
@@ -476,7 +481,8 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.01,
                                                                                    false,
-                                                                                   true);
+                                                                                   true,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 10;
@@ -633,7 +639,8 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
                                                                                    meshkernel::MeshLocations::Faces,
                                                                                    1.0,
                                                                                    false,
-                                                                                   false);
+                                                                                   false,
+                                                                                   1);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
