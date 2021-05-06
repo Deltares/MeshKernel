@@ -2316,7 +2316,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, const GeometryList& point)
+    MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, double xCoordinate, double yCoordinate)
     {
         int exitCode = Success;
         try
@@ -2325,19 +2325,14 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto points = ConvertGeometryListToPointVector(point);
-
-            if (points.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No point provided");
-            }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
                 throw std::invalid_argument("MeshKernel: Empty curvilinear grid");
             }
+            meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(points[0]);
+            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point);
         }
         catch (...)
         {

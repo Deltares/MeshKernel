@@ -856,9 +856,10 @@ namespace meshkernelapi
 
         /// @brief Inserts a new face on a curvilinear grid. The new face will be inserted on top of the closest edge by linear extrapolation.
         /// @param[in] meshKernelId       The id of the mesh state
-        /// @param[in] point  The x coordinate of the point used for finding the closest edge.
+        /// @param[in] xCoordinate        The x coordinate of the point used for finding the closest face.
+        /// @param[in] yCoordinate        The y coordinate of the point used for finding the closest face.
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, const GeometryList& point);
+        MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, double xCoordinate, double yCoordinate);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
