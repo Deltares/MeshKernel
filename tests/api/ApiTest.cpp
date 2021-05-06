@@ -675,7 +675,6 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshRefinementParameters.min_face_size = 0.5;
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.maximum_time_step = 0.0;
     meshRefinementParameters.account_for_samples_outside = 0;
 
     // Execute

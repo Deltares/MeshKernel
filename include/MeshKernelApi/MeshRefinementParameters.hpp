@@ -50,9 +50,6 @@ namespace meshkernelapi
         /// @brief Connect hanging nodes at the end of the iteration, 1 yes or 0 no
         int connect_hanging_nodes = 1;
 
-        /// @brief Maximum time-step in Courant grid
-        double maximum_time_step;
-
         /// @brief Take samples outside face into account , 1 yes 0 no
         int account_for_samples_outside;
     };

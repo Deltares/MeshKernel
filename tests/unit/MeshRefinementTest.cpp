@@ -32,7 +32,6 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.32;
     meshRefinementParameters.min_face_size = 1.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -124,7 +123,6 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.64;
     meshRefinementParameters.min_face_size = 2.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -225,7 +223,6 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 15.97;
     meshRefinementParameters.min_face_size = 50.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -352,7 +349,6 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.96;
     meshRefinementParameters.min_face_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -422,7 +418,6 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.96;
     meshRefinementParameters.min_face_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -488,7 +483,6 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.max_num_refinement_iterations = 10;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.96;
     meshRefinementParameters.min_face_size = 0.5;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -646,7 +640,6 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.maximum_time_step = 0.000527;
     meshRefinementParameters.min_face_size = 0.00165;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
