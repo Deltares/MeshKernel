@@ -37,6 +37,7 @@ namespace meshkernel::averaging
     {
         /// @brief The static method returning the strategy
         /// @param[in] averagingMethod The averaging method enumeration value
+        /// @param[in] minNumSamples The minimum a of samples used for certain interpolation algorithms
         /// @param[in] interpolationPoint The interpolation point
         /// @param[in] projection  The projection to use
         /// @return The interpolation strategy to use
