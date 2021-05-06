@@ -621,11 +621,11 @@ CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
     return CurvilinearGrid(m_gridNodes, m_projection);
 }
 
-double CurvilinearGrid::ComputeNodalDistance(NodeIndices const& index, GridLineDirection direction)
+double CurvilinearGrid::ComputeAverageNodalDistance(NodeIndices const& index, GridLineDirection direction)
 {
     if (index.m_m > m_gridNodes.size() || index.m_n > m_gridNodes[0].size())
     {
-        throw std::invalid_argument("CurvilinearGrid::ComputeNodalDistance: invalid index coordinates");
+        throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: invalid index coordinates");
     }
 
     if (direction == GridLineDirection::MDirection)
@@ -633,7 +633,7 @@ double CurvilinearGrid::ComputeNodalDistance(NodeIndices const& index, GridLineD
         double numEdges = 0.0;
         double leftDistance = 0.0;
         double rightDistance = 0.0;
-        if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid()) 
+        if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid())
         {
             leftDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection);
             numEdges += 1.0;

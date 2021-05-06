@@ -81,7 +81,7 @@ CurvilinearGrid CurvilinearGridLineAttraction::Compute()
 
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(nodeIndex, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
 
-            auto const distance = m_originalGrid.ComputeNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
+            auto const distance = m_originalGrid.ComputeAverageNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
             auto displacement = Point{0.0, 0.0};
 
             if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection)

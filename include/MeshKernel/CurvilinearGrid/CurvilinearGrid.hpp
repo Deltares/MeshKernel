@@ -168,17 +168,17 @@ namespace meshkernel
                                                                                                    NodeIndices const& lowerLeftIndices,
                                                                                                    NodeIndices const& upperRightIndices);
 
-        /// @brief (DXB)
-        /// @param currentPointIndices
-        /// @param direction
-        /// @return
-        [[nodiscard]] double ComputeNodalDistance(NodeIndices const& currentPointIndices, GridLineDirection direction);
+        /// @brief Computes an average distance of the current node from the oder nodes (DXB)
+        /// @param[in] nodeIndex The current node index
+        /// @param[in] direction The direction, either m or n
+        /// @return The computed distance
+        [[nodiscard]] double ComputeAverageNodalDistance(NodeIndices const& nodeIndex, GridLineDirection direction);
 
-        /// @brief Transform the displacement
-        /// @param displacement
-        /// @param node
-        /// @param isLocal
-        /// @return
+        /// @brief Transform the displacement around a node to local or global (TOLOCL)
+        /// @param[in] displacement The displacement to transform.
+        /// @param[in] node The node position
+        /// @param[in] toLocal A boolean to indicate whatever to transform the displacement to local grid (True) or to global grid (false)
+        /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, NodeIndices const& node, bool isLocal) const;
 
         /// @brief Clones the curvilinear grid instance
