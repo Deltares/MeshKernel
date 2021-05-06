@@ -617,25 +617,33 @@ namespace meshkernelapi
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param[in] meshKernelId            The id of the mesh state.
-        /// @param[in] firstPoint              The first point defining the refinement zone.
-        /// @param[in] secondPoint             The second point defining the refinement zone.
+        /// @param[in] xLowerLeftCorner        The x coordinate of the lower left corner of the block to refine
+        /// @param[in] yLowerLeftCorner        The y coordinate of the lower left corner of the block to refine
+        /// @param[in] xUpperRightCorner       The x coordinate of the upper right corner of the block to refine
+        /// @param[in] yUpperRightCorner       The y coordinate of the upper right corner of the block to refine
         /// @param[in] refinement              The number of grid lines to add between \p firstPoint and \p secondPoint
         /// @return                            Error code
         MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId,
-                                                   const GeometryList& firstPoint,
-                                                   const GeometryList& secondPoint,
+                                                   double xLowerLeftCorner,
+                                                   double yLowerLeftCorner,
+                                                   double xUpperRightCorner,
+                                                   double yUpperRightCorner,
                                                    int refinement);
 
         /// @brief Directional curvilinear grid derefinement. Grid lines are removed perpendicularly to the segment defined by \p firstPoint and \p secondPoint.
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param meshKernelId            The id of the mesh state.
-        /// @param firstPoint              The first point defining the de-refinement zone.
-        /// @param secondPoint             The second point defining the de-refinement zone.
+        /// @param[in] xLowerLeftCorner    The x coordinate of the lower left corner of the block to de-refine
+        /// @param[in] yLowerLeftCorner    The y coordinate of the lower left corner of the block to de-refine
+        /// @param[in] xUpperRightCorner   The x coordinate of the upper right corner of the block to de-refine
+        /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to de-refine
         /// @return Error code
         MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
-                                                     const GeometryList& firstPoint,
-                                                     const GeometryList& secondPoint);
+                                                     double xLowerLeftCorner,
+                                                     double yLowerLeftCorner,
+                                                     double xUpperRightCorner,
+                                                     double yUpperRightCorner);
 
         /// @brief Generates curvilinear grid from splines with transfinite interpolation
         /// @param[in] meshKernelId          The id of the mesh state

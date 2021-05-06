@@ -1633,21 +1633,7 @@ TEST_F(ApiTests, RefineCompute_OnCurvilinearGrid_ShouldRefine)
 
     MakeUniformCurvilinearGrid(3, 3, 10);
 
-    meshkernelapi::GeometryList firstPoint{};
-    std::unique_ptr<double> const xCoordinatesFirstPoint(new double[1]{10.0});
-    std::unique_ptr<double> const yCoordinatesFirstPoint(new double[1]{20.0});
-    firstPoint.coordinates_x = xCoordinatesFirstPoint.get();
-    firstPoint.coordinates_y = yCoordinatesFirstPoint.get();
-    firstPoint.num_coordinates = 1;
-
-    meshkernelapi::GeometryList secondPoint{};
-    std::unique_ptr<double> const xCoordinateSecondPoint(new double[1]{20.0});
-    std::unique_ptr<double> const yCoordinatesSecondPoint(new double[1]{20.0});
-    secondPoint.coordinates_x = xCoordinateSecondPoint.get();
-    secondPoint.coordinates_y = yCoordinatesSecondPoint.get();
-    secondPoint.num_coordinates = 1;
-
-    auto errorCode = mkernel_refine_curvilinear(meshKernelId, firstPoint, secondPoint, 10);
+    auto errorCode = meshkernelapi::mkernel_refine_curvilinear(meshKernelId, 10.0, 20.0, 20.0, 20.0, 10);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
@@ -1665,22 +1651,8 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
 
     MakeUniformCurvilinearGrid();
 
-    meshkernelapi::GeometryList firstPoint{};
-    std::unique_ptr<double> const xCoordinatesFirstPoint(new double[1]{10.0});
-    std::unique_ptr<double> const yCoordinatesFirstPoint(new double[1]{20.0});
-    firstPoint.coordinates_x = xCoordinatesFirstPoint.get();
-    firstPoint.coordinates_y = yCoordinatesFirstPoint.get();
-    firstPoint.num_coordinates = 1;
-
-    meshkernelapi::GeometryList secondPoint{};
-    std::unique_ptr<double> const xCoordinateSecondPoint(new double[1]{30.0});
-    std::unique_ptr<double> const yCoordinatesSecondPoint(new double[1]{20.0});
-    secondPoint.coordinates_x = xCoordinateSecondPoint.get();
-    secondPoint.coordinates_y = yCoordinatesSecondPoint.get();
-    secondPoint.num_coordinates = 1;
-
     // Execute
-    auto errorCode = mkernel_derefine_curvilinear(meshKernelId, firstPoint, secondPoint);
+    auto errorCode = meshkernelapi::mkernel_derefine_curvilinear(meshKernelId, 10.0, 20.0, 30.0, 20.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
