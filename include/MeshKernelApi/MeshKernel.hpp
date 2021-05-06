@@ -267,16 +267,18 @@ namespace meshkernelapi
 
         /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
         /// @param[in]  meshKernelId    Id of the grid state
-        /// @param[in]  xCoordinate     The x coordinate of the node to insert
-        /// @param[in]  yCoordinate     The y coordinate of the node to insert
+        /// @param[in]  xCoordinateIn   The x coordinate of the node to insert
+        /// @param[in]  yCoordinateIn   The y coordinate of the node to insert
         /// @param[in]  searchRadius    The radii where to search for mesh nodes
-        /// @param[out] node            The found Mesh2D node coordinates
+        /// @param[out] xCoordinateOut  The x coordinate of the found Mesh2D node
+        /// @param[out] yCoordinateOut  The y coordinate of the found Mesh2D node
         /// @returns Error code
         MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
-                                                        double xCoordinate,
-                                                        double yCoordinate,
+                                                        double xCoordinateIn,
+                                                        double yCoordinateIn,
                                                         double searchRadius,
-                                                        GeometryList& node);
+                                                        double& xCoordinateOut,
+                                                        double& yCoordinateOut);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
@@ -324,15 +326,15 @@ namespace meshkernelapi
         /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`.
         ///
         /// This function should be used by clients before `mkernel_refine_polygon` for allocating \ref GeometryList containing the refinement result.
-        /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The input polygon to refine
-        /// @param[in] firstIndex     The first index of the refinement interval
-        /// @param[in] secondIndex    The second index of the refinement interval
-        /// @param[in] distance       The target interval edge length
+        /// @param[in] meshKernelId          The id of the mesh state
+        /// @param[in] polygonToRefine       The input polygon to refine
+        /// @param[in] firstIndex            The first index of the refinement interval
+        /// @param[in] secondIndex           The second index of the refinement interval
+        /// @param[in] distance              The target interval edge length
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
         MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
-                                                     const GeometryList& geometryListIn,
+                                                     const GeometryList& polygonToRefine,
                                                      int firstIndex,
                                                      int secondIndex,
                                                      double distance,
