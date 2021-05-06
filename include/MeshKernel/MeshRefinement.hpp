@@ -88,7 +88,6 @@ namespace meshkernel
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
-        /// @param[in] sampleRefineParameters Refinement based on samples parameters
         /// @param[in] meshRefinementParameters Interpolation parameters
         explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 std::shared_ptr<AveragingInterpolation> averaging,

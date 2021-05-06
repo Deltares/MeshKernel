@@ -29,7 +29,7 @@
 
 namespace meshkernelapi
 {
-    /// @brief A struct used to describe the interpolation parameters in a C-compatible manner
+    /// @brief A struct used to describe the mesh parameters in a C-compatible manner
     struct MeshRefinementParameters
     {
         /// Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10)
