@@ -19,13 +19,13 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
         {15.5396099, 24.2669525, 1.0},
         {23.8305721, 23.9275551, 1.0}};
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -37,7 +37,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -110,13 +110,13 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
         {15.5396099, 24.2669525, 1.0},
         {23.8305721, 23.9275551, 1.0}};
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
@@ -128,7 +128,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     //Assert number of edges and nodes
@@ -210,13 +210,13 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
         {359.8657532, 350.3144836, 1.0},
         {387.5152588, 299.2614746, 1.0}};
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -228,7 +228,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -336,13 +336,13 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
         {13.5837603, 12.1783361, 3.0000000},
         {17.2156067, 16.9106121, 3.0000000}};
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
@@ -354,7 +354,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -405,13 +405,13 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
@@ -423,7 +423,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -470,13 +470,13 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::Max,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.01,
-                                                                                false,
-                                                                                true);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::Max,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.01,
+                                                                                   false,
+                                                                                   true);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 10;
@@ -488,7 +488,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 3;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     // total number of edges
@@ -627,13 +627,13 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
         {41.1085625, 41.1083946, 1.0},
         {41.1052971, 41.1083336, 1.0}};
 
-    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                samples,
-                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::MeshLocations::Faces,
-                                                                                1.0,
-                                                                                false,
-                                                                                false);
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -645,7 +645,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());

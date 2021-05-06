@@ -180,9 +180,9 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh2D> m_mesh;                                    ///< Pointer to the mesh
-        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;     ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                               ///< Polygons
-        meshkernelapi::MeshRefinementParameters m_interpolationParameters; ///< The interpolation parameters
+        std::shared_ptr<Mesh2D> m_mesh;                                     ///< Pointer to the mesh
+        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;      ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                                ///< Polygons
+        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
     };
 } // namespace meshkernel
