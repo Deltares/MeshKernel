@@ -804,6 +804,29 @@ namespace meshkernelapi
                                                                  GeometryList const& fromCoordinate,
                                                                  GeometryList const& toCoordinate);
 
+        /// @brief Attracts/repulses the gridlines in a block towards a defined grid line
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] repulsionParameter The attraction/repulsion parameter. If positive the gridlines are attracted towards the line, if negative the lines are repulsed
+        /// @param[in] xFirstNodeOnTheLine The x coordinate of the first node on the line
+        /// @param[in] yFirstNodeOnTheLine The y coordinate of the first node on the line
+        /// @param[in] xSecondNodeOnTheLine  The x coordinate of the second node on the line
+        /// @param[in] ySecondNodeOnTheLine  The y coordinate of the second node on the line
+        /// @param[in] xLowerLeftCorner The x coordinate of the lower left corner of the block where the operation is performed
+        /// @param[in] yLowerLeftCorner The y coordinate of the lower left corner of the block where the operation is performed
+        /// @param[in] xUpperRightCorner  The x coordinate of the upper right corner of the block where the operation is performed
+        /// @param[in] yUpperRightCorner  The y coordinate of the upper right corner of the block where the operation is performed
+        /// @return  Error code
+        MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+                                                                      double repulsionParameter,
+                                                                      double xFirstNodeOnTheLine,
+                                                                      double yFirstNodeOnTheLine,
+                                                                      double xSecondNodeOnTheLine,
+                                                                      double ySecondNodeOnTheLine,
+                                                                      double xLowerLeftCorner,
+                                                                      double yLowerLeftCorner,
+                                                                      double xUpperRightCorner,
+                                                                      double yUpperRightCorner);
+
         /// @brief Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code

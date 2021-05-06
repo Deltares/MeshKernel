@@ -40,6 +40,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
@@ -2321,6 +2322,45 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint[0], toPoint[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+                                                                  double repulsionParameter,
+                                                                  double xFirstNodeOnTheLine,
+                                                                  double yFirstNodeOnTheLine,
+                                                                  double xSecondNodeOnTheLine,
+                                                                  double ySecondNodeOnTheLine,
+                                                                  double xLowerLeftCorner,
+                                                                  double yLowerLeftCorner,
+                                                                  double xUpperRightCorner,
+                                                                  double yUpperRightCorner)
+    {
+
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
+
+            meshkernel::Point const lineFrom{xFirstNodeOnTheLine, yFirstNodeOnTheLine};
+            meshkernel::Point const lineTo{xSecondNodeOnTheLine, ySecondNodeOnTheLine};
+            curvilinearLineAttractionRepulsion.SetLine(lineFrom, lineTo);
+
+            meshkernel::Point const lowerLeft{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
+            curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearLineAttractionRepulsion.Compute();
         }
         catch (...)
         {
