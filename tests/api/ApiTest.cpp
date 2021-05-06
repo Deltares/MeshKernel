@@ -2539,16 +2539,8 @@ TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
     MakeUniformCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::GeometryList firstGridLineNode{};
-    std::unique_ptr<double> const firstGridNodeCoordinateX(new double[1]{-5.0});
-    std::unique_ptr<double> const firstGridNodeCoordinateY(new double[1]{5.0});
-
-    firstGridLineNode.coordinates_x = firstGridNodeCoordinateX.get();
-    firstGridLineNode.coordinates_y = firstGridNodeCoordinateY.get();
-    firstGridLineNode.num_coordinates = 1;
-
     //Execute
-    auto errorCode = mkernel_insert_face_curvilinear(meshKernelId, firstGridLineNode);
+    auto errorCode = meshkernelapi::mkernel_insert_face_curvilinear(meshKernelId, -5.0, 5.0);
 
     //Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
