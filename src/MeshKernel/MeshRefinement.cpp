@@ -731,11 +731,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
 
     for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
     {
-
-        size_t numHangingEdges;
-        size_t numHangingNodes;
-        size_t numEdgesToRefine;
-        FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
+        const auto [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
 
         std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
         size_t numEdgesToBeRefined = 0;
@@ -761,15 +757,12 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     }
 };
 
-void MeshRefinement::FindHangingNodes(size_t face,
-                                      size_t& numHangingEdges,
-                                      size_t& numHangingNodes,
-                                      size_t& numEdgesToRefine)
+std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
 {
 
-    numEdgesToRefine = 0;
-    numHangingEdges = 0;
-    numHangingNodes = 0;
+    size_t numEdgesToRefine = 0;
+    size_t numHangingEdges = 0;
+    size_t numHangingNodes = 0;
     const auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
 
     if (numFaceNodes > maximumNumberOfEdgesPerNode)
@@ -835,6 +828,8 @@ void MeshRefinement::FindHangingNodes(size_t face,
             }
         }
     }
+
+    return {numHangingEdges, numHangingNodes, numEdgesToRefine};
 }
 
 void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
@@ -947,10 +942,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                 continue;
             }
 
-            size_t numHangingEdges;
-            size_t numHangingNodes;
-            size_t numEdgesToRefine;
-            FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
+            auto [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
 
             const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
@@ -1096,10 +1088,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 continue;
             }
 
-            size_t numHangingEdges;
-            size_t numHangingNodes;
-            size_t numEdgesToRefine;
-            FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
+            auto const [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
 
             bool isSplittingRequired = false;
 

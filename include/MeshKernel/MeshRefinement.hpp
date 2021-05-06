@@ -140,14 +140,11 @@ namespace meshkernel
         void ComputeEdgesRefinementMask();
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
-        /// @param[in] face
-        /// @param[out] numHangingEdges
-        /// @param[out] numHangingNodes
-        /// @param[out] numEdgesToRefine
-        void FindHangingNodes(size_t face,
-                              size_t& numHangingEdges,
-                              size_t& numHangingNodes,
-                              size_t& numEdgesToRefine);
+        /// @param[in] face The current face index
+        /// @param[out] numHangingEdges The number of hanging edges on the face
+        /// @param[out] numHangingNodes The number of hanging nodes on the face
+        /// @param[out] numEdgesToRefine The number of edges on the face
+        [[nodiscard]] std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
