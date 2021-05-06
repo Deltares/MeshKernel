@@ -44,7 +44,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid             The input curvilinear grid
-        /// @param[in] attractionFactor The input attraction factor
+        /// @param[in] attractionFactor The input attraction/repulsion factor (positive attracts lines/negative repulses lines)
         CurvilinearGridLineAttractionRepulsion(std::shared_ptr<CurvilinearGrid> grid, double attractionFactor);
 
         /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
