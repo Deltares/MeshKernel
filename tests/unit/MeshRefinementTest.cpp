@@ -3,8 +3,7 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
+#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
@@ -28,19 +27,17 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.32;
-    sampleRefineParameters.min_face_size = 1.0;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.32;
+    meshRefinementParameters.min_face_size = 1.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -121,19 +118,17 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.64;
-    sampleRefineParameters.min_face_size = 2.0;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 4;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.64;
+    meshRefinementParameters.min_face_size = 2.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 4;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
     meshRefinement.Compute();
 
     //Assert number of edges and nodes
@@ -223,19 +218,17 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 15.97;
-    sampleRefineParameters.min_face_size = 50.0;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 15.97;
+    meshRefinementParameters.min_face_size = 50.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -272,12 +265,12 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // total number of edges
@@ -351,19 +344,17 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.96;
-    sampleRefineParameters.min_face_size = 3.0;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.96;
+    meshRefinementParameters.min_face_size = 3.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 2;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -422,19 +413,17 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.96;
-    sampleRefineParameters.min_face_size = 3.0;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 4;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.96;
+    meshRefinementParameters.min_face_size = 3.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 4;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -489,19 +478,17 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
                                                                                 false,
                                                                                 true);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.96;
-    sampleRefineParameters.min_face_size = 0.5;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 3;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.96;
+    meshRefinementParameters.min_face_size = 0.5;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 3;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 10;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
     meshRefinement.Compute();
 
     // total number of edges
@@ -556,12 +543,12 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -614,12 +601,12 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 2;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // assert on number of nodes and edges
@@ -648,19 +635,17 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
                                                                                 false,
                                                                                 false);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.maximum_time_step = 0.000527;
-    sampleRefineParameters.min_face_size = 0.00165;
-    sampleRefineParameters.account_for_samples_outside = 0;
-    sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.maximum_time_step = 0.000527;
+    meshRefinementParameters.min_face_size = 0.00165;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
-
-    meshkernel::MeshRefinement meshRefinement(mesh, averaging, sampleRefineParameters, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging, meshRefinementParameters);
     meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());
@@ -696,13 +681,13 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 {
     auto mesh = MakeCurvilinearGridForTesting();
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 1;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
 
     meshkernel::Polygons polygon;
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     mesh->ComputeEdgesLengths();
@@ -731,12 +716,12 @@ TEST(MeshRefinement, RefineElongatedFaces)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 2;
-    interpolationParameters.refine_intersected = 0;
-    interpolationParameters.use_mass_center_when_refining = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, interpolationParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
 
     // Execute
     meshRefinement.Compute();

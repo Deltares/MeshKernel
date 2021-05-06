@@ -667,26 +667,20 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
     geometryListIn.values = valuesIn.get();
-
     geometryListIn.num_coordinates = 9;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 2;
-    interpolationParameters.averaging_method = 1;
-    interpolationParameters.minimum_num_points = 1;
-    interpolationParameters.relative_search_radius = 1.01;
-    interpolationParameters.interpolate_to = 3;
-    interpolationParameters.refine_intersected = 0;
-
-    meshkernelapi::SampleRefineParameters samplesRefineParameters;
-    samplesRefineParameters.min_face_size = 0.5;
-    samplesRefineParameters.refinement_type = 3;
-    samplesRefineParameters.connect_hanging_nodes = 1;
-    samplesRefineParameters.maximum_time_step = 0.0;
-    samplesRefineParameters.account_for_samples_outside = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.minimum_num_points = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_face_size = 0.5;
+    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.maximum_time_step = 0.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, interpolationParameters, samplesRefineParameters);
+    auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, meshRefinementParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -747,16 +741,13 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 
     geometryListIn.num_coordinates = 9;
 
-    meshkernelapi::InterpolationParameters interpolationParameters;
-    interpolationParameters.max_num_refinement_iterations = 2;
-    interpolationParameters.averaging_method = 1;
-    interpolationParameters.minimum_num_points = 1;
-    interpolationParameters.relative_search_radius = 1.01;
-    interpolationParameters.interpolate_to = 3;
-    interpolationParameters.refine_intersected = 0;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.minimum_num_points = 1;
+    meshRefinementParameters.refine_intersected = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_based_on_polygon_mesh2d(meshKernelId, geometryListIn, interpolationParameters);
+    auto errorCode = mkernel_refine_based_on_polygon_mesh2d(meshKernelId, geometryListIn, meshRefinementParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state

@@ -31,12 +31,11 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
+#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #if defined(_WIN32)
@@ -451,24 +450,22 @@ namespace meshkernelapi
         /// The number of successive splits is indicated on the sample value.
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
-        /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] samples                 The sample set
-        /// @param[in] interpolationParameters The interpolation parameters
-        /// @param[in] sampleRefineParameters  The interpolation settings related to the samples
+        /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] samples                  The sample set
+        /// @param[in] meshRefinementParameters The interpolation parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
-                                                               const InterpolationParameters& interpolationParameters,
-                                                               const SampleRefineParameters& sampleRefineParameters);
+                                                               const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
-        /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] geometryList            The closed polygon where to perform the refinement
-        /// @param[in] interpolationParameters The interpolation parameters
+        /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] geometryList             The closed polygon where to perform the refinement
+        /// @param[in] meshRefinementParameters The interpolation parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId,
                                                                const GeometryList& geometryList,
-                                                               const InterpolationParameters& interpolationParameters);
+                                                               const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in] meshKernelId   The id of the mesh state

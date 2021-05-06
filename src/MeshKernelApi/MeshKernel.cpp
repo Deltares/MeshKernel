@@ -1175,8 +1175,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                            const GeometryList& samples,
-                                                           const InterpolationParameters& interpolationParameters,
-                                                           const SampleRefineParameters& sampleRefineParameters)
+                                                           const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1193,18 +1192,18 @@ namespace meshkernelapi
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
             meshkernel::AveragingInterpolation::Method averagingMethod;
-            if (sampleRefineParameters.refinement_type == 2)
+            if (meshRefinementParameters.refinement_type == 2)
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            if (sampleRefineParameters.refinement_type == 3)
+            if (meshRefinementParameters.refinement_type == 3)
             {
 
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
             }
 
-            const bool refineOutsideFace = sampleRefineParameters.account_for_samples_outside == 1 ? true : false;
-            const bool transformSamples = sampleRefineParameters.refinement_type == 3 ? true : false;
+            const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
+            const bool transformSamples = meshRefinementParameters.refinement_type == 3 ? true : false;
 
             const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
                                                                                         samplesVector,
@@ -1214,7 +1213,7 @@ namespace meshkernelapi
                                                                                         refineOutsideFace,
                                                                                         transformSamples);
 
-            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1224,7 +1223,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList, const InterpolationParameters& interpolationParameters)
+    MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1242,7 +1241,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(points, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
             meshRefinement.Compute();
         }
         catch (...)
