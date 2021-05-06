@@ -245,19 +245,19 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_delete_orthogonalization_mesh2d(int meshKernelId);
 
         /// @brief Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.
-        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] geometryList The orthogonality values of each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_orthogonality_mesh2d(int meshKernelId, GeometryList& geometryList);
 
         /// @brief Gets the smoothness, expressed as the ratio between the values of two neighboring faces areas.
-        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] geometryList The smoothness values at each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_smoothness_mesh2d(int meshKernelId, GeometryList& geometryList);
 
         /// @brief Get the computed spline points between two corner nodes
-        /// @param[in] geometryListIn The input corner nodes of the splines
+        /// @param[in]  geometryListIn  The input corner nodes of the splines
         /// @param[out] geometryListOut The output spline
         /// @param[out] numberOfPointsBetweenNodes The number of spline points to generate between two corner nodes.
         /// @returns Error code
@@ -267,8 +267,8 @@ namespace meshkernelapi
 
         /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
         /// @param[in]  meshKernelId    Id of the grid state
-        /// @param[in] xCoordinate      The new x coordinate of the node to insert
-        /// @param[in] yCoordinate      The new y coordinate of the node to insert
+        /// @param[in]  xCoordinate     The x coordinate of the node to insert
+        /// @param[in]  yCoordinate     The y coordinate of the node to insert
         /// @param[in]  searchRadius    The radii where to search for mesh nodes
         /// @param[out] node            The found Mesh2D node coordinates
         /// @returns Error code
@@ -279,7 +279,7 @@ namespace meshkernelapi
                                                         GeometryList& node);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
-        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
         /// @returns Error code
         MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& polygonPoints);
@@ -385,9 +385,9 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_insert_edge_mesh2d(int meshKernelId, int startNode, int endNode, int& newEdgeIndex);
 
         /// @brief Insert a new mesh2d node at a specific coordinate.
-        /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] xCoordinate   The new x coordinate of the node to insert
-        /// @param[in] yCoordinate   The new y coordinate of the node to insert
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[in]  xCoordinate  The x coordinate of the node to insert
+        /// @param[in]  yCoordinate  The y coordinate of the node to insert
         /// @param[out] nodeIndex    The index of the new mesh node
         /// @returns Error code
         MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex);
