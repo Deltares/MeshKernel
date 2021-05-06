@@ -27,33 +27,33 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttraction.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/Entities.hpp>
 
 using meshkernel::CurvilinearGrid;
-using meshkernel::CurvilinearGridLineAttraction;
+using meshkernel::CurvilinearGridLineAttractionRepulsion;
 using meshkernel::Point;
 
-CurvilinearGridLineAttraction::CurvilinearGridLineAttraction(std::shared_ptr<CurvilinearGrid> grid,
-                                                             double attractionFactor) : CurvilinearGridAlgorithm(grid), m_attractionFactor(attractionFactor)
+CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(std::shared_ptr<CurvilinearGrid> grid,
+                                                                               double attractionFactor) : CurvilinearGridAlgorithm(grid), m_attractionFactor(attractionFactor)
 
 {
     // store a deep copy of the grid for computing the displacements
     m_originalGrid = m_grid.CloneCurvilinearGrid();
 }
 
-CurvilinearGrid CurvilinearGridLineAttraction::Compute()
+CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
 {
     if (m_lines.empty())
     {
-        throw std::invalid_argument("CurvilinearGridLineAttraction::Compute No candidate line to shift has been selected");
+        throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute No candidate line to shift has been selected");
     }
 
     // Points are coinciding, no attraction/repulsion zone defined
     if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection && m_lowerLeft.m_n == m_upperRight.m_n ||
         m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection && m_lowerLeft.m_m == m_upperRight.m_m)
     {
-        throw std::invalid_argument("CurvilinearGridLineAttraction::Compute The points defining the attraction area have the same direction of the attraction line.");
+        throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute The points defining the attraction area have the same direction of the attraction line.");
     }
 
     auto const startM = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;

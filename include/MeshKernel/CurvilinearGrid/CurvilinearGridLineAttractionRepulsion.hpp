@@ -39,13 +39,13 @@ namespace meshkernel
     /// and the displacement gets distributed on the influence zone, set with SetBlock
     ///
     /// This option provides the possibility to fit the curvilinear grid’s edges to a land boundary.
-    class CurvilinearGridLineAttraction : public CurvilinearGridAlgorithm
+    class CurvilinearGridLineAttractionRepulsion : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         /// @param[in] grid             The input curvilinear grid
         /// @param[in] attractionFactor The input attraction factor
-        CurvilinearGridLineAttraction(std::shared_ptr<CurvilinearGrid> grid, double attractionFactor);
+        CurvilinearGridLineAttractionRepulsion(std::shared_ptr<CurvilinearGrid> grid, double attractionFactor);
 
         /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
         /// @return The shifted curvilinear grid
