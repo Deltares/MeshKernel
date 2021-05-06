@@ -141,9 +141,7 @@ namespace meshkernel
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
-        /// @param[out] numHangingEdges The number of hanging edges on the face
-        /// @param[out] numHangingNodes The number of hanging nodes on the face
-        /// @param[out] numEdgesToRefine The number of edges on the face
+        /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
         [[nodiscard]] std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
