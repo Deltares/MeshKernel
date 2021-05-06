@@ -168,7 +168,7 @@ namespace meshkernel
                                                                                                    NodeIndices const& lowerLeftIndices,
                                                                                                    NodeIndices const& upperRightIndices);
 
-        /// @brief Computes an average distance of the current node from the oder nodes (DXB)
+        /// @brief Computes an average distance of the current node from the other nodes (DXB)
         /// @param[in] nodeIndex The current node index
         /// @param[in] direction The direction, either m or n
         /// @return The computed distance
