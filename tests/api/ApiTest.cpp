@@ -1368,22 +1368,13 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::GeometryList geometryListOut;
-    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
-    std::unique_ptr<double> const xCoordinatesOut(new double[1]{meshkernel::doubleMissingValue});
-    std::unique_ptr<double> const yCoordinatesOut(new double[1]{meshkernel::doubleMissingValue});
-    std::unique_ptr<double> const valuesOut(new double[1]{meshkernel::doubleMissingValue});
-    geometryListOut.coordinates_x = xCoordinatesOut.get();
-    geometryListOut.coordinates_y = yCoordinatesOut.get();
-    geometryListOut.values = valuesOut.get();
-    geometryListOut.num_coordinates = 1;
-
     // Execute
-    auto errorCode = mkernel_get_closest_node_mesh2d(meshKernelId, -5.0, 5.0, 10.0, geometryListOut);
+    double xCoordinatesOut, yCoordinatesOut;
+    auto errorCode = meshkernelapi::mkernel_get_closest_node_mesh2d(meshKernelId, -5.0, 5.0, 10.0, xCoordinatesOut, yCoordinatesOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(0.0, geometryListOut.coordinates_x[0]);
+    ASSERT_EQ(0.0, xCoordinatesOut);
 }
 
 TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)

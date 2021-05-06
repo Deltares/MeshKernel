@@ -859,7 +859,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
-                                                 const GeometryList& geometryListIn,
+                                                 const GeometryList& polygonToRefine,
                                                  int firstIndex,
                                                  int secondIndex,
                                                  double distance,
@@ -873,7 +873,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
@@ -1277,7 +1277,12 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, GeometryList& node)
+    MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
+                                                    double xCoordinateIn,
+                                                    double yCoordinateIn,
+                                                    double searchRadius,
+                                                    double& xCoordinateOut,
+                                                    double& yCoordinateOut)
     {
         int exitCode = Success;
         try
@@ -1291,19 +1296,14 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            if (node.num_coordinates <= 0)
-            {
-                throw std::invalid_argument("MeshKernel: The output-geometry has no coordinates.");
-            }
-
-            meshkernel::Point const point{xCoordinate, yCoordinate};
+            meshkernel::Point const point{xCoordinateIn, yCoordinateIn};
 
             const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius);
 
             // Set the node coordinate
-            std::vector<meshkernel::Point> nodeVector;
-            nodeVector.emplace_back(meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex]);
-            ConvertPointVectorToGeometryList(nodeVector, node);
+            auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
+            xCoordinateOut = foundNode.x;
+            yCoordinateOut = foundNode.y;
         }
         catch (...)
         {
