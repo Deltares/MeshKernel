@@ -93,13 +93,15 @@ namespace meshkernel
         /// @param[in] relativeSearchRadius            The relative search radius, used to enlarge the search area when looking for samples.
         /// @param[in] useClosestSampleIfNoneAvailable If no samples are found, use the closest one.
         /// @param[in] subtractSampleValues            For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
+        /// @param[in] minNumSamples                   The minimum a of samples used for certain interpolation algorithms
         explicit AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                         std::vector<Sample>& samples,
                                         Method method,
                                         MeshLocations locationType,
                                         double relativeSearchRadius,
                                         bool useClosestSampleIfNoneAvailable,
-                                        bool subtractSampleValues);
+                                        bool subtractSampleValues,
+                                        size_t minNumSamples);
 
         /// @brief Compute interpolation
         void Compute();
@@ -164,6 +166,7 @@ namespace meshkernel
         MeshLocations m_interpolationLocation;          ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
+        size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
         bool m_transformSamples = false;                ///< Wheher to transform samples
 
         RTree m_samplesRtree;               ///< The samples tree

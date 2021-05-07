@@ -33,8 +33,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RTree.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
+#include <MeshKernelApi/MeshRefinementParameters.hpp>
 
 namespace meshkernel
 {
@@ -88,20 +87,18 @@ namespace meshkernel
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
-        /// @param[in] sampleRefineParameters Refinement based on samples parameters
-        /// @param[in] interpolationParameters Interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 std::shared_ptr<AveragingInterpolation> averaging,
-                                const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
-                                const meshkernelapi::InterpolationParameters& interpolationParameters);
+                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
-        /// @param[in] interpolationParameters Interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 const Polygons& polygon,
-                                const meshkernelapi::InterpolationParameters& interpolationParameters);
+                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Compute mesh refinement (refinecellsandfaces2).
         ///
@@ -142,14 +139,9 @@ namespace meshkernel
         void ComputeEdgesRefinementMask();
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
-        /// @param[in] face
-        /// @param[out] numHangingEdges
-        /// @param[out] numHangingNodes
-        /// @param[out] numEdgesToRefine
-        void FindHangingNodes(size_t face,
-                              size_t& numHangingEdges,
-                              size_t& numHangingNodes,
-                              size_t& numEdgesToRefine);
+        /// @param[in] face The current face index
+        /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
+        [[nodiscard]] std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
@@ -185,10 +177,9 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh2D> m_mesh;                                   ///< Pointer to the mesh
-        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;    ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                              ///< Polygons
-        meshkernelapi::SampleRefineParameters m_sampleRefineParameters;   ///< The sample parameters
-        meshkernelapi::InterpolationParameters m_interpolationParameters; ///< The interpolation parameters
+        std::shared_ptr<Mesh2D> m_mesh;                                     ///< Pointer to the mesh
+        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;      ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                                ///< Polygons
+        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
     };
 } // namespace meshkernel

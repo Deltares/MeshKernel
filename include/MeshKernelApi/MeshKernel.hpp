@@ -31,12 +31,11 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
+#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #if defined(_WIN32)
@@ -459,24 +458,26 @@ namespace meshkernelapi
         /// The number of successive splits is indicated on the sample value.
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
-        /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] samples                 The sample set
-        /// @param[in] interpolationParameters The interpolation parameters
-        /// @param[in] sampleRefineParameters  The interpolation settings related to the samples
+        /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] samples                  The sample set
+        /// @param[in] relativeSearchRadius     The relative search radius relative to the face size, used for some interpolation algorithms
+        /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
-                                                               const InterpolationParameters& interpolationParameters,
-                                                               const SampleRefineParameters& sampleRefineParameters);
+                                                               double relativeSearchRadius,
+                                                               int minimumNumSamples,
+                                                               const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
-        /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] geometryList            The closed polygon where to perform the refinement
-        /// @param[in] interpolationParameters The interpolation parameters
+        /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] geometryList             The closed polygon where to perform the refinement
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId,
                                                                const GeometryList& geometryList,
-                                                               const InterpolationParameters& interpolationParameters);
+                                                               const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in] meshKernelId   The id of the mesh state
@@ -890,7 +891,7 @@ namespace meshkernelapi
         /// @return Error code
         MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
                                                                    const GeometryList& samples,
-                                                                   const int& locationType,
+                                                                   int locationType,
                                                                    GeometryList& results);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
@@ -899,13 +900,15 @@ namespace meshkernelapi
         /// @param[in] locationType           The location type (see MeshLocations enum)
         /// @param[in] averagingMethodType    The averaging method (see Method enum)
         /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
+        /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
         /// @param[in] results                The interpolation results with x and y coordinates
         /// @return Error code
         MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
-                                                               const int& locationType,
-                                                               const int& averagingMethodType,
-                                                               const double& relativeSearchSize,
+                                                               int locationType,
+                                                               int averagingMethodType,
+                                                               double relativeSearchSize,
+                                                               size_t minNumSamples,
                                                                GeometryList& results);
 
         /// @brief Gets pointer to error message.
