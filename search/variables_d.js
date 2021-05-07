@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['use_5fmass_5fcenter_5fwhen_5frefining_920',['use_mass_center_when_refining',['../structmeshkernelapi_1_1_interpolation_parameters.html#a38437f8bfd87f52926798577ce1cfe1a',1,'meshkernelapi::InterpolationParameters']]]
+  ['use_5fmass_5fcenter_5fwhen_5frefining_908',['use_mass_center_when_refining',['../structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa8adc1b44903661e737c875be38b8dee',1,'meshkernelapi::MeshRefinementParameters']]]
 ];

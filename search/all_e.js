@@ -1,12 +1,11 @@
 var searchData=
 [
-  ['raddeg_5fhp_417',['raddeg_hp',['../namespacemeshkernel.html#a64209ad0c58850d197b587a0f42a524a',1,'meshkernel']]],
-  ['referencepoint_418',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
-  ['refine_5fintersected_419',['refine_intersected',['../structmeshkernelapi_1_1_interpolation_parameters.html#a977046bb695c93be7006b9a9aa228849',1,'meshkernelapi::InterpolationParameters']]],
-  ['refinefirstpolygon_420',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#a54e732f1c9ea29133459404f86581100',1,'meshkernel::Polygons']]],
-  ['refinement_5ftype_421',['refinement_type',['../structmeshkernelapi_1_1_sample_refine_parameters.html#a3acce6be61fa46c7e641117af0d4dd04',1,'meshkernelapi::SampleRefineParameters']]],
-  ['relative_5fsearch_5fradius_422',['relative_search_radius',['../structmeshkernelapi_1_1_interpolation_parameters.html#a8571203f45b520e89a62847a4f977ba6',1,'meshkernelapi::InterpolationParameters']]],
-  ['remove_5fskinny_5ftriangles_423',['remove_skinny_triangles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#acdabd5f96b5a04f6ae6bb19ad85d78d2',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['reordervector_424',['ReorderVector',['../namespacemeshkernel.html#a646ed9a7bd91f6f1bfb614977d686d94',1,'meshkernel']]],
-  ['rtree_425',['RTree',['../classmeshkernel_1_1_r_tree.html',1,'meshkernel']]]
+  ['raddeg_5fhp_413',['raddeg_hp',['../namespacemeshkernel.html#a64209ad0c58850d197b587a0f42a524a',1,'meshkernel']]],
+  ['referencepoint_414',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
+  ['refine_5fintersected_415',['refine_intersected',['../structmeshkernelapi_1_1_mesh_refinement_parameters.html#afc537138d30d99535cd5f4214497a8ae',1,'meshkernelapi::MeshRefinementParameters']]],
+  ['refinefirstpolygon_416',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#a54e732f1c9ea29133459404f86581100',1,'meshkernel::Polygons']]],
+  ['refinement_5ftype_417',['refinement_type',['../structmeshkernelapi_1_1_mesh_refinement_parameters.html#a457d7d501763e9e86659d67a5c6429dc',1,'meshkernelapi::MeshRefinementParameters']]],
+  ['remove_5fskinny_5ftriangles_418',['remove_skinny_triangles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#acdabd5f96b5a04f6ae6bb19ad85d78d2',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['reordervector_419',['ReorderVector',['../namespacemeshkernel.html#a646ed9a7bd91f6f1bfb614977d686d94',1,'meshkernel']]],
+  ['rtree_420',['RTree',['../classmeshkernel_1_1_r_tree.html',1,'meshkernel']]]
 ];

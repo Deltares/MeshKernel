@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['point_489',['Point',['../structmeshkernel_1_1_point.html',1,'meshkernel']]],
-  ['polygons_490',['Polygons',['../classmeshkernel_1_1_polygons.html',1,'meshkernel']]]
+  ['rtree_485',['RTree',['../classmeshkernel_1_1_r_tree.html',1,'meshkernel']]]
 ];

@@ -104,9 +104,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2734d06df016ed62f5bdc9d6a39f35c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a2734d06df016ed62f5bdc9d6a39f35c7">AveragingInterpolation</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::vector&lt; <a class="el" href="structmeshkernel_1_1_sample.html">Sample</a> &gt; &amp;samples, <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> method, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> locationType, double relativeSearchRadius, bool useClosestSampleIfNoneAvailable, bool subtractSampleValues)</td></tr>
-<tr class="memdesc:a2734d06df016ed62f5bdc9d6a39f35c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation based on averaging.  <a href="classmeshkernel_1_1_averaging_interpolation.html#a2734d06df016ed62f5bdc9d6a39f35c7">More...</a><br /></td></tr>
-<tr class="separator:a2734d06df016ed62f5bdc9d6a39f35c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e20232e12c29f93285855be18f12667"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a9e20232e12c29f93285855be18f12667">AveragingInterpolation</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::vector&lt; <a class="el" href="structmeshkernel_1_1_sample.html">Sample</a> &gt; &amp;samples, <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> method, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> locationType, double relativeSearchRadius, bool useClosestSampleIfNoneAvailable, bool subtractSampleValues, size_t minNumSamples)</td></tr>
+<tr class="memdesc:a9e20232e12c29f93285855be18f12667"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation based on averaging.  <a href="classmeshkernel_1_1_averaging_interpolation.html#a9e20232e12c29f93285855be18f12667">More...</a><br /></td></tr>
+<tr class="separator:a9e20232e12c29f93285855be18f12667"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a500805140a119509ed7c5058e2ec6361"><td class="memItemLeft" align="right" valign="top"><a id="a500805140a119509ed7c5058e2ec6361"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a500805140a119509ed7c5058e2ec6361">Compute</a> ()</td></tr>
 <tr class="memdesc:a500805140a119509ed7c5058e2ec6361"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute interpolation. <br /></td></tr>
@@ -171,8 +171,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2734d06df016ed62f5bdc9d6a39f35c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2734d06df016ed62f5bdc9d6a39f35c7">&#9670;&nbsp;</a></span>AveragingInterpolation()</h2>
+<a id="a9e20232e12c29f93285855be18f12667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e20232e12c29f93285855be18f12667">&#9670;&nbsp;</a></span>AveragingInterpolation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -220,7 +220,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>subtractSampleValues</em>&#160;</td>
+          <td class="paramname"><em>subtractSampleValues</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>minNumSamples</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -245,6 +251,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchRadius</td><td>The relative search radius, used to enlarge the search area when looking for samples. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">useClosestSampleIfNoneAvailable</td><td>If no samples are found, use the closest one. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">subtractSampleValues</td><td>For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minNumSamples</td><td>The minimum a of samples used for certain interpolation algorithms </td></tr>
   </table>
   </dd>
 </dl>

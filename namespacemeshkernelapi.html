@@ -95,9 +95,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe a list of geometries in a C-compatible manner.  <a href="structmeshkernelapi_1_1_geometry_list.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the interpolation parameters in a C-compatible manner.  <a href="structmeshkernelapi_1_1_interpolation_parameters.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct describes the necessary parameters to create a new mesh in a C-compatible manner.  <a href="structmeshkernelapi_1_1_make_mesh_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,11 +107,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_mesh_kernel_state.html">MeshKernelState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The class holding the state of the C API library.  <a href="classmeshkernelapi_1_1_mesh_kernel_state.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the mesh refinement parameters in a C-compatible manner.  <a href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the orthogonalization parameters in a C-compatible manner.  <a href="structmeshkernelapi_1_1_orthogonalization_parameters.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_sample_refine_parameters.html">SampleRefineParameters</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the sample refine parameters in a C-compatible manner.  <a href="structmeshkernelapi_1_1_sample_refine_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner.  <a href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#details">More...</a><br /></td></tr>
@@ -263,12 +260,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aa533f0643228c17ddb97730b87287804"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa533f0643228c17ddb97730b87287804">mkernel_count_offset_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, int &amp;numberOfPolygonNodes)</td></tr>
 <tr class="memdesc:aa533f0643228c17ddb97730b87287804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes resulting from polygon offset.  <a href="namespacemeshkernelapi.html#aa533f0643228c17ddb97730b87287804">More...</a><br /></td></tr>
 <tr class="separator:aa533f0643228c17ddb97730b87287804"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb9cd679347edfbb00c999248b88624d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#adb9cd679347edfbb00c999248b88624d">mkernel_refine_based_on_samples_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, const <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters, const <a class="el" href="structmeshkernelapi_1_1_sample_refine_parameters.html">SampleRefineParameters</a> &amp;sampleRefineParameters)</td></tr>
-<tr class="memdesc:adb9cd679347edfbb00c999248b88624d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <a href="namespacemeshkernelapi.html#adb9cd679347edfbb00c999248b88624d">More...</a><br /></td></tr>
-<tr class="separator:adb9cd679347edfbb00c999248b88624d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a945c7051955b5ba78dae524f7ae0c98f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a945c7051955b5ba78dae524f7ae0c98f">mkernel_refine_based_on_polygon_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters)</td></tr>
-<tr class="memdesc:a945c7051955b5ba78dae524f7ae0c98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.  <a href="namespacemeshkernelapi.html#a945c7051955b5ba78dae524f7ae0c98f">More...</a><br /></td></tr>
-<tr class="separator:a945c7051955b5ba78dae524f7ae0c98f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a2680c8e157458fa802015b82309e27"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2a2680c8e157458fa802015b82309e27">mkernel_refine_based_on_samples_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, double relativeSearchRadius, int minimumNumSamples, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
+<tr class="memdesc:a2a2680c8e157458fa802015b82309e27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <a href="namespacemeshkernelapi.html#a2a2680c8e157458fa802015b82309e27">More...</a><br /></td></tr>
+<tr class="separator:a2a2680c8e157458fa802015b82309e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6f730f3d068ea476555607b7672ff5"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3d6f730f3d068ea476555607b7672ff5">mkernel_refine_based_on_polygon_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
+<tr class="memdesc:a3d6f730f3d068ea476555607b7672ff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.  <a href="namespacemeshkernelapi.html#a3d6f730f3d068ea476555607b7672ff5">More...</a><br /></td></tr>
+<tr class="separator:a3d6f730f3d068ea476555607b7672ff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc9467af813deee52cb7d93efce575bc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acc9467af813deee52cb7d93efce575bc">mkernel_get_node_index_mesh2d</a> (int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int &amp;nodeIndex)</td></tr>
 <tr class="memdesc:acc9467af813deee52cb7d93efce575bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the mesh2d node closest to a point, within a search radius.  <a href="namespacemeshkernelapi.html#acc9467af813deee52cb7d93efce575bc">More...</a><br /></td></tr>
 <tr class="separator:acc9467af813deee52cb7d93efce575bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -393,12 +390,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a329b68c1ddf16b487d2954b65481e3c4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">mkernel_get_inner_outer_separator</a> ()</td></tr>
 <tr class="memdesc:a329b68c1ddf16b487d2954b65481e3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used to separate the inner part of a polygon from its outer part.  <a href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">More...</a><br /></td></tr>
 <tr class="separator:a329b68c1ddf16b487d2954b65481e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc6b1b99d45701d12d2afd5536d51afa"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afc6b1b99d45701d12d2afd5536d51afa">mkernel_triangulation_interpolation_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, const int &amp;locationType, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;results)</td></tr>
-<tr class="memdesc:afc6b1b99d45701d12d2afd5536d51afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangle interpolation (ec_module)  <a href="namespacemeshkernelapi.html#afc6b1b99d45701d12d2afd5536d51afa">More...</a><br /></td></tr>
-<tr class="separator:afc6b1b99d45701d12d2afd5536d51afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a1b27490bd914f4fe62d8b9684bdff1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1a1b27490bd914f4fe62d8b9684bdff1">mkernel_averaging_interpolation_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, const int &amp;locationType, const int &amp;averagingMethodType, const double &amp;relativeSearchSize, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;results)</td></tr>
-<tr class="memdesc:a1a1b27490bd914f4fe62d8b9684bdff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">AveragingInterpolation interpolation (ec_module)  <a href="namespacemeshkernelapi.html#a1a1b27490bd914f4fe62d8b9684bdff1">More...</a><br /></td></tr>
-<tr class="separator:a1a1b27490bd914f4fe62d8b9684bdff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f7f5f7bee3f200690aebee507de94c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a36f7f5f7bee3f200690aebee507de94c">mkernel_triangulation_interpolation_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, int locationType, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;results)</td></tr>
+<tr class="memdesc:a36f7f5f7bee3f200690aebee507de94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangle interpolation (ec_module)  <a href="namespacemeshkernelapi.html#a36f7f5f7bee3f200690aebee507de94c">More...</a><br /></td></tr>
+<tr class="separator:a36f7f5f7bee3f200690aebee507de94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d48f60b7b645474035786f7caba8707"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1d48f60b7b645474035786f7caba8707">mkernel_averaging_interpolation_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, int locationType, int averagingMethodType, double relativeSearchSize, size_t minNumSamples, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;results)</td></tr>
+<tr class="memdesc:a1d48f60b7b645474035786f7caba8707"><td class="mdescLeft">&#160;</td><td class="mdescRight">AveragingInterpolation interpolation (ec_module)  <a href="namespacemeshkernelapi.html#a1d48f60b7b645474035786f7caba8707">More...</a><br /></td></tr>
+<tr class="separator:a1d48f60b7b645474035786f7caba8707"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b809a55fd930f5c266f5d12fdfa816"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57b809a55fd930f5c266f5d12fdfa816">mkernel_get_error</a> (const char *&amp;error_message)</td></tr>
 <tr class="memdesc:a57b809a55fd930f5c266f5d12fdfa816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets pointer to error message.  <a href="namespacemeshkernelapi.html#a57b809a55fd930f5c266f5d12fdfa816">More...</a><br /></td></tr>
 <tr class="separator:a57b809a55fd930f5c266f5d12fdfa816"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,8 +444,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a1a1b27490bd914f4fe62d8b9684bdff1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a1b27490bd914f4fe62d8b9684bdff1">&#9670;&nbsp;</a></span>mkernel_averaging_interpolation_mesh2d()</h2>
+<a id="a1d48f60b7b645474035786f7caba8707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d48f60b7b645474035786f7caba8707">&#9670;&nbsp;</a></span>mkernel_averaging_interpolation_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -468,20 +465,26 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int &amp;&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>locationType</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int &amp;&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>averagingMethodType</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>relativeSearchSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>minNumSamples</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -505,6 +508,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see MeshLocations enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">averagingMethodType</td><td>The averaging method (see Method enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchSize</td><td>The relative search size around the location (larger increases the number of samples considered) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minNumSamples</td><td>The minimum number of samples used for some interpolation algorithms to perform a valid interpolation </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">results</td><td>The interpolation results with x and y coordinates </td></tr>
   </table>
   </dd>
@@ -3669,8 +3673,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a945c7051955b5ba78dae524f7ae0c98f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a945c7051955b5ba78dae524f7ae0c98f">&#9670;&nbsp;</a></span>mkernel_refine_based_on_polygon_mesh2d()</h2>
+<a id="a3d6f730f3d068ea476555607b7672ff5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d6f730f3d068ea476555607b7672ff5">&#9670;&nbsp;</a></span>mkernel_refine_based_on_polygon_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3690,8 +3694,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>interpolationParameters</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshRefinementParameters</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3706,7 +3710,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The closed polygon where to perform the refinement </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">interpolationParameters</td><td>The interpolation parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
   </table>
   </dd>
 </dl>
@@ -3714,8 +3718,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="adb9cd679347edfbb00c999248b88624d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb9cd679347edfbb00c999248b88624d">&#9670;&nbsp;</a></span>mkernel_refine_based_on_samples_mesh2d()</h2>
+<a id="a2a2680c8e157458fa802015b82309e27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a2680c8e157458fa802015b82309e27">&#9670;&nbsp;</a></span>mkernel_refine_based_on_samples_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3735,14 +3739,20 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>interpolationParameters</em>, </td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>relativeSearchRadius</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_sample_refine_parameters.html">SampleRefineParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>sampleRefineParameters</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minimumNumSamples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshRefinementParameters</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3757,8 +3767,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The sample set </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">interpolationParameters</td><td>The interpolation parameters </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sampleRefineParameters</td><td>The interpolation settings related to the samples </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchRadius</td><td>The relative search radius relative to the face size, used for some interpolation algorithms </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minimumNumSamples</td><td>The minimum number of samples used for some averaging algorithms </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
   </table>
   </dd>
 </dl>
@@ -4397,8 +4408,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="afc6b1b99d45701d12d2afd5536d51afa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc6b1b99d45701d12d2afd5536d51afa">&#9670;&nbsp;</a></span>mkernel_triangulation_interpolation_mesh2d()</h2>
+<a id="a36f7f5f7bee3f200690aebee507de94c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f7f5f7bee3f200690aebee507de94c">&#9670;&nbsp;</a></span>mkernel_triangulation_interpolation_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4418,7 +4429,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int &amp;&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>locationType</em>, </td>
         </tr>
         <tr>
