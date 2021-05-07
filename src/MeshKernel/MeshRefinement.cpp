@@ -844,10 +844,6 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                            size_t& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
-    if (m_refinementType == RefinementType::RidgeRefinement)
-    {
-        throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMaskFromSamples: This functionality is not implemented yet.");
-    }
 
     const auto refinementValue = m_averaging->GetResults()[face];
 
