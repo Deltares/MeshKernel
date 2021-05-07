@@ -126,7 +126,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     sampleRefineParameters.min_face_size = 2.0;
     sampleRefineParameters.account_for_samples_outside = 0;
     sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    sampleRefineParameters.refinement_type = 1;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 4;
@@ -356,7 +356,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     sampleRefineParameters.min_face_size = 3.0;
     sampleRefineParameters.account_for_samples_outside = 0;
     sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    sampleRefineParameters.refinement_type = 1;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 2;
@@ -427,7 +427,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     sampleRefineParameters.min_face_size = 3.0;
     sampleRefineParameters.account_for_samples_outside = 0;
     sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 2;
+    sampleRefineParameters.refinement_type = 1;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 4;
@@ -494,7 +494,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     sampleRefineParameters.min_face_size = 0.5;
     sampleRefineParameters.account_for_samples_outside = 0;
     sampleRefineParameters.connect_hanging_nodes = 1;
-    sampleRefineParameters.refinement_type = 3;
+    sampleRefineParameters.refinement_type = 2;
 
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.max_num_refinement_iterations = 10;
