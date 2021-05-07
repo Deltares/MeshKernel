@@ -489,6 +489,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.refinement_type = 3;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+
     meshRefinement.Compute();
 
     // total number of edges
