@@ -126,7 +126,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     meshRefinementParameters.min_face_size = 2.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.refinement_type = 1;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
@@ -352,7 +352,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     meshRefinementParameters.min_face_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.refinement_type = 1;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -421,7 +421,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.min_face_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.refinement_type = 1;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -486,7 +486,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.min_face_size = 0.5;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.refinement_type = 2;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
