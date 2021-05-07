@@ -454,7 +454,7 @@ namespace meshkernelapi
         /// @param[in] samples                  The sample set
         /// @param[in] relativeSearchRadius     The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
-        /// @param[in] meshRefinementParameters The interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
@@ -465,7 +465,7 @@ namespace meshkernelapi
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId             The id of the mesh state
         /// @param[in] geometryList             The closed polygon where to perform the refinement
-        /// @param[in] meshRefinementParameters The interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId,
                                                                const GeometryList& geometryList,

@@ -88,7 +88,7 @@ namespace meshkernel
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
-        /// @param[in] meshRefinementParameters Interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 std::shared_ptr<AveragingInterpolation> averaging,
                                 const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
@@ -96,7 +96,7 @@ namespace meshkernel
         /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
-        /// @param[in] meshRefinementParameters Interpolation parameters
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
         explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 const Polygons& polygon,
                                 const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
