@@ -44,14 +44,14 @@ CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(s
 
 CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
 {
-    if (m_lines.empty())
-    {
-        throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute No candidate line to shift has been selected");
-    }
-
     if (m_grid.m_gridNodes.empty())
     {
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute Empty grid");
+    }
+
+    if (m_lines.empty())
+    {
+        throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute No candidate line to shift has been selected");
     }
 
     // Points are coinciding, no attraction/repulsion zone defined

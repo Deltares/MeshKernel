@@ -102,7 +102,6 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        /// @returns
         CurvilinearGrid() = default;
 
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points

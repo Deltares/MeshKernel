@@ -55,7 +55,7 @@ public:
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
     {
 
-        meshkernelapi::MakeMeshParameters makeMeshParameters{};
+        meshkernelapi::MakeMeshParameters makeMeshParameters;
         meshkernelapi::GeometryList geometryList{};
 
         makeMeshParameters.grid_type = 0;
@@ -1242,7 +1242,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     ASSERT_THAT(computedCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 }
 
-TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
+TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError)
 {
     // Prepare
     int meshKernelId;
@@ -2817,4 +2817,43 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     const double tolerance = 1e-6;
     std::vector<double> computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
     ASSERT_NEAR(computedResultsValues[8], 5.6666666666666670, tolerance);
+}
+
+TEST_F(ApiTests, LineAttraction_OnCurvilinearGrid_ShouldAttractGridlines)
+{
+    // Prepare
+    auto const meshKernelId = GetMeshKernelId();
+
+    MakeUniformCurvilinearGrid(5, 5, 10);
+
+    auto errorCode = meshkernelapi::mkernel_line_attraction_repulsion_curvilinear(meshKernelId,
+                                                                                  0.5,
+                                                                                  30.0, 0.0, 30.0, 50.0,
+                                                                                  10.0, 20.0, 50.0, 20.0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> edge_nodes(new int[curvilinearGrid.num_edges * 2]);
+    std::unique_ptr<double> const node_x(new double[curvilinearGrid.num_nodes]);
+    std::unique_ptr<double> const node_y(new double[curvilinearGrid.num_nodes]);
+    std::unique_ptr<double> const edge_x(new double[curvilinearGrid.num_edges]);
+    std::unique_ptr<double> const edge_y(new double[curvilinearGrid.num_edges]);
+    curvilinearGrid.edge_nodes = edge_nodes.get();
+    curvilinearGrid.node_x = node_x.get();
+    curvilinearGrid.node_y = node_y.get();
+    curvilinearGrid.edge_x = edge_x.get();
+    curvilinearGrid.edge_y = edge_y.get();
+    errorCode = mkernel_get_data_curvilinear(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert data
+    const double tolerance = 1e-6;
+    // Nodes
+    ASSERT_NEAR(17.5, curvilinearGrid.node_x[2], tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.node_y[2], tolerance);
+    ASSERT_NEAR(42.5, curvilinearGrid.node_x[4], tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 }

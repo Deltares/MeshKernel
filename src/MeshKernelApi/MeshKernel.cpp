@@ -501,12 +501,12 @@ namespace meshkernelapi
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                                                smoother,
-                                                                                                                                orthogonalizer,
-                                                                                                                                polygon,
-                                                                                                                                landBoundary,
-                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
-                                                                                                                                orthogonalizationParameters);
+                                                                                                               smoother,
+                                                                                                               orthogonalizer,
+                                                                                                               polygon,
+                                                                                                               landBoundary,
+                                                                                                               static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                               orthogonalizationParameters);
             meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
         catch (...)
@@ -2330,45 +2330,6 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
-                                                                  double repulsionParameter,
-                                                                  double xFirstNodeOnTheLine,
-                                                                  double yFirstNodeOnTheLine,
-                                                                  double xSecondNodeOnTheLine,
-                                                                  double ySecondNodeOnTheLine,
-                                                                  double xLowerLeftCorner,
-                                                                  double yLowerLeftCorner,
-                                                                  double xUpperRightCorner,
-                                                                  double yUpperRightCorner)
-    {
-
-        int exitCode = Success;
-        try
-        {
-            if (meshKernelState.count(meshKernelId) == 0)
-            {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
-            }
-
-            meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
-
-            meshkernel::Point const lineFrom{xFirstNodeOnTheLine, yFirstNodeOnTheLine};
-            meshkernel::Point const lineTo{xSecondNodeOnTheLine, ySecondNodeOnTheLine};
-            curvilinearLineAttractionRepulsion.SetLine(lineFrom, lineTo);
-
-            meshkernel::Point const lowerLeft{xLowerLeftCorner, yLowerLeftCorner};
-            meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
-            curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
-
-            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearLineAttractionRepulsion.Compute();
-        }
-        catch (...)
-        {
-            exitCode = HandleExceptions(std::current_exception());
-        }
-        return exitCode;
-    }
-
     MKERNEL_API int mkernel_line_shift_curvilinear(int meshKernelId)
     {
         int exitCode = Success;
@@ -2460,6 +2421,44 @@ namespace meshkernelapi
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+                                                                  double repulsionParameter,
+                                                                  double xFirstNodeOnTheLine,
+                                                                  double yFirstNodeOnTheLine,
+                                                                  double xSecondNodeOnTheLine,
+                                                                  double ySecondNodeOnTheLine,
+                                                                  double xLowerLeftCorner,
+                                                                  double yLowerLeftCorner,
+                                                                  double xUpperRightCorner,
+                                                                  double yUpperRightCorner)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
+
+            meshkernel::Point const lineFrom{xFirstNodeOnTheLine, yFirstNodeOnTheLine};
+            meshkernel::Point const lineTo{xSecondNodeOnTheLine, ySecondNodeOnTheLine};
+            curvilinearLineAttractionRepulsion.SetLine(lineFrom, lineTo);
+
+            meshkernel::Point const lowerLeft{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
+            curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearLineAttractionRepulsion.Compute();
         }
         catch (...)
         {
