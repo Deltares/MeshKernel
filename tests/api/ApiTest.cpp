@@ -104,25 +104,25 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     ASSERT_EQ(15, mesh2d.num_edges);
 
     // Allocate memory and get data
-    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
-    std::vector<int> face_nodes(mesh2d.num_face_nodes);
-    std::vector<int> nodes_per_face(mesh2d.num_faces);
-    std::vector<double> node_x(mesh2d.num_nodes);
-    std::vector<double> node_y(mesh2d.num_nodes);
-    std::vector<double> edge_x(mesh2d.num_edges);
-    std::vector<double> edge_y(mesh2d.num_edges);
-    std::vector<double> face_x(mesh2d.num_faces);
-    std::vector<double> face_y(mesh2d.num_faces);
+    std::unique_ptr<int> const edge_nodes(new int[mesh2d.num_edges * 2]);
+    std::unique_ptr<int> const face_nodes(new int[mesh2d.num_face_nodes]);
+    std::unique_ptr<int> const nodes_per_face(new int[mesh2d.num_faces]);
+    std::unique_ptr<double> const node_x(new double[mesh2d.num_nodes]);
+    std::unique_ptr<double> const node_y(new double[mesh2d.num_nodes]);
+    std::unique_ptr<double> const edge_x(new double[mesh2d.num_edges]);
+    std::unique_ptr<double> const edge_y(new double[mesh2d.num_edges]);
+    std::unique_ptr<double> const face_x(new double[mesh2d.num_faces]);
+    std::unique_ptr<double> const face_y(new double[mesh2d.num_faces]);
 
-    mesh2d.edge_nodes = &edge_nodes[0];
-    mesh2d.face_nodes = &face_nodes[0];
-    mesh2d.nodes_per_face = &nodes_per_face[0];
-    mesh2d.node_x = &node_x[0];
-    mesh2d.node_y = &node_y[0];
-    mesh2d.edge_x = &edge_x[0];
-    mesh2d.edge_y = &edge_y[0];
-    mesh2d.face_x = &face_x[0];
-    mesh2d.face_y = &face_y[0];
+    mesh2d.edge_nodes = edge_nodes.get();
+    mesh2d.face_nodes = face_nodes.get();
+    mesh2d.nodes_per_face = nodes_per_face.get();
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_x = edge_x.get();
+    mesh2d.edge_y = edge_y.get();
+    mesh2d.face_x = face_x.get();
+    mesh2d.face_y = face_y.get();
     errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -1932,12 +1932,12 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
     ASSERT_GT(numHangingEdges, 0);
 
     // Execute
-    std::vector<int> hangingEdges(numHangingEdges);
-    errorCode = meshkernelapi::mkernel_get_hanging_edges_mesh2d(meshKernelId, &hangingEdges[0]);
+    std::unique_ptr<int> const hangingEdges(new int[numHangingEdges]);
+    errorCode = meshkernelapi::mkernel_get_hanging_edges_mesh2d(meshKernelId, hangingEdges.get());
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(hangingEdges[0], 8);
+    ASSERT_EQ(hangingEdges.get()[0], 8);
 }
 
 TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
@@ -2000,7 +2000,8 @@ TEST_F(ApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList edgeOrthogonality;
-    edgeOrthogonality.values = &std::vector<double>(mesh2d.num_edges)[0];
+    std::unique_ptr<double> const values(new double[mesh2d.num_edges]);
+    edgeOrthogonality.values = values.get();
     edgeOrthogonality.num_coordinates = mesh2d.num_edges;
 
     // Execute
@@ -2021,7 +2022,8 @@ TEST_F(ApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList edgeSmoothness;
-    edgeSmoothness.values = &std::vector<double>(mesh2d.num_edges)[0];
+    std::unique_ptr<double> const values(new double[mesh2d.num_edges]);
+    edgeSmoothness.values = values.get();
     edgeSmoothness.num_coordinates = mesh2d.num_edges;
 
     // Execute
@@ -2045,18 +2047,19 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
-    std::vector<int> selectedNodes(mesh2d.num_nodes, -1);
+    std::unique_ptr<int> const selectedNodes(new int[mesh2d.num_nodes]);
     errorCode = mkernel_get_nodes_in_polygons_mesh2d(meshKernelId,
                                                      geometryListIn,
                                                      1,
-                                                     &selectedNodes[0]);
+                                                     selectedNodes.get());
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (all nodes indices will be selected)
+    std::vector<int> actualResult(selectedNodes.get(), selectedNodes.get() + mesh2d.num_nodes);
     std::vector<int> expectedResult(mesh2d.num_nodes);
     std::iota(expectedResult.begin(), expectedResult.end(), 0);
-    ASSERT_THAT(selectedNodes, ::testing::ContainerEq(expectedResult));
+    ASSERT_THAT(actualResult, ::testing::ContainerEq(expectedResult));
 }
 
 TEST_F(ApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
