@@ -165,6 +165,12 @@ namespace meshkernel
         /// @return A pointer to a deep copy of current curvilinear grid instance
         [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
 
+        /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
+        /// @param firstNode The first node of the boundary grid line.
+        /// @param secondNode The second node of the boundary grid line.
+        /// @return If a new grid line has been allocated
+        bool AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIndices const& secondNode, NodeType nodeType);
+
         size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;         ///< Member variable storing the grid

@@ -30,7 +30,6 @@
 #include <memory>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
 namespace meshkernel
