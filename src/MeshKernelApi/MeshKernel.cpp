@@ -2390,10 +2390,10 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_line_mirror_curvilinear(int meshKernelId,
                                                     double mirroring,
-                                                    double xFromCoordinate,
-                                                    double yFromCoordinate,
-                                                    double xToCoordinate,
-                                                    double yToCoordinate)
+                                                    double xFirstGridLineNode,
+                                                    double yFirstGridLineNode,
+                                                    double xSecondGridLineNode,
+                                                    double ySecondGridLineNode)
     {
         int exitCode = Success;
         try
@@ -2415,7 +2415,7 @@ namespace meshkernelapi
 
             auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(meshKernelState[meshKernelId].m_curvilinearGrid, mirroring);
 
-            curvilinearGridLineMirror.SetLine({xFromCoordinate, yFromCoordinate}, {xToCoordinate, yToCoordinate});
+            curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 
             *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridLineMirror.Compute();
         }
