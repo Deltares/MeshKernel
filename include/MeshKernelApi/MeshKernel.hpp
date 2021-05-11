@@ -875,6 +875,21 @@ namespace meshkernelapi
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
 
+        /// @brief Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mirroringFactor       The mirroring factor
+        /// @param[in] xFirstGridLineNode    The x coordinate of the first grid line point 
+        /// @param[in] yFirstGridLineNode    The y coordinate of the first grid line point
+        /// @param[in] xSecondGridLineNode   The x coordinate of the second grid line point
+        /// @param[in] ySecondGridLineNode   The y coordinate of the second grid line point
+        /// @return Error code
+        MKERNEL_API int mkernel_line_mirror_curvilinear(int meshKernelId,
+                                                        double mirroring,
+                                                        double xFirstGridlineNode,
+                                                        double yFirstGridlineNode,
+                                                        double xSecondGridLineNode,
+                                                        double ySecondGridLineNode);
+
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_separator();

@@ -45,9 +45,9 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
     {
         throw std::invalid_argument("CurvilinearGridLineMirror::Compute No candidate line to shift has been selected");
     }
-    if (m_grid.m_numM < 2 || m_grid.m_numN < 2)
+    if (!m_grid.IsValid())
     {
-        throw std::invalid_argument("CurvilinearGridLineMirror::Compute Invalid curvilinear grid");
+        throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid curvilinear grid");
     }
 
     const auto startNode = m_lines[0].m_startNode;
@@ -79,6 +79,8 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
             m_grid.m_gridNodes[i].front() = m_grid.m_gridNodes[i][1] * a + m_grid.m_gridNodes[i][2] * b;
         }
     }
+
+    m_grid.SetFlatCopies();
 
     return m_grid;
 }

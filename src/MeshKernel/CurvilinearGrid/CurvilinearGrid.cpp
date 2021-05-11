@@ -49,6 +49,8 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
 
 void CurvilinearGrid::SetFlatCopies()
 {
+    m_numM = m_gridNodes.size();
+    m_numN = m_gridNodes[0].size();
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
     m_edges = edges;
@@ -506,8 +508,6 @@ void CurvilinearGrid::InsertFace(Point const& point)
 
     // Re-compute quantities
     ComputeGridNodeTypes();
-    m_numM = m_gridNodes.size();
-    m_numN = m_gridNodes[0].size();
     SetFlatCopies();
 }
 
