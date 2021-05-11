@@ -511,51 +511,78 @@ void CurvilinearGrid::InsertFace(Point const& point)
     SetFlatCopies();
 }
 
-bool CurvilinearGrid::AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIndices const& secondNode, NodeType nodeType)
+bool CurvilinearGrid::AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIndices const& secondNode)
 {
     // If both nodes are invalid, we can substitute the invalid values. New allocation is not needed.
     bool const areNodesValid = m_gridNodes[firstNode.m_m][firstNode.m_n].IsValid() && m_gridNodes[secondNode.m_m][secondNode.m_n].IsValid();
+
     // Allocation depends on directions
-    if (nodeType == NodeType::Left && areNodesValid)
+    bool hasNewAllocationOccurred = false;
+    auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
+    if (gridLineType == BoundaryGridLineType::Left && areNodesValid)
     {
         m_gridNodes.emplace(m_gridNodes.begin(), std::vector<Point>(m_gridNodes[0].size()));
-        return true;
+        hasNewAllocationOccurred = true;
     }
-    if (nodeType == NodeType::Right && areNodesValid)
+    if (gridLineType == BoundaryGridLineType::Right && areNodesValid)
     {
         m_gridNodes.emplace_back(std::vector<Point>(m_gridNodes[0].size()));
-        return true;
+        hasNewAllocationOccurred = true;
     }
-    if (nodeType == NodeType::Up && areNodesValid)
+    if (gridLineType == BoundaryGridLineType::Up && areNodesValid)
     {
         for (auto& gridNodes : m_gridNodes)
         {
             gridNodes.emplace_back();
         }
-        return true;
+        hasNewAllocationOccurred = true;
     }
-    if (nodeType == NodeType::Bottom && areNodesValid)
+    if (gridLineType == BoundaryGridLineType::Bottom && areNodesValid)
     {
         for (auto& gridNodes : m_gridNodes)
         {
             gridNodes.emplace(gridNodes.begin());
         }
-        return true;
+        hasNewAllocationOccurred = true;
     }
-    return false;
+
+    return hasNewAllocationOccurred;
 }
 
-void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
-                              NodeIndices const& secondNode)
+CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(NodeIndices const& firstNode, NodeIndices const& secondNode) const
 {
+    auto const firstNodeType = m_gridNodesTypes[firstNode.m_m][firstNode.m_n];
+    auto const secondNodeType = m_gridNodesTypes[secondNode.m_m][secondNode.m_n];
+
+    if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom)
+    {
+        return BoundaryGridLineType::Bottom;
+    }
+    if (firstNodeType == NodeType::Up || secondNodeType == NodeType::Up)
+    {
+        return BoundaryGridLineType::Up;
+    }
+    if (firstNodeType == NodeType::Left || secondNodeType == NodeType::Left)
+    {
+        return BoundaryGridLineType::Left;
+    }
+    if (firstNodeType == NodeType::Right || secondNodeType == NodeType::Right)
+    {
+        return BoundaryGridLineType::Right;
+    }
+}
+
+void CurvilinearGrid::AddEdge(NodeIndices const& firstNode, NodeIndices const& secondNode)
+{
+
+    // Allocate new grid line if needed
+    auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
     // Allocation depends on directions
-    if (m_gridNodesTypes[firstNode.m_m][firstNode.m_n] == NodeType::Left ||
-        m_gridNodesTypes[secondNode.m_m][secondNode.m_n] == NodeType::Left)
+    if (gridLineType == BoundaryGridLineType::Left)
     {
         auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m + 1][firstNode.m_n];
         auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m + 1][secondNode.m_n];
-        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode, NodeType::Left);
-
+        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
             m_gridNodes.front()[firstNode.m_n] = firstNewNodeCoordinates;
@@ -567,29 +594,26 @@ void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
         m_gridNodes[secondNode.m_m - 1][secondNode.m_n] = secondNewNodeCoordinates;
         return;
     }
-    if (m_gridNodesTypes[firstNode.m_m][firstNode.m_n] == NodeType::Right ||
-        m_gridNodesTypes[secondNode.m_m][secondNode.m_n] == NodeType::Right)
+    if (gridLineType == BoundaryGridLineType::Right)
     {
         auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m - 1][firstNode.m_n];
         auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m - 1][secondNode.m_n];
-        AddGridLineAtBoundary(firstNode, secondNode, NodeType::Right);
-
+        AddGridLineAtBoundary(firstNode, secondNode);
         m_gridNodes[firstNode.m_m + 1][firstNode.m_n] = firstNewNodeCoordinates;
         m_gridNodes[secondNode.m_m + 1][secondNode.m_n] = secondNewNodeCoordinates;
 
         return;
     }
-    if (m_gridNodesTypes[firstNode.m_m][firstNode.m_n] == NodeType::Bottom ||
-        m_gridNodesTypes[secondNode.m_m][secondNode.m_n] == NodeType::Bottom)
+    if (gridLineType == BoundaryGridLineType::Bottom)
     {
         auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m][firstNode.m_n + 1];
         auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m][secondNode.m_n + 1];
-        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode, NodeType::Bottom);
+        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
             // Assign the new coordinates
-            m_gridNodes[firstNode.m_m].back() = firstNewNodeCoordinates;
-            m_gridNodes[secondNode.m_m].back() = secondNewNodeCoordinates;
+            m_gridNodes[firstNode.m_m].front() = firstNewNodeCoordinates;
+            m_gridNodes[secondNode.m_m].front() = secondNewNodeCoordinates;
             return;
         }
 
@@ -597,13 +621,11 @@ void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
         m_gridNodes[secondNode.m_m][secondNode.m_n - 1] = secondNewNodeCoordinates;
     }
 
-    if (m_gridNodesTypes[firstNode.m_m][firstNode.m_n] == NodeType::Up ||
-        m_gridNodesTypes[secondNode.m_m][secondNode.m_n] == NodeType::Up)
+    if (gridLineType == BoundaryGridLineType::Up)
     {
         auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m][firstNode.m_n - 1];
         auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m][secondNode.m_n - 1];
-        AddGridLineAtBoundary(firstNode, secondNode, NodeType::Up);
-
+        AddGridLineAtBoundary(firstNode, secondNode);
         m_gridNodes[firstNode.m_m][firstNode.m_n + 1] = firstNewNodeCoordinates;
         m_gridNodes[secondNode.m_m][secondNode.m_n + 1] = secondNewNodeCoordinates;
     }

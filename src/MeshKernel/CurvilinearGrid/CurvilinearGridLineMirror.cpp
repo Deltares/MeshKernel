@@ -34,11 +34,9 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLineMirror;
 using meshkernel::Point;
 
-CurvilinearGridLineMirror::CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid) : CurvilinearGridAlgorithm(grid)
+CurvilinearGridLineMirror::CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid, double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
 
 {
-    // store a deep copy of the grid for computing the displacements
-    m_originalGrid = m_grid.CloneCurvilinearGrid();
 }
 
 CurvilinearGrid CurvilinearGridLineMirror::Compute()
@@ -47,43 +45,45 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
     {
         throw std::invalid_argument("CurvilinearGridLineMirror::Compute No candidate line to shift has been selected");
     }
-
-    /// The first delta
-    auto const previousNodeIndex = m_lines[0].m_startNode;
-    auto previousDelta = m_grid.m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n] -
-                         m_originalGrid.m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n];
-
-    const double eps = 1e-5;
-    auto previousCoordinate = m_lines[0].m_startCoordinate;
-    for (auto i = 1; i <= m_lines[0].m_endCoordinate; ++i)
+    if (m_grid.m_numM < 2 || m_grid.m_numN < 2)
     {
-        auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
+        throw std::invalid_argument("CurvilinearGridLineMirror::Compute Invalid curvilinear grid");
+    }
 
-        auto const currentDelta = m_grid.m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
-                                  m_originalGrid.m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
+    const auto startNode = m_lines[0].m_startNode;
+    const auto endNode = m_lines[0].m_endNode;
 
-        if (std::abs(currentDelta.x) < eps && std::abs(currentDelta.y) < eps && i != m_lines[0].m_endCoordinate)
+    m_grid.ComputeGridNodeTypes();
+    auto const gridLineType = m_grid.GetBoundaryGridLineType(startNode, endNode);
+    m_grid.AddGridLineAtBoundary(startNode, endNode);
+
+    double const a = 1.0 + m_mirroringFactor;
+    double const b = -m_mirroringFactor;
+
+    for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
+    {
+        if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Left)
         {
-            continue;
+            m_grid.m_gridNodes.front()[i] = m_grid.m_gridNodes[1][i] * a + m_grid.m_gridNodes[2][i] * b;
         }
-
-        /// On the original algorithm currentDelta is distributed on the nodes above the current i,
-        /// except for the last node m_endCoordinate, where currentDelta is distributed on the entire grid line
-        const auto currentLastCoordinate = i == m_lines[0].m_endCoordinate ? i : i - 1;
-        for (auto j = previousCoordinate; j <= currentLastCoordinate; ++j)
+        if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
-
-            auto const nodeIndex = m_lines[0].GetNodeIndexFromCoordinate(j);
-
-            auto const firstFactor = static_cast<double>(j - previousCoordinate) / static_cast<double>(i - previousCoordinate);
-            auto const secondFactor = 1.0 - firstFactor;
-
-            // Now distribute the shifting
-            m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_originalGrid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
-                                                               previousDelta * secondFactor + currentDelta * firstFactor;
+            m_grid.m_gridNodes.back()[i] = m_grid.m_gridNodes[m_grid.m_numM - 2][i] * a - m_grid.m_gridNodes[m_grid.m_numM - 3][i] * b;
         }
-        previousCoordinate = i;
-        previousDelta = currentDelta;
+        if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)
+        {
+            for (auto& gridNodes : m_grid.m_gridNodes)
+            {
+                gridNodes.back() = gridNodes[m_grid.m_numN - 2] * a + gridNodes[m_grid.m_numN - 3] * b;
+            }
+        }
+        if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Bottom)
+        {
+            for (auto& gridNodes : m_grid.m_gridNodes)
+            {
+                gridNodes.front() = gridNodes[1] * a + gridNodes[2] * b;
+            }
+        }
     }
 
     return m_grid;

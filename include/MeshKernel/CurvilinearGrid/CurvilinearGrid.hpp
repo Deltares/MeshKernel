@@ -54,6 +54,15 @@ namespace meshkernel
             Invalid        //(0)
         };
 
+        /// @brief An enum for boundary grid line types
+        enum class BoundaryGridLineType
+        {
+            Left,
+            Right,
+            Bottom,
+            Up
+        };
+
         /// @brief A struct describing a node in the curvilinear grid in terms of node indices
         struct NodeIndices
         {
@@ -169,7 +178,13 @@ namespace meshkernel
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        bool AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIndices const& secondNode, NodeType nodeType);
+        bool AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIndices const& secondNode);
+
+        /// @brief Get the boundary grid line type: left, right, bottom or up
+        /// @param[in] firstNode The first node of the grid line
+        /// @param[in] secondNode The second node of the grid line
+        /// @return The boundary grid line type
+        BoundaryGridLineType GetBoundaryGridLineType(NodeIndices const& firstNode, NodeIndices const& secondNode) const;
 
         size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
@@ -198,7 +213,6 @@ namespace meshkernel
         /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
         /// @param[in] firstNode The indices of the first new node in the modified grid.
         /// @param[in] secondNode The indices of the second new node in the modified grid.
-        void AddEdge(NodeIndices const& firstNode,
-                     NodeIndices const& secondNode);
+        void AddEdge(NodeIndices const& firstNode, NodeIndices const& secondNode);
     };
 } // namespace meshkernel
