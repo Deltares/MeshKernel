@@ -517,17 +517,17 @@ bool CurvilinearGrid::AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIn
     bool const areNodesValid = m_gridNodes[firstNode.m_m][firstNode.m_n].IsValid() && m_gridNodes[secondNode.m_m][secondNode.m_n].IsValid();
 
     // Allocation depends on directions
-    bool hasNewAllocationOccurred = false;
+    bool gridSizeChanged = false;
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
     if (gridLineType == BoundaryGridLineType::Left && areNodesValid)
     {
         m_gridNodes.emplace(m_gridNodes.begin(), std::vector<Point>(m_gridNodes[0].size()));
-        hasNewAllocationOccurred = true;
+        gridSizeChanged = true;
     }
     if (gridLineType == BoundaryGridLineType::Right && areNodesValid)
     {
         m_gridNodes.emplace_back(std::vector<Point>(m_gridNodes[0].size()));
-        hasNewAllocationOccurred = true;
+        gridSizeChanged = true;
     }
     if (gridLineType == BoundaryGridLineType::Up && areNodesValid)
     {
@@ -535,7 +535,7 @@ bool CurvilinearGrid::AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIn
         {
             gridNodes.emplace_back();
         }
-        hasNewAllocationOccurred = true;
+        gridSizeChanged = true;
     }
     if (gridLineType == BoundaryGridLineType::Bottom && areNodesValid)
     {
@@ -543,10 +543,10 @@ bool CurvilinearGrid::AddGridLineAtBoundary(NodeIndices const& firstNode, NodeIn
         {
             gridNodes.emplace(gridNodes.begin());
         }
-        hasNewAllocationOccurred = true;
+        gridSizeChanged = true;
     }
 
-    return hasNewAllocationOccurred;
+    return gridSizeChanged;
 }
 
 CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(NodeIndices const& firstNode, NodeIndices const& secondNode) const
