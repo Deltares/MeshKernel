@@ -554,19 +554,27 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(N
     auto const firstNodeType = m_gridNodesTypes[firstNode.m_m][firstNode.m_n];
     auto const secondNodeType = m_gridNodesTypes[secondNode.m_m][secondNode.m_n];
 
-    if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom)
+    if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom ||
+        firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight ||
+        firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::BottomLeft)
     {
         return BoundaryGridLineType::Bottom;
     }
-    if (firstNodeType == NodeType::Up || secondNodeType == NodeType::Up)
+    if (firstNodeType == NodeType::Up || secondNodeType == NodeType::Up ||
+        firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::UpperRight ||
+        firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::UpperLeft)
     {
         return BoundaryGridLineType::Up;
     }
-    if (firstNodeType == NodeType::Left || secondNodeType == NodeType::Left)
+    if (firstNodeType == NodeType::Left || secondNodeType == NodeType::Left ||
+        firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::UpperLeft ||
+        firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::BottomLeft)
     {
         return BoundaryGridLineType::Left;
     }
-    if (firstNodeType == NodeType::Right || secondNodeType == NodeType::Right)
+    if (firstNodeType == NodeType::Right || secondNodeType == NodeType::Right ||
+        firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::UpperRight ||
+        firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::BottomRight)
     {
         return BoundaryGridLineType::Right;
     }

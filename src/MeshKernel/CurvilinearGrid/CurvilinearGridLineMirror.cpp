@@ -68,21 +68,15 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
-            m_grid.m_gridNodes.back()[i] = m_grid.m_gridNodes[m_grid.m_numM - 2][i] * a - m_grid.m_gridNodes[m_grid.m_numM - 3][i] * b;
+            m_grid.m_gridNodes.back()[i] = m_grid.m_gridNodes[m_grid.m_numM - 1][i] * a - m_grid.m_gridNodes[m_grid.m_numM - 2][i] * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)
         {
-            for (auto& gridNodes : m_grid.m_gridNodes)
-            {
-                gridNodes.back() = gridNodes[m_grid.m_numN - 2] * a + gridNodes[m_grid.m_numN - 3] * b;
-            }
+            m_grid.m_gridNodes[i].back() = m_grid.m_gridNodes[i][m_grid.m_numN - 1] * a + m_grid.m_gridNodes[i][m_grid.m_numN - 2] * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Bottom)
         {
-            for (auto& gridNodes : m_grid.m_gridNodes)
-            {
-                gridNodes.front() = gridNodes[1] * a + gridNodes[2] * b;
-            }
+            m_grid.m_gridNodes[i].front() = m_grid.m_gridNodes[i][1] * a + m_grid.m_gridNodes[i][2] * b;
         }
     }
 
