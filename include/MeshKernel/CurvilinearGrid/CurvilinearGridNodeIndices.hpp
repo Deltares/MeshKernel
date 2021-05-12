@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
 {
