@@ -875,6 +875,29 @@ namespace meshkernelapi
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
 
+        /// @brief Attracts/repulses grid lines in a block towards another set grid line
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] repulsionParameter The attraction/repulsion parameter. If positive the grid lines will be attracted towards the set line, if negative the lines will be repulsed
+        /// @param[in] xFirstNodeOnTheLine The x coordinate of the first node of the set line
+        /// @param[in] yFirstNodeOnTheLine The y coordinate of the first node of the set line
+        /// @param[in] xSecondNodeOnTheLine  The x coordinate of the second node of the set line
+        /// @param[in] ySecondNodeOnTheLine  The y coordinate of the second node of the set line
+        /// @param[in] xLowerLeftCorner The x coordinate of the lower left corner of the block where the operation is performed
+        /// @param[in] yLowerLeftCorner The y coordinate of the lower left corner of the block where the operation is performed
+        /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block where the operation is performed
+        /// @param[in] yUpperRightCorner  The y coordinate of the upper right corner of the block where the operation is performed
+        /// @return  Error code
+        MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+                                                                      double repulsionParameter,
+                                                                      double xFirstNodeOnTheLine,
+                                                                      double yFirstNodeOnTheLine,
+                                                                      double xSecondNodeOnTheLine,
+                                                                      double ySecondNodeOnTheLine,
+                                                                      double xLowerLeftCorner,
+                                                                      double yLowerLeftCorner,
+                                                                      double xUpperRightCorner,
+                                                                      double yUpperRightCorner);
+
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_separator();
