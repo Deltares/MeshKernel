@@ -120,7 +120,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_mesh2d(int meshKernelId, const GeometryList& polygon, int deletionOption, bool invertDeletion)
+    MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, bool invertDeletion)
     {
         int exitCode = Success;
         try
@@ -146,7 +146,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_set(int meshKernelId,
                                        const Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -173,7 +173,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                        const Mesh1D& mesh1d)
     {
         int exitCode = Success;
@@ -199,7 +199,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_dimensions_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId,
                                                   Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -219,7 +219,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId, Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -238,7 +238,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_dimensions_mesh1d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId,
                                                   Mesh1D& mesh1d)
     {
         int exitCode = Success;
@@ -259,7 +259,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId,
                                             Mesh1D& mesh1d)
     {
         int exitCode = Success;
@@ -279,7 +279,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_dimensions_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId,
                                                        CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
@@ -299,7 +299,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId,
                                                  CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
@@ -319,7 +319,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId,
                                                     Contacts& contacts)
     {
         int exitCode = Success;
@@ -338,7 +338,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_data_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_get_data(int meshKernelId,
                                               Contacts& contacts)
     {
         int exitCode = Success;
@@ -362,7 +362,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_hanging_edges_mesh2d(int meshKernelId, int& numHangingEdges)
+    MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numHangingEdges)
     {
         int exitCode = Success;
         try
@@ -382,7 +382,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int* edges)
+    MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges)
     {
         int exitCode = Success;
         try
@@ -404,7 +404,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_hanging_edges_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -422,7 +422,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_orthogonalization_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
                                                              int projectToLandBoundaryOption,
                                                              const OrthogonalizationParameters& orthogonalizationParameters,
                                                              const GeometryList& selectingPolygon,
@@ -469,7 +469,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_initialize_orthogonalization_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_initialize_orthogonalization(int meshKernelId,
                                                                 int projectToLandBoundaryOption,
                                                                 OrthogonalizationParameters& orthogonalizationParameters,
                                                                 const GeometryList& selectingPolygon,
@@ -516,7 +516,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_prepare_outer_iteration_orthogonalization_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_prepare_outer_iteration_orthogonalization(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -540,7 +540,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_inner_ortogonalization_iteration_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -564,7 +564,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_finalize_inner_ortogonalization_iteration_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_finalize_inner_ortogonalization_iteration(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -588,7 +588,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_orthogonalization_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_delete_orthogonalization(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -612,7 +612,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_orthogonality_mesh2d(int meshKernelId, GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList)
     {
         int exitCode = Success;
         try
@@ -646,7 +646,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_smoothness_mesh2d(int meshKernelId, GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
         int exitCode = Success;
         try
@@ -744,7 +744,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& polygonPoints)
+    MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
         int exitCode = Success;
         try
@@ -771,7 +771,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& samples)
+    MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
         int exitCode = Success;
         try
@@ -793,7 +793,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
         int exitCode = Success;
         try
@@ -815,7 +815,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -836,7 +836,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
+    MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
         int exitCode = Success;
         try
@@ -859,7 +859,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
+    MKERNEL_API int mkernel_polygon_count_refine(int meshKernelId,
                                                  const GeometryList& polygonToRefine,
                                                  int firstIndex,
                                                  int secondIndex,
@@ -889,7 +889,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
+    MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
         int exitCode = Success;
         try
@@ -912,7 +912,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int firstNode, int secondNode)
+    MKERNEL_API int mkernel_mesh2d_merge_two_nodes(int meshKernelId, int firstNode, int secondNode)
     {
         int exitCode = Success;
         try
@@ -930,7 +930,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_nodes_in_polygons_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_get_nodes_in_polygons(int meshKernelId,
                                                          const GeometryList& geometryListIn,
                                                          int inside,
                                                          int* selectedNodes)
@@ -967,7 +967,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_nodes_in_polygons_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_count_nodes_in_polygons(int meshKernelId,
                                                            const GeometryList& geometryListIn,
                                                            int inside,
                                                            int& numberOfMeshNodes)
@@ -1002,7 +1002,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_edge_mesh2d(int meshKernelId, int startNode, int endNode, int& new_edge_index)
+    MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
         int exitCode = Success;
         try
@@ -1021,7 +1021,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1042,7 +1042,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_node_mesh2d(int meshKernelId, int nodeIndex)
+    MKERNEL_API int mkernel_mesh2d_delete_node(int meshKernelId, int nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1061,7 +1061,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
+    MKERNEL_API int mkernel_mesh2d_move_node(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1082,7 +1082,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate)
+    MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId, double xCoordinate, double yCoordinate)
     {
         int exitCode = Success;
         try
@@ -1105,7 +1105,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex)
+    MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1126,7 +1126,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_offset_polygon(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1151,7 +1151,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_offset_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1174,7 +1174,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
                                                            const GeometryList& samples,
                                                            double relativeSearchRadius,
                                                            int minimumNumSamples,
@@ -1227,7 +1227,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1255,7 +1255,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1280,7 +1280,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_get_closest_node(int meshKernelId,
                                                     double xCoordinateIn,
                                                     double yCoordinateIn,
                                                     double searchRadius,
@@ -1315,7 +1315,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
+    MKERNEL_API int mkernel_polygon_get_included_points(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
     {
         int exitCode = Success;
         try
@@ -1342,7 +1342,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_flip_edges_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_flip_edges(int meshKernelId,
                                               int isTriangulationRequired,
                                               int projectToLandBoundaryRequired,
                                               const GeometryList& selectingPolygon,
@@ -1379,7 +1379,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_small_flow_edge_centers_mesh2d(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
+    MKERNEL_API int mkernel_mesh2d_count_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
     {
         int exitCode = Success;
         try
@@ -1400,7 +1400,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_small_flow_edge_centers_mesh2d(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result)
+    MKERNEL_API int mkernel_mesh2d_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result)
     {
         int exitCode = Success;
         try
@@ -1435,7 +1435,7 @@ namespace meshkernelapi
         return Success;
     }
 
-    MKERNEL_API int mkernel_count_obtuse_triangles_mesh2d(int meshKernelId, int& numObtuseTriangles)
+    MKERNEL_API int mkernel_mesh2d_count_obtuse_triangles(int meshKernelId, int& numObtuseTriangles)
     {
         int exitCode = Success;
         try
@@ -1456,7 +1456,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_obtuse_triangles_mass_centers_mesh2d(int meshKernelId, GeometryList& result)
+    MKERNEL_API int mkernel_mesh2d_get_obtuse_triangles_mass_centers(int meshKernelId, GeometryList& result)
     {
         int exitCode = Success;
         try
@@ -1477,7 +1477,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
+    MKERNEL_API int mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
         int exitCode = Success;
         try
@@ -1497,7 +1497,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
                                                     const int* oneDNodeMask,
                                                     const GeometryList& polygons)
     {
@@ -1530,7 +1530,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_compute_multiple(int meshKernelId,
                                                       const int* oneDNodeMask)
     {
         int exitCode = Success;
@@ -1556,7 +1556,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_with_polygons_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_compute_with_polygons(int meshKernelId,
                                                            const int* oneDNodeMask,
                                                            const GeometryList& polygons)
     {
@@ -1588,7 +1588,7 @@ namespace meshkernelapi
         }
         return exitCode;
     }
-    MKERNEL_API int mkernel_compute_with_points_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_compute_with_points(int meshKernelId,
                                                          const int* oneDNodeMask,
                                                          const GeometryList& points)
     {
@@ -1617,7 +1617,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
+    MKERNEL_API int mkernel_contacts_compute_boundary(int meshKernelId,
                                                       const int* oneDNodeMask,
                                                       const GeometryList& polygons,
                                                       double searchRadius)
@@ -1648,7 +1648,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int refinement)
+    MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int refinement)
     {
         int exitCode = Success;
         try
@@ -1672,7 +1672,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
                                                  double xLowerLeftCorner,
                                                  double yLowerLeftCorner,
                                                  double xUpperRightCorner,
@@ -1702,7 +1702,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_transfinite_from_splines_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
                                                                          const GeometryList& splines,
                                                                          const CurvilinearParameters& curvilinearParameters)
     {
@@ -1734,7 +1734,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_transfinite_from_polygon_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_polygon(int meshKernelId,
                                                                          const GeometryList& polygons,
                                                                          int firstNode,
                                                                          int secondNode,
@@ -1767,7 +1767,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_transfinite_from_triangle_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_triangle(int meshKernelId,
                                                                           const GeometryList& polygon,
                                                                           int firstNode,
                                                                           int secondNode,
@@ -1799,7 +1799,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_compute_orthogonal_grid_from_splines(int meshKernelId,
                                                                              const GeometryList& geometryListIn,
                                                                              const CurvilinearParameters& curvilinearParameters,
                                                                              const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
@@ -1828,7 +1828,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_initialize_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
                                                                                 const GeometryList& geometryList,
                                                                                 const CurvilinearParameters& curvilinearParameters,
                                                                                 const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
@@ -1855,7 +1855,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_iterate_orthogonal_grid_from_splines_curvilinear(int meshKernelId, int layer)
+    MKERNEL_API int mkernel_curvilinear_iterate_orthogonal_grid_from_splines(int meshKernelId, int layer)
     {
         int exitCode = Success;
         try
@@ -1878,7 +1878,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refresh_orthogonal_grid_from_splines_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -1904,7 +1904,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_orthogonal_grid_from_splines_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -1928,7 +1928,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                      const MakeMeshParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
@@ -1955,7 +1955,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_initialize_orthogonalize_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
                                                                  const OrthogonalizationParameters& orthogonalizationParameters)
     {
         int exitCode = Success;
@@ -1976,7 +1976,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
                                                                 double xLowerLeftCorner,
                                                                 double yLowerLeftCorner,
                                                                 double xUpperRightCorner,
@@ -2008,7 +2008,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
                                                                        double xFirstGridLineNode,
                                                                        double yFirstGridLineNode,
                                                                        double xSecondGridLineNode,
@@ -2041,7 +2041,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -2066,7 +2066,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -2090,7 +2090,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
                                                   int smoothingIterations,
                                                   double xLowerLeftCorner,
                                                   double yLowerLeftCorner,
@@ -2123,7 +2123,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_smoothing_directional(int meshKernelId,
                                                               int smoothingIterations,
                                                               double xFirstGridlineNode,
                                                               double yFirstGridlineNode,
@@ -2162,7 +2162,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_initialize_line_shift_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId)
     {
 
         int exitCode = Success;
@@ -2182,7 +2182,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_set_line_line_shift(int meshKernelId,
                                                             double xFirstGridLineNode,
                                                             double yFirstGridLineNode,
                                                             double xSecondGridLineNode,
@@ -2208,7 +2208,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_set_block_line_shift(int meshKernelId,
                                                              double xLowerLeftCorner,
                                                              double yLowerLeftCorner,
                                                              double xUpperRightCorner,
@@ -2234,7 +2234,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_move_node_line_shift(int meshKernelId,
                                                              double xFromCoordinate,
                                                              double yFromCoordinate,
                                                              double xToCoordinate,
@@ -2258,7 +2258,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_line_shift_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -2282,7 +2282,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_finalize_line_shift_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -2301,7 +2301,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, double xCoordinate, double yCoordinate)
+    MKERNEL_API int mkernel_curvilinear_insert_face(int meshKernelId, double xCoordinate, double yCoordinate)
     {
         int exitCode = Success;
         try
@@ -2326,19 +2326,19 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId)
     {
         int exitCode = Success;
         try
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_convert_curvilinear_to_mesh2d: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 && meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
             {
-                throw std::invalid_argument("mkernel_convert_curvilinear_to_mesh2d: The existing mesh2d projection is not equal to the curvilinear grid projection");
+                throw std::invalid_argument("MeshKernel: The existing mesh2d projection is not equal to the curvilinear grid projection");
             }
 
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
@@ -2352,7 +2352,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_line_attraction_repulsion(int meshKernelId,
                                                                   double repulsionParameter,
                                                                   double xFirstNodeOnTheLine,
                                                                   double yFirstNodeOnTheLine,
@@ -2400,7 +2400,7 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_averaging_interpolation(int meshKernelId,
                                                            const GeometryList& samples,
                                                            int locationType,
                                                            int averagingMethodType,
@@ -2413,12 +2413,12 @@ namespace meshkernelapi
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
+                throw std::invalid_argument("MeshKernel: The mesh is empty.");
             }
 
             auto sampleValues = ConvertGeometryListToSampleVector(samples);
@@ -2449,7 +2449,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
+    MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,
                                                                const GeometryList& samples,
                                                                int locationType,
                                                                GeometryList& results)
@@ -2459,12 +2459,12 @@ namespace meshkernelapi
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                throw std::invalid_argument("mkernel_averaging_interpolation_mesh2d: The mesh is empty.");
+                throw std::invalid_argument("MeshKernel: The mesh is empty.");
             }
 
             // Locations

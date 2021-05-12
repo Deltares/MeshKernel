@@ -43,7 +43,7 @@ public:
     {
         // Set-up new mesh
         const auto mesh2d = MakeRectangularMeshForApiTesting(n, m, delta);
-        const auto errorCode = mkernel_set_mesh2d(m_meshKernelId, mesh2d);
+        const auto errorCode = mkernel_mesh2d_set(m_meshKernelId, mesh2d);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not set mesh2d");
@@ -68,7 +68,7 @@ public:
         makeMeshParameters.block_size_x = blockSize;
         makeMeshParameters.block_size_y = blockSize;
 
-        auto errorCode = mkernel_make_uniform_curvilinear(m_meshKernelId, makeMeshParameters, geometryList);
+        auto errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeMeshParameters, geometryList);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not create uniform curvilinear grid");
@@ -91,12 +91,12 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_delete_node_mesh2d(meshKernelId, 0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_node(meshKernelId, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the dimensions
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert dimensions
@@ -123,7 +123,7 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     mesh2d.edge_y = edge_y.get();
     mesh2d.face_x = face_x.get();
     mesh2d.face_y = face_y.get();
-    errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     /*  1---4---7---10
@@ -171,7 +171,7 @@ TEST_F(ApiTests, FlipEdges_ShouldFlipEdges)
     const int projectToLandBoundaryOption = 1;
     meshkernelapi::GeometryList selectingPolygon{};
     meshkernelapi::GeometryList landBoundaries{};
-    auto errorCode = mkernel_flip_edges_mesh2d(meshKernelId,
+    auto errorCode = mkernel_mesh2d_flip_edges(meshKernelId,
                                                isTriangulationRequired,
                                                projectToLandBoundaryOption,
                                                selectingPolygon,
@@ -180,7 +180,7 @@ TEST_F(ApiTests, FlipEdges_ShouldFlipEdges)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -224,7 +224,7 @@ TEST_F(ApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
     landBoundaries.values = zCoordinates.get();
     landBoundaries.num_coordinates = 4;
 
-    auto errorCode = mkernel_flip_edges_mesh2d(meshKernelId,
+    auto errorCode = mkernel_mesh2d_flip_edges(meshKernelId,
                                                isTriangulationRequired,
                                                projectToLandBoundaryOption,
                                                selectingPolygon,
@@ -233,7 +233,7 @@ TEST_F(ApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -249,12 +249,12 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
 
     // Execute
     int newEdgeIndex;
-    auto errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(meshKernelId, 0, 4, newEdgeIndex);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_insert_edge(meshKernelId, 0, 4, newEdgeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(17, newEdgeIndex);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -269,11 +269,11 @@ TEST_F(ApiTests, MergeTwoNodesThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_merge_two_nodes_mesh2d(meshKernelId, 0, 4);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_merge_two_nodes(meshKernelId, 0, 4);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -289,11 +289,11 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     meshkernelapi::GeometryList geometry_list{};
 
     // Execute
-    auto errorCode = mkernel_merge_nodes_mesh2d(meshKernelId, geometry_list, 0.001);
+    auto errorCode = mkernel_mesh2d_merge_nodes(meshKernelId, geometry_list, 0.001);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -318,7 +318,7 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     meshkernelapi::GeometryList landBoundaries{};
 
     // Execute
-    auto errorCode = mkernel_initialize_orthogonalization_mesh2d(meshKernelId,
+    auto errorCode = mkernel_mesh2d_initialize_orthogonalization(meshKernelId,
                                                                  1,
                                                                  orthogonalizationParameters,
                                                                  landBoundaries,
@@ -327,20 +327,20 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_prepare_outer_iteration_orthogonalization_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_prepare_outer_iteration_orthogonalization(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_compute_inner_ortogonalization_iteration_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_compute_inner_ortogonalization_iteration(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_finalize_inner_ortogonalization_iteration_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_finalize_inner_ortogonalization_iteration(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_delete_orthogonalization_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_orthogonalization(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(12, mesh2d.num_nodes);
@@ -417,12 +417,12 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     geometryListIn.num_coordinates = 17;
 
     // Execute
-    auto errorCode = mkernel_make_mesh_from_polygon_mesh2d(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     // Get the new state
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -467,13 +467,13 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
     geometryListIn.num_coordinates = 5;
 
     // Execute
-    auto errorCode = mkernel_make_mesh_from_samples_mesh2d(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_mesh_from_samples(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -487,7 +487,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
     int numberOfpolygonNodes;
-    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_as_polygons_mesh2d(meshKernelId, numberOfpolygonNodes);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_count_mesh_boundaries_as_polygons(meshKernelId, numberOfpolygonNodes);
     ASSERT_EQ(11, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -504,7 +504,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     geometryListOut.values = zCoordinates.get();
 
     // Execute
-    errorCode = mkernel_get_mesh_boundaries_as_polygons_mesh2d(meshKernelId, geometryListOut);
+    errorCode = mkernel_mesh2d_get_mesh_boundaries_as_polygons(meshKernelId, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -547,7 +547,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
 
     // Execute
     int numberOfpolygonNodes;
-    auto errorCode = mkernel_count_offset_polygon(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
+    auto errorCode = mkernel_polygon_count_offset(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(4, numberOfpolygonNodes);
 
@@ -562,7 +562,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
     geometryListOut.values = valuesOut.get();
-    errorCode = mkernel_get_offset_polygon(meshKernelId, geometryListIn, false, 10.0, geometryListOut);
+    errorCode = mkernel_polygon_get_offset(meshKernelId, geometryListIn, false, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -601,7 +601,7 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
 
     // Execute
     int numberOfpolygonNodes;
-    auto errorCode = mkernel_count_refine_polygon(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    auto errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(22, numberOfpolygonNodes);
 
@@ -614,7 +614,7 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     geometryListOut.coordinates_x = xCoordinatesOut.get();
     geometryListOut.coordinates_y = yCoordinatesOut.get();
     geometryListOut.values = valuesOut.get();
-    errorCode = mkernel_refine_polygon(meshKernelId, geometryListIn, false, 0, 2, geometryListOut);
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, false, 0, 2, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -678,13 +678,13 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshRefinementParameters.account_for_samples_outside = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_based_on_samples_mesh2d(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
+    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -744,13 +744,13 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     meshRefinementParameters.refine_intersected = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_based_on_polygon_mesh2d(meshKernelId, geometryListIn, meshRefinementParameters);
+    auto errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -791,7 +791,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
+    auto errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -811,12 +811,12 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     polygon.num_coordinates = 5;
 
     // Execute
-    errorCode = mkernel_compute_single_contacts(meshKernelId, onedNodeMask.get(), polygon);
+    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.get(), polygon);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Contacts contacts{};
-    errorCode = mkernel_get_dimensions_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
@@ -824,7 +824,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     contacts.mesh1d_indices = mesh1d_indices.get();
     contacts.mesh2d_indices = mesh2d_indices.get();
 
-    errorCode = mkernel_get_data_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -876,7 +876,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
+    auto errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -885,12 +885,12 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 
     // Execute
     // Why do we need to specify the namespace "meshkernelapi"?
-    errorCode = meshkernelapi::mkernel_compute_multiple_contacts(meshKernelId, onedNodeMask.get());
+    errorCode = meshkernelapi::mkernel_contacts_compute_multiple(meshKernelId, onedNodeMask.get());
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Contacts contacts{};
-    errorCode = mkernel_get_dimensions_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
@@ -898,7 +898,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
     contacts.mesh1d_indices = mesh1d_indices.get();
     contacts.mesh2d_indices = mesh2d_indices.get();
 
-    errorCode = mkernel_get_data_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -950,7 +950,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
+    auto errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -970,12 +970,12 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     polygon.num_coordinates = 5;
 
     // Execute
-    errorCode = mkernel_compute_with_polygons_contacts(meshKernelId, onedNodeMask.get(), polygon);
+    errorCode = mkernel_contacts_compute_with_polygons(meshKernelId, onedNodeMask.get(), polygon);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Contacts contacts{};
-    errorCode = mkernel_get_dimensions_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
@@ -983,7 +983,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     contacts.mesh1d_indices = mesh1d_indices.get();
     contacts.mesh2d_indices = mesh2d_indices.get();
 
-    errorCode = mkernel_get_data_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1025,7 +1025,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
+    auto errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1055,12 +1055,12 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     points.num_coordinates = 4;
 
     // Execute
-    errorCode = mkernel_compute_with_points_contacts(meshKernelId, onedNodeMask.get(), points);
+    errorCode = mkernel_contacts_compute_with_points(meshKernelId, onedNodeMask.get(), points);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Contacts contacts{};
-    errorCode = mkernel_get_dimensions_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
@@ -1068,7 +1068,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     contacts.mesh1d_indices = mesh1d_indices.get();
     contacts.mesh2d_indices = mesh2d_indices.get();
 
-    errorCode = mkernel_get_data_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1118,7 +1118,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 7;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
+    auto errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1150,12 +1150,12 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     polygon.num_coordinates = 5;
 
     // Execute
-    errorCode = mkernel_compute_boundary_contacts(meshKernelId, onedNodeMask.get(), polygon, 200.0);
+    errorCode = mkernel_contacts_compute_boundary(meshKernelId, onedNodeMask.get(), polygon, 200.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Contacts contacts{};
-    errorCode = mkernel_get_dimensions_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
@@ -1163,7 +1163,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     contacts.mesh1d_indices = mesh1d_indices.get();
     contacts.mesh2d_indices = mesh2d_indices.get();
 
-    errorCode = mkernel_get_data_contacts(meshKernelId, contacts);
+    errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1238,7 +1238,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
     auto mesh2d = ReadLegacyMeshFromFileForApiTesting(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     DeleteRectangularMeshForApiTesting(mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -1252,7 +1252,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     meshkernelapi::GeometryList landBoundaries{};
 
     // Execute
-    errorCode = mkernel_initialize_orthogonalization_mesh2d(meshKernelId,
+    errorCode = mkernel_mesh2d_initialize_orthogonalization(meshKernelId,
                                                             1,
                                                             orthogonalizationParameters,
                                                             landBoundaries,
@@ -1262,11 +1262,11 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert there is a geometry error
-    errorCode = meshkernelapi::mkernel_prepare_outer_iteration_orthogonalization_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_prepare_outer_iteration_orthogonalization(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::InvalidGeometry, errorCode);
 
     //Delete orthogonalization instance
-    errorCode = meshkernelapi::mkernel_delete_orthogonalization_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_orthogonalization(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the message
@@ -1329,7 +1329,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     geometryListIn.num_coordinates = 9;
 
     // Execute
-    auto errorCode = mkernel_compute_transfinite_from_polygon_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_compute_transfinite_from_polygon(meshKernelId,
                                                                           geometryListIn,
                                                                           0,
                                                                           2,
@@ -1340,9 +1340,9 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     // Get the new state
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_convert_curvilinear_to_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1358,7 +1358,7 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
 
     // Execute
     double xCoordinatesOut, yCoordinatesOut;
-    auto errorCode = meshkernelapi::mkernel_get_closest_node_mesh2d(meshKernelId, -5.0, 5.0, 10.0, xCoordinatesOut, yCoordinatesOut);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_closest_node(meshKernelId, -5.0, 5.0, 10.0, xCoordinatesOut, yCoordinatesOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1412,7 +1412,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     geometryListIn.num_coordinates = 10;
 
     // Execute
-    auto errorCode = mkernel_compute_transfinite_from_triangle_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_compute_transfinite_from_triangle(meshKernelId,
                                                                            geometryListIn,
                                                                            0,
                                                                            3,
@@ -1420,9 +1420,9 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_convert_curvilinear_to_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(28, mesh2d.num_nodes);
@@ -1448,13 +1448,13 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     makeMeshParameters.block_size_y = 1.0;
 
     // Execute
-    auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_make_uniform(meshKernelId,
                                                       makeMeshParameters,
                                                       geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1472,7 +1472,7 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     curvilinearGrid.node_y = node_y.get();
     curvilinearGrid.edge_x = edge_x.get();
     curvilinearGrid.edge_y = edge_y.get();
-    errorCode = mkernel_get_data_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     /*  8---9--10---11
@@ -1530,13 +1530,13 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     curvilinearParameters.attraction_parameter = 0.0;
 
     // Execute
-    auto errorCode = mkernel_compute_transfinite_from_splines_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_compute_transfinite_from_splines(meshKernelId,
                                                                           geometryListIn,
                                                                           curvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1582,7 +1582,7 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     splinesToCurvilinearParameters.grow_grid_outside = 0;
 
     // Execute
-    auto errorCode = mkernel_initialize_orthogonal_grid_from_splines_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_initialize_orthogonal_grid_from_splines(meshKernelId,
                                                                                  geometryListIn,
                                                                                  curvilinearParameters,
                                                                                  splinesToCurvilinearParameters);
@@ -1591,22 +1591,22 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     // Grow grid, from the second layer
     for (auto layer = 1; layer <= curvilinearParameters.n_refinement; ++layer)
     {
-        errorCode = meshkernelapi::mkernel_iterate_orthogonal_grid_from_splines_curvilinear(meshKernelId, layer);
+        errorCode = meshkernelapi::mkernel_curvilinear_iterate_orthogonal_grid_from_splines(meshKernelId, layer);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     }
 
     // Puts the computed curvilinear mesh into the mesh state (unstructured mesh)
-    errorCode = meshkernelapi::mkernel_refresh_orthogonal_grid_from_splines_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_refresh_orthogonal_grid_from_splines(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Delete the mesh curvilinearGridFromSplinesInstances vector entry
-    errorCode = meshkernelapi::mkernel_delete_orthogonal_grid_from_splines_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_orthogonal_grid_from_splines(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1621,11 +1621,11 @@ TEST_F(ApiTests, RefineCompute_OnCurvilinearGrid_ShouldRefine)
 
     MakeUniformCurvilinearGrid(3, 3, 10);
 
-    auto errorCode = meshkernelapi::mkernel_refine_curvilinear(meshKernelId, 10.0, 20.0, 20.0, 20.0, 10);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId, 10.0, 20.0, 20.0, 20.0, 10);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     ASSERT_EQ(52, curvilinearGrid.num_nodes);
@@ -1640,11 +1640,11 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
     MakeUniformCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_derefine_curvilinear(meshKernelId, 10.0, 20.0, 30.0, 20.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId, 10.0, 20.0, 30.0, 20.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     ASSERT_EQ(20, curvilinearGrid.num_nodes);
@@ -1665,14 +1665,14 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
-    auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_set_block_orthogonalize_curvilinear(meshKernelId, 10.0, 20.0, 30.0, 20.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 10.0, 20.0, 30.0, 20.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_orthogonalize_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (nothing changed)
@@ -1688,10 +1688,10 @@ TEST_F(ApiTests, Smoothing_CurvilinearGrid_ShouldSmooth)
     MakeUniformCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_smoothing_curvilinear(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (nothing changed)
@@ -1707,7 +1707,7 @@ TEST_F(ApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
     MakeUniformCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_smoothing_directional_curvilinear(meshKernelId,
+    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing_directional(meshKernelId,
                                                                               10,
                                                                               10.0,
                                                                               0.0,
@@ -1720,7 +1720,7 @@ TEST_F(ApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (nothing changed)
@@ -1735,27 +1735,27 @@ TEST_F(ApiTests, ComputedLineShift_CurvilinearGrid_ShouldShift)
 
     MakeUniformCurvilinearGrid();
 
-    meshkernelapi::mkernel_initialize_line_shift_curvilinear(meshKernelId);
+    meshkernelapi::mkernel_curvilinear_initialize_line_shift(meshKernelId);
 
-    auto errorCode = meshkernelapi::mkernel_set_line_line_shift_curvilinear(meshKernelId, 0.0, 0.0, 0.0, 30.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_set_line_line_shift(meshKernelId, 0.0, 0.0, 0.0, 30.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_set_block_line_shift_curvilinear(meshKernelId, 0.0, 0.0, 30.0, 30.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_set_block_line_shift(meshKernelId, 0.0, 0.0, 30.0, 30.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     /// Move a gridline point, in this case the origin to -10.0, 0.0
-    errorCode = meshkernelapi::mkernel_move_node_line_shift_curvilinear(meshKernelId, 0.0, 0.0, -10.0, 0.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_move_node_line_shift(meshKernelId, 0.0, 0.0, -10.0, 0.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
-    errorCode = meshkernelapi::mkernel_line_shift_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_shift(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_finalize_line_shift_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_line_shift(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert, the nodes along the grid line have changed
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<double> const xNodesCurvilinearGrid(new double[curvilinearGrid.num_nodes]);
@@ -1769,7 +1769,7 @@ TEST_F(ApiTests, ComputedLineShift_CurvilinearGrid_ShouldShift)
     curvilinearGrid.edge_x = edge_x.get();
     curvilinearGrid.edge_y = edge_y.get();
 
-    errorCode = mkernel_get_data_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(-10.0, curvilinearGrid.node_x[0]);
     ASSERT_EQ(2.5, curvilinearGrid.node_x[1]);
     ASSERT_EQ(17.5, curvilinearGrid.node_x[2]);
@@ -1785,11 +1785,11 @@ TEST_F(ApiTests, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
     meshkernelapi::GeometryList geometryList{};
 
     // Execute
-    auto errorCode = mkernel_delete_mesh2d(meshKernelId, geometryList, 0, false);
+    auto errorCode = mkernel_mesh2d_delete(meshKernelId, geometryList, 0, false);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(0, mesh2d.num_nodes);
@@ -1829,12 +1829,12 @@ TEST_F(ApiTests, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
     mesh1d.num_nodes = 8;
     mesh1d.num_edges = 7;
 
-    auto errorCode = mkernel_set_mesh1d(GetMeshKernelId(), mesh1d);
+    auto errorCode = mkernel_mesh1d_set(GetMeshKernelId(), mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
     meshkernelapi::Mesh1D mesh1dResults;
-    errorCode = mkernel_get_dimensions_mesh1d(meshKernelId, mesh1dResults);
+    errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
 
     // Assert
     ASSERT_EQ(8, mesh1dResults.num_nodes);
@@ -1874,12 +1874,12 @@ TEST_F(ApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
     mesh1d.num_nodes = 8;
     mesh1d.num_edges = 7;
 
-    auto errorCode = mkernel_set_mesh1d(GetMeshKernelId(), mesh1d);
+    auto errorCode = mkernel_mesh1d_set(GetMeshKernelId(), mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
     meshkernelapi::Mesh1D mesh1dResults;
-    errorCode = mkernel_get_dimensions_mesh1d(meshKernelId, mesh1dResults);
+    errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
     std::unique_ptr<double> const meshNodesX(new double[mesh1dResults.num_nodes]);
     std::unique_ptr<double> const meshNodesY(new double[mesh1dResults.num_nodes]);
     std::unique_ptr<int> meshEdges(new int[mesh1dResults.num_edges * 2]);
@@ -1887,7 +1887,7 @@ TEST_F(ApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
     mesh1dResults.node_x = meshNodesX.get();
     mesh1dResults.node_y = meshNodesY.get();
     mesh1dResults.edge_nodes = meshEdges.get();
-    errorCode = mkernel_get_data_mesh1d(meshKernelId, mesh1dResults);
+    errorCode = mkernel_mesh1d_get_data(meshKernelId, mesh1dResults);
 
     // Assert
     std::vector<double> validMeshNodesX(nodesX.get(), nodesX.get() + mesh1d.num_nodes);
@@ -1910,7 +1910,7 @@ TEST_F(ApiTests, CountHangingEdgesMesh2D_WithZeroHangingEdges_ShouldCountZeroEdg
     auto const meshKernelId = GetMeshKernelId();
 
     int numHangingEdges;
-    auto const errorCode = meshkernelapi::mkernel_count_hanging_edges_mesh2d(meshKernelId, numHangingEdges);
+    auto const errorCode = meshkernelapi::mkernel_mesh2d_count_hanging_edges(meshKernelId, numHangingEdges);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     ASSERT_EQ(0, numHangingEdges);
@@ -1923,17 +1923,17 @@ TEST_F(ApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEd
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_delete_edge_mesh2d(meshKernelId, 0.5, 0.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     int numHangingEdges;
-    errorCode = meshkernelapi::mkernel_count_hanging_edges_mesh2d(meshKernelId, numHangingEdges);
+    errorCode = meshkernelapi::mkernel_mesh2d_count_hanging_edges(meshKernelId, numHangingEdges);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_GT(numHangingEdges, 0);
 
     // Execute
     std::unique_ptr<int> const hangingEdges(new int[numHangingEdges]);
-    errorCode = meshkernelapi::mkernel_get_hanging_edges_mesh2d(meshKernelId, hangingEdges.get());
+    errorCode = meshkernelapi::mkernel_mesh2d_get_hanging_edges(meshKernelId, hangingEdges.get());
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1947,18 +1947,18 @@ TEST_F(ApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHan
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_delete_edge_mesh2d(meshKernelId, 0.5, 0.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Before deletion
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(mesh2d.num_edges, 16);
 
     // Execute
-    errorCode = meshkernelapi::mkernel_delete_hanging_edges_mesh2d(meshKernelId);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_hanging_edges(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(mesh2d.num_edges, 15);
@@ -1983,7 +1983,7 @@ TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrtho
     // No land boundaries accounted
     meshkernelapi::GeometryList landBoundaries{};
 
-    auto errorCode = mkernel_compute_orthogonalization_mesh2d(meshKernelId, 1, orthogonalizationParameters, polygons, landBoundaries);
+    auto errorCode = mkernel_mesh2d_compute_orthogonalization(meshKernelId, 1, orthogonalizationParameters, polygons, landBoundaries);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1996,7 +1996,7 @@ TEST_F(ApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::Mesh2D mesh2d{};
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList edgeOrthogonality;
@@ -2005,7 +2005,7 @@ TEST_F(ApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
     edgeOrthogonality.num_coordinates = mesh2d.num_edges;
 
     // Execute
-    errorCode = mkernel_get_orthogonality_mesh2d(meshKernelId, edgeOrthogonality);
+    errorCode = mkernel_mesh2d_get_orthogonality(meshKernelId, edgeOrthogonality);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2018,7 +2018,7 @@ TEST_F(ApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::Mesh2D mesh2d{};
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList edgeSmoothness;
@@ -2027,7 +2027,7 @@ TEST_F(ApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
     edgeSmoothness.num_coordinates = mesh2d.num_edges;
 
     // Execute
-    errorCode = mkernel_get_smoothness_mesh2d(meshKernelId, edgeSmoothness);
+    errorCode = mkernel_mesh2d_get_smoothness(meshKernelId, edgeSmoothness);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2043,12 +2043,12 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     const meshkernelapi::GeometryList geometryListIn{};
 
     meshkernelapi::Mesh2D mesh2d{};
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
     std::unique_ptr<int> const selectedNodes(new int[mesh2d.num_nodes]);
-    errorCode = mkernel_get_nodes_in_polygons_mesh2d(meshKernelId,
+    errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId,
                                                      geometryListIn,
                                                      1,
                                                      selectedNodes.get());
@@ -2073,7 +2073,7 @@ TEST_F(ApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
 
     // Execute
     int numNodes;
-    const auto errorCode = mkernel_count_nodes_in_polygons_mesh2d(meshKernelId,
+    const auto errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId,
                                                                   geometryListIn,
                                                                   1,
                                                                   numNodes);
@@ -2090,18 +2090,18 @@ TEST_F(ApiTests, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    // Isolated nodes are removed by the administration done in mkernel_get_dimensions_mesh2d.
+    // Isolated nodes are removed by the administration done in mkernel_mesh2d_get_dimensions.
     // The newly inserted node should be connected to another one to form an edge.
     // In this manner, the edge will not be removed during the administration
     int newNodeIndex;
-    auto errorCode = meshkernelapi::mkernel_insert_node_mesh2d(meshKernelId, -0.5, -0.5, newNodeIndex);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_insert_node(meshKernelId, -0.5, -0.5, newNodeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     int newEdgeIndex;
-    errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(meshKernelId, newNodeIndex, 0, newEdgeIndex);
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge(meshKernelId, newNodeIndex, 0, newEdgeIndex);
 
     // Assert
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(mesh2d.num_nodes, 13);
     ASSERT_EQ(mesh2d.num_edges, 18);
 }
@@ -2113,11 +2113,11 @@ TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_move_node_mesh2d(meshKernelId, -0.5, -0.5, 0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshKernelId, -0.5, -0.5, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     std::unique_ptr<int> edge_nodes(new int[mesh2d.num_edges * 2]);
     std::unique_ptr<int> face_nodes(new int[mesh2d.num_face_nodes]);
     std::unique_ptr<int> nodes_per_face(new int[mesh2d.num_faces]);
@@ -2140,7 +2140,7 @@ TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     mesh2d.edge_y = edge_y.get();
     mesh2d.face_x = face_x.get();
     mesh2d.face_y = face_y.get();
-    errorCode = mkernel_get_data_mesh2d(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
 
     // Assert
     ASSERT_EQ(mesh2d.node_x[0], -0.5);
@@ -2155,7 +2155,7 @@ TEST_F(ApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
 
     // Execute
     int edgeIndex;
-    const auto errorCode = meshkernelapi::mkernel_get_edge_mesh2d(meshKernelId, 0.5, -0.5, edgeIndex);
+    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_edge(meshKernelId, 0.5, -0.5, edgeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -2170,7 +2170,7 @@ TEST_F(ApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
 
     // Execute
     int nodeIndex;
-    const auto errorCode = meshkernelapi::mkernel_get_node_index_mesh2d(meshKernelId, 3.0, 3.0, 10.0, nodeIndex);
+    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId, 3.0, 3.0, 10.0, nodeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -2196,13 +2196,13 @@ TEST_F(ApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
     int numSmallFlowEdges;
     double const smallFlowEdgesThreshold = 100.0;
-    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
     ASSERT_EQ(1, numSmallFlowEdges);
 }
 
@@ -2225,11 +2225,11 @@ TEST_F(ApiTests, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     int numSmallFlowEdges;
     double const smallFlowEdgesThreshold = 100.0;
-    errorCode = meshkernelapi::mkernel_count_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
 
     // Assert
     std::unique_ptr<double> const coordinates_x(new double[numSmallFlowEdges]);
@@ -2239,7 +2239,7 @@ TEST_F(ApiTests, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
     result.coordinates_y = coordinates_y.get();
     result.num_coordinates = numSmallFlowEdges;
 
-    errorCode = mkernel_get_small_flow_edge_centers_mesh2d(meshKernelId, smallFlowEdgesThreshold, result);
+    errorCode = mkernel_mesh2d_get_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, result);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     const double tolerance = 1e-6;
@@ -2262,10 +2262,10 @@ TEST_F(ApiTests, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldCountO
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     int numObtuseTriangles;
-    errorCode = meshkernelapi::mkernel_count_obtuse_triangles_mesh2d(meshKernelId, numObtuseTriangles);
+    errorCode = meshkernelapi::mkernel_mesh2d_count_obtuse_triangles(meshKernelId, numObtuseTriangles);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2287,10 +2287,10 @@ TEST_F(ApiTests, GetObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtus
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     int numObtuseTriangles;
-    errorCode = meshkernelapi::mkernel_count_obtuse_triangles_mesh2d(meshKernelId, numObtuseTriangles);
+    errorCode = meshkernelapi::mkernel_mesh2d_count_obtuse_triangles(meshKernelId, numObtuseTriangles);
     meshkernelapi::GeometryList geometryList{};
 
     std::unique_ptr<double> const coordinatesObtuseTrianglesX(new double[numObtuseTriangles]);
@@ -2298,7 +2298,7 @@ TEST_F(ApiTests, GetObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtus
     geometryList.coordinates_x = coordinatesObtuseTrianglesX.get();
     geometryList.coordinates_y = coordinatesObtuseTrianglesY.get();
     geometryList.num_coordinates = numObtuseTriangles;
-    errorCode = mkernel_get_obtuse_triangles_mass_centers_mesh2d(meshKernelId, geometryList);
+    errorCode = mkernel_mesh2d_get_obtuse_triangles_mass_centers(meshKernelId, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -2326,14 +2326,14 @@ TEST_F(ApiTests, DeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTria
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute, with large length threshold
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(meshKernelId, 1.0, 0.01);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(meshKernelId, 1.0, 0.01);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
     meshkernelapi::Mesh2D newMesh2d{};
-    errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, newMesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, newMesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // One edge is removed
@@ -2438,7 +2438,7 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
 
     // Execute, with large length threshold
     auto const meshKernelId = GetMeshKernelId();
-    auto errorCode = mkernel_compute_orthogonal_grid_from_splines_curvilinear(meshKernelId,
+    auto errorCode = mkernel_curvilinear_compute_orthogonal_grid_from_splines(meshKernelId,
                                                                               splines,
                                                                               curvilinearParameters,
                                                                               splinesToCurvilinearParameters);
@@ -2446,7 +2446,7 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
 
     // Assert
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert one curvilinear grid is produced
@@ -2460,11 +2460,11 @@ TEST_F(ApiTests, SetFrozenLines_OnCurvilinearGrid_ShouldSetFrozenLines)
     auto const meshKernelId = GetMeshKernelId();
     meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
 
-    auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     //Execute
-    errorCode = meshkernelapi::mkernel_set_frozen_lines_orthogonalize_curvilinear(meshKernelId, 20.0, 0.0, 20.0, 10.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, 20.0, 0.0, 20.0, 10.0);
 
     //Asset
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2477,11 +2477,11 @@ TEST_F(ApiTests, FinalizeOrthogonalizeCurvilinear_OnCurvilinearGrid_ShouldFinali
     auto const meshKernelId = GetMeshKernelId();
     meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
 
-    auto errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     //Execute
-    errorCode = meshkernelapi::mkernel_finalize_orthogonalize_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
 
     //Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2494,13 +2494,13 @@ TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
     auto const meshKernelId = GetMeshKernelId();
 
     //Execute
-    auto errorCode = meshkernelapi::mkernel_insert_face_curvilinear(meshKernelId, -5.0, 5.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_insert_face(meshKernelId, -5.0, 5.0);
 
     //Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert two extra nodes have been inserted (before it was 5 by 5 = 25 nodes, not it is 25 + 2 = 27)
@@ -2529,7 +2529,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     int const relativeSearchSize = 1.01; // The relative search size
 
     meshkernelapi::Mesh2D mesh2d;
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList results{};
@@ -2543,7 +2543,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     results.num_coordinates = mesh2d.num_nodes;
 
     //Execute
-    errorCode = mkernel_averaging_interpolation_mesh2d(meshKernelId,
+    errorCode = mkernel_mesh2d_averaging_interpolation(meshKernelId,
                                                        samples,
                                                        locationType,
                                                        averagingMethodType,
@@ -2578,7 +2578,7 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     int const locationType = 1; // Nodes
 
     meshkernelapi::Mesh2D mesh2d;
-    auto errorCode = mkernel_get_dimensions_mesh2d(meshKernelId, mesh2d);
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList results{};
@@ -2592,7 +2592,7 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     results.num_coordinates = mesh2d.num_nodes;
 
     //Execute
-    errorCode = mkernel_triangulation_interpolation_mesh2d(meshKernelId,
+    errorCode = mkernel_mesh2d_triangulation_interpolation(meshKernelId,
                                                            samples,
                                                            locationType,
                                                            results);
@@ -2611,14 +2611,14 @@ TEST_F(ApiTests, LineAttraction_OnCurvilinearGrid_ShouldAttractGridlines)
 
     MakeUniformCurvilinearGrid(5, 5, 10);
 
-    auto errorCode = meshkernelapi::mkernel_line_attraction_repulsion_curvilinear(meshKernelId,
+    auto errorCode = meshkernelapi::mkernel_curvilinear_line_attraction_repulsion(meshKernelId,
                                                                                   0.5,
                                                                                   30.0, 0.0, 30.0, 50.0,
                                                                                   10.0, 20.0, 50.0, 20.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkernel_get_dimensions_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::unique_ptr<int> edge_nodes(new int[curvilinearGrid.num_edges * 2]);
@@ -2631,7 +2631,7 @@ TEST_F(ApiTests, LineAttraction_OnCurvilinearGrid_ShouldAttractGridlines)
     curvilinearGrid.node_y = node_y.get();
     curvilinearGrid.edge_x = edge_x.get();
     curvilinearGrid.edge_y = edge_y.get();
-    errorCode = mkernel_get_data_curvilinear(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert data
