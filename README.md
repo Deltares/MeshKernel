@@ -19,7 +19,7 @@ The requirements are:
 - CMake 3.19 or higher
 - A C++17 compatible compiler
 - The Boost libraries
-- Git (with Git LFS)
+- Git
 - Doxygen (optional)
 
 
