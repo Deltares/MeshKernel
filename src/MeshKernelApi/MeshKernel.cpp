@@ -860,7 +860,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
-                                                 const GeometryList& geometryListIn,
+                                                 const GeometryList& polygonToRefine,
                                                  int firstIndex,
                                                  int secondIndex,
                                                  double distance,
@@ -874,7 +874,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
@@ -1021,7 +1021,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, GeometryList const& nodeCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1031,9 +1031,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const nodeCoordinateVector = ConvertGeometryListToPointVector(nodeCoordinate);
+            meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector[0]));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector));
         }
         catch (...)
         {
@@ -1061,7 +1061,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, const GeometryList& newNodePosition, int nodeIndex)
+    MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1071,9 +1071,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto newPosition = ConvertGeometryListToPointVector(newNodePosition);
+            meshkernel::Point newPosition{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition[0], nodeIndex);
+            meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition, nodeIndex);
         }
         catch (...)
         {
@@ -1082,7 +1082,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& point)
+    MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate)
     {
         int exitCode = Success;
         try
@@ -1092,9 +1092,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const pointCoordinate = ConvertGeometryListToPointVector(point);
+            meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(pointCoordinate[0]);
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point);
 
             meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex);
         }
@@ -1105,7 +1105,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
+    MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1115,9 +1115,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const pointPosition = ConvertGeometryListToPointVector(point);
+            meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(pointPosition[0]));
+            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point));
         }
         catch (...)
         {
@@ -1176,8 +1176,9 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
                                                            const GeometryList& samples,
-                                                           const InterpolationParameters& interpolationParameters,
-                                                           const SampleRefineParameters& sampleRefineParameters)
+                                                           double relativeSearchRadius,
+                                                           int minimumNumSamples,
+                                                           const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1194,28 +1195,29 @@ namespace meshkernelapi
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
             meshkernel::AveragingInterpolation::Method averagingMethod;
-            if (sampleRefineParameters.refinement_type == 2)
+            if (meshRefinementParameters.refinement_type == 1)
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            if (sampleRefineParameters.refinement_type == 3)
+            if (meshRefinementParameters.refinement_type == 2)
             {
 
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
             }
 
-            const bool refineOutsideFace = sampleRefineParameters.account_for_samples_outside == 1 ? true : false;
-            const bool transformSamples = sampleRefineParameters.refinement_type == 3 ? true : false;
+            const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
+            const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
 
             const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
                                                                                         samplesVector,
                                                                                         averagingMethod,
                                                                                         meshkernel::MeshLocations::Faces,
-                                                                                        1.0,
+                                                                                        relativeSearchRadius,
                                                                                         refineOutsideFace,
-                                                                                        transformSamples);
+                                                                                        transformSamples,
+                                                                                        static_cast<size_t>(minimumNumSamples));
 
-            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1225,7 +1227,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList, const InterpolationParameters& interpolationParameters)
+    MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1243,7 +1245,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(points, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1253,7 +1255,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, const GeometryList& point, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1267,9 +1269,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            auto const pointVector = ConvertGeometryListToPointVector(point);
+            meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(pointVector[0], searchRadius));
+            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius));
         }
         catch (...)
         {
@@ -1278,7 +1280,12 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId, const GeometryList& point, double searchRadius, GeometryList& node)
+    MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
+                                                    double xCoordinateIn,
+                                                    double yCoordinateIn,
+                                                    double searchRadius,
+                                                    double& xCoordinateOut,
+                                                    double& yCoordinateOut)
     {
         int exitCode = Success;
         try
@@ -1292,19 +1299,14 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            if (node.num_coordinates <= 0)
-            {
-                throw std::invalid_argument("MeshKernel: The output-geometry has no coordinates.");
-            }
+            meshkernel::Point const point{xCoordinateIn, yCoordinateIn};
 
-            auto polygonPoints = ConvertGeometryListToPointVector(point);
-
-            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
+            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius);
 
             // Set the node coordinate
-            std::vector<meshkernel::Point> nodeVector;
-            nodeVector.emplace_back(meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex]);
-            ConvertPointVectorToGeometryList(nodeVector, node);
+            auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
+            xCoordinateOut = foundNode.x;
+            yCoordinateOut = foundNode.y;
         }
         catch (...)
         {
@@ -1646,7 +1648,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId, const GeometryList& firstPoint, const GeometryList& secondPoint, int refinement)
+    MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int refinement)
     {
         int exitCode = Success;
         try
@@ -1655,22 +1657,12 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto firstPointVector = ConvertGeometryListToPointVector(firstPoint);
-
-            if (firstPointVector.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
-            }
-
-            const auto secondPointVector = ConvertGeometryListToPointVector(secondPoint);
-            if (secondPointVector.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
-            }
+            meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
             meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
-            curvilinearGridRefinement.SetBlock(firstPointVector[0], secondPointVector[0]);
+            curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridRefinement.Compute());
         }
         catch (...)
@@ -1681,8 +1673,10 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
-                                                 const GeometryList& firstPoint,
-                                                 const GeometryList& secondPoint)
+                                                 double xLowerLeftCorner,
+                                                 double yLowerLeftCorner,
+                                                 double xUpperRightCorner,
+                                                 double yUpperRightCorner)
     {
         int exitCode = Success;
         try
@@ -1691,23 +1685,13 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto firstPointVector = ConvertGeometryListToPointVector(firstPoint);
-
-            if (firstPointVector.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
-            }
-
-            const auto secondPointVector = ConvertGeometryListToPointVector(secondPoint);
-            if (secondPointVector.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
-            }
+            meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
             meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearGridDeRefinement.SetBlock(firstPointVector[0], secondPointVector[0]);
+            curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
         }
@@ -1993,8 +1977,10 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
-                                                                const GeometryList& lowerLeftCorner,
-                                                                const GeometryList& upperRightCorner)
+                                                                double xLowerLeftCorner,
+                                                                double yLowerLeftCorner,
+                                                                double xUpperRightCorner,
+                                                                double yUpperRightCorner)
     {
         int exitCode = Success;
         try
@@ -2009,21 +1995,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
-
-            if (firstPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: lower left corner of the orthogonalization block not provided.");
-            }
-
-            const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
-            if (secondPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: upper right corner of the orthogonalization block not provided.");
-            }
+            meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetBlock(firstPoint[0], secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetBlock(firstPoint, secondPoint);
         }
         catch (...)
         {
@@ -2033,8 +2009,11 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
-                                                                       const GeometryList& firstGridLineNode,
-                                                                       const GeometryList& secondGridLineNode)
+                                                                       double xFirstGridLineNode,
+                                                                       double yFirstGridLineNode,
+                                                                       double xSecondGridLineNode,
+                                                                       double ySecondGridLineNode)
+
     {
         int exitCode = Success;
         try
@@ -2049,21 +2028,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(firstGridLineNode);
-
-            if (firstPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: first frozen line node not provided.");
-            }
-
-            const auto secondPoint = ConvertGeometryListToPointVector(secondGridLineNode);
-            if (secondPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: second frozen line node not provided.");
-            }
+            meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
+            meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLine(firstPoint[0], secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLine(firstPoint, secondPoint);
         }
         catch (...)
         {
@@ -2123,8 +2092,11 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
                                                   int smoothingIterations,
-                                                  const GeometryList& lowerLeftCorner,
-                                                  const GeometryList& upperRightCorner)
+                                                  double xLowerLeftCorner,
+                                                  double yLowerLeftCorner,
+                                                  double xUpperRightCorner,
+                                                  double yUpperRightCorner)
+
     {
         int exitCode = Success;
         try
@@ -2133,24 +2105,15 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto firstPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
 
-            if (firstPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: lower left corner of the smoothing block not provided.");
-            }
-
-            const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
-            if (secondPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: upper right corner of the smoothing block not provided.");
-            }
+            const meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
+            const meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
                                                                           static_cast<size_t>(smoothingIterations));
 
-            curvilinearGridSmoothing.SetBlock(firstPoint[0], secondPoint[0]);
+            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
             curvilinearGridSmoothing.Compute();
         }
         catch (...)
@@ -2162,10 +2125,14 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
                                                               int smoothingIterations,
-                                                              GeometryList const& firstGridlineNode,
-                                                              GeometryList const& secondGridLineNode,
-                                                              GeometryList const& lowerLeftCornerSmoothingArea,
-                                                              GeometryList const& upperRightCornerSmootingArea)
+                                                              double xFirstGridlineNode,
+                                                              double yFirstGridlineNode,
+                                                              double xSecondGridLineNode,
+                                                              double ySecondGridLineNode,
+                                                              double xLowerLeftCornerSmoothingArea,
+                                                              double yLowerLeftCornerSmoothingArea,
+                                                              double xUpperRightCornerSmootingArea,
+                                                              double yUpperRightCornerSmootingArea)
     {
         int exitCode = Success;
         try
@@ -2175,35 +2142,16 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
 
-            const auto firstNode = ConvertGeometryListToPointVector(firstGridlineNode);
-            if (firstNode.empty())
-            {
-                throw std::invalid_argument("MeshKernel: First line node not provided.");
-            }
-
-            const auto secondNode = ConvertGeometryListToPointVector(secondGridLineNode);
-            if (secondNode.empty())
-            {
-                throw std::invalid_argument("MeshKernel: Second line node not provided.");
-            }
-
-            const auto lowerLeft = ConvertGeometryListToPointVector(lowerLeftCornerSmoothingArea);
-            if (lowerLeft.empty())
-            {
-                throw std::invalid_argument("MeshKernel: Lower left corner of the smoothing block not provided.");
-            }
-
-            const auto upperRight = ConvertGeometryListToPointVector(upperRightCornerSmootingArea);
-            if (upperRight.empty())
-            {
-                throw std::invalid_argument("MeshKernel: Upper right corner of the smoothing block not provided.");
-            }
+            meshkernel::Point const firstNode{xFirstGridlineNode, yFirstGridlineNode};
+            meshkernel::Point const secondNode{xSecondGridLineNode, ySecondGridLineNode};
+            meshkernel::Point const lowerLeft{xLowerLeftCornerSmoothingArea, yLowerLeftCornerSmoothingArea};
+            meshkernel::Point const upperRight{xUpperRightCornerSmootingArea, yUpperRightCornerSmootingArea};
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
 
-            curvilinearGridSmoothing.SetLine(firstNode[0], secondNode[0]);
-            curvilinearGridSmoothing.SetBlock(lowerLeft[0], upperRight[0]);
+            curvilinearGridSmoothing.SetLine(firstNode, secondNode);
+            curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
             curvilinearGridSmoothing.ComputeDirectional();
         }
@@ -2235,10 +2183,11 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
-                                                            GeometryList const& firstGridLineNode,
-                                                            GeometryList const& secondGridLineNode)
+                                                            double xFirstGridLineNode,
+                                                            double yFirstGridLineNode,
+                                                            double xSecondGridLineNode,
+                                                            double ySecondGridLineNode)
     {
-
         int exitCode = Success;
         try
         {
@@ -2246,19 +2195,11 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto firstNode = ConvertGeometryListToPointVector(firstGridLineNode);
-            if (firstNode.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No first grid line node");
-            }
 
-            const auto secondNode = ConvertGeometryListToPointVector(secondGridLineNode);
-            if (secondNode.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No second grid line node");
-            }
+            meshkernel::Point const firstNode{xFirstGridLineNode, yFirstGridLineNode};
+            meshkernel::Point const secondNode{xSecondGridLineNode, ySecondGridLineNode};
 
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetLine(firstNode[0], secondNode[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetLine(firstNode, secondNode);
         }
         catch (...)
         {
@@ -2268,8 +2209,10 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
-                                                             GeometryList const& lowerLeftCorner,
-                                                             GeometryList const& upperRightCorner)
+                                                             double xLowerLeftCorner,
+                                                             double yLowerLeftCorner,
+                                                             double xUpperRightCorner,
+                                                             double yUpperRightCorner)
     {
         int exitCode = Success;
         try
@@ -2278,19 +2221,11 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto lowerLeftPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
-            if (lowerLeftPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No lower left corner of the influence area.");
-            }
 
-            const auto upperRightPoint = ConvertGeometryListToPointVector(upperRightCorner);
-            if (upperRightPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No upper right corner of the influence area.");
-            }
+            meshkernel::Point const lowerLeftPoint{xLowerLeftCorner, yLowerLeftCorner};
+            meshkernel::Point const upperRightPoint{xUpperRightCorner, yUpperRightCorner};
 
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetBlock(lowerLeftPoint[0], upperRightPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetBlock(lowerLeftPoint, upperRightPoint);
         }
         catch (...)
         {
@@ -2300,8 +2235,10 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
-                                                             GeometryList const& fromCoordinate,
-                                                             GeometryList const& toCoordinate)
+                                                             double xFromCoordinate,
+                                                             double yFromCoordinate,
+                                                             double xToCoordinate,
+                                                             double yToCoordinate)
     {
         int exitCode = Success;
         try
@@ -2310,18 +2247,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto fromPoint = ConvertGeometryListToPointVector(fromCoordinate);
-            if (fromPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No from point coordinate");
-            }
-            const auto toPoint = ConvertGeometryListToPointVector(toCoordinate);
-            if (toPoint.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No end point coordinate");
-            }
-
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint[0], toPoint[0]);
+            meshkernel::Point const fromPoint{xFromCoordinate, yFromCoordinate};
+            meshkernel::Point const toPoint{xToCoordinate, yToCoordinate};
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint);
         }
         catch (...)
         {
@@ -2373,7 +2301,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, const GeometryList& point)
+    MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, double xCoordinate, double yCoordinate)
     {
         int exitCode = Success;
         try
@@ -2382,19 +2310,14 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto points = ConvertGeometryListToPointVector(point);
-
-            if (points.empty())
-            {
-                throw std::invalid_argument("MeshKernel: No point provided");
-            }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
                 throw std::invalid_argument("MeshKernel: Empty curvilinear grid");
             }
+            meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(points[0]);
+            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point);
         }
         catch (...)
         {
@@ -2479,9 +2402,10 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
                                                            const GeometryList& samples,
-                                                           const int& locationType,
-                                                           const int& averagingMethodType,
-                                                           const double& relativeSearchSize,
+                                                           int locationType,
+                                                           int averagingMethodType,
+                                                           double relativeSearchSize,
+                                                           size_t minNumSamples,
                                                            GeometryList& results)
     {
         int exitCode = Success;
@@ -2507,7 +2431,8 @@ namespace meshkernelapi
                                                          meshLocation,
                                                          relativeSearchSize,
                                                          false,
-                                                         false);
+                                                         false,
+                                                         minNumSamples);
             // Execute averaging
             averaging.Compute();
 
@@ -2526,7 +2451,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
                                                                const GeometryList& samples,
-                                                               const int& locationType,
+                                                               int locationType,
                                                                GeometryList& results)
     {
         int exitCode = Success;

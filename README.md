@@ -8,6 +8,11 @@ The library is separated in an API namespace (MeshKernelApi), used for communica
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
 These structures must be mirrored in the client application and filled with appropriate values.
 
+## Shared library dependencies (Linux)
+- libboost_system
+- libboost_filesystem
+- libgomp
+
 ## Build
 
 The requirements are:
