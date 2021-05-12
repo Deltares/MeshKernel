@@ -29,9 +29,11 @@
 #include <vector>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Operations.hpp>
 
 using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridNodeIndices;
 
 CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection) : m_gridNodes(grid)
 {
@@ -55,7 +57,7 @@ void CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGrid::NodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGridNodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (!IsValid())
     {
@@ -65,7 +67,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
     std::vector<std::vector<size_t>> nodeIndices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), sizetMissingValue));
-    std::vector<NodeIndices> gridIndices(nodes.size(), NodeIndices{sizetMissingValue, sizetMissingValue});
+    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{sizetMissingValue, sizetMissingValue});
 
     size_t ind = 0;
     for (size_t m = 0; m < m_gridNodes.size(); m++)
@@ -136,7 +138,7 @@ bool CurvilinearGrid::IsValid() const
     return true;
 }
 
-CurvilinearGrid::NodeIndices CurvilinearGrid::GetNodeIndices(Point point)
+CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
     SearchNearestNeighbors(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
@@ -148,7 +150,7 @@ CurvilinearGrid::NodeIndices CurvilinearGrid::GetNodeIndices(Point point)
     return m_gridIndices[nodeIndex];
 }
 
-std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
+std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
     SearchNearestNeighbors(point, MeshLocations::Edges);
     if (GetNumNearestNeighbors(MeshLocations::Edges) == 0)
@@ -171,7 +173,7 @@ bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
            m_gridNodes[m + 1][n + 1].IsValid();
 };
 
-std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
+std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
     auto const firstNode = GetNodeIndices(firstCornerPoint);
@@ -181,8 +183,8 @@ std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> Curviline
     return ComputeBlockFromCornerPoints(firstNode, secondNode);
 }
 
-std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>
-CurvilinearGrid::ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
+std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>
+CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const
 {
     return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)},
             {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
@@ -511,11 +513,11 @@ void CurvilinearGrid::InsertFace(Point const& point)
     SetFlatCopies();
 }
 
-void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
-                              NodeIndices const& secondNode)
+void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode,
+                              CurvilinearGridNodeIndices const& secondNode)
 {
     // Lambda to check if the node indices are allocated and filled with invalid values (grid with holes)
-    auto isAllocationNeeded = [this](NodeIndices const& first, NodeIndices const& second) {
+    auto isAllocationNeeded = [this](CurvilinearGridNodeIndices const& first, CurvilinearGridNodeIndices const& second) {
         auto const validIndex = first.m_m < m_gridNodes.size() &&
                                 first.m_n < m_gridNodes[0].size() &&
                                 second.m_m < m_gridNodes.size() &&
@@ -595,10 +597,10 @@ void CurvilinearGrid::AddEdge(NodeIndices const& firstNode,
 }
 
 std::tuple<double, double, double>
-CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint,
-                                                    const NodeIndices& pointOnSmoothingLineIndices,
-                                                    const NodeIndices& lowerLeftIndices,
-                                                    const NodeIndices& upperRightIndices)
+CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices const& gridpoint,
+                                                    const CurvilinearGridNodeIndices& pointOnSmoothingLineIndices,
+                                                    const CurvilinearGridNodeIndices& lowerLeftIndices,
+                                                    const CurvilinearGridNodeIndices& upperRightIndices)
 {
     // horizontal smoothing factor
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
@@ -621,52 +623,54 @@ CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
     return CurvilinearGrid(m_gridNodes, m_projection);
 }
 
-double CurvilinearGrid::ComputeAverageNodalDistance(NodeIndices const& index, GridLineDirection direction)
+double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)
 {
     if (index.m_m > m_gridNodes.size() || index.m_n > m_gridNodes[0].size())
     {
         throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: invalid index coordinates");
     }
-
-    if (direction == GridLineDirection::MDirection)
+    if (direction != CurvilinearGridLine::GridLineDirection::MDirection && direction != CurvilinearGridLine::GridLineDirection::NDirection)
     {
-        double numEdges = 0.0;
+        throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: invalid direction");
+    }
+
+    if (direction == CurvilinearGridLine::GridLineDirection::MDirection)
+    {
+        int numEdges = 0.0;
         double leftDistance = 0.0;
         double rightDistance = 0.0;
         if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid())
         {
             leftDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection);
-            numEdges += 1.0;
+            numEdges += 1;
         }
         if (index.m_m + 1 < m_gridNodes.size() && m_gridNodes[index.m_m + 1][index.m_n].IsValid())
         {
             rightDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m + 1][index.m_n], m_projection);
-            numEdges += 1.0;
+            numEdges += 1;
         }
-        return (leftDistance + rightDistance) / numEdges;
+        return numEdges == 0 ? 0.0 : (leftDistance + rightDistance) / numEdges;
     }
-    if (direction == GridLineDirection::NDirection)
+    if (direction == CurvilinearGridLine::GridLineDirection::NDirection)
     {
-        double numEdges = 0.0;
+        int numEdges = 0;
         double bottomDistance = 0.0;
         double upDistance = 0.0;
         if (index.m_n > 0 && m_gridNodes[index.m_m][index.m_n - 1].IsValid())
         {
             bottomDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n - 1], m_projection);
-            numEdges += 1.0;
+            numEdges += 1;
         }
         if (index.m_n + 1 < m_gridNodes[0].size() && m_gridNodes[index.m_m][index.m_n + 1].IsValid())
         {
             upDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n + 1], m_projection);
-            numEdges += 1.0;
+            numEdges += 1;
         }
-        return (bottomDistance + upDistance) / numEdges;
+        return numEdges == 0 ? 0.0 : (bottomDistance + upDistance) / numEdges;
     }
-
-    return doubleMissingValue;
 }
 
-meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displacement, NodeIndices const& node, bool isLocal) const
+meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const
 {
     Point left = m_gridNodes[node.m_m][node.m_n];
     Point right = left;

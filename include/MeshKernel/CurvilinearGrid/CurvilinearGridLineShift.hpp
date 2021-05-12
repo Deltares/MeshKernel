@@ -59,15 +59,15 @@ namespace meshkernel
     private:
         /// @brief Distribute the displacement around the node on the influence zone.
         /// @param[in] node The node to account for. The displacement around this not is calculated subtracting \ref m_grid to \ref m_originalGrid
-        void TransformGrid(CurvilinearGrid::NodeIndices const& node);
+        void TransformGrid(CurvilinearGridNodeIndices const& node);
 
         /// @brief Transform the displacement around a node to local or global (TOLOCL)
         /// @param[in] displacement The displacement to transform.
         /// @param[in] node The node position
         /// @param[in] toLocal A boolean to indicate whatever to transform the displacement to local grid (True) or to global grid (false)
         /// @return The new displacement
-        Point TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool toLocal) const;
+        Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool toLocal) const;
 
-        CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
+        std::shared_ptr<CurvilinearGrid> m_originalGrid; ///< A pointer to the original grid
     };
 } // namespace meshkernel

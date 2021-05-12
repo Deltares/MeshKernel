@@ -35,11 +35,9 @@ using meshkernel::CurvilinearGridLineAttractionRepulsion;
 using meshkernel::Point;
 
 CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(std::shared_ptr<CurvilinearGrid> grid,
-                                                                               double attractionFactor) : CurvilinearGridAlgorithm(grid), m_attractionFactor(attractionFactor)
+                                                                               double attractionFactor) : CurvilinearGridAlgorithm(grid), m_originalGrid(grid), m_attractionFactor(attractionFactor)
 
 {
-    // store a deep copy of the grid for computing the displacements
-    m_originalGrid = m_grid.CloneCurvilinearGrid();
 }
 
 CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
@@ -55,28 +53,28 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
     }
 
     // Points are coinciding, no attraction/repulsion zone defined
-    if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection && m_lowerLeft.m_n == m_upperRight.m_n ||
-        m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection && m_lowerLeft.m_m == m_upperRight.m_m)
+    if (m_lines[0].IsMGridLine() && m_lowerLeft.m_n == m_upperRight.m_n ||
+        m_lines[0].IsNGridLine() && m_lowerLeft.m_m == m_upperRight.m_m)
     {
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute The points defining the attraction area have the same direction of the attraction line.");
     }
 
-    auto const startM = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
-    auto const endM = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
-    auto const startN = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_lines[0].m_startCoordinate : m_lowerLeft.m_n;
-    auto const endN = m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
+    auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
+    auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
+    auto const startN = m_lines[0].IsNGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_n;
+    auto const endN = m_lines[0].IsNGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
 
     for (auto m = startM; m <= endM; ++m)
     {
         for (auto n = startN; n <= endN; ++n)
         {
             // Not a valid grid node
-            if (!m_originalGrid.m_gridNodes[m][n].IsValid())
+            if (!m_originalGrid->m_gridNodes[m][n].IsValid())
             {
                 continue;
             }
 
-            CurvilinearGrid::NodeIndices const nodeIndex{m, n};
+            CurvilinearGridNodeIndices const nodeIndex{m, n};
 
             // Nodes on the line should not be moved
             if (m_lines[0].IsNodeOnLine(nodeIndex))
@@ -86,22 +84,22 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
 
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(nodeIndex, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
 
-            auto const distance = m_originalGrid.ComputeAverageNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
+            auto const distance = m_originalGrid->ComputeAverageNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
             auto displacement = Point{0.0, 0.0};
 
-            if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::MDirection)
+            if (m_lines[0].IsMGridLine())
             {
                 double const direction = n < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
                 displacement.y = distance * m_attractionFactor * nSmoothing * direction;
             }
-            if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLineDirection::NDirection)
+            if (m_lines[0].IsNGridLine())
             {
                 double const direction = m < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
                 displacement.x = distance * m_attractionFactor * mSmoothing * direction;
             }
 
             // project transformation
-            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
+            displacement = m_originalGrid->TransformDisplacement(displacement, nodeIndex, false);
 
             // adjust nodes
             m_grid.m_gridNodes[m][n] = m_grid.m_gridNodes[m][n] + displacement;
