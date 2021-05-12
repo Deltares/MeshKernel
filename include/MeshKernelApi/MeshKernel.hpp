@@ -79,7 +79,7 @@ namespace meshkernelapi
         /// @param[in] deletionOption The deletion option \ref meshkernel::Mesh2D::DeleteMeshOptions
         /// @param[in] invertDeletion Inverts the deletion of selected features
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId,
                                               const GeometryList& polygon,
                                               int deletionOption,
                                               bool invertDeletion);
@@ -88,45 +88,45 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_set(int meshKernelId,
                                            const Mesh2D& mesh2d);
 
         /// @brief Sets the meshkernel::Mesh1D state
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh1d       The Mesh1D data
         /// @returns Error code
-        MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                            const Mesh1D& mesh1d);
 
         /// @brief Gets the Mesh2D dimensions
         ///
         /// The integer parameters of the Mesh2D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_data_mesh2d`.
+        /// before passing the struct to `mkernel_mesh2d_get_data`.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] mesh2d       The Mesh2D dimensions
         /// @returns Error code
-        MKERNEL_API int mkernel_get_dimensions_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId,
                                                       Mesh2D& mesh2d);
 
         /// @brief Gets the Mesh2D dimensions data
         ///
-        /// This function ought to be called after `mkernel_get_dimensions_mesh2d` has been called
+        /// This function ought to be called after `mkernel_mesh2d_get_dimensions` has been called
         /// and the pointers have been set to correctly sized memory.
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId, Mesh2D& mesh2d);
+        MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
 
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
         /// The integer parameters of the CurvilinearGrid struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_data_curvilinear`.
+        /// before passing the struct to `mkernel_curvilinear_get_data`.
         /// @param[in]  meshKernelId    The id of the mesh state.
         /// @param[out] curvilinearGrid The structure containing the dimensions of the curvilinear grid.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_dimensions_curvilinear(int meshKernelId, CurvilinearGrid& curvilinearGrid);
+        MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
         /// @brief Gets the curvilinear grid data as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
@@ -135,56 +135,56 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId    The id of the mesh state
         /// @param[out] curvilinearGrid The structure containing the curvilinear grid arrays.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_data_curvilinear(int meshKernelId, CurvilinearGrid& curvilinearGrid);
+        MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
         /// @brief Gets the Mesh1D dimensions
         ///
         /// The integer parameters of the Mesh1D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_dimensions_mesh1d`
+        /// before passing the struct to `mkernel_mesh1d_get_dimensions`
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] mesh1d       The structure containing the dimensions of the Mesh1D.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_dimensions_mesh1d(int meshKernelId, Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d);
 
         /// @brief Gets the Mesh1D dimensions data
         ///
-        /// This function ought to be called after `mkernel_get_dimensions_mesh1d` has been called
+        /// This function ought to be called after `mkernel_mesh1d_get_dimensions` has been called
         /// and the pointers have been set to correctly sized memory
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh1d       The structure containing the Mesh1D arrays.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId, Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId, Mesh1D& mesh1d);
 
         /// @brief Gets the number of contacts
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId, Contacts& contacts);
+        MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts);
 
         /// @brief Gets the contacts indices (from index / to indices)
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_data_contacts(int meshKernelId, Contacts& contacts);
+        MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts);
 
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[out] numEdges The number of hanging edges
         /// @returns Error code
-        MKERNEL_API int mkernel_count_hanging_edges_mesh2d(int meshKernelId, int& numEdges);
+        MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numEdges);
 
         /// @brief Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in]     meshKernelId        The id of the mesh state
         /// @param[in,out] edges Pointer to memory where the indices of the hanging edges will be stored
         /// @returns Error code
-        MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int* edges);
+        MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges);
 
         /// @brief Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_hanging_edges_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId);
 
         /// @brief Mesh2d orthogonalization.
         ///
@@ -197,7 +197,7 @@ namespace meshkernelapi
         /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization  (num_coordinates = 0 for an empty polygon)
         /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_orthogonalization_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
                                                                  int projectToLandBoundaryOption,
                                                                  const OrthogonalizationParameters& orthogonalizationParameters,
                                                                  const GeometryList& selectingPolygon,
@@ -213,7 +213,7 @@ namespace meshkernelapi
         /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization (num_coordinates = 0 for an empty polygon)
         /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process  (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
-        MKERNEL_API int mkernel_initialize_orthogonalization_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_initialize_orthogonalization(int meshKernelId,
                                                                     int projectToLandBoundaryOption,
                                                                     OrthogonalizationParameters& orthogonalizationParameters,
                                                                     const GeometryList& selectingPolygon,
@@ -221,39 +221,39 @@ namespace meshkernelapi
 
         /// @brief Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified mesh geometry (in interactive mode).
         ///
-        /// `mkernel_initialize_orthogonalization_mesh2d` function must be called before.
+        /// `mkernel_mesh2d_initialize_orthogonalization` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_prepare_outer_iteration_orthogonalization_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_prepare_outer_iteration_orthogonalization(int meshKernelId);
 
         /// @brief Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode).
         ///
-        /// `mkernel_prepare_outer_iteration_orthogonalization_mesh2d` function must be called before.
+        /// `mkernel_mesh2d_prepare_outer_iteration_orthogonalization` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_inner_ortogonalization_iteration_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
         /// @brief Finalizes the orthogonalization outer iteration, computing the new coefficients for grid adaption and the new face circumcenters (interactive mode).
         /// @param[in] meshKernelId  The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_finalize_inner_ortogonalization_iteration_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_finalize_inner_ortogonalization_iteration(int meshKernelId);
 
-        /// @brief Cleans the orthogonalization algorithm state, allocated in `mkernel_initialize_orthogonalization_mesh2d` (interactive mode)
+        /// @brief Cleans the orthogonalization algorithm state, allocated in `mkernel_mesh2d_initialize_orthogonalization` (interactive mode)
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_orthogonalization_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_delete_orthogonalization(int meshKernelId);
 
         /// @brief Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] geometryList The orthogonality values of each edge
         /// @returns Error code
-        MKERNEL_API int mkernel_get_orthogonality_mesh2d(int meshKernelId, GeometryList& geometryList);
+        MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList);
 
         /// @brief Gets the smoothness, expressed as the ratio between the values of two neighboring faces areas.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] geometryList The smoothness values at each edge
         /// @returns Error code
-        MKERNEL_API int mkernel_get_smoothness_mesh2d(int meshKernelId, GeometryList& geometryList);
+        MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList);
 
         /// @brief Get the computed spline points between two corner nodes
         /// @param[in]  geometryListIn  The input corner nodes of the splines
@@ -272,7 +272,7 @@ namespace meshkernelapi
         /// @param[out] xCoordinateOut  The x coordinate of the found Mesh2D node
         /// @param[out] yCoordinateOut  The y coordinate of the found Mesh2D node
         /// @returns Error code
-        MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_get_closest_node(int meshKernelId,
                                                         double xCoordinateIn,
                                                         double yCoordinateIn,
                                                         double searchRadius,
@@ -283,13 +283,13 @@ namespace meshkernelapi
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& polygonPoints);
+        MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
 
         /// @brief Makes a triangular mesh from  a set of samples, triangulating the sample points.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] samples The samples where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& samples);
+        MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
         ///
@@ -297,17 +297,17 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, GeometryList& boundaryPolygons);
+        MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons);
 
-        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_get_mesh_boundaries_as_polygons_mesh2d`
+        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_mesh2d_get_mesh_boundaries_as_polygons`
         /// @param[in]  meshKernelId         The id of the mesh state
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_mesh_boundaries_as_polygons_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
-        /// The function is often used before `mkernel_make_mesh_from_polygon_mesh2d`, for generating a triangular mesh where edges have a desired length.
+        /// The function is often used before `mkernel_mesh2d_make_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  polygonToRefine    The input polygon to refine
         /// @param[in]  firstNodeIndex     The first index of the refinement interval
@@ -315,16 +315,16 @@ namespace meshkernelapi
         /// @param[in]  targetEdgeLength   The target interval edge length
         /// @param[out] refinedPolygon     The refined polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_refine_polygon(int meshKernelId,
+        MKERNEL_API int mkernel_polygon_refine(int meshKernelId,
                                                const GeometryList& polygonToRefine,
                                                int firstNodeIndex,
                                                int secondNodeIndex,
                                                double targetEdgeLength,
                                                GeometryList& refinedPolygon);
 
-        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`.
+        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_polygon_refine`.
         ///
-        /// This function should be used by clients before `mkernel_refine_polygon` for allocating \ref GeometryList containing the refinement result.
+        /// This function should be used by clients before `mkernel_polygon_refine` for allocating \ref GeometryList containing the refinement result.
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] polygonToRefine       The input polygon to refine
         /// @param[in] firstIndex            The first index of the refinement interval
@@ -332,7 +332,7 @@ namespace meshkernelapi
         /// @param[in] distance              The target interval edge length
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
-        MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
+        MKERNEL_API int mkernel_polygon_count_refine(int meshKernelId,
                                                      const GeometryList& polygonToRefine,
                                                      int firstIndex,
                                                      int secondIndex,
@@ -344,14 +344,14 @@ namespace meshkernelapi
         /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
         /// @param[in] mergingDistance The distance below which two nodes will be merged
         /// @returns Error code
-        MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
+        MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
 
         /// @brief Merges two mesh2d nodes into one.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] firstNode    The index of the first node to merge
         /// @param[in] secondNode   The index of the second node to merge
         /// @returns Error code
-        MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int firstNode, int secondNode);
+        MKERNEL_API int mkernel_mesh2d_merge_two_nodes(int meshKernelId, int firstNode, int secondNode);
 
         /// @brief Gets the indices of the mesh2d nodes selected with a polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
@@ -359,20 +359,20 @@ namespace meshkernelapi
         /// @param[in]  inside         Selection of the nodes inside the polygon (1) or outside (0)
         /// @param[out] selectedNodes  The selected nodes indices
         /// @returns Error code
-        MKERNEL_API int mkernel_get_nodes_in_polygons_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_get_nodes_in_polygons(int meshKernelId,
                                                              const GeometryList& geometryListIn,
                                                              int inside,
                                                              int* selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices.
         ///
-        /// This function should be used by clients before `mkernel_get_nodes_in_polygons_mesh2d` for allocating an integer array storing the selection results.
+        /// This function should be used by clients before `mkernel_mesh2d_get_nodes_in_polygons` for allocating an integer array storing the selection results.
         /// @param[in]  meshKernelId      The id of the mesh state
         /// @param[in]  geometryListIn    The input polygon
         /// @param[in]  inside            Selection of the nodes inside the polygon (1) or outside (0)
         /// @param[out] numberOfMeshNodes The number of selected nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_nodes_in_polygons_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_count_nodes_in_polygons(int meshKernelId,
                                                                const GeometryList& geometryListIn,
                                                                int inside,
                                                                int& numberOfMeshNodes);
@@ -383,7 +383,7 @@ namespace meshkernelapi
         /// @param[in]  endNode      The index of the second node to connect
         /// @param[out] newEdgeIndex The index of the new generated edge
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_edge_mesh2d(int meshKernelId, int startNode, int endNode, int& newEdgeIndex);
+        MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& newEdgeIndex);
 
         /// @brief Insert a new mesh2d node at a specific coordinate.
         /// @param[in]  meshKernelId The id of the mesh state
@@ -391,13 +391,13 @@ namespace meshkernelapi
         /// @param[in]  yCoordinate  The y coordinate of the node to insert
         /// @param[out] nodeIndex    The index of the new mesh node
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex);
+        MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex);
 
         /// @brief Deletes a mesh2d node
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] nodeIndex    The index of the node to delete
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_node_mesh2d(int meshKernelId, int nodeIndex);
+        MKERNEL_API int mkernel_mesh2d_delete_node(int meshKernelId, int nodeIndex);
 
         /// @brief Moves a mesh2d node to a new position
         /// @param[in] meshKernelId    The id of the mesh state
@@ -405,7 +405,7 @@ namespace meshkernelapi
         /// @param[in] yCoordinate     The new y coordinate of the node to move
         /// @param[in] nodeIndex       The index of the mesh2d node to be moved
         /// @returns Error code
-        MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex);
+        MKERNEL_API int mkernel_mesh2d_move_node(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex);
 
         /// @brief Deletes the closest mesh2d edge to a point.
         /// The coordinates of the edge middle points are used for calculating the distances to the point.
@@ -413,7 +413,7 @@ namespace meshkernelapi
         /// @param[in] xCoordinate    The x coordinate of the point
         /// @param[in] yCoordinate    The y coordinate of the point
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate);
+        MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId, double xCoordinate, double yCoordinate);
 
         /// @brief Gets the closest mesh2d edge to a point.
         /// @param[in] meshKernelId   The id of the mesh state
@@ -421,7 +421,7 @@ namespace meshkernelapi
         /// @param[in] yCoordinate    The y coordinate of the point
         /// @param[out] edgeIndex     The found edge index
         /// @returns Error code
-        MKERNEL_API int mkernel_get_edge_mesh2d(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex);
+        MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex);
 
         /// @brief Generate a new polygon from an existing one by offsetting the perimeter by a given distance.
         ///
@@ -432,7 +432,7 @@ namespace meshkernelapi
         /// @param[in] distance         The offset distance
         /// @param[out] geometryListOut The resulting offset polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_get_offset_polygon(int meshKernelId,
+        MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId,
                                                    const GeometryList& geometryListIn,
                                                    bool inWard,
                                                    double distance,
@@ -440,14 +440,14 @@ namespace meshkernelapi
 
         /// @brief Counts the number of polygon nodes resulting from polygon offset.
         ///
-        /// This function should be used by clients before `mkernel_get_offset_polygon` for allocating the \ref GeometryList containing the offset result.
+        /// This function should be used by clients before `mkernel_polygon_get_offset` for allocating the \ref GeometryList containing the offset result.
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] geometryListIn        The polygon to offset
         /// @param[in] innerPolygon          Compute inner (true) or outer offset (false)
         /// @param[in] distance              The offset distance
         /// @param[out] numberOfPolygonNodes The number of nodes in the offset polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_count_offset_polygon(int meshKernelId,
+        MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId,
                                                      const GeometryList& geometryListIn,
                                                      bool innerPolygon,
                                                      double distance,
@@ -464,7 +464,7 @@ namespace meshkernelapi
         /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_refine_based_on_samples_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
@@ -475,7 +475,7 @@ namespace meshkernelapi
         /// @param[in] geometryList             The closed polygon where to perform the refinement
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_refine_based_on_polygon_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                                const GeometryList& geometryList,
                                                                const MeshRefinementParameters& meshRefinementParameters);
 
@@ -486,7 +486,7 @@ namespace meshkernelapi
         /// @param[in] searchRadius   The search radius
         /// @param[out] nodeIndex     The index of the found node
         /// @returns Error code
-        MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId,
                                                       double xCoordinate,
                                                       double yCoordinate,
                                                       double searchRadius,
@@ -499,12 +499,12 @@ namespace meshkernelapi
         /// @param[out] selectionResults   The selection result, contained in the in the values field of \ref GeometryList (0.0 not selected, 1.0 selected).
         /// Note that the selection selectionResults variable must be allocated by the client.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_points_in_polygon(int meshKernelId,
-                                                      const GeometryList& selectingPolygon,
-                                                      const GeometryList& polygonToSelect,
-                                                      GeometryList& selectionResults);
+        MKERNEL_API int mkernel_polygon_get_included_points(int meshKernelId,
+                                                            const GeometryList& selectingPolygon,
+                                                            const GeometryList& polygonToSelect,
+                                                            GeometryList& selectionResults);
 
-        /// @brief Flips mesh2d edges, to optimize the mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d` or `mkernel_refine_based_on_polygon_mesh2d`.
+        /// @brief Flips mesh2d edges, to optimize the mesh smoothness. This operation is usually performed after `mkernel_mesh2d_refine_based_on_samples` or `mkernel_mesh2d_refine_based_on_polygon`.
         ///
         /// Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
         /// @param[in] meshKernelId                  The id of the mesh state
@@ -513,7 +513,7 @@ namespace meshkernelapi
         /// @param[in] selectingPolygon              The polygon where to perform the edge flipping (num_coordinates = 0 for an empty polygon)
         /// @param[in] landBoundaries                The land boundaries to account for when flipping the edges (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
-        MKERNEL_API int mkernel_flip_edges_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_flip_edges(int meshKernelId,
                                                   int isTriangulationRequired,
                                                   int projectToLandBoundaryRequired,
                                                   const GeometryList& selectingPolygon,
@@ -523,20 +523,20 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[out] numObtuseTriangles The number of obtuse triangles
         /// @return Error code
-        MKERNEL_API int mkernel_count_obtuse_triangles_mesh2d(int meshKernelId, int& numObtuseTriangles);
+        MKERNEL_API int mkernel_mesh2d_count_obtuse_triangles(int meshKernelId, int& numObtuseTriangles);
 
         /// @brief Gets the mass centers of obtuse mesh2d triangles. Obtuse triangles are those having one edge longer than the sum of the other two.
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @param[out] result        The coordinates of the obtuse triangles mass centers stored in coordinates_x and coordinates_y of a \ref GeometryList
         /// @return Error code
-        MKERNEL_API int mkernel_get_obtuse_triangles_mass_centers_mesh2d(int meshKernelId, GeometryList& result);
+        MKERNEL_API int mkernel_mesh2d_get_obtuse_triangles_mass_centers(int meshKernelId, GeometryList& result);
 
         /// @brief Counts the number of small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in] meshKernelId                  The id of the mesh state
         /// @param[in] smallFlowEdgesLengthThreshold The configurable length for detecting a small flow edge
         /// @param[out] numSmallFlowEdges            The number of the small flow edges
         /// @return Error code
-        MKERNEL_API int mkernel_count_small_flow_edge_centers_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_count_small_flow_edge_centers(int meshKernelId,
                                                                      double smallFlowEdgesLengthThreshold,
                                                                      int& numSmallFlowEdges);
 
@@ -545,7 +545,7 @@ namespace meshkernelapi
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting a small flow edge
         /// @param[out] result                 The middle points of the small flow edges, stored in coordinates_x and coordinates_y of a \ref GeometryList
         /// @return Error code
-        MKERNEL_API int mkernel_get_small_flow_edge_centers_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_get_small_flow_edge_centers(int meshKernelId,
                                                                    double smallFlowEdgesThreshold,
                                                                    GeometryList& result);
 
@@ -555,7 +555,7 @@ namespace meshkernelapi
         /// @param[in] minFractionalAreaTriangles The ratio of the face area to the average area of neighboring non triangular faces.
         /// This parameter is used for determining if a triangular face is small.
         /// @return Error code
-        MKERNEL_API int mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(int meshKernelId,
                                                                                    double smallFlowEdgesThreshold,
                                                                                    double minFractionalAreaTriangles);
 
@@ -566,7 +566,7 @@ namespace meshkernelapi
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not connect)
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @return                   Error code
-        MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
+        MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
                                                         const int* oneDNodeMask,
                                                         const GeometryList& polygons);
 
@@ -576,7 +576,7 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @return                   Error code
-        MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
+        MKERNEL_API int mkernel_contacts_compute_multiple(int meshKernelId,
                                                           const int* oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
@@ -586,7 +586,7 @@ namespace meshkernelapi
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in]  polygons      The polygons to connect
         /// @return                   Error code
-        MKERNEL_API int mkernel_compute_with_polygons_contacts(int meshKernelId,
+        MKERNEL_API int mkernel_contacts_compute_with_polygons(int meshKernelId,
                                                                const int* oneDNodeMask,
                                                                const GeometryList& polygons);
 
@@ -597,7 +597,7 @@ namespace meshkernelapi
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in]  points        The points selecting the faces to connect
         /// @return                   Error code
-        MKERNEL_API int mkernel_compute_with_points_contacts(int meshKernelId,
+        MKERNEL_API int mkernel_contacts_compute_with_points(int meshKernelId,
                                                              const int* oneDNodeMask,
                                                              const GeometryList& points);
 
@@ -609,7 +609,7 @@ namespace meshkernelapi
         /// @param[in]  polygons     The points selecting the faces to connect.
         /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         /// @return                  Error code
-        MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
+        MKERNEL_API int mkernel_contacts_compute_boundary(int meshKernelId,
                                                           const int* oneDNodeMask,
                                                           const GeometryList& polygons,
                                                           double searchRadius);
@@ -624,7 +624,7 @@ namespace meshkernelapi
         /// @param[in] yUpperRightCorner       The y coordinate of the upper right corner of the block to refine
         /// @param[in] refinement              The number of grid lines to add between \p firstPoint and \p secondPoint
         /// @return                            Error code
-        MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId,
                                                    double xLowerLeftCorner,
                                                    double yLowerLeftCorner,
                                                    double xUpperRightCorner,
@@ -640,7 +640,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCorner   The x coordinate of the upper right corner of the block to de-refine
         /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to de-refine
         /// @return Error code
-        MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
                                                      double xLowerLeftCorner,
                                                      double yLowerLeftCorner,
                                                      double xUpperRightCorner,
@@ -651,7 +651,7 @@ namespace meshkernelapi
         /// @param[in] splines               The splines
         /// @param[in] curvilinearParameters The curvilinear parameters
         /// @returns                         Error code
-        MKERNEL_API int mkernel_compute_transfinite_from_splines_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
                                                                              const GeometryList& splines,
                                                                              const CurvilinearParameters& curvilinearParameters);
 
@@ -663,7 +663,7 @@ namespace meshkernelapi
         /// @param[in] thirdNode     The third node
         /// @param[in] useFourthSide Use (true/false) the fourth polygon side to compute the curvilinear grid
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_transfinite_from_polygon_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_polygon(int meshKernelId,
                                                                              const GeometryList& polygons,
                                                                              int firstNode,
                                                                              int secondNode,
@@ -677,7 +677,7 @@ namespace meshkernelapi
         /// @param[in] secondNode   The second selected node
         /// @param[in] thirdNode    The third node
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_transfinite_from_triangle_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_triangle(int meshKernelId,
                                                                               const GeometryList& polygon,
                                                                               int firstNode,
                                                                               int secondNode,
@@ -689,7 +689,7 @@ namespace meshkernelapi
         /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters The parameters of the advancing front algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_compute_orthogonal_grid_from_splines(int meshKernelId,
                                                                                  const GeometryList& geometryList,
                                                                                  const CurvilinearParameters& curvilinearParameters,
                                                                                  const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
@@ -700,7 +700,7 @@ namespace meshkernelapi
         /// @param[in] curvilinearParameters           The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters  The parameters of the advancing front algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_initialize_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
                                                                                     const GeometryList& geometryList,
                                                                                     const CurvilinearParameters& curvilinearParameters,
                                                                                     const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
@@ -709,24 +709,24 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] layer        The layer index
         /// @returns Error code
-        MKERNEL_API int mkernel_iterate_orthogonal_grid_from_splines_curvilinear(int meshKernelId, int layer);
+        MKERNEL_API int mkernel_curvilinear_iterate_orthogonal_grid_from_splines(int meshKernelId, int layer);
 
         /// @brief Converts curvilinear grid to mesh and refreshes the state (interactive)
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_refresh_orthogonal_grid_from_splines_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId);
 
         /// @brief Finalizes curvilinear grid from splines algorithm
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_orthogonal_grid_from_splines_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId);
 
         /// @brief Makes a new mesh
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygon to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                          const MakeMeshParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
@@ -734,7 +734,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_initialize_orthogonalize_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
                                                                      const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Freezes a line in the curvilinear orthogonalization process
@@ -744,7 +744,7 @@ namespace meshkernelapi
         /// @param[in] xSecondGridLineNode   The x coordinate of the second point of the line to freeze
         /// @param[in] ySecondGridLineNode   The y coordinate of the second point of the line to freeze
         /// @returns  Error code
-        MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
                                                                            double xFirstGridLineNode,
                                                                            double yFirstGridLineNode,
                                                                            double xSecondGridLineNode,
@@ -757,7 +757,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to orthogonalize
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to orthogonalize
         /// @return  Error code
-        MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
                                                                     double xLowerLeftCorner,
                                                                     double yLowerLeftCorner,
                                                                     double xUpperRightCorner,
@@ -766,12 +766,12 @@ namespace meshkernelapi
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId);
 
         /// @brief Resets the CurvilinearGridOrthogonalization instance in MeshKernelState
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
-        MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId);
 
         /// @brief Smooths a curvilinear grid
         /// @param[in] meshKernelId The id of the mesh state
@@ -781,7 +781,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCorner The x coordinate of the right corner of the block to smooth
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to smooth
         /// @return Error code
-        MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
                                                       int smoothingIterations,
                                                       double xLowerLeftCorner,
                                                       double yLowerLeftCorner,
@@ -800,7 +800,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCornerSmootingArea The x coordinate of the upper right corner of the smoothing area
         /// @param[in] yUpperRightCornerSmootingArea The x coordinate of the upper right corner of the smoothing area
         /// @return Error code
-        MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_smoothing_directional(int meshKernelId,
                                                                   int smoothingIterations,
                                                                   double xFirstGridlineNode,
                                                                   double yFirstGridlineNode,
@@ -814,7 +814,7 @@ namespace meshkernelapi
         /// @brief Instantiates the curvilinear line shift algorithm
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_initialize_line_shift_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId);
 
         /// @brief Sets the start and end nodes of the line to shift
         /// @param[in] meshKernelId The id of the mesh state
@@ -823,7 +823,7 @@ namespace meshkernelapi
         /// @param[in] xSecondGridLineNode   The x coordinate of the second point of the line to shift
         /// @param[in] ySecondGridLineNode   The y coordinate of the second point of the line to shift
         /// @returns  Error code
-        MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_set_line_line_shift(int meshKernelId,
                                                                 double xFirstGridLineNode,
                                                                 double yFirstGridLineNode,
                                                                 double xSecondGridLineNode,
@@ -836,7 +836,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block
         /// @return  Error code
-        MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_set_block_line_shift(int meshKernelId,
                                                                  double xLowerLeftCorner,
                                                                  double yLowerLeftCorner,
                                                                  double xUpperRightCorner,
@@ -849,7 +849,7 @@ namespace meshkernelapi
         /// @param[in] xToCoordinate  The x coordinate of the new node position
         /// @param[in] yToCoordinate  The y coordinate of the new node position
         /// @return  Error code
-        MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_move_node_line_shift(int meshKernelId,
                                                                  double xFromCoordinate,
                                                                  double yFromCoordinate,
                                                                  double xToCoordinate,
@@ -858,22 +858,22 @@ namespace meshkernelapi
         /// @brief Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
-        MKERNEL_API int mkernel_line_shift_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId);
 
         /// @brief Resets the instance of the line shift algorithm in MeshKernelState
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
-        MKERNEL_API int mkernel_finalize_line_shift_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId);
 
         /// @brief Inserts a new face on a curvilinear grid. The new face will be inserted on top of the closest edge by linear extrapolation.
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] xCoordinate        The x coordinate of the point used for finding the closest face.
         /// @param[in] yCoordinate        The y coordinate of the point used for finding the closest face.
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_face_curvilinear(int meshKernelId, double xCoordinate, double yCoordinate);
+        MKERNEL_API int mkernel_curvilinear_insert_face(int meshKernelId, double xCoordinate, double yCoordinate);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
-        MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
+        MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId);
 
         /// @brief Attracts/repulses grid lines in a block towards another set grid line
         /// @param[in] meshKernelId The id of the mesh state
@@ -887,7 +887,7 @@ namespace meshkernelapi
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block where the operation is performed
         /// @param[in] yUpperRightCorner  The y coordinate of the upper right corner of the block where the operation is performed
         /// @return  Error code
-        MKERNEL_API int mkernel_line_attraction_repulsion_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_curvilinear_line_attraction_repulsion(int meshKernelId,
                                                                       double repulsionParameter,
                                                                       double xFirstNodeOnTheLine,
                                                                       double yFirstNodeOnTheLine,
@@ -912,7 +912,7 @@ namespace meshkernelapi
         /// @param[in]  locationType       The location type (see MeshLocations enum)
         /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
-        MKERNEL_API int mkernel_triangulation_interpolation_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,
                                                                    const GeometryList& samples,
                                                                    int locationType,
                                                                    GeometryList& results);
@@ -926,7 +926,7 @@ namespace meshkernelapi
         /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
         /// @param[in] results                The interpolation results with x and y coordinates
         /// @return Error code
-        MKERNEL_API int mkernel_averaging_interpolation_mesh2d(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_averaging_interpolation(int meshKernelId,
                                                                const GeometryList& samples,
                                                                int locationType,
                                                                int averagingMethodType,
