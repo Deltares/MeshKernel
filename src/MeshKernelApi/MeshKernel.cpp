@@ -501,12 +501,12 @@ namespace meshkernelapi
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                               smoother,
-                                                                                                               orthogonalizer,
-                                                                                                               polygon,
-                                                                                                               landBoundary,
-                                                                                                               static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
-                                                                                                               orthogonalizationParameters);
+                                                                                                                                smoother,
+                                                                                                                                orthogonalizer,
+                                                                                                                                polygon,
+                                                                                                                                landBoundary,
+                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                                                orthogonalizationParameters);
             meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
         catch (...)
