@@ -63,7 +63,7 @@ namespace meshkernel
         /// @brief Inquires if another node is on the same grid line of the current node
         /// @param[in] rhs The node to inquire
         /// @return True if on the same grid line, false otherwise
-        bool IsOnTheSameGridLine(const CurvilinearGridNodeIndices& rhs) const
+        [[nodiscard]] bool IsOnTheSameGridLine(const CurvilinearGridNodeIndices& rhs) const
         {
             return m_m == rhs.m_m || m_n == rhs.m_n;
         }
