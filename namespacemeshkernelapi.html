@@ -384,6 +384,9 @@ Functions</h2></td></tr>
 MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0c8a7a9f99cd5feedadca9b03aae4e4d">mkernel_convert_curvilinear_to_mesh2d</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a curvilinear grid to an unstructured mesh. <br /></td></tr>
 <tr class="separator:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c264fea419b56aeae855e09840e404"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a88c264fea419b56aeae855e09840e404">mkernel_line_attraction_repulsion_curvilinear</a> (int meshKernelId, double repulsionParameter, double xFirstNodeOnTheLine, double yFirstNodeOnTheLine, double xSecondNodeOnTheLine, double ySecondNodeOnTheLine, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
+<tr class="memdesc:a88c264fea419b56aeae855e09840e404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attracts/repulses grid lines in a block towards another set grid line.  <a href="namespacemeshkernelapi.html#a88c264fea419b56aeae855e09840e404">More...</a><br /></td></tr>
+<tr class="separator:a88c264fea419b56aeae855e09840e404"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3263,6 +3266,100 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">layer</td><td>The layer index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a88c264fea419b56aeae855e09840e404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88c264fea419b56aeae855e09840e404">&#9670;&nbsp;</a></span>mkernel_line_attraction_repulsion_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_line_attraction_repulsion_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>repulsionParameter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xFirstNodeOnTheLine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yFirstNodeOnTheLine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xSecondNodeOnTheLine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ySecondNodeOnTheLine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xLowerLeftCorner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yLowerLeftCorner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xUpperRightCorner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yUpperRightCorner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attracts/repulses grid lines in a block towards another set grid line. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">repulsionParameter</td><td>The attraction/repulsion parameter. If positive the grid lines will be attracted towards the set line, if negative the lines will be repulsed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstNodeOnTheLine</td><td>The x coordinate of the first node of the set line </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstNodeOnTheLine</td><td>The y coordinate of the first node of the set line </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondNodeOnTheLine</td><td>The x coordinate of the second node of the set line </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondNodeOnTheLine</td><td>The y coordinate of the second node of the set line </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftCorner</td><td>The x coordinate of the lower left corner of the block where the operation is performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCorner</td><td>The y coordinate of the lower left corner of the block where the operation is performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCorner</td><td>The x coordinate of the upper right corner of the block where the operation is performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCorner</td><td>The y coordinate of the upper right corner of the block where the operation is performed </td></tr>
   </table>
   </dd>
 </dl>
