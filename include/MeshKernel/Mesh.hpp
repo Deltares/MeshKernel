@@ -144,6 +144,11 @@ namespace meshkernel
         /// @param[in] endNode The second of the second node to be merged
         void MergeTwoNodes(size_t startNode, size_t endNode);
 
+        /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
+        /// @param[in] polygons Polygon where to perform the merging
+        /// @param[in] mergingDistance The distance below which two nodes will be merged
+        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+
         /// @brief Connect two existing nodes, forming a new edge (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index

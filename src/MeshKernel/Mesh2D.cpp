@@ -558,52 +558,6 @@ void Mesh2D::ClassifyNodes()
     }
 }
 
-void Mesh2D::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
-{
-    // first filter the nodes in polygon
-    std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
-    size_t index = 0;
-    for (auto i = 0; i < GetNumNodes(); i++)
-    {
-        const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
-        if (inPolygon)
-        {
-            filteredNodes[index] = m_nodes[i];
-            originalNodeIndices[index] = i;
-            index++;
-        }
-    }
-    filteredNodes.resize(index);
-
-    // Update the R-Tree of the mesh nodes
-    RTree nodesRtree;
-    nodesRtree.BuildTree(filteredNodes);
-
-    // merge the closest nodes
-    auto const mergingDistanceSquared = mergingDistance * mergingDistance;
-    for (auto i = 0; i < filteredNodes.size(); i++)
-    {
-        nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
-
-        const auto resultSize = nodesRtree.GetQueryResultSize();
-        if (resultSize > 1)
-        {
-            for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
-            {
-                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
-                if (nodeIndexInFilteredNodes != i)
-                {
-                    MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
-                    nodesRtree.DeleteNode(i);
-                }
-            }
-        }
-    }
-
-    Administrate(AdministrationOption::AdministrateMeshEdges);
-}
-
 void Mesh2D::ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<size_t>& localNodeIndicesCache,

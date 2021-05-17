@@ -53,8 +53,12 @@ namespace meshkernel
                         const std::vector<Point>& nodes,
                         Projection projection);
 
-        /// @brief Construct a mesh1d starting from the branches and offsets
-        explicit Mesh1D(const std::vector<std::vector<Point>>& branches, double offset, Projection projection);
+        /// @brief Construct a mesh1d starting from polylines
+        /// @param polylines The polylines to be refined
+        /// @param offset The refinement distance
+        /// @param minEdgeLenght the minimum edge lenght below which two nodes will be merged
+        /// @param projection The projection to use
+        explicit Mesh1D(const std::vector<std::vector<Point>>& polylines, double offset, double minEdgeLenght, Projection projection);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index

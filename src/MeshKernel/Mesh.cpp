@@ -32,6 +32,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 using meshkernel::Mesh;
 
@@ -252,6 +253,52 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
+{
+    // first filter the nodes in polygon
+    std::vector<Point> filteredNodes(GetNumNodes());
+    std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
+    size_t index = 0;
+    for (auto i = 0; i < GetNumNodes(); i++)
+    {
+        const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
+        if (inPolygon)
+        {
+            filteredNodes[index] = m_nodes[i];
+            originalNodeIndices[index] = i;
+            index++;
+        }
+    }
+    filteredNodes.resize(index);
+
+    // Update the R-Tree of the mesh nodes
+    RTree nodesRtree;
+    nodesRtree.BuildTree(filteredNodes);
+
+    // merge the closest nodes
+    auto const mergingDistanceSquared = mergingDistance * mergingDistance;
+    for (auto i = 0; i < filteredNodes.size(); i++)
+    {
+        nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
+
+        const auto resultSize = nodesRtree.GetQueryResultSize();
+        if (resultSize > 1)
+        {
+            for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
+            {
+                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
+                if (nodeIndexInFilteredNodes != i)
+                {
+                    MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
+                    nodesRtree.DeleteNode(i);
+                }
+            }
+        }
+    }
+
+    AdministrateNodesEdges();
 }
 
 size_t Mesh::ConnectNodes(size_t startNode, size_t endNode)
