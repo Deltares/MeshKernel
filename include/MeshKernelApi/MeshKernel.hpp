@@ -98,6 +98,13 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                            const Mesh1D& mesh1d);
 
+        /// @brief Generates a mesh1d from branches
+        /// @param meshKernelId
+        /// @param branches The coordinates of the points composing each branch
+        /// @param offset The desired offset between 1d points
+        /// @return Error code
+        MKERNEL_API int mkernel_mesh1d_make_mesh_from_branches(int meshKernelId, const GeometryList& branches, double offset);
+
         /// @brief Gets the Mesh2D dimensions
         ///
         /// The integer parameters of the Mesh2D struct are set to the corresponding dimensions

@@ -558,4 +558,6 @@ namespace meshkernel
     /// @param[in] number_2 The second number
     size_t AbsoluteDifference(size_t number_1, size_t number_2);
 
+    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, double offset, Projection projection);
+
 } // namespace meshkernel

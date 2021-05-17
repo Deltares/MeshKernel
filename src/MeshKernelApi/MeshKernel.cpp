@@ -199,6 +199,23 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_mesh1d_make_mesh_from_branches(int meshKernelId, const GeometryList& branches, double offset)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId,
                                                   Mesh2D& mesh2d)
     {

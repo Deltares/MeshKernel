@@ -49,9 +49,12 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection  The projection to use
-        Mesh1D(const std::vector<Edge>& edges,
-               const std::vector<Point>& nodes,
-               Projection projection);
+        explicit Mesh1D(const std::vector<Edge>& edges,
+                        const std::vector<Point>& nodes,
+                        Projection projection);
+
+        /// @brief Construct a mesh1d starting from the branches and offsets
+        explicit Mesh1D(const std::vector<std::vector<Point>>& branches, double offset, Projection projection);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index

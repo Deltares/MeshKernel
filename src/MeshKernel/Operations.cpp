@@ -1504,4 +1504,75 @@ namespace meshkernel
         return {projectedPoint, segmentRatio, projectionOnSegment};
     }
 
+    std::vector<double> ComputeEdgesLengths(const std::vector<Point>& polyline, Projection projection)
+    {
+        std::vector<double> edgeLengths;
+        edgeLengths.reserve(polyline.size());
+
+        for (auto p = 0; p < polyline.size() - 1; ++p)
+        {
+            const auto firstNode = p;
+            auto secondNode = p + 1;
+            edgeLengths.emplace_back(ComputeDistance(polyline[firstNode], polyline[secondNode], projection));
+        }
+        return edgeLengths;
+    }
+
+    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, double offset, Projection projection)
+    {
+        std::vector<Point> refinedPolyline;
+        if (polyline.size() < 2)
+        {
+            return refinedPolyline;
+        }
+        // Compute the edge lengths and the edge coordinates
+        auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
+        std::vector<double> nodeSCoordinate(edgeLengths.size());
+        nodeSCoordinate[0] = 0.0;
+        for (auto i = 1; i < edgeLengths.size(); ++i)
+        {
+            nodeSCoordinate[i] = nodeSCoordinate[i - 1] + edgeLengths[i - 1];
+        }
+
+        auto currentNodeCoordinate = 0;
+        auto nextNodeCoordinate = currentNodeCoordinate + 1;
+        Point p0 = polyline[currentNodeCoordinate];
+        Point p1 = polyline[nextNodeCoordinate];
+
+        double pointSCoordinate = nodeSCoordinate[currentNodeCoordinate];
+        while (pointSCoordinate <= nodeSCoordinate.back())
+        {
+            pointSCoordinate += offset;
+            // find the next point
+            if (pointSCoordinate > nodeSCoordinate[nextNodeCoordinate])
+            {
+                bool nextNodeFound = false;
+                for (auto i = nextNodeCoordinate + 1; i < polyline.size(); ++i)
+                {
+                    if (nodeSCoordinate[i] > pointSCoordinate)
+                    {
+                        nextNodeFound = true;
+                        currentNodeCoordinate = i - 1;
+                        nextNodeCoordinate = i;
+                        break;
+                    }
+                }
+                if (!nextNodeFound)
+                {
+                    break;
+                }
+
+                p0 = polyline[currentNodeCoordinate];
+                p1 = polyline[nextNodeCoordinate];
+                pointSCoordinate = offset - pointSCoordinate;
+            }
+
+            double distanceFromLastNode = pointSCoordinate - nodeSCoordinate[currentNodeCoordinate];
+            const double factor = distanceFromLastNode / edgeLengths[currentNodeCoordinate];
+            Point p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[currentNodeCoordinate];
+
+            refinedPolyline.emplace_back(p);
+        }
+    }
+
 } // namespace meshkernel

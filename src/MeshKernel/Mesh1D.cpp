@@ -25,11 +25,25 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh1D.hpp"
-
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh1D.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <vector>
 
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
+
+meshkernel::Mesh1D::Mesh1D(const std::vector<std::vector<Point>>& branches, double offset, Projection projection)
+{
+
+    const std::vector<Edge> edges;
+    const std::vector<Point> nodes;
+    for (auto const& branch : branches)
+    {
+        auto const branchNodes = RefinePolyLine(branch, offset, projection);
+        //std::copy(branchNodes.begin(), branchNodes.end(), nodes.end());
+    }
+
+    Mesh(edges, nodes, projection);
+}
