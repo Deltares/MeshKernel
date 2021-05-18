@@ -1523,24 +1523,25 @@ namespace meshkernel
         std::vector<Point> refinedPolyline;
         if (polyline.size() < 2)
         {
-            return refinedPolyline;
+            throw std::invalid_argument("RefinePolyLine polyline with less than 2 points");
         }
         // Compute the edge lengths and the edge coordinates
         auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
-        std::vector<double> nodeSCoordinate(edgeLengths.size());
+        std::vector<double> nodeSCoordinate(polyline.size());
         nodeSCoordinate[0] = 0.0;
-        for (auto i = 1; i < edgeLengths.size(); ++i)
+        for (auto i = 0; i < edgeLengths.size(); ++i)
         {
-            nodeSCoordinate[i] = nodeSCoordinate[i - 1] + edgeLengths[i - 1];
+            nodeSCoordinate[i + 1] = nodeSCoordinate[i] + edgeLengths[i];
         }
 
         auto currentNodeCoordinate = 0;
         auto nextNodeCoordinate = currentNodeCoordinate + 1;
         Point p0 = polyline[currentNodeCoordinate];
         Point p1 = polyline[nextNodeCoordinate];
+        refinedPolyline.emplace_back(polyline.front());
 
         double pointSCoordinate = nodeSCoordinate[currentNodeCoordinate];
-        while (pointSCoordinate <= nodeSCoordinate.back())
+        while (pointSCoordinate + offset < nodeSCoordinate.back())
         {
             pointSCoordinate += offset;
             // find the next point
@@ -1564,15 +1565,16 @@ namespace meshkernel
 
                 p0 = polyline[currentNodeCoordinate];
                 p1 = polyline[nextNodeCoordinate];
-                pointSCoordinate = offset - pointSCoordinate;
             }
 
             double distanceFromLastNode = pointSCoordinate - nodeSCoordinate[currentNodeCoordinate];
-            const double factor = distanceFromLastNode / edgeLengths[currentNodeCoordinate];
             Point p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[currentNodeCoordinate];
 
             refinedPolyline.emplace_back(p);
         }
+        refinedPolyline.emplace_back(polyline.back());
+
+        return refinedPolyline;
     }
 
 } // namespace meshkernel

@@ -49,16 +49,16 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection  The projection to use
-        explicit Mesh1D(const std::vector<Edge>& edges,
-                        const std::vector<Point>& nodes,
+        explicit Mesh1D(std::vector<Edge> const& edges,
+                        std::vector<Point> const& nodes,
                         Projection projection);
 
-        /// @brief Construct a mesh1d starting from polylines
+        /// @brief Construct a mesh1d by discretizing polylines
         /// @param polylines The polylines to be refined
         /// @param offset The refinement distance
-        /// @param minEdgeLenght the minimum edge lenght below which two nodes will be merged
+        /// @param mergingLength the minimum edge length below which two nodes will be merged
         /// @param projection The projection to use
-        explicit Mesh1D(const std::vector<std::vector<Point>>& polylines, double offset, double minEdgeLenght, Projection projection);
+        explicit Mesh1D(std::vector<std::vector<Point>> const& polylines, double offset, double mergingLength, Projection projection);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index

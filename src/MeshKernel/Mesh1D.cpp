@@ -35,8 +35,12 @@ meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
 
-meshkernel::Mesh1D::Mesh1D(const std::vector<std::vector<Point>>& polylines, double offset, double minEdgeLenght, Projection projection)
+meshkernel::Mesh1D::Mesh1D(std::vector<std::vector<Point>> const& polylines, double offset, double mergingLength, Projection projection)
 {
+    if (offset <= mergingLength)
+    {
+        throw std::invalid_argument("Mesh1D::Mesh1D: Offset cannot be smaller than merging length");
+    }
 
     std::vector<Edge> edges;
     std::vector<Point> nodes;
@@ -45,10 +49,9 @@ meshkernel::Mesh1D::Mesh1D(const std::vector<std::vector<Point>>& polylines, dou
     {
         auto const branchNodes = RefinePolyLine(branch, offset, projection);
         std::copy(branchNodes.begin(), branchNodes.end(), back_inserter(nodes));
-        for (size_t i = 0; i < nodes.size() - 1; ++i)
+        for (auto i = numNodes; i < nodes.size() - 1; ++i)
         {
-            edges.emplace_back(numNodes + i, numNodes + i + 1);
-            numNodes++;
+            edges.emplace_back(i, i + 1);
         }
         // branches are separated. If the end of a polyline coincides with the start of another, the two nodes will be merged.
         numNodes = numNodes + nodes.size();
@@ -58,7 +61,11 @@ meshkernel::Mesh1D::Mesh1D(const std::vector<std::vector<Point>>& polylines, dou
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
+
+    // Perform node administration to fill the internal arrays
+    AdministrateNodesEdges();
+
     // If there are computational nodes at a distance smaller than  the threshold, these are eliminated
     const Polygons polygon{};
-    MergeNodesInPolygon(polygon, minEdgeLenght);
+    MergeNodesInPolygon(polygon, mergingLength);
 }
