@@ -101,7 +101,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class used for triangulation interpolation. </p>
-<p>As for averaging, the triangle interpolation operates at three specific <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> - Faces, Nodes, and Edges. The idea is to triangulate the samples and identify for each location the triangle that fully contains Only the values at the nodes of the identified triangle are used in the computation of each location. The algorithm operates as follow:</p>
+<p>As for averaging, the triangle interpolation operates at three specific <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> - Faces, Nodes, and Edges. Only the values at the nodes of the identified triangle are used in the computation of each location. The algorithm operates as follow:</p>
 <ul>
 <li>The triangulation of the samples is computed</li>
 <li>For each triangle, the circumcenter is computed</li>
