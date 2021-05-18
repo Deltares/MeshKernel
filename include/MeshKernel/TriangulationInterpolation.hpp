@@ -37,8 +37,6 @@ namespace meshkernel
     ///
     /// As for averaging, the triangle interpolation operates at three specific
     /// \ref MeshLocations - Faces, Nodes, and Edges.
-    /// The idea is to triangulate the samples and identify for each location
-    /// the triangle that fully contains
     /// Only the values at the nodes of the identified triangle are used in
     /// the computation of each location.
     /// The algorithm operates as follow:
