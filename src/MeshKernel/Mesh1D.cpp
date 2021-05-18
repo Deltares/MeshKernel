@@ -35,7 +35,7 @@ meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
 
-meshkernel::Mesh1D::Mesh1D(std::vector<std::vector<Point>> const& polylines, double offset, double mergingLength, Projection projection)
+meshkernel::Mesh1D::Mesh1D(std::vector<std::vector<Point>> const& polyLines, double offset, double mergingLength, Projection projection)
 {
     if (offset <= mergingLength)
     {
@@ -45,15 +45,19 @@ meshkernel::Mesh1D::Mesh1D(std::vector<std::vector<Point>> const& polylines, dou
     std::vector<Edge> edges;
     std::vector<Point> nodes;
     size_t numNodes = 0;
-    for (auto const& branch : polylines)
+    for (auto const& polyLine : polyLines)
     {
-        auto const branchNodes = RefinePolyLine(branch, offset, projection);
-        std::copy(branchNodes.begin(), branchNodes.end(), back_inserter(nodes));
+        auto const polyLineNodes = RefinePolyLine(polyLine, offset, projection);
+        if (polyLineNodes.empty())
+        {
+            continue;
+        }
+        std::copy(polyLineNodes.begin(), polyLineNodes.end(), back_inserter(nodes));
         for (auto i = numNodes; i < nodes.size() - 1; ++i)
         {
             edges.emplace_back(i, i + 1);
         }
-        // branches are separated. If the end of a polyline coincides with the start of another, the two nodes will be merged.
+        // Poly lines are separated. If the end of one polyline coincides with the start of another, the two nodes will be merged later on.
         numNodes = numNodes + nodes.size();
     }
 
