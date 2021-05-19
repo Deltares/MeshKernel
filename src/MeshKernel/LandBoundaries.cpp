@@ -63,7 +63,7 @@ void LandBoundaries::Administrate()
     // Computes the land boundary nodes inside a polygon
     m_nodeFaceIndices = m_mesh->PointFaceIndices(m_nodes);
 
-    // do not consider the landboundary nodes outside the polygon
+    // Do not consider the landboundary nodes outside the polygon
     std::vector<int> nodeMask(m_nodes.size(), 0);
     for (auto n = 0; n < m_nodes.size() - 1; n++)
     {
@@ -78,49 +78,11 @@ void LandBoundaries::Administrate()
         }
     }
 
-    // mesh boundary to polygon
+    // Mesh boundary to polygon
     const std::vector<Point> polygonNodes;
     const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
-    // mask all land boundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
-    for (auto n = 0; n < m_nodes.size() - 1; n++)
-    {
-        if (nodeMask[n] != 1 || meshBoundaryPolygon.empty())
-        {
-            continue;
-        }
-
-        Point firstPoint = m_nodes[n];
-        Point secondPoint = m_nodes[n + 1];
-        bool landBoundaryIsClose = false;
-
-        for (auto nn = 0; nn < meshBoundaryPolygon.size() - 2; nn++)
-        {
-            Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
-            Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
-
-            if (!firstMeshBoundaryNode.IsValid() || !secondMeshBoundaryNode.IsValid())
-            {
-                continue;
-            }
-
-            const auto edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
-
-            if (const auto [distanceFromMeshNode, normalPoint, ratio] = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection);
-                distanceFromMeshNode <= m_closeFactor * edgeLength)
-            {
-                landBoundaryIsClose = true;
-                break;
-            }
-        }
-
-        if (landBoundaryIsClose)
-        {
-            nodeMask[n] = 2;
-        }
-    }
-
-    // find the start/end node of the land boundaries.
+    // Find the start/end node of the land boundaries.
     // Emplace back them in m_validLandBoundaries if the land-boundary segment is close to a mesh node
     const auto indices = FindIndices(m_nodes, 0, m_nodes.size(), doubleMissingValue);
     m_validLandBoundaries.reserve(indices.size());
