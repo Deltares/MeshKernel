@@ -64,7 +64,7 @@ void LandBoundaries::Administrate()
     m_nodeFaceIndices = m_mesh->PointFaceIndices(m_nodes);
 
     // Do not consider the landboundary nodes outside the polygon
-    std::vector<int> nodeMask(m_nodes.size(), 0);
+    std::vector<bool> nodeMask(m_nodes.size(), false);
     for (auto n = 0; n < m_nodes.size() - 1; n++)
     {
         if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
@@ -74,7 +74,7 @@ void LandBoundaries::Administrate()
 
         if (m_polygons->IsPointInPolygon(m_nodes[n], 0) || m_polygons->IsPointInPolygon(m_nodes[n + 1], 0))
         {
-            nodeMask[n] = 1;
+            nodeMask[n] = true;
         }
     }
 
@@ -82,14 +82,16 @@ void LandBoundaries::Administrate()
     const std::vector<Point> polygonNodes;
     const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
-    // Find the start/end node of the land boundaries.
-    // Emplace back them in m_validLandBoundaries if the land-boundary segment is close to a mesh node
+    // Find the start/end node of the land boundaries
     const auto indices = FindIndices(m_nodes, 0, m_nodes.size(), doubleMissingValue);
+
+    // Emplace start/end node of the land boundaries back in m_validLandBoundaries,
+    // if the land boundary segment is close to a mesh node
     m_validLandBoundaries.reserve(indices.size());
     for (const auto& index : indices)
     {
-        // if the start node has a valid mask
-        if (nodeMask[index[0]] > 0)
+        // If the start node has a valid mask
+        if (nodeMask[index[0]])
         {
             m_validLandBoundaries.emplace_back(index);
         }
@@ -97,7 +99,7 @@ void LandBoundaries::Administrate()
 
     // Generate two segments for closed land boundaries
     const auto numSegmentIndicesBeforeSplitting = m_validLandBoundaries.size();
-    for (auto i = 0; i < numSegmentIndicesBeforeSplitting; i++)
+    for (size_t i = 0; i < numSegmentIndicesBeforeSplitting; ++i)
     {
         const auto startSegmentIndex = m_validLandBoundaries[i][0];
         const auto endSegmentIndex = m_validLandBoundaries[i][1];
