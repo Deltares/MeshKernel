@@ -61,9 +61,9 @@ namespace meshkernel
         LandBoundaries() = default;
 
         /// @brief Default constructor
-        /// @param[in] landBoundary A vector of points defining the land boundary
-        /// @param[in] mesh The current 2d mesh
-        /// @param[in] polygons A polygon for selecting part of the land boundaries
+        /// @param[in] landBoundary A vector of points defining the land boundary.
+        /// @param[in] mesh         The current 2d mesh.
+        /// @param[in] polygons     A polygon for selecting part of the land boundaries.
         LandBoundaries(const std::vector<Point>& landBoundary,
                        std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<Polygons> polygons);
@@ -72,19 +72,19 @@ namespace meshkernel
         ///
         /// This method uses a Point vector member variable and identifies
         /// the start-end points of each land boundary polyline with the requirement
-        /// that all polyline nodes are close enough to the mesh boundary and is inside the polygon.
+        /// that all polyline nodes are close enough to the mesh boundary and are inside the polygon.
         /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
         void Administrate();
 
-        /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
-        /// @param[in] projectToLandBoundaryOption the option to use to project to land boundary
+        /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline).
+        /// @param[in] projectToLandBoundaryOption The option describing the projection to the land boundary.
         void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
 
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
         void SnapMeshToLandBoundaries();
 
-        /// @brief Gets the number of land boundary nodes
-        /// @return the number of land boundary nodes
+        /// @brief Gets the number of land boundary nodes.
+        /// @return The number of land boundary nodes.
         auto GetNumNodes() const { return m_nodes.size(); }
 
         std::vector<size_t> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
