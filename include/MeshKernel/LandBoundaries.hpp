@@ -87,7 +87,7 @@ namespace meshkernel
         /// @return The number of land boundary nodes.
         auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<size_t> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
+        std::vector<size_t> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
@@ -108,7 +108,9 @@ namespace meshkernel
                              size_t numNodesLoc,
                              size_t nodeIndex);
 
-        /// @brief Assigns to each mesh node a \p landBoundaryIndex
+        /// @brief Assigns to each mesh node a land boundary segment.
+        ///
+        /// This is done by modifying m_meshNodesLandBoundarySegments.
         /// @param[in] landBoundaryIndex       The current landboundary segment
         /// @returns The number of mesh nodes and rejected nodes for this path
         std::tuple<size_t, size_t> MakePath(size_t landBoundaryIndex);
@@ -120,10 +122,10 @@ namespace meshkernel
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
         /// It is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
         //// \image html LandBoundaryNodeFlagging_step2.jpg  "Flag the mesh node close to the land boundary"
-        /// @param[in] segmentIndex
-        /// @param[in] meshBoundOnly
-        /// @param[in] startLandBoundaryIndex
-        /// @param[in] endLandBoundaryIndex
+        /// @param[in]  segmentIndex
+        /// @param[in]  meshBoundOnly
+        /// @param[in]  startLandBoundaryIndex
+        /// @param[in]  endLandBoundaryIndex
         /// @param[out] leftIndex
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
@@ -139,12 +141,12 @@ namespace meshkernel
 
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] landBoundaryIndex The land boundary polyline index
-        /// @param[in] initialFaces The initial face seeds
+        /// @param[in] initialFaces      The initial face seeds
         void MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size_t>& initialFaces);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
         /// @param[in] landBoundaryIndex The land boundary polyline index
-        /// @param[in] edge The mesh edge to inquire
+        /// @param[in] edge              The mesh edge to inquire
         /// @return the closest land boundary node
         [[nodiscard]] size_t IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex, size_t edge);
 
@@ -159,28 +161,28 @@ namespace meshkernel
         /// @brief Finds the edge nodes closest to a point
         ///
         /// \image html LandBoundaryStartEndNodes_step3.jpg  "Find the start and end mesh nodes of the land boundary on the mesh."
-        /// @param[in] edge The edge index
+        /// @param[in] edge  The edge index
         /// @param[in] point The point to inquire
         size_t FindStartEndMeshNodesFromEdges(size_t edge, Point point) const;
 
         /// @brief Connect mesh nodes close to the landBoundaryIndex using Dijkstra's algorithm
         /// @param[in] landBoundaryIndex The index of a valid landboundary
-        /// @param[in] startMeshNode the starting point
+        /// @param[in] startMeshNode     The starting point
         /// @returns A vector of connected edge indices for each node
         std::vector<size_t> ShortestPath(size_t landBoundaryIndex, size_t startMeshNode);
 
         /// @brief Compute the nearest land boundary segment (toland)
         /// @param[in] landBoundaryIndex The land boundary index
-        /// @param[in] node The node
-        /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary, the closest land boundary node,
-        /// The length of the segment from the starting point to the projected point expressed as an edge ratio
+        /// @param[in] node              The node
+        /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary,
+        ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
         std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(int landBoundaryIndex, const Point& node);
 
         std::shared_ptr<Mesh2D> m_mesh;                         ///< A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;                   ///< A pointer to polygons
         std::vector<Point> m_nodes;                             ///< XLAN, YLAN
         std::vector<Point> m_polygonNodesCache;                 ///< Array of points (e.g. points of a face)
-        std::vector<std::vector<size_t>> m_validLandBoundaries; ///< lanseg_startend
+        std::vector<std::vector<size_t>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
         std::vector<std::vector<double>> m_nodesLand;           ///< Node to land boundary segment mapping
         std::vector<size_t> m_nodeFaceIndices;                  ///< For each node, the indices of the faces including them
 

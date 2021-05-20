@@ -97,7 +97,8 @@ void LandBoundaries::Administrate()
         }
     }
 
-    // Avoid closed land boundaries by generating two segments
+    // Split every land boundary in order to get rid of closed land boundaries
+    // (some pieces of software cannot handle closed polygons, only polylines)
     const auto numSegmentIndicesBeforeSplitting = m_validLandBoundaries.size();
     for (size_t i = 0; i < numSegmentIndicesBeforeSplitting; ++i)
     {
@@ -146,11 +147,11 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
         }
     }
 
-    // connect the m_mesh nodes
+    // Connect the m_mesh nodes
     if (m_findOnlyOuterMeshBoundary)
     {
         std::vector<size_t> connectedNodes;
-        for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
+        for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             if (!m_mesh->IsEdgeOnBoundary(e))
             {
@@ -372,7 +373,7 @@ std::tuple<size_t, size_t> LandBoundaries::MakePath(size_t landBoundaryIndex)
         throw std::invalid_argument("LandBoundaries::MakePath: Invalid boundary index.");
     }
 
-    // fractional location of the projected outer nodes(min and max) on the land boundary segment
+    // Fractional location of the projected outer nodes(min and max) on the land boundary segment
     ComputeMeshNodeMask(landBoundaryIndex);
 
     auto [startMeshNode, endMeshNode] = FindStartEndMeshNodesDijkstraAlgorithm(landBoundaryIndex);
