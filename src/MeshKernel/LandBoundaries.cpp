@@ -134,16 +134,14 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     m_nodesMinDistances.resize(m_mesh->GetNumNodes(), doubleMissingValue);
 
     // Loop over the segments of the land boundary and assign each node to the land boundary segment index
-    for (auto landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); landBoundarySegment++)
+    for (size_t landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); ++landBoundarySegment)
     {
-        size_t numPaths = 0;
-        size_t numRejectedPaths = 0;
-        MakePath(landBoundarySegment, numPaths, numRejectedPaths);
+        const auto [_, numRejectedPaths] = MakePath(landBoundarySegment);
 
         if (numRejectedPaths > 0 && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
         {
             m_findOnlyOuterMeshBoundary = false;
-            MakePath(landBoundarySegment, numPaths, numRejectedPaths);
+            MakePath(landBoundarySegment);
             m_findOnlyOuterMeshBoundary = true;
         }
     }
@@ -361,13 +359,11 @@ void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, size_t
     m_validLandBoundaries.emplace_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
 }
 
-void LandBoundaries::MakePath(size_t landBoundaryIndex,
-                              size_t& numNodesInPath,
-                              size_t& numRejectedNodesInPath)
+std::tuple<size_t, size_t> LandBoundaries::MakePath(size_t landBoundaryIndex)
 {
     if (m_nodes.empty())
     {
-        return;
+        return {0, 0};
     }
 
     if (m_validLandBoundaries[landBoundaryIndex][0] >= m_nodes.size() ||
@@ -391,8 +387,8 @@ void LandBoundaries::MakePath(size_t landBoundaryIndex,
     size_t lastNode = sizetMissingValue;
     auto currentNode = endMeshNode;
     size_t numConnectedNodes = 0;
-    numRejectedNodesInPath = 0;
-    numNodesInPath = 0;
+    size_t numNodesInPath = 0;
+    size_t numRejectedNodesInPath = 0;
 
     while (true)
     {
@@ -488,6 +484,8 @@ void LandBoundaries::MakePath(size_t landBoundaryIndex,
     {
         m_meshNodesLandBoundarySegments[lastNode] = lastSegment;
     }
+
+    return {numNodesInPath, numRejectedNodesInPath};
 }
 
 void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
