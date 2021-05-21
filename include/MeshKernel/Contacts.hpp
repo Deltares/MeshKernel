@@ -81,7 +81,7 @@ namespace meshkernel
         ///
         /// Each internal 1d node is connected to multiple 2d faces.
         /// This type of contacts should be used when the lengths of the 1d mesh edges are considerably larger
-        /// than the 2d mesh edges and generating a single contact for each 1d node is not representative.
+        /// than the 2d mesh edges and generating a single contact for each 1d node is not sufficient.
         /// In this algorithm, only the internal 1d nodes are connected.
         /// The following figure shows a 1d mesh overlapping a 2d mesh.
         /// For the node n, the closest 2d faces within a search radius are found

@@ -3,6 +3,7 @@
 
 MeshKernel is library for creating and editing meshes.
 It supports 1D & 2D unstructured meshes as well as curvilinear meshes.
+The Python wrapper can be found [here](https://github.com/Deltares/MeshKernelPy).
 
 The library is separated in an API namespace (MeshKernelApi), used for communication with the client and a backend namespace (MeshKernel), where the algorithms are implemented. 
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
@@ -19,7 +20,7 @@ The requirements are:
 - CMake 3.19 or higher
 - A C++17 compatible compiler
 - The Boost libraries
-- Git (with Git LFS)
+- Git
 - Doxygen (optional)
 
 

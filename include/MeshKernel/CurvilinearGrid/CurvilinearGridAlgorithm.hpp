@@ -63,9 +63,9 @@ namespace meshkernel
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
-        CurvilinearGrid m_grid;                    ///< A copy of the original grid, it will be modified by the algorithms
-        std::vector<CurvilinearGridLine> m_lines;  ///< Selected grid lines
-        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the block
-        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the block
+        CurvilinearGrid m_grid;                   ///< A deep copy of the original grid, modified by the algorithms
+        std::vector<CurvilinearGridLine> m_lines; ///< Selected grid lines
+        CurvilinearGridNodeIndices m_lowerLeft;   ///< The lower left corner of the block
+        CurvilinearGridNodeIndices m_upperRight;  ///< The upper right corner of the block
     };
 } // namespace meshkernel
