@@ -57,6 +57,15 @@ namespace meshkernel
             Invalid        //(0)
         };
 
+        /// @brief An enum for boundary grid line types
+        enum class BoundaryGridLineType
+        {
+            Left,
+            Right,
+            Bottom,
+            Up
+        };
+
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
@@ -140,12 +149,24 @@ namespace meshkernel
         /// @return A pointer to a deep copy of current curvilinear grid instance
         [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
 
-        size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;         ///< Member variable storing the grid
-        std::vector<std::vector<bool>> m_gridFacesMask;      ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesTypes; ///< The grid node types
-        std::vector<CurvilinearGridNodeIndices> m_gridIndices;              ///< The original mapping of the flatten nodes in the curvilinear grid
+        /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
+        /// @param firstNode The first node of the boundary grid line.
+        /// @param secondNode The second node of the boundary grid line.
+        /// @return If a new grid line has been allocated
+        bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+
+        /// @brief Get the boundary grid line type: left, right, bottom or up
+        /// @param[in] firstNode The first node of the grid line
+        /// @param[in] secondNode The second node of the grid line
+        /// @return The boundary grid line type
+        BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const;
+
+        size_t m_numM = 0;                                     ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                     ///< The number of n coordinates (horizontal lines)
+        std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
+        std::vector<std::vector<bool>> m_gridFacesMask;        ///< The mask of the grid faces (true/false)
+        std::vector<std::vector<NodeType>> m_gridNodesTypes;   ///< The grid node types
+        std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:
         /// @brief Remove invalid nodes.

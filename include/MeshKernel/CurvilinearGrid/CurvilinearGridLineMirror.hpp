@@ -29,29 +29,28 @@
 
 #include <memory>
 
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Splines.hpp>
 
 namespace meshkernel
 {
-    class CurvilinearGrid;
 
-    /// @brief A class implementing the curvilinear grid refinement algorithm
-    class CurvilinearGridRefinement : public CurvilinearGridAlgorithm
+    /// @brief A class implementing the curvilinear grid line mirror.
+    /// Along the selected grid line, new faces are generated to expand the grid outwards.
+    class CurvilinearGridLineMirror : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
-        ///
-        /// \p firstPoint and \p secondPoint must lie on the same gridline
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] refinement  The number of refinement lines between the points set by SetBlock()
-        CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, size_t refinement);
+        /// @param[in] mirroringFactor The mirroringFactor factor
+        CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid, double mirroringFactor);
 
-        /// @brief Refine the curvilinear grid
+        /// @brief Computes a new curvilinear grid with the line shift
+        /// @return The shifted curvilinear grid
         CurvilinearGrid Compute() override;
 
     private:
-        size_t m_refinement; ///< The selected number of refinement lines
-        Splines m_splines;   ///< An instance of the spline class storing the individual grid lines as splines
+        CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
+        double m_mirroringFactor;       ///< The factor used to determine how far the faces should be mirrored
     };
 } // namespace meshkernel
