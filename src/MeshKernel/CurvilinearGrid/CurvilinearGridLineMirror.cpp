@@ -37,6 +37,10 @@ using meshkernel::Point;
 CurvilinearGridLineMirror::CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid, double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
 
 {
+    if (m_mirroringFactor <= 0)
+    {
+        throw std::invalid_argument("CurvilinearGridLineMirror::CurvilinearGridLineMirror mirroring factor cannot be less or equal to zero");
+    }
 }
 
 CurvilinearGrid CurvilinearGridLineMirror::Compute()

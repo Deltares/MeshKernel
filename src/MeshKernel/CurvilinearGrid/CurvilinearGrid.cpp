@@ -554,6 +554,12 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(N
     auto const firstNodeType = m_gridNodesTypes[firstNode.m_m][firstNode.m_n];
     auto const secondNodeType = m_gridNodesTypes[secondNode.m_m][secondNode.m_n];
 
+    if (firstNodeType == NodeType::InternalValid || firstNodeType == NodeType::Invalid ||
+        secondNodeType == NodeType::InternalValid || secondNodeType == NodeType::Invalid)
+    {
+        throw std::invalid_argument(" CurvilinearGrid::GetBoundaryGridLineType: Not a boundary grid line");
+    }
+
     if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom ||
         firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight ||
         firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::BottomLeft)

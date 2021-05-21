@@ -29,6 +29,15 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
     ASSERT_NEAR(366516.53233619139, mirroredGrid.m_gridNodes[4].front().y, tolerance);
 }
 
+TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundaryWithZeroMirrowingFactor_ShouldNotAddFacesOnBottomBoundary)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+
+    // Assert
+    ASSERT_THROW(meshkernel::CurvilinearGridLineMirror(curvilinearGrid, 0.0), std::invalid_argument);
+}
+
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUpperBoundary)
 {
     // Set-up
