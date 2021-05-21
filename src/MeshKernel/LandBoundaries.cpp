@@ -577,8 +577,8 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size
     nextFaces.reserve(initialFaces.size());
     for (const auto& face : initialFaces)
     {
-        // no face was crossed by the land boundary: mask boundary faces only
-        // these are the faces that are close (up to a certain tolerance) by a land boundary
+        // No face was crossed by the land boundary: mask boundary faces only
+        // These are the faces that are close (up to a certain tolerance) by a land boundary
         if (face == sizetMissingValue)
         {
             for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
@@ -609,7 +609,7 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size
         }
         else
         {
-            // face is crossed
+            // Face is crossed
             if (m_mesh->GetNumFaces() < numNodesInTriangle)
             {
                 continue;
@@ -617,7 +617,7 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size
 
             for (const auto& currentEdge : m_mesh->m_facesEdges[face])
             {
-                // is a boundary edge, continue
+                // If it is a boundary edge, continue
                 if (m_mesh->IsEdgeOnBoundary(currentEdge))
                 {
                     continue;
@@ -625,7 +625,7 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size
 
                 const auto otherFace = face == m_mesh->m_edgesFaces[currentEdge][0] ? m_mesh->m_edgesFaces[currentEdge][1] : m_mesh->m_edgesFaces[currentEdge][0];
 
-                // already masked
+                // Already masked
                 if (m_faceMask[otherFace])
                 {
                     continue;
@@ -636,17 +636,17 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size
                 {
                     if (m_edgeMask[edge] == 1)
                     {
-                        // previously visited crossed edge
+                        // Previously visited crossed edge
                         isFaceFound = true;
                         continue;
                     }
                     if (m_edgeMask[edge] == 0)
                     {
-                        // previously visited uncrossed edge
+                        // Previously visited uncrossed edge
                         continue;
                     }
 
-                    // visited edge
+                    // Visited edge
                     m_edgeMask[edge] = 0;
                     const auto landBoundaryNode = IsMeshEdgeCloseToLandBoundaries(landBoundaryIndex, edge);
 
@@ -717,7 +717,7 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
             if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
             {
                 landBoundaryNode = currentNode;
-                // the projection of firstMeshNode is within the segment currentNode / currentNode + 1
+                // The projection of firstMeshNode is within the segment currentNode / currentNode + 1
                 if (ratioFirstMeshNode >= 0.0 && ratioFirstMeshNode <= 1.0)
                 {
                     break;
@@ -725,7 +725,7 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
             }
             else
             {
-                // check the second point
+                // Check the second point
                 const auto [distanceFromLandBoundarySecondMeshNode, normalPoint, ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
                                                                                                                          m_nodes[currentNode],
                                                                                                                          m_nodes[currentNode + 1],
@@ -734,7 +734,7 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
                 if (distanceFromLandBoundarySecondMeshNode < closeDistance)
                 {
                     landBoundaryNode = currentNode;
-                    // the projection of secondMeshNode is within the segment currentNode / currentNode + 1
+                    // The projection of secondMeshNode is within the segment currentNode / currentNode + 1
                     if (ratioSecondMeshNode >= 0.0 && ratioSecondMeshNode <= 1.0)
                     {
                         break;
@@ -743,7 +743,7 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
             }
         }
 
-        // search the next land boundary edge if projection is not within is within the segment currentNode / currentNode + 1
+        // Search the next land boundary edge if projection is not within is within the segment currentNode / currentNode + 1
         searchIterations = 0;
         while ((searchIterations == 0 || currentNode < startLandBoundaryIndex || currentNode > endLandBoundaryIndex - 1) && searchIterations < 3)
         {
@@ -775,7 +775,7 @@ std::tuple<size_t, size_t> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorith
     const auto leftIndex = endLandBoundaryIndex - 1;
     const auto rightIndex = startLandBoundaryIndex;
 
-    // compute the start and end point of the land boundary respectively
+    // Compute the start and end point of the land boundary respectively
     const auto nextLeftIndex = std::min(leftIndex + 1, endLandBoundaryIndex);
     const Point startPoint = m_nodes[nextLeftIndex];
     const Point endPoint = m_nodes[rightIndex];
@@ -788,13 +788,13 @@ std::tuple<size_t, size_t> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorith
 
     for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
     {
-        // if the edge has an invalid node, continue
+        // If the edge has an invalid node, continue
         if (m_mesh->m_edges[e].first == sizetMissingValue || m_mesh->m_edges[e].second == sizetMissingValue)
         {
             continue;
         }
 
-        // use only edges with both nodes masked
+        // Use only edges with both nodes masked
         if (m_nodeMask[m_mesh->m_edges[e].first] == sizetMissingValue || m_nodeMask[m_mesh->m_edges[e].second] == sizetMissingValue)
         {
             continue;
@@ -864,7 +864,7 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
     connectedNodeEdges.resize(m_mesh->GetNumNodes(), sizetMissingValue);
     std::fill(connectedNodeEdges.begin(), connectedNodeEdges.end(), sizetMissingValue);
 
-    // infinite distance for all nodes
+    // Infinite distance for all nodes
     std::vector<double> nodeDistances(m_mesh->GetNumNodes(), std::numeric_limits<double>::max());
     std::vector<bool> isVisited(m_mesh->GetNumNodes(), false);
 
@@ -947,7 +947,7 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
             }
         }
 
-        // linear search with masking
+        // Linear search with masking
         currentNodeIndex = 0;
         double minValue = std::numeric_limits<double>::max();
         for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
