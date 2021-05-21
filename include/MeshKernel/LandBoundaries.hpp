@@ -142,7 +142,7 @@ namespace meshkernel
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] landBoundaryIndex The land boundary polyline index
         /// @param[in] initialFaces      The initial face seeds
-        void MaskMeshFaceMask(size_t landBoundaryIndex, std::vector<size_t>& initialFaces);
+        void MaskMeshFaceMask(size_t landBoundaryIndex, const std::vector<size_t>& initialFaces);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
         /// @param[in] landBoundaryIndex The land boundary polyline index
