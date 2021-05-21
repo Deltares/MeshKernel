@@ -387,6 +387,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a5727bee8dd3366d7915e3f80c684e518"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5727bee8dd3366d7915e3f80c684e518">mkernel_curvilinear_line_attraction_repulsion</a> (int meshKernelId, double repulsionParameter, double xFirstNodeOnTheLine, double yFirstNodeOnTheLine, double xSecondNodeOnTheLine, double ySecondNodeOnTheLine, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
 <tr class="memdesc:a5727bee8dd3366d7915e3f80c684e518"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attracts/repulses grid lines in a block towards another set grid line.  <a href="namespacemeshkernelapi.html#a5727bee8dd3366d7915e3f80c684e518">More...</a><br /></td></tr>
 <tr class="separator:a5727bee8dd3366d7915e3f80c684e518"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroring, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
+<tr class="memdesc:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <a href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">More...</a><br /></td></tr>
+<tr class="separator:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1478,6 +1481,72 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCorner</td><td>The y coordinate of the lower left corner of the block where the operation is performed </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCorner</td><td>The x coordinate of the upper right corner of the block where the operation is performed </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCorner</td><td>The y coordinate of the upper right corner of the block where the operation is performed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a89ba2e9652497c24c5c25b81dca8a3bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ba2e9652497c24c5c25b81dca8a3bd">&#9670;&nbsp;</a></span>mkernel_curvilinear_line_mirror()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_line_mirror </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>mirroring</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xFirstGridLineNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yFirstGridLineNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xSecondGridLineNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ySecondGridLineNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mirroring</td><td>The mirroring factor </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridLineNode</td><td>The x coordinate of the first grid line point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridLineNode</td><td>The y coordinate of the first grid line point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second grid line point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondGridLineNode</td><td>The y coordinate of the second grid line point </td></tr>
   </table>
   </dd>
 </dl>
