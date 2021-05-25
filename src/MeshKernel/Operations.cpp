@@ -1518,61 +1518,45 @@ namespace meshkernel
         return edgeLengths;
     }
 
-    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, double offset, Projection projection)
+    std::vector<double> ComputePolyLineChainages(std::vector<Point> const& polyline, Projection projection)
     {
-        std::vector<Point> refinedPolyline;
+        // Compute the edge lengths and the edge coordinates
+        auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
+        std::vector<double> chainages(polyline.size());
+        chainages[0] = 0.0;
+        for (auto i = 0; i < edgeLengths.size(); ++i)
+        {
+            chainages[i + 1] = chainages[i] + edgeLengths[i];
+        }
+        return chainages;
+    }
+
+    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection)
+    {
         if (polyline.size() < 2)
         {
             throw std::invalid_argument("RefinePolyLine polyline with less than 2 points");
         }
+
         // Compute the edge lengths and the edge coordinates
         auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
-        std::vector<double> nodeSCoordinate(polyline.size());
-        nodeSCoordinate[0] = 0.0;
-        for (auto i = 0; i < edgeLengths.size(); ++i)
-        {
-            nodeSCoordinate[i + 1] = nodeSCoordinate[i] + edgeLengths[i];
-        }
+        std::vector<double> const polylineNodalCoordinate = ComputePolyLineChainages(polyline, projection);
 
-        auto currentNodeCoordinate = 0;
-        auto nextNodeCoordinate = currentNodeCoordinate + 1;
-        Point p0 = polyline[currentNodeCoordinate];
-        Point p1 = polyline[nextNodeCoordinate];
-        refinedPolyline.emplace_back(polyline.front());
-
-        double pointSCoordinate = nodeSCoordinate[currentNodeCoordinate];
-        while (pointSCoordinate + offset < nodeSCoordinate.back())
+        std::vector<Point> refinedPolyline;
+        size_t curentNodalIndex = 0;
+        std::sort(chainages.begin(), chainages.end());
+        for (auto i = 0; i < chainages.size(); ++i)
         {
-            pointSCoordinate += offset;
-            // find the next point
-            if (pointSCoordinate > nodeSCoordinate[nextNodeCoordinate])
+            if (chainages[i] > polylineNodalCoordinate[curentNodalIndex + 1])
             {
-                bool nextNodeFound = false;
-                for (auto i = nextNodeCoordinate + 1; i < polyline.size(); ++i)
-                {
-                    if (nodeSCoordinate[i] > pointSCoordinate)
-                    {
-                        nextNodeFound = true;
-                        currentNodeCoordinate = i - 1;
-                        nextNodeCoordinate = i;
-                        break;
-                    }
-                }
-                if (!nextNodeFound)
-                {
-                    break;
-                }
-
-                p0 = polyline[currentNodeCoordinate];
-                p1 = polyline[nextNodeCoordinate];
+                curentNodalIndex++;
             }
 
-            double distanceFromLastNode = pointSCoordinate - nodeSCoordinate[currentNodeCoordinate];
-            Point p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[currentNodeCoordinate];
+            double distanceFromLastNode = chainages[i] - polylineNodalCoordinate[curentNodalIndex];
+            Point p = polyline[curentNodalIndex] + (polyline[curentNodalIndex + 1] - polyline[curentNodalIndex]) * distanceFromLastNode / edgeLengths[curentNodalIndex];
 
             refinedPolyline.emplace_back(p);
         }
-        refinedPolyline.emplace_back(polyline.back());
 
         return refinedPolyline;
     }

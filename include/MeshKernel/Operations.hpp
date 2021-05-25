@@ -558,6 +558,16 @@ namespace meshkernel
     /// @param[in] number_2 The second number
     size_t AbsoluteDifference(size_t number_1, size_t number_2);
 
-    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, double offset, Projection projection);
+    /// @brief Refines a polyline by inserting additional nodes
+    /// @param polyline A polyline described by its nodes
+    /// @param projection The projection to use
+    /// @return The refined polyline
+    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection);
+
+    /// @brief Computes the s coordinates of the polyline nodes
+    /// @param polyline
+    /// @param projection
+    /// @return
+    std::vector<double> ComputePolyLineChainages(std::vector<Point> const& polyline, Projection projection);
 
 } // namespace meshkernel
