@@ -77,12 +77,12 @@ namespace meshkernelapi
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] polygon        The polygon where to perform the operation
         /// @param[in] deletionOption The deletion option \ref meshkernel::Mesh2D::DeleteMeshOptions
-        /// @param[in] invertDeletion Inverts the deletion of selected features
+        /// @param[in] invertDeletion Whether to invert the deletion of selected features (0 no, 1 yes)
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId,
                                               const GeometryList& polygon,
                                               int deletionOption,
-                                              bool invertDeletion);
+                                              int invertDeletion);
 
         /// @brief Sets the meshkernel::Mesh2D state
         /// @param[in] meshKernelId The id of the mesh state
@@ -428,13 +428,13 @@ namespace meshkernelapi
         /// Offsetting can be done inward or outward the existing polygon.
         /// @param[in] meshKernelId     The id of the mesh state
         /// @param[in] geometryListIn   The polygon to offset
-        /// @param[in] inWard           Compute the inner offset (true) or outer offset offset (false)
+        /// @param[in] inWard           Compute the inner offset (1) or outer offset offset (0)
         /// @param[in] distance         The offset distance
         /// @param[out] geometryListOut The resulting offset polygon
         /// @returns Error code
         MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId,
                                                    const GeometryList& geometryListIn,
-                                                   bool inWard,
+                                                   int inWard,
                                                    double distance,
                                                    GeometryList& geometryListOut);
 
@@ -443,13 +443,13 @@ namespace meshkernelapi
         /// This function should be used by clients before `mkernel_polygon_get_offset` for allocating the \ref GeometryList containing the offset result.
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] geometryListIn        The polygon to offset
-        /// @param[in] innerPolygon          Compute inner (true) or outer offset (false)
+        /// @param[in] innerPolygon          Whether to compute inner (1) or outer offset (0)
         /// @param[in] distance              The offset distance
         /// @param[out] numberOfPolygonNodes The number of nodes in the offset polygon
         /// @returns Error code
         MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId,
                                                      const GeometryList& geometryListIn,
-                                                     bool innerPolygon,
+                                                     int innerPolygon,
                                                      double distance,
                                                      int& numberOfPolygonNodes);
 
@@ -661,14 +661,14 @@ namespace meshkernelapi
         /// @param[in] firstNode     The first selected node
         /// @param[in] secondNode    The second selected node
         /// @param[in] thirdNode     The third node
-        /// @param[in] useFourthSide Use (true/false) the fourth polygon side to compute the curvilinear grid
+        /// @param[in] useFourthSide Whether to use the fourth polygon side to compute the curvilinear grid (0 no, 1 yes)
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_polygon(int meshKernelId,
                                                                              const GeometryList& polygons,
                                                                              int firstNode,
                                                                              int secondNode,
                                                                              int thirdNode,
-                                                                             bool useFourthSide);
+                                                                             int useFourthSide);
 
         /// @brief Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId The id of the mesh state
