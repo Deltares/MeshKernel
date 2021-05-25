@@ -41,10 +41,10 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor
-        /// @param[in] mesh The input mesh
-        /// @param[in] landBoundary The land boundary
-        /// @param[in] triangulateFaces Option to triangulate all faces or not
-        /// @param[in] projectToLandBoundary Option to project to land boundaries or not
+        /// @param[in] mesh                  The input mesh
+        /// @param[in] landBoundary          The land boundary
+        /// @param[in] triangulateFaces      Whether to triangulate all faces or not
+        /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
         /// @returns If the method succeeded
         FlipEdges(std::shared_ptr<Mesh2D> mesh,
                   std::shared_ptr<LandBoundaries> landBoundary,
@@ -56,8 +56,8 @@ namespace meshkernel
 
     private:
         /// @brief Computes the change in topology functional and gets the nodes involved (comp_ntopo)
-        /// @param[in] edge The current edge
-        /// @param[out] nodeLeft The node at the left side of the edge
+        /// @param[in]  edge      The current edge
+        /// @param[out] nodeLeft  The node at the left side of the edge
         /// @param[out] nodeRight The node at the left side of the edge
         /// @return topologyFunctional The computed functional
         int ComputeTopologyFunctional(size_t edge,
@@ -79,8 +79,8 @@ namespace meshkernel
         /// @param[in] nodeIndex The index of the node to process
         void DeleteEdgeFromNode(size_t edgeIndex, size_t nodeIndex) const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to mesh
-        std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to land boundaries
+        std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to the 2D mesh
+        std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to the land boundaries
 
         bool m_triangulateFaces = false;      ///< Whether to triangulate faces
         bool m_projectToLandBoundary = false; ///< Whether to project to land boundary
