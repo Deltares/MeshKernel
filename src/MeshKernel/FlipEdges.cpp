@@ -66,7 +66,7 @@ void FlipEdges::Compute() const
     const auto numEdges = m_mesh->GetNumEdges();
     size_t numFlippedEdges = sizetMissingValue;
 
-    for (auto iteration = 0; iteration < MaxIter; iteration++)
+    for (auto iteration = 0; iteration < MaxIter; ++iteration)
     {
         if (numFlippedEdges == 0)
         {
@@ -82,7 +82,7 @@ void FlipEdges::Compute() const
                 continue;
             }
 
-            // triangles only
+            // Triangles only
             auto const leftFace = m_mesh->m_edgesFaces[e][0];
             auto const rightFace = m_mesh->m_edgesFaces[e][1];
 
@@ -248,7 +248,7 @@ void FlipEdges::Compute() const
 
 void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
 {
-    // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
+    // Update node, delete edge from m_mesh->m_nodesEdges[firstNode]
     size_t kk = 0;
     while (m_mesh->m_nodesEdges[firstNode][kk] != edge && kk < m_mesh->m_nodesNumEdges[firstNode])
     {
@@ -420,7 +420,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return 0;
     }
 
-    // find the first edge connecting secondNode
+    // Find the first edge connecting secondNode
     size_t edgeIndexConnectingSecondNode = sizetMissingValue;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
@@ -438,7 +438,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return 0;
     }
 
-    // count the numbers of edges clockwise from the one connecting indexFirstNode
+    // Count the numbers of edges clockwise from the one connecting indexFirstNode
     // that are not in a land or mesh boundary path
     auto currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
     auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
@@ -493,7 +493,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         }
     }
 
-    // the number of nodes is larger than the connected ones, should not happen
+    // The number of nodes is larger than the connected ones, should not happen
     if (num > m_mesh->m_nodesNumEdges[nodeIndex])
     {
         return 0;
@@ -501,7 +501,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
 
     if (firstEdgeInPathIndex != sizetMissingValue && secondEdgeInPathIndex != sizetMissingValue)
     {
-        // internal boundary
+        // Internal boundary
         return 4;
     }
 
