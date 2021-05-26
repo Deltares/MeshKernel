@@ -2507,6 +2507,31 @@ TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
     ASSERT_EQ(curvilinearGrid.num_nodes, 27);
 }
 
+TEST_F(ApiTests, Mirroring_OnCurvilinearGrid_ShouldInsertANewGridLine)
+{
+    //Setup
+    MakeUniformCurvilinearGrid();
+    auto const meshKernelId = GetMeshKernelId();
+
+    //Execute
+    auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
+                                                                    1.2,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    50.0);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert that 5 nodes have been inserted on the bottom boundary, so the total count is 30
+    ASSERT_EQ(curvilinearGrid.num_nodes, 30);
+}
+
 TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
 {
     //Setup
