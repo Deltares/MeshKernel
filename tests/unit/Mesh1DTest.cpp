@@ -3,12 +3,13 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
+#include <MeshKernel/Network1D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlappingNodes)
 {
     //1 Setup
-    std::vector<std::vector<meshkernel::Point>> polylines{
+    std::vector<std::vector<meshkernel::Point>> polyLines{
         {{0.0, 0.0},
          {10.0, 0.0},
          {20.0, 0.0}},
@@ -16,13 +17,17 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
          {10.0, 0.0},
          {10.0, 10.0}}};
 
-    std::vector<std::vector<double>> fixedChaninagesOnPolyline(polylines.size());
+    std::vector<std::vector<double>> fixedChaninagesOnPolyline(polyLines.size());
     double const offset = 5.0;
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
+    meshkernel::Network1D Network1D(polyLines, fixedChaninagesOnPolyline, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    Network1D.ComputeOffsettedChainages(offset);
+
     // 2 Execution
-    const auto mesh = meshkernel::Mesh1D(polylines, fixedChaninagesOnPolyline, offset, minFaceSize, offsetFromFixedChainages, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh1D(Network1D, minFaceSize);
 
     // 3 Assertion
     const auto tolerance = 1e-6;
@@ -50,7 +55,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
 {
     //1 Setup
-    std::vector<std::vector<meshkernel::Point>> polylines{
+    std::vector<std::vector<meshkernel::Point>> polyLines{
         {{0.0, 0.0},
          {10.0, 0.0},
          {20.0, 0.0}},
@@ -58,13 +63,17 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
          {10.0, 0.0},
          {10.0, 10.0}}};
 
-    std::vector<std::vector<double>> fixedChaninagesOnPolyline(polylines.size());
+    std::vector<std::vector<double>> fixedChaninagesOnPolyline(polyLines.size());
     double const offset = 7.0;
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
+    meshkernel::Network1D Network1D(polyLines, fixedChaninagesOnPolyline, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    Network1D.ComputeOffsettedChainages(offset);
+
     // 2 Execution
-    const auto mesh = meshkernel::Mesh1D(polylines, fixedChaninagesOnPolyline, offset, minFaceSize, offsetFromFixedChainages, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh1D(Network1D, minFaceSize);
 
     // 3 Assertion
     const auto tolerance = 1e-6;
@@ -90,11 +99,11 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
 {
     //1 Setup
-    std::vector<std::vector<meshkernel::Point>> polylines{{{0.0, 0.0},
+    std::vector<std::vector<meshkernel::Point>> polyLines{{{0.0, 0.0},
                                                            {10.0, 0.0},
                                                            {20.0, 0.0}}};
 
-    std::vector<std::vector<double>> fixedChainages(polylines.size());
+    std::vector<std::vector<double>> fixedChainages(polyLines.size());
     fixedChainages[0].emplace_back(8.0);
     fixedChainages[0].emplace_back(15.0);
 
@@ -102,8 +111,12 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
+    meshkernel::Network1D Network1D(polyLines, fixedChainages, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    Network1D.ComputeOffsettedChainages(offset);
+
     // 2 Execution
-    const auto mesh = meshkernel::Mesh1D(polylines, fixedChainages, offset, minFaceSize, offsetFromFixedChainages, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh1D(Network1D, minFaceSize);
 
     // 3 Assertion
     const auto tolerance = 1e-6;
@@ -135,11 +148,11 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithChainagesWithinOffset_ShouldGenerateMesh)
 {
     //1 Setup
-    std::vector<std::vector<meshkernel::Point>> polylines{{{0.0, 0.0},
+    std::vector<std::vector<meshkernel::Point>> polyLines{{{0.0, 0.0},
                                                            {10.0, 0.0},
                                                            {20.0, 0.0}}};
 
-    std::vector<std::vector<double>> fixedChainages(polylines.size());
+    std::vector<std::vector<double>> fixedChainages(polyLines.size());
     fixedChainages[0].emplace_back(8.0);
     fixedChainages[0].emplace_back(8.1);
 
@@ -147,8 +160,12 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithChainagesWithinOffset_ShouldGenerateM
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
+    meshkernel::Network1D Network1D(polyLines, fixedChainages, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    Network1D.ComputeOffsettedChainages(offset);
+
     // 2 Execution
-    const auto mesh = meshkernel::Mesh1D(polylines, fixedChainages, offset, minFaceSize, offsetFromFixedChainages, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh1D(Network1D, minFaceSize);
 
     // 3 Assertion
     const auto tolerance = 1e-6;

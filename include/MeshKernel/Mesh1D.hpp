@@ -30,6 +30,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Network1D.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -41,6 +42,7 @@ namespace meshkernel
     /// representing 1d real word features, such as pipes or a sewage network.
     class Mesh1D : public Mesh
     {
+
     public:
         /// @brief Default constructor
         Mesh1D() = default;
@@ -53,39 +55,15 @@ namespace meshkernel
                         std::vector<Point> const& nodes,
                         Projection projection);
 
-        /// @brief Construct a mesh1d by discretizing polyLines
-        /// @param[in] polyLines The polylines to be discretize
-        /// @param[in] fixedChainages The fixed chainages. These are locations where the first discretization points before and after should be at a distance equal to \ref offsetFixedChainages.
-        /// @param[in] offset The regular offset between points
-        /// @param[in] minFaceSize The minimum face size. The distance between two discratization point must be no less than this length.
-        /// @param[in] offsetFixedChainages The offset to use for fixed chainages
-        /// @param[in] projection The projection to use
-        explicit Mesh1D(std::vector<std::vector<Point>> const& polyLines,
-                        std::vector<std::vector<double>> const& fixedChainages,
-                        double offset,
-                        double minFaceSize,
-                        double offsetFixedChainages,
-                        Projection projection);
+        /// @brief Constructs a mesh 1d from a network 1d. The network contains the chainages where the discratization points will be computed.
+        /// @param[in] Network1D The input network
+        /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
+        explicit Mesh1D(Network1D& network1d, double minFaceSize);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
-
-        /// @brief Compute the chainages from fixed point locations
-        /// @param[in] fixedChainages The fixed chainages. These are locations where the first discretization points before and after should be at a distance equal to \ref offsetFixedChainages.
-        /// @param[in] minFaceSize  The minimum face size. The distance between two discratization point must be no less than this length.
-        /// @param[in] offsetFromFixedChainages  The offset to use for fixed chainages
-        /// @param[in, out] chainages The vector containing the computed chainages
-        void ComputeFixedChainages(std::vector<double> const& fixedChainages,
-                                   double minFaceSize,
-                                   double offsetFromFixedChainages,
-                                   std::vector<double>& chainages);
-
-        /// @brief Compute the chainages at a regular offset
-        /// @param[in] offset The regular offset between points
-        /// @param[in, out] chainages The vector containing the computed chainages
-        void ComputeChainagesAtOffset(double offset, std::vector<double>& chainages);
     };
 
 } // namespace meshkernel

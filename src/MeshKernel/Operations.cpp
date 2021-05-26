@@ -1504,7 +1504,7 @@ namespace meshkernel
         return {projectedPoint, segmentRatio, projectionOnSegment};
     }
 
-    std::vector<double> ComputeEdgesLengths(const std::vector<Point>& polyline, Projection projection)
+    std::vector<double> ComputePolyLineEdgesLengths(const std::vector<Point>& polyline, Projection projection)
     {
         std::vector<double> edgeLengths;
         edgeLengths.reserve(polyline.size());
@@ -1518,10 +1518,10 @@ namespace meshkernel
         return edgeLengths;
     }
 
-    std::vector<double> ComputePolyLineChainages(std::vector<Point> const& polyline, Projection projection)
+    std::vector<double> ComputePolyLineNodalChainages(std::vector<Point> const& polyline, Projection projection)
     {
         // Compute the edge lengths and the edge coordinates
-        auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
+        auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
         std::vector<double> chainages(polyline.size());
         chainages[0] = 0.0;
         for (auto i = 0; i < edgeLengths.size(); ++i)
@@ -1531,18 +1531,19 @@ namespace meshkernel
         return chainages;
     }
 
-    std::vector<Point> RefinePolyLine(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection)
+    std::vector<Point> ComputePolyLineDiscretization(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection)
     {
         if (polyline.size() < 2)
         {
-            throw std::invalid_argument("RefinePolyLine polyline with less than 2 points");
+            throw std::invalid_argument("ComputePolyLineDiscretization polyline with less than 2 points");
         }
 
         // Compute the edge lengths and the edge coordinates
-        auto const edgeLengths = ComputeEdgesLengths(polyline, projection);
-        std::vector<double> const polylineNodalCoordinate = ComputePolyLineChainages(polyline, projection);
+        auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
+        std::vector<double> const polylineNodalCoordinate = ComputePolyLineNodalChainages(polyline, projection);
 
-        std::vector<Point> refinedPolyline;
+        std::vector<Point> discretization;
+        discretization.reserve(chainages.size());
         size_t curentNodalIndex = 0;
         std::sort(chainages.begin(), chainages.end());
         for (auto i = 0; i < chainages.size(); ++i)
@@ -1555,10 +1556,10 @@ namespace meshkernel
             double distanceFromLastNode = chainages[i] - polylineNodalCoordinate[curentNodalIndex];
             Point p = polyline[curentNodalIndex] + (polyline[curentNodalIndex + 1] - polyline[curentNodalIndex]) * distanceFromLastNode / edgeLengths[curentNodalIndex];
 
-            refinedPolyline.emplace_back(p);
+            discretization.emplace_back(p);
         }
 
-        return refinedPolyline;
+        return discretization;
     }
 
 } // namespace meshkernel
