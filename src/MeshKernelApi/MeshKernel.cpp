@@ -289,8 +289,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // Do not change the pointer, just the object it is pointing to
-            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
+            // Do not change the pointer, just the object it is pointing to (add to the existing mesh1d stored in the instance)
+            *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
         }
         catch (...)
         {

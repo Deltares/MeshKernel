@@ -807,3 +807,45 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) co
     }
     return result;
 }
+
+Mesh& Mesh::operator+=(Mesh const& rhs)
+{
+    if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
+    {
+        throw std::invalid_argument("Mesh2D::operator+=: The two meshes cannot be added.");
+    }
+
+    const auto rhsNumNodes = rhs.GetNumNodes();
+    const auto rhsNumEdges = rhs.GetNumEdges();
+
+    auto numNodes = GetNumNodes();
+    auto numEdges = GetNumEdges();
+    m_edges.resize(GetNumEdges() + rhsNumEdges);
+    m_nodes.resize(GetNumNodes() + rhsNumNodes);
+
+    //copy mesh nodes
+    for (auto n = numNodes; n < numNodes + rhsNumNodes; ++n)
+    {
+        const auto index = n - numNodes;
+        m_nodes[n] = rhs.m_nodes[index];
+    }
+
+    //copy mesh edges
+    for (auto e = numEdges; e < numEdges + rhsNumEdges; ++e)
+    {
+        const auto index = e - numEdges;
+        m_edges[e].first = rhs.m_edges[index].first + numNodes;
+        m_edges[e].second = rhs.m_edges[index].second + numNodes;
+    }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
+    AdministrateNodesEdges();
+
+    //no polygon involved, so node mask is 1 everywhere
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+
+    return *this;
+}

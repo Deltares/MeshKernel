@@ -261,6 +261,12 @@ namespace meshkernel
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocations location) const;
 
+        /// @brief Add meshes: result is a mesh composed of the additions
+        /// firstMesh += secondmesh results in the second mesh being added to the first
+        /// @param[in] rhs The mesh to add
+        /// @returns The resulting mesh
+        Mesh& operator+=(Mesh const& rhs);
+
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
