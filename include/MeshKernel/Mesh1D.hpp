@@ -85,7 +85,7 @@ namespace meshkernel
         /// @brief Compute the chainages at a regular offset
         /// @param[in] offset The regular offset between points
         /// @param[in, out] chainages The vector containing the computed chainages
-        void ComputeChainagesAtInterval(double offset, std::vector<double>& chainages);
+        void ComputeChainagesAtOffset(double offset, std::vector<double>& chainages);
     };
 
 } // namespace meshkernel

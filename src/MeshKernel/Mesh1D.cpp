@@ -71,7 +71,7 @@ meshkernel::Mesh1D::Mesh1D(std::vector<std::vector<Point>> const& polyLines,
                               chainages);
 
         // Add chainages at fixed offsets
-        ComputeChainagesAtInterval(offset, chainages);
+        ComputeChainagesAtOffset(offset, chainages);
 
         // Compute the discretization
         auto const computedDiscretization = RefinePolyLine(polyLines[i], chainages, projection);
@@ -151,7 +151,7 @@ void meshkernel::Mesh1D::ComputeFixedChainages(std::vector<double> const& fixedC
     }
 }
 
-void meshkernel::Mesh1D::ComputeChainagesAtInterval(double offset, std::vector<double>& chainages)
+void meshkernel::Mesh1D::ComputeChainagesAtOffset(double offset, std::vector<double>& chainages)
 {
     // Sort whatever is there
     std::sort(chainages.begin(), chainages.end());
