@@ -121,7 +121,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, bool invertDeletion)
+    MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, int invertDeletion)
     {
         int exitCode = Success;
         try
@@ -137,8 +137,9 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
+            const bool invertDeletionBool = invertDeletion == 1 ? true : false;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletion);
+            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletionBool);
         }
         catch (...)
         {
@@ -1127,7 +1128,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, int inWard, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1141,7 +1142,8 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const auto newPolygon = polygon.OffsetCopy(distance, inWard);
+            const bool inWardBool = inWard == 1 ? true : false;
+            const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
 
             ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
         }
@@ -1152,7 +1154,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, int innerPolygon, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1163,8 +1165,9 @@ namespace meshkernelapi
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
+            const bool innerPolygonBool = innerPolygon == 1 ? true : false;
             const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
+            const auto newPolygon = polygon.OffsetCopy(distance, innerPolygonBool);
 
             numberOfPolygonNodes = static_cast<int>(newPolygon.GetNumNodes());
         }
@@ -1740,7 +1743,7 @@ namespace meshkernelapi
                                                                          int firstNode,
                                                                          int secondNode,
                                                                          int thirdNode,
-                                                                         bool useFourthSide)
+                                                                         int useFourthSide)
     {
         int exitCode = Success;
         try
@@ -1756,7 +1759,8 @@ namespace meshkernelapi
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 
-            const auto curvilinearGrid = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide);
+            const bool useFourthSideBool = useFourthSide == 1 ? true : false;
+            const auto curvilinearGrid = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSideBool);
 
             // set the curvilinear state
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGrid);
