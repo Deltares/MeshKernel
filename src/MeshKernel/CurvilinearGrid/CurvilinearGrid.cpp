@@ -559,7 +559,7 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
     if (firstNodeType == NodeType::InternalValid || firstNodeType == NodeType::Invalid ||
         secondNodeType == NodeType::InternalValid || secondNodeType == NodeType::Invalid)
     {
-        throw std::invalid_argument(" CurvilinearGrid::GetBoundaryGridLineType: Not a boundary grid line");
+        throw std::invalid_argument("CurvilinearGrid::GetBoundaryGridLineType: Not a boundary grid line");
     }
 
     if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom ||
@@ -586,6 +586,8 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
     {
         return BoundaryGridLineType::Right;
     }
+
+    throw std::invalid_argument("CurvilinearGrid::GetBoundaryGridLineType: Invalid node types");
 }
 
 void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
@@ -719,6 +721,8 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
         }
         return numEdges == 0 ? 0.0 : (bottomDistance + upDistance) / numEdges;
     }
+
+    throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: Invalid direction");
 }
 
 meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const
