@@ -59,6 +59,30 @@ namespace meshkernelapi
         return result;
     }
 
+    /// @brief Converts a GeometryList to a vector<vector<Point>>
+    /// @param[in] geometryListIn The geometry input list to convert
+    /// @returns The converted vector of points
+    static std::vector<std::vector<meshkernel::Point>> ConvertGeometryListToVectorOfPointVectors(const GeometryList& geometryListIn)
+    {
+        std::vector<std::vector<meshkernel::Point>> result;
+        std::vector<meshkernel::Point> chunk;
+        chunk.reserve(geometryListIn.num_coordinates);
+        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        {
+
+            if (meshkernel::IsEqual(geometryListIn.coordinates_x[i], geometryListIn.geometry_separator))
+            {
+                result.emplace_back(chunk);
+                chunk.clear();
+            }
+            else
+            {
+                chunk.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
+            }
+        }
+        return result;
+    }
+
     /// @brief Converts a GeometryList to a vector<Sample>
     /// @param[in] geometryListIn The geometry input list to convert
     /// @returns The converted vector of samples

@@ -98,12 +98,36 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                            const Mesh1D& mesh1d);
 
-        /// @brief Generates a mesh1d from branches
-        /// @param meshKernelId
-        /// @param branches The coordinates of the points composing each branch
-        /// @param offset The desired offset between 1d points
+        /// @brief Sets the meshkernel::Network1D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] polylines    The polylines describing the network
+        /// @returns Error code
+        MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines);
+
+        /// @brief Compute the network chainages from fixed point locations
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] fixedChainages The fixed chainages for each polyline. Chunks are separated by the separator, each chunk corresponds to a polyline
+        /// @param[in] sizeFixedChainages The size of fixed chainages vector
+        /// @param[in] minFaceSize The minimum face size. The distance between two chainages must be no less than this length
+        /// @param[in] offsetFromFixedChainages The offset to use for fixed chainages
         /// @return Error code
-        MKERNEL_API int mkernel_mesh1d_make_mesh_from_branches(int meshKernelId, const GeometryList& branches, double offset);
+        MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId,
+                                                                  double* fixedChainages,
+                                                                  int sizeFixedChainages,
+                                                                  double minFaceSize,
+                                                                  double offsetFromFixedChainages);
+
+        /// @brief Compute the network chainages at a regular offset
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] offset The offset between points
+        /// @return Error code
+        MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset);
+
+        /// @brief Convert network chainages to mesh1d nodes and edges
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
+        /// @return Error code
+        MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize);
 
         /// @brief Gets the Mesh2D dimensions
         ///

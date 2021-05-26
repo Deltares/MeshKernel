@@ -22,8 +22,8 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
-    meshkernel::Network1D Network1D(polyLines, fixedChaninagesOnPolyline, meshkernel::Projection::cartesian);
-    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(fixedChaninagesOnPolyline, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
     // 2 Execution
@@ -68,8 +68,8 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
-    meshkernel::Network1D Network1D(polyLines, fixedChaninagesOnPolyline, meshkernel::Projection::cartesian);
-    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(fixedChaninagesOnPolyline, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
     // 2 Execution
@@ -111,8 +111,8 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
-    meshkernel::Network1D Network1D(polyLines, fixedChainages, meshkernel::Projection::cartesian);
-    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(fixedChainages, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
     // 2 Execution
@@ -160,8 +160,8 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithChainagesWithinOffset_ShouldGenerateM
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
-    meshkernel::Network1D Network1D(polyLines, fixedChainages, meshkernel::Projection::cartesian);
-    Network1D.ComputeFixedChainages(minFaceSize, offsetFromFixedChainages);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    Network1D.ComputeFixedChainages(fixedChainages, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
     // 2 Execution

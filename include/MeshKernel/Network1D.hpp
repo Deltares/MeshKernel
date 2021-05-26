@@ -45,16 +45,16 @@ namespace meshkernel
 
         /// @brief Construct a mesh1d by discretizing polyLines
         /// @param[in] polyLines The polylines to be discretize
-        /// @param[in] fixedChainages The fixed chainages. These are locations where the first discretization points before and after should be at a distance equal to \ref offsetFixedChainages.
         /// @param[in] projection The projection to use
         explicit Network1D(std::vector<std::vector<Point>> const& polyLines,
-                           std::vector<std::vector<double>> const& fixedChainages,
                            Projection projection);
 
         /// @brief Compute the chainages from fixed point locations
-        /// @param[in] minChainageLength   The minimum face size. The distance between two discratization point must be no less than this length
+        /// @param[in] fixedChainages The fixed chainages. These are the locations where the discretization points before and after must be at a distance equal to \ref offsetFixedChainages
+        /// @param[in] minChainageLength   The minimum face size. The distance between two points must be no less than this length
         /// @param[in] offsetFromFixedChainages  The offset to use for fixed chainages
-        void ComputeFixedChainages(double minChainageLength,
+        void ComputeFixedChainages(std::vector<std::vector<double>> const& fixedChainages,
+                                   double minChainageLength,
                                    double offsetFromFixedChainages);
 
         /// @brief Compute the chainages at a regular offset
@@ -69,9 +69,8 @@ namespace meshkernel
         Projection m_projection; ///< The projection used
 
     private:
-        std::vector<std::vector<Point>> m_polyLines;       ///< The network poly lines
-        std::vector<std::vector<double>> m_fixedChainages; ///< The fixed chainages at each poly line
-        std::vector<std::vector<double>> m_chainages;      ///< The computed chainages
+        std::vector<std::vector<Point>> m_polyLines;  ///< The network poly lines
+        std::vector<std::vector<double>> m_chainages; ///< The computed chainages
     };
 
 } // namespace meshkernel

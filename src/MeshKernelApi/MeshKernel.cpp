@@ -200,7 +200,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh1d_make_mesh_from_branches(int meshKernelId, const GeometryList& branches, double offset)
+    MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines)
     {
         int exitCode = Success;
         try
@@ -209,6 +209,88 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+
+            auto const localPolylines = ConvertGeometryListToVectorOfPointVectors(polylines);
+
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_network1d = meshkernel::Network1D(localPolylines, meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double offsetFromFixedChainages)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+            // Use range constructor
+            std::vector<double> localFixedChainages(fixedChainages, fixedChainages + sizeFixedChainages);
+            // Split the
+            std::vector<std::vector<double>> localFixedChainagesChunked;
+            std::vector<double> chunk;
+            for (auto i = 0; i < sizeFixedChainages; i++)
+            {
+                if (meshkernel::IsEqual(localFixedChainages[i], mkernel_get_separator()))
+                {
+                    localFixedChainagesChunked.emplace_back(chunk);
+                    chunk.clear();
+                }
+                else
+                {
+                    chunk.emplace_back(localFixedChainages[i]);
+                }
+            }
+
+            // Do not change the pointer, just the object it is pointing to
+            meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(localFixedChainagesChunked, minFaceSize, offsetFromFixedChainages);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            // Do not change the pointer, just the object it is pointing to
+            meshKernelState[meshKernelId].m_network1d->ComputeOffsettedChainages(offset);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
         }
         catch (...)
         {

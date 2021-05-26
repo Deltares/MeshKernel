@@ -32,8 +32,7 @@
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
-                                 std::vector<std::vector<double>> const& fixedChainages,
-                                 Projection projection) : m_polyLines(polyLines), m_fixedChainages(fixedChainages), m_projection(projection)
+                                 Projection projection) : m_polyLines(polyLines), m_projection(projection)
 {
     m_chainages.resize(m_polyLines.size());
 
@@ -46,18 +45,19 @@ meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLine
     }
 }
 
-void meshkernel::Network1D::ComputeFixedChainages(double minChainageLength,
+void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double>> const& fixedChainages,
+                                                  double minChainageLength,
                                                   double offsetFromFixedChainages)
 {
 
-    if (m_polyLines.size() != m_fixedChainages.size())
+    if (m_polyLines.size() != fixedChainages.size())
     {
         throw std::invalid_argument("Network1D::ComputeFixedChainages: The polyline vector and the fixed chainages vector size must be the same");
     }
 
     for (auto p = 0; p < m_polyLines.size(); ++p)
     {
-        if (m_fixedChainages[p].empty())
+        if (fixedChainages[p].empty())
         {
             continue;
         }
@@ -71,10 +71,10 @@ void meshkernel::Network1D::ComputeFixedChainages(double minChainageLength,
         double const endChainage = m_chainages[p][1];
 
         double previousChainage = startChainage;
-        bool previousChainageIsAFixedPoint = IsEqual(previousChainage, m_fixedChainages[p].front()) ? true : false;
-        for (auto s = 0; s < m_fixedChainages[p].size(); ++s)
+        bool previousChainageIsAFixedPoint = IsEqual(previousChainage, fixedChainages[p].front()) ? true : false;
+        for (auto s = 0; s < fixedChainages[p].size(); ++s)
         {
-            const auto chainageBeforeFixedPoint = m_fixedChainages[p][s] - offsetFromFixedChainages;
+            const auto chainageBeforeFixedPoint = fixedChainages[p][s] - offsetFromFixedChainages;
 
             if (chainageBeforeFixedPoint - previousChainage >= minChainageLength && chainageBeforeFixedPoint > startChainage)
             {
@@ -89,7 +89,7 @@ void meshkernel::Network1D::ComputeFixedChainages(double minChainageLength,
                 previousChainage = m_chainages[p].back();
             }
 
-            const auto chainageAfterFixedPoint = m_fixedChainages[p][s] + offsetFromFixedChainages;
+            const auto chainageAfterFixedPoint = fixedChainages[p][s] + offsetFromFixedChainages;
             if (chainageAfterFixedPoint - previousChainage >= minChainageLength && chainageAfterFixedPoint < endChainage)
             {
                 m_chainages[p].emplace_back(chainageAfterFixedPoint);
