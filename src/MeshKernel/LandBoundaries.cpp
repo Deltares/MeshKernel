@@ -47,7 +47,8 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
 {
     if (!landBoundary.empty())
     {
-        m_nodes.reserve(10000);
+        size_t const nodeVectorPreallocation = 10000;
+        m_nodes.reserve(nodeVectorPreallocation);
         std::copy(landBoundary.begin(), landBoundary.end(), std::back_inserter(m_nodes));
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
     }
