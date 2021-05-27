@@ -231,10 +231,13 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            // Use range constructor
-            std::vector<double> fixedChainages(fixedChainages, fixedChainages + sizeFixedChainages);
 
-            const auto fixedChainagesByPolyline = ConvertVectorToVectorOfVectors(fixedChainages, mkernel_get_separator());
+            std::vector<double> localFixedChainages(sizeFixedChainages);
+            for (auto i = 0; i < sizeFixedChainages; ++i)
+            {
+                localFixedChainages[i] = fixedChainages[i];
+            }
+            const auto fixedChainagesByPolyline = ConvertVectorToVectorOfVectors(localFixedChainages, mkernel_get_separator());
 
             // Do not change the pointer, just the object it is pointing to
             meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(fixedChainagesByPolyline, minFaceSize, fixedChainagesOffset);
