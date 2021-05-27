@@ -36,10 +36,10 @@ namespace meshkernel
 
     /// @brief A class used to improve mesh connectivity.
     ///
-    /// Flipping edges is done in order to reduce the number of edges connected to a node
+    /// The edges are flipped in order to reduce the number of edges connected to a node
     /// The optimal number of edges to a node is six.
-    /// If we additionally set `triangulateFaces`to true, that results in triangles of 60° in each angle.
-    /// And additional option `projectToLandBoundary`defines whether we want project to the land boundary.
+    /// If we additionally set `triangulateFaces`to true, that results in triangles of 60° in each angle and therefore a nearly ideal mesh.
+    /// An additional option `projectToLandBoundary` defines whether we want project to the land boundary.
     class FlipEdges
     {
     public:
