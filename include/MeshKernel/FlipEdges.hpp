@@ -34,9 +34,12 @@ namespace meshkernel
     class Mesh2D;
     class LandBoundaries;
 
-    /// @brief A class used to flip edges in order to minimise the number of edges connected to a node.
+    /// @brief A class used to improve mesh connectivity.
     ///
-    /// The optimal number of edges to a node is six
+    /// Flipping edges is done in order to reduce the number of edges connected to a node
+    /// The optimal number of edges to a node is six.
+    /// If we additionally set `triangulateFaces`to true, that results in triangles of 60° in each angle.
+    /// And additional option `projectToLandBoundary`defines whether we want project to the land boundary.
     class FlipEdges
     {
     public:
