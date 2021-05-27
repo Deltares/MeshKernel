@@ -1546,14 +1546,14 @@ namespace meshkernel
         discretization.reserve(chainages.size());
         size_t curentNodalIndex = 0;
         std::sort(chainages.begin(), chainages.end());
-        for (auto i = 0; i < chainages.size(); ++i)
+        for (auto const& chainage : chainages)
         {
-            if (chainages[i] > polylineNodalCoordinate[curentNodalIndex + 1])
+            if (chainage > polylineNodalCoordinate[curentNodalIndex + 1])
             {
                 curentNodalIndex++;
             }
 
-            double distanceFromLastNode = chainages[i] - polylineNodalCoordinate[curentNodalIndex];
+            double distanceFromLastNode = chainage - polylineNodalCoordinate[curentNodalIndex];
             Point p = polyline[curentNodalIndex] + (polyline[curentNodalIndex + 1] - polyline[curentNodalIndex]) * distanceFromLastNode / edgeLengths[curentNodalIndex];
 
             discretization.emplace_back(p);

@@ -109,13 +109,13 @@ namespace meshkernelapi
         /// @param[in] fixedChainages The fixed chainages for each polyline. Chunks are separated by the separator, each chunk corresponds to a polyline
         /// @param[in] sizeFixedChainages The size of fixed chainages vector
         /// @param[in] minFaceSize The minimum face size. The distance between two chainages must be no less than this length
-        /// @param[in] offsetFromFixedChainages The offset to use for fixed chainages
+        /// @param[in] fixedChainagesOffset The offset to use for fixed chainages
         /// @return Error code
         MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId,
                                                                   double* fixedChainages,
                                                                   int sizeFixedChainages,
                                                                   double minFaceSize,
-                                                                  double offsetFromFixedChainages);
+                                                                  double fixedChainagesOffset);
 
         /// @brief Compute the network chainages at a regular offset
         /// @param[in] meshKernelId The id of the mesh state

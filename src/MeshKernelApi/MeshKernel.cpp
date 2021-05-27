@@ -222,7 +222,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double offsetFromFixedChainages)
+    MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)
     {
         int exitCode = Success;
         try
@@ -232,25 +232,12 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             // Use range constructor
-            std::vector<double> localFixedChainages(fixedChainages, fixedChainages + sizeFixedChainages);
-            // Split the
-            std::vector<std::vector<double>> localFixedChainagesChunked;
-            std::vector<double> chunk;
-            for (auto i = 0; i < sizeFixedChainages; i++)
-            {
-                if (meshkernel::IsEqual(localFixedChainages[i], mkernel_get_separator()))
-                {
-                    localFixedChainagesChunked.emplace_back(chunk);
-                    chunk.clear();
-                }
-                else
-                {
-                    chunk.emplace_back(localFixedChainages[i]);
-                }
-            }
+            std::vector<double> fixedChainages(fixedChainages, fixedChainages + sizeFixedChainages);
+
+            const auto fixedChainagesByPolyline = ConvertVectorToVectorOfVectors(fixedChainages, mkernel_get_separator());
 
             // Do not change the pointer, just the object it is pointing to
-            meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(localFixedChainagesChunked, minFaceSize, offsetFromFixedChainages);
+            meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(fixedChainagesByPolyline, minFaceSize, fixedChainagesOffset);
         }
         catch (...)
         {
