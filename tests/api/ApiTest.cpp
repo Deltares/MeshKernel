@@ -2667,17 +2667,49 @@ TEST_F(ApiTests, ComputeFixedChainagesAndConvertNetworkToMesh_ShouldGenerateMesh
     int const fixedChainagesSize = 3;
     double const minFaceSize = 0.01;
     double const fixedChainagesOffset = 10.0;
-    std::unique_ptr<double> const fixedChainages(new double[3]{5.0, separator, 5.0});
+    std::unique_ptr<double> fixedChainages(new double[3]{5.0, separator, 5.0});
     errorCode = meshkernelapi::mkernel_network1d_compute_fixed_chainages(meshKernelId, fixedChainages.get(), fixedChainagesSize, minFaceSize, fixedChainagesOffset);
-
-    // Execute, convert network 1d to mesh1d
+    // Convert network 1d to mesh1d
     errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, minFaceSize);
 
-    // Execute
+  // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
-
-    // Check the number of nodes and edges on the newly generated mesh1d
     ASSERT_EQ(6, mesh1dResults.num_nodes);
     ASSERT_EQ(4, mesh1dResults.num_edges);
+}
+
+TEST_F(ApiTests, ComputeOffsettedAndConvertNetworkToMesh_ShouldGenerateMesh1D)
+{
+    // Prepare
+    auto const meshKernelId = GetMeshKernelId();
+
+    double separator = meshkernelapi::mkernel_get_separator();
+    int const numCoordinates = 7;
+    std::unique_ptr<double> const polyLineXCoordinate(new double[numCoordinates]{0.0, 10.0, 20.0, separator, 10.0, 10.0, 10.0});
+    std::unique_ptr<double> const polyLineYCoordinate(new double[numCoordinates]{0.0, 0.0, 0.0, separator, -10.0, 0.0, 10.0});
+
+    meshkernelapi::GeometryList polylines{};
+    polylines.coordinates_x = polyLineXCoordinate.get();
+    polylines.coordinates_y = polyLineYCoordinate.get();
+    polylines.num_coordinates = numCoordinates;
+    polylines.geometry_separator = separator;
+
+    // Set the network
+    auto errorCode = mkernel_network1d_set(meshKernelId, polylines);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Execute, compute offsetted chainages
+    double const offset = 1.0;
+    std::unique_ptr<double> fixedChainages(new double[3]{5.0, separator, 5.0});
+    errorCode = meshkernelapi::mkernel_network1d_compute_offsetted_chainages(meshKernelId, offset);
+
+    // Convert network 1d to mesh1d
+    errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, 0.01);
+
+    // Asserts
+    meshkernelapi::Mesh1D mesh1dResults;
+    errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
+    ASSERT_EQ(41, mesh1dResults.num_nodes);
+    ASSERT_EQ(40, mesh1dResults.num_edges);
 }
