@@ -81,6 +81,12 @@ namespace meshkernelapi
                 chunk.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
             }
         }
+
+        if (!chunk.empty())
+        {
+            result.emplace_back(chunk);
+        }
+
         return result;
     }
 
@@ -104,6 +110,10 @@ namespace meshkernelapi
             {
                 chunk.emplace_back(input[i]);
             }
+        }
+        if (!chunk.empty())
+        {
+            result.emplace_back(chunk);
         }
         return result;
     }

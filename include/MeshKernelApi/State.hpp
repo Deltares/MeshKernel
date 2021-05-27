@@ -52,7 +52,7 @@ namespace meshkernelapi
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
-            m_network1d = std::shared_ptr<meshkernel::Network1D>();
+            m_network1d = std::make_shared<meshkernel::Network1D>();
             m_contacts = std::make_shared<meshkernel::Contacts>(m_mesh1d, m_mesh2d);
             m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>();
         }
