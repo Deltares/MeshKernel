@@ -560,6 +560,7 @@ namespace meshkernel
 
     /// @brief Computes the discretization points along a polyline
     /// @param polyline A polyline described by its nodes
+    /// @param chainages The chainages used for dicretizing the current polyline
     /// @param projection The projection to use
     /// @return The discretized polyline
     [[nodiscard]] std::vector<Point> ComputePolyLineDiscretization(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection);
@@ -567,7 +568,7 @@ namespace meshkernel
     /// @brief Computes the chainages of each polyline node
     /// @param polyline A polyline described by its nodes
     /// @param projection The projection to use
-    /// @return A vector containing the chainages of the polyline nodes
+    /// @return A vector containing the chainage volau of the polyline nodes
     [[nodiscard]] std::vector<double> ComputePolyLineNodalChainages(std::vector<Point> const& polyline, Projection projection);
 
     /// @brief Computes the lengths of each polyline segment

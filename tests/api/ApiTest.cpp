@@ -2672,7 +2672,7 @@ TEST_F(ApiTests, ComputeFixedChainagesAndConvertNetworkToMesh_ShouldGenerateMesh
     // Convert network 1d to mesh1d
     errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, minFaceSize);
 
-  // Asserts
+    // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
     ASSERT_EQ(6, mesh1dResults.num_nodes);

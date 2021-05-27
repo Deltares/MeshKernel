@@ -56,7 +56,7 @@ namespace meshkernel
                         Projection projection);
 
         /// @brief Constructs a mesh 1d from a network 1d. The network contains the chainages where the discratization points will be computed.
-        /// @param[in] Network1D The input network
+        /// @param[in] network1d The input network
         /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
         explicit Mesh1D(Network1D& network1d, double minFaceSize);
 

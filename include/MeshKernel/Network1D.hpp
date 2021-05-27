@@ -50,19 +50,18 @@ namespace meshkernel
                            Projection projection);
 
         /// @brief Compute the chainages from fixed point locations
-        /// @param[in] fixedChainagesByPolyline The fixed chainages. These are the locations where the discretization points before and after must be at a distance equal to \ref offsetFixedChainages
+        /// @param[in] fixedChainagesByPolyline The fixed chainages. These are the locations where the discretization points before and after must be at a distance equal to \ref fixedChainagesOffset
         /// @param[in] minFaceSize   The minimum face size. The distance between two points must be no less than this length
         /// @param[in] fixedChainagesOffset  The offset to use for fixed chainages
         void ComputeFixedChainages(std::vector<std::vector<double>> const& fixedChainagesByPolyline,
                                    double minFaceSize,
                                    double fixedChainagesOffset);
 
-        /// @brief Compute the chainages at a regular offset
-        /// @param[in] polyLineIndex The index of the polyline we are operating on
+        /// @brief Compute the chainages at a regular offset for all polylines
         /// @param[in] offset The offset between points
         void ComputeOffsettedChainages(double offset);
 
-        /// @brief Computes the discretization points from the chainages
+        /// @brief Computes the discretization points from the chainages for all polylines
         /// @return A discretization vector for each polyline
         [[nodiscard]] std::vector<std::vector<Point>> ComputeDiscretizationsFromChainages();
 
