@@ -115,7 +115,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:abd944a488636576a08960528b1e10f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)  <a href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">More...</a><br /></td></tr>
 <tr class="separator:abd944a488636576a08960528b1e10f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade64d4802363ff257d6522d82ce11e27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27">FindNearestMeshBoundary</a> (<a class="el" href="classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29">ProjectToLandBoundaryOption</a> projectToLandBoundaryOption)</td></tr>
-<tr class="memdesc:ade64d4802363ff257d6522d82ce11e27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the mesh boundary line closest to the land boundary (find_nearest_meshline)  <a href="classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27">More...</a><br /></td></tr>
+<tr class="memdesc:ade64d4802363ff257d6522d82ce11e27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the mesh boundary line closest to the land boundary (find_nearest_meshline).  <a href="classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27">More...</a><br /></td></tr>
 <tr class="separator:ade64d4802363ff257d6522d82ce11e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02db80d7314b1a24236e3150a0f64ee6"><td class="memItemLeft" align="right" valign="top"><a id="a02db80d7314b1a24236e3150a0f64ee6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6">SnapMeshToLandBoundaries</a> ()</td></tr>
@@ -129,7 +129,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 Public Attributes</h2></td></tr>
 <tr class="memitem:a11daf97747eafb56bd13efa414dafde7"><td class="memItemLeft" align="right" valign="top"><a id="a11daf97747eafb56bd13efa414dafde7"></a>
 std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a11daf97747eafb56bd13efa414dafde7">m_meshNodesLandBoundarySegments</a></td></tr>
-<tr class="memdesc:a11daf97747eafb56bd13efa414dafde7"><td class="mdescLeft">&#160;</td><td class="mdescRight">lanseg_map, mesh nodes to land boundary mapping <br /></td></tr>
+<tr class="memdesc:a11daf97747eafb56bd13efa414dafde7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> nodes to land boundary mapping (lanseg_map) <br /></td></tr>
 <tr class="separator:a11daf97747eafb56bd13efa414dafde7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -171,9 +171,9 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Default constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>A vector of points defining the land boundary </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The current 2d mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>A polygon for selecting part of the land boundaries </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>A vector of points defining the land boundary. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The current 2d mesh. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>A polygon for selecting part of the land boundaries. </td></tr>
   </table>
   </dd>
 </dl>
@@ -197,7 +197,7 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments) </p>
-<p>This method uses a <a class="el" href="structmeshkernel_1_1_point.html" title="A struct describing a point in a two-dimensional space.">Point</a> vector member variable and identifies the start-end points of each land boundary polyline with the requirement that all polyline nodes are close enough to the mesh boundary and is inside the polygon. </p><div class="image">
+<p>This method uses a <a class="el" href="structmeshkernel_1_1_point.html" title="A struct describing a point in a two-dimensional space.">Point</a> vector member variable and identifies the start-end points of each land boundary polyline with the requirement that all polyline nodes are close enough to the mesh boundary and are inside the polygon. </p><div class="image">
 <img src="LandBoundarySegmentation_step1.jpg" alt=""/>
 <div class="caption">
 Land boundary segmentation</div></div>
@@ -220,10 +220,10 @@ Land boundary segmentation</div></div>
       </table>
 </div><div class="memdoc">
 
-<p>Find the mesh boundary line closest to the land boundary (find_nearest_meshline) </p>
+<p>Find the mesh boundary line closest to the land boundary (find_nearest_meshline). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundaryOption</td><td>the option to use to project to land boundary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundaryOption</td><td>The option describing the projection to the land boundary. </td></tr>
   </table>
   </dd>
 </dl>
@@ -254,7 +254,7 @@ Land boundary segmentation</div></div>
 </div><div class="memdoc">
 
 <p>Gets the number of land boundary nodes. </p>
-<dl class="section return"><dt>Returns</dt><dd>the number of land boundary nodes </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of land boundary nodes. </dd></dl>
 
 </div>
 </div>
