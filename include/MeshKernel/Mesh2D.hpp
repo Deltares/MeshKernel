@@ -265,15 +265,17 @@ namespace meshkernel
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
 
-        /// @brief For a collection of points compute the face indices including them
-        /// @return The face indices including the points
+        /// @brief For a collection of points, compute the face indices including them.
+        /// @param[in] points The input point vector.
+        /// @return The face indices including the points.
         [[nodiscard]] std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
 
         /// @brief Deletes a mesh in a polygon, using several options (delnet)
-        /// @param[in] polygons The polygon where to perform the operation
+        /// @param[in] polygon        The polygon where to perform the operation
+        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        void DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
+        void DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
         /// @param firstPoint The first point of the segment
