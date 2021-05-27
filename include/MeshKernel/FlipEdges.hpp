@@ -39,7 +39,7 @@ namespace meshkernel
     /// The edges are flipped in order to reduce the number of edges connected to a node
     /// The optimal number of edges to a node is six.
     /// If we additionally set `triangulateFaces`to true, that results in triangles of 60° in each angle and therefore a nearly ideal mesh.
-    /// An additional option `projectToLandBoundary` defines whether we want project to the land boundary.
+    /// An additional option `projectToLandBoundary` defines whether we want to project to the land boundary.
     class FlipEdges
     {
     public:
