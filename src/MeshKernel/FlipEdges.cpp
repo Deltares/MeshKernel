@@ -66,7 +66,7 @@ void FlipEdges::Compute() const
     const auto numEdges = m_mesh->GetNumEdges();
     size_t numFlippedEdges = sizetMissingValue;
 
-    for (auto iteration = 0; iteration < MaxIter; iteration++)
+    for (auto iteration = 0; iteration < MaxIter; ++iteration)
     {
         if (numFlippedEdges == 0)
         {
@@ -82,7 +82,7 @@ void FlipEdges::Compute() const
                 continue;
             }
 
-            // triangles only
+            // Triangles only
             auto const leftFace = m_mesh->m_edgesFaces[e][0];
             auto const rightFace = m_mesh->m_edgesFaces[e][1];
 
@@ -102,7 +102,7 @@ void FlipEdges::Compute() const
                 continue;
             }
 
-            // check if nodes have been masked
+            // Check if nodes have been masked
             auto const firstNode = m_mesh->m_edges[e].first;
             auto const secondNode = m_mesh->m_edges[e].second;
 
@@ -179,7 +179,7 @@ void FlipEdges::Compute() const
                 }
             }
 
-            // change face orientation
+            // Change face orientation
             m_mesh->m_facesNodes[leftFace][0] = nodeLeft;
             m_mesh->m_facesNodes[leftFace][1] = nodeRight;
             m_mesh->m_facesNodes[leftFace][2] = firstNode;
@@ -248,7 +248,7 @@ void FlipEdges::Compute() const
 
 void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
 {
-    // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
+    // Update node, delete edge from m_mesh->m_nodesEdges[firstNode]
     size_t kk = 0;
     while (m_mesh->m_nodesEdges[firstNode][kk] != edge && kk < m_mesh->m_nodesNumEdges[firstNode])
     {
@@ -295,7 +295,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
         return largeTopologyFunctionalValue;
     }
 
-    // find the nodes that are connected to both k1 and k
+    // Find the nodes that are connected to both k1 and k
     size_t sumIndicesLeftFace = 0;
     size_t sumIndicesRightFace = 0;
     for (auto i = 0; i < 3; i++)
@@ -312,7 +312,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
         return largeTopologyFunctionalValue;
     }
 
-    // check that kl is part of faceL
+    // Check that kl is part of faceL
     bool nodeFound = false;
     for (auto i = 0; i < NumEdgesLeftFace; i++)
     {
@@ -328,7 +328,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
         return largeTopologyFunctionalValue;
     }
 
-    // check that kr is part of faceR
+    // Check that kr is part of faceR
     nodeFound = false;
     for (auto i = 0; i < NumEdgesRightFace; i++)
     {
@@ -344,7 +344,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
         return largeTopologyFunctionalValue;
     }
 
-    //  compute the change in functional
+    //  Compute the change in functional
     const auto n1 = static_cast<int>(m_mesh->m_nodesNumEdges[firstNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(firstNode));
     const auto n2 = static_cast<int>(m_mesh->m_nodesNumEdges[secondNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(secondNode));
     auto nL = static_cast<int>(m_mesh->m_nodesNumEdges[nodeLeft]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeLeft));
@@ -354,7 +354,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
     {
         if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != sizetMissingValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != sizetMissingValue)
         {
-            //edge is associated with a land boundary, keep the edge
+            // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;
         }
 
@@ -392,7 +392,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return static_cast<int>(m_mesh->m_nodesNumEdges[nodeIndex]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeIndex));
     }
 
-    // connected edges needs to be counterclockwise
+    // Connected edges needs to be counterclockwise
     const auto sign = CrossProductSign(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
     const auto isClockWise = sign < 0 ? true : false;
     if (isClockWise)
@@ -402,7 +402,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         secondNode = firstNodeTemp;
     }
 
-    // find the first edge connecting firstNode
+    // Find the first edge connecting firstNode
     size_t edgeIndexConnectingFirstNode = sizetMissingValue;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
@@ -420,7 +420,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return 0;
     }
 
-    // find the first edge connecting secondNode
+    // Find the first edge connecting secondNode
     size_t edgeIndexConnectingSecondNode = sizetMissingValue;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
@@ -438,7 +438,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return 0;
     }
 
-    // count the numbers of edges clockwise from the one connecting indexFirstNode
+    // Count the numbers of edges clockwise from the one connecting indexFirstNode
     // that are not in a land or mesh boundary path
     auto currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
     auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
@@ -493,7 +493,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         }
     }
 
-    // the number of nodes is larger than the connected ones, should not happen
+    // The number of nodes is larger than the connected ones, should not happen
     if (num > m_mesh->m_nodesNumEdges[nodeIndex])
     {
         return 0;
@@ -501,7 +501,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
 
     if (firstEdgeInPathIndex != sizetMissingValue && secondEdgeInPathIndex != sizetMissingValue)
     {
-        // internal boundary
+        // Internal boundary
         return 4;
     }
 
