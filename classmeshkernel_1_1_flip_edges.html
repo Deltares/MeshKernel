@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A class used to flip edges in order to minimise the number of edges connected to a node.  
+<p>A class used to improve mesh connectivity.  
  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_flip_edges_8hpp_source.html">FlipEdges.hpp</a>&gt;</code></p>
@@ -97,8 +97,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:ae527adee1fe9fadde1630d84a7bb6bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class used to flip edges in order to minimise the number of edges connected to a node. </p>
-<p>The optimal number of edges to a node is six </p>
+<div class="textblock"><p>A class used to improve mesh connectivity. </p>
+<p>The edges are flipped in order to reduce the number of edges connected to a node The optimal number of edges to a node is six. If we additionally set <code>triangulateFaces</code>to true, that results in triangles of 60° in each angle and therefore a nearly ideal mesh. An additional option <code>projectToLandBoundary</code> defines whether we want to project to the land boundary. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a181c0ec08211bb8ff109cb1d3fef2eae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a181c0ec08211bb8ff109cb1d3fef2eae">&#9670;&nbsp;</a></span>FlipEdges()</h2>
@@ -143,8 +143,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The input mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>The land boundary </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">triangulateFaces</td><td>Option to triangulate all faces or not </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundary</td><td>Option to project to land boundaries or not </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">triangulateFaces</td><td>Whether to triangulate all faces or not </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundary</td><td>Whether to project to land boundaries or not </td></tr>
   </table>
   </dd>
 </dl>
