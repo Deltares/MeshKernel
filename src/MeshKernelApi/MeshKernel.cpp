@@ -2469,6 +2469,37 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_delete_node(int meshKernelId,
+                                                    double xPointCoordinate,
+                                                    double yPointCoordinate)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate});
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API double mkernel_get_separator()
     {
         return meshkernel::doubleMissingValue;

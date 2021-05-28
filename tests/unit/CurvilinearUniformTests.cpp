@@ -230,3 +230,15 @@ TEST(CurvilinearGrid, InsertFace_OnGridWithHoles_ShouldInsertFace)
     ASSERT_NEAR(366716.74631036510, curvilinearGrid->m_gridNodes[3][7].y, tolerance);
     ASSERT_NEAR(366718.10475241451, curvilinearGrid->m_gridNodes[3][8].y, tolerance);
 }
+
+TEST(CurvilinearGrid, DeleteNode_OnUniformGrid_ShouldDeleteNode)
+{
+    // Prepare
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+
+    // Execution
+    curvilinearGrid->DeleteNode({80398.0, 366854.0});
+
+    // The number of nodes was 45 now is 44
+    ASSERT_EQ(curvilinearGrid->m_nodes.size(), 44);
+}
