@@ -163,7 +163,7 @@ namespace meshkernel
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point the input point coordinate. The closest grid node will be deleted.
-        void CurvilinearGrid::DeleteNode(Point const& point);
+        void DeleteNode(Point const& point);
 
         size_t m_numM = 0;                                     ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                     ///< The number of n coordinates (horizontal lines)

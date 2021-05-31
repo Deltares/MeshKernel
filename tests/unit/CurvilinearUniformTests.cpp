@@ -236,7 +236,7 @@ TEST(CurvilinearGrid, DeleteNode_OnUniformGrid_ShouldDeleteNode)
     // Prepare
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    // Execution
+    // Execute
     curvilinearGrid->DeleteNode({80398.0, 366854.0});
 
     // The number of nodes was 45 now is 44
