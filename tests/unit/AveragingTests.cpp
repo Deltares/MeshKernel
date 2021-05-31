@@ -28,7 +28,7 @@ TEST(Averaging, InterpolateOnNodesWithSphericalCoordinates)
     meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Nodes, 1.01, false, false, 0);
     averaging.Compute();
 
-    // aSSERT
+    // Asser
     auto interpolationResults = averaging.GetResults();
     constexpr double tolerance = 1e-6;
     ASSERT_NEAR(-999.0, interpolationResults[0], tolerance);
