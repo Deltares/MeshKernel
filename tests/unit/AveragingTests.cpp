@@ -7,8 +7,7 @@
 #include <TestUtils/SampleFileReader.hpp>
 
 //Simple averaging
-
-TEST(Averaging, InterpolateOnNodesWithSphericalCoordinates)
+TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
     //Prepare
     auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
@@ -57,7 +56,6 @@ TEST(Averaging, InterpolateOnNodesWithSphericalCoordinates)
     ASSERT_NEAR(2.0000, interpolationResults[23], tolerance);
     ASSERT_NEAR(2.0000, interpolationResults[24], tolerance);
 }
-
 TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
