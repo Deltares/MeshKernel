@@ -269,7 +269,7 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     }
 
     std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
-    for (auto i = 0; i < GetNumNodes(); i++)
+    for (auto i = 0; i < GetNumNodes(); ++i)
     {
         auto dx = normalVectors[i].x * distance;
         const auto dy = normalVectors[i].y * distance;

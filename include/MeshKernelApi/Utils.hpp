@@ -52,7 +52,7 @@ namespace meshkernelapi
     {
         std::vector<meshkernel::Point> result;
         result.reserve(geometryListIn.num_coordinates);
-        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
         {
             result.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
         }
@@ -68,7 +68,7 @@ namespace meshkernelapi
         std::vector<std::vector<meshkernel::Point>> result;
         std::vector<meshkernel::Point> chunk;
         chunk.reserve(geometryListIn.num_coordinates);
-        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
         {
 
             if (meshkernel::IsEqual(geometryListIn.coordinates_x[i], geometryListIn.geometry_separator))
@@ -90,7 +90,7 @@ namespace meshkernelapi
         return result;
     }
 
-    /// @brief Converts an array to a vector<T>
+    /// @brief Converts an a vector<T> separated by \p separator to a vector<vector<T>>
     /// @param[in]  input The data of the input array
     /// @param[in]  separator  The separator value
     /// @return The resulting vector of vectors
@@ -99,7 +99,7 @@ namespace meshkernelapi
     {
         std::vector<std::vector<T>> result;
         std::vector<T> chunk;
-        for (auto i = 0; i < input.size(); i++)
+        for (auto i = 0; i < input.size(); ++i)
         {
             if (meshkernel::IsEqual(input[i], separator))
             {
@@ -154,7 +154,7 @@ namespace meshkernelapi
         std::vector<meshkernel::Sample> result;
         result.reserve(geometryListIn.num_coordinates);
 
-        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
         {
             result.push_back({geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i], geometryListIn.values[i]});
         }
@@ -171,7 +171,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates in the result vector.");
         }
 
-        for (auto i = 0; i < result.num_coordinates; i++)
+        for (auto i = 0; i < result.num_coordinates; ++i)
         {
             result.coordinates_x[i] = pointVector[i].x;
             result.coordinates_y[i] = pointVector[i].y;
@@ -194,7 +194,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the value-vector size is smaller than the number of coordinates in the result vector.");
         }
 
-        for (auto i = 0; i < result.num_coordinates; i++)
+        for (auto i = 0; i < result.num_coordinates; ++i)
         {
             result.coordinates_x[i] = valuesCoordinates[i].x;
             result.coordinates_y[i] = valuesCoordinates[i].y;

@@ -289,8 +289,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId,
-                                                  Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -328,8 +327,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId,
-                                                  Mesh1D& mesh1d)
+    MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         int exitCode = Success;
         try
@@ -369,8 +367,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId,
-                                                       CurvilinearGrid& curvilinearGrid)
+    MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
         try
@@ -409,8 +406,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId,
-                                                    Contacts& contacts)
+    MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
         int exitCode = Success;
         try
@@ -428,8 +424,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_contacts_get_data(int meshKernelId,
-                                              Contacts& contacts)
+    MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts)
     {
         int exitCode = Success;
         try
@@ -778,7 +773,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.num_coordinates);
-            for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+            for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
             {
                 splines[i].x = geometryListIn.coordinates_x[i];
                 splines[i].y = geometryListIn.coordinates_y[i];
@@ -1420,7 +1415,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons localPolygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            for (auto i = 0; i < points.size(); i++)
+            for (auto i = 0; i < points.size(); ++i)
             {
                 selectionResults.values[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }

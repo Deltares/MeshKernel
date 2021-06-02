@@ -442,7 +442,7 @@ namespace meshkernel
     template <class T>
     void SwapVectorElements(std::vector<T>& v)
     {
-        for (auto i = 0; i < v.size() / 2; i++)
+        for (auto i = 0; i < v.size() / 2; ++i)
         {
             const auto a = v[i];
             v[i] = v[i + 1];

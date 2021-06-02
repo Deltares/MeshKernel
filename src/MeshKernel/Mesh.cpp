@@ -261,7 +261,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     std::vector<Point> filteredNodes(GetNumNodes());
     std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
     size_t index = 0;
-    for (auto i = 0; i < GetNumNodes(); i++)
+    for (auto i = 0; i < GetNumNodes(); ++i)
     {
         const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
         if (inPolygon)
@@ -279,7 +279,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
-    for (auto i = 0; i < filteredNodes.size(); i++)
+    for (auto i = 0; i < filteredNodes.size(); ++i)
     {
         nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
 

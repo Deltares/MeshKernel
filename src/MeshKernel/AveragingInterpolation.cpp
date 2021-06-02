@@ -122,7 +122,7 @@ std::vector<double> AveragingInterpolation::ComputeOnFaces()
         {
             // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
             // it is difficult to do it otherwise without sharing or caching the query result
-            for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+            for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
             {
                 if (const auto sample = m_samplesRtree.GetQueryResult(i); !m_visitedSamples[sample])
                 {
@@ -148,7 +148,7 @@ std::vector<double> AveragingInterpolation::ComputeOnNodesOrEdges()
         const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n]);
 
         // flag the visited samples
-        for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+        for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
         {
             const auto sample = m_samplesRtree.GetQueryResult(i);
             m_visitedSamples[sample] = true;
@@ -229,7 +229,7 @@ double AveragingInterpolation::GetSampleValueFromRTree(size_t const index)
 double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon)
 {
 
-    for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+    for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
     {
         auto const sampleIndex = m_samplesRtree.GetQueryResult(i);
         auto const sampleValue = m_samples[sampleIndex].value;

@@ -61,7 +61,7 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
         {
             continue;
         }
-
+        // For the current polyline, the start and end chainages should always be present
         if (m_chainages[p].size() < 2)
         {
             continue;

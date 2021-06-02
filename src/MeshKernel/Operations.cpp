@@ -222,7 +222,7 @@ namespace meshkernel
             // get 3D polygon coordinates
             std::vector<Cartesian3DPoint> cartesian3DPoints;
             cartesian3DPoints.reserve(currentPolygonSize);
-            for (auto i = 0; i < currentPolygonSize; i++)
+            for (auto i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
             }
@@ -230,7 +230,7 @@ namespace meshkernel
             // enlarge around polygon
             const double enlargementFactor = 1.000001;
             const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-            for (auto i = 0; i < currentPolygonSize; i++)
+            for (auto i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
                 cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
@@ -246,7 +246,7 @@ namespace meshkernel
             int inside = 0;
 
             // loop over the polygon nodes
-            for (auto i = 0; i < currentPolygonSize - 1; i++)
+            for (auto i = 0; i < currentPolygonSize - 1; ++i)
             {
                 const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
                 const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
@@ -747,7 +747,7 @@ namespace meshkernel
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
         const auto numPoints = polygon.size();
-        for (auto i = 0; i < numPoints; i++)
+        for (auto i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
             if (abs(polygon[i].y) < abs(minY))
@@ -759,7 +759,7 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             double maxX = std::numeric_limits<double>::lowest();
-            for (auto i = 0; i < numPoints; i++)
+            for (auto i = 0; i < numPoints; ++i)
             {
                 maxX = std::max(polygon[i].x, maxX);
             }
@@ -767,7 +767,7 @@ namespace meshkernel
             if (maxX - minX > 180.0)
             {
                 const double deltaX = maxX - 180.0;
-                for (auto i = 0; i < numPoints; i++)
+                for (auto i = 0; i < numPoints; ++i)
                 {
                     if (polygon[i].x < deltaX)
                     {
@@ -1235,7 +1235,7 @@ namespace meshkernel
         std::vector<double> result(v.size());
 
         result[0] = 0;
-        for (auto i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); ++i)
         {
             result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
@@ -1245,7 +1245,7 @@ namespace meshkernel
             return {result, totalDistance};
         }
         const double inverseTotalDistance = 1.0 / totalDistance;
-        for (auto i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); ++i)
         {
             result[i] = result[i] * inverseTotalDistance;
         }

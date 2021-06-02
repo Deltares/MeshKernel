@@ -506,7 +506,7 @@ void Mesh2D::ClassifyNodes()
             {
                 size_t firstNode = sizetMissingValue;
                 size_t secondNode = sizetMissingValue;
-                for (auto i = 0; i < m_nodesNumEdges[n]; i++)
+                for (auto i = 0; i < m_nodesNumEdges[n]; ++i)
                 {
                     const auto edgeIndex = m_nodesEdges[n][i];
                     if (!IsEdgeOnBoundary(edgeIndex))
@@ -1277,7 +1277,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
 void Mesh2D::TriangulateFaces()
 {
-    for (auto i = 0; i < GetNumFaces(); i++)
+    for (auto i = 0; i < GetNumFaces(); ++i)
     {
         const auto NumEdges = GetNumFaceEdges(i);
 
