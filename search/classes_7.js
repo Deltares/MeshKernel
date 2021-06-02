@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['point_485',['Point',['../structmeshkernel_1_1_point.html',1,'meshkernel']]],
-  ['polygons_486',['Polygons',['../classmeshkernel_1_1_polygons.html',1,'meshkernel']]]
+  ['orthogonalizationandsmoothing_495',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html',1,'meshkernel']]],
+  ['orthogonalizationparameters_496',['OrthogonalizationParameters',['../structmeshkernelapi_1_1_orthogonalization_parameters.html',1,'meshkernelapi']]],
+  ['orthogonalizer_497',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html',1,'meshkernel']]]
 ];

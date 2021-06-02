@@ -143,6 +143,18 @@ Functions</h2></td></tr>
 <tr class="memitem:aa162a77f3bcde424aa5c900b17b6cd06"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa162a77f3bcde424aa5c900b17b6cd06">mkernel_mesh1d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
 <tr class="memdesc:aa162a77f3bcde424aa5c900b17b6cd06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">meshkernel::Mesh1D</a> state.  <a href="namespacemeshkernelapi.html#aa162a77f3bcde424aa5c900b17b6cd06">More...</a><br /></td></tr>
 <tr class="separator:aa162a77f3bcde424aa5c900b17b6cd06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4682752f4cbc06cc28c6e428e673cce"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac4682752f4cbc06cc28c6e428e673cce">mkernel_network1d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polylines)</td></tr>
+<tr class="memdesc:ac4682752f4cbc06cc28c6e428e673cce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_network1_d.html" title="A class describing a network 1d.">meshkernel::Network1D</a> state.  <a href="namespacemeshkernelapi.html#ac4682752f4cbc06cc28c6e428e673cce">More...</a><br /></td></tr>
+<tr class="separator:ac4682752f4cbc06cc28c6e428e673cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a374a958ce04cf210d3daf85eb03c88fc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a374a958ce04cf210d3daf85eb03c88fc">mkernel_network1d_compute_fixed_chainages</a> (int meshKernelId, double *fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)</td></tr>
+<tr class="memdesc:a374a958ce04cf210d3daf85eb03c88fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the network chainages from fixed point locations.  <a href="namespacemeshkernelapi.html#a374a958ce04cf210d3daf85eb03c88fc">More...</a><br /></td></tr>
+<tr class="separator:a374a958ce04cf210d3daf85eb03c88fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26aca7c00112d28304ffff67edc80ce"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad26aca7c00112d28304ffff67edc80ce">mkernel_network1d_compute_offsetted_chainages</a> (int meshKernelId, double offset)</td></tr>
+<tr class="memdesc:ad26aca7c00112d28304ffff67edc80ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the network chainages at a regular offset.  <a href="namespacemeshkernelapi.html#ad26aca7c00112d28304ffff67edc80ce">More...</a><br /></td></tr>
+<tr class="separator:ad26aca7c00112d28304ffff67edc80ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e87cdf29b5b6ed204a0594b9e1bf08"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a11e87cdf29b5b6ed204a0594b9e1bf08">mkernel_network1d_to_mesh1d</a> (int meshKernelId, double minFaceSize)</td></tr>
+<tr class="memdesc:a11e87cdf29b5b6ed204a0594b9e1bf08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert network chainages to mesh1d nodes and edges.  <a href="namespacemeshkernelapi.html#a11e87cdf29b5b6ed204a0594b9e1bf08">More...</a><br /></td></tr>
+<tr class="separator:a11e87cdf29b5b6ed204a0594b9e1bf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a67f563fcc78f0992f5a7b01a70ad7bb4">mkernel_mesh2d_get_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions.  <a href="namespacemeshkernelapi.html#a67f563fcc78f0992f5a7b01a70ad7bb4">More...</a><br /></td></tr>
 <tr class="separator:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -4319,6 +4331,179 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The samples coordinates and values </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a> enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">results</td><td>The interpolation results with x and y coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a374a958ce04cf210d3daf85eb03c88fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a374a958ce04cf210d3daf85eb03c88fc">&#9670;&nbsp;</a></span>mkernel_network1d_compute_fixed_chainages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_network1d_compute_fixed_chainages </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>fixedChainages</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sizeFixedChainages</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minFaceSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fixedChainagesOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the network chainages from fixed point locations. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fixedChainages</td><td>The fixed chainages for each polyline. Chunks are separated by the separator, each chunk corresponds to a polyline </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sizeFixedChainages</td><td>The size of fixed chainages vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minFaceSize</td><td>The minimum face size. The distance between two chainages must be no less than this length </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fixedChainagesOffset</td><td>The offset to use for fixed chainages </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ad26aca7c00112d28304ffff67edc80ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26aca7c00112d28304ffff67edc80ce">&#9670;&nbsp;</a></span>mkernel_network1d_compute_offsetted_chainages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_network1d_compute_offsetted_chainages </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the network chainages at a regular offset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">offset</td><td>The offset between points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac4682752f4cbc06cc28c6e428e673cce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4682752f4cbc06cc28c6e428e673cce">&#9670;&nbsp;</a></span>mkernel_network1d_set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_network1d_set </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polylines</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the <a class="el" href="classmeshkernel_1_1_network1_d.html" title="A class describing a network 1d.">meshkernel::Network1D</a> state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polylines</td><td>The polylines describing the network </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a11e87cdf29b5b6ed204a0594b9e1bf08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e87cdf29b5b6ed204a0594b9e1bf08">&#9670;&nbsp;</a></span>mkernel_network1d_to_mesh1d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_network1d_to_mesh1d </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minFaceSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert network chainages to mesh1d nodes and edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minFaceSize</td><td>The minimum face size below which two nodes will be merged </td></tr>
   </table>
   </dd>
 </dl>

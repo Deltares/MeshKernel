@@ -124,6 +124,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html">MeshRefinement</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to refine a <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> instance.  <a href="classmeshkernel_1_1_mesh_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_network1_d.html">Network1D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing a network 1d.  <a href="classmeshkernel_1_1_network1_d.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html">OrthogonalizationAndSmoothing</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).  <a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -358,6 +361,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a0e3f7633080a3edaa3d8feeab14fc954"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0e3f7633080a3edaa3d8feeab14fc954">AbsoluteDifference</a> (size_t number_1, size_t number_2)</td></tr>
 <tr class="memdesc:a0e3f7633080a3edaa3d8feeab14fc954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the absolute difference between to <code>size_t</code> numbers.  <a href="namespacemeshkernel.html#a0e3f7633080a3edaa3d8feeab14fc954">More...</a><br /></td></tr>
 <tr class="separator:a0e3f7633080a3edaa3d8feeab14fc954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a094e1e91216ac9cc48d5f609f0e56916"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a094e1e91216ac9cc48d5f609f0e56916">ComputePolyLineDiscretization</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;polyline, std::vector&lt; double &gt; &amp;chainages, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a094e1e91216ac9cc48d5f609f0e56916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the discretization points along a polyline.  <a href="namespacemeshkernel.html#a094e1e91216ac9cc48d5f609f0e56916">More...</a><br /></td></tr>
+<tr class="separator:a094e1e91216ac9cc48d5f609f0e56916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae9baa2777568c4498cbf53583b402d0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aae9baa2777568c4498cbf53583b402d0">ComputePolyLineNodalChainages</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;polyline, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:aae9baa2777568c4498cbf53583b402d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the chainages of each polyline node.  <a href="namespacemeshkernel.html#aae9baa2777568c4498cbf53583b402d0">More...</a><br /></td></tr>
+<tr class="separator:aae9baa2777568c4498cbf53583b402d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80463bb8f0938498c2efba8b7c46a40d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a80463bb8f0938498c2efba8b7c46a40d">ComputePolyLineEdgesLengths</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;polyline, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a80463bb8f0938498c2efba8b7c46a40d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the lengths of each polyline segment.  <a href="namespacemeshkernel.html#a80463bb8f0938498c2efba8b7c46a40d">More...</a><br /></td></tr>
+<tr class="separator:a80463bb8f0938498c2efba8b7c46a40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e">Triangulation</a> (int *jatri, double *xs, double *ys, int *ns, int *indx, int *numtri, int *edgeidx, int *numedge, int *triedge, double *xs3, double *ys3, int *ns3, double *trisize)</td></tr>
 <tr class="memdesc:a5a4e91c351aad4f859d9ac69f026d29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function of the Triangle library.  <a href="namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e">More...</a><br /></td></tr>
 <tr class="separator:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1075,6 +1087,127 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The interpolated point </dd></dl>
+
+</div>
+</div>
+<a id="a094e1e91216ac9cc48d5f609f0e56916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a094e1e91216ac9cc48d5f609f0e56916">&#9670;&nbsp;</a></span>ComputePolyLineDiscretization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::ComputePolyLineDiscretization </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>polyline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>chainages</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the discretization points along a polyline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">polyline</td><td>A polyline described by its nodes </td></tr>
+    <tr><td class="paramname">chainages</td><td>The chainages used for dicretizing the current polyline </td></tr>
+    <tr><td class="paramname">projection</td><td>The projection to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The discretized polyline </dd></dl>
+
+</div>
+</div>
+<a id="a80463bb8f0938498c2efba8b7c46a40d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80463bb8f0938498c2efba8b7c46a40d">&#9670;&nbsp;</a></span>ComputePolyLineEdgesLengths()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; meshkernel::ComputePolyLineEdgesLengths </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>polyline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the lengths of each polyline segment. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">polyline</td><td>A polyline described by its nodes </td></tr>
+    <tr><td class="paramname">projection</td><td>The projection to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector containing the lengths of each polyline segment </dd></dl>
+
+</div>
+</div>
+<a id="aae9baa2777568c4498cbf53583b402d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae9baa2777568c4498cbf53583b402d0">&#9670;&nbsp;</a></span>ComputePolyLineNodalChainages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; meshkernel::ComputePolyLineNodalChainages </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>polyline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the chainages of each polyline node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">polyline</td><td>A polyline described by its nodes </td></tr>
+    <tr><td class="paramname">projection</td><td>The projection to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector containing the chainage volau of the polyline nodes </dd></dl>
 
 </div>
 </div>
