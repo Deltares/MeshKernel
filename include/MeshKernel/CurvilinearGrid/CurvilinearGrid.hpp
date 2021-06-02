@@ -162,7 +162,7 @@ namespace meshkernel
         BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const;
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
-        /// @param[in] point the input point coordinate. The closest grid node will be deleted.
+        /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         void DeleteNode(Point const& point);
 
         size_t m_numM = 0;                                     ///< The number of m coordinates (vertical lines)

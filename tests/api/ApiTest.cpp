@@ -2683,7 +2683,7 @@ TEST_F(ApiTests, DeleteNode_OnCurvilinearGrid_ShouldDeleteNode)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Two nodes are removed one by delete node and one by the administration. The node is at the corner and the entire face will be removed
+    // Two nodes are removed, one by delete node and one by the administration. The node is at the corner and the entire face will be removed
     ASSERT_EQ(curvilinearGrid.num_nodes, 34);
     ASSERT_EQ(curvilinearGrid.num_edges, 56);
 }
