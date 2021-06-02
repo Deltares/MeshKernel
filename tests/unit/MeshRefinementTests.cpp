@@ -678,6 +678,42 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     ASSERT_EQ(6, mesh->m_edges[47].second);
 }
 
+TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
+
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_face_size = 0.00165;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+
+    // Execute
+    meshkernel::Polygons polygon;
+    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    meshRefinement.Compute();
+
+    // Assert, we passed from 36 to 49 nodes
+    ASSERT_EQ(121, mesh->GetNumNodes());
+
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].x, tolerance);
+    ASSERT_NEAR(41.103300000000004, mesh->m_nodes[6].x, tolerance);
+    ASSERT_NEAR(41.106600000000000, mesh->m_nodes[12].x, tolerance);
+    ASSERT_NEAR(41.109900000000003, mesh->m_nodes[18].x, tolerance);
+    ASSERT_NEAR(41.113199999999999, mesh->m_nodes[24].x, tolerance);
+
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[6].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[12].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[18].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[24].y, tolerance);
+}
+
 TEST(MeshRefinement, RefineCurvilinearGrid)
 {
     auto mesh = MakeCurvilinearGridForTesting();
