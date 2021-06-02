@@ -1,4 +1,3 @@
-#include <chrono>
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Constants.hpp>
@@ -11,10 +10,6 @@
 #include <MeshKernel/Smoother.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-
-#if defined(_WIN32)
-#include <Windows.h>
-#endif
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 {
@@ -554,38 +549,4 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     ASSERT_NEAR(41.1073150612170, mesh->m_nodes[2].y, tolerance);
     ASSERT_NEAR(41.1046638488770, mesh->m_nodes[3].y, tolerance);
     ASSERT_NEAR(41.1039962768555, mesh->m_nodes[4].y, tolerance);
-}
-
-TEST(OrthogonalizationAndSmoothing, OrthogonalizationMeshWithEdgeWithNoFaces)
-{
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/EdgesWithNoFaces_net.nc");
-    ASSERT_EQ(mesh->GetNumNodes(), 376);
-    ASSERT_EQ(mesh->GetNumEdges(), 698);
-    ASSERT_EQ(mesh->GetNumFaces(), 319);
-
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.inner_iterations = 25;
-    orthogonalizationParameters.boundary_iterations = 25;
-    orthogonalizationParameters.outer_iterations = 1;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
-    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
-
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary{};
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
-
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
-
-    orthogonalization.Initialize();
-    orthogonalization.Compute();
 }
