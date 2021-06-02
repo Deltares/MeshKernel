@@ -30,6 +30,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Network1D.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -41,6 +42,7 @@ namespace meshkernel
     /// representing 1d real word features, such as pipes or a sewage network.
     class Mesh1D : public Mesh
     {
+
     public:
         /// @brief Default constructor
         Mesh1D() = default;
@@ -49,13 +51,19 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection  The projection to use
-        Mesh1D(const std::vector<Edge>& edges,
-               const std::vector<Point>& nodes,
-               Projection projection);
+        explicit Mesh1D(std::vector<Edge> const& edges,
+                        std::vector<Point> const& nodes,
+                        Projection projection);
+
+        /// @brief Constructs a mesh 1d from a network 1d. The network contains the chainages where the discratization points will be computed.
+        /// @param[in] network1d The input network
+        /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
+        explicit Mesh1D(Network1D& network1d, double minFaceSize);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
     };
+
 } // namespace meshkernel

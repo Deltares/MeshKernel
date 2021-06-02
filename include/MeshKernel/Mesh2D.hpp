@@ -84,12 +84,6 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// @brief Add meshes: result is a mesh composed of the additions
-        /// firstMesh += secondmesh results in the second mesh being added to the first
-        /// @param[in] rhs The mesh to add
-        /// @returns The resulting mesh
-        Mesh2D& operator+=(Mesh2D const& rhs);
-
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOption administrationOption);
@@ -104,11 +98,6 @@ namespace meshkernel
         /// @param[in] minx
         /// @param[in] miny
         void OffsetSphericalCoordinates(double minx, double miny);
-
-        /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
-        /// @param[in] polygons Polygon where to perform the merging
-        /// @param[in] mergingDistance The distance below which two nodes will be merged
-        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon

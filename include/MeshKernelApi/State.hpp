@@ -52,12 +52,14 @@ namespace meshkernelapi
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
+            m_network1d = std::make_shared<meshkernel::Network1D>();
             m_contacts = std::make_shared<meshkernel::Contacts>(m_mesh1d, m_mesh2d);
             m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>();
         }
 
         // Geometrical entities instances
         std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
+        std::shared_ptr<meshkernel::Network1D> m_network1d;             ///< Shared pointer to meshkernel::Network1D instance
         std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
         std::shared_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
         std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance

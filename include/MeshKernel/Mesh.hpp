@@ -144,6 +144,11 @@ namespace meshkernel
         /// @param[in] endNode The second of the second node to be merged
         void MergeTwoNodes(size_t startNode, size_t endNode);
 
+        /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
+        /// @param[in] polygons Polygon where to perform the merging
+        /// @param[in] mergingDistance The distance below which two nodes will be merged
+        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+
         /// @brief Connect two existing nodes, forming a new edge (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
@@ -255,6 +260,12 @@ namespace meshkernel
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocations location) const;
+
+        /// @brief Add meshes: result is a mesh composed of the additions
+        /// firstMesh += secondmesh results in the second mesh being added to the first
+        /// @param[in] rhs The mesh to add
+        /// @returns The resulting mesh
+        Mesh& operator+=(Mesh const& rhs);
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)

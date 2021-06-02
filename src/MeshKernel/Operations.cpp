@@ -222,7 +222,7 @@ namespace meshkernel
             // get 3D polygon coordinates
             std::vector<Cartesian3DPoint> cartesian3DPoints;
             cartesian3DPoints.reserve(currentPolygonSize);
-            for (auto i = 0; i < currentPolygonSize; i++)
+            for (auto i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
             }
@@ -230,7 +230,7 @@ namespace meshkernel
             // enlarge around polygon
             const double enlargementFactor = 1.000001;
             const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-            for (auto i = 0; i < currentPolygonSize; i++)
+            for (auto i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
                 cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
@@ -246,7 +246,7 @@ namespace meshkernel
             int inside = 0;
 
             // loop over the polygon nodes
-            for (auto i = 0; i < currentPolygonSize - 1; i++)
+            for (auto i = 0; i < currentPolygonSize - 1; ++i)
             {
                 const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
                 const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
@@ -747,7 +747,7 @@ namespace meshkernel
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
         const auto numPoints = polygon.size();
-        for (auto i = 0; i < numPoints; i++)
+        for (auto i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
             if (abs(polygon[i].y) < abs(minY))
@@ -759,7 +759,7 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             double maxX = std::numeric_limits<double>::lowest();
-            for (auto i = 0; i < numPoints; i++)
+            for (auto i = 0; i < numPoints; ++i)
             {
                 maxX = std::max(polygon[i].x, maxX);
             }
@@ -767,7 +767,7 @@ namespace meshkernel
             if (maxX - minX > 180.0)
             {
                 const double deltaX = maxX - 180.0;
-                for (auto i = 0; i < numPoints; i++)
+                for (auto i = 0; i < numPoints; ++i)
                 {
                     if (polygon[i].x < deltaX)
                     {
@@ -1235,7 +1235,7 @@ namespace meshkernel
         std::vector<double> result(v.size());
 
         result[0] = 0;
-        for (auto i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); ++i)
         {
             result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
@@ -1245,7 +1245,7 @@ namespace meshkernel
             return {result, totalDistance};
         }
         const double inverseTotalDistance = 1.0 / totalDistance;
-        for (auto i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); ++i)
         {
             result[i] = result[i] * inverseTotalDistance;
         }
@@ -1502,6 +1502,64 @@ namespace meshkernel
         auto projectionOnSegment = segmentRatio >= 0.0 && segmentRatio <= 1.0 ? true : false;
         segmentRatio = segmentRatio * std::sqrt(squaredDelta);
         return {projectedPoint, segmentRatio, projectionOnSegment};
+    }
+
+    std::vector<double> ComputePolyLineEdgesLengths(const std::vector<Point>& polyline, Projection projection)
+    {
+        std::vector<double> edgeLengths;
+        edgeLengths.reserve(polyline.size());
+
+        for (auto p = 0; p < polyline.size() - 1; ++p)
+        {
+            const auto firstNode = p;
+            auto secondNode = p + 1;
+            edgeLengths.emplace_back(ComputeDistance(polyline[firstNode], polyline[secondNode], projection));
+        }
+        return edgeLengths;
+    }
+
+    std::vector<double> ComputePolyLineNodalChainages(std::vector<Point> const& polyline, Projection projection)
+    {
+        // Compute the edge lengths and the edge coordinates
+        auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
+        std::vector<double> chainages(polyline.size());
+        chainages[0] = 0.0;
+        for (auto i = 0; i < edgeLengths.size(); ++i)
+        {
+            chainages[i + 1] = chainages[i] + edgeLengths[i];
+        }
+        return chainages;
+    }
+
+    std::vector<Point> ComputePolyLineDiscretization(std::vector<Point> const& polyline, std::vector<double>& chainages, Projection projection)
+    {
+        if (polyline.size() < 2)
+        {
+            throw std::invalid_argument("ComputePolyLineDiscretization polyline with less than 2 points");
+        }
+
+        // Compute the edge lengths and the edge coordinates
+        auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
+        std::vector<double> const polylineNodalCoordinate = ComputePolyLineNodalChainages(polyline, projection);
+
+        std::vector<Point> discretization;
+        discretization.reserve(chainages.size());
+        size_t curentNodalIndex = 0;
+        std::sort(chainages.begin(), chainages.end());
+        for (auto const& chainage : chainages)
+        {
+            if (chainage > polylineNodalCoordinate[curentNodalIndex + 1])
+            {
+                curentNodalIndex++;
+            }
+
+            double distanceFromLastNode = chainage - polylineNodalCoordinate[curentNodalIndex];
+            Point p = polyline[curentNodalIndex] + (polyline[curentNodalIndex + 1] - polyline[curentNodalIndex]) * distanceFromLastNode / edgeLengths[curentNodalIndex];
+
+            discretization.emplace_back(p);
+        }
+
+        return discretization;
     }
 
 } // namespace meshkernel

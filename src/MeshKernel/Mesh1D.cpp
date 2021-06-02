@@ -25,11 +25,52 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh1D.hpp"
+#include <vector>
 
 #include <MeshKernel/Entities.hpp>
-#include <vector>
+#include <MeshKernel/Mesh1D.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
+
+meshkernel::Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
+{
+    std::vector<Edge> edges;
+    std::vector<Point> nodes;
+    size_t numNodes = 0;
+
+    // Compute 1d mesh discretization
+    auto const discretizations = network1d.ComputeDiscretizationsFromChainages();
+    for (auto const& discretization : discretizations)
+    {
+        if (discretization.empty())
+        {
+            continue;
+        }
+        // add the new computed nodes
+        std::copy(discretization.begin(), discretization.end(), back_inserter(nodes));
+
+        // add the new computed edges
+        for (auto i = numNodes; i < nodes.size() - 1; ++i)
+        {
+            edges.emplace_back(i, i + 1);
+        }
+        // Poly lines are separated. If the end of one polyline coincides with the start of another, the two nodes will be merged later on.
+        numNodes = numNodes + nodes.size();
+    }
+
+    // Sets the edges, nodes and projections
+    m_edges = edges;
+    m_nodes = nodes;
+    m_projection = network1d.m_projection;
+
+    // Perform node administration to fill the internal arrays
+    AdministrateNodesEdges();
+
+    // If there are computational nodes at a distance smaller than  the threshold, these are eliminated
+    const Polygons polygon{};
+    MergeNodesInPolygon(polygon, minFaceSize);
+}

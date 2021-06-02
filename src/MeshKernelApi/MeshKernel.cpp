@@ -49,6 +49,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
@@ -201,8 +202,96 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId,
-                                                  Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            auto const localPolylines = ConvertGeometryListToVectorOfPointVectors(polylines);
+
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_network1d = meshkernel::Network1D(localPolylines, meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            std::vector<double> localFixedChainages(sizeFixedChainages);
+            for (auto i = 0; i < sizeFixedChainages; ++i)
+            {
+                localFixedChainages[i] = fixedChainages[i];
+            }
+            const auto fixedChainagesByPolyline = ConvertVectorToVectorOfVectors(localFixedChainages, mkernel_get_separator());
+
+            // Do not change the pointer, just the object it is pointing to
+            meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(fixedChainagesByPolyline, minFaceSize, fixedChainagesOffset);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            // Do not change the pointer, just the object it is pointing to
+            meshKernelState[meshKernelId].m_network1d->ComputeOffsettedChainages(offset);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            // Do not change the pointer, just the object it is pointing to (add to the existing mesh1d stored in the instance)
+            *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -240,8 +329,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId,
-                                                  Mesh1D& mesh1d)
+    MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         int exitCode = Success;
         try
@@ -281,8 +369,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId,
-                                                       CurvilinearGrid& curvilinearGrid)
+    MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
         try
@@ -321,8 +408,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId,
-                                                    Contacts& contacts)
+    MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
         int exitCode = Success;
         try
@@ -340,8 +426,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_contacts_get_data(int meshKernelId,
-                                              Contacts& contacts)
+    MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts)
     {
         int exitCode = Success;
         try
@@ -690,7 +775,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.num_coordinates);
-            for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+            for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
             {
                 splines[i].x = geometryListIn.coordinates_x[i];
                 splines[i].y = geometryListIn.coordinates_y[i];
@@ -1334,7 +1419,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons localPolygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            for (auto i = 0; i < points.size(); i++)
+            for (auto i = 0; i < points.size(); ++i)
             {
                 selectionResults.values[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
