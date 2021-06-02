@@ -32,6 +32,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 using meshkernel::Mesh;
 
@@ -252,6 +253,52 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
+{
+    // first filter the nodes in polygon
+    std::vector<Point> filteredNodes(GetNumNodes());
+    std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
+    size_t index = 0;
+    for (auto i = 0; i < GetNumNodes(); ++i)
+    {
+        const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
+        if (inPolygon)
+        {
+            filteredNodes[index] = m_nodes[i];
+            originalNodeIndices[index] = i;
+            index++;
+        }
+    }
+    filteredNodes.resize(index);
+
+    // Update the R-Tree of the mesh nodes
+    RTree nodesRtree;
+    nodesRtree.BuildTree(filteredNodes);
+
+    // merge the closest nodes
+    auto const mergingDistanceSquared = mergingDistance * mergingDistance;
+    for (auto i = 0; i < filteredNodes.size(); ++i)
+    {
+        nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
+
+        const auto resultSize = nodesRtree.GetQueryResultSize();
+        if (resultSize > 1)
+        {
+            for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
+            {
+                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
+                if (nodeIndexInFilteredNodes != i)
+                {
+                    MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
+                    nodesRtree.DeleteNode(i);
+                }
+            }
+        }
+    }
+
+    AdministrateNodesEdges();
 }
 
 size_t Mesh::ConnectNodes(size_t startNode, size_t endNode)
@@ -759,4 +806,46 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) co
         }
     }
     return result;
+}
+
+Mesh& Mesh::operator+=(Mesh const& rhs)
+{
+    if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
+    {
+        throw std::invalid_argument("Mesh2D::operator+=: The two meshes cannot be added.");
+    }
+
+    const auto rhsNumNodes = rhs.GetNumNodes();
+    const auto rhsNumEdges = rhs.GetNumEdges();
+
+    auto numNodes = GetNumNodes();
+    auto numEdges = GetNumEdges();
+    m_edges.resize(GetNumEdges() + rhsNumEdges);
+    m_nodes.resize(GetNumNodes() + rhsNumNodes);
+
+    //copy mesh nodes
+    for (auto n = numNodes; n < numNodes + rhsNumNodes; ++n)
+    {
+        const auto index = n - numNodes;
+        m_nodes[n] = rhs.m_nodes[index];
+    }
+
+    //copy mesh edges
+    for (auto e = numEdges; e < numEdges + rhsNumEdges; ++e)
+    {
+        const auto index = e - numEdges;
+        m_edges[e].first = rhs.m_edges[index].first + numNodes;
+        m_edges[e].second = rhs.m_edges[index].second + numNodes;
+    }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
+    AdministrateNodesEdges();
+
+    //no polygon involved, so node mask is 1 everywhere
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+
+    return *this;
 }

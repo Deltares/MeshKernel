@@ -52,16 +52,99 @@ namespace meshkernelapi
     {
         std::vector<meshkernel::Point> result;
         result.reserve(geometryListIn.num_coordinates);
-        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
         {
             result.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
         }
         return result;
     }
 
+    /// @brief Converts a GeometryList to a vector<vector<Point>>
+    /// @param[in] geometryListIn The geometry input list to convert
+    /// @returns The converted vector of points
+    /// @return The resulting vector of vector points
+    static std::vector<std::vector<meshkernel::Point>> ConvertGeometryListToVectorOfPointVectors(GeometryList const& geometryListIn)
+    {
+        std::vector<std::vector<meshkernel::Point>> result;
+        std::vector<meshkernel::Point> chunk;
+        chunk.reserve(geometryListIn.num_coordinates);
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
+        {
+
+            if (meshkernel::IsEqual(geometryListIn.coordinates_x[i], geometryListIn.geometry_separator))
+            {
+                result.emplace_back(chunk);
+                chunk.clear();
+            }
+            else
+            {
+                chunk.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
+            }
+        }
+
+        if (!chunk.empty())
+        {
+            result.emplace_back(chunk);
+        }
+
+        return result;
+    }
+
+    /// @brief Converts an a vector<T> separated by \p separator to a vector<vector<T>>
+    /// @param[in]  input The data of the input array
+    /// @param[in]  separator  The separator value
+    /// @return The resulting vector of vectors
+    template <typename T>
+    static std::vector<std::vector<T>> ConvertVectorToVectorOfVectors(const std::vector<T> input, T separator)
+    {
+        std::vector<std::vector<T>> result;
+        std::vector<T> chunk;
+        for (auto i = 0; i < input.size(); ++i)
+        {
+            if (meshkernel::IsEqual(input[i], separator))
+            {
+                result.emplace_back(chunk);
+                chunk.clear();
+            }
+            else
+            {
+                chunk.emplace_back(input[i]);
+            }
+        }
+        if (!chunk.empty())
+        {
+            result.emplace_back(chunk);
+        }
+        return result;
+    }
+
+    /// @brief Converts an int array to a vector<bool>
+    /// @param[in]  inputArray The data of the input array
+    /// @param[in]  inputSize  The size of the input array
+    /// @return The resulting vector of bool
+    static std::vector<bool> ConvertIntegerArrayToBoolVector(const int inputArray[], size_t inputSize)
+    {
+        std::vector<bool> result(inputSize);
+        for (auto i = 0; i < inputSize; ++i)
+        {
+            switch (inputArray[i])
+            {
+            case 0:
+                result[i] = false;
+                break;
+            case 1:
+                result[i] = true;
+                break;
+            default:
+                throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
+            }
+        }
+        return result;
+    }
+
     /// @brief Converts a GeometryList to a vector<Sample>
     /// @param[in] geometryListIn The geometry input list to convert
-    /// @returns The converted vector of samples
+    /// @return The converted vector of samples
     static std::vector<meshkernel::Sample> ConvertGeometryListToSampleVector(const GeometryList& geometryListIn)
     {
         if (geometryListIn.num_coordinates == 0)
@@ -71,7 +154,7 @@ namespace meshkernelapi
         std::vector<meshkernel::Sample> result;
         result.reserve(geometryListIn.num_coordinates);
 
-        for (auto i = 0; i < geometryListIn.num_coordinates; i++)
+        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
         {
             result.push_back({geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i], geometryListIn.values[i]});
         }
@@ -88,7 +171,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates in the result vector.");
         }
 
-        for (auto i = 0; i < result.num_coordinates; i++)
+        for (auto i = 0; i < result.num_coordinates; ++i)
         {
             result.coordinates_x[i] = pointVector[i].x;
             result.coordinates_y[i] = pointVector[i].y;
@@ -111,7 +194,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the value-vector size is smaller than the number of coordinates in the result vector.");
         }
 
-        for (auto i = 0; i < result.num_coordinates; i++)
+        for (auto i = 0; i < result.num_coordinates; ++i)
         {
             result.coordinates_x[i] = valuesCoordinates[i].x;
             result.coordinates_y[i] = valuesCoordinates[i].y;
@@ -236,30 +319,6 @@ namespace meshkernelapi
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].second);
             edgeIndex++;
         }
-    }
-
-    /// @brief Converts an int array to a vector<bool>
-    /// @param[in]  inputArray The data of the input array
-    /// @param[in]  inputSize  The size of the input array
-    static std::vector<bool> ConvertIntegerArrayToBoolVector(const int inputArray[],
-                                                             size_t inputSize)
-    {
-        std::vector<bool> result(inputSize);
-        for (auto i = 0; i < inputSize; ++i)
-        {
-            switch (inputArray[i])
-            {
-            case 0:
-                result[i] = false;
-                break;
-            case 1:
-                result[i] = true;
-                break;
-            default:
-                throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
-            }
-        }
-        return result;
     }
 
 } // namespace meshkernelapi
