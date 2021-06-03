@@ -754,3 +754,18 @@ meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displaceme
 
     return {0.0, 0.0};
 }
+
+void CurvilinearGrid::DeleteNode(Point const& point)
+{
+    // Get the m and n indices from the point coordinates
+    auto const nodeToDelete = GetNodeIndices(point);
+
+    if (nodeToDelete.IsValid())
+    {
+        // Invalidate gridnodes
+        m_gridNodes[nodeToDelete.m_m][nodeToDelete.m_n] = {doubleMissingValue, doubleMissingValue};
+        // Re-compute quantities
+        ComputeGridNodeTypes();
+        SetFlatCopies();
+    }
+}

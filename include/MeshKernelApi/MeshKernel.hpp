@@ -944,6 +944,15 @@ namespace meshkernelapi
                                                         double xSecondGridLineNode,
                                                         double ySecondGridLineNode);
 
+        /// @brief Delete the curvilinear node closest to a point
+        /// @param meshKernelId The id of the mesh state
+        /// @param xPointCoordinate The x coordinate of the point
+        /// @param yPointCoordinate The y coordinate of the point
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_node(int meshKernelId,
+                                                        double xPointCoordinate,
+                                                        double yPointCoordinate);
+
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_separator();
