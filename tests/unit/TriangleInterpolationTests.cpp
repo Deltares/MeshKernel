@@ -7,6 +7,55 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
+TEST(TriangleInterpolation, TriangleInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
+{
+    //Prepare
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
+
+    std::vector<meshkernel::Sample> samples{
+        {1.5, 1.5, 2.0},
+        {2.5, 1.5, 2.0},
+        {3.5, 1.5, 2.0},
+        {1.5, 2.5, 2.0},
+        {2.5, 2.5, 1.0},
+        {3.5, 2.5, 2.0},
+        {1.5, 3.5, 2.0},
+        {2.5, 3.5, 2.0},
+        {3.5, 3.5, 2.0}};
+
+    // Execute
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projection::spherical);
+    triangulationInterpolation.Compute();
+
+    // Assert
+    auto interpolationResults = triangulationInterpolation.GetResults();
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[0], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[1], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[2], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[3], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[4], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[5], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[6], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[7], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[8], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[9], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[10], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[11], tolerance);
+    ASSERT_NEAR(2.0000809724570234, interpolationResults[12], tolerance);
+    ASSERT_NEAR(1.5001095301135865, interpolationResults[13], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[14], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[15], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[16], tolerance);
+    ASSERT_NEAR(1.4999190275429768, interpolationResults[17], tolerance);
+    ASSERT_NEAR(2.0000000000000000, interpolationResults[18], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[19], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[20], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[21], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[22], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[23], tolerance);
+    ASSERT_NEAR(-999.00000000000000, interpolationResults[24], tolerance);
+}
 TEST(TriangleInterpolation, InterpolateOnNodes)
 {
     // Set up

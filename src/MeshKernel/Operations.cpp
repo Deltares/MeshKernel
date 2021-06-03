@@ -1036,7 +1036,7 @@ namespace meshkernel
         }
         if (projection == Projection::sphericalAccurate)
         {
-            // TODO: compute in case of spherical accurate
+            // TODO: compute in case of spherical accurate (comp_circumcenter3D)
         }
         return circumcenter;
     }

@@ -85,7 +85,7 @@ namespace meshkernel
         void Compute();
 
         /// @brief Get the results
-        /// @return
+        /// @return The vector with results
         [[nodiscard]] const auto& GetResults() const
         {
             return m_results;

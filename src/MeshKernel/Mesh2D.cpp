@@ -1354,7 +1354,7 @@ void Mesh2D::MakeDualFace(size_t node, double enlargementFactor, std::vector<Poi
         {
             centerOfMass.x -= 360.0;
         }
-        if (centerOfMass.x - m_nodes[node].x < 180.0)
+        if (centerOfMass.x - m_nodes[node].x < -180.0)
         {
             centerOfMass.x += 360.0;
         }
