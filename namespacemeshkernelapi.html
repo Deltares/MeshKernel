@@ -402,6 +402,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroring, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
 <tr class="memdesc:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <a href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">More...</a><br /></td></tr>
 <tr class="separator:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8828c734b99cf7e4a75065b93750e7c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">mkernel_curvilinear_delete_node</a> (int meshKernelId, double xPointCoordinate, double yPointCoordinate)</td></tr>
+<tr class="memdesc:a8828c734b99cf7e4a75065b93750e7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the curvilinear node closest to a point.  <a href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">More...</a><br /></td></tr>
+<tr class="separator:a8828c734b99cf7e4a75065b93750e7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -983,6 +986,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a8828c734b99cf7e4a75065b93750e7c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8828c734b99cf7e4a75065b93750e7c3">&#9670;&nbsp;</a></span>mkernel_curvilinear_delete_node()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_delete_node </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yPointCoordinate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete the curvilinear node closest to a point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramname">xPointCoordinate</td><td>The x coordinate of the point </td></tr>
+    <tr><td class="paramname">yPointCoordinate</td><td>The y coordinate of the point </td></tr>
   </table>
   </dd>
 </dl>
