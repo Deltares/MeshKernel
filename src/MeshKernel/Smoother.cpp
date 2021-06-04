@@ -575,7 +575,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
                 auto face = m_mesh->m_edgesFaces[edge][ff];
                 if (face != faceLeft && face != faceRight)
                 {
-                    isSquare = isSquare && m_mesh->GetNumFaceEdges(face) == 4;
+                    isSquare = isSquare && m_mesh->GetNumFaceEdges(face) == numNodesQuads;
                 }
             }
             if (!isSquare)
@@ -615,11 +615,11 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
                 thetaSquare[f + 1] = 0.5 * M_PI;
             }
 
-            if (m_sharedFacesCache[f] != sizetMissingValue && m_sharedFacesCache[f] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
+            if (m_sharedFacesCache[f] != sizetMissingValue && m_sharedFacesCache[f] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == numNodesQuads)
             {
                 numNonStencilQuad += 1;
             }
-            if (m_sharedFacesCache[leftFaceIndex] != sizetMissingValue && m_sharedFacesCache[leftFaceIndex] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4)
+            if (m_sharedFacesCache[leftFaceIndex] != sizetMissingValue && m_sharedFacesCache[leftFaceIndex] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == numNodesQuads)
             {
                 numNonStencilQuad += 1;
             }
@@ -640,7 +640,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
             continue;
 
         // non boundary face
-        if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
+        if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == numNodesQuads)
         {
             for (auto n = 0; n < m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]); n++)
             {
@@ -672,7 +672,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
         auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         double phi = OptimalEdgeAngle(numFaceNodes);
 
-        if (isSquareFace[f] || numFaceNodes == 4)
+        if (isSquareFace[f] || numFaceNodes == numNodesQuads)
         {
             size_t nextNode = static_cast<size_t>(f) + static_cast<size_t>(2);
             if (nextNode > numSharedFaces)
@@ -686,7 +686,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
                 numSquaredTriangles += 1;
                 phiSquaredTriangles += phi;
             }
-            else if (numFaceNodes == 4)
+            else if (numFaceNodes == numNodesQuads)
             {
                 numNonStencilQuad += 1;
                 phiQuads += phi;
