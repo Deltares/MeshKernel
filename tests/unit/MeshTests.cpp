@@ -591,3 +591,46 @@ TEST(Mesh, DeleteHangingEdge)
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
 }
+
+class MeshDeletion : public ::testing::TestWithParam<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>> GetData()
+    {
+        return {
+            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, 14},
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, false, 14},
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, 16},
+            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, 2},
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, true, 6},
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, 2}
+
+        };
+    }
+};
+
+TEST_P(MeshDeletion, expected_results)
+{
+    // Get the test parameters
+    auto const [deleteOption, invertSelection, numNodes] = GetParam();
+
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> polygonNodes{
+        {-0.5, -1.0},
+        {0.8, -1.0},
+        {0.8, 1.8},
+        {-0.5, 1.8},
+        {-0.5, -1.0}};
+
+    meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+
+    // Assert
+    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+}
+
+INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
