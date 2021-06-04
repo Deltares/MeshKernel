@@ -601,13 +601,13 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
             {
                 // Inner node
                 numNonStencilQuad = m_mesh->m_nodesNumEdges[nextNode] - 2;
-                thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
+                thetaSquare[f + 1] = (2.0 - static_cast<double>(numNonStencilQuad) * 0.5) * M_PI;
             }
             if (m_mesh->m_nodesTypes[nextNode] == 2)
             {
                 // boundary node
                 numNonStencilQuad = m_mesh->m_nodesNumEdges[nextNode] - 1 - m_mesh->m_edgesNumFaces[edgeIndex];
-                thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
+                thetaSquare[f + 1] = (1.0 - static_cast<double>(numNonStencilQuad) * 0.5) * M_PI;
             }
             if (m_mesh->m_nodesTypes[nextNode] == 3)
             {
