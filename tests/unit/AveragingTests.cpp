@@ -1,4 +1,5 @@
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
@@ -24,7 +25,7 @@ TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldint
         {3.5, 3.5, 2.0}};
 
     // Execute
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Nodes, 1.01, false, false, 0);
+    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
     averaging.Compute();
 
     // Asser
@@ -590,26 +591,89 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
     ASSERT_NEAR(7.0448179000000000, interpolationResults[17], tolerance);
 }
 
-TEST(Averaging, InterpolateOnFacesMinAbsValue)
+TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    //1 Setup
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Sample> samples{
+        {2.5, 1.0, 1.0},
+        {2.5, 2.0, 1.0},
+        {2.5, 3.0, 1.0},
+        {3.5, 1.0, 1.0},
+        {3.5, 2.0, 1.0},
+        {3.5, 3.0, 1.0},
+        {2.0, 1.5, 1.0},
+        {2.0, 2.5, 1.0},
+        {3.0, 1.5, 1.0},
+        {3.0, 2.5, 1.0},
+        {4.0, 1.5, 1.0},
+        {4.0, 2.5, 1.0}};
+
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::MinAbsValue, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
     averaging.Compute();
 
-    constexpr double tolerance = 1e-6;
+    // Assert: only 12 edges gets a valid value, as the provided sample set
     auto interpolationResults = averaging.GetResults();
-    ASSERT_NEAR(2.0868346999999998, interpolationResults[0], tolerance);
-    ASSERT_NEAR(3.0392157000000002, interpolationResults[1], tolerance);
-    ASSERT_NEAR(2.8711484999999999, interpolationResults[2], tolerance);
-    ASSERT_NEAR(3.8235294000000000, interpolationResults[3], tolerance);
-    ASSERT_NEAR(3.6554622000000001, interpolationResults[4], tolerance);
-    ASSERT_NEAR(4.6078431000000002, interpolationResults[5], tolerance);
-    ASSERT_NEAR(4.4397758999999999, interpolationResults[6], tolerance);
-    ASSERT_NEAR(5.3921568999999998, interpolationResults[7], tolerance);
-    ASSERT_NEAR(5.2240896000000001, interpolationResults[8], tolerance);
-    ASSERT_NEAR(6.1764706000000000, interpolationResults[9], tolerance);
+
+    std::vector expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    expectedInterpolationResults[11] = 1.0;
+    expectedInterpolationResults[12] = 1.0;
+    expectedInterpolationResults[13] = 1.0;
+    expectedInterpolationResults[16] = 1.0;
+    expectedInterpolationResults[17] = 1.0;
+    expectedInterpolationResults[18] = 1.0;
+    expectedInterpolationResults[29] = 1.0;
+    expectedInterpolationResults[30] = 1.0;
+    expectedInterpolationResults[33] = 1.0;
+    expectedInterpolationResults[34] = 1.0;
+    expectedInterpolationResults[37] = 1.0;
+    expectedInterpolationResults[38] = 1.0;
+
+    ASSERT_THAT(interpolationResults, ::testing::ContainerEq(expectedInterpolationResults));
+}
+
+TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
+{
+    //1 Setup
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Sample> samples{
+        {2.0, 1.0, 1.0},
+        {2.0, 2.0, 1.0},
+        {2.0, 3.0, 1.0},
+        {3.0, 1.0, 1.0},
+        {3.0, 2.0, 1.0},
+        {3.0, 3.0, 1.0},
+        {4.0, 1.0, 1.0},
+        {4.0, 2.0, 1.0},
+        {4.0, 3.0, 1.0}};
+
+    ASSERT_GT(mesh->GetNumNodes(), 0);
+
+    // Execute averaging, this time the minimum number of samples should at least be 2
+    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    averaging.Compute();
+
+    // Assert: only 12 edges gets a valid value
+    auto interpolationResults = averaging.GetResults();
+
+    std::vector expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    expectedInterpolationResults[11] = 1.0;
+    expectedInterpolationResults[12] = 1.0;
+    expectedInterpolationResults[13] = 1.0;
+    expectedInterpolationResults[16] = 1.0;
+    expectedInterpolationResults[17] = 1.0;
+    expectedInterpolationResults[18] = 1.0;
+    expectedInterpolationResults[29] = 1.0;
+    expectedInterpolationResults[30] = 1.0;
+    expectedInterpolationResults[33] = 1.0;
+    expectedInterpolationResults[34] = 1.0;
+    expectedInterpolationResults[37] = 1.0;
+    expectedInterpolationResults[38] = 1.0;
+
+    ASSERT_THAT(interpolationResults, ::testing::ContainerEq(expectedInterpolationResults));
 }

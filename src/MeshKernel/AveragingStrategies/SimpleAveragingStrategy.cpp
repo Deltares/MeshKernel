@@ -40,6 +40,6 @@ namespace meshkernel::averaging
 
     double SimpleAveragingStrategy::Calculate() const
     {
-        return m_nAdds > m_minNumPoints ? m_result / static_cast<double>(m_nAdds) : doubleMissingValue;
+        return m_nAdds >= m_minNumPoints ? m_result / static_cast<double>(m_nAdds) : doubleMissingValue;
     }
 } // namespace meshkernel::averaging
