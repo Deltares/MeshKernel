@@ -76,13 +76,13 @@ namespace meshkernel
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
         /// @param[in] administration Type of administration to perform
-        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
+        explicit Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
         /// @param[in] projection The projection to use
-        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
+        explicit Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform

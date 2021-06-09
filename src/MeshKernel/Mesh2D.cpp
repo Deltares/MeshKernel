@@ -843,11 +843,14 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
         polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
     }
 
+    // The circumcenter is included in the face, then return the calculated circumcentre
     if (IsPointInPolygonNodes(result, polygon, m_projection))
     {
         return result;
     }
 
+    // If the circumcenter is not included in the face,
+    // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcentre.
     for (auto n = 0; n < numNodes; n++)
     {
         const auto nextNode = NextCircularForwardIndex(n, numNodes);
