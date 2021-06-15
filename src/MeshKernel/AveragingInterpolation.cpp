@@ -85,14 +85,6 @@ void AveragingInterpolation::Compute()
             {
                 m_results[e] = (firstValue + secondValue) * 0.5;
             }
-            else if (IsEqual(firstValue, doubleMissingValue))
-            {
-                m_results[e] = secondValue;
-            }
-            else if (IsEqual(secondValue, doubleMissingValue))
-            {
-                m_results[e] = firstValue;
-            }
         }
         return;
     }
@@ -258,7 +250,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
         throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon invalid interpolation point");
     }
 
-    std::vector<Point> const searchPolygon = GetSearchPolygon(polygon, interpolationPoint);
+    auto const searchPolygon = GetSearchPolygon(polygon, interpolationPoint);
 
     double const searchRadiusSquared = GetSearchRadiusSquared(searchPolygon, interpolationPoint);
 

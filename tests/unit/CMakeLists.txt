@@ -4,7 +4,7 @@ add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(MeshKernelUnitTests PRIVATE MeshKernel UtilsStatic
-                                                  gtest_main)
+                                                  gtest_main gmock)
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
