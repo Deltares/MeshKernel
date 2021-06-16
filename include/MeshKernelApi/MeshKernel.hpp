@@ -998,6 +998,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(const char*& error_message);
 
+        /// @brief Gets pointer to version string.
+        /// @param[out] version Version string
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_version(const char*& version);
+
         /// @brief Gets the index of the erroneous entity.
         /// @param[out] invalidIndex The index of the erroneous entity
         /// @param[out] type         The entity type (node, edge or face, see MeshLocations)

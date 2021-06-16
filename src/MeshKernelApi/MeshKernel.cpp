@@ -66,6 +66,7 @@
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernelApi/State.hpp>
 #include <MeshKernelApi/Utils.hpp>
+#include <Version/Version.hpp>
 
 namespace meshkernelapi
 {
@@ -1514,6 +1515,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
         error_message = exceptionMessage;
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_get_version(const char*& version)
+    {
+        version = versionString;
         return Success;
     }
 
