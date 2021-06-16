@@ -420,6 +420,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a57b809a55fd930f5c266f5d12fdfa816"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57b809a55fd930f5c266f5d12fdfa816">mkernel_get_error</a> (const char *&amp;error_message)</td></tr>
 <tr class="memdesc:a57b809a55fd930f5c266f5d12fdfa816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets pointer to error message.  <a href="namespacemeshkernelapi.html#a57b809a55fd930f5c266f5d12fdfa816">More...</a><br /></td></tr>
 <tr class="separator:a57b809a55fd930f5c266f5d12fdfa816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23f420a1136016da9b4e6a3d1f6e688e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a23f420a1136016da9b4e6a3d1f6e688e">mkernel_get_version</a> (const char *&amp;version)</td></tr>
+<tr class="memdesc:a23f420a1136016da9b4e6a3d1f6e688e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets pointer to version string.  <a href="namespacemeshkernelapi.html#a23f420a1136016da9b4e6a3d1f6e688e">More...</a><br /></td></tr>
+<tr class="separator:a23f420a1136016da9b4e6a3d1f6e688e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60110d717bc03445222a06bc765ef4f4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a60110d717bc03445222a06bc765ef4f4">mkernel_get_geometry_error</a> (int &amp;invalidIndex, int &amp;type)</td></tr>
 <tr class="memdesc:a60110d717bc03445222a06bc765ef4f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the erroneous entity.  <a href="namespacemeshkernelapi.html#a60110d717bc03445222a06bc765ef4f4">More...</a><br /></td></tr>
 <tr class="separator:a60110d717bc03445222a06bc765ef4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2431,6 +2434,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input corner nodes of the splines </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>The output spline </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPointsBetweenNodes</td><td>The number of spline points to generate between two corner nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a23f420a1136016da9b4e6a3d1f6e688e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f420a1136016da9b4e6a3d1f6e688e">&#9670;&nbsp;</a></span>mkernel_get_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_version </td>
+          <td>(</td>
+          <td class="paramtype">const char *&amp;&#160;</td>
+          <td class="paramname"><em>version</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets pointer to version string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">version</td><td>Version string </td></tr>
   </table>
   </dd>
 </dl>
