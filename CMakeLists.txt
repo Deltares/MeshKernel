@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14...3.18)
 # Project name and a few useful settings. Other commands can pick up the results
 project(
   MeshKernel
-  VERSION 0.10.0
+  VERSION 1.0.0
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX C)
 
@@ -33,10 +33,17 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
   # Docs only available if this is the main app
   add_subdirectory(docs)
-
-  # Run packaging scripts
-  add_subdirectory(package)
 endif()
+
+# Determine version suffix from environment variable
+if(DEFINED ENV{VERSION_SUFFIX})
+  set(VERSION_SUFFIX $ENV{VERSION_SUFFIX})
+else()
+  set(VERSION_SUFFIX .0)
+endif()
+
+# Run packaging scripts
+add_subdirectory(package)
 
 # Add third party directory
 add_subdirectory(extern)

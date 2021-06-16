@@ -1,3 +1,7 @@
+# Configure version file
+configure_file("${PROJECT_SOURCE_DIR}/include/MeshKernelApi/Version.hpp.in"
+               "${PROJECT_SOURCE_DIR}/include/MeshKernelApi/Version.hpp" @ONLY)
+
 # Set api files
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS
      "${PROJECT_SOURCE_DIR}/include/MeshKernelApi/*.hpp")

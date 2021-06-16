@@ -11,6 +11,7 @@
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
+#include <MeshKernelApi/Version.hpp>
 
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
@@ -1280,6 +1281,13 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
     ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
+}
+
+TEST(ApiStatelessTests, TestGettingVersionThroughApi)
+{
+    const char* versionFromApi;
+    meshkernelapi::mkernel_get_version(versionFromApi);
+    ASSERT_EQ(strcmp(versionFromApi, versionString), 0);
 }
 
 TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
