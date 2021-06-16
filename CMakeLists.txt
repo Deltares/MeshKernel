@@ -71,6 +71,9 @@ endif()
 # OpenMP
 find_package(OpenMP REQUIRED)
 
+# The version file
+add_subdirectory(include/Version)
+
 # The static library
 add_subdirectory(src/MeshKernel)
 

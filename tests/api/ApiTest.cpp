@@ -11,7 +11,7 @@
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
-#include <MeshKernelApi/Version.hpp>
+#include <Version/Version.hpp>
 
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>

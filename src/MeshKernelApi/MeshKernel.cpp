@@ -66,7 +66,7 @@
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernelApi/State.hpp>
 #include <MeshKernelApi/Utils.hpp>
-#include <MeshKernelApi/Version.hpp>
+#include <Version/Version.hpp>
 
 namespace meshkernelapi
 {

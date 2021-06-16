@@ -22,4 +22,4 @@ xbuild
 # User specific
 post_build.bat
 /tests/utils/include/TestUtils/Definitions.hpp
-/include/MeshKernelApi/Version.hpp
+/include/Version/Version.hpp
