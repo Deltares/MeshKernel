@@ -128,9 +128,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6fb9ca3c9bf8888d566fa3564ee10557"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6fb9ca3c9bf8888d566fa3564ee10557">mkernel_allocate_state</a> (int isGeographic, int &amp;meshKernelId)</td></tr>
-<tr class="memdesc:a6fb9ca3c9bf8888d566fa3564ee10557"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="namespacemeshkernelapi.html#a6fb9ca3c9bf8888d566fa3564ee10557">More...</a><br /></td></tr>
-<tr class="separator:a6fb9ca3c9bf8888d566fa3564ee10557"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e737d3ce03b109b6aaff17396f63aac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">mkernel_allocate_state</a> (int projectionType, int &amp;meshKernelId)</td></tr>
+<tr class="memdesc:a8e737d3ce03b109b6aaff17396f63aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">More...</a><br /></td></tr>
+<tr class="separator:a8e737d3ce03b109b6aaff17396f63aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <a href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -430,8 +430,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains all structs and functions exposed at the API level. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a6fb9ca3c9bf8888d566fa3564ee10557"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6fb9ca3c9bf8888d566fa3564ee10557">&#9670;&nbsp;</a></span>mkernel_allocate_state()</h2>
+<a id="a8e737d3ce03b109b6aaff17396f63aac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e737d3ce03b109b6aaff17396f63aac">&#9670;&nbsp;</a></span>mkernel_allocate_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -440,7 +440,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_allocate_state </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>isGeographic</em>, </td>
+          <td class="paramname"><em>projectionType</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -459,7 +459,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <p>Creates a new mesh state and returns the generated <code>meshKernelId</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Cartesian (0) or spherical (1) mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>Cartesian (0), spherical (1) or spherical accurate(2) state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
   </table>
   </dd>

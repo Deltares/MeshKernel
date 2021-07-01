@@ -94,7 +94,7 @@ var searchData=
   ['minimumcellarea_265',['minimumCellArea',['../namespacemeshkernel.html#adcd460adf42c413b283f7190c5c9ef95',1,'meshkernel']]],
   ['minimumdeltacoordinate_266',['minimumDeltaCoordinate',['../namespacemeshkernel.html#a31c4926091fa82b79c7d357feca28f27',1,'meshkernel']]],
   ['minimumedgelength_267',['minimumEdgeLength',['../namespacemeshkernel.html#a5c43acbca41e9612154031ba73ad7b3f',1,'meshkernel']]],
-  ['mkernel_5fallocate_5fstate_268',['mkernel_allocate_state',['../namespacemeshkernelapi.html#a6fb9ca3c9bf8888d566fa3564ee10557',1,'meshkernelapi']]],
+  ['mkernel_5fallocate_5fstate_268',['mkernel_allocate_state',['../namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac',1,'meshkernelapi']]],
   ['mkernel_5fcontacts_5fcompute_5fboundary_269',['mkernel_contacts_compute_boundary',['../namespacemeshkernelapi.html#a23418612b67e544a81b53b49da588b8c',1,'meshkernelapi']]],
   ['mkernel_5fcontacts_5fcompute_5fmultiple_270',['mkernel_contacts_compute_multiple',['../namespacemeshkernelapi.html#ac667f8bfc3d51f8150d1c01476b7a724',1,'meshkernelapi']]],
   ['mkernel_5fcontacts_5fcompute_5fsingle_271',['mkernel_contacts_compute_single',['../namespacemeshkernelapi.html#ade9e164a9330cf56d1d8ec135cb1c9d3',1,'meshkernelapi']]],
