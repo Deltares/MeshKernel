@@ -63,10 +63,10 @@ namespace meshkernelapi
     {
 #endif
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
-        /// @param[in] isGeographic  Cartesian (0) or spherical (1) mesh
+        /// @param[in] projectionType  Cartesian (0), spherical (1) or spherical accurate(2) state
         /// @param[out] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId);
+        MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
         /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state

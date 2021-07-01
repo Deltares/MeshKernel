@@ -97,10 +97,10 @@ namespace meshkernelapi
         }
     }
 
-    MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId)
+    MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         meshKernelId = meshKernelStateCounter++;
-        auto const projection = static_cast<meshkernel::Projection>(isGeographic);
+        auto const projection = static_cast<meshkernel::Projection>(projectionType);
         meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
         return Success;
     };
