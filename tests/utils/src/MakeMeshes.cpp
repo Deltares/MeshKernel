@@ -216,8 +216,8 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
         }
     }
 
-    auto num_nodes = static_cast<size_t>(nodeIndex);
-    auto num_edges = static_cast<size_t>(edgeIndex * 0.5);
+    auto const num_nodes = static_cast<size_t>(nodeIndex);
+    auto const num_edges = static_cast<size_t>(edgeIndex * 0.5);
 
     return {num_nodes, num_edges, node_x, node_y, edge_nodes};
 }
