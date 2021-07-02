@@ -43,14 +43,18 @@ public:
     void MakeMesh(int n = 4, int m = 3, double delta = 1.0)
     {
         // Set-up new mesh
-        const auto mesh2d = MakeRectangularMeshForApiTesting(n, m, delta);
+        const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(n, m, delta);
+        meshkernelapi::Mesh2D mesh2d{};
+        mesh2d.num_edges = num_edges;
+        mesh2d.num_nodes = num_nodes;
+        mesh2d.node_x = node_x.get();
+        mesh2d.node_y = node_y.get();
+        mesh2d.edge_nodes = edge_nodes.get();
         const auto errorCode = mkernel_mesh2d_set(m_meshKernelId, mesh2d);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not set mesh2d");
         }
-        // Clean up client-allocated memory
-        DeleteRectangularMeshForApiTesting(mesh2d);
     }
 
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
@@ -1238,9 +1242,15 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     int isGeographic = 0;
     meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
-    auto mesh2d = ReadLegacyMeshFromFileForApiTesting(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = num_edges;
+    mesh2d.num_nodes = num_nodes;
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_nodes = edge_nodes.get();
+
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
-    DeleteRectangularMeshForApiTesting(mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};

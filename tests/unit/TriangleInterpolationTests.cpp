@@ -60,7 +60,7 @@ TEST(TriangleInterpolation, InterpolateOnNodes)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/TriangleInterpolationTests/inTestTriangleInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projection::cartesian);
@@ -86,7 +86,7 @@ TEST(TriangleInterpolation, InterpolateOnEdges)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/TriangleInterpolationTests/inTestTriangleInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     mesh->ComputeEdgesCenters();
@@ -113,7 +113,7 @@ TEST(TriangleInterpolation, InterpolateOnFaces)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/TriangleInterpolationTests/inTestTriangleInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projection::cartesian);
@@ -140,7 +140,7 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/TriangleInterpolationTests/SphericalCutted.xyz");
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/SphericalCutted.nc", meshkernel::Projection::cartesian);
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/SphericalCutted.nc", meshkernel::Projection::cartesian);
     ASSERT_GT(mesh->GetNumNodes(), 0);
     ASSERT_GT(samples.size(), 0);
 

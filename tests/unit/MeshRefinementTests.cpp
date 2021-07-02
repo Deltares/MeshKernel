@@ -203,7 +203,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     //sample points
     std::vector<meshkernel::Sample> samples{
@@ -252,7 +252,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // Polygon sample
     std::vector<meshkernel::Point> point{
@@ -739,7 +739,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 TEST(MeshRefinement, RefineElongatedFaces)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/MeshRefinementTests/CurvilinearEnlonged.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/CurvilinearEnlonged.nc");
 
     std::vector<meshkernel::Point> point{
         {2018.73356016594, 1165.26385465465},

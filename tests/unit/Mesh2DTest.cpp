@@ -522,7 +522,7 @@ TEST(Mesh2D, GetSmallFlowEdgeCenters)
 TEST(Mesh2D, DeleteSmallFlowEdge)
 {
     // Setup a mesh with eight triangles
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
 
     ASSERT_EQ(8, mesh->GetNumFaces());
 
@@ -535,7 +535,7 @@ TEST(Mesh2D, DeleteSmallFlowEdge)
 TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
 {
     // Setup a mesh with two triangles
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
 
     ASSERT_EQ(2, mesh->GetNumFaces());
 

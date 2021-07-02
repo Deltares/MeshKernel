@@ -34,7 +34,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
 TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
 {
     //1 Setup
-    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     //set landboundaries
     auto polygon = std::make_shared<meshkernel::Polygons>();

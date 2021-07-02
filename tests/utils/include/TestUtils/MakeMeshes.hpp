@@ -32,15 +32,13 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
-meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath);
+std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string filePath);
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
 
-meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delta);
-
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::Mesh2D& mesh2d);
+std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::shared_ptr<int>> MakeRectangularMeshForApiTesting(int n, int m, double delta);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
