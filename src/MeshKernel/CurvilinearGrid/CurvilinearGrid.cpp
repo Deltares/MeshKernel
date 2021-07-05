@@ -142,7 +142,7 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    SearchNearestNeighbors(point, MeshLocations::Nodes);
+    SearchNearestNeighbor(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
     {
         return {sizetMissingValue, sizetMissingValue};
@@ -154,7 +154,7 @@ CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
-    SearchNearestNeighbors(point, MeshLocations::Edges);
+    SearchNearestNeighbor(point, MeshLocations::Edges);
     if (GetNumNearestNeighbors(MeshLocations::Edges) == 0)
     {
         return {{}, {}};

@@ -462,7 +462,7 @@ size_t Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNod
         m_nodesRTreeRequiresUpdate = false;
     }
 
-    m_nodesRTree.NearestNeighbors(point);
+    m_nodesRTree.NearestNeighbor(point);
     const auto resultSize = m_nodesRTree.GetQueryResultSize();
 
     // no results found
@@ -497,7 +497,7 @@ size_t Mesh::FindEdgeCloseToAPoint(Point point)
         throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
 
-    SearchNearestNeighbors(point, MeshLocations::Edges);
+    SearchNearestNeighbor(point, MeshLocations::Edges);
 
     if (GetNumNearestNeighbors(MeshLocations::Edges) >= 1)
     {
@@ -637,26 +637,45 @@ void Mesh::BuildTree(MeshLocations meshLocation)
     }
 }
 
-void Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
+void Mesh::SearchNearestNeighbor(Point point, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighbors(point);
+        m_nodesRTree.NearestNeighbor(point);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighbors(point);
+        m_edgesRTree.NearestNeighbor(point);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighbors(point);
+        m_facesRTree.NearestNeighbor(point);
     }
 }
 
 void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
+{
+    BuildTree(meshLocation);
+    if (meshLocation == MeshLocations::Nodes)
+    {
+        m_nodesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+    }
+
+    if (meshLocation == MeshLocations::Edges)
+    {
+        m_edgesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+    }
+
+    if (meshLocation == MeshLocations::Faces)
+    {
+        m_facesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+    }
+}
+
+void Mesh::SearchPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)

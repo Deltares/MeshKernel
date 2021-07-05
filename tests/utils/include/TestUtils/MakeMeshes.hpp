@@ -29,14 +29,18 @@
 #include <memory>
 #include <string>
 
+#include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernelApi/Mesh2D.hpp>
 
 std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string filePath);
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string filePath, meshkernel::Mesh::MeshTypes meshType);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
+
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
+
+std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
 std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::shared_ptr<int>> MakeRectangularMeshForApiTesting(int n, int m, double delta);
 

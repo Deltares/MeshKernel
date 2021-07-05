@@ -187,7 +187,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto maxEdgeLength = m_mesh1d->ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
-        m_mesh2d->SearchNearestPointWithinSquaredRadius(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
+        m_mesh2d->SearchPointsWithinSquaredRadius(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
 
         // for each face determine if it is crossing the current 1d edge
         const auto numNeighbours = m_mesh2d->GetNumNearestNeighbors(MeshLocations::Faces);
@@ -341,7 +341,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         }
 
         // get the closest 1d node
-        m_mesh1d->SearchNearestNeighbors(points[i], MeshLocations::Nodes);
+        m_mesh1d->SearchNearestNeighbor(points[i], MeshLocations::Nodes);
 
         // if nothing found continue
         if (m_mesh1d->GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
