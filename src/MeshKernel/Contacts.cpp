@@ -263,6 +263,12 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
     }
 
+    // no valid polygons provided
+    if (polygons.IsEmpty())
+    {
+        return;
+    }
+
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
