@@ -38,11 +38,11 @@ namespace meshkernelapi
         /// @brief The y-coordinates of network1d nodes
         double* node_y = nullptr;
 
-        /// @brief The number of curvilinear grid nodes along n
-        int num_n = -1;
-
         /// @brief The number of curvilinear grid nodes along m
         int num_m = -1;
+
+        /// @brief The number of curvilinear grid nodes along n
+        int num_n = -1;
     };
 
 } // namespace meshkernelapi
