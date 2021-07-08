@@ -229,7 +229,7 @@ namespace meshkernelapi
     /// @brief Sets dimensions members of meshkernelapi::Mesh2D instance
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetMesh2dDimensions(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
+    static void SetMesh2dApiDimensions(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
     {
         size_t num_face_nodes = 0;
         for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
@@ -246,7 +246,7 @@ namespace meshkernelapi
     /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetMesh2d(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
+    static void SetMesh2dApi(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
     {
         mesh2d->ComputeEdgesCenters();
         for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
@@ -280,8 +280,8 @@ namespace meshkernelapi
     /// @brief Sets a meshkernelapi::CurvilinearGrid instance from a meshkernel::CurvilinearGrid instance
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetCurvilinear(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
-                               CurvilinearGrid& curvilinearGridApi)
+    static void SetCurvilinearGridApi(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
+                                      CurvilinearGrid& curvilinearGridApi)
     {
         curvilinearGrid->ComputeEdgesCenters();
         for (auto n = 0; n < curvilinearGrid->GetNumNodes(); n++)
@@ -289,21 +289,13 @@ namespace meshkernelapi
             curvilinearGridApi.node_x[n] = curvilinearGrid->m_nodes[n].x;
             curvilinearGridApi.node_y[n] = curvilinearGrid->m_nodes[n].y;
         }
-
-        for (auto edgeIndex = 0; edgeIndex < curvilinearGrid->GetNumEdges(); edgeIndex++)
-        {
-            curvilinearGridApi.edge_x[edgeIndex] = curvilinearGrid->m_edgesCenters[edgeIndex].x;
-            curvilinearGridApi.edge_y[edgeIndex] = curvilinearGrid->m_edgesCenters[edgeIndex].y;
-            curvilinearGridApi.edge_nodes[edgeIndex * 2] = static_cast<int>(curvilinearGrid->m_edges[edgeIndex].first);
-            curvilinearGridApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(curvilinearGrid->m_edges[edgeIndex].second);
-        }
     }
 
     /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
     /// @param[in]  mesh1d           The input meshkernel::Mesh1D instance
     /// @param[out] mesh1dApi        The output meshkernelapi::Mesh1D instance
-    static void SetMesh1d(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
-                          Mesh1D& mesh1dApi)
+    static void SetMesh1dApi(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
+                             Mesh1D& mesh1dApi)
     {
         for (auto n = 0; n < mesh1d->GetNumNodes(); n++)
         {

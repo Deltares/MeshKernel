@@ -32,26 +32,17 @@ namespace meshkernelapi
     /// @brief A struct used to describe the values of a curvilinear grid in a C-compatible manner
     struct CurvilinearGrid
     {
-        /// @brief The nodes composing each mesh 2d edge
-        int* edge_nodes = nullptr;
-
         /// @brief The x-coordinates of network1d nodes
         double* node_x = nullptr;
 
         /// @brief The y-coordinates of network1d nodes
         double* node_y = nullptr;
 
-        /// @brief The x-coordinates of the mesh edges middle points
-        double* edge_x = nullptr;
+        /// @brief The number of curvilinear grid nodes along n
+        int num_n = -1;
 
-        /// @brief The y-coordinates of the mesh edges middle points
-        double* edge_y = nullptr;
-
-        /// @brief The number of mesh nodes
-        int num_nodes;
-
-        /// @brief The number of edges
-        int num_edges;
+        /// @brief The number of curvilinear grid nodes along m
+        int num_m = -1;
     };
 
 } // namespace meshkernelapi

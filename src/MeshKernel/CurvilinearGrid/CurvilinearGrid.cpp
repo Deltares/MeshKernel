@@ -76,16 +76,12 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (size_t n = 0; n < m_gridNodes[0].size(); n++)
         {
-            if (m_gridNodes[m][n].IsValid())
-            {
-                nodes[ind] = m_gridNodes[m][n];
-                nodeIndices[m][n] = ind;
-                gridIndices[ind] = {m, n};
-                ind++;
-            }
+            nodes[ind] = m_gridNodes[m][n];
+            nodeIndices[m][n] = ind;
+            gridIndices[ind] = {m, n};
+            ind++;
         }
     }
-    nodes.resize(ind);
 
     ind = 0;
     for (auto m = 0; m < m_gridNodes.size() - 1; m++)

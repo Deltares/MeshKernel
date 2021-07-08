@@ -33,7 +33,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
 {
