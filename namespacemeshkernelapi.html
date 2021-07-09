@@ -174,10 +174,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a1b222ed081c13ed360c0e04f70b589d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions data.  <a href="namespacemeshkernelapi.html#a1b222ed081c13ed360c0e04f70b589d6">More...</a><br /></td></tr>
 <tr class="separator:a1b222ed081c13ed360c0e04f70b589d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76f74ded5da96ab12bd145e907f6ccd9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a76f74ded5da96ab12bd145e907f6ccd9">mkernel_contacts_get_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
-<tr class="memdesc:a76f74ded5da96ab12bd145e907f6ccd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of contacts.  <a href="namespacemeshkernelapi.html#a76f74ded5da96ab12bd145e907f6ccd9">More...</a><br /></td></tr>
+<tr class="memdesc:a76f74ded5da96ab12bd145e907f6ccd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of 1d-2d contacts.  <a href="namespacemeshkernelapi.html#a76f74ded5da96ab12bd145e907f6ccd9">More...</a><br /></td></tr>
 <tr class="separator:a76f74ded5da96ab12bd145e907f6ccd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3b3e7255f0763e4d904de90e58b510b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac3b3e7255f0763e4d904de90e58b510b">mkernel_contacts_get_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
-<tr class="memdesc:ac3b3e7255f0763e4d904de90e58b510b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the contacts indices (from index / to indices)  <a href="namespacemeshkernelapi.html#ac3b3e7255f0763e4d904de90e58b510b">More...</a><br /></td></tr>
+<tr class="memdesc:ac3b3e7255f0763e4d904de90e58b510b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 1d-2d contacts indices (from index / to indices)  <a href="namespacemeshkernelapi.html#ac3b3e7255f0763e4d904de90e58b510b">More...</a><br /></td></tr>
 <tr class="separator:ac3b3e7255f0763e4d904de90e58b510b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00ba5182f31ea1567bc258bb95cad221"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">mkernel_mesh2d_count_hanging_edges</a> (int meshKernelId, int &amp;numEdges)</td></tr>
 <tr class="memdesc:a00ba5182f31ea1567bc258bb95cad221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">More...</a><br /></td></tr>
@@ -724,7 +724,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the contacts indices (from index / to indices) </p>
+<p>Gets the 1d-2d contacts indices (from index / to indices) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -762,7 +762,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the number of contacts. </p>
+<p>Gets the number of 1d-2d contacts. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
