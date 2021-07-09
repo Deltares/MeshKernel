@@ -2,9 +2,9 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
-int CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid curvilinearGrid)
+size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curvilinearGrid)
 {
-    int validNodes = 0;
+    size_t validNodes = 0;
     size_t index = 0;
     for (auto m = 0; m < curvilinearGrid.num_m; ++m)
     {
@@ -20,7 +20,7 @@ int CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid curvilinearGri
     return validNodes;
 }
 
-size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> const curvilinearGrid)
+size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid)
 {
     size_t validNodes = 0;
     size_t index = 0;

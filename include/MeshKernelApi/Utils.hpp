@@ -243,10 +243,10 @@ namespace meshkernelapi
         mesh2dApi.num_edges = static_cast<int>(mesh2d->GetNumEdges());
     }
 
-    /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
+    /// @brief Sets the meshkernelapi::Mesh2D data
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetMesh2dApi(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
+    static void SetMesh2dApiData(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
     {
         mesh2d->ComputeEdgesCenters();
         for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
@@ -277,11 +277,11 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets a meshkernelapi::CurvilinearGrid instance from a meshkernel::CurvilinearGrid instance
+    /// @brief Sets the meshkernelapi::CurvilinearGrid data
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetCurvilinearGridApi(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
-                                      CurvilinearGrid& curvilinearGridApi)
+    static void SetCurvilinearGridApiData(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
+                                          CurvilinearGrid& curvilinearGridApi)
     {
         curvilinearGrid->ComputeEdgesCenters();
         for (auto n = 0; n < curvilinearGrid->GetNumNodes(); n++)
@@ -291,11 +291,11 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
+    /// @brief Sets a meshkernelapi::Mesh1D data
     /// @param[in]  mesh1d           The input meshkernel::Mesh1D instance
     /// @param[out] mesh1dApi        The output meshkernelapi::Mesh1D instance
-    static void SetMesh1dApi(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
-                             Mesh1D& mesh1dApi)
+    static void SetMesh1dApiData(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
+                                 Mesh1D& mesh1dApi)
     {
         for (auto n = 0; n < mesh1d->GetNumNodes(); n++)
         {

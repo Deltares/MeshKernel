@@ -321,7 +321,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            SetMesh2dApi(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            SetMesh2dApiData(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -361,7 +361,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            SetMesh1dApi(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
+            SetMesh1dApiData(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
@@ -400,7 +400,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_curvilinearGrid->SetFlatCopies();
-            SetCurvilinearGridApi(meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
+            SetCurvilinearGridApiData(meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
         }
         catch (...)
         {

@@ -675,7 +675,7 @@ void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadi
     }
 }
 
-void Mesh::SearchPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
