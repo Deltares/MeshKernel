@@ -2,6 +2,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
                ${CMAKE_BINARY_DIR}/version.rc @ONLY)
 
 configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/Deltares.MeshKernel.Native.nuspec.in
+  ${CMAKE_BINARY_DIR}/package/Deltares.MeshKernel.Native.nuspec @ONLY)
+
+configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/Deltares.MeshKernel.Devel.nuspec.in
   ${CMAKE_BINARY_DIR}/package/Deltares.MeshKernel.Devel.nuspec @ONLY)
 
