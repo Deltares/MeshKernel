@@ -29,4 +29,4 @@
 
 #include <vector>
 
-std::vector<meshkernel::Sample> ReadSampleFile(std::string filePath);
+std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);

@@ -95,8 +95,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh1d       The Mesh1D data
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
-                                           const Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_mesh1d_set(int meshKernelId, const Mesh1D& mesh1d);
 
         /// @brief Sets the meshkernel::Network1D state
         /// @param[in] meshKernelId The id of the mesh state
@@ -187,13 +186,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId, Mesh1D& mesh1d);
 
-        /// @brief Gets the number of contacts
+        /// @brief Gets the number of 1d-2d contacts
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
         MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts);
 
-        /// @brief Gets the contacts indices (from index / to indices)
+        /// @brief Gets the 1d-2d contacts indices (from index / to indices)
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
@@ -639,7 +638,7 @@ namespace meshkernelapi
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in] polygons     The points selecting the faces to connect.
         /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
-        /// @return                  Error code
+        /// @return Error code
         MKERNEL_API int mkernel_contacts_compute_boundary(int meshKernelId,
                                                           const int* oneDNodeMask,
                                                           const GeometryList& polygons,

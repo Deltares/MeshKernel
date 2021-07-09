@@ -1,5 +1,42 @@
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
+
+size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curvilinearGrid)
+{
+    size_t validNodes = 0;
+    size_t index = 0;
+    for (auto m = 0; m < curvilinearGrid.num_m; ++m)
+    {
+        for (auto n = 0; n < curvilinearGrid.num_n; ++n)
+        {
+            if (!meshkernel::IsEqual(curvilinearGrid.node_x[index], meshkernel::doubleMissingValue))
+            {
+                validNodes++;
+            }
+            index++;
+        }
+    }
+    return validNodes;
+}
+
+size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid)
+{
+    size_t validNodes = 0;
+    size_t index = 0;
+    for (auto m = 0; m < curvilinearGrid->m_numM; ++m)
+    {
+        for (auto n = 0; n < curvilinearGrid->m_numN; ++n)
+        {
+            if (curvilinearGrid->m_gridNodes[m][n].IsValid())
+            {
+                validNodes++;
+            }
+            index++;
+        }
+    }
+    return validNodes;
+}
 
 std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
 {

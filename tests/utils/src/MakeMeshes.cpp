@@ -5,10 +5,9 @@
 
 #include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
-#include <MeshKernel/Mesh2D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
-std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string filePath)
+std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string const& filePath)
 {
 
 #if _WIN32
@@ -100,38 +99,62 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     return {num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type};
 }
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string filePath, meshkernel::Projection projection)
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::MeshTypes meshType)
 {
     const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(filePath);
-
     std::vector<meshkernel::Edge> edges;
     std::vector<meshkernel::Point> nodes;
+    std::vector<int> nodeMapping;
     edges.reserve(num_edges);
     nodes.reserve(num_nodes);
+    nodeMapping.resize(num_nodes);
+
+    int nodeType = 0;
+    if (meshType == meshkernel::Mesh::MeshTypes::Mesh1D)
+    {
+        nodeType = 1;
+    }
+    if (meshType == meshkernel::Mesh::MeshTypes::Mesh2D)
+    {
+        nodeType = 2;
+    }
 
     for (auto i = 0; i < num_nodes; i++)
     {
         // If the node is not part of a 2 mesh, do not add it in nodes
-        if (node_type[i] == 2 || node_type[i] == 0)
+        if (node_type[i] == nodeType || node_type[i] == 0)
         {
             nodes.emplace_back(node_x.get()[i], node_y.get()[i]);
+            nodeMapping[i] = nodes.size() - 1;
         }
     }
 
     auto index = 0;
     for (auto i = 0; i < num_edges; i++)
     {
-        // If the edge is not part of a 2 mesh, do not add it in edges
-        if (edge_type.get()[i] == 2 || edge_type.get()[i] == 0)
+
+        auto const firstNode = edge_nodes.get()[index];
+        auto const secondNode = edge_nodes.get()[index + 1];
+        if ((node_type[firstNode] == nodeType || node_type[firstNode] == 0) && (node_type[secondNode] == nodeType || node_type[firstNode] == 0))
         {
-            auto const firstNode = index;
-            auto const secondNode = index + 1;
-            edges.emplace_back(edge_nodes.get()[firstNode], edge_nodes.get()[secondNode]);
+            edges.emplace_back(nodeMapping[firstNode], nodeMapping[secondNode]);
         }
         index = index + 2;
     }
 
+    return {nodes, edges};
+}
+
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string const& filePath, meshkernel::Projection projection)
+{
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh2D);
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
+}
+
+std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(std::string const& filePath, meshkernel::Projection projection)
+{
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh1D);
+    return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)

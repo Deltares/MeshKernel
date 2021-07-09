@@ -101,7 +101,7 @@ void TriangulationInterpolation::Compute()
         }
 
         // find the nearest triangle
-        samplesRtree.NearestNeighbors(m_locations[n]);
+        samplesRtree.NearestNeighbor(m_locations[n]);
         if (!samplesRtree.HasQueryResults())
         {
             continue;

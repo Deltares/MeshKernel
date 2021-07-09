@@ -302,7 +302,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
-            SetMesh2dDimensions(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            SetMesh2dApiDimensions(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -321,7 +321,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            SetMesh2d(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            SetMesh2dApiData(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -361,7 +361,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            SetMesh1d(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
+            SetMesh1dApiData(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
@@ -379,8 +379,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            curvilinearGrid.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->GetNumNodes());
-            curvilinearGrid.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->GetNumEdges());
+            curvilinearGrid.num_n = meshKernelState[meshKernelId].m_curvilinearGrid->m_numN;
+            curvilinearGrid.num_m = meshKernelState[meshKernelId].m_curvilinearGrid->m_numM;
         }
         catch (...)
         {
@@ -400,7 +400,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_curvilinearGrid->SetFlatCopies();
-            SetCurvilinear(meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
+            SetCurvilinearGridApiData(meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
         }
         catch (...)
         {

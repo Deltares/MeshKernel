@@ -76,16 +76,12 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (size_t n = 0; n < m_gridNodes[0].size(); n++)
         {
-            if (m_gridNodes[m][n].IsValid())
-            {
-                nodes[ind] = m_gridNodes[m][n];
-                nodeIndices[m][n] = ind;
-                gridIndices[ind] = {m, n};
-                ind++;
-            }
+            nodes[ind] = m_gridNodes[m][n];
+            nodeIndices[m][n] = ind;
+            gridIndices[ind] = {m, n};
+            ind++;
         }
     }
-    nodes.resize(ind);
 
     ind = 0;
     for (auto m = 0; m < m_gridNodes.size() - 1; m++)
@@ -142,7 +138,7 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    SearchNearestNeighbors(point, MeshLocations::Nodes);
+    SearchNearestNeighbor(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
     {
         return {sizetMissingValue, sizetMissingValue};
@@ -154,7 +150,7 @@ CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
-    SearchNearestNeighbors(point, MeshLocations::Edges);
+    SearchNearestNeighbor(point, MeshLocations::Edges);
     if (GetNumNearestNeighbors(MeshLocations::Edges) == 0)
     {
         return {{}, {}};

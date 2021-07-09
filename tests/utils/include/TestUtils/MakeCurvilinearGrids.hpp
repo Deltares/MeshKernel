@@ -29,6 +29,17 @@
 #include <memory>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernelApi/CurvilinearGrid.hpp>
+
+/// @brief Counts the number of valid nodes in a meshkernelapi::CurvilinearGrid instance
+/// @param curvilinearGrid The input curvilinear grid
+/// @return The number of valid nodes
+size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curvilinearGrid);
+
+/// @brief Counts the number of valid nodes in a meshkernel::CurvilinearGrid instance
+/// @param The input curvilinear grid
+/// @return The number of valid nodes
+size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid);
 
 /// @brief Makes a small, real world curvi grid
 /// See tests/CurvilinearGrids/Orthogonalization/small_curvi_grid.png for a plot of the grid

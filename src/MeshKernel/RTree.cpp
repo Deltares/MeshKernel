@@ -50,7 +50,7 @@ void RTree::PointsWithinSearchRadius(Point node, double searchRadiusSquared)
     }
 }
 
-void RTree::NearestNeighbors(Point node)
+void RTree::NearestNeighbor(Point node)
 {
 
     m_queryCache.reserve(m_queryVectorCapacity);

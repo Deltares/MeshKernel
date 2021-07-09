@@ -55,7 +55,7 @@ namespace meshkernel
     /// RTree is a class wrapping the boost::geometry::index::rtree code,
     /// adding an interface for performing common queries
     /// such as inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::PointsWithinSearchRadius`)
-    /// or a vector of the nearest neighbors (`meshkernel::RTree::NearestNeighbors`).
+    /// or a vector of the nearest neighbors (`meshkernel::RTree::NearestNeighbor`).
     /// RTee has a `m_queryCache`, a vector used for collecting all query results
     /// and avoid frequent re-allocations when the number of results changes.
     class RTree
@@ -102,7 +102,7 @@ namespace meshkernel
 
         /// @brief Gets the nearest of all nodes
         /// @param[in] node The node
-        void NearestNeighbors(Point node);
+        void NearestNeighbor(Point node);
 
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
