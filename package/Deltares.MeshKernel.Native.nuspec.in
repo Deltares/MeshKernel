@@ -12,6 +12,6 @@
     <files>
         <file src="winX64\*" target="runtimes/win-x64/native/" />
         <file src="linuxX64\*" target="runtimes/linux-x64/native/" />
-        <file src="Deltares.MeshKernel.native.targets" target="build\netstandard2.0\Deltares.MeshKernel.targets" />
+        <file src="Deltares.MeshKernel.Native.targets" target="build\netstandard2.0\Deltares.MeshKernel.targets" />
     </files>
 </package>
