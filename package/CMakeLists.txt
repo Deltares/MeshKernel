@@ -15,3 +15,6 @@ configure_file(
 
 configure_file(Deltares.MeshKernel.targets
                ${CMAKE_BINARY_DIR}/package/Deltares.MeshKernel.targets COPYONLY)
+
+configure_file(Deltares.MeshKernel.native.targets
+               ${CMAKE_BINARY_DIR}/package/Deltares.MeshKernel.native.targets COPYONLY)
