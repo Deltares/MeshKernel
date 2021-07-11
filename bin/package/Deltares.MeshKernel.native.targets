@@ -4,6 +4,7 @@
     <ItemGroup>
       <_FilesToCopyMeshKernelLibs Include="$(MSBuildThisFileDirectory)..\..\runtimes\**\*"/>      
     </ItemGroup>
+    
     <Copy SourceFiles="@(_FilesToCopyMeshKernelLibs)" DestinationFolder="$(OutDir)\%(RecursiveDir)" SkipUnchangedFiles="true"/>    
   </Target>
   
