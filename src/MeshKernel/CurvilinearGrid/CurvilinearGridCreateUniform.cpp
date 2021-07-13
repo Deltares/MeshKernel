@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
