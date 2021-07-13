@@ -104,8 +104,7 @@ void CurvilinearGridSmoothing::SolveDirectional()
         }
     }
 
-    auto isInvalidValidNode = [this](auto const& m, auto const& n)
-    {
+    auto isInvalidValidNode = [this](auto const& m, auto const& n) {
         if (m_lines[0].IsMGridLine())
         {
             return m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::InternalValid &&
