@@ -1210,7 +1210,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
 
     meshkernelapi::GeometryList geometryListOut;
     int const numberOfPointsBetweenNodes = 3;
-    size_t totalNumPoints = (numberOfPointsBetweenNodes + 2) * 2;
+    size_t totalNumPoints = (numberOfPointsBetweenNodes + 1) * 2 + 1;
     std::unique_ptr<double> const CoordinatesOutX(new double[totalNumPoints]);
     std::unique_ptr<double> const CoordinatesOutY(new double[totalNumPoints]);
     std::unique_ptr<double> const valuesOut(new double[totalNumPoints]);
@@ -1228,11 +1228,11 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     ASSERT_EQ(totalNumPoints, geometryListOut.num_coordinates);
 
     std::vector<double> computedCoordinatesX(CoordinatesOutX.get(), CoordinatesOutX.get() + totalNumPoints);
-    std::vector<double> ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, meshkernel::doubleMissingValue};
+    std::vector<double> ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0};
     ASSERT_THAT(computedCoordinatesX, ::testing::ContainerEq(ValidCoordinatesX));
 
     std::vector<double> computedCoordinatesY(CoordinatesOutY.get(), CoordinatesOutY.get() + totalNumPoints);
-    std::vector<double> ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000, meshkernel::doubleMissingValue};
+    std::vector<double> ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000};
     ASSERT_THAT(computedCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 }
 
@@ -2149,7 +2149,7 @@ TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     ASSERT_EQ(mesh2d.node_y[0], -0.5);
 }
 
-TEST_F(ApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnErrorCode)
+TEST_F(ApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorCode)
 {
     // Prepare
     MakeMesh();
@@ -2158,7 +2158,7 @@ TEST_F(ApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnErrorCode)
     // Execute
     const auto errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshKernelId, -0.5, -0.5, -1);
 
-    // Assert error code is not equal to MeshKernelApiErrors::Success
+    // Assert errorCode is not equal to MeshKernelApiErrors::Success
     ASSERT_NE(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 }
 
