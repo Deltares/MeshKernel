@@ -2149,6 +2149,19 @@ TEST_F(ApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     ASSERT_EQ(mesh2d.node_y[0], -0.5);
 }
 
+TEST_F(ApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnErrorCode)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    const auto errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshKernelId, -0.5, -0.5, -1);
+
+    // Assert error code is not equal to MeshKernelApiErrors::Success
+    ASSERT_NE(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+
 TEST_F(ApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
 {
     // Prepare
