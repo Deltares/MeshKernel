@@ -26,9 +26,9 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <stddef.h>
 
 #include <MeshKernel/Constants.hpp>
-#include <stddef.h>
 
 namespace meshkernel
 {

@@ -27,9 +27,10 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
-#include <stddef.h>
 
 namespace meshkernel
 {
