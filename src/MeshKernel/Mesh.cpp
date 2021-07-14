@@ -509,7 +509,12 @@ size_t Mesh::FindEdgeCloseToAPoint(Point point)
 
 void Mesh::MoveNode(Point newPoint, size_t nodeindex)
 {
-    const Point nodeToMove = m_nodes[nodeindex];
+    if (nodeindex >= m_nodes.size())
+    {
+        throw std::invalid_argument("Mesh::MoveNode: node index out of m_nodes range");
+    }
+
+    const Point nodeToMove = m_nodes.at(nodeindex);
 
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
