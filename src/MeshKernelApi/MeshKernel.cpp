@@ -819,10 +819,13 @@ namespace meshkernelapi
                 geometryListOut.values[index] = meshkernel::doubleMissingValue;
                 index++;
 
-                geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
-                geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
-                geometryListOut.values[index] = meshkernel::doubleMissingValue;
-                index++;
+                if (s != numSplines - 1)
+                {
+                    geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
+                    geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
+                    geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                    index++;
+                }
             }
         }
         catch (...)
