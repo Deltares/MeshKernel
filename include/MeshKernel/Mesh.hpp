@@ -241,32 +241,32 @@ namespace meshkernel
         /// @brief Search all points sorted by proximity to another point.
         /// @param[in] point The reference point.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestNeighbor(Point point, MeshLocations meshLocation);
+        void SearchNearestLocation(Point point, MeshLocations meshLocation);
 
         /// @brief Search the nearest point within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation);
+        void SearchNearestLocation(Point point, double squaredRadius, MeshLocations meshLocation);
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation);
+        void SearchLocations(Point point, double squaredRadius, MeshLocations meshLocation);
 
         /// @brief Gets the search results.
-        /// To be used after \ref SearchNearestPointsWithinSquaredRadius or \ref SearchNearestPointWithinSquaredRadius.
+        /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        size_t GetNumNearestNeighbors(MeshLocations meshLocation) const;
+        size_t GetNumLocations(MeshLocations meshLocation) const;
 
-        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbor or SearchNearestPointWithinSquaredRadius.
+        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
+        [[nodiscard]] size_t GetLocationsIndices(size_t index, MeshLocations meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///

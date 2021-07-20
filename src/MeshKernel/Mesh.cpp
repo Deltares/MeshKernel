@@ -438,11 +438,11 @@ size_t Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    SearchNearestPointWithinSquaredRadius(point, searchRadius * searchRadius, MeshLocations::Nodes);
+    SearchNearestLocation(point, searchRadius * searchRadius, MeshLocations::Nodes);
 
-    if (GetNumNearestNeighbors(MeshLocations::Nodes) > 0)
+    if (GetNumLocations(MeshLocations::Nodes) > 0)
     {
-        return GetNearestNeighborIndex(0, MeshLocations::Nodes);
+        return GetLocationsIndices(0, MeshLocations::Nodes);
     }
 
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
@@ -497,11 +497,11 @@ size_t Mesh::FindEdgeCloseToAPoint(Point point)
         throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
 
-    SearchNearestNeighbor(point, MeshLocations::Edges);
+    SearchNearestLocation(point, MeshLocations::Edges);
 
-    if (GetNumNearestNeighbors(MeshLocations::Edges) >= 1)
+    if (GetNumLocations(MeshLocations::Edges) >= 1)
     {
-        return GetNearestNeighborIndex(0, MeshLocations::Edges);
+        return GetLocationsIndices(0, MeshLocations::Edges);
     }
 
     throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
@@ -509,11 +509,6 @@ size_t Mesh::FindEdgeCloseToAPoint(Point point)
 
 void Mesh::MoveNode(Point newPoint, size_t nodeindex)
 {
-    if (nodeindex >= m_nodes.size())
-    {
-        throw std::invalid_argument("Mesh::MoveNode: node index out of m_nodes range");
-    }
-
     const Point nodeToMove = m_nodes.at(nodeindex);
 
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
@@ -538,6 +533,7 @@ void Mesh::MoveNode(Point newPoint, size_t nodeindex)
 
 bool Mesh::IsFaceOnBoundary(size_t face) const
 {
+
     bool isFaceOnBoundary = false;
 
     for (auto e = 0; e < GetNumFaceEdges(face); ++e)
@@ -642,7 +638,7 @@ void Mesh::BuildTree(MeshLocations meshLocation)
     }
 }
 
-void Mesh::SearchNearestNeighbor(Point point, MeshLocations meshLocation)
+void Mesh::SearchNearestLocation(Point point, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
@@ -661,7 +657,7 @@ void Mesh::SearchNearestNeighbor(Point point, MeshLocations meshLocation)
     }
 }
 
-void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestLocation(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
@@ -680,26 +676,26 @@ void Mesh::SearchNearestPointWithinSquaredRadius(Point point, double squaredRadi
     }
 }
 
-void Mesh::SearchNearestPointsWithinSquaredRadius(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchLocations(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_nodesRTree.PointsWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_edgesRTree.PointsWithinSearchRadius(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_facesRTree.PointsWithinSearchRadius(point, squaredRadius);
     }
 }
 
-size_t Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) const
+size_t Mesh::GetNumLocations(MeshLocations meshLocation) const
 {
     if (meshLocation == MeshLocations::Nodes)
     {
@@ -719,7 +715,7 @@ size_t Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) const
     return sizetMissingValue;
 }
 
-size_t Mesh::GetNearestNeighborIndex(size_t index, MeshLocations meshLocation)
+size_t Mesh::GetLocationsIndices(size_t index, MeshLocations meshLocation)
 {
     if (meshLocation == MeshLocations::Nodes)
     {

@@ -187,13 +187,13 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto maxEdgeLength = m_mesh1d->ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
-        m_mesh2d->SearchNearestPointsWithinSquaredRadius(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
+        m_mesh2d->SearchLocations(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
 
         // for each face determine if it is crossing the current 1d edge
-        const auto numNeighbours = m_mesh2d->GetNumNearestNeighbors(MeshLocations::Faces);
+        const auto numNeighbours = m_mesh2d->GetNumLocations(MeshLocations::Faces);
         for (auto f = 0; f < numNeighbours; ++f)
         {
-            const auto face = m_mesh2d->GetNearestNeighborIndex(f, MeshLocations::Faces);
+            const auto face = m_mesh2d->GetLocationsIndices(f, MeshLocations::Faces);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -347,16 +347,16 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         }
 
         // get the closest 1d node
-        m_mesh1d->SearchNearestNeighbor(points[i], MeshLocations::Nodes);
+        m_mesh1d->SearchNearestLocation(points[i], MeshLocations::Nodes);
 
         // if nothing found continue
-        if (m_mesh1d->GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
+        if (m_mesh1d->GetNumLocations(MeshLocations::Nodes) == 0)
         {
             continue;
         }
 
         // form the 1d-2d contact
-        m_mesh1dIndices.emplace_back(m_mesh1d->GetNearestNeighborIndex(0, MeshLocations::Nodes));
+        m_mesh1dIndices.emplace_back(m_mesh1d->GetLocationsIndices(0, MeshLocations::Nodes));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
 };
