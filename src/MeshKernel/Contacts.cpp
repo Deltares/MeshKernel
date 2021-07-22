@@ -403,7 +403,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
         }
 
         // compute the nearest 2d face indices
-        faceCircumcentersRTree.PointsWithinSearchRadius(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
+        faceCircumcentersRTree.SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
 
         //// for each face determine if it is crossing the current 1d edge
         //auto numResults = faceCircumcentersRTree.GetQueryResultSize();

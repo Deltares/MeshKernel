@@ -281,7 +281,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
     for (auto i = 0; i < filteredNodes.size(); ++i)
     {
-        nodesRtree.PointsWithinSearchRadius(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree.SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)
@@ -462,7 +462,7 @@ size_t Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNod
         m_nodesRTreeRequiresUpdate = false;
     }
 
-    m_nodesRTree.NearestNeighbor(point);
+    m_nodesRTree.SearchNearestPoint(point);
     const auto resultSize = m_nodesRTree.GetQueryResultSize();
 
     // no results found
@@ -643,17 +643,17 @@ void Mesh::SearchNearestLocation(Point point, MeshLocations meshLocation)
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighbor(point);
+        m_nodesRTree.SearchNearestPoint(point);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighbor(point);
+        m_edgesRTree.SearchNearestPoint(point);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighbor(point);
+        m_facesRTree.SearchNearestPoint(point);
     }
 }
 
@@ -662,17 +662,17 @@ void Mesh::SearchNearestLocation(Point point, double squaredRadius, MeshLocation
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_nodesRTree.SearchNearestPoint(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_edgesRTree.SearchNearestPoint(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.NearestNeighborWithinSearchRadius(point, squaredRadius);
+        m_facesRTree.SearchNearestPoint(point, squaredRadius);
     }
 }
 
@@ -681,17 +681,17 @@ void Mesh::SearchLocations(Point point, double squaredRadius, MeshLocations mesh
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
     {
-        m_nodesRTree.PointsWithinSearchRadius(point, squaredRadius);
+        m_nodesRTree.SearchPoints(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        m_edgesRTree.PointsWithinSearchRadius(point, squaredRadius);
+        m_edgesRTree.SearchPoints(point, squaredRadius);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        m_facesRTree.PointsWithinSearchRadius(point, squaredRadius);
+        m_facesRTree.SearchPoints(point, squaredRadius);
     }
 }
 

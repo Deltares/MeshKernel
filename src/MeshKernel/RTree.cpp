@@ -29,7 +29,7 @@
 
 using meshkernel::RTree;
 
-void RTree::PointsWithinSearchRadius(Point node, double searchRadiusSquared)
+void RTree::SearchPoints(Point node, double searchRadiusSquared)
 {
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
@@ -50,7 +50,7 @@ void RTree::PointsWithinSearchRadius(Point node, double searchRadiusSquared)
     }
 }
 
-void RTree::NearestNeighbor(Point node)
+void RTree::SearchNearestPoint(Point node)
 {
 
     m_queryCache.reserve(m_queryVectorCapacity);
@@ -65,7 +65,7 @@ void RTree::NearestNeighbor(Point node)
     }
 }
 
-void RTree::NearestNeighborWithinSearchRadius(Point node, double searchRadiusSquared)
+void RTree::SearchNearestPoint(Point node, double searchRadiusSquared)
 {
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
