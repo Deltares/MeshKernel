@@ -54,12 +54,17 @@ namespace meshkernelapi
         {
             return result;
         }
-
-        result.resize(geometryListIn.numberOfCoordinates);
-
-        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        result.reserve(geometryListIn.numberOfCoordinates);
+        result.emplace_back(geometryListIn.xCoordinates[0], geometryListIn.yCoordinates[0]);
+        // remove consecutive duplicated point leading to 0 length edges
+        for (auto i = 1; i < geometryListIn.numberOfCoordinates; ++i)
         {
-            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
+            if (meshkernel::IsEqual(geometryListIn.xCoordinates[i], geometryListIn.xCoordinates[i - 1]) &&
+                meshkernel::IsEqual(geometryListIn.yCoordinates[i], geometryListIn.yCoordinates[i - 1]))
+            {
+                continue;
+            }
+            result.emplace_back(geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]);
         }
         return result;
     }
