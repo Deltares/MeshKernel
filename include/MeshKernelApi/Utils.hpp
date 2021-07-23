@@ -59,8 +59,8 @@ namespace meshkernelapi
         // remove consecutive duplicated point leading to 0 length edges
         for (auto i = 1; i < geometryListIn.numberOfCoordinates; ++i)
         {
-            if (meshkernel::IsEqual(geometryListIn.xCoordinates[i], geometryListIn.xCoordinates[i - 1]) &&
-                meshkernel::IsEqual(geometryListIn.yCoordinates[i], geometryListIn.yCoordinates[i - 1]))
+            if (meshkernel::IsEqual(geometryListIn.xCoordinates[i], result.back().x) &&
+                meshkernel::IsEqual(geometryListIn.yCoordinates[i], result.back().y))
             {
                 continue;
             }
