@@ -51,9 +51,20 @@ namespace meshkernelapi
     static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
     {
         std::vector<meshkernel::Point> result;
-        result.reserve(geometryListIn.num_coordinates);
-        for (auto i = 0; i < geometryListIn.num_coordinates; ++i)
+        if (geometryListIn.num_coordinates == 0)
         {
+            return result;
+        }
+        result.reserve(geometryListIn.num_coordinates);
+        result.emplace_back(geometryListIn.coordinates_x[0], geometryListIn.coordinates_y[0]);
+        // remove consecutive duplicated point leading to 0 length edges
+        for (auto i = 1; i < geometryListIn.num_coordinates; ++i)
+        {
+            if (meshkernel::IsEqual(geometryListIn.coordinates_x[i], geometryListIn.coordinates_x[i - 1]) &&
+                meshkernel::IsEqual(geometryListIn.coordinates_y[i], geometryListIn.coordinates_y[i - 1]))
+            {
+                continue;
+            }
             result.emplace_back(geometryListIn.coordinates_x[i], geometryListIn.coordinates_y[i]);
         }
         return result;
