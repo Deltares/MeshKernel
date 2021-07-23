@@ -75,17 +75,16 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[3][1]);
 }
 
-TEST(Mesh, MakeMeshInPolygon)
+TEST(Mesh, MakeMeshInPolygonInRectangle)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({302.002502, 472.130371});
-    nodes.push_back({144.501526, 253.128174});
-    nodes.push_back({368.752930, 112.876755});
-    nodes.push_back({707.755005, 358.879242});
-    nodes.push_back({301.252502, 471.380371});
-    nodes.push_back({302.002502, 472.130371});
+    nodes.emplace_back(0.5, 2.5);
+    nodes.emplace_back(2.5, 0.5);
+    nodes.emplace_back(5.5, 3.0);
+    nodes.emplace_back(3.5, 5.0);
+    nodes.emplace_back(0.5, 2.5);
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
@@ -98,13 +97,13 @@ TEST(Mesh, MakeMeshInPolygon)
     MakeMeshParameters.OriginZCoordinate = 0.0;
     MakeMeshParameters.NumberOfColumns = 3;
     MakeMeshParameters.NumberOfRows = 3;
-    MakeMeshParameters.XGridBlockSize = 100.0;
-    MakeMeshParameters.YGridBlockSize = 100.0;
+    MakeMeshParameters.XGridBlockSize = 1.0;
+    MakeMeshParameters.YGridBlockSize = 1.0;
 
     // 2 Execution
     mesh.MakeMesh(MakeMeshParameters, polygons);
-    ASSERT_EQ(43, mesh.GetNumEdges());
-    ASSERT_EQ(27, mesh.GetNumNodes());
+    ASSERT_EQ(13, mesh.GetNumEdges());
+    ASSERT_EQ(10, mesh.GetNumNodes());
 }
 
 TEST(Mesh, MakeMeshInPolygonSpherical)

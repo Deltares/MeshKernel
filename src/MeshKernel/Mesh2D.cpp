@@ -782,8 +782,8 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
         if (!polygons.IsEmpty())
         {
             std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
-            std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, false));
-            // mark points inside a polygon
+            std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
+            // Mark points inside a polygon
             for (auto n = 0; n < numN; ++n)
             {
                 for (auto m = 0; m < numM; ++m)
@@ -796,19 +796,23 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
                 }
             }
 
-            // mark faces when at least one node is inside
+            // Mark faces when all nodes are inside
             for (auto n = 0; n < numN - 1; ++n)
             {
                 for (auto m = 0; m < numM - 1; ++m)
                 {
-                    if (nodeBasedMask[n][m] || nodeBasedMask[n + 1][m] || nodeBasedMask[n][m + 1] || nodeBasedMask[n + 1][m + 1])
+                    if (!nodeBasedMask[n][m] ||
+                        !nodeBasedMask[n + 1][m] ||
+                        !nodeBasedMask[n][m + 1] ||
+                        !nodeBasedMask[n + 1][m + 1])
                     {
-                        faceBasedMask[n][m] = true;
+                        faceBasedMask[n][m] = false;
                     }
                 }
             }
 
-            //mark nodes that are member of a cell inside the polygon(s)
+            // Mark only the nodes of faces completely included in the polygon
+            std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
             for (auto n = 0; n < numN - 1; ++n)
             {
                 for (auto m = 0; m < numM - 1; ++m)
