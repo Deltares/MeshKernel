@@ -7,15 +7,14 @@
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
-TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
+TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
 {
     // Setup
-    std::vector<meshkernel::Point> polygonNodes{{302.002502, 472.130371},
-                                                {144.501526, 253.128174},
-                                                {368.752930, 112.876755},
-                                                {707.755005, 358.879242},
-                                                {301.252502, 471.380371},
-                                                {302.002502, 472.130371}};
+    std::vector<meshkernel::Point> polygonNodes{{0.5, 2.5},
+                                                {2.5, 0.5},
+                                                {5.5, 3.0},
+                                                {3.5, 5.0},
+                                                {0.5, 2.5}};
 
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::cartesian);
 
@@ -26,8 +25,8 @@ TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
     makeMeshParameters.origin_y = 0.0;
     makeMeshParameters.num_columns = 3;
     makeMeshParameters.num_rows = 3;
-    makeMeshParameters.block_size_x = 100.0;
-    makeMeshParameters.block_size_y = 100.0;
+    makeMeshParameters.block_size_x = 1.0;
+    makeMeshParameters.block_size_y = 1.0;
 
     // Execution
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
@@ -35,7 +34,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
 
     // Assert, also invalid nodes and adges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
-    ASSERT_EQ(27, numValidNodes);
+    ASSERT_EQ(10, numValidNodes);
 }
 
 TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)

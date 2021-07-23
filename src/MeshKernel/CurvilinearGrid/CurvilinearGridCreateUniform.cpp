@@ -125,7 +125,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
     if (!m_polygons->IsEmpty())
     {
         std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
-        std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, false));
+        std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
         // mark points inside a polygon
         for (auto n = 0; n < numN; ++n)
         {
@@ -144,14 +144,18 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
         {
             for (auto m = 0; m < numM - 1; ++m)
             {
-                if (nodeBasedMask[n][m] || nodeBasedMask[n + 1][m] || nodeBasedMask[n][m + 1] || nodeBasedMask[n + 1][m + 1])
+                if (!nodeBasedMask[n][m] ||
+                    !nodeBasedMask[n + 1][m] ||
+                    !nodeBasedMask[n][m + 1] ||
+                    !nodeBasedMask[n + 1][m + 1])
                 {
-                    faceBasedMask[n][m] = true;
+                    faceBasedMask[n][m] = false;
                 }
             }
         }
 
         //mark nodes that are member of a cell inside the polygon(s)
+        std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
         for (auto n = 0; n < numN - 1; ++n)
         {
             for (auto m = 0; m < numM - 1; ++m)
