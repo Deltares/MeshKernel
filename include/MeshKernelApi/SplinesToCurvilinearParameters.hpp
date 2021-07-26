@@ -59,7 +59,7 @@ namespace meshkernelapi
         /// @brief Check for collisions with other parts of the front, 1 or not 0 (0)
         int check_front_collisions;
 
-        /// @brief Remove skinny triangles (1)
+        /// @brief Check for collisions with other parts of the front (1)
         int remove_skinny_triangles;
     };
 } // namespace meshkernelapi

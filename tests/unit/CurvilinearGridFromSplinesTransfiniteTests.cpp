@@ -18,7 +18,6 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
     std::vector<meshkernel::Point> secondSpline{{2.894012E+01, 2.010146E+02},
                                                 {2.344944E+02, 3.720490E+02},
                                                 {6.424647E+02, 5.917262E+02}};
-
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     std::vector<meshkernel::Point> thirdSpline{{2.265137E+00, 2.802553E+02},
