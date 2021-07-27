@@ -105,9 +105,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a18b31cd6a49f8212bba9184547e36369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">OffsetCopy</a> (double distance, bool innerAndOuter) const</td></tr>
 <tr class="memdesc:a18b31cd6a49f8212bba9184547e36369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">More...</a><br /></td></tr>
 <tr class="separator:a18b31cd6a49f8212bba9184547e36369"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fea051e182c020f979000d139dcb1e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7">IsPointInPolygon</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, size_t polygonIndex) const</td></tr>
-<tr class="memdesc:a3fea051e182c020f979000d139dcb1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon.  <a href="classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7">More...</a><br /></td></tr>
-<tr class="separator:a3fea051e182c020f979000d139dcb1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5787ec3256354c08ac7bba46455b8d2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a5787ec3256354c08ac7bba46455b8d2e">IsPointInPolygon</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;point, size_t polygonIndex) const</td></tr>
+<tr class="memdesc:a5787ec3256354c08ac7bba46455b8d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon. When the polygon is empty, the point is always included by default.  <a href="classmeshkernel_1_1_polygons.html#a5787ec3256354c08ac7bba46455b8d2e">More...</a><br /></td></tr>
+<tr class="separator:a5787ec3256354c08ac7bba46455b8d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a774d8a9861fcfde9c2fb371cb380a6e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a774d8a9861fcfde9c2fb371cb380a6e2">IsPointInPolygons</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;point) const</td></tr>
+<tr class="memdesc:a774d8a9861fcfde9c2fb371cb380a6e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a any of the polygon. When no polygon is present, the point is always included by default.  <a href="classmeshkernel_1_1_polygons.html#a774d8a9861fcfde9c2fb371cb380a6e2">More...</a><br /></td></tr>
+<tr class="separator:a774d8a9861fcfde9c2fb371cb380a6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a895a057cfebfc90ddb05cc5e3654502f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a895a057cfebfc90ddb05cc5e3654502f">PolygonIndex</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point) const</td></tr>
 <tr class="memdesc:a895a057cfebfc90ddb05cc5e3654502f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)  <a href="classmeshkernel_1_1_polygons.html#a895a057cfebfc90ddb05cc5e3654502f">More...</a><br /></td></tr>
 <tr class="separator:a895a057cfebfc90ddb05cc5e3654502f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -268,8 +271,8 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
 
 </div>
 </div>
-<a id="a3fea051e182c020f979000d139dcb1e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fea051e182c020f979000d139dcb1e7">&#9670;&nbsp;</a></span>IsPointInPolygon()</h2>
+<a id="a5787ec3256354c08ac7bba46455b8d2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5787ec3256354c08ac7bba46455b8d2e">&#9670;&nbsp;</a></span>IsPointInPolygon()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -277,7 +280,7 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
         <tr>
           <td class="memname">bool meshkernel::Polygons::IsPointInPolygon </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
           <td class="paramname"><em>point</em>, </td>
         </tr>
         <tr>
@@ -294,11 +297,38 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
       </table>
 </div><div class="memdoc">
 
-<p>Checks if a point is included in a given polygon. </p>
+<p>Checks if a point is included in a given polygon. When the polygon is empty, the point is always included by default. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point to check </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndex</td><td>The index of the polygon to account for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if it is included, false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a774d8a9861fcfde9c2fb371cb380a6e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a774d8a9861fcfde9c2fb371cb380a6e2">&#9670;&nbsp;</a></span>IsPointInPolygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::Polygons::IsPointInPolygons </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if a point is included in a any of the polygon. When no polygon is present, the point is always included by default. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point to check </td></tr>
   </table>
   </dd>
 </dl>

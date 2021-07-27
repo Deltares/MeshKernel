@@ -16,10 +16,11 @@ var searchData=
   ['isfullfacenotinpolygon_163',['IsFullFaceNotInPolygon',['../classmeshkernel_1_1_mesh2_d.html#aa61a329e63eeaf3b5e8b8e3f1a2e9b2c',1,'meshkernel::Mesh2D']]],
   ['isleft_164',['IsLeft',['../namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9',1,'meshkernel']]],
   ['isnodeonboundary_165',['IsNodeOnBoundary',['../classmeshkernel_1_1_mesh.html#a4954d57baf24b3792520bcb81b0d733a',1,'meshkernel::Mesh::IsNodeOnBoundary()'],['../classmeshkernel_1_1_mesh1_d.html#a65167bd7e5182e49b4f246166003672c',1,'meshkernel::Mesh1D::IsNodeOnBoundary()']]],
-  ['ispointinpolygon_166',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7',1,'meshkernel::Polygons']]],
+  ['ispointinpolygon_166',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a5787ec3256354c08ac7bba46455b8d2e',1,'meshkernel::Polygons']]],
   ['ispointinpolygonnodes_167',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29',1,'meshkernel']]],
-  ['ispointonpole_168',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
-  ['issegmentcrossingaboundaryedge_169',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
-  ['isvalid_170',['IsValid',['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
-  ['isvalueinboundingbox_171',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]]
+  ['ispointinpolygons_168',['IsPointInPolygons',['../classmeshkernel_1_1_polygons.html#a774d8a9861fcfde9c2fb371cb380a6e2',1,'meshkernel::Polygons']]],
+  ['ispointonpole_169',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
+  ['issegmentcrossingaboundaryedge_170',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
+  ['isvalid_171',['IsValid',['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
+  ['isvalueinboundingbox_172',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]]
 ];
