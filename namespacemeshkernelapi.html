@@ -333,7 +333,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a96a116ed7b36b018f8f2e3de5438bb97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#a96a116ed7b36b018f8f2e3de5438bb97">More...</a><br /></td></tr>
 <tr class="separator:a96a116ed7b36b018f8f2e3de5438bb97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae19676a79379e829dba95a9ad1d32088"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae19676a79379e829dba95a9ad1d32088">mkernel_curvilinear_compute_orthogonal_grid_from_splines</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
-<tr class="memdesc:ae19676a79379e829dba95a9ad1d32088"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes curvilinear grid from splines with an advancing front.  <a href="namespacemeshkernelapi.html#ae19676a79379e829dba95a9ad1d32088">More...</a><br /></td></tr>
+<tr class="memdesc:ae19676a79379e829dba95a9ad1d32088"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with the advancing front method.  <a href="namespacemeshkernelapi.html#ae19676a79379e829dba95a9ad1d32088">More...</a><br /></td></tr>
 <tr class="separator:ae19676a79379e829dba95a9ad1d32088"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfbec40fb77df31b24fb10fa7852d663"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#adfbec40fb77df31b24fb10fa7852d663">mkernel_curvilinear_initialize_orthogonal_grid_from_splines</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
 <tr class="memdesc:adfbec40fb77df31b24fb10fa7852d663"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)  <a href="namespacemeshkernelapi.html#adfbec40fb77df31b24fb10fa7852d663">More...</a><br /></td></tr>
@@ -812,7 +812,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Makes curvilinear grid from splines with an advancing front. </p>
+<p>Generates curvilinear grid from splines with the advancing front method. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -928,7 +928,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">splines</td><td>The splines </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">splines</td><td>The splines to use for curvilinear grid generation </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">curvilinearParameters</td><td>The curvilinear parameters </td></tr>
   </table>
   </dd>
