@@ -2480,6 +2480,8 @@ namespace meshkernelapi
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
         }
         catch (...)
         {

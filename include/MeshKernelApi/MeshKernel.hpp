@@ -678,7 +678,7 @@ namespace meshkernelapi
 
         /// @brief Generates curvilinear grid from splines with transfinite interpolation
         /// @param[in] meshKernelId          The id of the mesh state
-        /// @param[in] splines               The splines
+        /// @param[in] splines               The splines to use for curvilinear grid generation
         /// @param[in] curvilinearParameters The curvilinear parameters
         /// @returns                         Error code
         MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
@@ -713,7 +713,7 @@ namespace meshkernelapi
                                                                               int secondNode,
                                                                               int thirdNode);
 
-        /// @brief Makes curvilinear grid from splines with an advancing front.
+        /// @brief Generates curvilinear grid from splines with the advancing front method.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners
         /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
