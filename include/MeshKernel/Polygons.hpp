@@ -73,7 +73,6 @@ namespace meshkernel
         /// @brief Checks if a point is included in a any of the polygon.
         /// When no polygon is present, the point is always included by default
         /// @param[in] point The point to check
-        /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
         bool IsPointInPolygons(Point const& point) const;
 
