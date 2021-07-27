@@ -130,11 +130,11 @@ namespace meshkernel
         /// @param[in] polygons The polygon to account for
         void MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons);
 
-        /// @brief Masks the edges of all faces included in a polygon
+        /// @brief Masks the edges of all faces included in all polygons
         /// @param polygons The selection polygon
         /// @param invertSelection Invert selection
         /// @param includeIntersected Included the edges intersected by the polygon
-        void MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected);
+        void MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected);
 
         /// @brief From the masked edges compute the masked nodes
         void ComputeNodeMaskFromEdgeMask();

@@ -79,7 +79,7 @@ void meshkernel::MeshRefinement::Compute()
     const auto isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
     if (!isRefinementBasedOnSamples && m_interpolationParameters.RefineIntersected == 1)
     {
-        m_mesh->MaskFaceEdgesInPolygon(m_polygons, false, true);
+        m_mesh->MaskFaceEdgesInPolygons(m_polygons, false, true);
         m_mesh->ComputeNodeMaskFromEdgeMask();
     }
     else
