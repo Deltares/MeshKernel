@@ -51,6 +51,9 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
 
 void CurvilinearGrid::SetFlatCopies()
 {
+    if (m_gridNodes.empty())
+        return;
+
     m_numM = m_gridNodes.size();
     m_numN = m_gridNodes[0].size();
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
