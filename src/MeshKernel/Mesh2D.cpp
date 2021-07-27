@@ -645,7 +645,7 @@ void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
     }
 }
 
-void Mesh2D::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
+void Mesh2D::MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected)
 {
     Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 
@@ -653,7 +653,7 @@ void Mesh2D::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelecti
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (auto n = 0; n < GetNumNodes(); ++n)
     {
-        const auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n], 0);
+        const auto isInPolygon = polygons.IsPointInPolygons(m_nodes[n]);
         if (isInPolygon)
         {
             m_nodeMask[n] = 1;
@@ -1558,7 +1558,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     {
         for (auto n = 0; n < GetNumNodes(); ++n)
         {
-            auto isInPolygon = polygon.IsPointInPolygon(m_nodes[n], 0);
+            auto isInPolygon = polygon.IsPointInPolygons(m_nodes[n]);
             if (invertDeletion)
             {
                 isInPolygon = !isInPolygon;
@@ -1587,7 +1587,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
                 }
 
                 const auto faceCircumcenter = m_facesCircumcenters[faceIndex];
-                auto isInPolygon = polygon.IsPointInPolygon(faceCircumcenter, 0);
+                auto isInPolygon = polygon.IsPointInPolygons(faceCircumcenter);
                 if (invertDeletion)
                 {
                     isInPolygon = !isInPolygon;
@@ -1629,7 +1629,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
     if (deletionOption == FacesCompletelyIncluded)
     {
-        MaskFaceEdgesInPolygon(polygon, invertDeletion, false);
+        MaskFaceEdgesInPolygons(polygon, invertDeletion, false);
 
         // mark the edges for deletion
         for (auto e = 0; e < GetNumEdges(); ++e)

@@ -63,11 +63,18 @@ namespace meshkernel
         /// @return The new offset polygon
         Polygons OffsetCopy(double distance, bool innerAndOuter) const;
 
-        /// @brief Checks if a point is included in a given polygon
+        /// @brief Checks if a point is included in a given polygon.
+        /// When the polygon is empty, the point is always included by default
         /// @param[in] point The point to check
         /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
-        bool IsPointInPolygon(Point point, size_t polygonIndex) const;
+        bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
+
+        /// @brief Checks if a point is included in a any of the polygon.
+        /// When no polygon is present, the point is always included by default
+        /// @param[in] point The point to check
+        /// @return True if it is included, false otherwise
+        bool IsPointInPolygons(Point const& point) const;
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check

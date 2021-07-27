@@ -99,11 +99,11 @@ namespace meshkernel
         /// @param[in] miny
         void OffsetSphericalCoordinates(double minx, double miny);
 
-        /// @brief Masks the edges of all faces included in a polygon
+        /// @brief Masks the edges of all faces included in all polygons
         /// @param polygons The selection polygon
         /// @param invertSelection Invert selection
         /// @param includeIntersected Included the edges intersected by the polygon
-        void MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected);
+        void MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected);
 
         /// @brief From the masked edges compute the masked nodes
         void ComputeNodeMaskFromEdgeMask();

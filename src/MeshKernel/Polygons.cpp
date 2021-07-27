@@ -292,10 +292,9 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     return newPolygon;
 }
 
-bool Polygons::IsPointInPolygon(Point point, size_t polygonIndex) const
+bool Polygons::IsPointInPolygon(Point const& point, size_t polygonIndex) const
 {
-    // empty polygon means everything is included
-    if (m_indices.empty())
+    if (IsEmpty())
     {
         return true;
     }
@@ -307,6 +306,24 @@ bool Polygons::IsPointInPolygon(Point point, size_t polygonIndex) const
 
     const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
     return inPolygon;
+}
+
+bool Polygons::IsPointInPolygons(const Point& point) const
+{
+    if (IsEmpty())
+    {
+        return true;
+    }
+
+    for (auto p = 0; p < GetNumPolygons(); ++p)
+    {
+        auto const inPolygon = IsPointInPolygon(point, p);
+        if (inPolygon)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 size_t Polygons::GetNumPolygons() const

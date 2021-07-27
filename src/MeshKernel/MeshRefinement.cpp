@@ -80,7 +80,7 @@ void MeshRefinement::Compute()
     auto const isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
-        m_mesh->MaskFaceEdgesInPolygon(m_polygons, false, true);
+        m_mesh->MaskFaceEdgesInPolygons(m_polygons, false, true);
         m_mesh->ComputeNodeMaskFromEdgeMask();
     }
     else
