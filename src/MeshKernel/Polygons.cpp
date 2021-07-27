@@ -312,7 +312,6 @@ namespace meshkernel
 
     bool Polygons::IsPointInPolygons(const Point& point) const
     {
-        // when no polygon is present, the point is always included by default
         if (IsEmpty())
         {
             return true;
