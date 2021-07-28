@@ -224,6 +224,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa566951b67a6ae20db9570971137bd18"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa566951b67a6ae20db9570971137bd18">mkernel_mesh2d_make_mesh_from_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples)</td></tr>
 <tr class="memdesc:aa566951b67a6ae20db9570971137bd18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular mesh from a set of samples, triangulating the sample points.  <a href="namespacemeshkernelapi.html#aa566951b67a6ae20db9570971137bd18">More...</a><br /></td></tr>
 <tr class="separator:aa566951b67a6ae20db9570971137bd18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2479f2c15616352b2666cf61d461cf23"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2479f2c15616352b2666cf61d461cf23">mkernel_mesh2d_make_uniform</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;makeGridParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
+<tr class="memdesc:a2479f2c15616352b2666cf61d461cf23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes uniform meshes from a series of polygons.  <a href="namespacemeshkernelapi.html#a2479f2c15616352b2666cf61d461cf23">More...</a><br /></td></tr>
+<tr class="separator:a2479f2c15616352b2666cf61d461cf23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dd8b018fc9893667066ec6bc59a0107"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9dd8b018fc9893667066ec6bc59a0107">mkernel_mesh2d_get_mesh_boundaries_as_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolygons)</td></tr>
 <tr class="memdesc:a9dd8b018fc9893667066ec6bc59a0107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the boundaries of a mesh as a series of separated polygons.  <a href="namespacemeshkernelapi.html#a9dd8b018fc9893667066ec6bc59a0107">More...</a><br /></td></tr>
 <tr class="separator:a9dd8b018fc9893667066ec6bc59a0107"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -348,7 +351,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ae4058e2207ebb8a74b5f80024a02e888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <a href="namespacemeshkernelapi.html#ae4058e2207ebb8a74b5f80024a02e888">More...</a><br /></td></tr>
 <tr class="separator:ae4058e2207ebb8a74b5f80024a02e888"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae9a1bad8793b1245de4304439cb426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5ae9a1bad8793b1245de4304439cb426">mkernel_curvilinear_make_uniform</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;makeGridParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a5ae9a1bad8793b1245de4304439cb426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new mesh.  <a href="namespacemeshkernelapi.html#a5ae9a1bad8793b1245de4304439cb426">More...</a><br /></td></tr>
+<tr class="memdesc:a5ae9a1bad8793b1245de4304439cb426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used.  <a href="namespacemeshkernelapi.html#a5ae9a1bad8793b1245de4304439cb426">More...</a><br /></td></tr>
 <tr class="separator:a5ae9a1bad8793b1245de4304439cb426"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d48822f52bef0e01cc46c9da3edbed6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2d48822f52bef0e01cc46c9da3edbed6">mkernel_curvilinear_initialize_orthogonalize</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters)</td></tr>
 <tr class="memdesc:a2d48822f52bef0e01cc46c9da3edbed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the orthogonal curvilinear algorithm.  <a href="namespacemeshkernelapi.html#a2d48822f52bef0e01cc46c9da3edbed6">More...</a><br /></td></tr>
@@ -1676,12 +1679,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Makes a new mesh. </p>
+<p>Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygon to account for </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygons to account for </td></tr>
   </table>
   </dd>
 </dl>
@@ -4045,6 +4048,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The samples where to triangulate </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a2479f2c15616352b2666cf61d461cf23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2479f2c15616352b2666cf61d461cf23">&#9670;&nbsp;</a></span>mkernel_mesh2d_make_uniform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_make_uniform </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>makeGridParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryList</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Makes uniform meshes from a series of polygons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygons to account for </td></tr>
   </table>
   </dd>
 </dl>

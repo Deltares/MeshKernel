@@ -23,5 +23,6 @@ var searchData=
   ['splines_458',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
   ['splinestocurvilinearparameters_459',['SplinesToCurvilinearParameters',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html',1,'meshkernelapi']]],
   ['squarerootofthree_460',['squareRootOfThree',['../namespacemeshkernel.html#abe79a717873ddb5760feae84567d98de',1,'meshkernel']]],
-  ['swapvectorelements_461',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
+  ['startendindicesofpolygon_461',['StartEndIndicesOfPolygon',['../classmeshkernel_1_1_polygons.html#ad0f5027e18d30344f7d214ff7add72ee',1,'meshkernel::Polygons']]],
+  ['swapvectorelements_462',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
 ];
