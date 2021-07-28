@@ -884,6 +884,48 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
+                                                const MakeMeshParameters& makeGridParameters,
+                                                const GeometryList& geometryList)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+
+            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
+
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
+
+            if (polygon->IsEmpty())
+            {
+                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute();
+                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+            }
+            else
+            {
+                // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
+                for (auto p = 0; p < polygon->GetNumPolygons(); ++p)
+                {
+                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, p);
+                    auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                }
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
         int exitCode = Success;
@@ -2044,9 +2086,16 @@ namespace meshkernelapi
 
             const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
 
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, polygon);
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute());
+            if (polygon->IsEmpty())
+            {
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute();
+            }
+            else
+            {
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, 0);
+            }
         }
         catch (...)
         {
@@ -2481,6 +2530,7 @@ namespace meshkernelapi
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
+            // curvilinear grid must be re-setted
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
         }
         catch (...)

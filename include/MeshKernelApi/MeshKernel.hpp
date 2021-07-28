@@ -321,6 +321,15 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples);
 
+        /// @brief Makes uniform meshes from a series of polygons
+        /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] makeGridParameters The structure containing the make grid parameters
+        /// @param[in] geometryList       The polygons to account for
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
+                                                    const MakeMeshParameters& makeGridParameters,
+                                                    const GeometryList& geometryList);
+
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
         ///
         /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
@@ -751,10 +760,10 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId);
 
-        /// @brief Makes a new mesh
+        /// @brief Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
-        /// @param[in] geometryList       The polygon to account for
+        /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                          const MakeMeshParameters& makeGridParameters,

@@ -20,7 +20,7 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
     return validNodes;
 }
 
-size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid)
+size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> const& curvilinearGrid)
 {
     size_t validNodes = 0;
     size_t index = 0;

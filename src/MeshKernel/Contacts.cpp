@@ -36,7 +36,7 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
     m_mesh2dIndices.reserve(m_mesh1d->m_nodes.size());
 
-    const auto nodePolygonIndices = polygons.PolygonIndices(m_mesh1d->m_nodes);
+    const auto nodePolygonIndices = polygons.PointsInPolygons(m_mesh1d->m_nodes);
 
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
@@ -276,10 +276,13 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     m_mesh1d->AdministrateNodesEdges();
 
     // for each mesh2d face, store polygon index
-    std::vector<size_t> polygonIndices(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    std::vector<size_t> facePolygonIndex(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    std::vector<bool> faceInPolygon(m_mesh2d->GetNumFaces(), false);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
-        polygonIndices[faceIndex] = polygons.PolygonIndex(m_mesh2d->m_facesMassCenters[faceIndex]);
+        auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_mesh2d->m_facesMassCenters[faceIndex]);
+        faceInPolygon[faceIndex] = isInPolygon;
+        facePolygonIndex[faceIndex] = polygonIndex;
     }
 
     // for each polygon, find closest 1d node to any 2d mass center within the polygon
@@ -288,12 +291,12 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     std::vector<size_t> closest2dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
-        const auto polygonIndex = polygonIndices[faceIndex];
         // if face is not within a polygon, continue
-        if (polygonIndex == sizetMissingValue)
+        if (!faceInPolygon[faceIndex])
         {
             continue;
         }
+        const auto polygonIndex = facePolygonIndex[faceIndex];
         const auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
 
         const auto close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
@@ -382,7 +385,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
 
     // get the indices
-    const auto facePolygonIndices = polygons.PolygonIndices(m_mesh2d->m_facesCircumcenters);
+    const auto isFaceCircumcenterInPolygons = polygons.PointsInPolygons(m_mesh2d->m_facesCircumcenters);
 
     // Loop over 1d edges
     std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);
@@ -427,7 +430,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             // the face is not inside a polygon
-            if (facePolygonIndices[face] == sizetMissingValue)
+            if (!isFaceCircumcenterInPolygons[face])
             {
                 isValidFace[face] = false;
                 continue;

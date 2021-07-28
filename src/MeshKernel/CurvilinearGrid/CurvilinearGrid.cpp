@@ -31,6 +31,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
@@ -49,10 +50,89 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
     SetFlatCopies();
 }
 
+void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonIndex)
+{
+    // no polygons available
+    if (polygons->IsEmpty())
+    {
+        return;
+    }
+
+    // no grid, return
+    if (m_gridNodes.empty())
+    {
+        return;
+    }
+
+    const auto numN = m_gridNodes.size();
+    const auto numM = m_gridNodes[0].size();
+
+    std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
+    std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
+    // Mark points inside a polygonIndex
+    for (auto n = 0; n < numN; ++n)
+    {
+        for (auto m = 0; m < numM; ++m)
+        {
+            const auto isInPolygon = polygons->IsPointInPolygon(m_gridNodes[n][m], polygonIndex);
+            if (isInPolygon)
+            {
+                nodeBasedMask[n][m] = true;
+            }
+        }
+    }
+
+    // Mark faces when all nodes are inside
+    for (auto n = 0; n < numN - 1; ++n)
+    {
+        for (auto m = 0; m < numM - 1; ++m)
+        {
+            if (!nodeBasedMask[n][m] ||
+                !nodeBasedMask[n + 1][m] ||
+                !nodeBasedMask[n][m + 1] ||
+                !nodeBasedMask[n + 1][m + 1])
+            {
+                faceBasedMask[n][m] = false;
+            }
+        }
+    }
+
+    // Mark only the nodes of faces completely included in the polygonIndex
+    std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
+    for (auto n = 0; n < numN - 1; ++n)
+    {
+        for (auto m = 0; m < numM - 1; ++m)
+        {
+            if (faceBasedMask[n][m])
+            {
+                nodeBasedMask[n][m] = true;
+                nodeBasedMask[n + 1][m] = true;
+                nodeBasedMask[n][m + 1] = true;
+                nodeBasedMask[n + 1][m + 1] = true;
+            }
+        }
+    }
+
+    // mark points inside a polygonIndex
+    for (auto n = 0; n < numN; ++n)
+    {
+        for (auto m = 0; m < numM; ++m)
+        {
+            if (!nodeBasedMask[n][m])
+            {
+                m_gridNodes[n][m].x = doubleMissingValue;
+                m_gridNodes[n][m].y = doubleMissingValue;
+            }
+        }
+    }
+}
+
 void CurvilinearGrid::SetFlatCopies()
 {
     if (m_gridNodes.empty())
+    {
         return;
+    }
 
     m_numM = m_gridNodes.size();
     m_numN = m_gridNodes[0].size();
@@ -62,7 +142,7 @@ void CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGridNodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGridNodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
 {
     if (!IsValid())
     {

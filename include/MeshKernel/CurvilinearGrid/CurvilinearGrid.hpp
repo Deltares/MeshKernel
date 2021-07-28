@@ -68,6 +68,11 @@ namespace meshkernel
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
+        /// @brief Deletes a curvilinear grid inside a polygon
+        /// @param[in] polygons The polygons
+        /// @param[in] polygonIndex The index of the polygon to use for deletion
+        void Delete(std::shared_ptr<Polygons> polygons, size_t polygonIndex);
+
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
@@ -79,7 +84,7 @@ namespace meshkernel
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
-        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<CurvilinearGridNodeIndices>> ConvertCurvilinearToNodesAndEdges();
+        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<CurvilinearGridNodeIndices>> ConvertCurvilinearToNodesAndEdges() const;
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();

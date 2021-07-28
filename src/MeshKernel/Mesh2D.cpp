@@ -597,11 +597,11 @@ void Mesh2D::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& poly
 void Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-    const auto nodePolygonIndices = polygon.PolygonIndices(m_nodes);
+    const auto nodePolygonIndices = polygon.PointsInPolygons(m_nodes);
 
     for (auto i = 0; i < GetNumNodes(); ++i)
     {
-        auto isInPolygon = nodePolygonIndices[i] == sizetMissingValue ? false : true;
+        auto isInPolygon = nodePolygonIndices[i];
         if (!inside)
         {
             isInPolygon = !isInPolygon;
@@ -653,7 +653,7 @@ void Mesh2D::MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelect
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (auto n = 0; n < GetNumNodes(); ++n)
     {
-        const auto isInPolygon = polygons.IsPointInPolygons(m_nodes[n]);
+        const auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_nodes[n]);
         if (isInPolygon)
         {
             m_nodeMask[n] = 1;
@@ -1558,7 +1558,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     {
         for (auto n = 0; n < GetNumNodes(); ++n)
         {
-            auto isInPolygon = polygon.IsPointInPolygons(m_nodes[n]);
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
             if (invertDeletion)
             {
                 isInPolygon = !isInPolygon;
@@ -1586,8 +1586,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
                     continue;
                 }
 
-                const auto faceCircumcenter = m_facesCircumcenters[faceIndex];
-                auto isInPolygon = polygon.IsPointInPolygons(faceCircumcenter);
+                auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_facesCircumcenters[faceIndex]);
                 if (invertDeletion)
                 {
                     isInPolygon = !isInPolygon;
@@ -1612,7 +1611,8 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
                 const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
 
-                allFaceCircumcentersInPolygon = polygon.IsPointInPolygon(edgeCenter, 0);
+                auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(edgeCenter);
+                allFaceCircumcentersInPolygon = isInPolygon;
                 if (invertDeletion)
                 {
                     allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;

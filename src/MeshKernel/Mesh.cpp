@@ -838,8 +838,8 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     const auto rhsNumNodes = rhs.GetNumNodes();
     const auto rhsNumEdges = rhs.GetNumEdges();
 
-    auto numNodes = GetNumNodes();
-    auto numEdges = GetNumEdges();
+    auto const numNodes = GetNumNodes();
+    auto const numEdges = GetNumEdges();
     m_edges.resize(GetNumEdges() + rhsNumEdges);
     m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
