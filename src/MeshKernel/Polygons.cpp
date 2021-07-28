@@ -310,42 +310,23 @@ namespace meshkernel
         return inPolygon;
     }
 
-    bool Polygons::IsPointInPolygons(const Point& point) const
-    {
-        if (IsEmpty())
-        {
-            return true;
-        }
-
-        for (auto p = 0; p < GetNumPolygons(); ++p)
-        {
-            auto const inPolygon = IsPointInPolygon(point, p);
-            if (inPolygon)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     size_t Polygons::GetNumPolygons() const
     {
         return m_indices.size();
     }
 
-    size_t Polygons::PolygonIndex(Point point) const
+    std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())
         {
-            return true;
+            return {true, sizetMissingValue};
         }
 
         bool inPolygon = false;
         for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
         {
-            auto polygonStartIndex = m_indices[polygonIndex][0];
-            auto polygonEndIndex = m_indices[polygonIndex][1];
+            const auto [polygonStartIndex, polygonEndIndex] = StartEndIndicesOfPolygon(polygonIndex);
 
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
@@ -368,19 +349,20 @@ namespace meshkernel
 
             if (inPolygon)
             {
-                return polygonIndex;
+                return {true, polygonIndex};
             }
         }
 
-        return sizetMissingValue;
+        return {false, sizetMissingValue};
     }
 
-    std::vector<size_t> Polygons::PolygonIndices(const std::vector<Point>& points) const
+    std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const
     {
-        std::vector<size_t> result(points.size(), sizetMissingValue);
+        std::vector<bool> result(points.size(), sizetMissingValue);
         for (auto i = 0; i < points.size(); ++i)
         {
-            result[i] = PolygonIndex(points[i]);
+            const auto [isInPolygon, polygonIndex] = IsPointInPolygons(points[i]);
+            result[i] = isInPolygon;
         }
         return result;
     }

@@ -33,6 +33,8 @@
 
 namespace meshkernel
 {
+    class Polygons;
+
     /// @brief A class representing a curvilinear grid
     class CurvilinearGrid
     {
@@ -49,6 +51,11 @@ namespace meshkernel
         {
             m_grid.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
         }
+
+        /// @brief Deletes a curvilinear grid inside a polygon
+        /// @param[in] The polygons
+        /// @param[in] The index of the polygon to use for deletion
+        void Delete(Polygons const& polygons, size_t polygonIndex);
 
         /// @brief Sets the point to the curvilinear grid
         /// @param[in] grid Input grid points

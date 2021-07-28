@@ -700,70 +700,103 @@ void meshkernel::Mesh2D::ClassifyNodes()
 
 void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons)
 {
-    CurvilinearGrid CurvilinearGrid;
     m_projection = polygons.m_projection;
-    if (MakeMeshParameters.GridType == 0)
+
+    // We can ony generate rectangular grids
+    if (MakeMeshParameters.GridType != 0)
     {
-        // regular grid
-        auto numM = static_cast<size_t>(MakeMeshParameters.NumberOfColumns + 1);
-        auto numN = static_cast<size_t>(MakeMeshParameters.NumberOfRows + 1);
-        const double XGridBlockSize = MakeMeshParameters.XGridBlockSize;
-        const double YGridBlockSize = MakeMeshParameters.YGridBlockSize;
-        const double cosineAngle = std::cos(MakeMeshParameters.GridAngle * degrad_hp);
-        const double sinAngle = std::sin(MakeMeshParameters.GridAngle * degrad_hp);
-        double OriginXCoordinate = MakeMeshParameters.OriginXCoordinate;
-        double OriginYCoordinate = MakeMeshParameters.OriginYCoordinate;
+        return;
+    }
 
-        // in case a polygon is there, re-compute parameters
-        if (!polygons.IsEmpty())
+    // regular grid
+    auto numM = static_cast<size_t>(MakeMeshParameters.NumberOfColumns + 1);
+    auto numN = static_cast<size_t>(MakeMeshParameters.NumberOfRows + 1);
+    const double XGridBlockSize = MakeMeshParameters.XGridBlockSize;
+    const double YGridBlockSize = MakeMeshParameters.YGridBlockSize;
+    const double cosineAngle = std::cos(MakeMeshParameters.GridAngle * degrad_hp);
+    const double sinAngle = std::sin(MakeMeshParameters.GridAngle * degrad_hp);
+    double OriginXCoordinate = MakeMeshParameters.OriginXCoordinate;
+    double OriginYCoordinate = MakeMeshParameters.OriginYCoordinate;
+
+    // No polygon, use MakeMeshParameters as is
+    if (polygons.IsEmpty())
+    {
+        CurvilinearGrid curvilinearGrid{numN, numM};
+        for (auto n = 0; n < numN; ++n)
         {
-            Point referencePoint{doubleMissingValue, doubleMissingValue};
-            // rectangular grid in polygon
-
-            for (const auto& node : polygons.m_nodes)
+            for (auto m = 0; m < numM; ++m)
             {
-                if (node.IsValid())
+                const auto newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
+                double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
+                if (m_projection == Projection::spherical && n > 0)
                 {
-                    referencePoint = node;
-                    break;
+                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * curvilinearGrid.m_grid[n - 1][m].y);
                 }
+                curvilinearGrid.m_grid[n][m] = {newPointXCoordinate, newPointYCoordinate};
             }
-
-            // get polygon min/max in rotated (xi,eta) coordinates
-            double xmin = std::numeric_limits<double>::max();
-            double xmax = -xmin;
-            double etamin = std::numeric_limits<double>::max();
-            double etamax = -etamin;
-            for (const auto& node : polygons.m_nodes)
-            {
-                if (node.IsValid())
-                {
-                    const double dx = GetDx(referencePoint, node, m_projection);
-                    const double dy = GetDy(referencePoint, node, m_projection);
-                    double xi = dx * cosineAngle + dy * sinAngle;
-                    double eta = -dx * sinAngle + dy * cosineAngle;
-                    xmin = std::min(xmin, xi);
-                    xmax = std::max(xmax, xi);
-                    etamin = std::min(etamin, eta);
-                    etamax = std::max(etamax, eta);
-                }
-            }
-
-            double xShift = xmin * cosineAngle - etamin * sinAngle;
-            double yShift = xmin * sinAngle + etamin * cosineAngle;
-            if (m_projection == Projection::spherical)
-            {
-                xShift = xShift / earth_radius * raddeg_hp;
-                yShift = yShift / (earth_radius * std::cos(referencePoint.y * degrad_hp)) * raddeg_hp;
-            }
-
-            OriginXCoordinate = referencePoint.x + xShift;
-            OriginYCoordinate = referencePoint.y + yShift;
-            numN = static_cast<size_t>(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
-            numM = static_cast<size_t>(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
         }
 
-        CurvilinearGrid = {numN, numM};
+        // Assign mesh
+        *this = Mesh2D(curvilinearGrid, m_projection);
+
+        m_nodesRTreeRequiresUpdate = true;
+        m_edgesRTreeRequiresUpdate = true;
+
+        Administrate(AdministrationOptions::AdministrateMeshEdges);
+        return;
+    }
+
+    // With polygons compute origin and numN, numM
+    for (auto p = 0; p < polygons.GetNumPolygons(); ++p)
+    {
+        auto const [startPolygonIdex, endPolygonIndex] = polygons.StartEndIndicesOfPolygon(p);
+
+        Point referencePoint{doubleMissingValue, doubleMissingValue};
+        // rectangular grid in polygon
+
+        for (auto i = startPolygonIdex; i <= endPolygonIndex; ++i)
+        {
+            if (polygons.m_nodes[i].IsValid())
+            {
+                referencePoint = polygons.m_nodes[i];
+                break;
+            }
+        }
+
+        // get polygon min/max in rotated (xi,eta) coordinates
+        double xmin = std::numeric_limits<double>::max();
+        double xmax = -xmin;
+        double etamin = std::numeric_limits<double>::max();
+        double etamax = -etamin;
+        for (auto i = startPolygonIdex; i <= endPolygonIndex; ++i)
+        {
+            if (polygons.m_nodes[i].IsValid())
+            {
+                const double dx = GetDx(referencePoint, polygons.m_nodes[i], m_projection);
+                const double dy = GetDy(referencePoint, polygons.m_nodes[i], m_projection);
+                double xi = dx * cosineAngle + dy * sinAngle;
+                double eta = -dx * sinAngle + dy * cosineAngle;
+                xmin = std::min(xmin, xi);
+                xmax = std::max(xmax, xi);
+                etamin = std::min(etamin, eta);
+                etamax = std::max(etamax, eta);
+            }
+        }
+
+        double xShift = xmin * cosineAngle - etamin * sinAngle;
+        double yShift = xmin * sinAngle + etamin * cosineAngle;
+        if (m_projection == Projection::spherical)
+        {
+            xShift = xShift / earth_radius * raddeg_hp;
+            yShift = yShift / (earth_radius * std::cos(referencePoint.y * degrad_hp)) * raddeg_hp;
+        }
+
+        OriginXCoordinate = referencePoint.x + xShift;
+        OriginYCoordinate = referencePoint.y + yShift;
+        numN = static_cast<size_t>(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
+        numM = static_cast<size_t>(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
+
+        CurvilinearGrid curvilinearGrid{numN, numM};
         for (auto n = 0; n < numN; ++n)
         {
             for (auto m = 0; m < numM; ++m)
@@ -772,78 +805,25 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
                 double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
                 if (m_projection == Projection::spherical && n > 0)
                 {
-                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * CurvilinearGrid.m_grid[n - 1][m].y);
+                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * curvilinearGrid.m_grid[n - 1][m].y);
                 }
-                CurvilinearGrid.m_grid[n][m] = {newPointXCoordinate, newPointYCoordinate};
+                curvilinearGrid.m_grid[n][m] = {newPointXCoordinate, newPointYCoordinate};
             }
         }
 
         // in case a polygon is there, remove nodes outside
-        if (!polygons.IsEmpty())
+        curvilinearGrid.Delete(polygons, p);
+
+        Mesh2D mesh2d(curvilinearGrid, m_projection);
+
+        if (mesh2d.GetNumNodes() <= 0)
         {
-            std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
-            std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
-            // Mark points inside a polygon
-            for (auto n = 0; n < numN; ++n)
-            {
-                for (auto m = 0; m < numM; ++m)
-                {
-                    const bool isInPolygon = polygons.IsPointInPolygon(CurvilinearGrid.m_grid[n][m], 0);
-                    if (isInPolygon)
-                    {
-                        nodeBasedMask[n][m] = true;
-                    }
-                }
-            }
-
-            // Mark faces when all nodes are inside
-            for (auto n = 0; n < numN - 1; ++n)
-            {
-                for (auto m = 0; m < numM - 1; ++m)
-                {
-                    if (!nodeBasedMask[n][m] ||
-                        !nodeBasedMask[n + 1][m] ||
-                        !nodeBasedMask[n][m + 1] ||
-                        !nodeBasedMask[n + 1][m + 1])
-                    {
-                        faceBasedMask[n][m] = false;
-                    }
-                }
-            }
-
-            // Mark only the nodes of faces completely included in the polygon
-            std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
-            for (auto n = 0; n < numN - 1; ++n)
-            {
-                for (auto m = 0; m < numM - 1; ++m)
-                {
-                    if (faceBasedMask[n][m])
-                    {
-                        nodeBasedMask[n][m] = true;
-                        nodeBasedMask[n + 1][m] = true;
-                        nodeBasedMask[n][m + 1] = true;
-                        nodeBasedMask[n + 1][m + 1] = true;
-                    }
-                }
-            }
-
-            // mark points inside a polygon
-            for (auto n = 0; n < numN; ++n)
-            {
-                for (auto m = 0; m < numM; ++m)
-                {
-                    if (!nodeBasedMask[n][m])
-                    {
-                        CurvilinearGrid.m_grid[n][m].x = doubleMissingValue;
-                        CurvilinearGrid.m_grid[n][m].y = doubleMissingValue;
-                    }
-                }
-            }
+            continue;
         }
-    }
 
-    // Assign mesh
-    *this = Mesh2D(CurvilinearGrid, m_projection);
+        // add the mesh
+        *this += mesh2d;
+    }
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
@@ -935,11 +915,11 @@ void meshkernel::Mesh2D::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<
 void meshkernel::Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-    const auto nodePolygonIndices = polygon.PolygonIndices(m_nodes);
+    const auto nodePolygonIndices = polygon.PointsInPolygons(m_nodes);
 
     for (auto i = 0; i < GetNumNodes(); ++i)
     {
-        auto isInPolygon = nodePolygonIndices[i] == sizetMissingValue ? false : true;
+        auto isInPolygon = nodePolygonIndices[i];
         if (!inside)
         {
             isInPolygon = !isInPolygon;
@@ -991,7 +971,7 @@ void meshkernel::Mesh2D::MaskFaceEdgesInPolygons(const Polygons& polygons, bool 
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (auto n = 0; n < GetNumNodes(); ++n)
     {
-        const auto isInPolygon = polygons.IsPointInPolygons(m_nodes[n]);
+        const auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_nodes[n]);
         if (isInPolygon)
         {
             m_nodeMask[n] = 1;
@@ -1085,8 +1065,8 @@ meshkernel::Mesh2D& meshkernel::Mesh2D::operator+=(Mesh2D const& rhs)
     const auto rhsNumNodes = rhs.GetNumNodes();
     const auto rhsNumEdges = rhs.GetNumEdges();
 
-    auto numNodes = GetNumNodes();
-    auto numEdges = GetNumEdges();
+    auto const numNodes = GetNumNodes();
+    auto const numEdges = GetNumEdges();
     m_edges.resize(GetNumEdges() + rhsNumEdges);
     m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
@@ -1935,7 +1915,7 @@ void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption
     {
         for (auto n = 0; n < GetNumNodes(); ++n)
         {
-            auto isInPolygon = polygons.IsPointInPolygons(m_nodes[n]);
+            auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_nodes[n]);
             if (invertDeletion)
             {
                 isInPolygon = !isInPolygon;
@@ -1964,7 +1944,7 @@ void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption
                 }
 
                 const auto faceCircumcenter = m_facesCircumcenters[faceIndex];
-                auto isInPolygon = polygons.IsPointInPolygons(faceCircumcenter);
+                auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(faceCircumcenter);
                 if (invertDeletion)
                 {
                     isInPolygon = !isInPolygon;
@@ -1989,7 +1969,8 @@ void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption
 
                 const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
 
-                allFaceCircumcentersInPolygon = polygons.IsPointInPolygons(edgeCenter);
+                auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(edgeCenter);
+                allFaceCircumcentersInPolygon = isInPolygon;
                 if (invertDeletion)
                 {
                     allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;

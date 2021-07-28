@@ -48,43 +48,50 @@ namespace meshkernel
 
         /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
         /// @returns The generated points
-        std::vector<std::vector<Point>> ComputePointsInPolygons() const;
+        [[nodiscard]] std::vector<std::vector<Point>> ComputePointsInPolygons() const;
 
         /// @brief Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)
         /// @param[in] startIndex The start index
         /// @param[in] endIndex The end index
         /// @param[in] refinementDistance The chosen refinement distance
         /// @return refinedPolygon The computed polygon
-        std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
+        [[nodiscard]] std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] innerAndOuter Offset inwards or outward
         /// @return The new offset polygon
-        Polygons OffsetCopy(double distance, bool innerAndOuter) const;
+        [[nodiscard]] Polygons OffsetCopy(double distance, bool innerAndOuter) const;
 
         /// @brief Checks if a point is included in a given polygon.
         /// When the polygon is empty, the point is always included by default
         /// @param[in] point The point to check
         /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
-        bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
-
-        /// @brief Checks if a point is included in a any of the polygon.
-        /// When no polygon is present, the point is always included by default
-        /// @param[in] point The point to check
-        /// @return True if it is included, false otherwise
-        bool IsPointInPolygons(Point const& point) const;
+        [[nodiscard]] bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
         /// @return The index of a polygon where the point is included or if none has been found, sizetMissingValue
-        size_t PolygonIndex(Point point) const;
+        [[nodiscard]] std::tuple<bool, size_t> IsPointInPolygons(Point point) const;
 
-        /// @brief For each point, compute the index of the polygon including it
+        /// @brief For each point, compute if the point is included in any polygon
         /// @param[in] point The vector of points
-        /// @return The index of the polygon including it
-        std::vector<size_t> PolygonIndices(const std::vector<Point>& point) const;
+        /// @return A vector of booleans to indicate if the point is in polygon
+        [[nodiscard]] std::vector<bool> PointsInPolygons(const std::vector<Point>& point) const;
+
+        /// @brief For a polygonIndex returns its start end end index
+        /// @param[in] polygonIndex The polygon index
+        /// @return the start and end index in m_indices
+        [[nodiscard]] std::tuple<size_t, size_t> StartEndIndicesOfPolygon(size_t polygonIndex) const
+        {
+            if (polygonIndex >= m_indices.size())
+            {
+                return {sizetMissingValue, sizetMissingValue};
+            }
+
+            return {m_indices.at(polygonIndex).at(0), m_indices.at(polygonIndex).at(1)};
+        }
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
