@@ -28,7 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MakeGridParameters.hpp>
 
 #include <memory>
 
@@ -43,11 +43,11 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         ///
-        /// @param[in] MakeMeshParameters The structure containing the make grid parameters
+        /// @param[in] MakeGridParameters The structure containing the make grid parameters
         /// @param[in] projection The projection to use
-        CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, Projection projection);
+        CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& MakeMeshParameters, Projection projection);
 
-        /// @brief Compute an uniform curvilinear grid using the make mesh parameters 
+        /// @brief Compute an uniform curvilinear grid using the make mesh parameters
         CurvilinearGrid Compute() const;
 
         /// @brief Compute an uniform curvilinear grid in one polygon
@@ -56,7 +56,7 @@ namespace meshkernel
         CurvilinearGrid Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const;
 
     private:
-        meshkernelapi::MakeMeshParameters m_makeMeshParameters; ///< A copy of the structure containing the parameters used for making the grid
+        meshkernelapi::MakeGridParameters m_makeMeshParameters; ///< A copy of the structure containing the parameters used for making the grid
         Projection m_projection;                                ///< The projection to use
     };
 } // namespace meshkernel

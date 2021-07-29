@@ -885,7 +885,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                const MakeMeshParameters& makeGridParameters,
+                                                const MakeGridParameters& makeGridParameters,
                                                 const GeometryList& geometryList)
     {
         int exitCode = Success;
@@ -1789,7 +1789,12 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int refinement)
+    MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId,
+                                               double xLowerLeftCorner,
+                                               double yLowerLeftCorner,
+                                               double xUpperRightCorner,
+                                               double yUpperRightCorner,
+                                               int refinement)
     {
         int exitCode = Success;
         try
@@ -2071,7 +2076,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                     const MakeMeshParameters& makeGridParameters,
+                                                     const MakeGridParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
         int exitCode = Success;

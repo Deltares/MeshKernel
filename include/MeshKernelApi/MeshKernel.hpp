@@ -31,7 +31,7 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshRefinementParameters.hpp>
@@ -327,7 +327,7 @@ namespace meshkernelapi
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                    const MakeMeshParameters& makeGridParameters,
+                                                    const MakeGridParameters& makeGridParameters,
                                                     const GeometryList& geometryList);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
@@ -653,7 +653,7 @@ namespace meshkernelapi
                                                           const GeometryList& polygons,
                                                           double searchRadius);
 
-        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by \p firstPoint and \p secondPoint.
+        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param[in] meshKernelId      The id of the mesh state.
@@ -766,7 +766,7 @@ namespace meshkernelapi
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                         const MakeMeshParameters& makeGridParameters,
+                                                         const MakeGridParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
         /// @brief Initializes the orthogonal curvilinear algorithm

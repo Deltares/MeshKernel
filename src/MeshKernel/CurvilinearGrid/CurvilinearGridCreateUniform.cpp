@@ -33,18 +33,13 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridCreateUniform;
 
-CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& makeMeshParameters, Projection projection)
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& makeMeshParameters, Projection projection)
     : m_makeMeshParameters(makeMeshParameters), m_projection(projection)
 {
 }
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
 {
-    if (m_makeMeshParameters.grid_type != 0)
-    {
-        throw std::invalid_argument("CurvilinearGridCreateUniform::Compute m_makeMeshParameters.grid_type can only be 0");
-    }
-
     // regular grid
     auto numM = static_cast<size_t>(m_makeMeshParameters.num_columns + 1);
     auto numN = static_cast<size_t>(m_makeMeshParameters.num_rows + 1);
@@ -55,7 +50,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
     double OriginXCoordinate = m_makeMeshParameters.origin_x;
     double OriginYCoordinate = m_makeMeshParameters.origin_y;
 
-    // No polygon, use MakeMeshParameters as is
+    // No polygon, use MakeGridParameters as is
 
     std::vector<std::vector<Point>> gridNodes(numN, std::vector<Point>(numM));
     for (auto n = 0; n < numN; ++n)

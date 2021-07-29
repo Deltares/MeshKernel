@@ -4,7 +4,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
@@ -18,8 +18,7 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::cartesian);
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
+    meshkernelapi::MakeGridParameters makeMeshParameters;
     makeMeshParameters.angle = 0.0;
     makeMeshParameters.origin_x = 0.0;
     makeMeshParameters.origin_y = 0.0;
@@ -49,8 +48,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::spherical);
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
+    meshkernelapi::MakeGridParameters makeMeshParameters;
     makeMeshParameters.angle = 0.0;
     makeMeshParameters.origin_x = 0.0;
     makeMeshParameters.origin_y = 0.0;
@@ -72,8 +70,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 {
     //1 Setup
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
+    meshkernelapi::MakeGridParameters makeMeshParameters;
     makeMeshParameters.angle = 0.0;
     makeMeshParameters.origin_x = 0.0;
     makeMeshParameters.origin_y = 0.0;

@@ -7,7 +7,7 @@
 
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
@@ -61,10 +61,9 @@ public:
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
     {
 
-        meshkernelapi::MakeMeshParameters makeMeshParameters;
+        meshkernelapi::MakeGridParameters makeMeshParameters;
         meshkernelapi::GeometryList geometryList{};
 
-        makeMeshParameters.grid_type = 0;
         makeMeshParameters.num_columns = numberOfColumns;
         makeMeshParameters.num_rows = numberOfRows;
         makeMeshParameters.angle = 0.0;
@@ -1453,10 +1452,9 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters{};
+    meshkernelapi::MakeGridParameters makeMeshParameters{};
     meshkernelapi::GeometryList geometryList{};
 
-    makeMeshParameters.grid_type = 0;
     makeMeshParameters.num_columns = 3;
     makeMeshParameters.num_rows = 2;
     makeMeshParameters.angle = 0.0;
