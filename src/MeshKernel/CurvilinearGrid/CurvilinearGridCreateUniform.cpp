@@ -33,22 +33,22 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridCreateUniform;
 
-CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& makeMeshParameters, Projection projection)
-    : m_makeMeshParameters(makeMeshParameters), m_projection(projection)
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& makeGridParameters, Projection projection)
+    : m_makeGridParameters(makeGridParameters), m_projection(projection)
 {
 }
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
 {
     // regular grid
-    auto numM = static_cast<size_t>(m_makeMeshParameters.num_columns + 1);
-    auto numN = static_cast<size_t>(m_makeMeshParameters.num_rows + 1);
-    const double XGridBlockSize = m_makeMeshParameters.block_size_x;
-    const double YGridBlockSize = m_makeMeshParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeMeshParameters.angle * degrad_hp);
-    const double sinAngle = std::sin(m_makeMeshParameters.angle * degrad_hp);
-    double OriginXCoordinate = m_makeMeshParameters.origin_x;
-    double OriginYCoordinate = m_makeMeshParameters.origin_y;
+    auto numM = static_cast<size_t>(m_makeGridParameters.num_columns + 1);
+    auto numN = static_cast<size_t>(m_makeGridParameters.num_rows + 1);
+    const double XGridBlockSize = m_makeGridParameters.block_size_x;
+    const double YGridBlockSize = m_makeGridParameters.block_size_y;
+    const double cosineAngle = std::cos(m_makeGridParameters.angle * degrad_hp);
+    const double sinAngle = std::sin(m_makeGridParameters.angle * degrad_hp);
+    double OriginXCoordinate = m_makeGridParameters.origin_x;
+    double OriginYCoordinate = m_makeGridParameters.origin_y;
 
     // No polygon, use MakeGridParameters as is
 
@@ -98,10 +98,10 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     double etamin = std::numeric_limits<double>::max();
     double etamax = -etamin;
 
-    const double XGridBlockSize = m_makeMeshParameters.block_size_x;
-    const double YGridBlockSize = m_makeMeshParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeMeshParameters.angle * degrad_hp);
-    const double sinAngle = std::sin(m_makeMeshParameters.angle * degrad_hp);
+    const double XGridBlockSize = m_makeGridParameters.block_size_x;
+    const double YGridBlockSize = m_makeGridParameters.block_size_y;
+    const double cosineAngle = std::cos(m_makeGridParameters.angle * degrad_hp);
+    const double sinAngle = std::sin(m_makeGridParameters.angle * degrad_hp);
 
     for (auto i = startPolygonIdex; i <= endPolygonIndex; ++i)
     {

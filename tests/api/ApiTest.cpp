@@ -61,19 +61,19 @@ public:
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
     {
 
-        meshkernelapi::MakeGridParameters makeMeshParameters;
+        meshkernelapi::MakeGridParameters makeGridParameters;
         meshkernelapi::GeometryList geometryList{};
 
-        makeMeshParameters.num_columns = numberOfColumns;
-        makeMeshParameters.num_rows = numberOfRows;
-        makeMeshParameters.angle = 0.0;
-        makeMeshParameters.block_size = 0.0;
-        makeMeshParameters.origin_x = 0.0;
-        makeMeshParameters.origin_y = 0.0;
-        makeMeshParameters.block_size_x = blockSize;
-        makeMeshParameters.block_size_y = blockSize;
+        makeGridParameters.num_columns = numberOfColumns;
+        makeGridParameters.num_rows = numberOfRows;
+        makeGridParameters.angle = 0.0;
+        makeGridParameters.block_size = 0.0;
+        makeGridParameters.origin_x = 0.0;
+        makeGridParameters.origin_y = 0.0;
+        makeGridParameters.block_size_x = blockSize;
+        makeGridParameters.block_size_y = blockSize;
 
-        auto errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeMeshParameters, geometryList);
+        auto errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeGridParameters, geometryList);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not create uniform curvilinear grid");
@@ -1452,21 +1452,21 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::MakeGridParameters makeMeshParameters{};
+    meshkernelapi::MakeGridParameters makeGridParameters{};
     meshkernelapi::GeometryList geometryList{};
 
-    makeMeshParameters.num_columns = 3;
-    makeMeshParameters.num_rows = 2;
-    makeMeshParameters.angle = 0.0;
-    makeMeshParameters.block_size = 0.0;
-    makeMeshParameters.origin_x = 0.0;
-    makeMeshParameters.origin_y = 0.0;
-    makeMeshParameters.block_size_x = 1.0;
-    makeMeshParameters.block_size_y = 1.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 2;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.block_size = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 1.0;
 
     // Execute
     auto errorCode = mkernel_curvilinear_make_uniform(meshKernelId,
-                                                      makeMeshParameters,
+                                                      makeGridParameters,
                                                       geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 

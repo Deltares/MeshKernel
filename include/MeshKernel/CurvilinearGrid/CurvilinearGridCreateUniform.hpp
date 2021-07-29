@@ -56,7 +56,7 @@ namespace meshkernel
         CurvilinearGrid Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const;
 
     private:
-        meshkernelapi::MakeGridParameters m_makeMeshParameters; ///< A copy of the structure containing the parameters used for making the grid
+        meshkernelapi::MakeGridParameters m_makeGridParameters; ///< A copy of the structure containing the parameters used for making the grid
         Projection m_projection;                                ///< The projection to use
     };
 } // namespace meshkernel
