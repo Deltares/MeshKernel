@@ -321,7 +321,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a958ee3292784ee27c9d4c09adb0e2fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <a href="namespacemeshkernelapi.html#a958ee3292784ee27c9d4c09adb0e2fb4">More...</a><br /></td></tr>
 <tr class="separator:a958ee3292784ee27c9d4c09adb0e2fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6de2ba28c078686437dce5b9fe5a3d82"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6de2ba28c078686437dce5b9fe5a3d82">mkernel_curvilinear_derefine</a> (int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
-<tr class="memdesc:a6de2ba28c078686437dce5b9fe5a3d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid derefinement. Grid lines are removed perpendicularly to the segment defined by <code>firstPoint</code> and <code>secondPoint</code>.  <a href="namespacemeshkernelapi.html#a6de2ba28c078686437dce5b9fe5a3d82">More...</a><br /></td></tr>
+<tr class="memdesc:a6de2ba28c078686437dce5b9fe5a3d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <a href="namespacemeshkernelapi.html#a6de2ba28c078686437dce5b9fe5a3d82">More...</a><br /></td></tr>
 <tr class="separator:a6de2ba28c078686437dce5b9fe5a3d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97de12466b3bb153a7a767625a4cdfb3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a97de12466b3bb153a7a767625a4cdfb3">mkernel_curvilinear_compute_transfinite_from_splines</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters)</td></tr>
 <tr class="memdesc:a97de12466b3bb153a7a767625a4cdfb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with transfinite interpolation.  <a href="namespacemeshkernelapi.html#a97de12466b3bb153a7a767625a4cdfb3">More...</a><br /></td></tr>
@@ -883,8 +883,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The input polygons </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second selected node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">useFourthSide</td><td>Whether to use the fourth polygon side to compute the curvilinear grid (0 no, 1 yes) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third selected node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">useFourthSide</td><td>Use the fourth polygon side to compute the curvilinear grid (0 no, 1 yes) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1112,7 +1112,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Directional curvilinear grid derefinement. Grid lines are removed perpendicularly to the segment defined by <code>firstPoint</code> and <code>secondPoint</code>. </p>
+<p>Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner. </p>
 <p><code>firstPoint</code> and <code>secondPoint</code> must lie on the same grid line. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
