@@ -61,7 +61,7 @@ public:
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
     {
 
-        meshkernelapi::MakeGridParameters makeGridParameters;
+        meshkernelapi::MakeGridParameters makeGridParameters{};
         meshkernelapi::GeometryList geometryList{};
 
         makeGridParameters.num_columns = numberOfColumns;
@@ -73,7 +73,7 @@ public:
         makeGridParameters.block_size_x = blockSize;
         makeGridParameters.block_size_y = blockSize;
 
-        auto errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeGridParameters, geometryList);
+        auto const errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeGridParameters, geometryList);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not create uniform curvilinear grid");
@@ -1300,7 +1300,7 @@ TEST(ApiStatelessTests, TestGettingVersionThroughApi)
     ASSERT_EQ(strcmp(versionFromApi, versionString), 0);
 }
 
-TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
+TEST_F(ApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
 {
     // Prepare
     MakeMesh();
@@ -1308,38 +1308,11 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
-    std::unique_ptr<double> const xCoordinatesIn(new double[9]{
-        273.502319,
-        274.252319,
-        275.002350,
-        458.003479,
-        719.005127,
-        741.505249,
-        710.755066,
-        507.503784,
-        305.002533});
+    std::unique_ptr<double> const xCoordinatesIn(new double[9]{0, 5, 10, 10, 10, 5, 0, 0, 0});
 
-    std::unique_ptr<double> const yCoordinatesIn(new double[9]{
-        478.880432,
-        325.128906,
-        172.127350,
-        157.127213,
-        157.127213,
-        328.128937,
-        490.880554,
-        494.630615,
-        493.130615});
+    std::unique_ptr<double> const yCoordinatesIn(new double[9]{0, 0, 0, 5, 10, 10, 10, 5, 0});
 
-    std::unique_ptr<double> const valuesIn(new double[9]{
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0});
+    std::unique_ptr<double> const valuesIn(new double[9]{0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     geometryListIn.coordinates_x = xCoordinatesIn.get();
     geometryListIn.coordinates_y = yCoordinatesIn.get();
@@ -1352,20 +1325,18 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
                                                                           0,
                                                                           2,
                                                                           4,
-                                                                          true);
+                                                                          false);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
+    meshkernelapi::CurvilinearGrid curvilinear_grid{};
 
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinear_grid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(21, mesh2d.num_nodes);
-    ASSERT_EQ(29, mesh2d.num_edges);
+    ASSERT_EQ(3, curvilinear_grid.num_m);
+    ASSERT_EQ(3, curvilinear_grid.num_n);
 }
 
 TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)

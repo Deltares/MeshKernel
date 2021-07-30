@@ -670,7 +670,7 @@ namespace meshkernelapi
                                                    double yUpperRightCorner,
                                                    int refinement);
 
-        /// @brief Directional curvilinear grid derefinement. Grid lines are removed perpendicularly to the segment defined by \p firstPoint and \p secondPoint.
+        /// @brief Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param meshKernelId          The id of the mesh state.
@@ -699,8 +699,8 @@ namespace meshkernelapi
         /// @param[in] polygons      The input polygons
         /// @param[in] firstNode     The first selected node
         /// @param[in] secondNode    The second selected node
-        /// @param[in] thirdNode     The third node
-        /// @param[in] useFourthSide Whether to use the fourth polygon side to compute the curvilinear grid (0 no, 1 yes)
+        /// @param[in] thirdNode     The third selected node
+        /// @param[in] useFourthSide Use the fourth polygon side to compute the curvilinear grid (0 no, 1 yes)
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_polygon(int meshKernelId,
                                                                              const GeometryList& polygons,

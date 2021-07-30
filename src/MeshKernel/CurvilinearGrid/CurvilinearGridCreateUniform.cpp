@@ -66,7 +66,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
             gridNodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
         }
     }
-    return CurvilinearGrid(std::move(gridNodes), m_projection);
+    return CurvilinearGrid{gridNodes, m_projection};
 }
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const
