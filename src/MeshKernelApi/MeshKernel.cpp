@@ -2211,7 +2211,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute();
+            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute());
         }
         catch (...)
         {
