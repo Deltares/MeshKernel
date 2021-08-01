@@ -9,12 +9,13 @@ var searchData=
   ['administratenodesedges_6',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],
   ['administrationoption_7',['AdministrationOption',['../classmeshkernel_1_1_mesh.html#ad868b6ebf71ea7921e0646992deaa18b',1,'meshkernel::Mesh']]],
   ['algorithmerror_8',['AlgorithmError',['../classmeshkernel_1_1_algorithm_error.html',1,'meshkernel::AlgorithmError'],['../classmeshkernel_1_1_algorithm_error.html#af87252531c363685fb0157f5560de503',1,'meshkernel::AlgorithmError::AlgorithmError(const std::string &amp;msg)'],['../classmeshkernel_1_1_algorithm_error.html#aa4dd70ac0169e30b28339e8db0420e58',1,'meshkernel::AlgorithmError::AlgorithmError(const char *msg)']]],
-  ['areal_5fto_5fangle_5fsmoothing_5ffactor_9',['areal_to_angle_smoothing_factor',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ad62cad5b4ab91960e676a40e76e2dc8e',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['aresegmentscrossing_10',['AreSegmentsCrossing',['../namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba',1,'meshkernel']]],
-  ['aspect_5fratio_11',['aspect_ratio',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a77420b59d6eb2d91e67c19d109d05459',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['aspect_5fratio_5fgrow_5ffactor_12',['aspect_ratio_grow_factor',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a823974162a726fbc445faf2d104b406c',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['attraction_5fparameter_13',['attraction_parameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a0e8576342cf96b281475a9dc03b5bdbf',1,'meshkernelapi::CurvilinearParameters']]],
-  ['average_5fwidth_14',['average_width',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a9966f31309bdd2b71d8fc6358042bc1d',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['averaginginterpolation_15',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#a9e20232e12c29f93285855be18f12667',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]],
-  ['averagingmethod_16',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
+  ['angle_9',['angle',['../structmeshkernelapi_1_1_make_grid_parameters.html#aeddb2b119881a293314bd11342215493',1,'meshkernelapi::MakeGridParameters']]],
+  ['areal_5fto_5fangle_5fsmoothing_5ffactor_10',['areal_to_angle_smoothing_factor',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ad62cad5b4ab91960e676a40e76e2dc8e',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['aresegmentscrossing_11',['AreSegmentsCrossing',['../namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba',1,'meshkernel']]],
+  ['aspect_5fratio_12',['aspect_ratio',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a77420b59d6eb2d91e67c19d109d05459',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['aspect_5fratio_5fgrow_5ffactor_13',['aspect_ratio_grow_factor',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a823974162a726fbc445faf2d104b406c',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['attraction_5fparameter_14',['attraction_parameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a0e8576342cf96b281475a9dc03b5bdbf',1,'meshkernelapi::CurvilinearParameters']]],
+  ['average_5fwidth_15',['average_width',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a9966f31309bdd2b71d8fc6358042bc1d',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['averaginginterpolation_16',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#a9e20232e12c29f93285855be18f12667',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]],
+  ['averagingmethod_17',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
 ];
