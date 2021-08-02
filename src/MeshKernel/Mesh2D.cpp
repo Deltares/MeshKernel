@@ -429,6 +429,7 @@ void Mesh2D::ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters
     std::vector<size_t> numEdgeFacesCache;
     numEdgeFacesCache.reserve(maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
+#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (auto f = 0; f < numFaces; f++)
     {
         //need to account for spherical coordinates. Build a polygon around a face
