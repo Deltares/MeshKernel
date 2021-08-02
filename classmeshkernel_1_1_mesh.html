@@ -227,7 +227,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:aa5dbb10dd61580b4d81c8c297b77e602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).  <a href="classmeshkernel_1_1_mesh.html#aa5dbb10dd61580b4d81c8c297b77e602">More...</a><br /></td></tr>
 <tr class="separator:aa5dbb10dd61580b4d81c8c297b77e602"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abae11e12a202c2e4d2ee57fae97f9881"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">operator+=</a> (<a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> const &amp;rhs)</td></tr>
-<tr class="memdesc:abae11e12a202c2e4d2ee57fae97f9881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to the first.  <a href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">More...</a><br /></td></tr>
+<tr class="memdesc:abae11e12a202c2e4d2ee57fae97f9881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh.  <a href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">More...</a><br /></td></tr>
 <tr class="separator:abae11e12a202c2e4d2ee57fae97f9881"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -250,7 +250,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 <tr class="separator:a9144552c670d44e0bc134ea48b4271af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a375882f55356a94885b680bc5092e426"><td class="memItemLeft" align="right" valign="top"><a id="a375882f55356a94885b680bc5092e426"></a>
 std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a375882f55356a94885b680bc5092e426">m_nodesNodes</a></td></tr>
-<tr class="memdesc:a375882f55356a94885b680bc5092e426"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each node, its neighbours. <br /></td></tr>
+<tr class="memdesc:a375882f55356a94885b680bc5092e426"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each node, its neighbors. <br /></td></tr>
 <tr class="separator:a375882f55356a94885b680bc5092e426"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69248de9529d1c0ad698d056760e5900"><td class="memItemLeft" align="right" valign="top"><a id="a69248de9529d1c0ad698d056760e5900"></a>
 std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a69248de9529d1c0ad698d056760e5900">m_nodesTypes</a></td></tr>
@@ -1212,7 +1212,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to the first. </p>
+<p>Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The mesh to add </td></tr>
