@@ -225,9 +225,10 @@ namespace meshkernel
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
 
-        /// @brief Sort mesh edges in conterclockwise orther (Sort_links_ccw)
-        /// @param[in] node The node index for which sorting should take place
-        void SortEdgesInCounterClockWiseOrder(size_t node);
+        /// @brief Sort mesh edges around a node in conterclockwise orther (Sort_links_ccw)
+        /// @param[in] startNode The first node index where to perform edge sorting.
+        /// @param[in] endNode   The first node index where to perform edge sorting.
+        void SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode);
 
         /// @brief Compute the max length of the edges connected to a node
         /// @param node The mesh node
