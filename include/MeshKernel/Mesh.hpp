@@ -275,7 +275,7 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocations location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
-        /// firstMesh += secondmesh results in the second mesh being added to the first
+        /// firstMesh += secondmesh results in the second mesh being added to firstMesh
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
@@ -285,7 +285,7 @@ namespace meshkernel
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<int> m_nodeMask;                   ///< The node mask (kc)
-        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbours
+        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 
         // edges

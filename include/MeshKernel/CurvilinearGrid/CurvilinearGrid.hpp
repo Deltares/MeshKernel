@@ -84,19 +84,19 @@ namespace meshkernel
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
-        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<CurvilinearGridNodeIndices>> ConvertCurvilinearToNodesAndEdges() const;
+        [[nodiscard]] std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<CurvilinearGridNodeIndices>> ConvertCurvilinearToNodesAndEdges() const;
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
-        CurvilinearGridNodeIndices GetNodeIndices(Point point);
+        [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
 
         /// @brief From a point gets the node indices of the closest edges
         /// @param[in] point The input point
         /// @return The curvilinear grid indices of the closest edge
-        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> GetEdgeNodeIndices(Point const& point);
+        [[nodiscard]] std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> GetEdgeNodeIndices(Point const& point);
 
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
@@ -106,7 +106,7 @@ namespace meshkernel
         /// @param[in] m The m coordinate
         /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
-        bool IsValidFace(size_t m, size_t n) const;
+        [[nodiscard]] bool IsValidFace(size_t m, size_t n) const;
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
@@ -157,13 +157,13 @@ namespace meshkernel
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        [[nodiscard]] bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
         /// @param[in] secondNode The second node of the grid line
         /// @return The boundary grid line type
-        BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const;
+        [[nodiscard]] BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const;
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.

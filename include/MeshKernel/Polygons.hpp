@@ -85,11 +85,6 @@ namespace meshkernel
         /// @return the start and end index in m_indices
         [[nodiscard]] std::tuple<size_t, size_t> StartEndIndicesOfPolygon(size_t polygonIndex) const
         {
-            if (polygonIndex >= m_indices.size())
-            {
-                return {sizetMissingValue, sizetMissingValue};
-            }
-
             return {m_indices.at(polygonIndex).at(0), m_indices.at(polygonIndex).at(1)};
         }
 
