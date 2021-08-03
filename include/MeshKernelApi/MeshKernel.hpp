@@ -830,10 +830,10 @@ namespace meshkernelapi
         /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId                  The id of the mesh state
         /// @param[in] smoothingIterations           The number of smoothing iterations to perform
-        /// @param[in] xFirstGridlineNode            The x coordinate of the first point of the segment
-        /// @param[in] yFirstGridlineNode            The y coordinate of the first point of the segment
-        /// @param[in] xSecondGridLineNode           The x coordinate of the second point of the segment
-        /// @param[in] ySecondGridLineNode           The y coordinate of the second point of the segment
+        /// @param[in] xFirstGridlineNode            The x coordinate of the first curvilinear grid node
+        /// @param[in] yFirstGridlineNode            The y coordinate of the first curvilinear grid node
+        /// @param[in] xSecondGridLineNode           The x coordinate of the second curvilinear grid node
+        /// @param[in] ySecondGridLineNode           The y coordinate of the second curvilinear grid node
         /// @param[in] xLowerLeftCornerSmoothingArea The x coordinate of the lower left corner of the smoothing area
         /// @param[in] yLowerLeftCornerSmoothingArea The x coordinate of the lower left corner of the smoothing area
         /// @param[in] xUpperRightCornerSmootingArea The x coordinate of the upper right corner of the smoothing area
@@ -850,17 +850,17 @@ namespace meshkernelapi
                                                                   double xUpperRightCornerSmootingArea,
                                                                   double yUpperRightCornerSmootingArea);
 
-        /// @brief Instantiates the curvilinear line shift algorithm
+        /// @brief Initializes the curvilinear line shift algorithm
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId);
 
         /// @brief Sets the start and end nodes of the line to shift
         /// @param[in] meshKernelId        The id of the mesh state
-        /// @param[in] xFirstGridLineNode  The x coordinate of the first point of the line to shift
-        /// @param[in] yFirstGridLineNode  The y coordinate of the first point of the line to shift
-        /// @param[in] xSecondGridLineNode The x coordinate of the second point of the line to shift
-        /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to shift
+        /// @param[in] xFirstGridLineNode  The x coordinate of the first curvilinear grid node to shift
+        /// @param[in] yFirstGridLineNode  The y coordinate of the first curvilinear grid node to shift
+        /// @param[in] xSecondGridLineNode The x coordinate of the second curvilinear grid node to shift
+        /// @param[in] ySecondGridLineNode The y coordinate of the second curvilinear grid node to shift
         /// @returns  Error code
         MKERNEL_API int mkernel_curvilinear_set_line_line_shift(int meshKernelId,
                                                                 double xFirstGridLineNode,
@@ -881,7 +881,7 @@ namespace meshkernelapi
                                                                  double xUpperRightCorner,
                                                                  double yUpperRightCorner);
 
-        /// @brief Moves a node of the line to shift
+        /// @brief Moves a node of the line to shift, the operation can be performed multiple times.
         /// @param[in] meshKernelId    The id of the mesh state
         /// @param[in] xFromCoordinate The x coordinate of the node to move (the closest curvilinear grid node will be found)
         /// @param[in] yFromCoordinate The y coordinate of the node to move (the closest curvilinear grid node will be found)

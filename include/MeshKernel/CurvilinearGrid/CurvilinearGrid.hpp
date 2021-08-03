@@ -169,6 +169,11 @@ namespace meshkernel
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         void DeleteNode(Point const& point);
 
+        /// @brief Moves a node from one position to another
+        /// @param[in] fromPoint The input position, the closest node will be used
+        /// @param[in] toPoint The coordinates of the new position
+        void MoveNode(Point const& fromPoint, Point const& toPoint);
+
         size_t m_numM = 0;                                     ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                     ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
@@ -188,7 +193,7 @@ namespace meshkernel
         /// @brief Compute spline derivatives along a gridline, also accounting for missing values
         /// @param[in] gridLine The input gridline
         /// @returns The spline derivatives
-        std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
+        [[nodiscard]] std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
         /// @brief Adds an edge at the boundary forming a new face. Increase the grid if required (MODGR1)
         /// The position of the new edge depends on the type of \p firstNode or \p secondNode.

@@ -145,5 +145,5 @@ void CurvilinearGridLineShift::MoveNode(Point const& fromPoint, Point const& toP
         throw std::invalid_argument("CurvilinearGridLineShift::MoveNode The selected node does not belong to the line to be shifted");
     }
 
-    m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+    m_grid.MoveNode(fromPoint, toPoint);
 }

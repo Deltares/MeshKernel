@@ -848,3 +848,18 @@ void CurvilinearGrid::DeleteNode(Point const& point)
         SetFlatCopies();
     }
 }
+
+void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
+{
+    // Get the node indices of fromPoint
+    auto const nodeIndex = GetNodeIndices(fromPoint);
+
+    //Check the node indices are valid
+    if (!nodeIndex.IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
+    }
+
+    // move fromPoint to toPoint
+    m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+}
