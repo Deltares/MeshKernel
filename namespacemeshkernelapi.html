@@ -408,6 +408,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a8828c734b99cf7e4a75065b93750e7c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">mkernel_curvilinear_delete_node</a> (int meshKernelId, double xPointCoordinate, double yPointCoordinate)</td></tr>
 <tr class="memdesc:a8828c734b99cf7e4a75065b93750e7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the curvilinear node closest to a point.  <a href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">More...</a><br /></td></tr>
 <tr class="separator:a8828c734b99cf7e4a75065b93750e7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab538a45d6469d77c2c1dc925a9fcb446"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">mkernel_curvilinear_move_node</a> (int meshKernelId, double xFromPoint, double yFromPoint, double xToPoint, double yToPoint)</td></tr>
+<tr class="memdesc:ab538a45d6469d77c2c1dc925a9fcb446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a point of a curvilinear grid from one location to another.  <a href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">More...</a><br /></td></tr>
+<tr class="separator:ab538a45d6469d77c2c1dc925a9fcb446"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1034,9 +1037,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <p>Delete the curvilinear node closest to a point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramname">xPointCoordinate</td><td>The x coordinate of the point </td></tr>
-    <tr><td class="paramname">yPointCoordinate</td><td>The y coordinate of the point </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xPointCoordinate</td><td>The x coordinate of the point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yPointCoordinate</td><td>The y coordinate of the point </td></tr>
   </table>
   </dd>
 </dl>
@@ -1685,6 +1688,65 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygons to account for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ab538a45d6469d77c2c1dc925a9fcb446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab538a45d6469d77c2c1dc925a9fcb446">&#9670;&nbsp;</a></span>mkernel_curvilinear_move_node()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_move_node </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xFromPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yFromPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xToPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yToPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves a point of a curvilinear grid from one location to another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFromPoint</td><td>The x coordinate of point to move </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFromPoint</td><td>The y coordinate of point to move </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xToPoint</td><td>The new x coordinate of the point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yToPoint</td><td>The new y coordinate of the point </td></tr>
   </table>
   </dd>
 </dl>
