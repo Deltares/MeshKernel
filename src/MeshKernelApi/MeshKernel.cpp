@@ -2278,7 +2278,7 @@ namespace meshkernelapi
                                                                           static_cast<size_t>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
-            curvilinearGridSmoothing.Compute();
+            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(curvilinearGridSmoothing.Compute());
         }
         catch (...)
         {
@@ -2644,6 +2644,37 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate});
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_move_node(int meshKernelId,
+                                                  double xFromPoint,
+                                                  double yFromPoint,
+                                                  double xToPoint,
+                                                  double yToPoint)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+            }
+
+            meshkernel::Point const fromPoint{xFromPoint, yFromPoint};
+            meshkernel::Point const toPoint{xToPoint, yToPoint};
+
+            meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint);
         }
         catch (...)
         {

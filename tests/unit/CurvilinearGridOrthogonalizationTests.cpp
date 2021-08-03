@@ -5,6 +5,37 @@
 #include <MeshKernel/Entities.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinearGrid_ShouldOrthogonalizeGrid)
+{
+    // Set-up
+    std::vector<std::vector<meshkernel::Point>> grid{
+        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
+        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
+        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
+        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+
+    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
+
+    // Move a node, to make the grid strongly non orthogonal
+    curvilinearGrid->MoveNode({10.0, 20.0}, {18.0, 12.0});
+
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
+
+    // Execute
+    auto const orthogonalizedCurvilinearGrid = curvilinearGridOrthogonalization.Compute();
+
+    // Assert the moved nodes has moved towards its original location, making the grid more orthogonal
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(11.841396536135521, orthogonalizedCurvilinearGrid.m_gridNodes[1][2].x, tolerance);
+    ASSERT_NEAR(18.158586078094562, orthogonalizedCurvilinearGrid.m_gridNodes[1][2].y, tolerance);
+}
+
 TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_ShouldNotModifyGrid)
 {
     // Set-up

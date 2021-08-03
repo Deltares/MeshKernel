@@ -1652,7 +1652,10 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeUniformCurvilinearGrid(3, 3, 10.0);
+    // Move a node to make the grid non orthogonal
+    auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, 10.0, 20.0, 18.0, 12.0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
@@ -1661,9 +1664,9 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
-    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 10.0, 20.0, 30.0, 20.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1672,8 +1675,18 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (nothing changed)
-    ASSERT_EQ(5, curvilinearGrid.num_m);
-    ASSERT_EQ(5, curvilinearGrid.num_n);
+    ASSERT_EQ(4, curvilinearGrid.num_m);
+    ASSERT_EQ(4, curvilinearGrid.num_n);
+
+    std::unique_ptr<double> const xNodesCurvilinearGrid(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
+    std::unique_ptr<double> const yNodesCurvilinearGrid(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
+    curvilinearGrid.node_x = xNodesCurvilinearGrid.get();
+    curvilinearGrid.node_y = yNodesCurvilinearGrid.get();
+
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    double const tolerance = 1e-6;
+    ASSERT_NEAR(11.841396536135521, curvilinearGrid.node_x[9], tolerance);
+    ASSERT_NEAR(18.158586078094562, curvilinearGrid.node_y[9], tolerance);
 }
 
 TEST_F(ApiTests, Smoothing_CurvilinearGrid_ShouldSmooth)

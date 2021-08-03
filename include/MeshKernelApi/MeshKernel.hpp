@@ -954,12 +954,25 @@ namespace meshkernelapi
 
         /// @brief Delete the curvilinear node closest to a point
         /// @param meshKernelId The id of the mesh state
-        /// @param xPointCoordinate The x coordinate of the point
-        /// @param yPointCoordinate The y coordinate of the point
+        /// @param[in] xPointCoordinate The x coordinate of the point
+        /// @param[in] yPointCoordinate The y coordinate of the point
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_delete_node(int meshKernelId,
                                                         double xPointCoordinate,
                                                         double yPointCoordinate);
+
+        /// @brief Moves a point of a curvilinear grid from one location to another
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] xFromPoint The x coordinate of point to move
+        /// @param[in] yFromPoint The y coordinate of point to move
+        /// @param[in] xToPoint The new x coordinate of the point
+        /// @param[in] yToPoint The new y coordinate of the point
+        /// @return Error code
+        MKERNEL_API int mkernel_curvilinear_move_node(int meshKernelId,
+                                                      double xFromPoint,
+                                                      double yFromPoint,
+                                                      double xToPoint,
+                                                      double yToPoint);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
