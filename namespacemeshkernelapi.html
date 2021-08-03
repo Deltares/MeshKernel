@@ -375,7 +375,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ad19958bebc2ca018eca5e3da034deb0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooths a curvilinear grid along the direction specified by a segment.  <a href="namespacemeshkernelapi.html#ad19958bebc2ca018eca5e3da034deb0c">More...</a><br /></td></tr>
 <tr class="separator:ad19958bebc2ca018eca5e3da034deb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a613dd90bec5a91a28dee0d31788401a7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a613dd90bec5a91a28dee0d31788401a7">mkernel_curvilinear_initialize_line_shift</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:a613dd90bec5a91a28dee0d31788401a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates the curvilinear line shift algorithm.  <a href="namespacemeshkernelapi.html#a613dd90bec5a91a28dee0d31788401a7">More...</a><br /></td></tr>
+<tr class="memdesc:a613dd90bec5a91a28dee0d31788401a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the curvilinear line shift algorithm.  <a href="namespacemeshkernelapi.html#a613dd90bec5a91a28dee0d31788401a7">More...</a><br /></td></tr>
 <tr class="separator:a613dd90bec5a91a28dee0d31788401a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a7dc0445883bf597840da83c47babc1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4a7dc0445883bf597840da83c47babc1">mkernel_curvilinear_set_line_line_shift</a> (int meshKernelId, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
 <tr class="memdesc:a4a7dc0445883bf597840da83c47babc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the start and end nodes of the line to shift.  <a href="namespacemeshkernelapi.html#a4a7dc0445883bf597840da83c47babc1">More...</a><br /></td></tr>
@@ -384,7 +384,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a9bc5a4f9bf16b91caf138adaf2265040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a block on the curvilinear where the shifting is distributed.  <a href="namespacemeshkernelapi.html#a9bc5a4f9bf16b91caf138adaf2265040">More...</a><br /></td></tr>
 <tr class="separator:a9bc5a4f9bf16b91caf138adaf2265040"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6dadaf06c429d8c30f962d672b72c1bb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6dadaf06c429d8c30f962d672b72c1bb">mkernel_curvilinear_move_node_line_shift</a> (int meshKernelId, double xFromCoordinate, double yFromCoordinate, double xToCoordinate, double yToCoordinate)</td></tr>
-<tr class="memdesc:a6dadaf06c429d8c30f962d672b72c1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a node of the line to shift.  <a href="namespacemeshkernelapi.html#a6dadaf06c429d8c30f962d672b72c1bb">More...</a><br /></td></tr>
+<tr class="memdesc:a6dadaf06c429d8c30f962d672b72c1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a node of the line to shift, the operation can be performed multiple times.  <a href="namespacemeshkernelapi.html#a6dadaf06c429d8c30f962d672b72c1bb">More...</a><br /></td></tr>
 <tr class="separator:a6dadaf06c429d8c30f962d672b72c1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4cf4944145f3981e711822151ffdeac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad4cf4944145f3981e711822151ffdeac">mkernel_curvilinear_line_shift</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ad4cf4944145f3981e711822151ffdeac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before.  <a href="namespacemeshkernelapi.html#ad4cf4944145f3981e711822151ffdeac">More...</a><br /></td></tr>
@@ -1276,7 +1276,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Instantiates the curvilinear line shift algorithm. </p>
+<p>Initializes the curvilinear line shift algorithm. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -1736,7 +1736,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Moves a node of the line to shift. </p>
+<p>Moves a node of the line to shift, the operation can be performed multiple times. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -2096,10 +2096,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridLineNode</td><td>The x coordinate of the first point of the line to shift </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridLineNode</td><td>The y coordinate of the first point of the line to shift </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second point of the line to shift </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondGridLineNode</td><td>The y coordinate of the second point of the line to shift </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridLineNode</td><td>The x coordinate of the first curvilinear grid node to shift </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridLineNode</td><td>The y coordinate of the first curvilinear grid node to shift </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second curvilinear grid node to shift </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondGridLineNode</td><td>The y coordinate of the second curvilinear grid node to shift </td></tr>
   </table>
   </dd>
 </dl>
@@ -2252,10 +2252,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">smoothingIterations</td><td>The number of smoothing iterations to perform </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridlineNode</td><td>The x coordinate of the first point of the segment </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridlineNode</td><td>The y coordinate of the first point of the segment </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second point of the segment </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondGridLineNode</td><td>The y coordinate of the second point of the segment </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridlineNode</td><td>The x coordinate of the first curvilinear grid node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridlineNode</td><td>The y coordinate of the first curvilinear grid node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second curvilinear grid node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondGridLineNode</td><td>The y coordinate of the second curvilinear grid node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftCornerSmoothingArea</td><td>The x coordinate of the lower left corner of the smoothing area </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCornerSmoothingArea</td><td>The x coordinate of the lower left corner of the smoothing area </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCornerSmootingArea</td><td>The x coordinate of the upper right corner of the smoothing area </td></tr>
