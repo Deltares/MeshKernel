@@ -381,7 +381,7 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         edgeIndexOtherNode = edgeIndexOtherNode - 1;
     }
 
-    const auto edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
+    auto const edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
     FindFacesRecursive(startNode, otherNode, edge, numClosingEdges, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 

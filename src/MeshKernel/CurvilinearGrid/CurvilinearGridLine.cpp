@@ -49,7 +49,7 @@ CurvilinearGridLine::CurvilinearGridLine(CurvilinearGridNodeIndices const& start
 
 bool CurvilinearGridLine::IsNodeOnLine(CurvilinearGridNodeIndices const& node) const
 {
-    for (auto i = m_startCoordinate; i < m_endCoordinate; ++i)
+    for (auto i = m_startCoordinate; i <= m_endCoordinate; ++i)
     {
         if (IsMGridLine() && node.m_m == i && node.m_n == m_constantCoordinate)
         {
