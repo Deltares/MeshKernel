@@ -552,13 +552,13 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 {
 
     std::vector<double> edgeAngles(maximumNumberOfEdgesPerNode);
-    std::vector<std::size_t> indices;
-    std::vector<size_t> edgeNodeCopy;
+    std::vector<std::size_t> indices(maximumNumberOfEdgesPerNode);
+    std::vector<size_t> edgeNodeCopy(maximumNumberOfEdgesPerNode);
     for (auto n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
         {
-            throw std::invalid_argument("Mesh::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
+            continue;
         }
 
         double phi0 = 0.0;
@@ -612,7 +612,6 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 
         // Performing sorting
         indices.resize(m_nodesNumEdges[n]);
-        edgeNodeCopy.reserve(m_nodesEdges[n].size());
         edgeNodeCopy.clear();
         std::copy(m_nodesEdges[n].begin(), m_nodesEdges[n].end(), std::back_inserter(edgeNodeCopy));
         iota(indices.begin(), indices.end(), 0);

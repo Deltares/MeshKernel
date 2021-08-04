@@ -89,7 +89,7 @@ namespace meshkernel
         void Administrate(AdministrationOption administrationOption);
 
         /// @brief Compute face circumcenters
-        void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
+        void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();

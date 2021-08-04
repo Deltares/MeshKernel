@@ -88,7 +88,7 @@ void Mesh2D::Administrate(AdministrationOption administrationOption)
     FindFaces();
 
     // find mesh circumcenters
-    ComputeFaceCircumcentersMassCentersAndAreas();
+    ComputeCircumcentersMassCentersAndFaceAreas();
 
     // classify node types
     ClassifyNodes();
@@ -387,12 +387,11 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
 
 void Mesh2D::FindFaces()
 {
-    std::vector<size_t> sortedEdgesFaces;
-    std::vector<size_t> sortedNodes;
-    std::vector<Point> nodalValues;
-    std::vector<size_t> edges;
-    std::vector<size_t> nodes;
-    nodalValues.reserve(maximumNumberOfEdgesPerFace);
+    std::vector<size_t> sortedEdgesFaces(maximumNumberOfEdgesPerFace);
+    std::vector<size_t> sortedNodes(maximumNumberOfEdgesPerFace);
+    std::vector<Point> nodalValues(maximumNumberOfEdgesPerFace);
+    std::vector<size_t> edges(maximumNumberOfEdgesPerFace);
+    std::vector<size_t> nodes(maximumNumberOfEdgesPerFace);
     for (auto numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
         for (auto n = 0; n < GetNumNodes(); n++)
@@ -404,9 +403,9 @@ void Mesh2D::FindFaces()
 
             for (auto e = 0; e < m_nodesNumEdges[n]; e++)
             {
-                FindFacesRecursive(n, n, m_nodesEdges[n][e], numEdgesPerFace, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
                 nodes.clear();
                 edges.clear();
+                FindFacesRecursive(n, n, m_nodesEdges[n][e], numEdgesPerFace, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
             }
         }
     }
@@ -418,13 +417,13 @@ void Mesh2D::FindFaces()
     }
 }
 
-void Mesh2D::ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters)
+void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
 {
 
     auto const numFaces = GetNumFaces();
-    m_facesCircumcenters.resize(GetNumFaces());
-    m_faceArea.resize(GetNumFaces());
-    m_facesMassCenters.resize(GetNumFaces());
+    m_facesCircumcenters.resize(numFaces);
+    m_faceArea.resize(numFaces);
+    m_facesMassCenters.resize(numFaces);
 
     std::vector<size_t> numEdgeFacesCache;
     numEdgeFacesCache.reserve(maximumNumberOfEdgesPerFace);
