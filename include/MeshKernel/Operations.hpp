@@ -39,6 +39,7 @@ namespace meshkernel
 {
     /// @brief Resizes and fills a two dimensional vector
     /// @tparam T The type of the vector elements
+    /// @param[in] v The input two dimensional vector
     /// @param[in] firstDimension The first new dimension
     /// @param[in] secondDimension The second new dimension
     /// @param[in] fill Whatever fill or not fill the vector with missing values
@@ -59,6 +60,7 @@ namespace meshkernel
 
     /// @brief Resizes and fills a three dimensional vector
     /// @tparam T The type of the vector elements
+    /// @param[in] v The input three dimensional vector
     /// @param[in] firstDimension The first new dimension
     /// @param[in] secondDimension The second new dimension
     /// @param[in] thirdDim The third new dimension
