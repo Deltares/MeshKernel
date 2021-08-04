@@ -274,7 +274,7 @@ CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& 
 void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
-    m_gridFacesMask.resize(m_numM - 1, std::vector<bool>(m_numN - 1, false));
+    ResizeAndFill2DVector(m_gridFacesMask, m_numM - 1, m_numN - 1, true, false);
     for (auto m = 0; m < m_numM - 1; ++m)
     {
         for (auto n = 0; n < m_numN - 1; ++n)
@@ -349,12 +349,12 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
-    m_gridNodesTypes.resize(m_numM, std::vector<NodeType>(m_numN, NodeType::Invalid));
+    ResizeAndFill2DVector(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
 
     // Flag faces based on boundaries
-    for (size_t m = 0; m < m_numM; ++m)
+    for (auto m = 0; m < m_numM; ++m)
     {
-        for (size_t n = 0; n < m_numN; ++n)
+        for (auto n = 0; n < m_numN; ++n)
         {
 
             if (!m_gridNodes[m][n].IsValid())

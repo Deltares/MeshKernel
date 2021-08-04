@@ -428,7 +428,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     }
 
     // Now determine the start and end spline corner points for each spline
-    m_splineGroupIndexAndFromToIntersections.resize(numSplines, std::vector<size_t>(3, 0));
+    ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<size_t>(0));
 
     // m_n direction
     for (auto i = 0; i < m_numMSplines; i++)

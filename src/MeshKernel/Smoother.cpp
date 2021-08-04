@@ -147,7 +147,7 @@ void Smoother::ComputeWeights()
         Ginv[n][3] = 1.0;
     }
 
-    m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+    ResizeAndFill2DVector(m_weights, m_mesh->GetNumNodes(), m_maximumNumConnectedNodes, true, 0.0);
     std::vector<double> a1(2);
     std::vector<double> a2(2);
 
@@ -905,7 +905,7 @@ void Smoother::NodeAdministration(size_t currentNode,
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
     if (m_faceNodeMappingCache.size() < numSharedFaces)
     {
-        m_faceNodeMappingCache.resize(numSharedFaces, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
+        ResizeAndFill2DVector(m_faceNodeMappingCache, numSharedFaces, maximumNumberOfNodesPerFace);
     }
     for (auto f = 0; f < numSharedFaces; f++)
     {
@@ -1118,12 +1118,11 @@ void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
             const auto estimatedSize = static_cast<size_t>(static_cast<double>(m_numTopologies) * 1.5);
             m_numTopologyNodes.resize(estimatedSize, 0);
             m_numTopologyFaces.resize(estimatedSize, 0);
-            m_topologyXi.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-            m_topologyEta.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-
-            m_topologySharedFaces.resize(estimatedSize, std::vector<size_t>(maximumNumberOfEdgesPerNode, sizetMissingValue));
-            m_topologyConnectedNodes.resize(estimatedSize, std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
-            m_topologyFaceNodeMapping.resize(estimatedSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
+            ResizeAndFill2DVector(m_topologyXi, estimatedSize, maximumNumberOfConnectedNodes);
+            ResizeAndFill2DVector(m_topologyEta, estimatedSize, maximumNumberOfConnectedNodes);
+            ResizeAndFill2DVector(m_topologySharedFaces, estimatedSize, maximumNumberOfEdgesPerNode);
+            ResizeAndFill2DVector(m_topologyConnectedNodes, estimatedSize, maximumNumberOfConnectedNodes);
+            ResizeAndFill3DVector(m_topologyFaceNodeMapping, estimatedSize, maximumNumberOfConnectedNodes, maximumNumberOfConnectedNodes);
         }
 
         const auto topologyIndex = m_numTopologies - 1;

@@ -143,8 +143,8 @@ namespace meshkernel
             }
 
             // Create m_faceNodes
-            m_faceNodes.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
-            m_faceEdges.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
+            ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, sizetMissingValue);
+            ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, sizetMissingValue);
             size_t faceCounter = 0;
             for (auto f = 0; f < m_numFaces; ++f)
             {
@@ -165,7 +165,7 @@ namespace meshkernel
                 return;
             }
 
-            m_edgeNodes.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
+            ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, sizetMissingValue);
             size_t edgeCounter = 0;
             for (auto e = 0; e < m_numEdges; ++e)
             {
@@ -175,7 +175,7 @@ namespace meshkernel
                 edgeCounter++;
             }
 
-            m_edgesFaces.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
+            ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, sizetMissingValue);
             edgeCounter = 0;
             for (auto f = 0; f < m_numFaces; ++f)
             {

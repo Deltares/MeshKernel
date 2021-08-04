@@ -1080,7 +1080,7 @@ void Mesh2D::ComputeNodeNeighbours()
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
 
-    m_nodesNodes.resize(GetNumNodes(), std::vector<size_t>(m_maxNumNeighbours, sizetMissingValue));
+    ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, sizetMissingValue);
     //for each node, determine the neighbouring nodes
     for (auto n = 0; n < GetNumNodes(); n++)
     {

@@ -939,20 +939,20 @@ namespace meshkernelapi
 
         /// @brief Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] mirroring       The mirroring factor
+        /// @param[in] mirroringFactor       The mirroring factor
         /// @param[in] xFirstGridLineNode    The x coordinate of the first grid line point
         /// @param[in] yFirstGridLineNode    The y coordinate of the first grid line point
         /// @param[in] xSecondGridLineNode   The x coordinate of the second grid line point
         /// @param[in] ySecondGridLineNode   The y coordinate of the second grid line point
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_line_mirror(int meshKernelId,
-                                                        double mirroring,
+                                                        double mirroringFactor,
                                                         double xFirstGridLineNode,
                                                         double yFirstGridLineNode,
                                                         double xSecondGridLineNode,
                                                         double ySecondGridLineNode);
 
-        /// @brief Delete the curvilinear node closest to a point
+        /// @brief Delete the node closest to a point
         /// @param meshKernelId The id of the mesh state
         /// @param[in] xPointCoordinate The x coordinate of the point
         /// @param[in] yPointCoordinate The y coordinate of the point

@@ -45,13 +45,13 @@ CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_p
     m_splines = Splines(m_grid);
 
     /// allocate matrix coefficients
-    m_a.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_b.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_c.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_d.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_e.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_atp.resize(m_grid.m_numM, std::vector<double>(m_grid.m_numN, doubleMissingValue));
-    m_isGridNodeFrozen.resize(m_grid.m_numM, std::vector<bool>(m_grid.m_numN, false));
+    ResizeAndFill2DVector(m_a, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_b, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_c, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_d, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_e, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_atp, m_grid.m_numM, m_grid.m_numN, true, doubleMissingValue);
+    ResizeAndFill2DVector(m_isGridNodeFrozen, m_grid.m_numM, m_grid.m_numN, true, false);
 }
 
 void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()

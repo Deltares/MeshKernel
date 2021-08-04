@@ -45,9 +45,8 @@ Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 void Orthogonalizer::Compute()
 {
     m_mesh->ComputeNodeNeighbours();
-    m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_mesh->m_maxNumNeighbours, 0.0));
-    m_rhs.resize(m_mesh->GetNumNodes(), std::vector<double>(2, 0.0));
-    std::fill(m_rhs.begin(), m_rhs.end(), std::vector<double>(2, 0.0));
+    ResizeAndFill2DVector(m_weights, m_mesh->GetNumNodes(), m_mesh->m_maxNumNeighbours, true, 0.0);
+    ResizeAndFill2DVector(m_rhs, m_mesh->GetNumNodes(), 2, true, 0.0);
 
     // Compute mesh aspect ratios
     m_mesh->ComputeAspectRatios(m_aspectRatios);

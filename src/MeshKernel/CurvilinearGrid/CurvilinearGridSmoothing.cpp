@@ -38,7 +38,8 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGr
 
 {
     // Allocate cache for storing grid nodes values
-    m_gridNodesCache.resize(m_grid.m_gridNodes.size(), std::vector<Point>(m_grid.m_gridNodes[0].size()));
+    ResizeAndFill2DVector(m_gridNodesCache, m_grid.m_gridNodes.size(), m_grid.m_gridNodes[0].size());
+
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
 }

@@ -366,7 +366,7 @@ void CurvilinearGridFromSplines::Initialize()
     // Increase curvilinear grid
     const auto numGridLayers = m_curvilinearParameters.n_refinement + 1;
     // The layer by coordinate to grow
-    m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, {doubleMissingValue, doubleMissingValue}));
+    ResizeAndFill2DVector(m_gridPoints, numGridLayers + 1, m_numM + 1);
     m_validFrontNodes.resize(m_numM, 1);
 
     // Copy the first m point in m_gridPoints
@@ -1091,8 +1091,8 @@ std::tuple<size_t, size_t> CurvilinearGridFromSplines::GetNeighbours(const std::
 void CurvilinearGridFromSplines::ComputeEdgeVelocities()
 {
     m_edgeVelocities.resize(m_numM - 1, doubleMissingValue);
-    m_growFactorOnSubintervalAndEdge.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1, 1.0));
-    m_numPerpendicularFacesOnSubintervalAndEdge.resize(m_maxNumCenterSplineHeights, std::vector<size_t>(m_numM - 1, 0));
+    ResizeAndFill2DVector(m_growFactorOnSubintervalAndEdge, m_maxNumCenterSplineHeights, m_numM - 1, true, 1.0);
+    ResizeAndFill2DVector(m_numPerpendicularFacesOnSubintervalAndEdge, m_maxNumCenterSplineHeights, m_numM - 1, true, static_cast<size_t>(0));
 
     ComputeGridHeights();
 
@@ -1346,9 +1346,7 @@ void CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals(size_t s,
 void CurvilinearGridFromSplines::ComputeGridHeights()
 {
     const auto numSplines = m_splines->GetNumSplines();
-
-    m_gridHeights.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1));
-    std::fill(m_gridHeights.begin(), m_gridHeights.end(), std::vector<double>(m_numM - 1, doubleMissingValue));
+    ResizeAndFill2DVector(m_gridHeights, m_maxNumCenterSplineHeights, m_numM - 1, true, doubleMissingValue);
 
     std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.m_refinement, 0.0));
     std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_curvilinearParameters.m_refinement, 0.0));

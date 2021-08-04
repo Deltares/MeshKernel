@@ -37,6 +37,51 @@
 
 namespace meshkernel
 {
+    /// @brief Resizes and fills a two dimensional vector
+    /// @tparam T The type of the vector elements
+    /// @param[in] firstDimension The first new dimension
+    /// @param[in] secondDimension The second new dimension
+    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fillValue The fill value
+    template <typename T>
+    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, size_t const& firstDimension, size_t const& secondDimension, bool fill = false, const T& fillValue = {})
+    {
+        v.resize(firstDimension);
+        for (auto& e : v)
+        {
+            e.resize(secondDimension);
+            if (fill)
+            {
+                std::fill(e.begin(), e.end(), fillValue);
+            }
+        }
+    }
+
+    /// @brief Resizes and fills a three dimensional vector
+    /// @tparam T The type of the vector elements
+    /// @param[in] firstDimension The first new dimension
+    /// @param[in] secondDimension The second new dimension
+    /// @param[in] thirdDim The third new dimension
+    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fillValue The fill value
+    template <typename T>
+    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, size_t const& firstDimension, size_t const& secondDimension, size_t const& thirdDim, bool fill = false, const T& fillValue = {})
+    {
+        v.resize(firstDimension);
+        for (auto& e : v)
+        {
+            e.resize(secondDimension);
+            for (auto& ee : e)
+            {
+                ee.resize(thirdDim);
+                if (fill)
+                {
+                    std::fill(ee.begin(), ee.end(), fillValue);
+                }
+            }
+        }
+    }
+
     /// @brief Defines generic dot product for one dimension
     /// @tparam T Requires * operator
     /// @param[in] dx1 First component
