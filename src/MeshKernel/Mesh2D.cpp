@@ -1081,7 +1081,7 @@ void Mesh2D::ComputeNodeNeighbours()
     m_maxNumNeighbours += 1;
 
     ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, sizetMissingValue);
-    //for each node, determine the neighbouring nodes
+    //for each node, determine the neighboring nodes
     for (auto n = 0; n < GetNumNodes(); n++)
     {
         for (auto nn = 0; nn < m_nodesNumEdges[n]; nn++)
@@ -1109,7 +1109,7 @@ std::vector<double> Mesh2D::GetOrthogonality()
                                                     m_facesCircumcenters[m_edgesFaces[e][0]],
                                                     m_facesCircumcenters[m_edgesFaces[e][1]],
                                                     m_projection);
-            if (val != doubleMissingValue)
+            if (!IsEqual(val, doubleMissingValue))
             {
                 val = std::abs(val);
             }
