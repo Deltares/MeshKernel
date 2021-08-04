@@ -228,12 +228,12 @@ void FlipEdges::Compute() const
             // Add edge to m_mesh->m_nodesEdges[kl]
             m_mesh->m_nodesEdges[nodeLeft].resize(m_mesh->m_nodesNumEdges[nodeLeft]);
             m_mesh->m_nodesEdges[nodeLeft].back() = e;
-            m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft);
+            m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft, nodeLeft);
 
             // Add edge to m_mesh->m_nodesEdges[kr]
             m_mesh->m_nodesEdges[nodeRight].resize(m_mesh->m_nodesNumEdges[nodeRight]);
             m_mesh->m_nodesEdges[nodeRight].back() = e;
-            m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight);
+            m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight, nodeRight);
         }
     }
 

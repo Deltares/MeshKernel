@@ -172,7 +172,7 @@ void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
     //compute new faces circumcenters
     if (!m_keepCircumcentersAndMassCenters)
     {
-        m_mesh->ComputeFaceCircumcentersMassCentersAndAreas(true);
+        m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
     }
 }
 
