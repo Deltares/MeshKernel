@@ -548,72 +548,79 @@ bool Mesh::IsFaceOnBoundary(size_t face) const
     return isFaceOnBoundary;
 }
 
-void Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
+void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 {
-    if (!m_nodes[node].IsValid())
-    {
-        throw std::invalid_argument("Mesh::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
-    }
 
-    double phi0 = 0.0;
-    double phi;
     std::vector<double> edgeAngles(maximumNumberOfEdgesPerNode);
-    std::fill(edgeAngles.begin(), edgeAngles.end(), 0.0);
-    for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+    std::vector<std::size_t> indices(maximumNumberOfEdgesPerNode);
+    std::vector<size_t> edgeNodeCopy(maximumNumberOfEdgesPerNode);
+    for (auto n = startNode; n <= endNode; n++)
     {
-
-        auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
-        auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
-        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
+        if (!m_nodes[n].IsValid())
         {
             continue;
         }
 
-        if (secondNode == node)
+        double phi0 = 0.0;
+        double phi;
+        std::fill(edgeAngles.begin(), edgeAngles.end(), 0.0);
+        for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
         {
-            secondNode = firstNode;
-            firstNode = node;
-        }
 
-        const auto deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-        const auto deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-        if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
-        {
-            if (deltaY < 0.0)
+            auto firstNode = m_edges[m_nodesEdges[n][edgeIndex]].first;
+            auto secondNode = m_edges[m_nodesEdges[n][edgeIndex]].second;
+            if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
             {
-                phi = -M_PI / 2.0;
+                continue;
+            }
+
+            if (secondNode == n)
+            {
+                secondNode = firstNode;
+                firstNode = n;
+            }
+
+            const auto deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            const auto deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
+            {
+                if (deltaY < 0.0)
+                {
+                    phi = -M_PI / 2.0;
+                }
+                else
+                {
+                    phi = M_PI / 2.0;
+                }
             }
             else
             {
-                phi = M_PI / 2.0;
+                phi = atan2(deltaY, deltaX);
+            }
+
+            if (edgeIndex == 0)
+            {
+                phi0 = phi;
+            }
+
+            edgeAngles[edgeIndex] = phi - phi0;
+            if (edgeAngles[edgeIndex] < 0.0)
+            {
+                edgeAngles[edgeIndex] = edgeAngles[edgeIndex] + 2.0 * M_PI;
             }
         }
-        else
+
+        // Performing sorting
+        indices.resize(m_nodesNumEdges[n]);
+        edgeNodeCopy.clear();
+        std::copy(m_nodesEdges[n].begin(), m_nodesEdges[n].end(), std::back_inserter(edgeNodeCopy));
+        iota(indices.begin(), indices.end(), 0);
+        sort(indices.begin(), indices.end(), [&](std::size_t const& i1, std::size_t const& i2) { return edgeAngles[i1] < edgeAngles[i2]; });
+
+        for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
         {
-            phi = atan2(deltaY, deltaX);
+            m_nodesEdges[n][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
         }
-
-        if (edgeIndex == 0)
-        {
-            phi0 = phi;
-        }
-
-        edgeAngles[edgeIndex] = phi - phi0;
-        if (edgeAngles[edgeIndex] < 0.0)
-        {
-            edgeAngles[edgeIndex] = edgeAngles[edgeIndex] + 2.0 * M_PI;
-        }
-    }
-
-    // Performing sorting
-    std::vector<std::size_t> indices(m_nodesNumEdges[node]);
-    std::vector<size_t> edgeNodeCopy{m_nodesEdges[node]};
-    iota(indices.begin(), indices.end(), 0);
-    sort(indices.begin(), indices.end(), [&](std::size_t i1, std::size_t i2) { return edgeAngles[i1] < edgeAngles[i2]; });
-
-    for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
-    {
-        m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
     }
 }
 
@@ -766,10 +773,7 @@ void Mesh::AdministrateNodesEdges()
 
     NodeAdministration();
 
-    for (auto n = 0; n < GetNumNodes(); n++)
-    {
-        SortEdgesInCounterClockWiseOrder(n);
-    }
+    SortEdgesInCounterClockWiseOrder(0, GetNumNodes() - 1);
 }
 
 double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)

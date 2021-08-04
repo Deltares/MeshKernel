@@ -89,7 +89,7 @@ namespace meshkernel
         void Administrate(AdministrationOption administrationOption);
 
         /// @brief Compute face circumcenters
-        void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
+        void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
@@ -274,13 +274,10 @@ namespace meshkernel
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
-        std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
-
     private:
         /// @brief Find cells recursive, works with an arbitrary number of edges
-        /// @param[in] startingNode The starting node
+        /// @param[in] startNode The starting node
         /// @param[in] node The current node
-        /// @param[in] numEdges The number of edges visited so far
         /// @param[in] previousEdge The previously visited edge
         /// @param[in] numClosingEdges The number of edges closing a face (3 for triangles, 4 for quads, etc)
         /// @param[in,out] edges The vector storing the current edges forming a face
@@ -288,9 +285,8 @@ namespace meshkernel
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
         /// @param[in,out] nodalValues The nodal values building a closed polygon
-        void FindFacesRecursive(size_t startingNode,
+        void FindFacesRecursive(size_t startNode,
                                 size_t node,
-                                size_t numEdges,
                                 size_t previousEdge,
                                 size_t numClosingEdges,
                                 std::vector<size_t>& edges,
