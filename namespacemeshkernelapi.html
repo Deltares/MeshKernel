@@ -402,11 +402,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a5727bee8dd3366d7915e3f80c684e518"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5727bee8dd3366d7915e3f80c684e518">mkernel_curvilinear_line_attraction_repulsion</a> (int meshKernelId, double repulsionParameter, double xFirstNodeOnTheLine, double yFirstNodeOnTheLine, double xSecondNodeOnTheLine, double ySecondNodeOnTheLine, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
 <tr class="memdesc:a5727bee8dd3366d7915e3f80c684e518"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attracts/repulses grid lines in a block towards another set grid line.  <a href="namespacemeshkernelapi.html#a5727bee8dd3366d7915e3f80c684e518">More...</a><br /></td></tr>
 <tr class="separator:a5727bee8dd3366d7915e3f80c684e518"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroring, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
-<tr class="memdesc:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <a href="namespacemeshkernelapi.html#a89ba2e9652497c24c5c25b81dca8a3bd">More...</a><br /></td></tr>
-<tr class="separator:a89ba2e9652497c24c5c25b81dca8a3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa55a4a01c4325f46d98254fbf6ccbc32"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa55a4a01c4325f46d98254fbf6ccbc32">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroringFactor, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
+<tr class="memdesc:aa55a4a01c4325f46d98254fbf6ccbc32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <a href="namespacemeshkernelapi.html#aa55a4a01c4325f46d98254fbf6ccbc32">More...</a><br /></td></tr>
+<tr class="separator:aa55a4a01c4325f46d98254fbf6ccbc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8828c734b99cf7e4a75065b93750e7c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">mkernel_curvilinear_delete_node</a> (int meshKernelId, double xPointCoordinate, double yPointCoordinate)</td></tr>
-<tr class="memdesc:a8828c734b99cf7e4a75065b93750e7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the curvilinear node closest to a point.  <a href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">More...</a><br /></td></tr>
+<tr class="memdesc:a8828c734b99cf7e4a75065b93750e7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the node closest to a point.  <a href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">More...</a><br /></td></tr>
 <tr class="separator:a8828c734b99cf7e4a75065b93750e7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab538a45d6469d77c2c1dc925a9fcb446"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">mkernel_curvilinear_move_node</a> (int meshKernelId, double xFromPoint, double yFromPoint, double xToPoint, double yToPoint)</td></tr>
 <tr class="memdesc:ab538a45d6469d77c2c1dc925a9fcb446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a point of a curvilinear grid from one location to another.  <a href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">More...</a><br /></td></tr>
@@ -1034,7 +1034,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Delete the curvilinear node closest to a point. </p>
+<p>Delete the node closest to a point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -1557,8 +1557,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a89ba2e9652497c24c5c25b81dca8a3bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89ba2e9652497c24c5c25b81dca8a3bd">&#9670;&nbsp;</a></span>mkernel_curvilinear_line_mirror()</h2>
+<a id="aa55a4a01c4325f46d98254fbf6ccbc32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa55a4a01c4325f46d98254fbf6ccbc32">&#9670;&nbsp;</a></span>mkernel_curvilinear_line_mirror()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1573,7 +1573,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>mirroring</em>, </td>
+          <td class="paramname"><em>mirroringFactor</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1611,7 +1611,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mirroring</td><td>The mirroring factor </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mirroringFactor</td><td>The mirroring factor </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridLineNode</td><td>The x coordinate of the first grid line point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridLineNode</td><td>The y coordinate of the first grid line point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second grid line point </td></tr>

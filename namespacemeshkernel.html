@@ -196,6 +196,14 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ad65d4aca184527272ef32a5d5a946d3f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad65d4aca184527272ef32a5d5a946d3f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad65d4aca184527272ef32a5d5a946d3f">ResizeAndFill2DVector</a> (std::vector&lt; std::vector&lt; T &gt;&gt; &amp;v, size_t const &amp;firstDimension, size_t const &amp;secondDimension, bool fill=false, const T &amp;fillValue={})</td></tr>
+<tr class="memdesc:ad65d4aca184527272ef32a5d5a946d3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a two dimensional vector.  <a href="namespacemeshkernel.html#ad65d4aca184527272ef32a5d5a946d3f">More...</a><br /></td></tr>
+<tr class="separator:ad65d4aca184527272ef32a5d5a946d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4039e4e8f6367b7bf414e0986f6c384"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae4039e4e8f6367b7bf414e0986f6c384"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae4039e4e8f6367b7bf414e0986f6c384">ResizeAndFill3DVector</a> (std::vector&lt; std::vector&lt; std::vector&lt; T &gt;&gt;&gt; &amp;v, size_t const &amp;firstDimension, size_t const &amp;secondDimension, size_t const &amp;thirdDim, bool fill=false, const T &amp;fillValue={})</td></tr>
+<tr class="memdesc:ae4039e4e8f6367b7bf414e0986f6c384"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a three dimensional vector.  <a href="namespacemeshkernel.html#ae4039e4e8f6367b7bf414e0986f6c384">More...</a><br /></td></tr>
+<tr class="separator:ae4039e4e8f6367b7bf414e0986f6c384"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7eba48571f6e2e6ec9857d9499d235d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ab7eba48571f6e2e6ec9857d9499d235d"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d">DotProduct</a> (const T &amp;dx1, const T &amp;dx2)</td></tr>
 <tr class="memdesc:ab7eba48571f6e2e6ec9857d9499d235d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines generic dot product for one dimension.  <a href="namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d">More...</a><br /></td></tr>
@@ -2604,6 +2612,143 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The reordered vector </dd></dl>
+
+</div>
+</div>
+<a id="ad65d4aca184527272ef32a5d5a946d3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad65d4aca184527272ef32a5d5a946d3f">&#9670;&nbsp;</a></span>ResizeAndFill2DVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::ResizeAndFill2DVector </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; T &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t const &amp;&#160;</td>
+          <td class="paramname"><em>firstDimension</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t const &amp;&#160;</td>
+          <td class="paramname"><em>secondDimension</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fill</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>fillValue</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resizes and fills a two dimensional vector. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the vector elements </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstDimension</td><td>The first new dimension </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondDimension</td><td>The second new dimension </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fill</td><td>Whatever fill or not fill the vector with missing values </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fillValue</td><td>The fill value </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae4039e4e8f6367b7bf414e0986f6c384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4039e4e8f6367b7bf414e0986f6c384">&#9670;&nbsp;</a></span>ResizeAndFill3DVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::ResizeAndFill3DVector </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; std::vector&lt; T &gt;&gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t const &amp;&#160;</td>
+          <td class="paramname"><em>firstDimension</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t const &amp;&#160;</td>
+          <td class="paramname"><em>secondDimension</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t const &amp;&#160;</td>
+          <td class="paramname"><em>thirdDim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fill</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>fillValue</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resizes and fills a three dimensional vector. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the vector elements </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstDimension</td><td>The first new dimension </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondDimension</td><td>The second new dimension </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thirdDim</td><td>The third new dimension </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fill</td><td>Whatever fill or not fill the vector with missing values </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fillValue</td><td>The fill value </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
