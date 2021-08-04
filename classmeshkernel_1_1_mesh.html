@@ -199,9 +199,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993">AdministrateNodesEdges</a> ()</td></tr>
 <tr class="memdesc:a4f2c7373bafa1d4429c330876f445993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform node and edges administration. <br /></td></tr>
 <tr class="separator:a4f2c7373bafa1d4429c330876f445993"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1f4c1ea798428e4f4291ef836e3d965"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">SortEdgesInCounterClockWiseOrder</a> (size_t node)</td></tr>
-<tr class="memdesc:ab1f4c1ea798428e4f4291ef836e3d965"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort mesh edges in conterclockwise orther (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">More...</a><br /></td></tr>
-<tr class="separator:ab1f4c1ea798428e4f4291ef836e3d965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee0e0e1b31c6723772fa1f4710efe24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3ee0e0e1b31c6723772fa1f4710efe24">SortEdgesInCounterClockWiseOrder</a> (size_t startNode, size_t endNode)</td></tr>
+<tr class="memdesc:a3ee0e0e1b31c6723772fa1f4710efe24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort mesh edges around a node in conterclockwise order (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#a3ee0e0e1b31c6723772fa1f4710efe24">More...</a><br /></td></tr>
+<tr class="separator:a3ee0e0e1b31c6723772fa1f4710efe24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49f948cb7c8e5c7552f1504e2c446391"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a49f948cb7c8e5c7552f1504e2c446391">ComputeMaxLengthSurroundingEdges</a> (size_t node)</td></tr>
 <tr class="memdesc:a49f948cb7c8e5c7552f1504e2c446391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the max length of the edges connected to a node.  <a href="classmeshkernel_1_1_mesh.html#a49f948cb7c8e5c7552f1504e2c446391">More...</a><br /></td></tr>
 <tr class="separator:a49f948cb7c8e5c7552f1504e2c446391"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1348,8 +1348,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ab1f4c1ea798428e4f4291ef836e3d965"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab1f4c1ea798428e4f4291ef836e3d965">&#9670;&nbsp;</a></span>SortEdgesInCounterClockWiseOrder()</h2>
+<a id="a3ee0e0e1b31c6723772fa1f4710efe24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ee0e0e1b31c6723772fa1f4710efe24">&#9670;&nbsp;</a></span>SortEdgesInCounterClockWiseOrder()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1358,16 +1358,27 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>node</em></td><td>)</td>
+          <td class="paramname"><em>startNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>endNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sort mesh edges in conterclockwise orther (Sort_links_ccw) </p>
+<p>Sort mesh edges around a node in conterclockwise order (Sort_links_ccw) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>The node index for which sorting should take place </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td>The first node index where to perform edge sorting. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td>The last node index where to perform edge sorting. </td></tr>
   </table>
   </dd>
 </dl>

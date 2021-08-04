@@ -143,10 +143,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3749e89584aa2be5c26b552eedfe4188"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a3749e89584aa2be5c26b552eedfe4188">Administrate</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#ad868b6ebf71ea7921e0646992deaa18b">AdministrationOption</a> administrationOption)</td></tr>
 <tr class="memdesc:a3749e89584aa2be5c26b552eedfe4188"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform mesh administration.  <a href="classmeshkernel_1_1_mesh2_d.html#a3749e89584aa2be5c26b552eedfe4188">More...</a><br /></td></tr>
 <tr class="separator:a3749e89584aa2be5c26b552eedfe4188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0bbef8e37b13093d38d3e1d49d18217"><td class="memItemLeft" align="right" valign="top"><a id="aa0bbef8e37b13093d38d3e1d49d18217"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aa0bbef8e37b13093d38d3e1d49d18217">ComputeFaceCircumcentersMassCentersAndAreas</a> (bool computeMassCenters=false)</td></tr>
-<tr class="memdesc:aa0bbef8e37b13093d38d3e1d49d18217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute face circumcenters. <br /></td></tr>
-<tr class="separator:aa0bbef8e37b13093d38d3e1d49d18217"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf625bb91c465cf93bfed19ce43dad50"><td class="memItemLeft" align="right" valign="top"><a id="aaf625bb91c465cf93bfed19ce43dad50"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aaf625bb91c465cf93bfed19ce43dad50">ComputeCircumcentersMassCentersAndFaceAreas</a> (bool computeMassCenters=false)</td></tr>
+<tr class="memdesc:aaf625bb91c465cf93bfed19ce43dad50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute face circumcenters. <br /></td></tr>
+<tr class="separator:aaf625bb91c465cf93bfed19ce43dad50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b94a7acb30a64061a8767efec60811b"><td class="memItemLeft" align="right" valign="top"><a id="a5b94a7acb30a64061a8767efec60811b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5b94a7acb30a64061a8767efec60811b">FindFaces</a> ()</td></tr>
 <tr class="memdesc:a5b94a7acb30a64061a8767efec60811b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells) <br /></td></tr>
@@ -331,9 +331,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993">AdministrateNodesEdges</a> ()</td></tr>
 <tr class="memdesc:a4f2c7373bafa1d4429c330876f445993 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform node and edges administration. <br /></td></tr>
 <tr class="separator:a4f2c7373bafa1d4429c330876f445993 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1f4c1ea798428e4f4291ef836e3d965 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">SortEdgesInCounterClockWiseOrder</a> (size_t node)</td></tr>
-<tr class="memdesc:ab1f4c1ea798428e4f4291ef836e3d965 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort mesh edges in conterclockwise orther (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">More...</a><br /></td></tr>
-<tr class="separator:ab1f4c1ea798428e4f4291ef836e3d965 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee0e0e1b31c6723772fa1f4710efe24 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3ee0e0e1b31c6723772fa1f4710efe24">SortEdgesInCounterClockWiseOrder</a> (size_t startNode, size_t endNode)</td></tr>
+<tr class="memdesc:a3ee0e0e1b31c6723772fa1f4710efe24 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort mesh edges around a node in conterclockwise order (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#a3ee0e0e1b31c6723772fa1f4710efe24">More...</a><br /></td></tr>
+<tr class="separator:a3ee0e0e1b31c6723772fa1f4710efe24 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49f948cb7c8e5c7552f1504e2c446391 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a49f948cb7c8e5c7552f1504e2c446391">ComputeMaxLengthSurroundingEdges</a> (size_t node)</td></tr>
 <tr class="memdesc:a49f948cb7c8e5c7552f1504e2c446391 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the max length of the edges connected to a node.  <a href="classmeshkernel_1_1_mesh.html#a49f948cb7c8e5c7552f1504e2c446391">More...</a><br /></td></tr>
 <tr class="separator:a49f948cb7c8e5c7552f1504e2c446391 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -368,10 +368,6 @@ Public Attributes</h2></td></tr>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ad49b984915b56fa7e5e1fe2fe9e52007">m_maxNumNeighbours</a> = 0</td></tr>
 <tr class="memdesc:ad49b984915b56fa7e5e1fe2fe9e52007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of neighbours. <br /></td></tr>
 <tr class="separator:ad49b984915b56fa7e5e1fe2fe9e52007"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22e855cef6aa7ad8b1ead1cd9aff675b"><td class="memItemLeft" align="right" valign="top"><a id="a22e855cef6aa7ad8b1ead1cd9aff675b"></a>
-std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a22e855cef6aa7ad8b1ead1cd9aff675b">m_polygonNodesCache</a></td></tr>
-<tr class="memdesc:a22e855cef6aa7ad8b1ead1cd9aff675b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache to store the face nodes. <br /></td></tr>
-<tr class="separator:a22e855cef6aa7ad8b1ead1cd9aff675b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a130c483ec12ccfc11cddc0b1162a318e inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a130c483ec12ccfc11cddc0b1162a318e"></a>
 std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a></td></tr>
