@@ -326,12 +326,10 @@ size_t Mesh::InsertNode(const Point& newPoint)
     const auto newNodeIndex = GetNumNodes();
 
     m_nodes.resize(newSize);
-    m_nodeMask.resize(newSize);
     m_nodesNumEdges.resize(newSize);
     m_nodesEdges.resize(newSize);
 
     m_nodes[newNodeIndex] = newPoint;
-    m_nodeMask[newNodeIndex] = static_cast<int>(newNodeIndex);
     m_nodesNumEdges[newNodeIndex] = 0;
 
     m_nodesRTreeRequiresUpdate = true;
@@ -866,10 +864,6 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     m_edgesRTreeRequiresUpdate = true;
 
     AdministrateNodesEdges();
-
-    //no polygon involved, so node mask is 1 everywhere
-    m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
     return *this;
 }

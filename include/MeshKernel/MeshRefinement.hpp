@@ -164,6 +164,7 @@ namespace meshkernel
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split
+        std::vector<int> m_nodeMask;        ///< the node mask
         std::vector<size_t> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches

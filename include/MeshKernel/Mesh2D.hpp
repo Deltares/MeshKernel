@@ -99,15 +99,6 @@ namespace meshkernel
         /// @param[in] miny
         void OffsetSphericalCoordinates(double minx, double miny);
 
-        /// @brief Masks the edges of all faces included in all polygons
-        /// @param polygons The selection polygon
-        /// @param invertSelection Invert selection
-        /// @param includeIntersected Included the edges intersected by the polygon
-        void MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected);
-
-        /// @brief From the masked edges compute the masked nodes
-        void ComputeNodeMaskFromEdgeMask();
-
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
         /// @param[out] polygonNodesCache      The node cache array filled with the nodes values
@@ -122,16 +113,6 @@ namespace meshkernel
         /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
         void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
-
-        /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
-        /// @param[in] faceIndex The face index
-        /// @returns   If the face is fully contained in the polygon or not
-        [[nodiscard]] bool IsFullFaceNotInPolygon(size_t faceIndex) const;
-
-        /// @brief Mask all nodes in a polygon
-        /// @param[in] polygons The input polygon
-        /// @param[in] inside   Inside/outside option
-        void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
@@ -267,10 +248,27 @@ namespace meshkernel
         void DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
-        /// @param firstPoint The first point of the segment
-        /// @param secondPoint The second point of the segment
+        /// @param[in] firstPoint The first point of the segment
+        /// @param[in] secondPoint The second point of the segment
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
+
+        /// @brief Masks the edges of all faces included in all polygons
+        /// @param[in] polygons The selection polygon
+        /// @param[in] invertSelection Invert selection
+        /// @param[in] includeIntersected Included the edges intersected by the polygon
+        [[nodiscard]] std::vector<int> MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+
+        /// @brief From the masked edges compute the masked nodes
+        /// @param[in] edgeMask The edge mask
+        /// @return The node mask
+        [[nodiscard]] std::vector<int> Mesh2D::ComputeNodeMaskFromEdgeMask(std::vector<int> const& edgeMask) const;
+
+        /// @brief Mask all nodes in a polygon
+        /// @param[in] polygons The input polygon
+        /// @param[in] inside   Inside/outside option
+        /// @return The node mask
+        [[nodiscard]] std::vector<int> MaskNodesInPolygons(const Polygons& polygons, bool inside) const;
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
