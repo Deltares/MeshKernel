@@ -63,7 +63,7 @@ void OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
     m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
-    const auto nodeMask = m_mesh->MaskNodesInPolygons(*m_polygons, true);
+    const auto nodeMask = m_mesh->NodeMaskFromPolygon(*m_polygons, true);
 
     // Flag nodes outside the polygon as corner points
     for (auto n = 0; n < nodeMask.size(); n++)

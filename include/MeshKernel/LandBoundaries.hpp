@@ -186,7 +186,7 @@ namespace meshkernel
         std::vector<std::vector<double>> m_nodesLand;           ///< Node to land boundary segment mapping
         std::vector<size_t> m_nodeFaceIndices;                  ///< For each node, the indices of the faces including them
 
-        std::vector<size_t> m_nodeMask; ///< Nodemask, masking the net nodes
+        std::vector<size_t> m_nodeMask; ///< Node mask
         std::vector<bool> m_faceMask;   ///< Face mask
         std::vector<size_t> m_edgeMask; ///< Edge mask
 

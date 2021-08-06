@@ -80,12 +80,12 @@ void MeshRefinement::Compute()
     auto const isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
-        const auto edgeMask = m_mesh->MaskFaceEdgesInPolygons(m_polygons, false, true);
-        m_nodeMask = m_mesh->ComputeNodeMaskFromEdgeMask(edgeMask);
+        const auto edgeMask = m_mesh->EdgesMaskOfFacesInPolygons(m_polygons, false, true);
+        m_nodeMask = m_mesh->NodeMaskFromEdgeMask(edgeMask);
     }
     else
     {
-        m_nodeMask = m_mesh->MaskNodesInPolygons(m_polygons, true);
+        m_nodeMask = m_mesh->NodeMaskFromPolygon(m_polygons, true);
     }
 
     FindBrotherEdges();
@@ -94,6 +94,8 @@ void MeshRefinement::Compute()
     ComputeNodeMaskAtPolygonPerimeter();
 
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
+    // reserve some extra capacity for the node mask
+    m_nodeMask.reserve(m_nodeMask.size() * 2);
     for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
         if (level > 0)
@@ -502,7 +504,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
         m_edgeMask[e] = static_cast<int>(newNodeIndex);
 
         // set mask on the new node
-        m_nodeMask.push_back(1);
+        m_nodeMask.emplace_back(1);
         if (m_nodeMask[firstNodeIndex] == 0 && m_nodeMask[secondNodeIndex] == 0)
         {
             m_nodeMask[newNodeIndex] = 0;
@@ -650,7 +652,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
                     m_mesh->ConnectNodes(notHangingNode, newNodeIndex);
                 }
 
-                m_nodeMask.push_back(1);
+                m_nodeMask.emplace_back(1);
                 if (isParentCrossed)
                 {
                     //inactive nodes in cells crossed by polygon

@@ -1081,7 +1081,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
-            const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->MaskNodesInPolygons(polygon, selectInside);
+            const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
 
             int index = 0;
             for (auto i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
@@ -1117,7 +1117,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
-            const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->MaskNodesInPolygons(polygon, selectInside);
+            const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
 
             numberOfMeshNodes = 0;
             for (auto i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)

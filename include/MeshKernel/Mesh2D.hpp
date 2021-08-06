@@ -253,22 +253,23 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
-        /// @brief Masks the edges of all faces included in all polygons
+        /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
         /// @param[in] invertSelection Invert selection
         /// @param[in] includeIntersected Included the edges intersected by the polygon
-        [[nodiscard]] std::vector<int> MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+        /// @return The edge mask
+        [[nodiscard]] std::vector<int> EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
 
-        /// @brief From the masked edges compute the masked nodes
+        /// @brief From the edge mask compute the node mask
         /// @param[in] edgeMask The edge mask
         /// @return The node mask
-        [[nodiscard]] std::vector<int> Mesh2D::ComputeNodeMaskFromEdgeMask(std::vector<int> const& edgeMask) const;
+        [[nodiscard]] std::vector<int> NodeMaskFromEdgeMask(std::vector<int> const& edgeMask) const;
 
-        /// @brief Mask all nodes in a polygon
+        /// @brief Mask all nodes included in all polygons
         /// @param[in] polygons The input polygon
-        /// @param[in] inside   Inside/outside option
+        /// @param[in] inside   Inside or outside option
         /// @return The node mask
-        [[nodiscard]] std::vector<int> MaskNodesInPolygons(const Polygons& polygons, bool inside) const;
+        [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
