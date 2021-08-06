@@ -48,12 +48,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection,
                AdministrationOption administration) : Mesh(edges, nodes, projection)
 {
-
     Administrate(administration);
-
-    //no polygon involved, so node mask is 1 everywhere
-    m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 };
 
 void Mesh2D::Administrate(AdministrationOption administrationOption)
@@ -77,12 +72,14 @@ void Mesh2D::Administrate(AdministrationOption administrationOption)
     m_facesNodes.clear();
     m_facesEdges.clear();
     m_facesCircumcenters.clear();
+    m_numFacesNodes.clear();
 
     m_facesMassCenters.reserve(GetNumNodes());
     m_faceArea.reserve(GetNumNodes());
     m_facesNodes.reserve(GetNumNodes());
     m_facesEdges.reserve(GetNumNodes());
     m_facesCircumcenters.reserve(GetNumNodes());
+    m_numFacesNodes.reserve(GetNumNodes());
 
     // find faces
     FindFaces();
@@ -354,6 +351,7 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         m_facesEdges.emplace_back(edges);
         m_faceArea.emplace_back(area);
         m_facesMassCenters.emplace_back(centerOfMass);
+        m_numFacesNodes.emplace_back(nodes.size());
 
         return;
     }
@@ -408,12 +406,6 @@ void Mesh2D::FindFaces()
                 FindFacesRecursive(n, n, m_nodesEdges[n][e], numEdgesPerFace, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
             }
         }
-    }
-
-    m_numFacesNodes.resize(GetNumFaces());
-    for (auto f = 0; f < GetNumFaces(); ++f)
-    {
-        m_numFacesNodes[f] = m_facesNodes[f].size();
     }
 }
 
@@ -601,38 +593,6 @@ void Mesh2D::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& poly
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
-void Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool inside)
-{
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-    const auto nodePolygonIndices = polygon.PointsInPolygons(m_nodes);
-
-    for (auto i = 0; i < GetNumNodes(); ++i)
-    {
-        auto isInPolygon = nodePolygonIndices[i];
-        if (!inside)
-        {
-            isInPolygon = !isInPolygon;
-        }
-        m_nodeMask[i] = 0;
-        if (isInPolygon)
-        {
-            m_nodeMask[i] = 1;
-        }
-    }
-}
-
-bool Mesh2D::IsFullFaceNotInPolygon(size_t faceIndex) const
-{
-    for (auto n = 0; n < GetNumFaceEdges(faceIndex); n++)
-    {
-        if (m_nodeMask[m_facesNodes[faceIndex][n]] != 1)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
     if (m_projection == Projection::spherical && maxx - minx > 180.0)
@@ -648,128 +608,6 @@ void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
             {
                 m_nodes[n].x += 360.0;
             }
-        }
-    }
-}
-
-void Mesh2D::MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected)
-{
-    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
-
-    // mark all nodes in polygon with 1
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-    for (auto n = 0; n < GetNumNodes(); ++n)
-    {
-        const auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_nodes[n]);
-        if (isInPolygon)
-        {
-            m_nodeMask[n] = 1;
-        }
-    }
-
-    // mark all edges with both start end end nodes included with 1
-    std::vector<int> edgeMask(m_edges.size(), 0);
-    for (auto e = 0; e < GetNumEdges(); ++e)
-    {
-        const auto firstNodeIndex = m_edges[e].first;
-        const auto secondNodeIndex = m_edges[e].second;
-
-        int isEdgeIncluded;
-        if (includeIntersected)
-        {
-            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && m_nodeMask[firstNodeIndex] == 1 ||
-                              secondNodeIndex != sizetMissingValue && m_nodeMask[secondNodeIndex] == 1)
-                                 ? 1
-                                 : 0;
-        }
-        else
-        {
-            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && m_nodeMask[firstNodeIndex] == 1 &&
-                              secondNodeIndex != sizetMissingValue && m_nodeMask[secondNodeIndex] == 1)
-                                 ? 1
-                                 : 0;
-        }
-
-        edgeMask[e] = isEdgeIncluded;
-    }
-
-    // if one edge of the face is not included do not include all the edges of that face
-    auto secondEdgeMask = edgeMask;
-    if (!includeIntersected)
-    {
-        for (auto f = 0; f < GetNumFaces(); ++f)
-        {
-            bool isOneEdgeNotIncluded = false;
-            for (auto n = 0; n < GetNumFaceEdges(f); ++n)
-            {
-                const auto edgeIndex = m_facesEdges[f][n];
-                if (edgeIndex != sizetMissingValue && edgeMask[edgeIndex] == 0)
-                {
-                    isOneEdgeNotIncluded = true;
-                    break;
-                }
-            }
-
-            if (isOneEdgeNotIncluded)
-            {
-                for (auto n = 0; n < GetNumFaceEdges(f); ++n)
-                {
-                    const auto edgeIndex = m_facesEdges[f][n];
-                    if (edgeIndex != sizetMissingValue)
-                    {
-                        secondEdgeMask[edgeIndex] = 0;
-                    }
-                }
-            }
-        }
-    }
-
-    // if the selection is inverted, do not delete the edges of included faces
-    if (invertSelection)
-    {
-        for (auto e = 0; e < GetNumEdges(); ++e)
-        {
-            if (secondEdgeMask[e] == 0)
-            {
-                secondEdgeMask[e] = 1;
-            }
-
-            if (edgeMask[e] == 1)
-            {
-                secondEdgeMask[e] = 0;
-            }
-        }
-    }
-
-    m_edgeMask = std::move(secondEdgeMask);
-}
-
-void Mesh2D::ComputeNodeMaskFromEdgeMask()
-{
-    if (m_edgeMask.size() != GetNumEdges() || m_nodeMask.size() != GetNumNodes())
-    {
-        throw std::invalid_argument("Mesh2D::ComputeNodeMaskFromEdgeMask:The dimension of the masks do not fit the mesh.");
-    }
-
-    // fill node mask to 0
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-
-    // compute node mask from edge mask
-    for (auto e = 0; e < GetNumEdges(); ++e)
-    {
-        if (m_edgeMask[e] != 1)
-            continue;
-
-        const auto firstNodeIndex = m_edges[e].first;
-        const auto secondNodeIndex = m_edges[e].second;
-
-        if (firstNodeIndex != sizetMissingValue)
-        {
-            m_nodeMask[firstNodeIndex] = 1;
-        }
-        if (secondNodeIndex != sizetMissingValue)
-        {
-            m_nodeMask[secondNodeIndex] = 1;
         }
     }
 }
@@ -1636,12 +1474,13 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
     if (deletionOption == FacesCompletelyIncluded)
     {
-        MaskFaceEdgesInPolygons(polygon, invertDeletion, false);
+        Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
+        const auto edgeMask = EdgesMaskOfFacesInPolygons(polygon, invertDeletion, false);
 
         // mark the edges for deletion
         for (auto e = 0; e < GetNumEdges(); ++e)
         {
-            if (m_edgeMask[e] == 1)
+            if (edgeMask[e] == 1)
             {
                 m_edges[e].first = sizetMissingValue;
                 m_edges[e].second = sizetMissingValue;
@@ -1733,4 +1572,146 @@ std::tuple<size_t, size_t> Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& f
     }
 
     return {intersectedFace, intersectedEdge};
+}
+
+std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const
+{
+    // mark all nodes in polygon with 1
+    std::vector<int> nodeMask(GetNumNodes(), 0);
+    for (auto n = 0; n < GetNumNodes(); ++n)
+    {
+        const auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_nodes[n]);
+        if (isInPolygon)
+        {
+            nodeMask[n] = 1;
+        }
+    }
+
+    // mark all edges with both start end end nodes included with 1
+    std::vector<int> edgeMask(m_edges.size(), 0);
+    for (auto e = 0; e < GetNumEdges(); ++e)
+    {
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
+
+        int isEdgeIncluded;
+        if (includeIntersected)
+        {
+            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && nodeMask[firstNodeIndex] == 1 ||
+                              secondNodeIndex != sizetMissingValue && nodeMask[secondNodeIndex] == 1)
+                                 ? 1
+                                 : 0;
+        }
+        else
+        {
+            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && nodeMask[firstNodeIndex] == 1 &&
+                              secondNodeIndex != sizetMissingValue && nodeMask[secondNodeIndex] == 1)
+                                 ? 1
+                                 : 0;
+        }
+
+        edgeMask[e] = isEdgeIncluded;
+    }
+
+    // if one edge of the face is not included do not include all the edges of that face
+    auto secondEdgeMask = edgeMask;
+    if (!includeIntersected)
+    {
+        for (auto f = 0; f < GetNumFaces(); ++f)
+        {
+            bool isOneEdgeNotIncluded = false;
+            for (auto n = 0; n < GetNumFaceEdges(f); ++n)
+            {
+                const auto edgeIndex = m_facesEdges[f][n];
+                if (edgeIndex != sizetMissingValue && edgeMask[edgeIndex] == 0)
+                {
+                    isOneEdgeNotIncluded = true;
+                    break;
+                }
+            }
+
+            if (isOneEdgeNotIncluded)
+            {
+                for (auto n = 0; n < GetNumFaceEdges(f); ++n)
+                {
+                    const auto edgeIndex = m_facesEdges[f][n];
+                    if (edgeIndex != sizetMissingValue)
+                    {
+                        secondEdgeMask[edgeIndex] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    // if the selection is inverted, do not delete the edges of included faces
+    if (invertSelection)
+    {
+        for (auto e = 0; e < GetNumEdges(); ++e)
+        {
+            if (secondEdgeMask[e] == 0)
+            {
+                secondEdgeMask[e] = 1;
+            }
+
+            if (edgeMask[e] == 1)
+            {
+                secondEdgeMask[e] = 0;
+            }
+        }
+    }
+
+    return secondEdgeMask;
+}
+
+std::vector<int> Mesh2D::NodeMaskFromEdgeMask(std::vector<int> const& edgeMask) const
+{
+    if (edgeMask.size() != GetNumEdges())
+    {
+        throw std::invalid_argument("Mesh2D::NodeMaskFromEdgeMask:The dimension of the edge mask do not fit the mesh.");
+    }
+
+    // fill node mask to 0
+    std::vector<int> nodeMask(GetNumNodes(), 0);
+
+    // compute node mask from edge mask
+    for (auto e = 0; e < GetNumEdges(); ++e)
+    {
+        if (m_edgeMask[e] != 1)
+            continue;
+
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
+
+        if (firstNodeIndex != sizetMissingValue)
+        {
+            nodeMask[firstNodeIndex] = 1;
+        }
+        if (secondNodeIndex != sizetMissingValue)
+        {
+            nodeMask[secondNodeIndex] = 1;
+        }
+    }
+    return nodeMask;
+}
+
+std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool inside) const
+{
+    std::vector<int> nodeMask(GetNumNodes(), 0);
+    const auto nodePolygonIndices = polygon.PointsInPolygons(m_nodes);
+
+    for (auto i = 0; i < nodeMask.size(); ++i)
+    {
+        auto isInPolygon = nodePolygonIndices[i];
+        if (!inside)
+        {
+            isInPolygon = !isInPolygon;
+        }
+        nodeMask[i] = 0;
+        if (isInPolygon)
+        {
+            nodeMask[i] = 1;
+        }
+    }
+    return nodeMask;
 }

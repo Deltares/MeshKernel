@@ -285,7 +285,6 @@ namespace meshkernel
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodeMask;                   ///< The node mask (kc)
         std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 

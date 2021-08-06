@@ -119,7 +119,7 @@ namespace meshkernel
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
-        /// @brief Modifies m_mesh.m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
+        /// @brief Modifies m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
         ///        The mask value of the other nodes will not be modified.
         void ComputeNodeMaskAtPolygonPerimeter();
 
@@ -164,6 +164,7 @@ namespace meshkernel
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split
+        std::vector<int> m_nodeMask;        ///< The node mask used in the refinement process
         std::vector<size_t> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches

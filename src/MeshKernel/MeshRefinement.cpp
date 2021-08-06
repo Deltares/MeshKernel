@@ -80,12 +80,12 @@ void MeshRefinement::Compute()
     auto const isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
-        m_mesh->MaskFaceEdgesInPolygons(m_polygons, false, true);
-        m_mesh->ComputeNodeMaskFromEdgeMask();
+        const auto edgeMask = m_mesh->EdgesMaskOfFacesInPolygons(m_polygons, false, true);
+        m_nodeMask = m_mesh->NodeMaskFromEdgeMask(edgeMask);
     }
     else
     {
-        m_mesh->MaskNodesInPolygons(m_polygons, true);
+        m_nodeMask = m_mesh->NodeMaskFromPolygon(m_polygons, true);
     }
 
     FindBrotherEdges();
@@ -94,6 +94,8 @@ void MeshRefinement::Compute()
     ComputeNodeMaskAtPolygonPerimeter();
 
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
+    // reserve some extra capacity for the node mask
+    m_nodeMask.reserve(m_nodeMask.size() * 2);
     for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
         if (level > 0)
@@ -133,7 +135,7 @@ void MeshRefinement::Compute()
                 for (auto n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
                 {
                     const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_mesh->m_nodeMask[nodeIndex] != 0 && m_mesh->m_nodeMask[nodeIndex] != -2)
+                    if (m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2)
                     {
                         activeNodeFound = true;
                         break;
@@ -153,7 +155,7 @@ void MeshRefinement::Compute()
                 for (auto n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
                 {
                     const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_mesh->m_nodeMask[nodeIndex] != 1)
+                    if (m_nodeMask[nodeIndex] != 1)
                     {
                         m_faceMask[f] = 0;
                         break;
@@ -502,18 +504,18 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
         m_edgeMask[e] = static_cast<int>(newNodeIndex);
 
         // set mask on the new node
-        m_mesh->m_nodeMask[newNodeIndex] = 1;
-        if (m_mesh->m_nodeMask[firstNodeIndex] == 0 && m_mesh->m_nodeMask[secondNodeIndex] == 0)
+        m_nodeMask.emplace_back(1);
+        if (m_nodeMask[firstNodeIndex] == 0 && m_nodeMask[secondNodeIndex] == 0)
         {
-            m_mesh->m_nodeMask[newNodeIndex] = 0;
+            m_nodeMask[newNodeIndex] = 0;
         }
-        else if (m_mesh->m_nodeMask[firstNodeIndex] != 1 || m_mesh->m_nodeMask[secondNodeIndex] != 1)
+        else if (m_nodeMask[firstNodeIndex] != 1 || m_nodeMask[secondNodeIndex] != 1)
         {
-            m_mesh->m_nodeMask[newNodeIndex] = -1;
+            m_nodeMask[newNodeIndex] = -1;
         }
         else
         {
-            m_mesh->m_nodeMask[newNodeIndex] = 1;
+            m_nodeMask[newNodeIndex] = 1;
         }
     }
 
@@ -530,7 +532,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
         for (auto e = 0; e < numEdges; ++e)
         {
             const auto n = m_mesh->m_facesNodes[f][e];
-            if (m_mesh->m_nodeMask[n] != 1)
+            if (m_nodeMask[n] != 1)
             {
                 isParentCrossed = true;
                 break;
@@ -650,11 +652,11 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
                     m_mesh->ConnectNodes(notHangingNode, newNodeIndex);
                 }
 
-                m_mesh->m_nodeMask[newNodeIndex] = 1;
+                m_nodeMask.emplace_back(1);
                 if (isParentCrossed)
                 {
                     //inactive nodes in cells crossed by polygon
-                    m_mesh->m_nodeMask[newNodeIndex] = -1;
+                    m_nodeMask[newNodeIndex] = -1;
                 }
             }
             else if (notHangingFaceNodes.size() == 2)
@@ -695,7 +697,7 @@ void MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
         for (auto n = 0; n < numnodes; n++)
         {
             const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-            if (m_mesh->m_nodeMask[nodeIndex] == 0)
+            if (m_nodeMask[nodeIndex] == 0)
             {
                 crossing = true;
                 break;
@@ -708,9 +710,9 @@ void MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
             for (auto n = 0; n < numnodes; n++)
             {
                 const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                if (m_mesh->m_nodeMask[nodeIndex] == 1)
+                if (m_nodeMask[nodeIndex] == 1)
                 {
-                    m_mesh->m_nodeMask[nodeIndex] = -2;
+                    m_nodeMask[nodeIndex] = -2;
                 }
             }
         }
