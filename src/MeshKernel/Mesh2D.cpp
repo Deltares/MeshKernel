@@ -1677,7 +1677,7 @@ std::vector<int> Mesh2D::NodeMaskFromEdgeMask(std::vector<int> const& edgeMask) 
     // compute node mask from edge mask
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
-        if (m_edgeMask[e] != 1)
+        if (edgeMask[e] != 1)
             continue;
 
         const auto firstNodeIndex = m_edges[e].first;
