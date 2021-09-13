@@ -1015,7 +1015,7 @@ namespace meshkernelapi
                                                                GeometryList& results);
 
         /// @brief Gets pointer to error message.
-        /// @param[out] error_message
+        /// @param[out] error_message The pointer to the latest error message
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(const char*& error_message);
 
