@@ -399,11 +399,6 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
         // compute the nearest 2d face indices
         faceCircumcentersRTree.SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
 
-        if (faceCircumcentersRTree.GetQueryResultSize() == 0)
-        {
-            continue;
-        }
-
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
             const auto face = faceCircumcentersRTree.GetQueryResult(f);
