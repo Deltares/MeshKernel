@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -73,4 +74,40 @@ meshkernel::Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
     // If there are computational nodes at a distance smaller than  the threshold, these are eliminated
     const Polygons polygon{};
     MergeNodesInPolygon(polygon, minFaceSize);
+}
+
+meshkernel::Point meshkernel::Mesh1D::ComputeProjectedNode(size_t node, double distanceFactor) const
+{
+
+    if (m_nodesNumEdges[node] <= 0)
+    {
+        throw AlgorithmError("meshkernel::Mesh1D::ComputeProjectedNode: mesh 1d node has no connected edges");
+    }
+
+    if (IsNodeOnBoundary(node))
+    {
+        // A boundary edge: compute the projection by taking the current node and the other node of the edge.
+        const auto edge = m_nodesEdges[node][0];
+
+        const auto otherNode = m_edges[edge].first == node ? m_edges[edge].second : m_edges[edge].first;
+
+        const auto normalVector = NormalVectorOutside(m_nodes[node], m_nodes[otherNode], m_projection);
+        const auto edgeLength = ComputeDistance(m_nodes[node], m_nodes[otherNode], m_projection);
+
+        const auto projectedNode = m_nodes[node] + normalVector * edgeLength * distanceFactor;
+
+        return projectedNode;
+    }
+
+    // Not a boundary edge: compute the projection by taking the leftmost and rightmost nodes of two consecutive edges sharing the input node.
+    const auto left1dEdge = m_nodesEdges[node][0];
+    const auto right1dEdge = m_nodesEdges[node][1];
+
+    const auto otherLeft1dNode = m_edges[left1dEdge].first == node ? m_edges[left1dEdge].second : m_edges[left1dEdge].first;
+    const auto otherRight1dNode = m_edges[right1dEdge].first == node ? m_edges[right1dEdge].second : m_edges[right1dEdge].first;
+
+    const auto normalVector = NormalVectorOutside(m_nodes[otherLeft1dNode], m_nodes[otherRight1dNode], m_projection);
+    const auto edgeLength = ComputeDistance(m_nodes[otherLeft1dNode], m_nodes[otherRight1dNode], m_projection);
+
+    return m_nodes[node] + normalVector * edgeLength * distanceFactor;
 }

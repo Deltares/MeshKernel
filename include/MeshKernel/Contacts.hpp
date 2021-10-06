@@ -59,7 +59,6 @@ namespace meshkernel
         ///
         /// Each non-boundary 1d node is connected to single 2d face.
         /// The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red).
-        /// The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face.
         /// For the 1d nodes not overlapping a 2d mesh,
         /// a ray starting from the current node n is computed (dashed blue ray).
         /// This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1),
