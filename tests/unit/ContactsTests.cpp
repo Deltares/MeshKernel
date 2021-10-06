@@ -38,18 +38,22 @@ TEST(Contacts, ComputeSingleContacts1dOutside2dMesh)
     contacts.ComputeSingleContacts(onedNodeMask, polygons);
 
     //Assert
-    ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(4, contacts.m_mesh2dIndices.size());
+    ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
+    ASSERT_EQ(6, contacts.m_mesh2dIndices.size());
 
-    ASSERT_EQ(1, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(3, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(6, contacts.m_mesh1dIndices[3]);
+    ASSERT_EQ(0, contacts.m_mesh1dIndices[0]);
+    ASSERT_EQ(1, contacts.m_mesh1dIndices[1]);
+    ASSERT_EQ(2, contacts.m_mesh1dIndices[2]);
+    ASSERT_EQ(3, contacts.m_mesh1dIndices[3]);
+    ASSERT_EQ(6, contacts.m_mesh1dIndices[4]);
+    ASSERT_EQ(7, contacts.m_mesh1dIndices[5]);
 
     ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(2, contacts.m_mesh2dIndices[2]);
+    ASSERT_EQ(0, contacts.m_mesh2dIndices[1]);
+    ASSERT_EQ(1, contacts.m_mesh2dIndices[2]);
     ASSERT_EQ(2, contacts.m_mesh2dIndices[3]);
+    ASSERT_EQ(2, contacts.m_mesh2dIndices[4]);
+    ASSERT_EQ(5, contacts.m_mesh2dIndices[5]);
 }
 
 TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
