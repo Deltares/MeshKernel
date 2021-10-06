@@ -370,28 +370,39 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
 
     // get the indices
-    const auto isFaceCircumcenterInPolygons = polygons.PointsInPolygons(m_mesh2d->m_facesCircumcenters);
+    const auto facePolygonIndices = polygons.PointsInPolygons(m_mesh2d->m_facesCircumcenters);
+
+    bool computeLocalSearchRadius = true;
+    double localSearchRadius = 0.0;
+    if (!IsEqual(searchRadius, doubleMissingValue))
+    {
+        computeLocalSearchRadius = false;
+        localSearchRadius = searchRadius;
+    }
 
     // Loop over 1d edges
     std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);
     std::vector<size_t> faceTo1DNode(m_mesh2d->GetNumFaces(), sizetMissingValue);
     for (auto n = 0; n < m_mesh1d->GetNumNodes(); ++n)
     {
-
-        // account for the 1d node mask if present
+        // Account for 1d node mask if present
         if (!oneDNodeMask.empty() && !oneDNodeMask[n])
         {
             continue;
         }
 
-        auto localSearchRadius = searchRadius;
-        if (IsEqual(searchRadius, doubleMissingValue))
+        if (computeLocalSearchRadius)
         {
             localSearchRadius = m_mesh1d->ComputeMaxLengthSurroundingEdges(n);
         }
 
         // compute the nearest 2d face indices
         faceCircumcentersRTree.SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
+
+        if (faceCircumcentersRTree.GetQueryResultSize() == 0)
+        {
+            continue;
+        }
 
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
@@ -411,7 +422,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             // the face is not inside a polygon
-            if (!isFaceCircumcenterInPolygons[face])
+            if (facePolygonIndices[face] == sizetMissingValue)
             {
                 isValidFace[face] = false;
                 continue;
