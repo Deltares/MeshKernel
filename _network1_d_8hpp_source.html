@@ -105,45 +105,44 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//------------------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_network1_d.html">   40</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_network1_d.html">Network1D</a></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <a class="code" href="classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f">Network1D</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f">Network1D</a>(std::vector&lt;std::vector&lt;Point&gt;&gt; <span class="keyword">const</span>&amp; polyLines,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                           <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#a6a9f3e47211c6f96071ca5483d81c406">ComputeFixedChainages</a>(std::vector&lt;std::vector&lt;double&gt;&gt; <span class="keyword">const</span>&amp; fixedChainagesByPolyline,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                   <span class="keywordtype">double</span> minFaceSize,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                   <span class="keywordtype">double</span> fixedChainagesOffset);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#ab00e5e168bbf56e765b6ee6707b9955a">ComputeOffsettedChainages</a>(<span class="keywordtype">double</span> offset);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;Point&gt;&gt; <a class="code" href="classmeshkernel_1_1_network1_d.html#ab3a0ee421be8e74cd5ef5fc50774d877">ComputeDiscretizationsFromChainages</a>();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">   68</a></span>&#160;        <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> <a class="code" href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">m_projection</a>; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        std::vector&lt;std::vector&lt;Point&gt;&gt; m_polyLines;  </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_chainages; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    };</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_network1_d.html">   39</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_network1_d.html">Network1D</a></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <a class="code" href="classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f">Network1D</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f">Network1D</a>(std::vector&lt;std::vector&lt;Point&gt;&gt; <span class="keyword">const</span>&amp; polyLines,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                           <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#a6a9f3e47211c6f96071ca5483d81c406">ComputeFixedChainages</a>(std::vector&lt;std::vector&lt;double&gt;&gt; <span class="keyword">const</span>&amp; fixedChainagesByPolyline,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                   <span class="keywordtype">double</span> minFaceSize,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                   <span class="keywordtype">double</span> fixedChainagesOffset);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_network1_d.html#ab00e5e168bbf56e765b6ee6707b9955a">ComputeOffsettedChainages</a>(<span class="keywordtype">double</span> offset);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        [[nodiscard]] std::vector&lt;std::vector&lt;Point&gt;&gt; <a class="code" href="classmeshkernel_1_1_network1_d.html#ab3a0ee421be8e74cd5ef5fc50774d877">ComputeDiscretizationsFromChainages</a>();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">   67</a></span>&#160;        <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> <a class="code" href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">m_projection</a>; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        std::vector&lt;std::vector&lt;Point&gt;&gt; m_polyLines;  </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_chainages; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    };</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:58</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:55</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_ab29497476d5c08fd0ea3cab0879f444f"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f">meshkernel::Network1D::Network1D</a></div><div class="ttdeci">Network1D()=default</div><div class="ttdoc">Default constructor.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_ab3a0ee421be8e74cd5ef5fc50774d877"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#ab3a0ee421be8e74cd5ef5fc50774d877">meshkernel::Network1D::ComputeDiscretizationsFromChainages</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Point &gt; &gt; ComputeDiscretizationsFromChainages()</div><div class="ttdoc">Computes the discretization points from the chainages for all polylines.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_a6f6106d9d29f94959275658a211aac49"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">meshkernel::Network1D::m_projection</a></div><div class="ttdeci">Projection m_projection</div><div class="ttdoc">The projection used.</div><div class="ttdef"><b>Definition:</b> Network1D.hpp:68</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_a6f6106d9d29f94959275658a211aac49"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#a6f6106d9d29f94959275658a211aac49">meshkernel::Network1D::m_projection</a></div><div class="ttdeci">Projection m_projection</div><div class="ttdoc">The projection used.</div><div class="ttdef"><b>Definition:</b> Network1D.hpp:67</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_a6a9f3e47211c6f96071ca5483d81c406"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#a6a9f3e47211c6f96071ca5483d81c406">meshkernel::Network1D::ComputeFixedChainages</a></div><div class="ttdeci">void ComputeFixedChainages(std::vector&lt; std::vector&lt; double &gt;&gt; const &amp;fixedChainagesByPolyline, double minFaceSize, double fixedChainagesOffset)</div><div class="ttdoc">Compute the chainages from fixed point locations.</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:35</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_network1_d_html_ab00e5e168bbf56e765b6ee6707b9955a"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html#ab00e5e168bbf56e765b6ee6707b9955a">meshkernel::Network1D::ComputeOffsettedChainages</a></div><div class="ttdeci">void ComputeOffsettedChainages(double offset)</div><div class="ttdoc">Compute the chainages at a regular offset for all polylines.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_network1_d_html"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html">meshkernel::Network1D</a></div><div class="ttdoc">A class describing a network 1d.</div><div class="ttdef"><b>Definition:</b> Network1D.hpp:40</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_network1_d_html"><div class="ttname"><a href="classmeshkernel_1_1_network1_d.html">meshkernel::Network1D</a></div><div class="ttdoc">A class describing a network 1d.</div><div class="ttdef"><b>Definition:</b> Network1D.hpp:39</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
