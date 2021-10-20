@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 

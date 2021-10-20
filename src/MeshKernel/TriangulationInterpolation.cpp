@@ -24,7 +24,6 @@
 // Stichting Deltares. All rights reserved.
 //
 //------------------------------------------------------------------------------
-#include <tuple>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>

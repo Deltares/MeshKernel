@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <memory>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp>

@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <numeric>
-#include <vector>
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>

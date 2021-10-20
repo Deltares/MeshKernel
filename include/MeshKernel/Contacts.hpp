@@ -30,9 +30,6 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 
-#include <memory>
-#include <vector>
-
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel

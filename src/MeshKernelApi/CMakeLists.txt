@@ -25,6 +25,14 @@ endif()
 # Link shared lib to static lib, but don't expose it
 target_link_libraries(MeshKernelApi PRIVATE MeshKernel)
 
+# Add precompiled header to speed up compilation
+target_precompile_headers(MeshKernelApi PRIVATE <map>
+                                                <string> 
+                                                <unordered_map> 
+                                                <vector> 
+                                                <memory> 
+                                                <stdexcept> )
+
 # IDEs should put the headers in a nice place
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include/MeshKernelApi"

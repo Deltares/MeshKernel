@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <vector>
-
 namespace meshkernel
 {
     extern "C"

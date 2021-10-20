@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Network1D.hpp>
 #include <MeshKernel/Operations.hpp>

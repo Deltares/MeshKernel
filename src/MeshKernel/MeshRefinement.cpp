@@ -25,19 +25,12 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <cmath>
-#include <numeric>
-#include <tuple>
-#include <vector>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/RTree.hpp>
 
 using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;

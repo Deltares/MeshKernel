@@ -25,9 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <stdexcept>
-#include <vector>
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Operations.hpp>

@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <memory>
-#include <vector>
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/Entities.hpp>

@@ -1,7 +1,3 @@
-#include <memory>
-#include <stdexcept>
-#include <vector>
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/Exceptions.hpp>

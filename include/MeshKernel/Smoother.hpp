@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 namespace meshkernel
 {
     class Mesh2D;

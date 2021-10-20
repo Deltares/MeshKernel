@@ -34,6 +34,23 @@ target_include_directories(MeshKernel PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_link_libraries(MeshKernel LINK_PUBLIC ${Boost_LIBRARIES} triangle
                       OpenMP::OpenMP_CXX)
 
+# Add precompiled header to speed up compilation
+target_precompile_headers(MeshKernel PRIVATE <map>
+                                             <string> 
+                                             <unordered_map> 
+                                             <vector> 
+                                             <memory> 
+                                             <algorithm>
+                                             <cmath>
+                                             <numeric>
+                                             <tuple>
+                                             <limits>
+                                             <utility>
+                                             <array>
+                                             <initializer_list>
+                                             <stdexcept> 
+                                             <cassert>)
+
 # IDEs should put the headers in a nice place
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include/MeshKernel"

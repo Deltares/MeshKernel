@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>

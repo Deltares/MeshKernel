@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <stdexcept>
-#include <tuple>
-#include <vector>
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>

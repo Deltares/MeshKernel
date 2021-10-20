@@ -25,11 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <array>
-#include <numeric>
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>

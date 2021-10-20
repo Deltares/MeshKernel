@@ -26,7 +26,6 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 

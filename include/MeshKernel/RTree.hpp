@@ -37,9 +37,6 @@
 #include <boost/geometry/index/rtree.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
-#include <utility>
-#include <vector>
-
 // r-tree
 // https://gist.github.com/logc/10272165
 

@@ -11,6 +11,9 @@ add_dependencies(MeshKernelApiTests MeshKernelApi)
 target_link_libraries(MeshKernelApiTests PRIVATE MeshKernelApi UtilsStatic
                                                  gtest_main gmock)
 
+# Add precompiled header to speed up compilation
+target_precompile_headers(MeshKernelApiTests PRIVATE <exception> <memory> <numeric>)
+
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(

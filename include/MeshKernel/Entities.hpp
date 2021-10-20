@@ -28,9 +28,6 @@
 #pragma once
 
 #include <cmath>
-#include <limits>
-#include <utility>
-#include <vector>
 
 #include <MeshKernel/Constants.hpp>
 

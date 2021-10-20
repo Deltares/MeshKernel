@@ -25,9 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <stdexcept>
-#include <tuple>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/Exceptions.hpp>

@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>

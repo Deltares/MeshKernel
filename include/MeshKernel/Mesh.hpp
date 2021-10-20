@@ -30,8 +30,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/RTree.hpp>
 
-#include <vector>
-
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel

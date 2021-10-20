@@ -1,5 +1,4 @@
 #pragma once
-#include <stdexcept>
 
 #include <MeshKernel/Constants.hpp>
 

@@ -25,9 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <stdexcept>
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
