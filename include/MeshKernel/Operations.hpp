@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <numeric>
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/RTree.hpp>
