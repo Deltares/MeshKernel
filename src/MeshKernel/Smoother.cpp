@@ -57,35 +57,28 @@ void Smoother::ComputeTopologies()
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
-        size_t numSharedFaces = 0;
-        size_t numConnectedNodes = 0;
+        NodeAdministration(n);
 
-        std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), sizetMissingValue);
-        std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), sizetMissingValue);
-        NodeAdministration(n, numSharedFaces, numConnectedNodes);
+        ComputeNodeXiEta(n);
 
-        std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
-        std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
-        ComputeNodeXiEta(n, numSharedFaces, numConnectedNodes);
+        SaveNodeTopologyIfNeeded(n);
 
-        SaveNodeTopologyIfNeeded(n, numSharedFaces, numConnectedNodes);
-
-        m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, numConnectedNodes);
-        m_maximumNumSharedFaces = std::max(m_maximumNumSharedFaces, numSharedFaces);
+        m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, m_connectedNodesCache.size());
+        m_maximumNumSharedFaces = std::max(m_maximumNumSharedFaces, m_sharedFacesCache.size());
     }
 }
 
 void Smoother::ComputeOperators()
 {
     // allocate local operators for unique topologies
-    m_Az.resize(m_numTopologies);
-    m_Gxi.resize(m_numTopologies);
-    m_Geta.resize(m_numTopologies);
-    m_Divxi.resize(m_numTopologies);
-    m_Diveta.resize(m_numTopologies);
-    m_Jxi.resize(m_numTopologies);
-    m_Jeta.resize(m_numTopologies);
-    m_ww2.resize(m_numTopologies);
+    m_Az.resize(m_topologyConnectedNodes.size());
+    m_Gxi.resize(m_topologyConnectedNodes.size());
+    m_Geta.resize(m_topologyConnectedNodes.size());
+    m_Divxi.resize(m_topologyConnectedNodes.size());
+    m_Diveta.resize(m_topologyConnectedNodes.size());
+    m_Jxi.resize(m_topologyConnectedNodes.size());
+    m_Jeta.resize(m_topologyConnectedNodes.size());
+    m_ww2.resize(m_topologyConnectedNodes.size());
 
     // allocate caches
     m_boundaryEdgesCache.resize(2, sizetMissingValue);
@@ -96,7 +89,7 @@ void Smoother::ComputeOperators()
     m_xisCache.resize(maximumNumberOfEdgesPerNode, 0.0);
     m_etasCache.resize(maximumNumberOfEdgesPerNode, 0.0);
 
-    std::vector<bool> isNewTopology(m_numTopologies, true);
+    std::vector<bool> isNewTopology(m_topologyConnectedNodes.size(), true);
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
@@ -182,7 +175,7 @@ void Smoother::ComputeWeights()
 
             std::fill(DGinvDxi.begin(), DGinvDxi.end(), 0.0);
             std::fill(DGinvDeta.begin(), DGinvDeta.end(), 0.0);
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 DGinvDxi[0] += Ginv[m_topologyConnectedNodes[currentTopology][i]][0] * m_Jxi[currentTopology][i];
                 DGinvDxi[1] += Ginv[m_topologyConnectedNodes[currentTopology][i]][1] * m_Jxi[currentTopology][i];
@@ -206,7 +199,7 @@ void Smoother::ComputeWeights()
             std::fill(GxiByDiveta.begin(), GxiByDiveta.end(), 0.0);
             std::fill(GetaByDivxi.begin(), GetaByDivxi.end(), 0.0);
             std::fill(GetaByDiveta.begin(), GetaByDiveta.end(), 0.0);
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 for (auto j = 0; j < m_Divxi[currentTopology].size(); j++)
                 {
@@ -217,7 +210,7 @@ void Smoother::ComputeWeights()
                 }
             }
 
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 m_weights[n][i] -= MatrixNorm(a1, a1, DGinvDxi) * m_Jxi[currentTopology][i] +
                                    MatrixNorm(a1, a2, DGinvDeta) * m_Jxi[currentTopology][i] +
@@ -230,19 +223,19 @@ void Smoother::ComputeWeights()
             }
 
             double alpha = 0.0;
-            for (auto i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 1; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 alpha = std::max(alpha, -m_weights[n][i]) / std::max(1.0, m_ww2[currentTopology][i]);
             }
 
             double sumValues = 0.0;
-            for (auto i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 1; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 m_weights[n][i] = m_weights[n][i] + alpha * std::max(1.0, m_ww2[currentTopology][i]);
                 sumValues += m_weights[n][i];
             }
             m_weights[n][0] = -sumValues;
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 m_weights[n][i] = -m_weights[n][i] / (-sumValues + 1e-8);
             }
@@ -255,7 +248,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
     // the current topology index
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
-    for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
+    for (auto f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         if (m_topologySharedFaces[currentTopology][f] == sizetMissingValue || m_mesh->m_nodesTypes[currentNode] == 3)
         {
@@ -264,9 +257,9 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
 
         size_t edgeLeft = f + 1;
         size_t edgeRight = edgeLeft + 1;
-        if (edgeRight > m_numTopologyFaces[currentTopology])
+        if (edgeRight > m_topologySharedFaces[currentTopology].size())
         {
-            edgeRight -= m_numTopologyFaces[currentTopology];
+            edgeRight -= m_topologySharedFaces[currentTopology].size();
         }
 
         const auto xiLeft = m_topologyXi[currentTopology][edgeLeft];
@@ -298,8 +291,9 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         else
         {
             // for non-triangular faces
-            for (const auto& element : m_topologyFaceNodeMapping[currentTopology][f])
+            for (auto i = 0; i < numFaceNodes; ++i)
             {
+                const auto element = m_topologyFaceNodeMapping[currentTopology][f][i];
                 m_Az[currentTopology][f][element] = 1.0 / static_cast<double>(numFaceNodes);
             }
         }
@@ -319,7 +313,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
-    for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
+    for (auto f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
@@ -361,7 +355,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
             }
 
             // Compute the face circumcenter
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
                 leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
@@ -387,7 +381,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         else
         {
             faceLeftIndex = f;
-            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, m_numTopologyFaces[currentTopology]);
+            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, m_topologySharedFaces[currentTopology].size());
 
             if (faceRightIndex == sizetMissingValue)
             {
@@ -403,7 +397,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
                 throw std::invalid_argument("Smoother::ComputeOperatorsNode: Invalid argument.");
             }
 
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
                 leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
@@ -450,7 +444,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
 
         size_t node1 = f + 1;
         size_t node0 = 0;
-        for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+        for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
         {
             m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
             m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
@@ -496,7 +490,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
     }
 
     //compute the node-to-node gradients
-    for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
+    for (auto f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         // internal edge
         if (!m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]))
@@ -511,7 +505,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
                 rightNode = f - 1;
             }
 
-            for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+            for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
             {
                 m_Jxi[currentTopology][i] += m_Divxi[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
                 m_Jeta[currentTopology][i] += m_Diveta[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
@@ -530,19 +524,22 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
     std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
     for (auto n = 0; n < m_mesh->m_nodesNumEdges[currentNode]; n++)
     {
-        for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+        for (auto i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
         {
             m_ww2[currentTopology][i] += m_Divxi[currentTopology][n] * m_Gxi[currentTopology][n][i] + m_Diveta[currentTopology][n] * m_Geta[currentTopology][n][i];
         }
     }
 }
 
-void Smoother::ComputeNodeXiEta(size_t currentNode,
-                                size_t numSharedFaces,
-                                size_t numConnectedNodes)
+void Smoother::ComputeNodeXiEta(size_t currentNode)
 {
+    // set caches to 0
+    std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
+    std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
+
+    const auto numSharedFaces = m_sharedFacesCache.size();
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
-    std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
+    std::vector<double> thetaSquare(m_connectedNodesCache.size(), doubleMissingValue);
     // for each shared face, a boolean indicating if it is squared or not
     std::vector<bool> isSquareFace(numSharedFaces, false);
 
@@ -815,13 +812,12 @@ void Smoother::ComputeNodeXiEta(size_t currentNode,
     }
 }
 
-void Smoother::NodeAdministration(size_t currentNode,
-                                  size_t& numSharedFaces,
-                                  size_t& numConnectedNodes)
+void Smoother::NodeAdministration(size_t currentNode)
 {
+    m_sharedFacesCache.clear();
+    m_connectedNodesCache.clear();
+    m_connectedNodes[currentNode].clear();
 
-    numSharedFaces = 0;
-    numConnectedNodes = 0;
     if (m_mesh->m_nodesNumEdges[currentNode] < 2)
     {
         return;
@@ -867,43 +863,41 @@ void Smoother::NodeAdministration(size_t currentNode,
         }
 
         //corner face (already found in the first iteration)
-        if (m_mesh->m_nodesNumEdges[currentNode] == 2 && e == 1 && m_mesh->m_nodesTypes[currentNode] == 3 && m_sharedFacesCache[0] == newFaceIndex)
+        if (m_mesh->m_nodesNumEdges[currentNode] == 2 &&
+            e == 1 &&
+            m_mesh->m_nodesTypes[currentNode] == 3 &&
+            !m_sharedFacesCache.empty() &&
+            m_sharedFacesCache[0] == newFaceIndex)
         {
             newFaceIndex = sizetMissingValue;
         }
-        m_sharedFacesCache[numSharedFaces] = newFaceIndex;
-        numSharedFaces += 1;
+        m_sharedFacesCache.emplace_back(newFaceIndex);
     }
 
     // no shared face found
-    if (numSharedFaces < 1)
+    if (m_sharedFacesCache.empty())
     {
         return;
     }
 
-    size_t connectedNodesIndex = 0;
-    m_connectedNodesCache[connectedNodesIndex] = currentNode;
+    m_connectedNodes[currentNode].emplace_back(currentNode);
+    m_connectedNodesCache.emplace_back(currentNode);
 
     // edge connected nodes
     for (auto e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[currentNode][e];
         const auto node = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
-        connectedNodesIndex++;
-        m_connectedNodesCache[connectedNodesIndex] = node;
-        if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
-        {
-            m_connectedNodes[currentNode].resize(connectedNodesIndex);
-        }
-        m_connectedNodes[currentNode][connectedNodesIndex] = node;
+        m_connectedNodes[currentNode].emplace_back(node);
+        m_connectedNodesCache.emplace_back(node);
     }
 
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
-    if (m_faceNodeMappingCache.size() < numSharedFaces)
+    if (m_faceNodeMappingCache.size() < m_sharedFacesCache.size())
     {
-        ResizeAndFill2DVector(m_faceNodeMappingCache, numSharedFaces, maximumNumberOfNodesPerFace);
+        ResizeAndFill2DVector(m_faceNodeMappingCache, m_sharedFacesCache.size(), maximumNumberOfNodesPerFace);
     }
-    for (auto f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < m_sharedFacesCache.size(); f++)
     {
         const auto faceIndex = m_sharedFacesCache[f];
         if (faceIndex == sizetMissingValue)
@@ -934,7 +928,7 @@ void Smoother::NodeAdministration(size_t currentNode,
             const auto node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
 
             bool isNewNode = true;
-            for (auto i = 0; i < connectedNodesIndex + 1; i++)
+            for (auto i = 0; i < m_connectedNodesCache.size(); i++)
             {
                 if (node == m_connectedNodesCache[i])
                 {
@@ -946,14 +940,9 @@ void Smoother::NodeAdministration(size_t currentNode,
 
             if (isNewNode)
             {
-                connectedNodesIndex++;
-                m_connectedNodesCache[connectedNodesIndex] = node;
-                m_faceNodeMappingCache[f][faceNodeIndex] = connectedNodesIndex;
-                if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
-                {
-                    m_connectedNodes[currentNode].resize(connectedNodesIndex);
-                }
-                m_connectedNodes[currentNode][connectedNodesIndex] = node;
+                m_connectedNodesCache.emplace_back(node);
+                m_faceNodeMappingCache[f][faceNodeIndex] = m_connectedNodesCache.size() - 1;
+                m_connectedNodes[currentNode].emplace_back(node);
             }
 
             //update node index
@@ -961,11 +950,8 @@ void Smoother::NodeAdministration(size_t currentNode,
         }
     }
 
-    // compute the number of connected nodes
-    numConnectedNodes = connectedNodesIndex + 1;
-
     //update connected nodes (kkc)
-    m_numConnectedNodes[currentNode] = numConnectedNodes;
+    m_numConnectedNodes[currentNode] = m_connectedNodesCache.size();
 }
 
 double Smoother::OptimalEdgeAngle(size_t numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
@@ -1000,11 +986,9 @@ void Smoother::Initialize()
     m_connectedNodes.resize(m_mesh->GetNumNodes());
     std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
 
-    m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, sizetMissingValue);
-    std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), sizetMissingValue);
+    m_sharedFacesCache.reserve(maximumNumberOfEdgesPerNode);
 
-    m_connectedNodesCache.resize(maximumNumberOfConnectedNodes, sizetMissingValue);
-    std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), sizetMissingValue);
+    m_connectedNodesCache.reserve(maximumNumberOfConnectedNodes);
 
     m_faceNodeMappingCache.resize(maximumNumberOfConnectedNodes);
     std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
@@ -1015,38 +999,14 @@ void Smoother::Initialize()
     m_etaCache.resize(maximumNumberOfConnectedNodes, 0.0);
     std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
 
-    // topology
-    m_numTopologies = 0;
-
     m_nodeTopologyMapping.resize(m_mesh->GetNumNodes());
     std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), sizetMissingValue);
-
-    m_numTopologyNodes.resize(m_topologyInitialSize);
-    std::fill(m_numTopologyNodes.begin(), m_numTopologyNodes.end(), sizetMissingValue);
-
-    m_numTopologyFaces.resize(m_topologyInitialSize);
-    std::fill(m_numTopologyFaces.begin(), m_numTopologyFaces.end(), sizetMissingValue);
-
-    m_topologyXi.resize(m_topologyInitialSize);
-    std::fill(m_topologyXi.begin(), m_topologyXi.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
-
-    m_topologyEta.resize(m_topologyInitialSize);
-    std::fill(m_topologyEta.begin(), m_topologyEta.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
-
-    m_topologySharedFaces.resize(m_topologyInitialSize);
-    std::fill(m_topologySharedFaces.begin(), m_topologySharedFaces.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, sizetMissingValue));
-
-    m_topologyConnectedNodes.resize(m_topologyInitialSize);
-    std::fill(m_topologyConnectedNodes.begin(), m_topologyConnectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
-
-    m_topologyFaceNodeMapping.resize(m_topologyInitialSize);
-    std::fill(m_topologyFaceNodeMapping.begin(), m_topologyFaceNodeMapping.end(), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
 }
 
 void Smoother::AllocateNodeOperators(size_t topologyIndex)
 {
-    const auto numSharedFaces = m_numTopologyFaces[topologyIndex];
-    const auto numConnectedNodes = m_numTopologyNodes[topologyIndex];
+    const auto numSharedFaces = m_topologySharedFaces[topologyIndex].size();
+    const auto numConnectedNodes = m_topologyConnectedNodes[topologyIndex].size();
 
     //// will reallocate only if necessary
     m_Az[topologyIndex].resize(numSharedFaces);
@@ -1074,20 +1034,18 @@ void Smoother::AllocateNodeOperators(size_t topologyIndex)
     std::fill(m_ww2[topologyIndex].begin(), m_ww2[topologyIndex].end(), 0.0);
 }
 
-void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
-                                        size_t numSharedFaces,
-                                        size_t numConnectedNodes)
+void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode)
 {
     bool isNewTopology = true;
-    for (auto topo = 0; topo < m_numTopologies; topo++)
+    for (auto topo = 0; topo < m_topologyConnectedNodes.size(); topo++)
     {
-        if (numSharedFaces != m_numTopologyFaces[topo] || numConnectedNodes != m_numTopologyNodes[topo])
+        if (m_sharedFacesCache.size() != m_topologySharedFaces[topo].size() || m_connectedNodesCache.size() != m_topologyConnectedNodes[topo].size())
         {
             continue;
         }
 
         isNewTopology = false;
-        for (auto n = 1; n < numConnectedNodes; n++)
+        for (auto n = 1; n < m_connectedNodesCache.size(); n++)
         {
             const double thetaLoc = std::atan2(m_etaCache[n], m_xiCache[n]);
             const double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
@@ -1107,36 +1065,19 @@ void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
 
     if (isNewTopology)
     {
-        m_numTopologies += 1;
-
-        if (m_numTopologies > m_numTopologyNodes.size())
-        {
-            const auto estimatedSize = static_cast<size_t>(static_cast<double>(m_numTopologies) * 1.5);
-            m_numTopologyNodes.resize(estimatedSize, 0);
-            m_numTopologyFaces.resize(estimatedSize, 0);
-            ResizeAndFill2DVector(m_topologyXi, estimatedSize, maximumNumberOfConnectedNodes);
-            ResizeAndFill2DVector(m_topologyEta, estimatedSize, maximumNumberOfConnectedNodes);
-            ResizeAndFill2DVector(m_topologySharedFaces, estimatedSize, maximumNumberOfEdgesPerNode);
-            ResizeAndFill2DVector(m_topologyConnectedNodes, estimatedSize, maximumNumberOfConnectedNodes);
-            ResizeAndFill3DVector(m_topologyFaceNodeMapping, estimatedSize, maximumNumberOfConnectedNodes, maximumNumberOfConnectedNodes);
-        }
-
-        const auto topologyIndex = m_numTopologies - 1;
-        m_numTopologyNodes[topologyIndex] = numConnectedNodes;
-        m_topologyConnectedNodes[topologyIndex] = m_connectedNodesCache;
-        m_numTopologyFaces[topologyIndex] = numSharedFaces;
-        m_topologySharedFaces[topologyIndex] = m_sharedFacesCache;
-        m_topologyXi[topologyIndex] = m_xiCache;
-        m_topologyEta[topologyIndex] = m_etaCache;
-        m_topologyFaceNodeMapping[topologyIndex] = m_faceNodeMappingCache;
-        m_nodeTopologyMapping[currentNode] = topologyIndex;
+        m_topologyConnectedNodes.emplace_back(m_connectedNodesCache);
+        m_topologySharedFaces.emplace_back(m_sharedFacesCache);
+        m_topologyXi.emplace_back(m_xiCache);
+        m_topologyEta.emplace_back(m_etaCache);
+        m_topologyFaceNodeMapping.emplace_back(m_faceNodeMappingCache);
+        m_nodeTopologyMapping[currentNode] = m_topologyConnectedNodes.size() - 1;
     }
 }
 
 void Smoother::ComputeJacobian(size_t currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
-    const auto numNodes = m_numTopologyNodes[currentTopology];
+    const auto numNodes = m_topologyConnectedNodes[currentTopology].size();
     if (m_mesh->m_projection == Projection::cartesian)
     {
         J[0] = 0.0;

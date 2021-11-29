@@ -2785,3 +2785,52 @@ TEST_F(ApiTests, ComputeOffsettedAndConvertNetworkToMesh_ShouldGenerateMesh1D)
     ASSERT_EQ(41, mesh1dResults.num_nodes);
     ASSERT_EQ(40, mesh1dResults.num_edges);
 }
+
+TEST(OrthogonalizationAndSmoothing, OrthogonalizeRealMeshWithExagon_ShouldOrthogonalize)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshWithExagon.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = num_edges;
+    mesh2d.num_nodes = num_nodes;
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_nodes = edge_nodes.get();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+
+    meshkernelapi::GeometryList geometryList{};
+    meshkernelapi::GeometryList landBoundaries{};
+
+    // Execute
+    errorCode = mkernel_mesh2d_initialize_orthogonalization(meshKernelId,
+                                                            1,
+                                                            orthogonalizationParameters,
+                                                            landBoundaries,
+                                                            geometryList);
+
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_prepare_outer_iteration_orthogonalization(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_compute_inner_ortogonalization_iteration(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_finalize_inner_ortogonalization_iteration(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_orthogonalization(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}

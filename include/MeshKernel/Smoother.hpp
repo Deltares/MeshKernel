@@ -97,19 +97,11 @@ namespace meshkernel
 
         /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// @param[in] currentNode
-        /// @param[out] numSharedFaces
-        /// @param[out] numConnectedNodes
-        void NodeAdministration(size_t currentNode,
-                                size_t& numSharedFaces,
-                                size_t& numConnectedNodes);
+        void NodeAdministration(size_t currentNode);
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
-        /// @param[in] numSharedFaces
-        /// @param[in] numConnectedNodes
-        void ComputeNodeXiEta(size_t currentNode,
-                              size_t numSharedFaces,
-                              size_t numConnectedNodes);
+        void ComputeNodeXiEta(size_t currentNode);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -128,11 +120,7 @@ namespace meshkernel
 
         /// @brief If it is a new topology, save it
         /// @param[in] currentNode
-        /// @param[in] numSharedFaces
-        /// @param[in] numConnectedNodes
-        void SaveNodeTopologyIfNeeded(size_t currentNode,
-                                      size_t numSharedFaces,
-                                      size_t numConnectedNodes);
+        void SaveNodeTopologyIfNeeded(size_t currentNode);
 
         /// @brief Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
         /// @param[in] currentNode
@@ -179,10 +167,7 @@ namespace meshkernel
         std::vector<double> m_etasCache;                         ///< Cache for etas
 
         // Smoother topologies
-        size_t m_numTopologies = 0;                                              ///< Number of topologies
         std::vector<size_t> m_nodeTopologyMapping;                               ///< Node topology mapping
-        std::vector<size_t> m_numTopologyNodes;                                  ///< Number of topology nodes
-        std::vector<size_t> m_numTopologyFaces;                                  ///< Number of topology faces
         std::vector<std::vector<double>> m_topologyXi;                           ///< Topology xi
         std::vector<std::vector<double>> m_topologyEta;                          ///< Topology eta
         std::vector<std::vector<size_t>> m_topologySharedFaces;                  ///< Topology shared faces
