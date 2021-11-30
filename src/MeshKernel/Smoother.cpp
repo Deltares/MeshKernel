@@ -971,12 +971,6 @@ double Smoother::OptimalEdgeAngle(size_t numFaceNodes, double theta1, double the
     return angle;
 }
 
-double Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients) const
-{
-    const double norm = (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
-    return norm;
-}
-
 void Smoother::Initialize()
 {
     // local matrices caches

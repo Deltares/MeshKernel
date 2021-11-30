@@ -1558,4 +1558,9 @@ namespace meshkernel
         return discretization;
     }
 
+    double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients)
+    {
+        return (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
+    }
+
 } // namespace meshkernel

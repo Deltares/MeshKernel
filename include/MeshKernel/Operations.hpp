@@ -622,4 +622,11 @@ namespace meshkernel
     /// @return A vector containing the lengths of each polyline segment
     [[nodiscard]] std::vector<double> ComputePolyLineEdgesLengths(std::vector<Point> const& polyline, Projection projection);
 
+    /// @brief Compute the matrix norm
+    /// @brief x [in] To be detailed
+    /// @brief y [in] To be detailed
+    /// @brief matCoefficients [in] To be detailed
+    /// @returns The computed matrix norm
+    [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
+
 } // namespace meshkernel

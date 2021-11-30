@@ -127,15 +127,6 @@ namespace meshkernel
         /// @param[out] J
         void ComputeJacobian(size_t currentNode, std::vector<double>& J) const;
 
-        /// @brief Compute the matrix norm
-        /// @brief x
-        /// @brief y
-        /// @brief matCoefficients
-        /// @returns
-        [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
-                                        const std::vector<double>& y,
-                                        const std::vector<double>& matCoefficients) const;
-
         // The mesh to smooth
         std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
 
