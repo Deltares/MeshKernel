@@ -378,6 +378,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a80463bb8f0938498c2efba8b7c46a40d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a80463bb8f0938498c2efba8b7c46a40d">ComputePolyLineEdgesLengths</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const &amp;polyline, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:a80463bb8f0938498c2efba8b7c46a40d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the lengths of each polyline segment.  <a href="namespacemeshkernel.html#a80463bb8f0938498c2efba8b7c46a40d">More...</a><br /></td></tr>
 <tr class="separator:a80463bb8f0938498c2efba8b7c46a40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab08750c57678ca9093d7268866965f25"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ab08750c57678ca9093d7268866965f25">MatrixNorm</a> (const std::vector&lt; double &gt; &amp;x, const std::vector&lt; double &gt; &amp;y, const std::vector&lt; double &gt; &amp;matCoefficients)</td></tr>
+<tr class="memdesc:ab08750c57678ca9093d7268866965f25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the matrix norm.  <a href="namespacemeshkernel.html#ab08750c57678ca9093d7268866965f25">More...</a><br /></td></tr>
+<tr class="separator:ab08750c57678ca9093d7268866965f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e">Triangulation</a> (int *jatri, double *xs, double *ys, int *ns, int *indx, int *numtri, int *edgeidx, int *numedge, int *triedge, double *xs3, double *ys3, int *ns3, double *trisize)</td></tr>
 <tr class="memdesc:a5a4e91c351aad4f859d9ac69f026d29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function of the Triangle library.  <a href="namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e">More...</a><br /></td></tr>
 <tr class="separator:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2210,6 +2213,45 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The interpolated value. </dd></dl>
+
+</div>
+</div>
+<a id="ab08750c57678ca9093d7268866965f25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab08750c57678ca9093d7268866965f25">&#9670;&nbsp;</a></span>MatrixNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::MatrixNorm </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>matCoefficients</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the matrix norm. </p>
+<p>x [in] To be detailed</p>
+<p>y [in] To be detailed</p>
+<p>matCoefficients [in] To be detailed </p><dl class="section return"><dt>Returns</dt><dd>The computed matrix norm </dd></dl>
 
 </div>
 </div>
