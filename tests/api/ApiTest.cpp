@@ -2786,14 +2786,14 @@ TEST_F(ApiTests, ComputeOffsettedAndConvertNetworkToMesh_ShouldGenerateMesh1D)
     ASSERT_EQ(40, mesh1dResults.num_edges);
 }
 
-TEST(OrthogonalizationAndSmoothing, OrthogonalizeRealMeshWithExagon_ShouldOrthogonalize)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizeRealMeshWithHexagon_ShouldOrthogonalize)
 {
     // Prepare
     int meshKernelId;
     const int isGeographic = 0;
     meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshWithExagon.nc");
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshWithHexagon.nc");
     meshkernelapi::Mesh2D mesh2d;
     mesh2d.num_edges = num_edges;
     mesh2d.num_nodes = num_nodes;
