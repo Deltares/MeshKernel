@@ -37,7 +37,7 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // connect only nodes included in the polygons
-        if (nodePolygonIndices[n] == sizetMissingValue)
+        if (!nodePolygonIndices[n])
         {
             continue;
         }
@@ -53,31 +53,9 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(node1dFaceIndices[n]);
-            continue;
         }
-
-        // connect faces crossing the right projected segment
-        Connect1dNodesWithCrossingFaces(n, 5.0);
-        // connect faces crossing the left projected segment
-        Connect1dNodesWithCrossingFaces(n, -5.0);
     }
 };
-
-void Contacts::Connect1dNodesWithCrossingFaces(size_t node,
-                                               double distanceFactor)
-{
-    const auto projectedNode = m_mesh1d->ComputeProjectedNode(node, distanceFactor);
-
-    const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
-    if (intersectedFace != sizetMissingValue &&
-        intersectedEdge != sizetMissingValue &&
-        !IsContactIntersectingMesh1d(node, intersectedFace) &&
-        !IsContactIntersectingContact(node, intersectedFace))
-    {
-        m_mesh1dIndices.emplace_back(node);
-        m_mesh2dIndices.emplace_back(intersectedFace);
-    }
-}
 
 bool Contacts::IsContactIntersectingMesh1d(size_t node,
                                            size_t face) const
