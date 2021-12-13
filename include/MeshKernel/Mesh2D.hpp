@@ -74,7 +74,22 @@ namespace meshkernel
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
         /// @param[in] administration Type of administration to perform
-        explicit Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
+        explicit Mesh2D(const std::vector<Edge>& edges,
+                        const std::vector<Point>& nodes,
+                        Projection projection,
+                        AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
+
+        /// @brief Construct a mesh2d from face nodes and num face nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
+        /// @param[in] projection The mesh projection
+        explicit Mesh2D(const std::vector<Edge>& edges,
+                        const std::vector<Point>& nodes,
+                        const std::vector<std::vector<size_t>>& faceNodes,
+                        const std::vector<size_t>& numFaceNodes,
+                        Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
@@ -85,6 +100,9 @@ namespace meshkernel
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOption administrationOption);
+
+        /// @brief Perform node administration from the face nodes
+        void AdministrateFromFaceNodes();
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -297,5 +315,30 @@ namespace meshkernel
         /// @param[in] nodes
         /// @returns If triangle is okay
         [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+
+        /// @brief Resizes the face arrays
+        void ResizeFaceArrays()
+        {
+            // face administration
+            m_edgesNumFaces.resize(m_edges.size());
+            std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
+
+            m_edgesFaces.resize(m_edges.size());
+            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, sizetMissingValue));
+
+            m_facesMassCenters.clear();
+            m_faceArea.clear();
+            m_facesNodes.clear();
+            m_facesEdges.clear();
+            m_facesCircumcenters.clear();
+            m_numFacesNodes.clear();
+
+            m_facesMassCenters.reserve(GetNumNodes());
+            m_faceArea.reserve(GetNumNodes());
+            m_facesNodes.reserve(GetNumNodes());
+            m_facesEdges.reserve(GetNumNodes());
+            m_facesCircumcenters.reserve(GetNumNodes());
+            m_numFacesNodes.reserve(GetNumNodes());
+        }
     };
 } // namespace meshkernel

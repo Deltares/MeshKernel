@@ -1166,7 +1166,7 @@ namespace meshkernel
         return sgn(val);
     }
 
-    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
+    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection)
     {
         if (polygon.empty())
         {
@@ -1178,7 +1178,7 @@ namespace meshkernel
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
         }
 
-        area = 0.0;
+        double area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
@@ -1206,7 +1206,7 @@ namespace meshkernel
             yCenterOfMass = yCenterOfMass + xds * yc;
         }
 
-        isCounterClockWise = area > 0.0;
+        bool isCounterClockWise = area > 0.0;
 
         area = std::abs(area) < minArea ? minArea : area;
 
@@ -1220,10 +1220,11 @@ namespace meshkernel
             xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * std::cos((yCenterOfMass + reference.y) * degrad_hp));
         }
 
+        Point centerOfMass;
         centerOfMass.x = xCenterOfMass + reference.x;
         centerOfMass.y = yCenterOfMass + reference.y;
 
-        area = std::abs(area);
+        return {std::abs(area), centerOfMass, isCounterClockWise};
     }
 
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection)

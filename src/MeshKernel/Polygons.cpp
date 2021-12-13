@@ -61,10 +61,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             continue;
         }
 
-        double localPolygonArea = 0.0;
-        Point centerOfMass;
-        bool isCounterClockWise;
-        FaceAreaAndCenterOfMass(localPolygon, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
+        const auto [localPolygonArea, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(localPolygon, m_projection);
 
         const auto perimeter = PerimeterClosedPolygon(localPolygon);
 

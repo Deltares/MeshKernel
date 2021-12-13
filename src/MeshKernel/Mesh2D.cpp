@@ -43,6 +43,51 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
     Administrate(administration);
 };
 
+Mesh2D::Mesh2D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               const std::vector<std::vector<size_t>>& faceNodes,
+               const std::vector<size_t>& numFaceNodes,
+               Projection projection) : Mesh(edges, nodes, projection)
+{
+    // The face nodes and the num face nodes
+    m_facesNodes = faceNodes;
+    m_numFacesNodes = numFaceNodes;
+    AdministrateFromFaceNodes();
+}
+
+void Mesh2D::AdministrateFromFaceNodes()
+{
+    AdministrateNodesEdges();
+
+    ResizeFaceArrays();
+
+    std::vector<size_t> edges;
+    std::vector<Point> nodal_values;
+    for (auto f = 0; f < m_facesNodes.size(); ++f)
+    {
+        edges.clear();
+        nodal_values.clear();
+        for (auto n = 0; n < m_facesNodes[f].size(); ++n)
+        {
+            const auto edge = m_facesEdges[f][n];
+            const auto node = m_facesNodes[f][n];
+            edges.emplace_back(edge);
+            nodal_values.emplace_back(m_nodes[node]);
+        }
+        nodal_values.emplace_back(nodal_values.front());
+
+        auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodal_values, m_projection);
+
+        m_faceArea.emplace_back(face_area);
+        m_facesEdges.emplace_back(edges);
+        m_facesMassCenters.emplace_back(center_of_mass);
+    }
+
+    ComputeCircumcentersMassCentersAndFaceAreas();
+
+    ClassifyNodes();
+}
+
 void Mesh2D::Administrate(AdministrationOption administrationOption)
 {
     AdministrateNodesEdges();
@@ -53,25 +98,7 @@ void Mesh2D::Administrate(AdministrationOption administrationOption)
     }
 
     // face administration
-    m_edgesNumFaces.resize(m_edges.size());
-    std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
-
-    m_edgesFaces.resize(m_edges.size());
-    std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, sizetMissingValue));
-
-    m_facesMassCenters.clear();
-    m_faceArea.clear();
-    m_facesNodes.clear();
-    m_facesEdges.clear();
-    m_facesCircumcenters.clear();
-    m_numFacesNodes.clear();
-
-    m_facesMassCenters.reserve(GetNumNodes());
-    m_faceArea.reserve(GetNumNodes());
-    m_facesNodes.reserve(GetNumNodes());
-    m_facesEdges.reserve(GetNumNodes());
-    m_facesCircumcenters.reserve(GetNumNodes());
-    m_numFacesNodes.reserve(GetNumNodes());
+    ResizeFaceArrays();
 
     // find faces
     FindFaces();
@@ -321,11 +348,8 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         }
         nodalValues.emplace_back(nodalValues.front());
 
-        double area;
-        Point centerOfMass;
-        bool isCounterClockWise;
-        FaceAreaAndCenterOfMass(nodalValues, m_projection, area, centerOfMass, isCounterClockWise);
-        if (!isCounterClockWise)
+        auto const [area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodalValues, m_projection);
+        if (!is_counter_clock_wise)
         {
             return;
         }
@@ -342,7 +366,7 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         m_facesNodes.emplace_back(nodes);
         m_facesEdges.emplace_back(edges);
         m_faceArea.emplace_back(area);
-        m_facesMassCenters.emplace_back(centerOfMass);
+        m_facesMassCenters.emplace_back(center_of_mass);
         m_numFacesNodes.emplace_back(nodes.size());
 
         return;
@@ -420,10 +444,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 
         if (computeMassCenters)
         {
-            double area;
-            Point centerOfMass;
-            bool isCounterClockWise;
-            FaceAreaAndCenterOfMass(polygonNodesCache, m_projection, area, centerOfMass, isCounterClockWise);
+            const auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
             m_faceArea[f] = area;
             m_facesMassCenters[f] = centerOfMass;
         }
@@ -1183,10 +1204,7 @@ void Mesh2D::MakeDualFace(size_t node, double enlargementFactor, std::vector<Poi
     dualFace.emplace_back(dualFace[0]);
 
     // now we can compute the mass center of the dual face
-    double area;
-    Point centerOfMass;
-    bool isCounterClockWise;
-    FaceAreaAndCenterOfMass(dualFace, m_projection, area, centerOfMass, isCounterClockWise);
+    auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(dualFace, m_projection);
 
     if (m_projection == Projection::spherical)
     {
