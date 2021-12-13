@@ -325,9 +325,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:afee88ee44579dd731f8ac1db4db03dc0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#afee88ee44579dd731f8ac1db4db03dc0">CrossProductSign</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:afee88ee44579dd731f8ac1db4db03dc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sign of the cross product between two segments (duitpl)  <a href="namespacemeshkernel.html#afee88ee44579dd731f8ac1db4db03dc0">More...</a><br /></td></tr>
 <tr class="separator:afee88ee44579dd731f8ac1db4db03dc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae353b37ec8a3310333d27f76109fb183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, double &amp;area, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;centerOfMass, bool &amp;isCounterClockWise)</td></tr>
-<tr class="memdesc:ae353b37ec8a3310333d27f76109fb183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened.  <a href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">More...</a><br /></td></tr>
-<tr class="separator:ae353b37ec8a3310333d27f76109fb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; double, <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af1ad102a74a3e4a7eb7a90b674ba5eac">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened.  <a href="namespacemeshkernel.html#af1ad102a74a3e4a7eb7a90b674ba5eac">More...</a><br /></td></tr>
+<tr class="separator:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">ComputePointOnSplineAtAdimensionalDistance</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate)</td></tr>
 <tr class="memdesc:a8d3640a26ce227c47cc0dc382e1174c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)  <a href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">More...</a><br /></td></tr>
@@ -1551,14 +1551,14 @@ template&lt;typename T , typename... Args&gt; </div>
 
 </div>
 </div>
-<a id="ae353b37ec8a3310333d27f76109fb183"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae353b37ec8a3310333d27f76109fb183">&#9670;&nbsp;</a></span>FaceAreaAndCenterOfMass()</h2>
+<a id="af1ad102a74a3e4a7eb7a90b674ba5eac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ad102a74a3e4a7eb7a90b674ba5eac">&#9670;&nbsp;</a></span>FaceAreaAndCenterOfMass()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::FaceAreaAndCenterOfMass </td>
+          <td class="memname">std::tuple&lt;double, <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, bool&gt; meshkernel::FaceAreaAndCenterOfMass </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>polygon</em>, </td>
@@ -1567,25 +1567,7 @@ template&lt;typename T , typename... Args&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
-          <td class="paramname"><em>projection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>area</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>centerOfMass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>isCounterClockWise</em>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1600,12 +1582,10 @@ template&lt;typename T , typename... Args&gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The input vector containing the nodes of the polygon (must be closed) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The projection to use. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">area</td><td>The resulting area. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">centerOfMass</td><td>The resulting center of mass. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">isCounterClockWise</td><td>The orientation of the edges. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple containing the resulting area, the resulting center of mass, and the orientation of the edges (counterclockwise/clockwise) </dd></dl>
 
 </div>
 </div>
