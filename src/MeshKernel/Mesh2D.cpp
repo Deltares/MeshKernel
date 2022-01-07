@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Exceptions.hpp"
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -52,7 +54,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
     AdministrateNodesEdges();
 
-    ResizeFaceArrays();
+    ResizeAndInitializeFaceArrays();
 
     // The face nodes and the num face nodes
     m_facesNodes = faceNodes;
@@ -106,6 +108,16 @@ void Mesh2D::AdministrateFromFaceNodes()
         }
 
         m_facesEdges.emplace_back(edges);
+        for (const auto& e : edges)
+        {
+            if (m_edgesNumFaces[e] > 2)
+            {
+                throw AlgorithmError("Mesh2D::AdministrateFromFaceNodes: m_edgesNumFaces > 2.");
+            }
+            m_edgesFaces[e][m_edgesNumFaces[e]] = f;
+            m_edgesNumFaces[e] += 1;
+        }
+
         nodes.emplace_back(nodes.front());
 
         auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodes, m_projection);
@@ -129,7 +141,7 @@ void Mesh2D::Administrate(AdministrationOption administrationOption)
     }
 
     // face administration
-    ResizeFaceArrays();
+    ResizeAndInitializeFaceArrays();
 
     // find faces
     FindFaces();
@@ -159,7 +171,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     std::vector<bool> edgeNodesFlag(triangulationWrapper.m_numEdges, false);
     for (auto i = 0; i < triangulationWrapper.m_numFaces; ++i)
     {
-        const auto goodTriangle = CheckTriangle(triangulationWrapper.m_faceNodes[i], inputNodes);
+        const auto goodTriangle = HasTriangleNoAcuteAngles(triangulationWrapper.m_faceNodes[i], inputNodes);
 
         if (!goodTriangle)
         {
@@ -208,7 +220,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     *this = Mesh2D(edges, inputNodes, projection, AdministrationOption::AdministrateMeshEdges);
 }
 
-bool Mesh2D::CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const
+bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;

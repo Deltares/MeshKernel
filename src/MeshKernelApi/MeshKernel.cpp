@@ -168,7 +168,7 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            if (mesh2d.num_faces > 0)
+            if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
             {
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
@@ -180,7 +180,7 @@ namespace meshkernelapi
                     num_face_nodes.emplace_back(static_cast<size_t>(mesh2d.nodes_per_face[n]));
                 }
 
-                //// Do not change the pointer, just the object it is pointing to
+                // Do not change the pointer, just the object it is pointing to
                 *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
                                                                              nodes2d,
                                                                              face_nodes,
@@ -1685,8 +1685,7 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask,
-                                                                            meshKernelPolygons);
+            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons);
         }
         catch (...)
         {

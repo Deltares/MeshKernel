@@ -311,13 +311,13 @@ namespace meshkernel
                                 std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
-        /// @param[in] faceNodes
-        /// @param[in] nodes
-        /// @returns If triangle is okay
-        [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+        /// @param[in] faceNodes The face nodes composing the triangles
+        /// @param[in] nodes The node coordinates
+        /// @returns If triangle has an acute triangle
+        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
 
-        /// @brief Resizes the face arrays
-        void ResizeFaceArrays()
+        /// @brief Resizes and initializes face arrays
+        void ResizeAndInitializeFaceArrays()
         {
             // face administration
             m_edgesNumFaces.resize(m_edges.size());

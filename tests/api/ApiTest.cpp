@@ -33,7 +33,7 @@ public:
         meshkernelapi::mkernel_deallocate_state(m_meshKernelId);
     }
 
-    /// @brief Makes a mesh
+    /// @brief Make a mesh
     /// @param[in]  n            Number of rows
     /// @param[in]  m            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes

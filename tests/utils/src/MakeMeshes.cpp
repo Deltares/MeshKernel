@@ -640,7 +640,7 @@ MakeMeshWithFaceNodes()
         14,
     };
 
-    std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4};
+    std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
 
     return {nodes_x, nodes_y, edges, faceNodes, num_face_nodes};
 }
