@@ -44,16 +44,14 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Ctor
-        /// @returns
+        /// @brief Default constructor
         Splines() = default;
 
         /// @brief Ctor, set projection
         /// @brief[in] projection The map projection
-        /// @returns
         explicit Splines(Projection projection);
 
-        /// @brief Ctor from grids, each gridline is converted to spline, first  the first m_n horizontal lines then the m_m vertical lines
+        /// @brief Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines
         /// @brief[in] The curvilinear grid
         explicit Splines(CurvilinearGrid const& grid);
 
