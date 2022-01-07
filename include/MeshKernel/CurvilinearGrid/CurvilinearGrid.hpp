@@ -76,7 +76,7 @@ namespace meshkernel
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        explicit CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
+        CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise

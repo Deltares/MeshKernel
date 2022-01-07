@@ -52,12 +52,12 @@ FlipEdges::FlipEdges(std::shared_ptr<Mesh2D> mesh,
 void FlipEdges::Compute() const
 {
 
-    m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate();
 
     if (m_triangulateFaces)
     {
         m_mesh->TriangulateFaces();
-        m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate();
     }
 
     const size_t MaxIter = 10;
@@ -241,7 +241,7 @@ void FlipEdges::Compute() const
     }
 
     // Perform mesh administration
-    m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate();
 }
 
 void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const

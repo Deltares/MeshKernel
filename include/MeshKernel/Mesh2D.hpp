@@ -74,10 +74,9 @@ namespace meshkernel
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
         /// @param[in] administration Type of administration to perform
-        explicit Mesh2D(const std::vector<Edge>& edges,
-                        const std::vector<Point>& nodes,
-                        Projection projection,
-                        AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
+        Mesh2D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               Projection projection);
 
         /// @brief Construct a mesh2d from face nodes and num face nodes
         /// @param[in] edges The input edges
@@ -85,24 +84,20 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         /// @param[in] projection The mesh projection
-        explicit Mesh2D(const std::vector<Edge>& edges,
-                        const std::vector<Point>& nodes,
-                        const std::vector<std::vector<size_t>>& faceNodes,
-                        const std::vector<size_t>& numFaceNodes,
-                        Projection projection);
+        Mesh2D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               const std::vector<std::vector<size_t>>& faceNodes,
+               const std::vector<size_t>& numFaceNodes,
+               Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
         /// @param[in] projection The projection to use
-        explicit Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
+        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Perform mesh administration
-        /// @param administrationOption Type of administration to perform
-        void Administrate(AdministrationOption administrationOption);
-
-        /// @brief Perform node administration from the face nodes
-        void AdministrateFromFaceNodes();
+        void Administrate();
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -316,8 +311,8 @@ namespace meshkernel
         /// @returns If triangle has an acute triangle
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
 
-        /// @brief Resizes and initializes face arrays
-        void ResizeAndInitializeFaceArrays()
+        /// @brief Resizes and initializes face vectors
+        void ResizeAndInitializeFaceVectors()
         {
             // face administration
             m_edgesNumFaces.resize(m_edges.size());

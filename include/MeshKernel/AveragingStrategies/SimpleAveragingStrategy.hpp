@@ -11,7 +11,7 @@ namespace meshkernel::averaging
     public:
         /// @brief Constructor taking the minimum amount of points parameter
         /// @param minNumSamples[in] The minimum amount of samples for a valid interpolation
-        explicit SimpleAveragingStrategy(size_t minNumSamples);
+        SimpleAveragingStrategy(size_t minNumSamples);
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;

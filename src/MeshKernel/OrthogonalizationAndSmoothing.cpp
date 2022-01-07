@@ -57,7 +57,7 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
 void OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
-    m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate();
     const auto nodeMask = m_mesh->NodeMaskFromPolygon(*m_polygons, true);
 
     // Flag nodes outside the polygon as corner points

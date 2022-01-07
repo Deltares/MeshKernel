@@ -50,14 +50,14 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection  The projection to use
-        explicit Mesh1D(std::vector<Edge> const& edges,
-                        std::vector<Point> const& nodes,
-                        Projection projection);
+        Mesh1D(std::vector<Edge> const& edges,
+               std::vector<Point> const& nodes,
+               Projection projection);
 
         /// @brief Constructs a mesh 1d from a network 1d. The network contains the chainages where the discratization points will be computed.
         /// @param[in] network1d The input network
         /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
-        explicit Mesh1D(Network1D& network1d, double minFaceSize);
+        Mesh1D(Network1D& network1d, double minFaceSize);
 
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index

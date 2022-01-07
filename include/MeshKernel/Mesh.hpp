@@ -82,13 +82,6 @@ namespace meshkernel
     class Mesh
     {
     public:
-        /// Enumerator describing the different options to administrate a mesh
-        enum class AdministrationOption
-        {
-            AdministrateMeshEdges,
-            AdministrateMeshEdgesAndFaces
-        };
-
         /// Enumerator describing the different mesh types
         enum class MeshTypes
         {

@@ -40,9 +40,9 @@ namespace meshkernel::averaging
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] minNumSamples      The minimum amount of samples for a valid interpolation.
         /// @param[in] projection         The projection used in calculating the distance.
-        explicit InverseWeightedAveragingStrategy(Point const& interpolationPoint,
-                                                  size_t minNumSamples,
-                                                  Projection projection);
+        InverseWeightedAveragingStrategy(Point const& interpolationPoint,
+                                         size_t minNumSamples,
+                                         Projection projection);
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;

@@ -53,7 +53,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 void MeshRefinement::Compute()
 {
     // administrate mesh once more
-    m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate();
 
     // all faces and edges refined
     m_faceMask.resize(m_mesh->GetNumFaces(), 1);
@@ -180,7 +180,7 @@ void MeshRefinement::Compute()
 
         m_mesh->OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
 
-        m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate();
 
         m_faceMask.resize(m_mesh->GetNumFaces());
         m_edgeMask.resize(m_mesh->GetNumEdges());
@@ -190,7 +190,7 @@ void MeshRefinement::Compute()
     if (m_meshRefinementParameters.connect_hanging_nodes == 1)
     {
         ConnectHangingNodes();
-        m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate();
     }
 }
 
