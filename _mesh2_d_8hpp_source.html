@@ -235,9 +235,9 @@ $(function() {
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                                std::vector&lt;size_t&gt;&amp; sortedNodes,</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                                std::vector&lt;Point&gt;&amp; nodalValues);</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160; </div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> CheckTriangle(<span class="keyword">const</span> std::vector&lt;size_t&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> HasTriangleNoAcuteAngles(<span class="keyword">const</span> std::vector&lt;size_t&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        <span class="keywordtype">void</span> ResizeFaceArrays()</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        <span class="keywordtype">void</span> ResizeAndInitializeFaceArrays()</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        {</div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            <span class="comment">// face administration</span></div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            <a class="code" href="classmeshkernel_1_1_mesh.html#ace24771b055caf16b816d77cda39114d">m_edgesNumFaces</a>.resize(<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>.size());</div>
