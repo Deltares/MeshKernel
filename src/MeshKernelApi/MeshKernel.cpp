@@ -150,8 +150,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set(int meshKernelId,
-                                       const Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -160,15 +159,40 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+
             // convert raw arrays to containers
             const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
                                                                       mesh2d.edge_nodes);
+
             const auto nodes2d = meshkernel::ConvertToNodesVector(mesh2d.num_nodes,
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            // Do not change the pointer, just the object it is pointing to
-            *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+            if (mesh2d.num_faces > 0)
+            {
+
+                const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
+
+                std::vector<size_t> num_face_nodes;
+                num_face_nodes.reserve(mesh2d.num_faces);
+                for (auto n = 0; n < mesh2d.num_faces; n++)
+                {
+                    num_face_nodes.emplace_back(static_cast<size_t>(mesh2d.nodes_per_face[n]));
+                }
+
+                //// Do not change the pointer, just the object it is pointing to
+                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
+                                                                             nodes2d,
+                                                                             face_nodes,
+                                                                             num_face_nodes,
+                                                                             meshKernelState[meshKernelId].m_projection);
+            }
+            else
+            {
+                // Do not change the pointer, just the object it is pointing to
+                // Compute the faces
+                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+            }
         }
         catch (...)
         {

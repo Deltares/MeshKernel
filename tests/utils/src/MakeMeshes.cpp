@@ -472,3 +472,175 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
     }
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }
+
+/// @brief Make face nodes
+std::tuple<std::vector<double>,
+           std::vector<double>,
+           std::vector<int>,
+           std::vector<int>,
+           std::vector<int>>
+MakeMeshWithFaceNodes()
+{
+    // Set-up new mesh
+    std::vector<double> nodes_x{
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+    };
+
+    std::vector<double> nodes_y{
+        0,
+        0,
+        0,
+        0,
+        10,
+        10,
+        10,
+        10,
+        20,
+        20,
+        20,
+        20,
+        30,
+        30,
+        30,
+        30};
+
+    std::vector<int> edges{
+        0,
+        1,
+
+        1,
+        5,
+
+        5,
+        4,
+
+        4,
+        0,
+
+        1,
+        2,
+
+        2,
+        6,
+
+        6,
+        5,
+
+        2,
+        3,
+
+        3,
+        7,
+
+        7,
+        6,
+
+        4,
+        8,
+
+        5,
+        9,
+
+        9,
+        8,
+
+        6,
+        10,
+
+        10,
+        9,
+
+        7,
+        11,
+
+        11,
+        10,
+
+        8,
+        12,
+
+        9,
+        13,
+
+        13,
+        12,
+
+        10,
+        14,
+
+        14,
+        13,
+
+        11,
+        15,
+
+        15,
+        14,
+    };
+
+    std::vector<int> faceNodes{
+        0,
+        1,
+        5,
+        4,
+
+        1,
+        2,
+        6,
+        5,
+
+        2,
+        3,
+        7,
+        6,
+
+        4,
+        5,
+        9,
+        8,
+
+        5,
+        6,
+        10,
+        9,
+
+        6,
+        7,
+        11,
+        10,
+
+        8,
+        9,
+        13,
+        12,
+
+        9,
+        10,
+        14,
+        13,
+
+        10,
+        11,
+        15,
+        14,
+    };
+
+    std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4};
+
+    return {nodes_x, nodes_y, edges, faceNodes, num_face_nodes};
+}

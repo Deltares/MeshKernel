@@ -49,37 +49,68 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<size_t>& numFaceNodes,
                Projection projection) : Mesh(edges, nodes, projection)
 {
+
+    AdministrateNodesEdges();
+
+    ResizeFaceArrays();
+
     // The face nodes and the num face nodes
     m_facesNodes = faceNodes;
     m_numFacesNodes = numFaceNodes;
+
     AdministrateFromFaceNodes();
 }
 
 void Mesh2D::AdministrateFromFaceNodes()
 {
-    AdministrateNodesEdges();
-
-    ResizeFaceArrays();
 
     std::vector<size_t> edges;
-    std::vector<Point> nodal_values;
+    std::vector<Point> nodes;
+    std::vector<size_t> node_indices;
     for (auto f = 0; f < m_facesNodes.size(); ++f)
     {
         edges.clear();
-        nodal_values.clear();
-        for (auto n = 0; n < m_facesNodes[f].size(); ++n)
-        {
-            const auto edge = m_facesEdges[f][n];
-            const auto node = m_facesNodes[f][n];
-            edges.emplace_back(edge);
-            nodal_values.emplace_back(m_nodes[node]);
-        }
-        nodal_values.emplace_back(nodal_values.front());
+        nodes.clear();
+        node_indices.clear();
 
-        auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodal_values, m_projection);
+        auto node = m_facesNodes[f][0];
+        nodes.emplace_back(m_nodes[node]);
+        node_indices.emplace_back(node);
+        size_t index = 0;
+        while (index < m_nodesEdges[node].size())
+        {
+            const auto edge = m_nodesEdges[node][index];
+            const auto other_node = OtherNodeOfEdge(m_edges[edge], node);
+            const auto edge_iter = std::find(edges.begin(), edges.end(), edge);
+            if (std::find(m_facesNodes[f].begin(), m_facesNodes[f].end(), other_node) != m_facesNodes[f].end() &&
+                edge_iter == edges.end() &&
+                std::find(node_indices.begin(), node_indices.end(), other_node) == node_indices.end())
+
+            {
+
+                edges.emplace_back(edge);
+                nodes.emplace_back(m_nodes[other_node]);
+                node_indices.emplace_back(other_node);
+                node = other_node;
+                index = 0;
+                continue;
+            }
+            if (other_node == m_facesNodes[f][0] && edge_iter == edges.end())
+            {
+                // loop closed
+                edges.emplace_back(edge);
+                break;
+            }
+
+            index++;
+        }
+
+        m_facesEdges.emplace_back(edges);
+        nodes.emplace_back(nodes.front());
+
+        auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodes, m_projection);
 
         m_faceArea.emplace_back(face_area);
-        m_facesEdges.emplace_back(edges);
         m_facesMassCenters.emplace_back(center_of_mass);
     }
 

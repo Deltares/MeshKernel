@@ -88,8 +88,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set(int meshKernelId,
-                                           const Mesh2D& mesh2d);
+        MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
         /// @brief Sets the meshkernel::Mesh1D state
         /// @param[in] meshKernelId The id of the mesh state

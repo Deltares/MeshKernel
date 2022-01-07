@@ -283,4 +283,25 @@ namespace meshkernel
         return faceCenters;
     };
 
+    /// @brief Converts array of face centers to corresponding vector
+    static std::vector<std::vector<size_t>> ConvertToFaceNodesVector(int num_faces, const int* face_nodes, const int* nodes_per_face)
+    {
+        std::vector<std::vector<size_t>> result;
+        result.reserve(num_faces);
+
+        std::vector<size_t> nodes;
+        size_t index = 0;
+        for (auto f = 0; f < num_faces; f++)
+        {
+            nodes.clear();
+            for (auto n = 0; n < nodes_per_face[f]; n++)
+            {
+                nodes.emplace_back(face_nodes[index]);
+                index++;
+            }
+            result.emplace_back(nodes);
+        }
+        return result;
+    };
+
 } // namespace meshkernel

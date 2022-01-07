@@ -47,3 +47,10 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
 std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+
+std::tuple<std::vector<double>,
+           std::vector<double>,
+           std::vector<int>,
+           std::vector<int>,
+           std::vector<int>>
+MakeMeshWithFaceNodes();
