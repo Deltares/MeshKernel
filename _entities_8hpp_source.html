@@ -324,7 +324,27 @@ $(function() {
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;        <span class="keywordflow">return</span> faceCenters;</div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    };</div>
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160; </div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keyword">static</span> std::vector&lt;std::vector&lt;size_t&gt;&gt; ConvertToFaceNodesVector(<span class="keywordtype">int</span> num_faces, <span class="keyword">const</span> <span class="keywordtype">int</span>* face_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span>* nodes_per_face)</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    {</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        std::vector&lt;std::vector&lt;size_t&gt;&gt; result;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        result.reserve(num_faces);</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        std::vector&lt;size_t&gt; nodes;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        <span class="keywordtype">size_t</span> index = 0;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> f = 0; f &lt; num_faces; f++)</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;            nodes.clear();</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; nodes_per_face[f]; n++)</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            {</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                nodes.emplace_back(face_nodes[index]);</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                index++;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            }</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;            result.emplace_back(nodes);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        }</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    };</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160; </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="astructmeshkernel_1_1_cartesian3_d_point_html"><div class="ttname"><a href="structmeshkernel_1_1_cartesian3_d_point.html">meshkernel::Cartesian3DPoint</a></div><div class="ttdoc">A struct describing the three coordinates in a cartesian projection.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:204</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:55</div></div>
