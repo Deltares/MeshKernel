@@ -2803,4 +2803,57 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_get_edges_location_type(int& type)
+    {
+        type = static_cast<int>(meshkernel::MeshLocations::Edges);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_nodes_location_type(int& type)
+    {
+        type = static_cast<int>(meshkernel::MeshLocations::Nodes);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_faces_location_type(int& type)
+    {
+        type = static_cast<int>(meshkernel::MeshLocations::Faces);
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::SimpleAveraging);
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::ClosestPoint);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_averaging_method_max(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::Max);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_averaging_method_min(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::Min);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_averaging_method_inverse_weight_distance(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::InverseWeightDistance);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::MinAbs);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_averaging_method_kdtree(int& method)
+    {
+        method = static_cast<int>(meshkernel::AveragingMethod::KdTree);
+        return Success;
+    }
+
 } // namespace meshkernelapi

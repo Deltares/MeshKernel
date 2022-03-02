@@ -1029,6 +1029,56 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type);
 
+        /// @brief Gets an int indicating the edge location type
+        /// @param[out] type The int indicating the edge location type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_edges_location_type(int& type);
+
+        /// @brief Gets an int indicating the node location type
+        /// @param[out] type The int indicating the node location type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_nodes_location_type(int& type);
+
+        /// @brief Gets an int indicating the faces location type
+        /// @param[out] type The int indicating the face location type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_faces_location_type(int& type);
+
+        /// @brief Gets an int indicating the simple averaging method type
+        /// @param[out] method The int indicating the averaging method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method);
+
+        /// @brief Gets an int indicating the closest point method type
+        /// @param[out] method The int indicating the closest point method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method);
+
+        /// @brief Gets an int indicating the max value method type
+        /// @param[out] method The int indicating the max value method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_max(int& method);
+
+        /// @brief Gets an int indicating the minimum method type
+        /// @param[out] method The int indicating the minimum method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_min(int& method);
+
+        /// @brief Gets an int indicating the inverse weight distance method type
+        /// @param[out] method The int indicating the inverse weight distance method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_inverse_weight_distance(int& method);
+
+        /// @brief Gets an int indicating the minimum absolute value method type
+        /// @param[out] method The int indicating the minimum absolute value method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method);
+
+        /// @brief Gets an int indicating the kdtree method type
+        /// @param[out] method The int indicating the averaging method type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_averaging_method_kdtree(int& method);
+
 #ifdef __cplusplus
     }
 #endif
