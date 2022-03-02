@@ -39,7 +39,7 @@ namespace meshkernelapi
         double inner_outer_separator;
 
         /// @brief The number of coordinate values present
-        int num_coordinates;
+        int num_coordinates = 0;
 
         /// @brief The x coordinate values
         double* coordinates_x = nullptr;
