@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['averagingmethod_955',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
+  ['averagingmethod_975',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
 ];
