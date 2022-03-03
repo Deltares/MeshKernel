@@ -462,6 +462,15 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:ae32fc7171af89adbd695f2abbf354352"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae32fc7171af89adbd695f2abbf354352">mkernel_get_averaging_method_kdtree</a> (int &amp;method)</td></tr>
 <tr class="memdesc:ae32fc7171af89adbd695f2abbf354352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the kdtree averaging method type.  <a href="namespacemeshkernelapi.html#ae32fc7171af89adbd695f2abbf354352">More...</a><br /></td></tr>
 <tr class="separator:ae32fc7171af89adbd695f2abbf354352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b5723e697138e4f4c0cd89fd7c7016"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a24b5723e697138e4f4c0cd89fd7c7016">mkernel_get_projection_cartesian</a> (int &amp;projection)</td></tr>
+<tr class="memdesc:a24b5723e697138e4f4c0cd89fd7c7016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the cartesian projection.  <a href="namespacemeshkernelapi.html#a24b5723e697138e4f4c0cd89fd7c7016">More...</a><br /></td></tr>
+<tr class="separator:a24b5723e697138e4f4c0cd89fd7c7016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80f8539ad3c24315bb99e9f8a9605276"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a80f8539ad3c24315bb99e9f8a9605276">mkernel_get_projection_spherical</a> (int &amp;projection)</td></tr>
+<tr class="memdesc:a80f8539ad3c24315bb99e9f8a9605276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the spherical projection.  <a href="namespacemeshkernelapi.html#a80f8539ad3c24315bb99e9f8a9605276">More...</a><br /></td></tr>
+<tr class="separator:a80f8539ad3c24315bb99e9f8a9605276"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48a895fc8ca2c9520a0604deffe4692c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a48a895fc8ca2c9520a0604deffe4692c">mkernel_get_projection_spherical_accurate</a> (int &amp;projection)</td></tr>
+<tr class="memdesc:a48a895fc8ca2c9520a0604deffe4692c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the spherical accurate projection.  <a href="namespacemeshkernelapi.html#a48a895fc8ca2c9520a0604deffe4692c">More...</a><br /></td></tr>
+<tr class="separator:a48a895fc8ca2c9520a0604deffe4692c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains all structs and functions exposed at the API level. </p>
@@ -2734,6 +2743,87 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The int indicating the node location type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a24b5723e697138e4f4c0cd89fd7c7016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b5723e697138e4f4c0cd89fd7c7016">&#9670;&nbsp;</a></span>mkernel_get_projection_cartesian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_projection_cartesian </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>projection</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the cartesian projection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">projection</td><td>The int indicating the cartesian projection </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a80f8539ad3c24315bb99e9f8a9605276"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80f8539ad3c24315bb99e9f8a9605276">&#9670;&nbsp;</a></span>mkernel_get_projection_spherical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_projection_spherical </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>projection</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the spherical projection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">projection</td><td>The int indicating the spherical projection </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a48a895fc8ca2c9520a0604deffe4692c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48a895fc8ca2c9520a0604deffe4692c">&#9670;&nbsp;</a></span>mkernel_get_projection_spherical_accurate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_projection_spherical_accurate </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>projection</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the spherical accurate projection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">projection</td><td>The int indicating the spherical accurate projection </td></tr>
   </table>
   </dd>
 </dl>
