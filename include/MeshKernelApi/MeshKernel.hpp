@@ -1049,33 +1049,33 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method);
 
-        /// @brief Gets an int indicating the closest point method type
-        /// @param[out] method The int indicating the closest point method type
+        /// @brief Gets an int indicating the closest point averaging method type
+        /// @param[out] method The int indicating the closest point averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method);
 
-        /// @brief Gets an int indicating the max value method type
-        /// @param[out] method The int indicating the max value method type
+        /// @brief Gets an int indicating the max value averaging method type
+        /// @param[out] method The int indicating the max value averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_max(int& method);
 
-        /// @brief Gets an int indicating the minimum method type
-        /// @param[out] method The int indicating the minimum method type
+        /// @brief Gets an int indicating the minimum averaging method type
+        /// @param[out] method The int indicating the minimum averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_min(int& method);
 
-        /// @brief Gets an int indicating the inverse weight distance method type
-        /// @param[out] method The int indicating the inverse weight distance method type
+        /// @brief Gets an int indicating the inverse weight distance averaging method type
+        /// @param[out] method The int indicating the inverse weight distance averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_inverse_weight_distance(int& method);
 
-        /// @brief Gets an int indicating the minimum absolute value method type
-        /// @param[out] method The int indicating the minimum absolute value method type
+        /// @brief Gets an int indicating the minimum absolute value averaging method type
+        /// @param[out] method The int indicating the minimum absolute value averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method);
 
-        /// @brief Gets an int indicating the kdtree method type
-        /// @param[out] method The int indicating the averaging method type
+        /// @brief Gets an int indicating the kdtree averaging method type
+        /// @param[out] method The int indicating the kdtree averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_kdtree(int& method);
 
