@@ -1079,6 +1079,21 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_kdtree(int& method);
 
+        /// @brief Gets an int indicating the cartesian projection
+        /// @param[out] projection The int indicating the cartesian projection
+        /// @return Error code
+        MKERNEL_API int mkernel_get_projection_cartesian(int& projection);
+
+        /// @brief Gets an int indicating the spherical projection
+        /// @param[out] projection The int indicating the spherical projection
+        /// @return Error code
+        MKERNEL_API int mkernel_get_projection_spherical(int& projection);
+
+        /// @brief Gets an int indicating the spherical accurate projection
+        /// @param[out] projection The int indicating the spherical accurate projection
+        /// @return Error code
+        MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection);
+
 #ifdef __cplusplus
     }
 #endif

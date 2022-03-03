@@ -2856,4 +2856,20 @@ namespace meshkernelapi
         return Success;
     }
 
+    MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
+    {
+        projection = static_cast<int>(meshkernel::Projection::cartesian);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_projection_spherical(int& projection)
+    {
+        projection = static_cast<int>(meshkernel::Projection::spherical);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
+    {
+        projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
+        return Success;
+    }
+
 } // namespace meshkernelapi
