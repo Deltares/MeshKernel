@@ -76,3 +76,5 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/src/MeshKernel/CurvilinearGrid"
   PREFIX "Source Files/CurvilinearGrid"
   FILES ${CURVILINEAR_GRID_SOURCE_LIST})
+
+install(TARGETS MeshKernel)

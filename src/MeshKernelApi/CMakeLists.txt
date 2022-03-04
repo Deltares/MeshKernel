@@ -38,3 +38,5 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/include/MeshKernelApi"
   PREFIX "Header Files"
   FILES ${HEADER_LIST})
+
+install(TARGETS MeshKernelApi)
