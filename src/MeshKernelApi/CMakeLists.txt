@@ -8,6 +8,9 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
 add_library(MeshKernelApi SHARED ${SOURCE_LIST} ${HEADER_LIST}
                                  ${CMAKE_BINARY_DIR}/version.rc)
 
+# define the public header
+set_target_properties(MeshKernelApi PROPERTIES PUBLIC_HEADER "${HEADER_LIST}")
+
 # Expose the interface of the shared lib
 target_include_directories(MeshKernelApi PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
