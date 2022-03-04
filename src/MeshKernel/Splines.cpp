@@ -297,7 +297,7 @@ bool Splines::GetSplinesIntersection(size_t first,
         return true;
     }
 
-    //not crossing
+    // not crossing
     return false;
 }
 
