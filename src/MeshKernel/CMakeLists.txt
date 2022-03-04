@@ -16,6 +16,9 @@ add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST}
                               ${AVERAGING_STRATEGIES_HEADER_LIST} ${AVERAGING_STRATEGIES_SOURCE_LIST}
                               ${CURVILINEAR_GRID_HEADER_LIST} ${CURVILINEAR_GRID_SOURCE_LIST})
 
+# define the public header
+set_target_properties(MeshKernel PROPERTIES PUBLIC_HEADER "${HEADER_LIST}")
+
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(
@@ -77,4 +80,4 @@ source_group(
   PREFIX "Source Files/CurvilinearGrid"
   FILES ${CURVILINEAR_GRID_SOURCE_LIST})
 
-install(TARGETS MeshKernel)
+install(TARGETS MeshKernel PUBLIC_HEADER DESTINATION "include/MeshKernel")
