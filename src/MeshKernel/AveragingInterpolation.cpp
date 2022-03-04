@@ -89,6 +89,7 @@ void AveragingInterpolation::Compute()
     //for the other cases, the interpolated values are already at the correct location
     m_results = std::move(interpolatedResults);
 }
+
 std::vector<double> AveragingInterpolation::ComputeOnFaces()
 {
     std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), doubleMissingValue);
