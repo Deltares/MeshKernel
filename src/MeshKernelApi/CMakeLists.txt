@@ -42,4 +42,4 @@ source_group(
   PREFIX "Header Files"
   FILES ${HEADER_LIST})
 
-install(TARGETS MeshKernelApi)
+install(TARGETS MeshKernelApi PUBLIC_HEADER DESTINATION "include/MeshKernelApi")
