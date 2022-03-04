@@ -73,7 +73,6 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
-        /// @param[in] administration Type of administration to perform
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                Projection projection);
