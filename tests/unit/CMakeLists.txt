@@ -18,9 +18,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(${target_name} PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
-
-target_link_libraries(${target_name} INTERFACE -ldl)
-
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
 add_test(NAME ${target_name}  COMMAND ${target_name} )
@@ -42,3 +39,7 @@ if(WIN32)
       COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
   endforeach()
 endif()
+
+if (UNIX)
+    target_link_libraries(${target_name} INTERFACE -ldl)
+endif (UNIX)
