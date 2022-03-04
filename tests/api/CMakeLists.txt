@@ -11,6 +11,10 @@ add_dependencies(MeshKernelApiTests MeshKernelApi)
 target_link_libraries(MeshKernelApiTests PRIVATE MeshKernelApi UtilsStatic
                                                  gtest_main gmock)
 
+if (UNIX)
+   target_link_libraries(MeshKernelApiTests PUBLIC ${CMAKE_DL_LIBS})
+endif (UNIX)
+
 # Add precompiled header to speed up compilation
 target_precompile_headers(MeshKernelApiTests PRIVATE <exception> <memory> <numeric>)
 

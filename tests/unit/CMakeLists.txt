@@ -8,6 +8,10 @@ add_executable(${target_name} ${UNIT_TEST_LIST})
 target_link_libraries(${target_name}  PRIVATE MeshKernel UtilsStatic
                                                   gtest_main gmock)
 
+if (UNIX)
+   target_link_libraries(${target_name} PUBLIC ${CMAKE_DL_LIBS})
+endif (UNIX)
+
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(
@@ -39,7 +43,3 @@ if(WIN32)
       COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
   endforeach()
 endif()
-
-if (UNIX)
-    target_link_libraries(${target_name} INTERFACE -ldl)
-endif (UNIX)
