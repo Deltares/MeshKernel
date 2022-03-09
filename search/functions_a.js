@@ -53,7 +53,7 @@ var searchData=
   ['mkernel_5fcurvilinear_5fsmoothing_5fdirectional_702',['mkernel_curvilinear_smoothing_directional',['../namespacemeshkernelapi.html#ad19958bebc2ca018eca5e3da034deb0c',1,'meshkernelapi']]],
   ['mkernel_5fdeallocate_5fstate_703',['mkernel_deallocate_state',['../namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3',1,'meshkernelapi']]],
   ['mkernel_5fget_5faveraging_5fmethod_5fclosest_5fpoint_704',['mkernel_get_averaging_method_closest_point',['../namespacemeshkernelapi.html#a61c310189351a979c7f2b170802e5fa3',1,'meshkernelapi']]],
-  ['mkernel_5fget_5faveraging_5fmethod_5finverse_5fweight_5fdistance_705',['mkernel_get_averaging_method_inverse_weight_distance',['../namespacemeshkernelapi.html#a2c49827b1fed6ed7fd9185bbe759f357',1,'meshkernelapi']]],
+  ['mkernel_5fget_5faveraging_5fmethod_5finverse_5fdistance_5fweights_705',['mkernel_get_averaging_method_inverse_distance_weights',['../namespacemeshkernelapi.html#a62363861b04b0e1fcad68c14b8f27a65',1,'meshkernelapi']]],
   ['mkernel_5fget_5faveraging_5fmethod_5fkdtree_706',['mkernel_get_averaging_method_kdtree',['../namespacemeshkernelapi.html#ae32fc7171af89adbd695f2abbf354352',1,'meshkernelapi']]],
   ['mkernel_5fget_5faveraging_5fmethod_5fmax_707',['mkernel_get_averaging_method_max',['../namespacemeshkernelapi.html#aebd755a42334c133d093230297814729',1,'meshkernelapi']]],
   ['mkernel_5fget_5faveraging_5fmethod_5fmin_708',['mkernel_get_averaging_method_min',['../namespacemeshkernelapi.html#a9fb82e72f98299ebb56b5c9dd3402dc7',1,'meshkernelapi']]],
