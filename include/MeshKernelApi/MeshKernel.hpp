@@ -1064,10 +1064,10 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_min(int& method);
 
-        /// @brief Gets an int indicating the inverse weight distance averaging method type
+        /// @brief Gets an int indicating the inverse distance weights averaging method type
         /// @param[out] method The int indicating the inverse weight distance averaging method type
         /// @returns Error code
-        MKERNEL_API int mkernel_get_averaging_method_inverse_weight_distance(int& method);
+        MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weights(int& method);
 
         /// @brief Gets an int indicating the minimum absolute value averaging method type
         /// @param[out] method The int indicating the minimum absolute value averaging method type
