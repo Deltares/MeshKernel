@@ -79,7 +79,7 @@ namespace meshkernel
         ClosestPoint = 2,
         Max = 3,
         Min = 4,
-        InverseDistanceWeights = 5,
+        InverseDistanceWeighting = 5,
         MinAbs = 6,
         KdTree = 7
     };

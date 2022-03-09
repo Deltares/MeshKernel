@@ -2840,9 +2840,9 @@ namespace meshkernelapi
         method = static_cast<int>(meshkernel::AveragingMethod::Min);
         return Success;
     }
-    MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weights(int& method)
+    MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weighting(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingMethod::InverseDistanceWeights);
+        method = static_cast<int>(meshkernel::AveragingMethod::InverseDistanceWeighting);
         return Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
