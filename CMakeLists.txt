@@ -7,6 +7,8 @@ project(
   VERSION 1.0.0
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX C)
+  
+option(PRODUCE_CODE_COVERAGE "Produce code coverage files under GNU compilers" OFF)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

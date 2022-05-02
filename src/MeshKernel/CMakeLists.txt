@@ -20,14 +20,9 @@ add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST}
 set_target_properties(MeshKernel PROPERTIES PUBLIC_HEADER "${HEADER_LIST}")
 
 # Make sure that coverage information is produced when using gcc
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set_target_properties(
-    MeshKernel
-    PROPERTIES COMPILE_FLAGS
-               "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++"
-  )
-  set_target_properties(MeshKernel PROPERTIES LINK_FLAGS
-                                              "-ldl -lgcov --coverage")
+if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set_target_properties(MeshKernel PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+  set_target_properties(MeshKernel PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
 # Expose the interface of the static lib

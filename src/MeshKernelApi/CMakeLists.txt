@@ -15,14 +15,9 @@ set_target_properties(MeshKernelApi PROPERTIES PUBLIC_HEADER "${HEADER_LIST}")
 target_include_directories(MeshKernelApi PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # Make sure that coverage information is produced when using gcc
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set_target_properties(
-    MeshKernelApi
-    PROPERTIES COMPILE_FLAGS
-               "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++"
-  )
-  set_target_properties(MeshKernelApi PROPERTIES LINK_FLAGS
-                                                 "-ldl -lgcov --coverage")
+if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set_target_properties(MeshKernelApi PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+  set_target_properties(MeshKernelApi PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
 # Link shared lib to static lib, but don't expose it
