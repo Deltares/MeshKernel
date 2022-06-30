@@ -263,6 +263,12 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
+        /// @brief Gets the edges crossed by a segment
+        /// @param[in] firstPoint The first point of the segment
+        /// @param[in] secondPoint The second point of the segment
+        /// @return A vector containing the crossed edges indices
+        [[nodiscard]] std::vector<size_t> GetCrossedEdgesIndices(const Point& firstPoint, const Point& secondPoint) const;
+
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
         /// @param[in] invertSelection Invert selection

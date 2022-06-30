@@ -1615,6 +1615,35 @@ std::tuple<size_t, size_t> Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& f
     return {intersectedFace, intersectedEdge};
 }
 
+std::vector<size_t> Mesh2D::GetCrossedEdgesIndices(const Point& firstPoint, const Point& secondPoint) const
+{
+    std::vector<size_t> result;
+    for (auto e = 0; e < GetNumEdges(); ++e)
+    {
+        Point intersectionPoint;
+        double crossProduct;
+        double ratioFirstSegment;
+        double ratioSecondSegment;
+        const auto areSegmentsCrossing = AreSegmentsCrossing(firstPoint,
+                                                             secondPoint,
+                                                             m_nodes[m_edges[e].first],
+                                                             m_nodes[m_edges[e].second],
+                                                             false,
+                                                             m_projection,
+                                                             intersectionPoint,
+                                                             crossProduct,
+                                                             ratioFirstSegment,
+                                                             ratioSecondSegment);
+
+        if (areSegmentsCrossing)
+        {
+            result.push_back(e);
+        }
+    }
+
+    return result;
+}
+
 std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const
 {
     // mark all nodes in polygon with 1

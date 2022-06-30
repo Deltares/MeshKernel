@@ -993,6 +993,46 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_count_intersected_nodes(int meshKernelId, const GeometryList& polyLines, int& numberOfNodes)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            auto const samples = ConvertGeometryListToSampleVector(polyLines);
+
+            std::vector<int> result;
+            for (auto i = 0; i < samples.size(); ++i)
+            {
+                const auto crossedEdges =  meshKernelState[meshKernelId].m_mesh2d->GetCrossedEdgesIndices({samples[i].x, samples[i].y}, {samples[i + 1].x, samples[i + 1].y});
+                for (auto e = 0; e < crossedEdges.size(); ++e)
+                {
+                    const auto edge = meshKernelState[meshKernelId].m_mesh2d->m_edges[e];
+                    const auto [firstNode, secondNode] = edge;
+
+                    result.push_back(firstNode);
+                    result.push_back(secondNode);
+                }
+            }
+
+            //const std::vector<meshkernel::Point> polygonNodes;
+            //const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->GetCrossedEdges(polygonNodes);
+
+            //const std::vector<meshkernel::Point> polygonNodes;
+            //const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
+            //numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
         int exitCode = Success;

@@ -343,6 +343,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
+        /// @brief Counts the number of nodes of the intersected edges `mkernel_mesh2d_get_mesh_boundaries_as_polygons`
+        /// @param[in]  meshKernelId         The id of the mesh state
+        /// @param[in] polyLines The number of polygon nodes
+        /// @param[out] numberOfNodes The number of nodes of the intersected edges 
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_count_intersected_nodes(int meshKernelId, const GeometryList& polyLines, int& numberOfNodes);
+
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
         /// The function is often used before `mkernel_mesh2d_make_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
