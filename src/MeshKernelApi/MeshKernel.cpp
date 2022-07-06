@@ -1003,28 +1003,10 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto const samples = ConvertGeometryListToSampleVector(polyLines);
+            auto const boundaryLines = ConvertGeometryListToPointVector(polyLines);
 
-            std::vector<int> result;
-            for (auto i = 0; i < samples.size(); ++i)
-            {
-                const auto crossedEdges =  meshKernelState[meshKernelId].m_mesh2d->GetCrossedEdgesIndices({samples[i].x, samples[i].y}, {samples[i + 1].x, samples[i + 1].y});
-                for (auto e = 0; e < crossedEdges.size(); ++e)
-                {
-                    const auto edge = meshKernelState[meshKernelId].m_mesh2d->m_edges[e];
-                    const auto [firstNode, secondNode] = edge;
+            const auto crossedEdges = meshKernelState[meshKernelId].m_mesh2d->GetNodeClassesForCutCell(boundaryLines);
 
-                    result.push_back(firstNode);
-                    result.push_back(secondNode);
-                }
-            }
-
-            //const std::vector<meshkernel::Point> polygonNodes;
-            //const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->GetCrossedEdges(polygonNodes);
-
-            //const std::vector<meshkernel::Point> polygonNodes;
-            //const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
-            //numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
         catch (...)
         {

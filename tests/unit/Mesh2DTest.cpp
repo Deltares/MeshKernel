@@ -592,3 +592,38 @@ TEST(Mesh2D, DeleteHangingEdge)
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
 }
+
+TEST(Mesh2D, GetNodeClassesForCutCell)
+{
+    //1. Setup
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> boundaryLines;
+    boundaryLines.emplace_back(0.5, 0.5);
+    boundaryLines.emplace_back(0.5,2.5);
+    boundaryLines.emplace_back(2.5,2.5);
+    boundaryLines.emplace_back(2.5,0.5);
+    boundaryLines.emplace_back(0.5, 0.5);
+
+    // 2. Execute
+    const auto nodeClasses = mesh->GetNodeClassesForCutCell(boundaryLines);
+
+    // 3. Assert
+    ASSERT_EQ(nodeClasses[0], 1);
+    ASSERT_EQ(nodeClasses[1], 1);
+    ASSERT_EQ(nodeClasses[2], 1);
+    ASSERT_EQ(nodeClasses[3], 1);
+    ASSERT_EQ(nodeClasses[4], 1);
+    ASSERT_EQ(nodeClasses[5], 2);
+    ASSERT_EQ(nodeClasses[6], 2);
+    ASSERT_EQ(nodeClasses[7], 1);
+    ASSERT_EQ(nodeClasses[8], 1);
+    ASSERT_EQ(nodeClasses[9], 2);
+    ASSERT_EQ(nodeClasses[10], 2);
+    ASSERT_EQ(nodeClasses[11], 1);
+    ASSERT_EQ(nodeClasses[12], 1);
+    ASSERT_EQ(nodeClasses[13], 1);
+    ASSERT_EQ(nodeClasses[14], 1);
+    ASSERT_EQ(nodeClasses[15], 1);
+
+}

@@ -132,10 +132,13 @@ namespace meshkernel
         return sphericalPoint;
     }
 
-    double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
+    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
     {
-        const double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
-        return left;
+        const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
+        const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
+        const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        return dx1 * dy2 - dy1 * dx2;
     }
 
     bool IsPointInPolygonNodes(const Point& point,
@@ -185,8 +188,10 @@ namespace meshkernel
             int windingNumber = 0;
             for (auto n = startNode; n < endNode; n++)
             {
-                const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-                if (IsEqual(leftDifference, 0.0))
+
+                const auto crossProductValue = crossProduct(polygonNodes[n], polygonNodes[n + 1], polygonNodes[n], point, Projection::cartesian);
+
+                if (IsEqual(crossProductValue, 0.0))
                 {
                     // point on the line
                     return true;
@@ -194,7 +199,7 @@ namespace meshkernel
 
                 if (polygonNodes[n].y <= point.y) // an upward crossing
                 {
-                    if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
+                    if (polygonNodes[n + 1].y > point.y && crossProductValue > 0.0)
 
                     {
                         ++windingNumber; // have  a valid up intersect
@@ -202,7 +207,7 @@ namespace meshkernel
                 }
                 else
                 {
-                    if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
+                    if (polygonNodes[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
                     {
 
                         --windingNumber; // have  a valid down intersect
@@ -1153,17 +1158,6 @@ namespace meshkernel
         }
 
         return isCrossing;
-    }
-
-    int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
-    {
-
-        const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        const auto val = dx1 * dy2 - dy1 * dx2;
-        return sgn(val);
     }
 
     std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection)

@@ -1615,33 +1615,78 @@ std::tuple<size_t, size_t> Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& f
     return {intersectedFace, intersectedEdge};
 }
 
-std::vector<size_t> Mesh2D::GetCrossedEdgesIndices(const Point& firstPoint, const Point& secondPoint) const
+std::vector<int> Mesh2D::GetNodeClassesForCutCell(const std::vector<Point>& boundaryLines) const
 {
-    std::vector<size_t> result;
-    for (auto e = 0; e < GetNumEdges(); ++e)
-    {
-        Point intersectionPoint;
-        double crossProduct;
-        double ratioFirstSegment;
-        double ratioSecondSegment;
-        const auto areSegmentsCrossing = AreSegmentsCrossing(firstPoint,
-                                                             secondPoint,
-                                                             m_nodes[m_edges[e].first],
-                                                             m_nodes[m_edges[e].second],
-                                                             false,
-                                                             m_projection,
-                                                             intersectionPoint,
-                                                             crossProduct,
-                                                             ratioFirstSegment,
-                                                             ratioSecondSegment);
+    const int inactiveFlag{0};
+    const int virtualNodeFlag{1};
+    const int innerNodeFlag{2};
 
-        if (areSegmentsCrossing)
+    std::vector nodeMask(GetNumNodes(), innerNodeFlag);
+
+    // Mask all mesh nodes on the left of the boundary lines as inactive
+    for (auto i = 0; i < boundaryLines.size() - 1; ++i)
+    {
+        for (auto n = 0; n < m_nodes.size(); ++n)
         {
-            result.push_back(e);
+            const bool isLeft = crossProduct(boundaryLines[i], boundaryLines[i + 1], boundaryLines[i], m_nodes[n], m_projection) > 0.0;
+            if (isLeft)
+            {
+                nodeMask[n] = inactiveFlag;  
+            }
         }
     }
 
-    return result;
+    // Mask all edges of the crossed faces
+    std::vector faceMask(GetNumFaces(), false);
+    for (auto i = 0; i < boundaryLines.size() - 1; ++i)
+    {
+        for (auto e = 0; e < GetNumEdges(); ++e)
+        {
+
+            Point intersectionPoint;
+            double crossProductValue;
+            double ratioFirstSegment;
+            double ratioSecondSegment;
+            const auto areSegmentsCrossing = AreSegmentsCrossing(boundaryLines[i],
+                                                                 boundaryLines[i + 1],
+                                                                 m_nodes[m_edges[e].first],
+                                                                 m_nodes[m_edges[e].second],
+                                                                 false,
+                                                                 m_projection,
+                                                                 intersectionPoint,
+                                                                 crossProductValue,
+                                                                 ratioFirstSegment,
+                                                                 ratioSecondSegment);
+            if (areSegmentsCrossing)
+            {
+                // mask all faces crossed by the boundary line
+                for (auto f = 0; f < m_edgesNumFaces[e]; ++f)
+                {
+                    const auto face = m_edgesFaces[e][f];
+                    faceMask[face] = true;
+                }
+            }
+        }
+    }
+
+    // Loop over the edges and mark as virtual nodes the inactive nodes belonging to a masked edge
+    for (auto f = 0; f < GetNumFaces(); ++f)
+    {
+        if (!faceMask[f])
+        {
+            continue;
+        }
+        for (int n = 0; n < m_numFacesNodes[f]; ++n)
+        {
+            const auto node = m_facesNodes[f][n];
+            if (nodeMask[node] == inactiveFlag)
+            {
+                nodeMask[node] = virtualNodeFlag;
+            }
+        }
+    }
+
+    return nodeMask;
 }
 
 std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const
