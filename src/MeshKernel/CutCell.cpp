@@ -39,11 +39,8 @@ CutCell::CutCell(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 
 std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines) const
 {
-    const int inactiveFlag{0};
-    const int virtualNodeFlag{1};
-    const int innerNodeFlag{2};
 
-    std::vector nodeMask(m_mesh->GetNumNodes(), innerNodeFlag);
+    std::vector nodeMask(m_mesh->GetNumNodes(), NodeClasses::innerNodeFlag);
 
     // Mask all mesh nodes on the left of the boundary lines as inactive
     for (auto i = 0; i < boundaryLines.size() - 1; ++i)
@@ -53,7 +50,7 @@ std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines)
             const bool isLeft = crossProduct(boundaryLines[i], boundaryLines[i + 1], boundaryLines[i], m_mesh->m_nodes[n], m_mesh->m_projection) > 0.0;
             if (isLeft)
             {
-                nodeMask[n] = inactiveFlag;  
+                nodeMask[n] = NodeClasses::inactiveFlag;  
             }
         }
     }
@@ -101,9 +98,9 @@ std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines)
         for (int n = 0; n < m_mesh->m_numFacesNodes[f]; ++n)
         {
             const auto node = m_mesh->m_facesNodes[f][n];
-            if (nodeMask[node] == inactiveFlag)
+            if (nodeMask[node] == NodeClasses::inactiveFlag)
             {
-                nodeMask[node] = virtualNodeFlag;
+                nodeMask[node] = NodeClasses::virtualNodeFlag;
             }
         }
     }
