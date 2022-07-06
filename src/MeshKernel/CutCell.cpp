@@ -58,7 +58,7 @@ std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines)
         }
     }
 
-    // Mask all edges of the crossed faces
+    // Mask all faces crossed by the boundary line
     std::vector faceMask(m_mesh->GetNumFaces(), false);
     for (auto i = 0; i < boundaryLines.size() - 1; ++i)
     {
@@ -91,7 +91,7 @@ std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines)
         }
     }
 
-    // Loop over the edges and mark as virtual nodes the inactive nodes belonging to a masked edge
+    // Loop over the edges and mark as virtual nodes the inactive nodes belonging to a masked face
     for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
     {
         if (!faceMask[f])
