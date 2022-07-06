@@ -1,3 +1,5 @@
+#include "MeshKernel/CutCell.hpp"
+
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
@@ -606,7 +608,8 @@ TEST(Mesh2D, GetNodeClassesForCutCell)
     boundaryLines.emplace_back(0.5, 0.5);
 
     // 2. Execute
-    const auto nodeClasses = mesh->GetNodeClassesForCutCell(boundaryLines);
+    const meshkernel::CutCell cutCell(mesh);
+    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
 
     // 3. Assert
     ASSERT_EQ(nodeClasses[0], 1);

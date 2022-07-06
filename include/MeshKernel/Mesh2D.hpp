@@ -281,11 +281,6 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
-        /// @brief Gets the edges crossed by a segment
-        /// @param[in] boundaryLines The boundary polyline
-        /// @return A vector containing the polyline vertices
-        [[nodiscard]] std::vector<int> GetNodeClassesForCutCell(const std::vector<Point>& boundaryLines) const;
-
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
