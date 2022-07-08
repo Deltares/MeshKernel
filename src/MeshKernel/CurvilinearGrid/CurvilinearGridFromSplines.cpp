@@ -193,7 +193,7 @@ void CurvilinearGridFromSplines::DeleteSkinnyTriangles()
                     if (squaredCurrentDistance < squaredDistanceTolerance && currentCosPhi > maxCosine)
                     {
 
-                        //determine persistent node
+                        // determine persistent node
                         const auto leftCosPhi = NormalizedInnerProductTwoSegments(
                             m_gridPoints[j - 1][i],
                             m_gridPoints[j][i],
@@ -212,7 +212,7 @@ void CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 
                         if ((secondRightIndex == firstRightIndex || leftCosPhi - rightCosPhi < -cosineTolerance) && firstLeftIndex != i)
                         {
-                            //move left node
+                            // move left node
                             for (auto k = i; k <= firstRightIndex - 1; ++k)
                             {
                                 m_gridPoints[j][k] = m_gridPoints[j][firstRightIndex];
@@ -390,7 +390,7 @@ void CurvilinearGridFromSplines::Initialize()
         }
     }
 
-    //compute maximum mesh width and get dtolLR in the proper dimension
+    // compute maximum mesh width and get dtolLR in the proper dimension
     double squaredMaximumGridWidth = 0.0;
     for (auto i = 0; i < m_gridPoints[0].size() - 1; i++)
     {
@@ -476,7 +476,7 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         size_t maxN = 0;
         size_t minNOther = m_curvilinearParameters.n_refinement;
         size_t maxNOther = 0;
-        //check if this part is connected to another part
+        // check if this part is connected to another part
         for (auto i = mIndicesThisSide[0][0]; i < mIndicesThisSide[0][1] + 1; ++i)
         {
             nIndicesThisSide = FindIndices(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue);
@@ -1310,7 +1310,7 @@ void CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals(size_t s,
             numPerpendicularFacesOnSubintervalAndEdge[0][i] = numNUniformPart;
             edgeVelocities[i] = firstHeight;
 
-            //compare with other side of spline
+            // compare with other side of spline
             const auto otherSideIndex = otherGridLineIndex[s] + m_numMSplines[s] - (i - gridLineIndex[s] + 1);
 
             if (edgeVelocities[otherSideIndex] != doubleMissingValue)
@@ -1398,7 +1398,7 @@ void CurvilinearGridFromSplines::ComputeGridHeights()
             }
             edgesCenterPoints[numM] = doubleMissingValue;
 
-            //compute center spline path length of cross splines
+            // compute center spline path length of cross splines
             crossingSplinesDimensionalCoordinates[0] = m_splines->ComputeSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
             for (auto i = 0; i < m_numCrossingSplines[s] - 1; ++i)
             {
@@ -1569,7 +1569,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
     size_t numCenterSplines = 0;
     for (auto s = 0; s < m_splines->GetNumSplines(); ++s)
     {
-        //center splines only
+        // center splines only
         if (m_type[s] != SplineTypes::central)
         {
             continue;
@@ -1585,7 +1585,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
     size_t gridLineIndex = 0;
     for (size_t s = 0; s < m_splines->GetNumSplines(); ++s)
     {
-        //center splines only
+        // center splines only
         if (m_type[s] != SplineTypes::central)
         {
             continue;
@@ -1760,7 +1760,7 @@ void CurvilinearGridFromSplines::ComputeSplineProperties(const bool restoreOrigi
             m_type[s] = m_originalTypes[s];
         }
 
-        //mark new splines as artificial cross splines
+        // mark new splines as artificial cross splines
         for (size_t s = m_numOriginalSplines; s < m_splines->GetNumSplines(); ++s)
         {
             m_type[s] = SplineTypes::artificial;

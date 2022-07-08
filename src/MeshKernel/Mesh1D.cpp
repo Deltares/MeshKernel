@@ -40,7 +40,7 @@ meshkernel::Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
     std::vector<Edge> edges;
     std::vector<Point> nodes;
     size_t numNodes = 0;
-
+    
     // Compute 1d mesh discretization
     auto const discretizations = network1d.ComputeDiscretizationsFromChainages();
     for (auto const& discretization : discretizations)

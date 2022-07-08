@@ -86,7 +86,7 @@ void AveragingInterpolation::Compute()
         return;
     }
 
-    //for the other cases, the interpolated values are already at the correct location
+    // for the other cases, the interpolated values are already at the correct location
     m_results = std::move(interpolatedResults);
 }
 
