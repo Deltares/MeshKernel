@@ -1020,6 +1020,24 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_inactive_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::inactiveFlag);
+        return Success;
+    }
+    
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_virtual_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::virtualNodeFlag);
+        return Success;
+    }
+    
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_inner_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::innerNodeFlag);
+        return Success;
+    }
+
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
         int exitCode = Success;

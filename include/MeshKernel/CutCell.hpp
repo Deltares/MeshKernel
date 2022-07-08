@@ -36,9 +36,9 @@ namespace meshkernel
     class Mesh2D;
 
     
-    /// \namespace NodeClasses
+    /// \namespace CutCellNodeClasses
     /// @brief Contains the logic of the C++ static library
-    namespace NodeClasses
+    namespace CutCellNodeClasses
     {
         const int inactiveFlag{0};
         const int virtualNodeFlag{1};
