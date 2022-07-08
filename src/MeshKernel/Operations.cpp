@@ -80,7 +80,7 @@ namespace meshkernel
             }
         }
 
-        //in case no separator have been found
+        // in case no separator have been found
         if (inRange)
         {
             result.emplace_back(std::initializer_list<size_t>{startRange, vec.size() - 1});
@@ -156,7 +156,7 @@ namespace meshkernel
         if (startNode == sizetMissingValue && endNode == sizetMissingValue)
         {
             startNode = 0;
-            endNode = polygonNodes.size() - 1; //closed polygon
+            endNode = polygonNodes.size() - 1; // closed polygon
         }
 
         if (endNode <= startNode)
@@ -411,7 +411,7 @@ namespace meshkernel
 
             double result = std::sqrt(vxx * vxx + vyy * vyy + vzz * vzz);
 
-            //check if vector is pointing outwards of earth
+            // check if vector is pointing outwards of earth
             if (vxx * xx1 + vyy * yy1 + vzz * zz1 < 0.0)
             {
                 result = -result;
@@ -568,7 +568,7 @@ namespace meshkernel
             // get the 3D coordinate
             const Cartesian3DPoint globalCoordinatesCartesian{SphericalToCartesian3D(globalCoordinates)};
 
-            //project to rotated frame
+            // project to rotated frame
             Cartesian3DPoint globalCoordinatesCartesianRotated;
             globalCoordinatesCartesianRotated.x = exxp[0] * globalCoordinatesCartesian.x + exxp[1] * globalCoordinatesCartesian.y + exxp[2] * globalCoordinatesCartesian.z;
             globalCoordinatesCartesianRotated.y = eyyp[0] * globalCoordinatesCartesian.x + eyyp[1] * globalCoordinatesCartesian.y + eyyp[2] * globalCoordinatesCartesian.z;
@@ -583,15 +583,15 @@ namespace meshkernel
             const double vyy = globalComponents.x * elambda[1] + globalComponents.y * ephi[1];
             const double vzz = globalComponents.x * elambda[2] + globalComponents.y * ephi[2];
 
-            //transform to local spherical coordinates
+            // transform to local spherical coordinates
             const auto globalCoordinatesToLocal = Cartesian3DToSpherical(globalCoordinatesCartesianRotated, reference.x);
 
-            //compute base vectors at other point in rotated 3D(xxp, yyp, zzp) frame
+            // compute base vectors at other point in rotated 3D(xxp, yyp, zzp) frame
             std::array<double, 3> elambdap{0.0, 0.0, 0.0};
             std::array<double, 3> ephip{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(globalCoordinatesToLocal, elambdap, ephip);
 
-            //compute local base vectors in(xx, yy, zz) frame
+            // compute local base vectors in(xx, yy, zz) frame
             std::array<double, 3> elambdaloc;
             elambdaloc[0] = exxp[0] * elambdap[0] + eyyp[0] * elambdap[1] + ezzp[0] * elambda[2];
             elambdaloc[1] = exxp[1] * elambdap[0] + eyyp[1] * elambdap[1] + ezzp[1] * elambda[2];
@@ -602,7 +602,7 @@ namespace meshkernel
             ephiloc[1] = exxp[1] * ephip[0] + eyyp[1] * ephip[1] + ezzp[1] * ephip[2];
             ephiloc[2] = exxp[2] * ephip[0] + eyyp[2] * ephip[1] + ezzp[2] * ephip[2];
 
-            //compute vectors in other point in local base(elambdaloc, ephiloc)
+            // compute vectors in other point in local base(elambdaloc, ephiloc)
             localComponents.x = elambdaloc[0] * vxx + elambdaloc[1] * vyy + elambdaloc[2] * vzz;
             localComponents.y = ephiloc[0] * vxx + ephiloc[1] * vyy + ephiloc[2] * vzz;
         }
@@ -630,7 +630,7 @@ namespace meshkernel
             const Cartesian3DPoint firstPointCartesianCoordinates{SphericalToCartesian3D(firstPoint)};
             const Cartesian3DPoint secondPointCartesianCoordinates{SphericalToCartesian3D(secondPoint)};
 
-            //compute the base vectors at middle point
+            // compute the base vectors at middle point
             std::array<double, 3> elambda{0.0, 0.0, 0.0};
             std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(middlePoint, elambda, ephi);
@@ -805,7 +805,7 @@ namespace meshkernel
             return (xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1) + (zz2 - zz1) * (zz2 - zz1);
         }
 
-        //cartesian and spherical
+        // cartesian and spherical
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
             const double dx = GetDx(firstPoint, secondPoint, projection);
@@ -1294,7 +1294,7 @@ namespace meshkernel
             }
         }
 
-        //border points
+        // border points
         std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
         for (auto m = 0; m < numMPoints; m++)
         {
