@@ -66,7 +66,7 @@ void AveragingInterpolation::Compute()
 
     auto interpolatedResults = ComputeOnLocations();
 
-    //for edges, an average of the nodal interpolated value is made
+    // for edges, an average of the nodal interpolated value is made
     if (m_interpolationLocation == MeshLocations::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
