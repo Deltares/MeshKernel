@@ -139,7 +139,7 @@ void CurvilinearGridLineShift::MoveNode(Point const& fromPoint, Point const& toP
     // Get the index in the grid of the line to be shifted
     auto const nodeIndex = m_grid.GetNodeIndices(fromPoint);
 
-    //Check the nodes are on the line to shift
+    // Check the nodes are on the line to shift
     if (!m_lines[0].IsNodeOnLine(nodeIndex))
     {
         throw std::invalid_argument("CurvilinearGridLineShift::MoveNode The selected node does not belong to the line to be shifted");

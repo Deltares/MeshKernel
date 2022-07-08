@@ -170,7 +170,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
     {
         for (auto j = 0; j < numNSplines - 1; j++)
         {
-            //Fill each block of the interpolation plane
+            // Fill each block of the interpolation plane
             for (auto k = 0; k < numMPoints; k++)
             {
                 for (auto l = 0; l < numNPoints; l++)
@@ -284,7 +284,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(size_t numInt
                 const auto index = i * numDiscretizations + j;
                 distances[index] = ar * rightDiscretization[j] + al * leftDiscretization[j];
 
-                //adjust a second time
+                // adjust a second time
                 ar = (distances[index] - intersectionDistances[i]) / (intersectionDistances[i + 1] - intersectionDistances[i]);
                 al = 1.0 - ar;
                 distances[index] = ar * rightDiscretization[j] + al * leftDiscretization[j];
@@ -545,12 +545,12 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(size_t startFirst,
                 {
                     continue;
                 }
-                //they must be swapped
+                // they must be swapped
                 SwapRows(m_splines->m_splineNodes, j, k);
                 SwapRows(m_splineIntersectionRatios, j, k);
                 SwapColumns(m_splineIntersectionRatios, j, k);
 
-                //repeat the entire procedure once more
+                // repeat the entire procedure once more
                 return false;
             }
         }

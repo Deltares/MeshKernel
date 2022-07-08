@@ -221,7 +221,7 @@ void CurvilinearGridFromSplines::DeleteSkinnyTriangles()
                         }
                         else if ((firstLeftIndex == i || rightCosPhi - leftCosPhi < -cosineTolerance) && secondRightIndex != firstRightIndex)
                         {
-                            //move right node
+                            // move right node
                             for (auto k = firstRightIndex; k <= secondRightIndex - 1; ++k)
                             {
                                 m_gridPoints[j][k] = m_gridPoints[j][i];
@@ -230,7 +230,7 @@ void CurvilinearGridFromSplines::DeleteSkinnyTriangles()
                         }
                         else
                         {
-                            //move both nodes
+                            // move both nodes
                             const Point middle = (m_gridPoints[j][i] + m_gridPoints[j][firstRightIndex]) * 0.5;
                             for (auto k = i; k <= firstRightIndex - 1; ++k)
                             {
@@ -1612,7 +1612,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
         m_gridLineDimensionalCoordinates[gridLineIndex] = doubleMissingValue;
         gridLineIndex++;
 
-        //add other side of gridline
+        // add other side of gridline
         m_rightGridLineIndex[s] = gridLineIndex;
         auto rightIndex = m_rightGridLineIndex[s] - 1;
         for (auto j = m_rightGridLineIndex[s] - 1; j >= m_leftGridLineIndex[s] && j != static_cast<size_t>(0) - 1; --j)
