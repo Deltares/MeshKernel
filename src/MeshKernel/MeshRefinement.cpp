@@ -83,7 +83,7 @@ void MeshRefinement::Compute()
 
     FindBrotherEdges();
 
-    //set_initial_mask
+    // set_initial_mask
     ComputeNodeMaskAtPolygonPerimeter();
 
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
@@ -111,7 +111,7 @@ void MeshRefinement::Compute()
                 edge = -edge;
             }
 
-            //TODO: implement SmoothEdgeRefinementMask SmoothEdgeRefinementMask();
+            // TODO: implement SmoothEdgeRefinementMask SmoothEdgeRefinementMask();
         }
         else
         {
@@ -121,7 +121,7 @@ void MeshRefinement::Compute()
 
         if (level == 0)
         {
-            //if one face node is in polygon enable face refinement
+            // if one face node is in polygon enable face refinement
             for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
             {
                 bool activeNodeFound = false;
@@ -142,7 +142,7 @@ void MeshRefinement::Compute()
         }
         if (level > 0)
         {
-            //if one face node is not in polygon disable refinement
+            // if one face node is not in polygon disable refinement
             for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
             {
                 for (auto n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
@@ -186,7 +186,7 @@ void MeshRefinement::Compute()
         m_edgeMask.resize(m_mesh->GetNumEdges());
     }
 
-    //remove isolated hanging nodes and connect if needed
+    // remove isolated hanging nodes and connect if needed
     if (m_meshRefinementParameters.connect_hanging_nodes == 1)
     {
         ConnectHangingNodes();
@@ -253,7 +253,7 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
 
             const auto otherNodeIndex = OtherNodeOfEdge(m_mesh->m_edges[brotherEdgeIndex], commonNode);
 
-            //update lin admin
+            // update lin admin
             if (m_mesh->m_edges[e].first == commonNode)
             {
                 m_mesh->m_edges[e].first = otherNodeIndex;
@@ -263,7 +263,7 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
                 m_mesh->m_edges[e].second = otherNodeIndex;
             }
 
-            //change nod adm of other node
+            // change nod adm of other node
             for (auto ee = 0; ee < m_mesh->m_nodesNumEdges[otherNodeIndex]; ++ee)
             {
                 if (m_mesh->m_nodesEdges[otherNodeIndex][ee] == brotherEdgeIndex)
@@ -273,7 +273,7 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
                 }
             }
 
-            //delete node
+            // delete node
             m_mesh->DeleteNode(commonNode);
 
             m_mesh->DeleteEdge(brotherEdgeIndex);
@@ -446,7 +446,7 @@ void MeshRefinement::ConnectHangingNodes()
 
 void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement)
 {
-    //Add new nodes where required
+    // Add new nodes where required
     std::vector<size_t> notHangingFaceNodes;
     notHangingFaceNodes.reserve(maximumNumberOfNodesPerFace);
     std::vector<size_t> nonHangingEdges;
@@ -464,7 +464,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
             continue;
         }
 
-        //Compute the center of the edge
+        // Compute the center of the edge
         const auto firstNodeIndex = m_mesh->m_edges[e].first;
         const auto secondNodeIndex = m_mesh->m_edges[e].second;
         const auto firstNode = m_mesh->m_nodes[firstNodeIndex];
@@ -585,7 +585,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
             }
         }
 
-        //compute new center node : circumcenter without hanging nodes for quads, c / g otherwise
+        // compute new center node : circumcenter without hanging nodes for quads, c / g otherwise
         facePolygonWithoutHangingNodes.clear();
         localEdgesNumFaces.clear();
         for (const auto& edge : nonHangingEdges)
@@ -648,7 +648,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
                 m_nodeMask.emplace_back(1);
                 if (isParentCrossed)
                 {
-                    //inactive nodes in cells crossed by polygon
+                    // inactive nodes in cells crossed by polygon
                     m_nodeMask[newNodeIndex] = -1;
                 }
             }
@@ -667,7 +667,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
         }
     }
 
-    //Split original edges
+    // Split original edges
     for (auto e = 0; e < numEdgesBeforeRefinement; ++e)
     {
         if (m_edgeMask[e] > 0)
@@ -951,7 +951,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     const auto firstEdgeIndex = m_mesh->m_facesEdges[f][e];
                     const auto secondEdgeIndex = m_mesh->m_facesEdges[f][ee];
 
-                    //do not refine edges with an hanging node
+                    // do not refine edges with an hanging node
                     if (m_brotherEdges[edgeIndex] != firstEdgeIndex && m_brotherEdges[edgeIndex] != secondEdgeIndex)
                     {
                         m_edgeMask[edgeIndex] = 1;
@@ -1100,11 +1100,11 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 }
             }
 
-            //compute the effective face type
+            // compute the effective face type
             const auto numNodesEffective = numFaceNodes - static_cast<size_t>(static_cast<double>(numHangingEdges) / 2.0);
             if (2 * (numFaceNodes - numNodesEffective) != numHangingEdges)
             {
-                //uneven number of brotherlinks
+                // uneven number of brotherlinks
                 // TODO: ADD DOT
             }
 
@@ -1136,7 +1136,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                     }
                     if (iter == maxiter)
                     {
-                        //TODO: ADD DOT/MESSAGES
+                        // TODO: ADD DOT/MESSAGES
                     }
                 }
             }
@@ -1182,16 +1182,16 @@ void MeshRefinement::FindBrotherEdges()
                 continue;
             }
 
-            //check if node k is in the middle
+            // check if node k is in the middle
             const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n);
             const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
 
-            //compute tolerance
+            // compute tolerance
             const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
             const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
             const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
 
-            //The center of the two edges coincides with the shared node
+            // The center of the two edges coincides with the shared node
             const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
             const auto squaredDistanceFromCentre = ComputeSquaredDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
             if (squaredDistanceFromCentre < squaredTolerance)

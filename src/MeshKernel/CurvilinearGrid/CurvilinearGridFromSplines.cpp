@@ -1817,7 +1817,7 @@ void CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSplineIndex, siz
 {
     // find center spline index
     size_t centerSplineLocalIndex = 0;
-    const auto crossingSplineIndex = m_crossingSplinesIndices[centerSplineIndex][crossingSplineLocalIndex]; //js
+    const auto crossingSplineIndex = m_crossingSplinesIndices[centerSplineIndex][crossingSplineLocalIndex]; // js
     for (auto s = 0; s < m_numCrossingSplines[crossingSplineIndex]; ++s)
     {
         if (m_crossingSplinesIndices[crossingSplineIndex][s] == centerSplineIndex)
