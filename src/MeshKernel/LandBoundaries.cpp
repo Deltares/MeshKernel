@@ -281,7 +281,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, boo
                     if (m_addLandboundaries)
                     {
                         AddLandBoundary(nodesLoc, numNodesLoc, lastVisitedNode);
-                        m_meshNodesLandBoundarySegments[meshNode] = m_validLandBoundaries.size() - 1; //last added ;and boundary
+                        m_meshNodesLandBoundarySegments[meshNode] = m_validLandBoundaries.size() - 1; // last added ;and boundary
                     }
                 }
                 else

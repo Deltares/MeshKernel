@@ -847,14 +847,14 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     m_edges.resize(GetNumEdges() + rhsNumEdges);
     m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
-    //copy mesh nodes
+    // copy mesh nodes
     for (auto n = numNodes; n < numNodes + rhsNumNodes; ++n)
     {
         const auto index = n - numNodes;
         m_nodes[n] = rhs.m_nodes[index];
     }
 
-    //copy mesh edges
+    // copy mesh edges
     for (auto e = numEdges; e < numEdges + rhsNumEdges; ++e)
     {
         const auto index = e - numEdges;
