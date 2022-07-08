@@ -173,7 +173,8 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
     std::transform(std::begin(polygon),
                    std::end(polygon),
                    begin(searchPolygon),
-                   [&](Point const& p) { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
+                   [&](Point const& p)
+                   { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
     if (m_mesh->m_projection == Projection::spherical)
     {
