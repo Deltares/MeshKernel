@@ -994,7 +994,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_count_intersected_nodes(int meshKernelId, const GeometryList& polyLines, int& numberOfNodes)
+    MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses)
     {
         int exitCode = Success;
         try
@@ -1006,9 +1006,12 @@ namespace meshkernelapi
 
             auto const boundaryLines = ConvertGeometryListToPointVector(polyLines);
             const meshkernel::CutCell cutCell(meshKernelState[meshKernelId].m_mesh2d);
+            const auto classes = cutCell.ClassifyNodes(boundaryLines);
 
-            const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
-
+            for (auto i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
+            {
+                nodeClasses[i] = classes[i];
+            }
         }
         catch (...)
         {

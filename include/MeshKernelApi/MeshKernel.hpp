@@ -343,12 +343,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
-        /// @brief Counts the number of nodes of the intersected edges `mkernel_mesh2d_get_mesh_boundaries_as_polygons`
-        /// @param[in]  meshKernelId         The id of the mesh state
-        /// @param[in] polyLines The number of polygon nodes
-        /// @param[out] numberOfNodes The number of nodes of the intersected edges 
+        /// @brief Classify nodes for the cut cell method
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] polyLines The boundary line
+        /// @param[out] nodeClasses A vector containing and integer for each class
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_count_intersected_nodes(int meshKernelId, const GeometryList& polyLines, int& numberOfNodes);
+        MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
