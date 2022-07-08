@@ -241,7 +241,7 @@ namespace meshkernel
             // convert point
             const Cartesian3DPoint pointCartesian3D{SphericalToCartesian3D(point)};
 
-            //get test direction: e_lambda
+            // get test direction: e_lambda
             const double lambda = point.x * degrad_hp;
             const Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
             int inside = 0;

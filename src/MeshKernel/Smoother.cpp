@@ -161,7 +161,7 @@ void Smoother::ComputeWeights()
 
             ComputeJacobian(n, J[n]);
 
-            //compute the contravariant base vectors
+            // compute the contravariant base vectors
             const double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
             if (determinant == 0.0)
             {
@@ -326,7 +326,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
             throw std::invalid_argument("Smoother::ComputeOperatorsNode: Face could not be found, this happens when the face is outside of the polygon.");
         }
 
-        //by construction
+        // by construction
         double xiOne = m_topologyXi[currentTopology][f + 1];
         double etaOne = m_topologyEta[currentTopology][f + 1];
 
@@ -430,13 +430,13 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         const double facetaR = -exi01 * fac * leftRightSwap;
         double facetaL = -facetaR;
 
-        //boundary link
+        // boundary link
         if (m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             facxi1 += -facxiL * 2.0 * alpha_x;
             facxi0 += -facxiL * 2.0 * (1.0 - alpha_x);
             facxiL += facxiL;
-            //note that facxiR does not exist
+            // note that facxiR does not exist
             faceta1 += -facetaL * 2.0 * alpha_x;
             faceta0 += -facetaL * 2.0 * (1.0 - alpha_x);
             facetaL = 2.0 * facetaL;

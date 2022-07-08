@@ -167,10 +167,10 @@ bool Splines::GetSplinesIntersection(size_t first,
                 {
                     minimumCrossingDistance = crossingDistance;
                     numCrossing = 1;
-                    firstCrossingIndex = n;            //TI0
-                    secondCrossingIndex = nn;          //TJ0
-                    firstCrossingRatio = firstRatio;   //SL
-                    secondCrossingRatio = secondRatio; //SM
+                    firstCrossingIndex = n;            // TI0
+                    secondCrossingIndex = nn;          // TJ0
+                    firstCrossingRatio = firstRatio;   // SL
+                    secondCrossingRatio = secondRatio; // SM
                 }
             }
             closestIntersection = intersection;
