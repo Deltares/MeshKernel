@@ -33,9 +33,7 @@
 
 using namespace meshkernel;
 
-CutCell::CutCell(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
-{
-};
+CutCell::CutCell(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh){};
 
 std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines) const
 {
@@ -50,7 +48,7 @@ std::vector<int> CutCell::ClassifyNodes(const std::vector<Point>& boundaryLines)
             const bool isLeft = crossProduct(boundaryLines[i], boundaryLines[i + 1], boundaryLines[i], m_mesh->m_nodes[n], m_mesh->m_projection) > 0.0;
             if (isLeft)
             {
-                nodeMask[n] = CutCellNodeClasses::inactiveFlag;  
+                nodeMask[n] = CutCellNodeClasses::inactiveFlag;
             }
         }
     }

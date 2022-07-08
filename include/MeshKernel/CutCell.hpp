@@ -26,8 +26,8 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "Entities.hpp"
 
@@ -35,7 +35,6 @@ namespace meshkernel
 {
     class Mesh2D;
 
-    
     /// \namespace CutCellNodeClasses
     /// @brief Contains the logic of the C++ static library
     namespace CutCellNodeClasses
@@ -43,7 +42,7 @@ namespace meshkernel
         const int inactiveFlag{0};
         const int virtualNodeFlag{1};
         const int innerNodeFlag{2};
-    }
+    } // namespace CutCellNodeClasses
 
     /// @brief A class implementing some of the CutCell functionality
     class CutCell
@@ -60,9 +59,7 @@ namespace meshkernel
         [[nodiscard]] std::vector<int> ClassifyNodes(const std::vector<Point>& boundaryLines) const;
 
     private:
-
         // A reference to the mesh
         std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
-        
     };
 } // namespace meshkernel
