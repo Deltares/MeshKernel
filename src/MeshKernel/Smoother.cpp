@@ -461,7 +461,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         m_Gxi[currentTopology][f][node0] += facxi0;
         m_Geta[currentTopology][f][node0] += faceta0;
 
-        //fill the node-based gradient matrix
+        // fill the node-based gradient matrix
         m_Divxi[currentTopology][f] = -eetaLR * leftRightSwap;
         m_Diveta[currentTopology][f] = exiLR * leftRightSwap;
 
@@ -489,7 +489,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         m_Diveta[currentTopology][i] = m_Diveta[currentTopology][i] / volxi;
     }
 
-    //compute the node-to-node gradients
+    // compute the node-to-node gradients
     for (auto f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         // internal edge
@@ -520,7 +520,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         }
     }
 
-    //compute the weights in the Laplacian smoother
+    // compute the weights in the Laplacian smoother
     std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
     for (auto n = 0; n < m_mesh->m_nodesNumEdges[currentNode]; n++)
     {
@@ -545,7 +545,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
 
     size_t numNonStencilQuad = 0;
 
-    //loop over the connected edges
+    // loop over the connected edges
     for (auto f = 0; f < numSharedFaces; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
@@ -558,7 +558,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
             faceRight = m_mesh->m_edgesFaces[edgeIndex][1];
         }
 
-        //check if it is a rectangular node (not currentNode itself)
+        // check if it is a rectangular node (not currentNode itself)
         bool isSquare = true;
         for (auto e = 0; e < m_mesh->m_nodesNumEdges[nextNode]; e++)
         {
@@ -577,7 +577,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
             }
         }
 
-        //Compute optimal angle thetaSquare based on the node type
+        // Compute optimal angle thetaSquare based on the node type
         size_t leftFaceIndex;
         if (f == 0)
         {
@@ -862,7 +862,7 @@ void Smoother::NodeAdministration(size_t currentNode)
             newFaceIndex = sizetMissingValue;
         }
 
-        //corner face (already found in the first iteration)
+        // corner face (already found in the first iteration)
         if (m_mesh->m_nodesNumEdges[currentNode] == 2 &&
             e == 1 &&
             m_mesh->m_nodesTypes[currentNode] == 3 &&
@@ -945,12 +945,12 @@ void Smoother::NodeAdministration(size_t currentNode)
                 m_connectedNodes[currentNode].emplace_back(node);
             }
 
-            //update node index
+            // update node index
             faceNodeIndex += 1;
         }
     }
 
-    //update connected nodes (kkc)
+    // update connected nodes (kkc)
     m_numConnectedNodes[currentNode] = m_connectedNodesCache.size();
 }
 
@@ -1002,7 +1002,7 @@ void Smoother::AllocateNodeOperators(size_t topologyIndex)
     const auto numSharedFaces = m_topologySharedFaces[topologyIndex].size();
     const auto numConnectedNodes = m_topologyConnectedNodes[topologyIndex].size();
 
-    //// will reallocate only if necessary
+    // will reallocate only if necessary
     m_Az[topologyIndex].resize(numSharedFaces);
     std::fill(m_Az[topologyIndex].begin(), m_Az[topologyIndex].end(), std::vector<double>(numConnectedNodes, 0.0));
 
