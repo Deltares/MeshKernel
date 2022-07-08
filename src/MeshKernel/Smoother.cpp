@@ -604,7 +604,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
             }
             if (m_mesh->m_nodesTypes[nextNode] == 3)
             {
-                //corner node
+                // corner node
                 thetaSquare[f + 1] = 0.5 * M_PI;
             }
 
