@@ -97,6 +97,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html">Contacts</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing an 1d-2d contacts.  <a href="classmeshkernel_1_1_contacts.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_cut_cell.html">CutCell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing some of the <a class="el" href="classmeshkernel_1_1_cut_cell.html" title="A class implementing some of the CutCell functionality.">CutCell</a> functionality.  <a href="classmeshkernel_1_1_cut_cell.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to improve mesh connectivity.  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,9 +255,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9d9dfaffd2c818177c3f9f02debb460e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a9d9dfaffd2c818177c3f9f02debb460e">Cartesian3DToSpherical</a> (const <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> &amp;cartesianPoint, double referenceLongitude)</td></tr>
 <tr class="memdesc:a9d9dfaffd2c818177c3f9f02debb460e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms 3D cartesian coordinates to 2D point in spherical coordinates.  <a href="namespacemeshkernel.html#a9d9dfaffd2c818177c3f9f02debb460e">More...</a><br /></td></tr>
 <tr class="separator:a9d9dfaffd2c818177c3f9f02debb460e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dce9fe20343a37372cb4e442ae836c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9">IsLeft</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;leftPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;rightPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
-<tr class="memdesc:a5dce9fe20343a37372cb4e442ae836c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a point is Left|On|Right of an infinite line.  <a href="namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9">More...</a><br /></td></tr>
-<tr class="separator:a5dce9fe20343a37372cb4e442ae836c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4609136f4cc71e1030ea54840e8397f6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6">crossProduct</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a4609136f4cc71e1030ea54840e8397f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the cross product between two segments (duitpl)  <a href="namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6">More...</a><br /></td></tr>
+<tr class="separator:a4609136f4cc71e1030ea54840e8397f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b00b39ebfe727bd035a36e774093d29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">IsPointInPolygonNodes</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> polygonCenter={<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>, <a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>}, size_t startNode=<a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a>, size_t endNode=<a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a>)</td></tr>
 <tr class="memdesc:a0b00b39ebfe727bd035a36e774093d29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <a href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">More...</a><br /></td></tr>
 <tr class="separator:a0b00b39ebfe727bd035a36e774093d29"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -319,12 +322,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a7dfde423e91be0793af4c40e98d6a5a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1">CircumcenterOfTriangle</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondNode, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;thirdNode, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a7dfde423e91be0793af4c40e98d6a5a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the circumcenter of a triangle.  <a href="namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1">More...</a><br /></td></tr>
 <tr class="separator:a7dfde423e91be0793af4c40e98d6a5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb4473bf53d165558b563b4e35ed8dba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba">AreSegmentsCrossing</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;crossProduct, double &amp;ratioFirstSegment, double &amp;ratioSecondSegment)</td></tr>
+<tr class="memitem:abb4473bf53d165558b563b4e35ed8dba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba">AreSegmentsCrossing</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;<a class="el" href="namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6">crossProduct</a>, double &amp;ratioFirstSegment, double &amp;ratioSecondSegment)</td></tr>
 <tr class="memdesc:abb4473bf53d165558b563b4e35ed8dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if two segments are crossing (cross, cross3D)  <a href="namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba">More...</a><br /></td></tr>
 <tr class="separator:abb4473bf53d165558b563b4e35ed8dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afee88ee44579dd731f8ac1db4db03dc0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#afee88ee44579dd731f8ac1db4db03dc0">CrossProductSign</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
-<tr class="memdesc:afee88ee44579dd731f8ac1db4db03dc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sign of the cross product between two segments (duitpl)  <a href="namespacemeshkernel.html#afee88ee44579dd731f8ac1db4db03dc0">More...</a><br /></td></tr>
-<tr class="separator:afee88ee44579dd731f8ac1db4db03dc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; double, <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af1ad102a74a3e4a7eb7a90b674ba5eac">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened.  <a href="namespacemeshkernel.html#af1ad102a74a3e4a7eb7a90b674ba5eac">More...</a><br /></td></tr>
 <tr class="separator:af1ad102a74a3e4a7eb7a90b674ba5eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1267,14 +1267,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="afee88ee44579dd731f8ac1db4db03dc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afee88ee44579dd731f8ac1db4db03dc0">&#9670;&nbsp;</a></span>CrossProductSign()</h2>
+<a id="a4609136f4cc71e1030ea54840e8397f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4609136f4cc71e1030ea54840e8397f6">&#9670;&nbsp;</a></span>crossProduct()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int meshkernel::CrossProductSign </td>
+          <td class="memname">double meshkernel::crossProduct </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
           <td class="paramname"><em>firstSegmentFirstPoint</em>, </td>
@@ -1311,18 +1311,18 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Computes the sign of the cross product between two segments (duitpl) </p>
+<p>Computes the cross product between two segments (duitpl) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">firstSegmentFirstPoint</td><td>The first point of the first segment </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">firstSegmentSecondPoint</td><td>The second point of the first segment </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">secondSegmentFistPoint</td><td>The first point of the second segment </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondSegmentFistPoint</td><td>The second point of the second segment </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondSegmentSecondPoint</td><td>The second point of the second segment </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The cross product sign </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cross product value </dd></dl>
 
 </div>
 </div>
@@ -1945,56 +1945,6 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting inner product </dd></dl>
-
-</div>
-</div>
-<a id="a5dce9fe20343a37372cb4e442ae836c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5dce9fe20343a37372cb4e442ae836c9">&#9670;&nbsp;</a></span>IsLeft()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double meshkernel::IsLeft </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>leftPoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>rightPoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>point</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tests if a point is Left|On|Right of an infinite line. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">leftPoint</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rightPoint</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>&gt;0 for point left of the line through leftPoint and rightPoint</li>
-<li>=0 for point on the line</li>
-<li>&lt;0 for point right of the line </li>
-</ul>
-</dd></dl>
 
 </div>
 </div>

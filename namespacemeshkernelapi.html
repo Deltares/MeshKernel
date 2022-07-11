@@ -233,6 +233,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5b7bcc0a8c5e3af905c124e5778a5960">mkernel_mesh2d_count_mesh_boundaries_as_polygons</a> (int meshKernelId, int &amp;numberOfPolygonNodes)</td></tr>
 <tr class="memdesc:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes contained in the mesh boundary polygons computed in function <code>mkernel_mesh2d_get_mesh_boundaries_as_polygons</code>  <a href="namespacemeshkernelapi.html#a5b7bcc0a8c5e3af905c124e5778a5960">More...</a><br /></td></tr>
 <tr class="separator:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26c2fb670dac88458c1a4d6aa840fe61"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a26c2fb670dac88458c1a4d6aa840fe61">mkernel_mesh2d_cut_cell_classify_nodes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polyLines, int *nodeClasses)</td></tr>
+<tr class="memdesc:a26c2fb670dac88458c1a4d6aa840fe61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classify nodes for the cut cell method.  <a href="namespacemeshkernelapi.html#a26c2fb670dac88458c1a4d6aa840fe61">More...</a><br /></td></tr>
+<tr class="separator:a26c2fb670dac88458c1a4d6aa840fe61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f0e812c9c86ab09a32bb5db0aba9dd8"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3f0e812c9c86ab09a32bb5db0aba9dd8">mkernel_mesh2d_get_cut_cell_inactive_node_flag</a> (int &amp;flag)</td></tr>
+<tr class="memdesc:a3f0e812c9c86ab09a32bb5db0aba9dd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get mesh nodes inactive node flag.  <a href="namespacemeshkernelapi.html#a3f0e812c9c86ab09a32bb5db0aba9dd8">More...</a><br /></td></tr>
+<tr class="separator:a3f0e812c9c86ab09a32bb5db0aba9dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a001b53580085b735bfb232e3d0280635"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a001b53580085b735bfb232e3d0280635">mkernel_mesh2d_get_cut_cell_virtual_node_flag</a> (int &amp;flag)</td></tr>
+<tr class="memdesc:a001b53580085b735bfb232e3d0280635"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get mesh nodes virtual node flag.  <a href="namespacemeshkernelapi.html#a001b53580085b735bfb232e3d0280635">More...</a><br /></td></tr>
+<tr class="separator:a001b53580085b735bfb232e3d0280635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c73f60d5d7ce34ca8f91b769d02f21"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a29c73f60d5d7ce34ca8f91b769d02f21">mkernel_mesh2d_get_cut_cell_inner_node_flag</a> (int &amp;flag)</td></tr>
+<tr class="memdesc:a29c73f60d5d7ce34ca8f91b769d02f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get mesh nodes inner node flag.  <a href="namespacemeshkernelapi.html#a29c73f60d5d7ce34ca8f91b769d02f21">More...</a><br /></td></tr>
+<tr class="separator:a29c73f60d5d7ce34ca8f91b769d02f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">mkernel_polygon_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;refinedPolygon)</td></tr>
 <tr class="memdesc:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.  <a href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">More...</a><br /></td></tr>
 <tr class="separator:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3408,6 +3420,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="a26c2fb670dac88458c1a4d6aa840fe61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26c2fb670dac88458c1a4d6aa840fe61">&#9670;&nbsp;</a></span>mkernel_mesh2d_cut_cell_classify_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_cut_cell_classify_nodes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polyLines</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>nodeClasses</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Classify nodes for the cut cell method. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polyLines</td><td>The boundary line </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodeClasses</td><td>A vector containing and integer for each class </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="ab787ab2087d49d4797e2dbdb3cf5e0ca"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab787ab2087d49d4797e2dbdb3cf5e0ca">&#9670;&nbsp;</a></span>mkernel_mesh2d_delete()</h2>
 
@@ -3787,6 +3844,87 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radii where to search for mesh nodes </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">xCoordinateOut</td><td>The x coordinate of the found <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">yCoordinateOut</td><td>The y coordinate of the found <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a3f0e812c9c86ab09a32bb5db0aba9dd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0e812c9c86ab09a32bb5db0aba9dd8">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_cut_cell_inactive_node_flag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_cut_cell_inactive_node_flag </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get mesh nodes inactive node flag. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">flag</td><td>The mesh nodes virtual node flag </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a29c73f60d5d7ce34ca8f91b769d02f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c73f60d5d7ce34ca8f91b769d02f21">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_cut_cell_inner_node_flag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_cut_cell_inner_node_flag </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get mesh nodes inner node flag. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">flag</td><td>The mesh nodes inner flag </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a001b53580085b735bfb232e3d0280635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a001b53580085b735bfb232e3d0280635">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_cut_cell_virtual_node_flag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_cut_cell_virtual_node_flag </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get mesh nodes virtual node flag. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">flag</td><td>The mesh nodes virtual flag </td></tr>
   </table>
   </dd>
 </dl>

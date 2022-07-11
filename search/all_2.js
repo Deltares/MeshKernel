@@ -4,7 +4,7 @@ var searchData=
   ['cartesian3dtospherical_23',['Cartesian3DToSpherical',['../namespacemeshkernel.html#a9d9dfaffd2c818177c3f9f02debb460e',1,'meshkernel']]],
   ['check_5ffront_5fcollisions_24',['check_front_collisions',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a742744f258b5a57de623f8b3ef4d1074',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['circumcenteroftriangle_25',['CircumcenterOfTriangle',['../namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1',1,'meshkernel']]],
-  ['classifynodes_26',['ClassifyNodes',['../classmeshkernel_1_1_mesh2_d.html#ae70f0bfaf5a55b9b0a76bd6a3d98041f',1,'meshkernel::Mesh2D']]],
+  ['classifynodes_26',['ClassifyNodes',['../classmeshkernel_1_1_cut_cell.html#afcdf096f3bfec0daa903acf41af4803f',1,'meshkernel::CutCell::ClassifyNodes()'],['../classmeshkernel_1_1_mesh2_d.html#ae70f0bfaf5a55b9b0a76bd6a3d98041f',1,'meshkernel::Mesh2D::ClassifyNodes()']]],
   ['closest_27',['Closest',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a0c89b66f6bdfb128781e2c68d43364d8',1,'meshkernel::AveragingInterpolation']]],
   ['compute_28',['Compute',['../classmeshkernel_1_1_averaging_interpolation.html#a500805140a119509ed7c5058e2ec6361',1,'meshkernel::AveragingInterpolation::Compute()'],['../classmeshkernel_1_1_flip_edges.html#ae527adee1fe9fadde1630d84a7bb6bcb',1,'meshkernel::FlipEdges::Compute()'],['../classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be',1,'meshkernel::MeshRefinement::Compute()'],['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a36882183b2f25248d84f06861d64b93b',1,'meshkernel::OrthogonalizationAndSmoothing::Compute()'],['../classmeshkernel_1_1_orthogonalizer.html#a383a65ef501b86da252785cbe0521339',1,'meshkernel::Orthogonalizer::Compute()'],['../classmeshkernel_1_1_smoother.html#aec9e87d6264f384c2d870c4e51000f99',1,'meshkernel::Smoother::Compute()'],['../classmeshkernel_1_1_triangulation_interpolation.html#aa3d513f4ec432060bda127936e770833',1,'meshkernel::TriangulationInterpolation::Compute()'],['../structmeshkernel_1_1_triangulation_wrapper.html#a9ede2c31a0853b50de19d211d90c58d8',1,'meshkernel::TriangulationWrapper::Compute()']]],
   ['computeadimensionaldistancesfrompointserie_29',['ComputeAdimensionalDistancesFromPointSerie',['../namespacemeshkernel.html#ab494e044742959e1ed0a317f026735e7',1,'meshkernel']]],
@@ -49,9 +49,11 @@ var searchData=
   ['converttosamples_68',['ConvertToSamples',['../structmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['coordinates_5fx_69',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
   ['coordinates_5fy_70',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
-  ['crossproductsign_71',['CrossProductSign',['../namespacemeshkernel.html#afee88ee44579dd731f8ac1db4db03dc0',1,'meshkernel']]],
+  ['crossproduct_71',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]],
   ['curvature_5fadapted_5fgrid_5fspacing_72',['curvature_adapted_grid_spacing',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a4a9a0c5aba6ef19596c119f7999cad7c',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['curvilineargrid_73',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
   ['curvilinearparameters_74',['CurvilinearParameters',['../structmeshkernelapi_1_1_curvilinear_parameters.html',1,'meshkernelapi']]],
-  ['curvilineartoorthogonalratio_75',['curvilinearToOrthogonalRatio',['../namespacemeshkernel.html#a292b3e1f854e33c3982785c3b22eaefd',1,'meshkernel']]]
+  ['curvilineartoorthogonalratio_75',['curvilinearToOrthogonalRatio',['../namespacemeshkernel.html#a292b3e1f854e33c3982785c3b22eaefd',1,'meshkernel']]],
+  ['cutcell_76',['CutCell',['../classmeshkernel_1_1_cut_cell.html',1,'meshkernel::CutCell'],['../classmeshkernel_1_1_cut_cell.html#a144639d4fdad2c3915e8bfd6de1a460d',1,'meshkernel::CutCell::CutCell()']]],
+  ['cutcellnodeclasses_77',['CutCellNodeClasses',['../namespace_cut_cell_node_classes.html',1,'']]]
 ];
