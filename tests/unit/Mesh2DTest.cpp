@@ -1,3 +1,5 @@
+#include "MeshKernel/CutCell.hpp"
+
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
@@ -591,4 +593,147 @@ TEST(Mesh2D, DeleteHangingEdge)
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
+}
+
+TEST(Mesh2D, GetNodeClassesForCutCell)
+{
+    //1. Setup
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> boundaryLines;
+    boundaryLines.emplace_back(0.5, 0.5);
+    boundaryLines.emplace_back(0.5,2.5);
+    boundaryLines.emplace_back(2.5,2.5);
+    boundaryLines.emplace_back(2.5,0.5);
+    boundaryLines.emplace_back(0.5, 0.5);
+
+    // 2. Execute
+    const meshkernel::CutCell cutCell(mesh);
+    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
+
+    // 3. Assert
+    ASSERT_EQ(nodeClasses[0], 1);
+    ASSERT_EQ(nodeClasses[1], 1);
+    ASSERT_EQ(nodeClasses[2], 1);
+    ASSERT_EQ(nodeClasses[3], 1);
+    ASSERT_EQ(nodeClasses[4], 1);
+    ASSERT_EQ(nodeClasses[5], 1);
+    ASSERT_EQ(nodeClasses[6], 1);
+    ASSERT_EQ(nodeClasses[7], 1);
+    ASSERT_EQ(nodeClasses[8], 1);
+    ASSERT_EQ(nodeClasses[9], 1);
+    ASSERT_EQ(nodeClasses[10], 1);
+    ASSERT_EQ(nodeClasses[11], 1);
+    ASSERT_EQ(nodeClasses[12], 1);
+    ASSERT_EQ(nodeClasses[13], 1);
+    ASSERT_EQ(nodeClasses[14], 1);
+    ASSERT_EQ(nodeClasses[15], 1);
+
+}
+
+TEST(Mesh2D, GetNodeClassesForCutCellObliqueLine)
+{
+    //1. Setup
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> boundaryLines;
+    boundaryLines.emplace_back(3.9, 0.0);
+    boundaryLines.emplace_back(0.0, 3.9);
+
+    // 2. Execute
+    const meshkernel::CutCell cutCell(mesh);
+    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
+
+    // 3. Assert
+    ASSERT_EQ(nodeClasses[0], 0);
+    ASSERT_EQ(nodeClasses[1], 0);
+    ASSERT_EQ(nodeClasses[2], 1);
+    ASSERT_EQ(nodeClasses[3], 1);
+    ASSERT_EQ(nodeClasses[4], 1);
+    ASSERT_EQ(nodeClasses[5], 2);
+    ASSERT_EQ(nodeClasses[6], 0);
+    ASSERT_EQ(nodeClasses[7], 1);
+    ASSERT_EQ(nodeClasses[8], 1);
+    ASSERT_EQ(nodeClasses[9], 1);
+    ASSERT_EQ(nodeClasses[10], 1);
+    ASSERT_EQ(nodeClasses[11], 2);
+    ASSERT_EQ(nodeClasses[12], 1);
+    ASSERT_EQ(nodeClasses[13], 1);
+    ASSERT_EQ(nodeClasses[14], 1);
+    ASSERT_EQ(nodeClasses[15], 1);
+    ASSERT_EQ(nodeClasses[16], 2);
+    ASSERT_EQ(nodeClasses[17], 2);
+    ASSERT_EQ(nodeClasses[18], 1);
+    ASSERT_EQ(nodeClasses[19], 1);
+    ASSERT_EQ(nodeClasses[20], 1);
+    ASSERT_EQ(nodeClasses[21], 2);
+    ASSERT_EQ(nodeClasses[22], 2);
+    ASSERT_EQ(nodeClasses[23], 2);
+    ASSERT_EQ(nodeClasses[24], 1);
+    ASSERT_EQ(nodeClasses[25], 1);
+    ASSERT_EQ(nodeClasses[26], 2);
+    ASSERT_EQ(nodeClasses[27], 2);
+    ASSERT_EQ(nodeClasses[28], 2);
+    ASSERT_EQ(nodeClasses[29], 2);
+    ASSERT_EQ(nodeClasses[30], 2);
+    ASSERT_EQ(nodeClasses[31], 2);
+    ASSERT_EQ(nodeClasses[32], 2);
+    ASSERT_EQ(nodeClasses[33], 2);
+    ASSERT_EQ(nodeClasses[34], 2);
+    ASSERT_EQ(nodeClasses[35], 2);
+}
+
+TEST(Mesh2D, GetNodeClassesForCutCellPolygon)
+{
+    //1. Setup
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> boundaryLines;
+    boundaryLines.emplace_back(3.9, 0.0);
+    boundaryLines.emplace_back(0.0, 3.9);
+    boundaryLines.emplace_back(1.5, 5.0);
+    boundaryLines.emplace_back(5.0, 4.1);
+    boundaryLines.emplace_back(3.9, 0.0);
+
+    // 2. Execute
+    const meshkernel::CutCell cutCell(mesh);
+    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
+
+    // 3. Assert
+    ASSERT_EQ(nodeClasses[0], 0);
+    ASSERT_EQ(nodeClasses[1], 0);
+    ASSERT_EQ(nodeClasses[2], 1);
+    ASSERT_EQ(nodeClasses[3], 1);
+    ASSERT_EQ(nodeClasses[4], 1);
+    ASSERT_EQ(nodeClasses[5], 1);
+    ASSERT_EQ(nodeClasses[6], 0);
+    ASSERT_EQ(nodeClasses[7], 1);
+    ASSERT_EQ(nodeClasses[8], 1);
+    ASSERT_EQ(nodeClasses[9], 1);
+    ASSERT_EQ(nodeClasses[10], 1);
+    ASSERT_EQ(nodeClasses[11], 1);
+    ASSERT_EQ(nodeClasses[12], 1);
+    ASSERT_EQ(nodeClasses[13], 1);
+    ASSERT_EQ(nodeClasses[14], 1);
+    ASSERT_EQ(nodeClasses[15], 1);
+    ASSERT_EQ(nodeClasses[16], 1);
+    ASSERT_EQ(nodeClasses[17], 1);
+    ASSERT_EQ(nodeClasses[18], 1);
+    ASSERT_EQ(nodeClasses[19], 1);
+    ASSERT_EQ(nodeClasses[20], 1);
+    ASSERT_EQ(nodeClasses[21], 2);
+    ASSERT_EQ(nodeClasses[22], 1);
+    ASSERT_EQ(nodeClasses[23], 1);
+    ASSERT_EQ(nodeClasses[24], 1);
+    ASSERT_EQ(nodeClasses[25], 1);
+    ASSERT_EQ(nodeClasses[26], 1);
+    ASSERT_EQ(nodeClasses[27], 1);
+    ASSERT_EQ(nodeClasses[28], 1);
+    ASSERT_EQ(nodeClasses[29], 1);
+    ASSERT_EQ(nodeClasses[30], 1);
+    ASSERT_EQ(nodeClasses[31], 1);
+    ASSERT_EQ(nodeClasses[32], 1);
+    ASSERT_EQ(nodeClasses[33], 1);
+    ASSERT_EQ(nodeClasses[34], 1);
+    ASSERT_EQ(nodeClasses[35], 1);
 }

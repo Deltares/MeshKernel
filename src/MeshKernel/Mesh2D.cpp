@@ -470,7 +470,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 #pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (auto f = 0; f < numFaces; f++)
     {
-        //need to account for spherical coordinates. Build a polygon around a face
+        // need to account for spherical coordinates. Build a polygon around a face
         ComputeFaceClosedPolygon(f, polygonNodesCache);
 
         if (computeMassCenters)
@@ -542,7 +542,7 @@ void Mesh2D::ClassifyNodes()
         {
             if (m_nodesNumEdges[n] == 2)
             {
-                //corner point
+                // corner point
                 m_nodesTypes[n] = 3;
             }
             else
@@ -590,12 +590,12 @@ void Mesh2D::ClassifyNodes()
         }
         else if (m_nodesTypes[n] != -1)
         {
-            //internal node
+            // internal node
             m_nodesTypes[n] = 1;
         }
         if (m_nodesNumEdges[n] < 2)
         {
-            //hanging node
+            // hanging node
             m_nodesTypes[n] = -1;
         }
     }
@@ -660,7 +660,7 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                  const std::vector<size_t>& edgesNumFaces) const
 {
     const size_t maximumNumberCircumcenterIterations = 100;
-    const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
+    const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
     std::vector<Point> middlePoints;
     middlePoints.reserve(maximumNumberOfNodesPerFace);
     std::vector<Point> normals;
@@ -771,7 +771,7 @@ std::vector<meshkernel::Point> Mesh2D::GetObtuseTrianglesCenters()
             const auto firstNode = m_facesNodes[f][0];
             const auto secondNode = m_facesNodes[f][1];
             const auto thirdNode = m_facesNodes[f][2];
-            //compute squared edge lengths
+            // compute squared edge lengths
             const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_nodes[secondNode], m_nodes[firstNode], m_projection);
             const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_nodes[thirdNode], m_nodes[firstNode], m_projection);
             const auto thirdEdgeSquaredLength = ComputeSquaredDistance(m_nodes[thirdNode], m_nodes[secondNode], m_projection);
@@ -963,7 +963,7 @@ void Mesh2D::ComputeNodeNeighbours()
     m_maxNumNeighbours += 1;
 
     ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, sizetMissingValue);
-    //for each node, determine the neighboring nodes
+    // for each node, determine the neighboring nodes
     for (auto n = 0; n < GetNumNodes(); n++)
     {
         for (auto nn = 0; nn < m_nodesNumEdges[n]; nn++)
@@ -1061,14 +1061,14 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
             leftCenter = m_nodes[first];
         }
 
-        //find right cell center, if it exists
+        // find right cell center, if it exists
         if (m_edgesNumFaces[e] == 2)
         {
             rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
         }
         else
         {
-            //otherwise, make ghost node by imposing boundary condition
+            // otherwise, make ghost node by imposing boundary condition
             double dinry = InnerProductTwoSegments(m_nodes[first], m_nodes[second], m_nodes[first], leftCenter, m_projection);
             dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
@@ -1105,7 +1105,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
                 aspectRatios[edgeIndex] = averageFlowEdgesLength[edgeIndex] / edgeLength;
             }
 
-            //quads
+            // quads
             if (numberOfFaceNodes == numNodesQuads)
             {
                 size_t kkp2 = n + 2;
@@ -1336,7 +1336,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
             continue;
         }
 
-        //Start a new polyline
+        // Start a new polyline
         if (!meshBoundaryPolygon.empty())
         {
             meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
@@ -1357,7 +1357,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         // if the boundary polygon is not closed
         if (currentNode != firstNodeIndex)
         {
-            //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
+            // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
             WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
@@ -1375,7 +1375,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
             }
         }
 
-        //Start a new polyline
+        // Start a new polyline
         meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
     }
     return meshBoundaryPolygon;

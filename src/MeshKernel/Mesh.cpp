@@ -165,11 +165,13 @@ void Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Remove invalid nodes, without reducing capacity
-    const auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) { return !n.IsValid(); });
+    const auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n)
+                                              { return !n.IsValid(); });
     m_nodes.erase(endNodeVector, m_nodes.end());
 
     // Remove invalid edges, without reducing capacity
-    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first == sizetMissingValue || e.second == sizetMissingValue; });
+    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e)
+                                              { return e.first == sizetMissingValue || e.second == sizetMissingValue; });
     m_edges.erase(endEdgeVector, m_edges.end());
 }
 
@@ -612,7 +614,8 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
         edgeNodeCopy.clear();
         std::copy(m_nodesEdges[n].begin(), m_nodesEdges[n].end(), std::back_inserter(edgeNodeCopy));
         iota(indices.begin(), indices.end(), 0);
-        sort(indices.begin(), indices.end(), [&](std::size_t const& i1, std::size_t const& i2) { return edgeAngles[i1] < edgeAngles[i2]; });
+        sort(indices.begin(), indices.end(), [&](std::size_t const& i1, std::size_t const& i2)
+             { return edgeAngles[i1] < edgeAngles[i2]; });
 
         for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
         {
@@ -844,14 +847,14 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     m_edges.resize(GetNumEdges() + rhsNumEdges);
     m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
-    //copy mesh nodes
+    // copy mesh nodes
     for (auto n = numNodes; n < numNodes + rhsNumNodes; ++n)
     {
         const auto index = n - numNodes;
         m_nodes[n] = rhs.m_nodes[index];
     }
 
-    //copy mesh edges
+    // copy mesh edges
     for (auto e = numEdges; e < numEdges + rhsNumEdges; ++e)
     {
         const auto index = e - numEdges;

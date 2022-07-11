@@ -305,7 +305,7 @@ namespace meshkernel
         std::vector<double> m_maximumGridHeightsOriginal; ///< Original maximum transversal grid height
         std::vector<SplineTypes> m_originalTypes;         ///< Original types
 
-        //cache variables during iterations
+        // cache variables during iterations
         std::vector<double> m_edgeVelocities;                                         ///< Edge velocities
         std::vector<size_t> m_validFrontNodes;                                        ///< InternalValid front nodes
         std::vector<std::vector<Point>> m_gridPoints;                                 ///< Grid points

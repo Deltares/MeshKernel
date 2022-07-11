@@ -198,7 +198,7 @@ namespace meshkernel
         const double m_closeWholeMeshFactor = 1.0;      ///< Close-to-whole-mesh tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0; ///< Minimal distance from land factor
 
-        //findOnlyOuterMeshBoundary
+        // findOnlyOuterMeshBoundary
         bool m_findOnlyOuterMeshBoundary = false; ///< Whether to find only outer mesh boundary
     };
 

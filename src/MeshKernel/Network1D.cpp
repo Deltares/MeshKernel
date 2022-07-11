@@ -80,7 +80,7 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
             }
             else if (previousChainageIsAFixedPoint)
             {
-                //center the gridpoint between two fixed points
+                // center the gridpoint between two fixed points
                 m_chainages[p].back() = (chainageBeforeFixedPoint + previousChainage) * 0.5;
                 previousChainage = m_chainages[p].back();
             }

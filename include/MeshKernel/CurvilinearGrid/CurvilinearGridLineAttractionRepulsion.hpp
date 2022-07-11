@@ -52,7 +52,7 @@ namespace meshkernel
         CurvilinearGrid Compute() override;
 
     private:
-        std::shared_ptr<CurvilinearGrid> m_originalGrid; ///<A pointer to the original grid, used for computation of quantities
+        std::shared_ptr<CurvilinearGrid> m_originalGrid; ///< A pointer to the original grid, used for computation of quantities
         double m_attractionFactor;                       ///< The attraction factor. If 0.0 no line will be attracted to m_lines[0]
     };
 } // namespace meshkernel

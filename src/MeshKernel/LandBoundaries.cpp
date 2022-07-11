@@ -200,7 +200,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, boo
         }
         else
         {
-            //not a valid edge
+            // not a valid edge
             return;
         }
     }
@@ -281,7 +281,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, boo
                     if (m_addLandboundaries)
                     {
                         AddLandBoundary(nodesLoc, numNodesLoc, lastVisitedNode);
-                        m_meshNodesLandBoundarySegments[meshNode] = m_validLandBoundaries.size() - 1; //last added ;and boundary
+                        m_meshNodesLandBoundarySegments[meshNode] = m_validLandBoundaries.size() - 1; // last added ;and boundary
                     }
                 }
                 else
@@ -521,7 +521,7 @@ void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
     {
         std::fill(m_faceMask.begin(), m_faceMask.end(), false);
         std::fill(m_edgeMask.begin(), m_edgeMask.end(), sizetMissingValue);
-        //m_faceMask assumes crossedFace has already been done.
+        // m_faceMask assumes crossedFace has already been done.
         if (crossedFaceIndex != sizetMissingValue)
         {
             m_faceMask[crossedFaceIndex] = true;

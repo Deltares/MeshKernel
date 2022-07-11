@@ -343,6 +343,28 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
+        /// @brief Classify nodes for the cut cell method
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] polyLines The boundary line
+        /// @param[out] nodeClasses A vector containing and integer for each class
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses);
+
+        /// @brief Get mesh nodes inactive node flag
+        /// @param[out] flag The mesh nodes virtual node flag
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_cut_cell_inactive_node_flag(int& flag);
+
+        /// @brief Get mesh nodes virtual node flag
+        /// @param[out] flag The mesh nodes virtual flag
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_cut_cell_virtual_node_flag(int& flag);
+
+        /// @brief Get mesh nodes inner node flag
+        /// @param[out] flag The mesh nodes inner flag
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_cut_cell_inner_node_flag(int& flag);
+
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
         /// The function is often used before `mkernel_mesh2d_make_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.

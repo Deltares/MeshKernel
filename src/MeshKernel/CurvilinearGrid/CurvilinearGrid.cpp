@@ -851,7 +851,7 @@ void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
     // Get the node indices of fromPoint
     auto const nodeIndex = GetNodeIndices(fromPoint);
 
-    //Check the node indices are valid
+    // Check the node indices are valid
     if (!nodeIndex.IsValid())
     {
         throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");

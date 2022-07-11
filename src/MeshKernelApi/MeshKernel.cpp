@@ -45,6 +45,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
+#include <MeshKernel/CutCell.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -991,6 +992,50 @@ namespace meshkernelapi
             exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            auto const boundaryLines = ConvertGeometryListToPointVector(polyLines);
+            const meshkernel::CutCell cutCell(meshKernelState[meshKernelId].m_mesh2d);
+            const auto classes = cutCell.ClassifyNodes(boundaryLines);
+
+            for (auto i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
+            {
+                nodeClasses[i] = classes[i];
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_inactive_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::inactiveFlag);
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_virtual_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::virtualNodeFlag);
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_cut_cell_inner_node_flag(int& flag)
+    {
+        flag = static_cast<int>(meshkernel::CutCellNodeClasses::innerNodeFlag);
+        return Success;
     }
 
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)

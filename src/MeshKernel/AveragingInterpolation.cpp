@@ -66,7 +66,7 @@ void AveragingInterpolation::Compute()
 
     auto interpolatedResults = ComputeOnLocations();
 
-    //for edges, an average of the nodal interpolated value is made
+    // for edges, an average of the nodal interpolated value is made
     if (m_interpolationLocation == MeshLocations::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
@@ -86,7 +86,7 @@ void AveragingInterpolation::Compute()
         return;
     }
 
-    //for the other cases, the interpolated values are already at the correct location
+    // for the other cases, the interpolated values are already at the correct location
     m_results = std::move(interpolatedResults);
 }
 
@@ -173,7 +173,8 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
     std::transform(std::begin(polygon),
                    std::end(polygon),
                    begin(searchPolygon),
-                   [&](Point const& p) { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
+                   [&](Point const& p)
+                   { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
     if (m_mesh->m_projection == Projection::spherical)
     {

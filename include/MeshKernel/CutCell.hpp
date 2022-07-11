@@ -27,24 +27,39 @@
 
 #pragma once
 #include <memory>
+#include <vector>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "Entities.hpp"
 
 namespace meshkernel
 {
-    class CurvilinearGrid;
+    class Mesh2D;
 
-    /// @brief A class implementing the curvilinear grid de-refinement algorithm.
-    /// A segment is defined by the first and second point.
-    /// The grid lines crossed by the segment are eliminated from the curvilinear grid.
-    class CurvilinearGridDeRefinement : public CurvilinearGridAlgorithm
+    /// \namespace CutCellNodeClasses
+    /// @brief Contains the logic of the C++ static library
+    namespace CutCellNodeClasses
     {
-    public:
-        /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
-        CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid);
+        const int inactiveFlag{0};
+        const int virtualNodeFlag{1};
+        const int innerNodeFlag{2};
+    } // namespace CutCellNodeClasses
 
-        /// @brief Refine the curvilinear grid
-        CurvilinearGrid Compute() override;
+    /// @brief A class implementing some of the CutCell functionality
+    class CutCell
+    {
+
+    public:
+        /// @brief CutCell ctor
+        /// @brief mesh a shared pointer to mesh
+        explicit CutCell(std::shared_ptr<Mesh2D> mesh);
+
+        /// @brief Gets the edges crossed by a segment
+        /// @param[in] boundaryLines The boundary polyline
+        /// @return A vector containing the polyline vertices
+        [[nodiscard]] std::vector<int> ClassifyNodes(const std::vector<Point>& boundaryLines) const;
+
+    private:
+        // A reference to the mesh
+        std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
     };
 } // namespace meshkernel

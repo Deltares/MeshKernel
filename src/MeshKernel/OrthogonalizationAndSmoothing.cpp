@@ -113,7 +113,7 @@ void OrthogonalizationAndSmoothing::Compute()
             } // inner iteration
         }     // boundary iter
 
-        //update mu
+        // update mu
         FinalizeOuterIteration();
     } // outer iter
 }
@@ -164,7 +164,7 @@ void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
 
-    //compute new faces circumcenters
+    // compute new faces circumcenters
     if (!m_keepCircumcentersAndMassCenters)
     {
         m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
@@ -303,7 +303,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 continue;
             }
 
-            //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
+            // Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
 
             const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection);
 
@@ -331,7 +331,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
 void OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
-    //TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
+    // TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
 
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
@@ -374,16 +374,16 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
         std::array<double, 3> ezzp{0.0, 0.0, 0.0};
         ComputeThreeBaseComponents(m_mesh->m_nodes[nodeIndex], exxp, eyyp, ezzp);
 
-        //get 3D-coordinates in rotated frame
+        // get 3D-coordinates in rotated frame
         const Cartesian3DPoint cartesianLocalPoint{SphericalToCartesian3D(localPoint)};
 
-        //project to fixed frame
+        // project to fixed frame
         Cartesian3DPoint transformedCartesianLocalPoint;
         transformedCartesianLocalPoint.x = exxp[0] * cartesianLocalPoint.x + eyyp[0] * cartesianLocalPoint.y + ezzp[0] * cartesianLocalPoint.z;
         transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
         transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
 
-        //transform to spherical coordinates
+        // transform to spherical coordinates
         m_orthogonalCoordinates[nodeIndex] = Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh->m_nodes[nodeIndex].x);
     }
 }

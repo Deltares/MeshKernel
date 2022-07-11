@@ -68,11 +68,11 @@ namespace meshkernel
         /// @return True if it is an N grid line
         bool IsNGridLine() const { return m_gridLineType == GridLineDirection::NDirection; };
 
-        CurvilinearGridNodeIndices m_startNode; ///<The start node of the grid line
-        CurvilinearGridNodeIndices m_endNode;   ///<The end node of the grid line
-        size_t m_startCoordinate;               ///<The start coordinate. If it is an MDirection, the start m otherwise the start n
-        size_t m_endCoordinate;                 ///<The end coordinate. If it is an MDirection, the end m otherwise the end n
-        size_t m_constantCoordinate;            ///<The constant coordinate. If it is an MDirection, the n coordinate, otherwise the m coordinate
-        GridLineDirection m_gridLineType;       ///<The grid line type
+        CurvilinearGridNodeIndices m_startNode; ///< The start node of the grid line
+        CurvilinearGridNodeIndices m_endNode;   ///< The end node of the grid line
+        size_t m_startCoordinate;               ///< The start coordinate. If it is an MDirection, the start m otherwise the start n
+        size_t m_endCoordinate;                 ///< The end coordinate. If it is an MDirection, the end m otherwise the end n
+        size_t m_constantCoordinate;            ///< The constant coordinate. If it is an MDirection, the n coordinate, otherwise the m coordinate
+        GridLineDirection m_gridLineType;       ///< The grid line type
     };
 } // namespace meshkernel

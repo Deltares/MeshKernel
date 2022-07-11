@@ -155,7 +155,8 @@ namespace meshkernel
     {
         std::vector<size_t> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
-        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
+        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
+                         { return v[i1] < v[i2]; });
         return indices;
     }
 
@@ -183,7 +184,7 @@ namespace meshkernel
     template <typename F>
     [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
-        //golden distance factors
+        // golden distance factors
         const double c = 0.38196602;
         const double r = 0.61803399;
         const double tolerance = 1e-5;
@@ -258,15 +259,14 @@ namespace meshkernel
     /// @returns The spherical coordinate
     [[nodiscard]] Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude);
 
-    /// @brief Tests if a point is Left|On|Right of an infinite line.
-    /// @param[in] leftPoint
-    /// @param[in] rightPoint
-    /// @param[in] point
-    /// @returns
-    ///          - >0 for point left of the line through leftPoint and rightPoint
-    ///          - =0 for point  on the line
-    ///          - <0 for point  right of the line
-    [[nodiscard]] double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point);
+    /// @brief Computes the cross product between two segments (duitpl)
+    /// @param[in] firstSegmentFirstPoint   The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint  The second point of the first segment
+    /// @param[in] secondSegmentFistPoint   The second point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] projection               The coordinate system projection
+    /// @return The cross product value
+    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
     /// @param[in] point The point to check
@@ -428,15 +428,6 @@ namespace meshkernel
                                            double& crossProduct,
                                            double& ratioFirstSegment,
                                            double& ratioSecondSegment);
-
-    /// @brief Computes the sign of the cross product between two segments (duitpl)
-    /// @param[in] firstSegmentFirstPoint   The first point of the first segment
-    /// @param[in] firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in] secondSegmentFistPoint   The first point of the second segment
-    /// @param[in] secondSegmentSecondPoint The second point of the second segment
-    /// @param[in] projection               The coordinate system projection
-    /// @return The cross product sign
-    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
     /// @param[in]  polygon            The input vector containing the nodes of the polygon (must be closed)
