@@ -33,6 +33,18 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CutCell.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -49,18 +61,6 @@
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
