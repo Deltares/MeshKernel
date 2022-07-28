@@ -82,8 +82,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     }
 
     Point referencePoint{doubleMissingValue, doubleMissingValue};
-    auto const [startPolygonIdex, endPolygonIndex] = polygons->StartEndIndicesOfPolygon(polygonIndex);
-    for (auto i = startPolygonIdex; i <= endPolygonIndex; ++i)
+    auto const& [startPolygonIndex, endPolygonIndex] = polygons->m_outer_polygons_indices[polygonIndex];
+    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {
         if (polygons->m_nodes[i].IsValid())
         {
@@ -103,7 +103,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     const double cosineAngle = std::cos(m_makeGridParameters.angle * degrad_hp);
     const double sinAngle = std::sin(m_makeGridParameters.angle * degrad_hp);
 
-    for (auto i = startPolygonIdex; i <= endPolygonIndex; ++i)
+    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {
         if (polygons->m_nodes[i].IsValid())
         {

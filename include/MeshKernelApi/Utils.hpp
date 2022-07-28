@@ -57,7 +57,7 @@ namespace meshkernelapi
         }
         result.reserve(geometryListIn.num_coordinates);
         result.emplace_back(geometryListIn.coordinates_x[0], geometryListIn.coordinates_y[0]);
-        // remove consecutive duplicated point leading to 0 length edges
+        // remove consecutive duplicated point leading to 0 edge length
         for (auto i = 1; i < geometryListIn.num_coordinates; ++i)
         {
             if (meshkernel::IsEqual(geometryListIn.coordinates_x[i], result.back().x) &&
@@ -229,10 +229,11 @@ namespace meshkernelapi
 
         for (const auto& index : indices)
         {
-            const auto size = index[1] - index[0] + 1;
+            const auto& [startIndex, endIndex] = index;
+            const auto size = endIndex - startIndex + 1;
             if (size > 0)
             {
-                spline.AddSpline(splineCornerPoints, index[0], size);
+                spline.AddSpline(splineCornerPoints, startIndex, size);
             }
         }
     }

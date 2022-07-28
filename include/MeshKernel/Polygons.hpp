@@ -78,14 +78,6 @@ namespace meshkernel
         /// @return A vector of booleans to indicate if the point is in polygon
         [[nodiscard]] std::vector<bool> PointsInPolygons(const std::vector<Point>& point) const;
 
-        /// @brief For a polygonIndex returns its start end end index
-        /// @param[in] polygonIndex The polygon index
-        /// @return the start and end index in m_indices
-        [[nodiscard]] std::tuple<size_t, size_t> StartEndIndicesOfPolygon(size_t polygonIndex) const
-        {
-            return {m_indices.at(polygonIndex).at(0), m_indices.at(polygonIndex).at(1)};
-        }
-
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
         bool IsEmpty() const;
@@ -98,9 +90,10 @@ namespace meshkernel
         /// @return the number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<Point> m_nodes;                 ///< The polygon nodes
-        Projection m_projection;                    ///< The current projection
-        std::vector<std::vector<size_t>> m_indices; ///< Start-end indices of each polygon in m_nodes
+        std::vector<Point> m_nodes;                                                        ///< The polygon nodes
+        Projection m_projection;                                                           ///< The current projection
+        std::vector<std::pair<size_t, size_t>> m_outer_polygons_indices;                   ///< Start-end indices of each outer polygon in m_nodes
+        std::map<size_t, std::vector<std::pair<size_t, size_t>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
 
     private:
         /// @brief Computes the perimeter of a closed polygon

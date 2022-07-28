@@ -182,7 +182,9 @@ namespace meshkernel
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             const bool isInvalid = IsEqual(x, missingValue) ||
-                                   IsEqual(y, missingValue);
+                                   IsEqual(y, missingValue) ||
+                                   IsEqual(x, innerOuterSeparator) ||
+                                   IsEqual(y, innerOuterSeparator);
 
             return !isInvalid;
         }

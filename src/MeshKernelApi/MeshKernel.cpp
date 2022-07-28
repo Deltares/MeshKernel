@@ -138,7 +138,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The 2d mesh contains no nodes.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const bool invertDeletionBool = invertDeletion == 1 ? true : false;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
@@ -813,8 +813,9 @@ namespace meshkernelapi
             int index = 0;
             for (auto s = 0; s < numSplines; s++)
             {
-                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + static_cast<int>(indices[s][1]) + 1);
-                const int numNodes = static_cast<int>(indices[s][1]) - static_cast<int>(indices[s][0]) + 1;
+                const auto& [startIndex, endIndex] = indices[s];
+                std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
+                const int numNodes = static_cast<int>(endIndex) - static_cast<int>(startIndex) + 1;
                 const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)

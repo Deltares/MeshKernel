@@ -142,10 +142,7 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
-                                                 size_t start,
-                                                 size_t end,
-                                                 double separator);
+    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort

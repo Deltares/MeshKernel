@@ -55,8 +55,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indices[0][0];
-    const auto end = m_polygon->m_indices[0][1];
+    auto start = m_polygon->m_outer_polygons_indices[0].first;
+    auto end = m_polygon->m_outer_polygons_indices[0].second;
 
     if (end <= start)
     {
@@ -235,8 +235,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indices[0][0];
-    const auto end = m_polygon->m_indices[0][1];
+    const auto& [start, end] = m_polygon->m_outer_polygons_indices[0];
 
     if (end <= start)
     {
