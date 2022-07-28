@@ -81,8 +81,7 @@ void Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t 
     const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), doubleMissingValue);
     for (auto index : indices)
     {
-        const auto startIndex = index[0];
-        const auto endIndex = index[1];
+        const auto& [startIndex, endIndex] = index;
         const auto derivatives = SecondOrderDerivative(splinesNodes, startIndex, endIndex);
         for (auto j = startIndex; j <= endIndex; ++j)
         {
