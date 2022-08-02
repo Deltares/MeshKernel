@@ -674,7 +674,8 @@ public:
         return {
             {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, firstPolygon_, 9},
             {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, firstPolygon_, 40},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, secondPolygon_, 41}
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, secondPolygon_, 41},
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, secondPolygon_, 24}
         };
     }
 };
