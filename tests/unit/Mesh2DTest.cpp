@@ -417,7 +417,7 @@ TEST(Mesh2D, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     ASSERT_EQ(5, mesh->m_edgesRTree.Size());
 }
 
-TEST(Mesh2D, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
+TEST(Mesh2D, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     //1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
