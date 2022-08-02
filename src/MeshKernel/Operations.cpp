@@ -46,9 +46,9 @@ namespace meshkernel
     }
 
     std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec,
-                                                 size_t start,
-                                                 size_t end,
-                                                 double separator)
+                                                       size_t start,
+                                                       size_t end,
+                                                       double separator)
     {
         std::vector<std::pair<size_t, size_t>> result;
 

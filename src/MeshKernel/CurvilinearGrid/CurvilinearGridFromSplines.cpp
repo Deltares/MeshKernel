@@ -471,7 +471,6 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         const auto mStartIndexOtherSide = mEndIndexThisSide + 2;
         const auto mEndIndexOtherSide = mStartIndexOtherSide + (mEndIndexThisSide - mStartIndexThisSide);
 
-
         bool isConnected = true;
 
         size_t minN = m_curvilinearParameters.n_refinement;

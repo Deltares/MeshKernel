@@ -61,12 +61,11 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
         {
             inner_polygons.emplace_back(inner_polygons_indices[j]);
         }
-        
+
         m_inner_polygons_indices[i] = inner_polygons;
 
-        // shift the index of the outer polygon, the 
+        // shift the index of the outer polygon, the
         m_outer_polygons_indices[i].second = inner_start - 2;
-        
     }
 }
 
