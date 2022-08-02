@@ -90,10 +90,10 @@ namespace meshkernel
         /// @return the number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<Point> m_nodes;                                                        ///< The polygon nodes
-        Projection m_projection;                                                           ///< The current projection
-        std::vector<std::pair<size_t, size_t>> m_outer_polygons_indices;                   ///< Start-end indices of each outer polygon in m_nodes
-        std::map<size_t, std::vector<std::pair<size_t, size_t>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
+        std::vector<Point> m_nodes;                                                                  ///< The polygon nodes
+        Projection m_projection;                                                                     ///< The current projection
+        std::vector<std::pair<size_t, size_t>> m_outer_polygons_indices;                             ///< Start-end indices of each outer polygon in m_nodes
+        std::unordered_map<size_t, std::vector<std::pair<size_t, size_t>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
 
     private:
         /// @brief Computes the perimeter of a closed polygon

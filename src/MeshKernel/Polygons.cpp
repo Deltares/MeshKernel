@@ -39,24 +39,33 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
     m_outer_polygons_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
     for (auto i = 0; i < m_outer_polygons_indices.size(); ++i)
     {
-        m_inner_polygons_indices[i] = std::vector<std::pair<size_t, size_t>>();
+        m_inner_polygons_indices[i] = std::vector<std::pair<size_t, size_t>>{};
 
-        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[i];
+        const auto& [outer_start, outer_end] = m_outer_polygons_indices[i];
 
-        const auto inner_polygons_indices = FindIndices(polygon, outerStart, outerEnd, innerOuterSeparator);
-        const auto& [firstInnerStart, firstInnerEnd] = inner_polygons_indices[0];
+        // The inner polygon indices, the first interval corresponds to the outer polygon
+        const auto inner_polygons_indices = FindIndices(polygon, outer_start, outer_end, innerOuterSeparator);
 
-        // If the first inner start is equal to the outer start, there is no inner polygon
-        if (firstInnerStart == outerStart)
+        // No inner polygon found
+        if (inner_polygons_indices.size() <= 1)
         {
             continue;
         }
 
-        // store inner polygons for this outer polygon
-        m_inner_polygons_indices[i] = inner_polygons_indices;
+        // The first inner
+        const auto inner_start = inner_polygons_indices[1].first;
 
-        // shift the index of the outer polygon to not include the inner polygons
-        m_outer_polygons_indices[i].second = firstInnerStart - 1;
+        // store inner polygons for this outer polygon
+        auto inner_polygons = std::vector<std::pair<size_t, size_t>>{};
+        for (auto j = 1; j < inner_polygons_indices.size(); ++j)
+        {
+            inner_polygons.emplace_back(inner_polygons_indices[j]);
+        }
+        
+        m_inner_polygons_indices[i] = inner_polygons;
+
+        // shift the index of the outer polygon, the 
+        m_outer_polygons_indices[i].second = inner_start - 2;
         
     }
 }
@@ -367,8 +376,7 @@ std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
         {
             for (const auto& [startInner, endInner] : m_inner_polygons_indices.at(polygonIndex))
             {
-                const auto inInnerPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), startInner, endInner);
-                if (inInnerPolygon)
+                if (IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), startInner, endInner))
                 {
                     return {false, sizetMissingValue};
                 }
