@@ -993,48 +993,45 @@ namespace meshkernelapi
         return exitCode;
     }
 
-
-    MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId, 
-        const GeometryList& boundaryPolyLine,
-        int* nodesOfIntersectedEdges, 
-        double* edgeAdimensionalIntersections,
-        int* polyLineIndexes,
-        double* lineAdimensionalIntersections)
+    MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId,
+                                                                       const GeometryList& boundaryPolyLine,
+                                                                       int* nodesOfIntersectedEdges,
+                                                                       double* edgeAdimensionalIntersections,
+                                                                       int* polyLineIndexes,
+                                                                       double* lineAdimensionalIntersections)
     {
-            int exitCode = Success;
-            try
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                if (meshKernelState.count(meshKernelId) == 0)
-                {
-                    throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
-                }
-
-                auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
-
-                const auto& [localNodesOfIntersectedEdges,
-                             localEdgeAdimensionalIntersections,
-                             localPolyLineIndexes,
-                             localLineAdimensionalIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetIntersectedEdgesFromPolyline(boundaryLines);
-
-                for (auto i = 0; i < localNodesOfIntersectedEdges.size(); ++i)
-                {
-                    nodesOfIntersectedEdges[i] = localNodesOfIntersectedEdges[i];
-                }
-
-                for (auto i = 0; i < localEdgeAdimensionalIntersections.size(); ++i)
-                {
-                    edgeAdimensionalIntersections[i] = localEdgeAdimensionalIntersections[i];
-                    polyLineIndexes[i] = localPolyLineIndexes[i];
-                    lineAdimensionalIntersections[i] = localLineAdimensionalIntersections[i];
-                }
-
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            catch (...)
+
+            auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
+
+            const auto& [localNodesOfIntersectedEdges,
+                         localEdgeAdimensionalIntersections,
+                         localPolyLineIndexes,
+                         localLineAdimensionalIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetIntersectedEdgesFromPolyline(boundaryLines);
+
+            for (auto i = 0; i < localNodesOfIntersectedEdges.size(); ++i)
             {
-                exitCode = HandleExceptions(std::current_exception());
+                nodesOfIntersectedEdges[i] = localNodesOfIntersectedEdges[i];
             }
-            return exitCode;
 
+            for (auto i = 0; i < localEdgeAdimensionalIntersections.size(); ++i)
+            {
+                edgeAdimensionalIntersections[i] = localEdgeAdimensionalIntersections[i];
+                polyLineIndexes[i] = localPolyLineIndexes[i];
+                lineAdimensionalIntersections[i] = localLineAdimensionalIntersections[i];
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)

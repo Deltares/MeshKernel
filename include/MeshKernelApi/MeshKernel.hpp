@@ -351,11 +351,11 @@ namespace meshkernelapi
         /// @param[out] The location of the intersection point on the current segment, expressed with as an adimensional distance from the segment left's node
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId,
-                                                              const GeometryList& boundaryPolyLine,
-                                                              int* nodesOfIntersectedEdges,
-                                                              double* edgeAdimensionalIntersections,
-                                                              int* polyLineIndexes,
-                                                              double* lineAdimensionalIntersections);
+                                                                           const GeometryList& boundaryPolyLine,
+                                                                           int* nodesOfIntersectedEdges,
+                                                                           double* edgeAdimensionalIntersections,
+                                                                           int* polyLineIndexes,
+                                                                           double* lineAdimensionalIntersections);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
