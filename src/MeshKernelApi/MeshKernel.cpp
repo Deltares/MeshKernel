@@ -994,30 +994,48 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses)
+
+    MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId, 
+        const GeometryList& boundaryPolyLine,
+        int* nodesOfIntersectedEdges, 
+        double* edgeAdimensionalIntersections,
+        int* polyLineIndexes,
+        double* lineAdimensionalIntersections)
     {
-        int exitCode = Success;
-        try
-        {
-            if (meshKernelState.count(meshKernelId) == 0)
+            int exitCode = Success;
+            try
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                if (meshKernelState.count(meshKernelId) == 0)
+                {
+                    throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                }
+
+                auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
+
+                const auto& [localNodesOfIntersectedEdges,
+                             localEdgeAdimensionalIntersections,
+                             localPolyLineIndexes,
+                             localLineAdimensionalIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetIntersectedEdgesFromPolyline(boundaryLines);
+
+                for (auto i = 0; i < localNodesOfIntersectedEdges.size(); ++i)
+                {
+                    nodesOfIntersectedEdges[i] = localNodesOfIntersectedEdges[i];
+                }
+
+                for (auto i = 0; i < localEdgeAdimensionalIntersections.size(); ++i)
+                {
+                    edgeAdimensionalIntersections[i] = localEdgeAdimensionalIntersections[i];
+                    polyLineIndexes[i] = localPolyLineIndexes[i];
+                    lineAdimensionalIntersections[i] = localLineAdimensionalIntersections[i];
+                }
+
             }
-
-            auto const boundaryLines = ConvertGeometryListToPointVector(polyLines);
-            const meshkernel::CutCell cutCell(meshKernelState[meshKernelId].m_mesh2d);
-            const auto classes = cutCell.ClassifyNodes(boundaryLines);
-
-            for (auto i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
+            catch (...)
             {
-                nodeClasses[i] = classes[i];
+                exitCode = HandleExceptions(std::current_exception());
             }
-        }
-        catch (...)
-        {
-            exitCode = HandleExceptions(std::current_exception());
-        }
-        return exitCode;
+            return exitCode;
+
     }
 
     MKERNEL_API int mkernel_mesh2d_get_cut_cell_inactive_node_flag(int& flag)
