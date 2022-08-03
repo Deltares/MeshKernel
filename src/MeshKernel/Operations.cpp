@@ -319,10 +319,6 @@ namespace meshkernel
     double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         const double delta = secondPoint.x - firstPoint.x;
-        if (std::abs(delta) <= nearlyZero)
-        {
-            return 0.0;
-        }
 
         if (projection == Projection::cartesian)
         {
@@ -361,10 +357,6 @@ namespace meshkernel
     double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         const double delta = secondPoint.y - firstPoint.y;
-        if (std::abs(delta) <= nearlyZero)
-        {
-            return 0.0;
-        }
 
         if (projection == Projection::cartesian)
         {

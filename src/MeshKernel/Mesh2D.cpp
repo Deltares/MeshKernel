@@ -1619,20 +1619,22 @@ std::tuple<std::vector<int>,
            std::vector<double>,
            std::vector<int>,
            std::vector<double>>
-Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine) const
+Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
 {
     std::vector<int> nodesOfIntersectedEdges;
     std::vector<double> edgeAdimensionalIntersections;
     std::vector<int> polyLineIndexes;
     std::vector<double> lineAdimensionalIntersections;
 
-    // Mask all faces crossed by boundary lines
-    std::vector<bool> edgemask(GetNumEdges(), false);
+    ComputeEdgesLengths();
 
-    for (auto l = 0; l < polyLine.size() - 1; ++l)
+    // Mask all faces crossed by boundary lines
+    std::vector edgemask(GetNumEdges(), false);
+
+    for (auto s = 0; s < polyLine.size() - 1; ++s)
     {
 
-        const auto polylineSegmentLength = ComputeDistance(polyLine[l], polyLine[l + 1], m_projection);
+        const auto polylineSegmentLength = ComputeDistance(polyLine[s], polyLine[s + 1], m_projection);
         for (auto e = 0; e < GetNumEdges(); ++e)
         {
             if (edgemask[e])
@@ -1644,8 +1646,8 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine) cons
             double crossProductValue;
             double ratioFirstSegment;
             double ratioSecondSegment;
-            const auto isEdgeCrossed = AreSegmentsCrossing(polyLine[l],
-                                                           polyLine[l + 1],
+            const auto isEdgeCrossed = AreSegmentsCrossing(polyLine[s],
+                                                           polyLine[s + 1],
                                                            m_nodes[m_edges[e].first],
                                                            m_nodes[m_edges[e].second],
                                                            false,
@@ -1654,15 +1656,23 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine) cons
                                                            crossProductValue,
                                                            ratioFirstSegment,
                                                            ratioSecondSegment);
-
             if (isEdgeCrossed)
             {
-                nodesOfIntersectedEdges.emplace_back(m_edges[e].first);
-                nodesOfIntersectedEdges.emplace_back(m_edges[e].second);
+                auto firstNodeIndex = m_edges[e].first;
+                auto secondNodeIndex = m_edges[e].second;
 
-                edgeAdimensionalIntersections.emplace_back(ratioFirstSegment / m_edgeLengths[l]);
-                lineAdimensionalIntersections.emplace_back(ratioSecondSegment / polylineSegmentLength);
-                polyLineIndexes.emplace_back(l);
+                if (crossProductValue >= 0)
+                {
+                    firstNodeIndex = m_edges[e].second;
+                    secondNodeIndex = m_edges[e].first;
+                }
+
+                nodesOfIntersectedEdges.emplace_back(firstNodeIndex);
+                nodesOfIntersectedEdges.emplace_back(secondNodeIndex);
+
+                edgeAdimensionalIntersections.emplace_back(ratioSecondSegment / m_edgeLengths[e]);
+                lineAdimensionalIntersections.emplace_back(ratioFirstSegment / polylineSegmentLength);
+                polyLineIndexes.emplace_back(s);
 
                 edgemask[e] = true;
             }

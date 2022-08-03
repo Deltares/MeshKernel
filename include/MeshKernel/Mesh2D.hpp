@@ -274,7 +274,7 @@ namespace meshkernel
                                  std::vector<double>,
                                  std::vector<int>,
                                  std::vector<double>>
-        GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine) const;
+        GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine);
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon

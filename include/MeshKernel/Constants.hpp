@@ -51,7 +51,6 @@ namespace meshkernel
     const double earth_radius = 6378137.0;                   ///< Earth radius(m)
     const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
     const double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
-    const double nearlyZero = 1e-16;                         ///< Used to determine if a length is zero
 
     // mesh constants
     const double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
