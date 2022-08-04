@@ -263,6 +263,19 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
+        /// @brief Gets the edges intersected by a polyline, with additional information on the intersections
+        /// @param[in] polyLine An input polyline, defined as a series of points
+        /// @return A tuple containing:
+        ///     The node indices of the intersected edges (the first node  of the edge is on the left ( the virtual node ), the second node of the edge is on the right (the inner node))
+        ///     The location of the intersection point on the edge, expressed with as an adimensional distance from the left node
+        ///     The intersected segment index (a polyline is formed by several segments)
+        ///     The location of the intersection point on the current segment, expressed with as an adimensional distance from the segment left's node
+        [[nodiscard]] std::tuple<std::vector<int>,
+                                 std::vector<double>,
+                                 std::vector<int>,
+                                 std::vector<double>>
+        GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine);
+
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
         /// @param[in] invertSelection Invert selection

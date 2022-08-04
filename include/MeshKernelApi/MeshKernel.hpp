@@ -343,27 +343,20 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
-        /// @brief Classify nodes for the cut cell method
+        /// @brief Gets the edges intersected by a polyline, with additional information on the intersections
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] polyLines The boundary line
-        /// @param[out] nodeClasses A vector containing and integer for each class
+        /// @param[in] boundaryPolyLine An input polyline, defined as a series of points
+        /// @param[out] nodesOfIntersectedEdges The node indices of the intersected edges (the first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node))
+        /// @param[out] edgeAdimensionalIntersections The location of the intersection point on the edge, expressed with as an adimensional distance from the left node
+        /// @param[out] polyLineIndexes The intersected segment index (a polyline is formed by several segments)
+        /// @param[out] lineAdimensionalIntersections The location of the intersection point on the current segment, expressed with as an adimensional distance from the segment left's node
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_cut_cell_classify_nodes(int meshKernelId, const GeometryList& polyLines, int* nodeClasses);
-
-        /// @brief Get mesh nodes inactive node flag
-        /// @param[out] flag The mesh nodes virtual node flag
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_cut_cell_inactive_node_flag(int& flag);
-
-        /// @brief Get mesh nodes virtual node flag
-        /// @param[out] flag The mesh nodes virtual flag
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_cut_cell_virtual_node_flag(int& flag);
-
-        /// @brief Get mesh nodes inner node flag
-        /// @param[out] flag The mesh nodes inner flag
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_cut_cell_inner_node_flag(int& flag);
+        MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId,
+                                                                           const GeometryList& boundaryPolyLine,
+                                                                           int* nodesOfIntersectedEdges,
+                                                                           double* edgeAdimensionalIntersections,
+                                                                           int* polyLineIndexes,
+                                                                           double* lineAdimensionalIntersections);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///

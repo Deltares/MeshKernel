@@ -1,5 +1,3 @@
-#include "MeshKernel/CutCell.hpp"
-
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
@@ -595,7 +593,7 @@ TEST(Mesh2D, DeleteHangingEdge)
     ASSERT_EQ(0, hangingEdges.size());
 }
 
-TEST(Mesh2D, GetNodeClassesForCutCell)
+TEST(Mesh2D, GetIntersectedEdgesFromPolyline)
 {
     //1. Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
@@ -608,32 +606,58 @@ TEST(Mesh2D, GetNodeClassesForCutCell)
     boundaryLines.emplace_back(0.5, 0.5);
 
     // 2. Execute
-    const meshkernel::CutCell cutCell(mesh);
-    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
+    const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodeClasses[0], 1);
-    ASSERT_EQ(nodeClasses[1], 1);
-    ASSERT_EQ(nodeClasses[2], 1);
-    ASSERT_EQ(nodeClasses[3], 1);
-    ASSERT_EQ(nodeClasses[4], 1);
-    ASSERT_EQ(nodeClasses[5], 1);
-    ASSERT_EQ(nodeClasses[6], 1);
-    ASSERT_EQ(nodeClasses[7], 1);
-    ASSERT_EQ(nodeClasses[8], 1);
-    ASSERT_EQ(nodeClasses[9], 1);
-    ASSERT_EQ(nodeClasses[10], 1);
-    ASSERT_EQ(nodeClasses[11], 1);
-    ASSERT_EQ(nodeClasses[12], 1);
-    ASSERT_EQ(nodeClasses[13], 1);
-    ASSERT_EQ(nodeClasses[14], 1);
-    ASSERT_EQ(nodeClasses[15], 1);
+    ASSERT_EQ(nodesOfIntersectedEdges[0],  1);
+    ASSERT_EQ(nodesOfIntersectedEdges[1],  5);
+    ASSERT_EQ(nodesOfIntersectedEdges[2],  2);
+    ASSERT_EQ(nodesOfIntersectedEdges[3],  6);
+    ASSERT_EQ(nodesOfIntersectedEdges[4],  7);
+    ASSERT_EQ(nodesOfIntersectedEdges[5],  6);
+    ASSERT_EQ(nodesOfIntersectedEdges[6],  11);
+    ASSERT_EQ(nodesOfIntersectedEdges[7],  10);
+    ASSERT_EQ(nodesOfIntersectedEdges[8],  13);
+    ASSERT_EQ(nodesOfIntersectedEdges[9],  9);
+    ASSERT_EQ(nodesOfIntersectedEdges[10], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[11], 10);
+    ASSERT_EQ(nodesOfIntersectedEdges[12], 4);
+    ASSERT_EQ(nodesOfIntersectedEdges[13], 5);
+    ASSERT_EQ(nodesOfIntersectedEdges[14], 8);
+    ASSERT_EQ(nodesOfIntersectedEdges[15], 9);
+
+    ASSERT_EQ(edgeAdimensionalIntersections[0], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[1], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[2], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[3], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[4], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[5], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[6], 0.5);
+    ASSERT_EQ(edgeAdimensionalIntersections[7], 0.5);
+
+    ASSERT_EQ(polyLineIndexes[0], 0);
+    ASSERT_EQ(polyLineIndexes[1], 0);
+    ASSERT_EQ(polyLineIndexes[2], 1);
+    ASSERT_EQ(polyLineIndexes[3], 1);
+    ASSERT_EQ(polyLineIndexes[4], 2);
+    ASSERT_EQ(polyLineIndexes[5], 2);
+    ASSERT_EQ(polyLineIndexes[6], 3);
+    ASSERT_EQ(polyLineIndexes[7], 3);
+
+    ASSERT_EQ(lineAdimensionalIntersections[0], 0.125);
+    ASSERT_EQ(lineAdimensionalIntersections[1], 0.375);
+    ASSERT_EQ(lineAdimensionalIntersections[2], 0.125);
+    ASSERT_EQ(lineAdimensionalIntersections[3], 0.375);
+    ASSERT_EQ(lineAdimensionalIntersections[4], 0.375);
+    ASSERT_EQ(lineAdimensionalIntersections[5], 0.125);
+    ASSERT_EQ(lineAdimensionalIntersections[6], 0.375);
+    ASSERT_EQ(lineAdimensionalIntersections[7], 0.125);
 
 }
 
-TEST(Mesh2D, GetNodeClassesForCutCellObliqueLine)
+TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
 {
-    //1. Setup
+    // 1. Setup
     auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> boundaryLines;
@@ -641,99 +665,50 @@ TEST(Mesh2D, GetNodeClassesForCutCellObliqueLine)
     boundaryLines.emplace_back(0.0, 3.9);
 
     // 2. Execute
-    const meshkernel::CutCell cutCell(mesh);
-    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
+    const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodeClasses[0], 0);
-    ASSERT_EQ(nodeClasses[1], 0);
-    ASSERT_EQ(nodeClasses[2], 1);
-    ASSERT_EQ(nodeClasses[3], 1);
-    ASSERT_EQ(nodeClasses[4], 1);
-    ASSERT_EQ(nodeClasses[5], 2);
-    ASSERT_EQ(nodeClasses[6], 0);
-    ASSERT_EQ(nodeClasses[7], 1);
-    ASSERT_EQ(nodeClasses[8], 1);
-    ASSERT_EQ(nodeClasses[9], 1);
-    ASSERT_EQ(nodeClasses[10], 1);
-    ASSERT_EQ(nodeClasses[11], 2);
-    ASSERT_EQ(nodeClasses[12], 1);
-    ASSERT_EQ(nodeClasses[13], 1);
-    ASSERT_EQ(nodeClasses[14], 1);
-    ASSERT_EQ(nodeClasses[15], 1);
-    ASSERT_EQ(nodeClasses[16], 2);
-    ASSERT_EQ(nodeClasses[17], 2);
-    ASSERT_EQ(nodeClasses[18], 1);
-    ASSERT_EQ(nodeClasses[19], 1);
-    ASSERT_EQ(nodeClasses[20], 1);
-    ASSERT_EQ(nodeClasses[21], 2);
-    ASSERT_EQ(nodeClasses[22], 2);
-    ASSERT_EQ(nodeClasses[23], 2);
-    ASSERT_EQ(nodeClasses[24], 1);
-    ASSERT_EQ(nodeClasses[25], 1);
-    ASSERT_EQ(nodeClasses[26], 2);
-    ASSERT_EQ(nodeClasses[27], 2);
-    ASSERT_EQ(nodeClasses[28], 2);
-    ASSERT_EQ(nodeClasses[29], 2);
-    ASSERT_EQ(nodeClasses[30], 2);
-    ASSERT_EQ(nodeClasses[31], 2);
-    ASSERT_EQ(nodeClasses[32], 2);
-    ASSERT_EQ(nodeClasses[33], 2);
-    ASSERT_EQ(nodeClasses[34], 2);
-    ASSERT_EQ(nodeClasses[35], 2);
-}
+    ASSERT_EQ(nodesOfIntersectedEdges[0], 3);
+    ASSERT_EQ(nodesOfIntersectedEdges[1], 9);
+    ASSERT_EQ(nodesOfIntersectedEdges[2], 8);
+    ASSERT_EQ(nodesOfIntersectedEdges[3], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[4], 13);
+    ASSERT_EQ(nodesOfIntersectedEdges[5], 19);
+    ASSERT_EQ(nodesOfIntersectedEdges[6], 18);
+    ASSERT_EQ(nodesOfIntersectedEdges[7], 24);
+    ASSERT_EQ(nodesOfIntersectedEdges[8], 3);
+    ASSERT_EQ(nodesOfIntersectedEdges[9], 4);
+    ASSERT_EQ(nodesOfIntersectedEdges[10], 8);
+    ASSERT_EQ(nodesOfIntersectedEdges[11], 9);
+    ASSERT_EQ(nodesOfIntersectedEdges[12], 13);
+    ASSERT_EQ(nodesOfIntersectedEdges[13], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[14], 18);
+    ASSERT_EQ(nodesOfIntersectedEdges[15], 19);
 
-TEST(Mesh2D, GetNodeClassesForCutCellPolygon)
-{
-    //1. Setup
-    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
+    ASSERT_NEAR(edgeAdimensionalIntersections[0], 0.89999999999999991, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[1], 0.89999999999999969, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[2], 0.89999999999999980, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[3], 0.89999999999999991, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[4], 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[5], 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[6], 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(edgeAdimensionalIntersections[7], 0.10000000000000003, 1e-8);
 
-    std::vector<meshkernel::Point> boundaryLines;
-    boundaryLines.emplace_back(3.9, 0.0);
-    boundaryLines.emplace_back(0.0, 3.9);
-    boundaryLines.emplace_back(1.5, 5.0);
-    boundaryLines.emplace_back(5.0, 4.1);
-    boundaryLines.emplace_back(3.9, 0.0);
+    ASSERT_EQ(polyLineIndexes[0], 0);
+    ASSERT_EQ(polyLineIndexes[1], 0);
+    ASSERT_EQ(polyLineIndexes[2], 0);
+    ASSERT_EQ(polyLineIndexes[3], 0);
+    ASSERT_EQ(polyLineIndexes[4], 0);
+    ASSERT_EQ(polyLineIndexes[5], 0);
+    ASSERT_EQ(polyLineIndexes[6], 0);
+    ASSERT_EQ(polyLineIndexes[7], 0);
 
-    // 2. Execute
-    const meshkernel::CutCell cutCell(mesh);
-    const auto nodeClasses = cutCell.ClassifyNodes(boundaryLines);
-
-    // 3. Assert
-    ASSERT_EQ(nodeClasses[0], 0);
-    ASSERT_EQ(nodeClasses[1], 0);
-    ASSERT_EQ(nodeClasses[2], 1);
-    ASSERT_EQ(nodeClasses[3], 1);
-    ASSERT_EQ(nodeClasses[4], 1);
-    ASSERT_EQ(nodeClasses[5], 1);
-    ASSERT_EQ(nodeClasses[6], 0);
-    ASSERT_EQ(nodeClasses[7], 1);
-    ASSERT_EQ(nodeClasses[8], 1);
-    ASSERT_EQ(nodeClasses[9], 1);
-    ASSERT_EQ(nodeClasses[10], 1);
-    ASSERT_EQ(nodeClasses[11], 1);
-    ASSERT_EQ(nodeClasses[12], 1);
-    ASSERT_EQ(nodeClasses[13], 1);
-    ASSERT_EQ(nodeClasses[14], 1);
-    ASSERT_EQ(nodeClasses[15], 1);
-    ASSERT_EQ(nodeClasses[16], 1);
-    ASSERT_EQ(nodeClasses[17], 1);
-    ASSERT_EQ(nodeClasses[18], 1);
-    ASSERT_EQ(nodeClasses[19], 1);
-    ASSERT_EQ(nodeClasses[20], 1);
-    ASSERT_EQ(nodeClasses[21], 2);
-    ASSERT_EQ(nodeClasses[22], 1);
-    ASSERT_EQ(nodeClasses[23], 1);
-    ASSERT_EQ(nodeClasses[24], 1);
-    ASSERT_EQ(nodeClasses[25], 1);
-    ASSERT_EQ(nodeClasses[26], 1);
-    ASSERT_EQ(nodeClasses[27], 1);
-    ASSERT_EQ(nodeClasses[28], 1);
-    ASSERT_EQ(nodeClasses[29], 1);
-    ASSERT_EQ(nodeClasses[30], 1);
-    ASSERT_EQ(nodeClasses[31], 1);
-    ASSERT_EQ(nodeClasses[32], 1);
-    ASSERT_EQ(nodeClasses[33], 1);
-    ASSERT_EQ(nodeClasses[34], 1);
-    ASSERT_EQ(nodeClasses[35], 1);
+    ASSERT_NEAR(lineAdimensionalIntersections[0], 0.13946879313344135, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[1], 0.092979195422294228, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[2], 0.046489597711147114, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[3], 0.0000000000000000, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[4], 0.18130943107347372, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[5], 0.13481983336232661, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[6], 0.088330235651179506, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[7], 0.041840637940032399, 1e-8);
 }
