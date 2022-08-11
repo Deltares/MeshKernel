@@ -667,22 +667,22 @@ TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
     const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodesOfIntersectedEdges[0], 3);
-    ASSERT_EQ(nodesOfIntersectedEdges[1], 9);
-    ASSERT_EQ(nodesOfIntersectedEdges[2], 8);
-    ASSERT_EQ(nodesOfIntersectedEdges[3], 14);
-    ASSERT_EQ(nodesOfIntersectedEdges[4], 13);
-    ASSERT_EQ(nodesOfIntersectedEdges[5], 19);
-    ASSERT_EQ(nodesOfIntersectedEdges[6], 18);
-    ASSERT_EQ(nodesOfIntersectedEdges[7], 24);
-    ASSERT_EQ(nodesOfIntersectedEdges[8], 3);
-    ASSERT_EQ(nodesOfIntersectedEdges[9], 4);
-    ASSERT_EQ(nodesOfIntersectedEdges[10], 8);
-    ASSERT_EQ(nodesOfIntersectedEdges[11], 9);
-    ASSERT_EQ(nodesOfIntersectedEdges[12], 13);
-    ASSERT_EQ(nodesOfIntersectedEdges[13], 14);
-    ASSERT_EQ(nodesOfIntersectedEdges[14], 18);
-    ASSERT_EQ(nodesOfIntersectedEdges[15], 19);
+    ASSERT_EQ(nodesOfIntersectedEdges[0],  9 );
+    ASSERT_EQ(nodesOfIntersectedEdges[1],  3 );
+    ASSERT_EQ(nodesOfIntersectedEdges[2],  14);
+    ASSERT_EQ(nodesOfIntersectedEdges[3],  8 );
+    ASSERT_EQ(nodesOfIntersectedEdges[4],  19);
+    ASSERT_EQ(nodesOfIntersectedEdges[5],  13);
+    ASSERT_EQ(nodesOfIntersectedEdges[6],  24);
+    ASSERT_EQ(nodesOfIntersectedEdges[7],  18);
+    ASSERT_EQ(nodesOfIntersectedEdges[8],  4 );
+    ASSERT_EQ(nodesOfIntersectedEdges[9],  3 );
+    ASSERT_EQ(nodesOfIntersectedEdges[10], 9 );
+    ASSERT_EQ(nodesOfIntersectedEdges[11], 8 );
+    ASSERT_EQ(nodesOfIntersectedEdges[12], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[13], 13);
+    ASSERT_EQ(nodesOfIntersectedEdges[14], 19);
+    ASSERT_EQ(nodesOfIntersectedEdges[15], 18);
 
     ASSERT_NEAR(edgeAdimensionalIntersections[0], 0.89999999999999991, 1e-8);
     ASSERT_NEAR(edgeAdimensionalIntersections[1], 0.89999999999999969, 1e-8);
@@ -702,12 +702,12 @@ TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
     ASSERT_EQ(polyLineIndexes[6], 0);
     ASSERT_EQ(polyLineIndexes[7], 0);
 
-    ASSERT_NEAR(lineAdimensionalIntersections[0], 0.13946879313344135, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[1], 0.092979195422294228, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[2], 0.046489597711147114, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[3], 0.0000000000000000, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[4], 0.18130943107347372, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[5], 0.13481983336232661, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[6], 0.088330235651179506, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[7], 0.041840637940032399, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[0], 0.76923076923076927, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[1], 0.51282051282051289, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[2], 0.25641025641025644, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[3], 0.00000000000000001, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[4], 1.00000000000000001, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[5], 0.74358974358974361, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[6], 0.48717948717948717, 1e-8);
+    ASSERT_NEAR(lineAdimensionalIntersections[7], 0.23076923076923075, 1e-8);
 }
