@@ -1626,15 +1626,11 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
     std::vector<int> polyLineIndexes;
     std::vector<double> lineAdimensionalIntersections;
 
-    ComputeEdgesLengths();
-
     // Mask all faces crossed by boundary lines
     std::vector edgemask(GetNumEdges(), false);
 
     for (auto s = 0; s < polyLine.size() - 1; ++s)
     {
-
-        const auto polylineSegmentLength = ComputeDistance(polyLine[s], polyLine[s + 1], m_projection);
         for (auto e = 0; e < GetNumEdges(); ++e)
         {
             if (edgemask[e])
@@ -1661,7 +1657,7 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
                 auto firstNodeIndex = m_edges[e].first;
                 auto secondNodeIndex = m_edges[e].second;
 
-                if (crossProductValue >= 0)
+                if (crossProductValue < 0)
                 {
                     firstNodeIndex = m_edges[e].second;
                     secondNodeIndex = m_edges[e].first;
@@ -1670,8 +1666,9 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
                 nodesOfIntersectedEdges.emplace_back(firstNodeIndex);
                 nodesOfIntersectedEdges.emplace_back(secondNodeIndex);
 
-                edgeAdimensionalIntersections.emplace_back(ratioSecondSegment / m_edgeLengths[e]);
-                lineAdimensionalIntersections.emplace_back(ratioFirstSegment / polylineSegmentLength);
+                edgeAdimensionalIntersections.emplace_back(ratioSecondSegment);
+                lineAdimensionalIntersections.emplace_back(ratioFirstSegment);
+
                 polyLineIndexes.emplace_back(s);
 
                 edgemask[e] = true;
