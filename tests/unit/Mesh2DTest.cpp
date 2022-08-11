@@ -12,7 +12,7 @@
 
 TEST(Mesh2D, OneQuadTestConstructor)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({0.0, 10.0});
@@ -69,7 +69,7 @@ TEST(Mesh2D, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
     ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
 
-    //each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::sizetMissingValue)
+    // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::sizetMissingValue)
     ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[0][1]);
     ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[1][1]);
     ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[2][1]);
@@ -139,7 +139,7 @@ TEST(Mesh2D, TriangulateSamples)
 
 TEST(Mesh2D, TwoTrianglesDuplicatedEdges)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, -5.0});
@@ -162,7 +162,7 @@ TEST(Mesh2D, TwoTrianglesDuplicatedEdges)
 
 TEST(Mesh2D, MeshBoundaryToPolygon)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, -5.0});
@@ -197,7 +197,7 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
 
 TEST(Mesh2D, HangingEdge)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, 0.0});
@@ -395,7 +395,7 @@ TEST(Mesh2D, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
 TEST(Mesh2D, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::MeshLocations::Edges);
 
@@ -417,7 +417,7 @@ TEST(Mesh2D, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
 TEST(Mesh2D, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::MeshLocations::Edges);
 
@@ -432,7 +432,7 @@ TEST(Mesh2D, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
 TEST(Mesh2D, GetNodeIndexShouldTriggerNodesRTreeBuild)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // By default, no nodesRTree is build
@@ -450,7 +450,7 @@ TEST(Mesh2D, GetNodeIndexShouldTriggerNodesRTreeBuild)
 
 TEST(Mesh2D, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
@@ -558,7 +558,7 @@ TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
 
 TEST(Mesh2D, DeleteHangingEdge)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, 0.0});
@@ -595,36 +595,36 @@ TEST(Mesh2D, DeleteHangingEdge)
 
 TEST(Mesh2D, GetIntersectedEdgesFromPolyline)
 {
-    //1. Setup
+    // 1. Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> boundaryLines;
     boundaryLines.emplace_back(0.5, 0.5);
-    boundaryLines.emplace_back(0.5,2.5);
-    boundaryLines.emplace_back(2.5,2.5);
-    boundaryLines.emplace_back(2.5,0.5);
+    boundaryLines.emplace_back(2.5, 0.5);
+    boundaryLines.emplace_back(2.5, 2.5);
+    boundaryLines.emplace_back(0.5, 2.5);
     boundaryLines.emplace_back(0.5, 0.5);
 
     // 2. Execute
     const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodesOfIntersectedEdges[0],  1);
-    ASSERT_EQ(nodesOfIntersectedEdges[1],  5);
-    ASSERT_EQ(nodesOfIntersectedEdges[2],  2);
-    ASSERT_EQ(nodesOfIntersectedEdges[3],  6);
-    ASSERT_EQ(nodesOfIntersectedEdges[4],  7);
-    ASSERT_EQ(nodesOfIntersectedEdges[5],  6);
-    ASSERT_EQ(nodesOfIntersectedEdges[6],  11);
-    ASSERT_EQ(nodesOfIntersectedEdges[7],  10);
-    ASSERT_EQ(nodesOfIntersectedEdges[8],  13);
-    ASSERT_EQ(nodesOfIntersectedEdges[9],  9);
-    ASSERT_EQ(nodesOfIntersectedEdges[10], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[0], 4);
+    ASSERT_EQ(nodesOfIntersectedEdges[1], 5);
+    ASSERT_EQ(nodesOfIntersectedEdges[2], 8);
+    ASSERT_EQ(nodesOfIntersectedEdges[3], 9);
+    ASSERT_EQ(nodesOfIntersectedEdges[4], 13);
+    ASSERT_EQ(nodesOfIntersectedEdges[5], 9);
+    ASSERT_EQ(nodesOfIntersectedEdges[6], 14);
+    ASSERT_EQ(nodesOfIntersectedEdges[7], 10);
+    ASSERT_EQ(nodesOfIntersectedEdges[8], 7);
+    ASSERT_EQ(nodesOfIntersectedEdges[9], 6);
+    ASSERT_EQ(nodesOfIntersectedEdges[10], 11);
     ASSERT_EQ(nodesOfIntersectedEdges[11], 10);
-    ASSERT_EQ(nodesOfIntersectedEdges[12], 4);
+    ASSERT_EQ(nodesOfIntersectedEdges[12], 1);
     ASSERT_EQ(nodesOfIntersectedEdges[13], 5);
-    ASSERT_EQ(nodesOfIntersectedEdges[14], 8);
-    ASSERT_EQ(nodesOfIntersectedEdges[15], 9);
+    ASSERT_EQ(nodesOfIntersectedEdges[14], 2);
+    ASSERT_EQ(nodesOfIntersectedEdges[15], 6);
 
     ASSERT_EQ(edgeAdimensionalIntersections[0], 0.5);
     ASSERT_EQ(edgeAdimensionalIntersections[1], 0.5);
@@ -644,15 +644,14 @@ TEST(Mesh2D, GetIntersectedEdgesFromPolyline)
     ASSERT_EQ(polyLineIndexes[6], 3);
     ASSERT_EQ(polyLineIndexes[7], 3);
 
-    ASSERT_EQ(lineAdimensionalIntersections[0], 0.125);
-    ASSERT_EQ(lineAdimensionalIntersections[1], 0.375);
-    ASSERT_EQ(lineAdimensionalIntersections[2], 0.125);
-    ASSERT_EQ(lineAdimensionalIntersections[3], 0.375);
-    ASSERT_EQ(lineAdimensionalIntersections[4], 0.375);
-    ASSERT_EQ(lineAdimensionalIntersections[5], 0.125);
-    ASSERT_EQ(lineAdimensionalIntersections[6], 0.375);
-    ASSERT_EQ(lineAdimensionalIntersections[7], 0.125);
-
+    ASSERT_EQ(lineAdimensionalIntersections[0], 0.25);
+    ASSERT_EQ(lineAdimensionalIntersections[1], 0.75);
+    ASSERT_EQ(lineAdimensionalIntersections[2], 0.25);
+    ASSERT_EQ(lineAdimensionalIntersections[3], 0.75);
+    ASSERT_EQ(lineAdimensionalIntersections[4], 0.75);
+    ASSERT_EQ(lineAdimensionalIntersections[5], 0.25);
+    ASSERT_EQ(lineAdimensionalIntersections[6], 0.75);
+    ASSERT_EQ(lineAdimensionalIntersections[7], 0.25);
 }
 
 TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
