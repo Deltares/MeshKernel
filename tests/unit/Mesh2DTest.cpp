@@ -711,3 +711,4 @@ TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
     ASSERT_NEAR(lineAdimensionalIntersections[6], 0.088330235651179506, 1e-8);
     ASSERT_NEAR(lineAdimensionalIntersections[7], 0.041840637940032399, 1e-8);
 }
+

@@ -1668,6 +1668,7 @@ Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
 
                 edgeAdimensionalIntersections.emplace_back(ratioSecondSegment);
                 lineAdimensionalIntersections.emplace_back(ratioFirstSegment);
+
                 polyLineIndexes.emplace_back(s);
 
                 edgemask[e] = true;
