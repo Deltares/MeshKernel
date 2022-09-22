@@ -114,9 +114,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a00bf73b5fd65ee623f62aa9f7c971488"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488">PointsInPolygons</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;point) const</td></tr>
 <tr class="memdesc:a00bf73b5fd65ee623f62aa9f7c971488"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each point, compute the index of the polygon including it.  <a href="classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488">More...</a><br /></td></tr>
 <tr class="separator:a00bf73b5fd65ee623f62aa9f7c971488"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0f5027e18d30344f7d214ff7add72ee"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; size_t, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ad0f5027e18d30344f7d214ff7add72ee">StartEndIndicesOfPolygon</a> (size_t polygonIndex) const</td></tr>
-<tr class="memdesc:ad0f5027e18d30344f7d214ff7add72ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a polygonIndex returns its start end end index.  <a href="classmeshkernel_1_1_polygons.html#ad0f5027e18d30344f7d214ff7add72ee">More...</a><br /></td></tr>
-<tr class="separator:ad0f5027e18d30344f7d214ff7add72ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada9dba423c7ed711062841761d058b4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">IsEmpty</a> () const</td></tr>
 <tr class="memdesc:ada9dba423c7ed711062841761d058b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the polygon is empty.  <a href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">More...</a><br /></td></tr>
 <tr class="separator:ada9dba423c7ed711062841761d058b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,10 +134,14 @@ std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &
 <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a73d8ec098d1a08b3d7d56b101012ce47">m_projection</a></td></tr>
 <tr class="memdesc:a73d8ec098d1a08b3d7d56b101012ce47"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current projection. <br /></td></tr>
 <tr class="separator:a73d8ec098d1a08b3d7d56b101012ce47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09ccee60388a96e2bc9e00db137c49de"><td class="memItemLeft" align="right" valign="top"><a id="a09ccee60388a96e2bc9e00db137c49de"></a>
-std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a09ccee60388a96e2bc9e00db137c49de">m_indices</a></td></tr>
-<tr class="memdesc:a09ccee60388a96e2bc9e00db137c49de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start-end indices of each polygon in m_nodes. <br /></td></tr>
-<tr class="separator:a09ccee60388a96e2bc9e00db137c49de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cb38edb08c3ee55f3e3d817deb51155"><td class="memItemLeft" align="right" valign="top"><a id="a3cb38edb08c3ee55f3e3d817deb51155"></a>
+std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3cb38edb08c3ee55f3e3d817deb51155">m_outer_polygons_indices</a></td></tr>
+<tr class="memdesc:a3cb38edb08c3ee55f3e3d817deb51155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start-end indices of each outer polygon in m_nodes. <br /></td></tr>
+<tr class="separator:a3cb38edb08c3ee55f3e3d817deb51155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311443dbf47ecbd9b4a3542284097c26"><td class="memItemLeft" align="right" valign="top"><a id="a311443dbf47ecbd9b4a3542284097c26"></a>
+std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a311443dbf47ecbd9b4a3542284097c26">m_inner_polygons_indices</a></td></tr>
+<tr class="memdesc:a311443dbf47ecbd9b4a3542284097c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each outer polygon, the indices of each inner polygon. <br /></td></tr>
+<tr class="separator:a311443dbf47ecbd9b4a3542284097c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing polygons. </p>
@@ -443,41 +444,6 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>refinedPolygon The computed polygon </dd></dl>
-
-</div>
-</div>
-<a id="ad0f5027e18d30344f7d214ff7add72ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0f5027e18d30344f7d214ff7add72ee">&#9670;&nbsp;</a></span>StartEndIndicesOfPolygon()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::tuple&lt;size_t, size_t&gt; meshkernel::Polygons::StartEndIndicesOfPolygon </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>polygonIndex</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>For a polygonIndex returns its start end end index. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndex</td><td>The polygon index </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the start and end index in m_indices </dd></dl>
 
 </div>
 </div>

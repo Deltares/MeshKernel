@@ -8,7 +8,7 @@ var searchData=
   ['findfaces_598',['FindFaces',['../classmeshkernel_1_1_mesh2_d.html#a5b94a7acb30a64061a8767efec60811b',1,'meshkernel::Mesh2D']]],
   ['findfunctionrootwithgoldensectionsearch_599',['FindFunctionRootWithGoldenSectionSearch',['../namespacemeshkernel.html#aa72d2c72f71ee69084ae3a53bd98f29e',1,'meshkernel']]],
   ['findindex_600',['FindIndex',['../namespacemeshkernel.html#a4fb112d05ece05930f2364b0e69ec6d5',1,'meshkernel']]],
-  ['findindices_601',['FindIndices',['../namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2',1,'meshkernel']]],
+  ['findindices_601',['FindIndices',['../namespacemeshkernel.html#a24c80c65d4cd9f3568052beefce00682',1,'meshkernel']]],
   ['findnearestmeshboundary_602',['FindNearestMeshBoundary',['../classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27',1,'meshkernel::LandBoundaries']]],
   ['findnodeclosetoapoint_603',['FindNodeCloseToAPoint',['../classmeshkernel_1_1_mesh.html#a21b45fd9131625b769264f4b4e533d1e',1,'meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector&lt; bool &gt; &amp;nodeMask)'],['../classmeshkernel_1_1_mesh.html#a13bf37401f505cb1df233cf6f1074c8b',1,'meshkernel::Mesh::FindNodeCloseToAPoint(Point const &amp;point, double searchRadius)']]],
   ['flipedges_604',['FlipEdges',['../classmeshkernel_1_1_flip_edges.html#a181c0ec08211bb8ff109cb1d3fef2eae',1,'meshkernel::FlipEdges']]],

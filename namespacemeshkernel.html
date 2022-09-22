@@ -222,9 +222,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4fb112d05ece05930f2364b0e69ec6d5"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4fb112d05ece05930f2364b0e69ec6d5">FindIndex</a> (const std::vector&lt; T &gt; &amp;vec, T el)</td></tr>
 <tr class="memdesc:a4fb112d05ece05930f2364b0e69ec6d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find index of a certain element.  <a href="namespacemeshkernel.html#a4fb112d05ece05930f2364b0e69ec6d5">More...</a><br /></td></tr>
 <tr class="separator:a4fb112d05ece05930f2364b0e69ec6d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b994233de718f8c272ca3bdb62ddcf2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">FindIndices</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;vec, size_t start, size_t end, double separator)</td></tr>
-<tr class="memdesc:a5b994233de718f8c272ca3bdb62ddcf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all start-end positions in a vector separated by a separator.  <a href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">More...</a><br /></td></tr>
-<tr class="separator:a5b994233de718f8c272ca3bdb62ddcf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24c80c65d4cd9f3568052beefce00682"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a24c80c65d4cd9f3568052beefce00682">FindIndices</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;vec, size_t start, size_t end, double separator)</td></tr>
+<tr class="memdesc:a24c80c65d4cd9f3568052beefce00682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all start-end positions in a vector separated by a separator.  <a href="namespacemeshkernel.html#a24c80c65d4cd9f3568052beefce00682">More...</a><br /></td></tr>
+<tr class="separator:a24c80c65d4cd9f3568052beefce00682"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addc034baff4660617d88a46aae221a99"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:addc034baff4660617d88a46aae221a99"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#addc034baff4660617d88a46aae221a99">SortedIndices</a> (const std::vector&lt; T &gt; &amp;v)</td></tr>
 <tr class="memdesc:addc034baff4660617d88a46aae221a99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort a vector and return the sorted indices.  <a href="namespacemeshkernel.html#addc034baff4660617d88a46aae221a99">More...</a><br /></td></tr>
@@ -1669,14 +1669,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a5b994233de718f8c272ca3bdb62ddcf2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b994233de718f8c272ca3bdb62ddcf2">&#9670;&nbsp;</a></span>FindIndices()</h2>
+<a id="a24c80c65d4cd9f3568052beefce00682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24c80c65d4cd9f3568052beefce00682">&#9670;&nbsp;</a></span>FindIndices()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;size_t&gt; &gt; meshkernel::FindIndices </td>
+          <td class="memname">std::vector&lt;std::pair&lt;size_t, size_t&gt; &gt; meshkernel::FindIndices </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>vec</em>, </td>

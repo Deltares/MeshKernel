@@ -16,6 +16,5 @@ var searchData=
   ['sortedindices_826',['SortedIndices',['../namespacemeshkernel.html#addc034baff4660617d88a46aae221a99',1,'meshkernel']]],
   ['sphericaltocartesian3d_827',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
   ['splines_828',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['startendindicesofpolygon_829',['StartEndIndicesOfPolygon',['../classmeshkernel_1_1_polygons.html#ad0f5027e18d30344f7d214ff7add72ee',1,'meshkernel::Polygons']]],
-  ['swapvectorelements_830',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
+  ['swapvectorelements_829',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
 ];
