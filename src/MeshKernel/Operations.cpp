@@ -45,12 +45,12 @@ namespace meshkernel
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
-                                                 size_t start,
-                                                 size_t end,
-                                                 double separator)
+    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec,
+                                                       size_t start,
+                                                       size_t end,
+                                                       double separator)
     {
-        std::vector<std::vector<size_t>> result;
+        std::vector<std::pair<size_t, size_t>> result;
 
         if (vec.empty())
         {
@@ -75,15 +75,15 @@ namespace meshkernel
             }
             if (IsEqual(vec[n].x, separator) && inRange)
             {
-                result.emplace_back(std::initializer_list<size_t>{startRange, n - 1});
+                result.emplace_back(startRange, n - 1);
                 inRange = false;
             }
         }
 
-        // in case no separator have been found
+        // in case no separator was found
         if (inRange)
         {
-            result.emplace_back(std::initializer_list<size_t>{startRange, vec.size() - 1});
+            result.emplace_back(startRange, vec.size() - 1);
         }
 
         return result;
@@ -174,7 +174,7 @@ namespace meshkernel
             return false;
         }
 
-        if (const auto [lowerleft, upperRight] = GetBoundingBox(polygonNodes);
+        if (const auto& [lowerleft, upperRight] = GetBoundingBox(polygonNodes);
             point.x < lowerleft.x || point.x > upperRight.x || point.y < lowerleft.y || point.y > upperRight.y)
         {
             return false;

@@ -446,8 +446,6 @@ void CurvilinearGridFromSplines::Iterate(size_t layer)
 
 CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints()
 {
-    std::vector<std::vector<size_t>> mIndicesOtherSide(1, std::vector<size_t>(2));
-    std::vector<std::vector<size_t>> nIndicesThisSide(1, std::vector<size_t>(2));
     std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(),
                                                          std::vector<Point>(m_gridPoints.size(), {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<Point>> curvilinearMeshPoints;
@@ -468,8 +466,11 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
     {
         auto mIndicesThisSide = FindIndices(m_gridPoints[0], startIndex, m_numM, doubleMissingValue);
 
-        mIndicesOtherSide[0][0] = mIndicesThisSide[0][1] + 2;
-        mIndicesOtherSide[0][1] = mIndicesOtherSide[0][0] + (mIndicesThisSide[0][1] - mIndicesThisSide[0][0]);
+        const auto& [mStartIndexThisSide, mEndIndexThisSide] = mIndicesThisSide[0];
+
+        const auto mStartIndexOtherSide = mEndIndexThisSide + 2;
+        const auto mEndIndexOtherSide = mStartIndexOtherSide + (mEndIndexThisSide - mStartIndexThisSide);
+
         bool isConnected = true;
 
         size_t minN = m_curvilinearParameters.n_refinement;
@@ -477,13 +478,14 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         size_t minNOther = m_curvilinearParameters.n_refinement;
         size_t maxNOther = 0;
         // check if this part is connected to another part
-        for (auto i = mIndicesThisSide[0][0]; i < mIndicesThisSide[0][1] + 1; ++i)
+        for (auto i = mStartIndexThisSide; i < mEndIndexThisSide + 1; ++i)
         {
-            nIndicesThisSide = FindIndices(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue);
-            minN = std::min(minN, nIndicesThisSide[0][0]);
-            maxN = std::max(maxN, nIndicesThisSide[0][1]);
+            const auto nIndicesThisSide = FindIndices(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue);
+            const auto& [nStartIndexThisSide, nEndIndexThisSide] = nIndicesThisSide[0];
+            minN = std::min(minN, nStartIndexThisSide);
+            maxN = std::max(maxN, nEndIndexThisSide);
 
-            const size_t mOther = mIndicesThisSide[0][1] + 2 + (mIndicesThisSide[0][1] - i);
+            const size_t mOther = mEndIndexThisSide + 2 + (mEndIndexThisSide - i);
 
             if (mOther > m_numM - 1)
             {
@@ -500,21 +502,23 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
                 else
                 {
                     const auto nIndicesOtherSide = FindIndices(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue);
-                    minNOther = std::min(minNOther, nIndicesOtherSide[0][0]);
-                    maxNOther = std::max(maxNOther, nIndicesOtherSide[0][1]);
+                    const auto& [nStartIndexOtherSide, nEndIndexOtherSide] = nIndicesOtherSide[0];
+
+                    minNOther = std::min(minNOther, nStartIndexOtherSide);
+                    maxNOther = std::max(maxNOther, nEndIndexOtherSide);
                 }
             }
         }
 
-        const auto endGridlineIndex = startGridLine + mIndicesThisSide[0][1] - mIndicesThisSide[0][0];
+        const auto endGridlineIndex = startGridLine + mEndIndexThisSide - mStartIndexThisSide;
         if (isConnected)
         {
-            startIndex = mIndicesOtherSide[0][1] + 2;
+            startIndex = mEndIndexOtherSide + 2;
         }
         else
         {
             maxNOther = 1;
-            startIndex = mIndicesThisSide[0][1] + 2;
+            startIndex = mEndIndexThisSide + 2;
         }
 
         // increment points
@@ -531,7 +535,7 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         {
             for (auto j = 0; j < maxN + 1; ++j)
             {
-                curvilinearMeshPoints[i][j + maxNOther] = m_gridPoints[j][mIndicesThisSide[0][0] + columnIncrement];
+                curvilinearMeshPoints[i][j + maxNOther] = m_gridPoints[j][mStartIndexThisSide + columnIncrement];
             }
             columnIncrement++;
         }
@@ -541,7 +545,7 @@ CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints
         {
             for (auto j = 0; j < maxNOther + 1; ++j)
             {
-                curvilinearMeshPoints[i][maxNOther - j] = m_gridPoints[j][mIndicesOtherSide[0][1] - columnIncrement];
+                curvilinearMeshPoints[i][maxNOther - j] = m_gridPoints[j][mEndIndexOtherSide - columnIncrement];
             }
             columnIncrement++;
         }
