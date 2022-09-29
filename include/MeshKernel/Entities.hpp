@@ -48,7 +48,21 @@ namespace meshkernel
     template <typename T>
     static bool IsEqual(T value, T referenceValue)
     {
-        return std::abs(value - referenceValue) < std::numeric_limits<T>::epsilon();
+        if (value == referenceValue)
+        {
+            return true;
+        }
+        if (std::numeric_limits<T>::is_integer)
+        {
+            return false;
+        }
+        const auto absDiff = std::abs(value - referenceValue);
+        const auto absValue = std::abs(value);
+        const auto absReferenceValue = std::abs(referenceValue);
+        const auto tol = 10 * std::numeric_limits<T>::epsilon();
+
+        return absDiff < tol * std::min(absValue, absReferenceValue);
+        
     }
 
     /// @brief Enumerator describing the supported projections
