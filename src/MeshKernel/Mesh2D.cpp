@@ -1615,68 +1615,70 @@ std::tuple<size_t, size_t> Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& f
     return {intersectedFace, intersectedEdge};
 }
 
-std::tuple<std::vector<int>,
-           std::vector<double>,
-           std::vector<int>,
-           std::vector<double>>
-Mesh2D::GetIntersectedEdgesFromPolyline(const std::vector<Point>& polyLine)
+std::vector<meshkernel::Mesh::MeshPolylineIntersection> Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
 {
-    std::vector<int> nodesOfIntersectedEdges;
-    std::vector<double> edgeAdimensionalIntersections;
-    std::vector<int> polyLineIndexes;
-    std::vector<double> lineAdimensionalIntersections;
+    // Mesh intersections
+    std::vector<MeshPolylineIntersection> intersections;
 
-    // Mask all faces crossed by boundary lines
-    std::vector edgemask(GetNumEdges(), false);
-
-    for (auto s = 0; s < polyLine.size() - 1; ++s)
+    for (auto segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
     {
-        for (auto e = 0; e < GetNumEdges(); ++e)
+        std::vector<MeshPolylineIntersection> polylineSegmentIntersections;
+        for (auto faceIndex = 0; faceIndex < GetNumFaces(); ++faceIndex)
         {
-            if (edgemask[e])
+            for (auto e = 0; e < m_numFacesNodes[faceIndex]; ++e)
             {
-                continue;
-            }
+                const auto edgeIndex = m_facesEdges[faceIndex][e];
 
-            Point intersectionPoint;
-            double crossProductValue;
-            double ratioFirstSegment;
-            double ratioSecondSegment;
-            const auto isEdgeCrossed = AreSegmentsCrossing(polyLine[s],
-                                                           polyLine[s + 1],
-                                                           m_nodes[m_edges[e].first],
-                                                           m_nodes[m_edges[e].second],
-                                                           false,
-                                                           m_projection,
-                                                           intersectionPoint,
-                                                           crossProductValue,
-                                                           ratioFirstSegment,
-                                                           ratioSecondSegment);
-            if (isEdgeCrossed)
-            {
-                auto firstNodeIndex = m_edges[e].first;
-                auto secondNodeIndex = m_edges[e].second;
-
-                if (crossProductValue < 0)
+                Point intersectionPoint;
+                double crossProductValue;
+                double polylineSegmentDistance;
+                double edgeDistance;
+                const auto isEdgeCrossed = AreSegmentsCrossing(polyLine[segmentIndex],
+                                                               polyLine[segmentIndex + 1],
+                                                               m_nodes[m_edges[edgeIndex].first],
+                                                               m_nodes[m_edges[edgeIndex].second],
+                                                               false,
+                                                               m_projection,
+                                                               intersectionPoint,
+                                                               crossProductValue,
+                                                               polylineSegmentDistance,
+                                                               edgeDistance);
+                if (isEdgeCrossed)
                 {
-                    firstNodeIndex = m_edges[e].second;
-                    secondNodeIndex = m_edges[e].first;
+                    auto edgeFirstNode = m_edges[edgeIndex].first;
+                    auto edgeSecondNode = m_edges[edgeIndex].second;
+
+                    if (crossProductValue < 0)
+                    {
+                        edgeFirstNode = m_edges[edgeIndex].second;
+                        edgeSecondNode = m_edges[edgeIndex].first;
+                    }
+
+                    MeshPolylineIntersection intersection;
+
+                    intersection.polylineSegmentIndex = segmentIndex;
+                    intersection.polylineSegmentDistance = polylineSegmentDistance;
+                    intersection.edgeIndex = edgeIndex;
+                    intersection.edgeFirstNode = edgeFirstNode;
+                    intersection.edgeSecondNode = edgeSecondNode;
+                    intersection.edgeDistance = edgeDistance;
+                    intersection.faceIndex = faceIndex;
+
+                    polylineSegmentIntersections.emplace_back(intersection);
                 }
-
-                nodesOfIntersectedEdges.emplace_back(firstNodeIndex);
-                nodesOfIntersectedEdges.emplace_back(secondNodeIndex);
-
-                edgeAdimensionalIntersections.emplace_back(ratioSecondSegment);
-                lineAdimensionalIntersections.emplace_back(ratioFirstSegment);
-
-                polyLineIndexes.emplace_back(s);
-
-                edgemask[e] = true;
             }
         }
+
+        // sort polylineSegmentIntersections by polylineSegmentDistance (along the segment coordinate)
+        std::sort(polylineSegmentIntersections.begin(), polylineSegmentIntersections.end(),
+                  [](const MeshPolylineIntersection& first, const MeshPolylineIntersection& second)
+                  { return first.polylineSegmentDistance < second.polylineSegmentDistance; });
+
+        // insert polylineSegmentIntersections at the end of intersections
+        intersections.insert(intersections.end(), polylineSegmentIntersections.begin(), polylineSegmentIntersections.end());
     }
 
-    return {nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections};
+    return intersections;
 }
 
 std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const

@@ -994,12 +994,14 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_intersected_edges_from_polyline(int meshKernelId,
-                                                                       const GeometryList& boundaryPolyLine,
-                                                                       int* nodesOfIntersectedEdges,
-                                                                       double* edgeAdimensionalIntersections,
-                                                                       int* polyLineIndexes,
-                                                                       double* lineAdimensionalIntersections)
+    MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
+                                                               const GeometryList& boundaryPolyLine,
+                                                               int* polylineSegmentIndexes,
+                                                               double* polylineSegmentDistances,
+                                                               int* edgeNodesIntersections,
+                                                               double* edgeDistances,
+                                                               int* faceIndexes,
+                                                               int* faceNodesIntersections)
     {
         int exitCode = Success;
         try
@@ -1011,21 +1013,39 @@ namespace meshkernelapi
 
             auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto& [localNodesOfIntersectedEdges,
-                         localEdgeAdimensionalIntersections,
-                         localPolyLineIndexes,
-                         localLineAdimensionalIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetIntersectedEdgesFromPolyline(boundaryLines);
+            const auto intersections = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
 
-            for (auto i = 0; i < localNodesOfIntersectedEdges.size(); ++i)
+            int edgeNodesCount = 0;
+            int faceNodesCount = 0;
+            int edgeCount = 0;
+            std::set<size_t> intersectedEdges;
+            for (auto i = 0; i < intersections.size(); ++i)
             {
-                nodesOfIntersectedEdges[i] = localNodesOfIntersectedEdges[i];
-            }
+                const auto& intersection = intersections[i];
 
-            for (auto i = 0; i < localEdgeAdimensionalIntersections.size(); ++i)
-            {
-                edgeAdimensionalIntersections[i] = localEdgeAdimensionalIntersections[i];
-                polyLineIndexes[i] = localPolyLineIndexes[i];
-                lineAdimensionalIntersections[i] = localLineAdimensionalIntersections[i];
+                // edge information must be stored only once
+                if (intersectedEdges.find(intersection.edgeIndex) == intersectedEdges.end())
+                {
+                    edgeNodesIntersections[edgeNodesCount] = intersection.edgeFirstNode;
+                    edgeNodesCount++;
+                    edgeNodesIntersections[edgeNodesCount] = intersection.edgeSecondNode;
+                    edgeNodesCount++;
+
+                    // the edge count
+                    edgeDistances[edgeCount] = intersection.edgeDistance;
+                    polylineSegmentIndexes[edgeCount] = intersection.polylineSegmentIndex;
+                    polylineSegmentDistances[edgeCount] = intersection.polylineSegmentDistance;
+                    edgeCount++;
+                }
+
+                // get the intersected faces
+                const auto faceIndex = intersection.faceIndex;
+                faceIndexes[i] = faceIndex;
+
+                faceNodesIntersections[faceNodesCount] = intersection.edgeFirstNode;
+                faceNodesCount++;
+                faceNodesIntersections[faceNodesCount] = intersection.edgeSecondNode;
+                faceNodesCount++;
             }
         }
         catch (...)

@@ -89,6 +89,18 @@ namespace meshkernel
             Mesh2D
         };
 
+        /// Mesh polyline intersection
+        struct MeshPolylineIntersection
+        {
+            int polylineSegmentIndex;       ///< The intersected segment index (a polyline can formed by several segments)
+            double polylineSegmentDistance; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            size_t edgeIndex;               ///< The index of the intersected edge
+            size_t edgeFirstNode;           ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeSecondNode;          ///< The second node of the edge is on the right (the inner node)
+            double edgeDistance;            ///< The location of the intersection expressed as an adimensional distance from the edge start
+            size_t faceIndex;               ///< The index of the intersected face
+        };
+
         /// @brief Default constructor
         Mesh() = default;
 
