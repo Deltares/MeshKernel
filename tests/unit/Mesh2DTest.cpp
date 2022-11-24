@@ -606,52 +606,115 @@ TEST(Mesh2D, GetIntersectedEdgesFromPolyline)
     boundaryLines.emplace_back(0.5, 0.5);
 
     // 2. Execute
-    const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
+    const auto intersections = mesh->GetPolylineIntersections(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodesOfIntersectedEdges[0], 4);
-    ASSERT_EQ(nodesOfIntersectedEdges[1], 5);
-    ASSERT_EQ(nodesOfIntersectedEdges[2], 8);
-    ASSERT_EQ(nodesOfIntersectedEdges[3], 9);
-    ASSERT_EQ(nodesOfIntersectedEdges[4], 13);
-    ASSERT_EQ(nodesOfIntersectedEdges[5], 9);
-    ASSERT_EQ(nodesOfIntersectedEdges[6], 14);
-    ASSERT_EQ(nodesOfIntersectedEdges[7], 10);
-    ASSERT_EQ(nodesOfIntersectedEdges[8], 7);
-    ASSERT_EQ(nodesOfIntersectedEdges[9], 6);
-    ASSERT_EQ(nodesOfIntersectedEdges[10], 11);
-    ASSERT_EQ(nodesOfIntersectedEdges[11], 10);
-    ASSERT_EQ(nodesOfIntersectedEdges[12], 1);
-    ASSERT_EQ(nodesOfIntersectedEdges[13], 5);
-    ASSERT_EQ(nodesOfIntersectedEdges[14], 2);
-    ASSERT_EQ(nodesOfIntersectedEdges[15], 6);
 
-    ASSERT_EQ(edgeAdimensionalIntersections[0], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[1], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[2], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[3], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[4], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[5], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[6], 0.5);
-    ASSERT_EQ(edgeAdimensionalIntersections[7], 0.5);
+    // edge intersection, edge nodes (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].edgeFirstNode, 4);
+    ASSERT_EQ(intersections[0].edgeSecondNode, 5);
 
-    ASSERT_EQ(polyLineIndexes[0], 0);
-    ASSERT_EQ(polyLineIndexes[1], 0);
-    ASSERT_EQ(polyLineIndexes[2], 1);
-    ASSERT_EQ(polyLineIndexes[3], 1);
-    ASSERT_EQ(polyLineIndexes[4], 2);
-    ASSERT_EQ(polyLineIndexes[5], 2);
-    ASSERT_EQ(polyLineIndexes[6], 3);
-    ASSERT_EQ(polyLineIndexes[7], 3);
+    ASSERT_EQ(intersections[1].edgeFirstNode, 4);
+    ASSERT_EQ(intersections[1].edgeSecondNode, 5);
 
-    ASSERT_EQ(lineAdimensionalIntersections[0], 0.25);
-    ASSERT_EQ(lineAdimensionalIntersections[1], 0.75);
-    ASSERT_EQ(lineAdimensionalIntersections[2], 0.25);
-    ASSERT_EQ(lineAdimensionalIntersections[3], 0.75);
-    ASSERT_EQ(lineAdimensionalIntersections[4], 0.75);
-    ASSERT_EQ(lineAdimensionalIntersections[5], 0.25);
-    ASSERT_EQ(lineAdimensionalIntersections[6], 0.75);
-    ASSERT_EQ(lineAdimensionalIntersections[7], 0.25);
+    ASSERT_EQ(intersections[2].edgeFirstNode, 8);
+    ASSERT_EQ(intersections[2].edgeSecondNode, 9);
+
+    ASSERT_EQ(intersections[3].edgeFirstNode, 8);
+    ASSERT_EQ(intersections[3].edgeSecondNode, 9);
+
+    ASSERT_EQ(intersections[4].edgeFirstNode, 13);
+    ASSERT_EQ(intersections[4].edgeSecondNode, 9);
+
+    ASSERT_EQ(intersections[5].edgeFirstNode, 13);
+    ASSERT_EQ(intersections[5].edgeSecondNode, 9);
+
+    ASSERT_EQ(intersections[6].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[6].edgeSecondNode, 10);
+
+    ASSERT_EQ(intersections[7].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[7].edgeSecondNode, 10);
+
+    ASSERT_EQ(intersections[8].edgeFirstNode, 11);
+    ASSERT_EQ(intersections[8].edgeSecondNode, 10);
+
+    ASSERT_EQ(intersections[9].edgeFirstNode, 11);
+    ASSERT_EQ(intersections[9].edgeSecondNode, 10);
+
+    ASSERT_EQ(intersections[10].edgeFirstNode, 7);
+    ASSERT_EQ(intersections[10].edgeSecondNode, 6);
+
+    ASSERT_EQ(intersections[11].edgeFirstNode, 7);
+    ASSERT_EQ(intersections[11].edgeSecondNode, 6);
+
+    ASSERT_EQ(intersections[12].edgeFirstNode, 2);
+    ASSERT_EQ(intersections[12].edgeSecondNode, 6);
+
+    ASSERT_EQ(intersections[13].edgeFirstNode, 2);
+    ASSERT_EQ(intersections[13].edgeSecondNode, 6);
+
+    ASSERT_EQ(intersections[14].edgeFirstNode, 1);
+    ASSERT_EQ(intersections[14].edgeSecondNode, 5);
+
+    ASSERT_EQ(intersections[15].edgeFirstNode, 1);
+    ASSERT_EQ(intersections[15].edgeSecondNode, 5);
+
+    // edge intersection, distance from start of the edge (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[1].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[2].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[3].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[4].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[5].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[6].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[7].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[8].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[9].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[10].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[11].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[12].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[13].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[14].edgeDistance, 0.5);
+    ASSERT_EQ(intersections[15].edgeDistance, 0.5);
+
+    // intersection polyline segment index (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[1].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[2].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[3].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[4].polylineSegmentIndex, 1);
+    ASSERT_EQ(intersections[5].polylineSegmentIndex, 1);
+    ASSERT_EQ(intersections[6].polylineSegmentIndex, 1);
+    ASSERT_EQ(intersections[7].polylineSegmentIndex, 1);
+    ASSERT_EQ(intersections[8].polylineSegmentIndex, 2);
+    ASSERT_EQ(intersections[9].polylineSegmentIndex, 2);
+    ASSERT_EQ(intersections[10].polylineSegmentIndex, 2);
+    ASSERT_EQ(intersections[11].polylineSegmentIndex, 2);
+    ASSERT_EQ(intersections[12].polylineSegmentIndex, 3);
+    ASSERT_EQ(intersections[13].polylineSegmentIndex, 3);
+    ASSERT_EQ(intersections[14].polylineSegmentIndex, 3);
+    ASSERT_EQ(intersections[15].polylineSegmentIndex, 3);
+
+    // polyline segment distance (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[1].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[2].polylineSegmentDistance, 0.75);
+    ASSERT_EQ(intersections[3].polylineSegmentDistance, 0.75);
+
+    ASSERT_EQ(intersections[4].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[5].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[6].polylineSegmentDistance, 0.75);
+    ASSERT_EQ(intersections[7].polylineSegmentDistance, 0.75);
+
+    ASSERT_EQ(intersections[8].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[9].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[10].polylineSegmentDistance, 0.75);
+    ASSERT_EQ(intersections[11].polylineSegmentDistance, 0.75);
+
+    ASSERT_EQ(intersections[12].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[13].polylineSegmentDistance, 0.25);
+    ASSERT_EQ(intersections[14].polylineSegmentDistance, 0.75);
+    ASSERT_EQ(intersections[15].polylineSegmentDistance, 0.75);
 }
 
 TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
@@ -664,51 +727,98 @@ TEST(Mesh2D, GetIntersectedEdgesFromObliquePolyline)
     boundaryLines.emplace_back(0.0, 3.9);
 
     // 2. Execute
-    const auto& [nodesOfIntersectedEdges, edgeAdimensionalIntersections, polyLineIndexes, lineAdimensionalIntersections] = mesh->GetIntersectedEdgesFromPolyline(boundaryLines);
+    const auto& intersections = mesh->GetPolylineIntersections(boundaryLines);
 
     // 3. Assert
-    ASSERT_EQ(nodesOfIntersectedEdges[0],  9 );
-    ASSERT_EQ(nodesOfIntersectedEdges[1],  3 );
-    ASSERT_EQ(nodesOfIntersectedEdges[2],  14);
-    ASSERT_EQ(nodesOfIntersectedEdges[3],  8 );
-    ASSERT_EQ(nodesOfIntersectedEdges[4],  19);
-    ASSERT_EQ(nodesOfIntersectedEdges[5],  13);
-    ASSERT_EQ(nodesOfIntersectedEdges[6],  24);
-    ASSERT_EQ(nodesOfIntersectedEdges[7],  18);
-    ASSERT_EQ(nodesOfIntersectedEdges[8],  4 );
-    ASSERT_EQ(nodesOfIntersectedEdges[9],  3 );
-    ASSERT_EQ(nodesOfIntersectedEdges[10], 9 );
-    ASSERT_EQ(nodesOfIntersectedEdges[11], 8 );
-    ASSERT_EQ(nodesOfIntersectedEdges[12], 14);
-    ASSERT_EQ(nodesOfIntersectedEdges[13], 13);
-    ASSERT_EQ(nodesOfIntersectedEdges[14], 19);
-    ASSERT_EQ(nodesOfIntersectedEdges[15], 18);
 
-    ASSERT_NEAR(edgeAdimensionalIntersections[0], 0.89999999999999991, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[1], 0.89999999999999969, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[2], 0.89999999999999980, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[3], 0.89999999999999991, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[4], 0.10000000000000014, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[5], 0.10000000000000014, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[6], 0.10000000000000014, 1e-8);
-    ASSERT_NEAR(edgeAdimensionalIntersections[7], 0.10000000000000003, 1e-8);
+    // edge intersection, edge nodes (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].edgeFirstNode, 24);
+    ASSERT_EQ(intersections[0].edgeSecondNode, 18);
 
-    ASSERT_EQ(polyLineIndexes[0], 0);
-    ASSERT_EQ(polyLineIndexes[1], 0);
-    ASSERT_EQ(polyLineIndexes[2], 0);
-    ASSERT_EQ(polyLineIndexes[3], 0);
-    ASSERT_EQ(polyLineIndexes[4], 0);
-    ASSERT_EQ(polyLineIndexes[5], 0);
-    ASSERT_EQ(polyLineIndexes[6], 0);
-    ASSERT_EQ(polyLineIndexes[7], 0);
+    ASSERT_EQ(intersections[1].edgeFirstNode, 19);
+    ASSERT_EQ(intersections[1].edgeSecondNode, 18);
 
-    ASSERT_NEAR(lineAdimensionalIntersections[0], 0.76923076923076927, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[1], 0.51282051282051289, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[2], 0.25641025641025644, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[3], 0.00000000000000001, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[4], 1.00000000000000001, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[5], 0.74358974358974361, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[6], 0.48717948717948717, 1e-8);
-    ASSERT_NEAR(lineAdimensionalIntersections[7], 0.23076923076923075, 1e-8);
+    ASSERT_EQ(intersections[2].edgeFirstNode, 19);
+    ASSERT_EQ(intersections[2].edgeSecondNode, 18);
+
+    ASSERT_EQ(intersections[3].edgeFirstNode, 19);
+    ASSERT_EQ(intersections[3].edgeSecondNode, 13);
+
+    ASSERT_EQ(intersections[4].edgeFirstNode, 19);
+    ASSERT_EQ(intersections[4].edgeSecondNode, 13);
+
+    ASSERT_EQ(intersections[5].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[5].edgeSecondNode, 13);
+
+    ASSERT_EQ(intersections[6].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[6].edgeSecondNode, 13);
+
+    ASSERT_EQ(intersections[7].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[7].edgeSecondNode, 8);
+
+    ASSERT_EQ(intersections[8].edgeFirstNode, 14);
+    ASSERT_EQ(intersections[8].edgeSecondNode, 8);
+
+    ASSERT_EQ(intersections[9].edgeFirstNode, 9);
+    ASSERT_EQ(intersections[9].edgeSecondNode, 8);
+
+    ASSERT_EQ(intersections[10].edgeFirstNode, 9);
+    ASSERT_EQ(intersections[10].edgeSecondNode, 8);
+
+    ASSERT_EQ(intersections[11].edgeFirstNode, 9);
+    ASSERT_EQ(intersections[11].edgeSecondNode, 3);
+
+    ASSERT_EQ(intersections[12].edgeFirstNode, 9);
+    ASSERT_EQ(intersections[12].edgeSecondNode, 3);
+
+    ASSERT_EQ(intersections[13].edgeFirstNode, 4);
+    ASSERT_EQ(intersections[13].edgeSecondNode, 3);
+
+    // edge intersection, distance from start of the edge (with duplicates if an edge is shared by more than one face)
+    ASSERT_NEAR(intersections[0].edgeDistance, 0.89999999999999991, 1e-8);
+    ASSERT_NEAR(intersections[1].edgeDistance, 0.10000000000000003, 1e-8);
+    ASSERT_NEAR(intersections[2].edgeDistance, 0.10000000000000003, 1e-8);
+    ASSERT_NEAR(intersections[3].edgeDistance, 0.89999999999999980, 1e-8);
+    ASSERT_NEAR(intersections[4].edgeDistance, 0.89999999999999980, 1e-8);
+    ASSERT_NEAR(intersections[5].edgeDistance, 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(intersections[6].edgeDistance, 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(intersections[7].edgeDistance, 0.89999999999999969, 1e-8);
+    ASSERT_NEAR(intersections[8].edgeDistance, 0.89999999999999969, 1e-8);
+    ASSERT_NEAR(intersections[9].edgeDistance, 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(intersections[10].edgeDistance, 0.10000000000000014, 1e-8);
+    ASSERT_NEAR(intersections[11].edgeDistance, 0.89999999999999991, 1e-8);
+    ASSERT_NEAR(intersections[12].edgeDistance, 0.89999999999999991, 1e-8);
+    ASSERT_NEAR(intersections[13].edgeDistance, 0.10000000000000014, 1e-8);
+
+    // intersection polyline segment index (with duplicates if an edge is shared by more than one face)
+    ASSERT_EQ(intersections[0].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[1].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[2].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[3].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[4].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[5].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[6].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[7].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[8].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[9].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[10].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[11].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[12].polylineSegmentIndex, 0);
+    ASSERT_EQ(intersections[13].polylineSegmentIndex, 0);
+
+    // polyline segment distance (with duplicates if an edge is shared by more than one face)
+    ASSERT_NEAR(intersections[0].polylineSegmentDistance, 0.0000000000000000, 1e-8);
+    ASSERT_NEAR(intersections[1].polylineSegmentDistance, 0.23076923076923075, 1e-8);
+    ASSERT_NEAR(intersections[2].polylineSegmentDistance, 0.23076923076923075, 1e-8);
+    ASSERT_NEAR(intersections[3].polylineSegmentDistance, 0.25641025641025644, 1e-8);
+    ASSERT_NEAR(intersections[4].polylineSegmentDistance, 0.25641025641025644, 1e-8);
+    ASSERT_NEAR(intersections[5].polylineSegmentDistance, 0.48717948717948717, 1e-8);
+    ASSERT_NEAR(intersections[6].polylineSegmentDistance, 0.48717948717948717, 1e-8);
+    ASSERT_NEAR(intersections[7].polylineSegmentDistance, 0.51282051282051289, 1e-8);
+    ASSERT_NEAR(intersections[8].polylineSegmentDistance, 0.51282051282051289, 1e-8);
+    ASSERT_NEAR(intersections[9].polylineSegmentDistance, 0.74358974358974361, 1e-8);
+    ASSERT_NEAR(intersections[10].polylineSegmentDistance, 0.74358974358974361, 1e-8);
+    ASSERT_NEAR(intersections[11].polylineSegmentDistance, 0.76923076923076927, 1e-8);
+    ASSERT_NEAR(intersections[12].polylineSegmentDistance, 0.76923076923076927, 1e-8);
+    ASSERT_NEAR(intersections[13].polylineSegmentDistance, 1.0000000000000000, 1e-8);
 }
-
