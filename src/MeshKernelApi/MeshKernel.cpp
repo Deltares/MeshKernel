@@ -28,6 +28,7 @@
 #include <map>
 #include <stdexcept>
 #include <string.h>
+#include <unordered_set>
 #include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
@@ -1018,7 +1019,7 @@ namespace meshkernelapi
             int edgeNodesCount = 0;
             int faceNodesCount = 0;
             int edgeCount = 0;
-            std::set<size_t> intersectedEdges;
+            std::unordered_set<size_t> intersectedEdges;
             for (auto i = 0; i < intersections.size(); ++i)
             {
                 const auto& intersection = intersections[i];
