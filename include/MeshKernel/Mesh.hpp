@@ -40,7 +40,7 @@ namespace meshkernel
     /// This class contains the shared functionality between 1d or 2d meshes.
     ///
     /// MeshKernel can handle 2d meshes and 1d meshes.
-    /// Algorithms require cartain mappings to be available for both Mesh1D and Mesh2D,
+    /// Algorithms require certain mappings to be available for both Mesh1D and Mesh2D,
     /// such as a mapping listing all edge indices connected to a particular node.
     /// The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
     /// The Mesh base class also contains other common data members,
