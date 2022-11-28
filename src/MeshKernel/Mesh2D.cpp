@@ -1670,9 +1670,9 @@ std::vector<meshkernel::Mesh::MeshPolylineIntersection> Mesh2D::GetPolylineInter
         }
 
         // sort polylineSegmentIntersections by polylineSegmentDistance (along the segment coordinate)
-        std::sort(polylineSegmentIntersections.begin(), polylineSegmentIntersections.end(),
-                  [](const MeshPolylineIntersection& first, const MeshPolylineIntersection& second)
-                  { return first.polylineSegmentDistance < second.polylineSegmentDistance; });
+        std::stable_sort(polylineSegmentIntersections.begin(), polylineSegmentIntersections.end(),
+                         [](const MeshPolylineIntersection& first, const MeshPolylineIntersection& second)
+                         { return first.polylineSegmentDistance < second.polylineSegmentDistance; });
 
         // insert polylineSegmentIntersections at the end of intersections
         intersections.insert(intersections.end(), polylineSegmentIntersections.begin(), polylineSegmentIntersections.end());
