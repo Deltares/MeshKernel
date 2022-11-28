@@ -1064,8 +1064,8 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            std::vector<double> values{x21, y21, x43, y43};
-            const double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
+            std::vector<double> values{std::abs(x21), std::abs(y21), std::abs(x43), std::abs(y43)};
+            const double eps = std::max(0.00001 * *std::max_element(values.begin(), values.end()), std::numeric_limits<double>::denorm_min());
 
             if (std::abs(det) < eps)
             {

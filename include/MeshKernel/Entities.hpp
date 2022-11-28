@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <cmath>
 
 #include <MeshKernel/Constants.hpp>
@@ -48,7 +50,7 @@ namespace meshkernel
     template <typename T>
     static bool IsEqual(T value, T referenceValue)
     {
-        if constexpr (std::is_integral_v<T>)
+        if constexpr (std::is_integral<T>::value)
         {
             return value == referenceValue;
         }

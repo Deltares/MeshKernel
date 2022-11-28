@@ -106,7 +106,7 @@ void LandBoundaries::Administrate()
         {
             const auto split = startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2;
             m_validLandBoundaries[i].second = split;
-            m_validLandBoundaries.emplace_back(std::pair{split, endSegmentIndex});
+            m_validLandBoundaries.emplace_back(split, endSegmentIndex);
         }
     }
 };
