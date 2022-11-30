@@ -1651,7 +1651,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
                         const auto edgeFirstNode = facesIntersections[faceIndex].edgeNodes[0];
                         const auto edgeSecondNode = facesIntersections[faceIndex].edgeNodes[1];
                         facesIntersections[faceIndex].edgeNodes[0] = edgesIntersections[edgeIndex].edgeFirstNode;
-                        facesIntersections[faceIndex].edgeNodes[1] = edgesIntersections[edgeIndex].edgeFirstNode;
+                        facesIntersections[faceIndex].edgeNodes[1] = edgesIntersections[edgeIndex].edgeSecondNode;
 
                         facesIntersections[faceIndex].edgeNodes.emplace_back(edgeFirstNode);
                         facesIntersections[faceIndex].edgeNodes.emplace_back(edgeSecondNode);
