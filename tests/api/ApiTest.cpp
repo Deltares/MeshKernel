@@ -2961,8 +2961,8 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dDimensions);
 
     // Set the polyLine
-    std::vector<double> xCoordinates{49.5, 49.5};
-    std::vector<double> yCoordinates{0.5, 49.5};
+    std::vector xCoordinates{49.5, 49.5};
+    std::vector yCoordinates{0.5, 49.5};
 
     meshkernelapi::GeometryList boundaryPolyLine{};
     boundaryPolyLine.geometry_separator = meshkernel::doubleMissingValue;
@@ -2997,4 +2997,13 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(149, faceIndexes[3]);
     ASSERT_EQ(149, faceIndexes[4]);
     ASSERT_EQ(199, faceIndexes[5]);
+
+    ASSERT_EQ(faceNodesIntersections[0], 101);
+    ASSERT_EQ(faceNodesIntersections[1], 100);
+    ASSERT_EQ(faceNodesIntersections[2], 101);
+    ASSERT_EQ(faceNodesIntersections[3], 100);
+    ASSERT_EQ(faceNodesIntersections[4], 152);
+    ASSERT_EQ(faceNodesIntersections[5], 151);
+
+
 }
