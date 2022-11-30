@@ -90,15 +90,22 @@ namespace meshkernel
         };
 
         /// Mesh polyline intersection
-        struct MeshPolylineIntersection
+        struct EdgeMeshPolylineIntersection
         {
-            int polylineSegmentIndex;       ///< The intersected segment index (a polyline can formed by several segments)
-            double polylineSegmentDistance; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            size_t edgeIndex;               ///< The index of the intersected edge
-            size_t edgeFirstNode;           ///< The first node of the edge is on the left (the virtual node)
-            size_t edgeSecondNode;          ///< The second node of the edge is on the right (the inner node)
-            double edgeDistance;            ///< The location of the intersection expressed as an adimensional distance from the edge start
-            size_t faceIndex;               ///< The index of the intersected face
+            int polylineSegmentIndex{intMissingValue};          ///< The intersected segment index (a polyline can formed by several segments)
+            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            size_t edgeIndex{sizetMissingValue};                ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeFirstNode{sizetMissingValue};            ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeSecondNode{sizetMissingValue};           ///< The second node of the edge is on the right (the inner node)
+            double edgeDistance{doubleMissingValue};            ///< The location of the intersection expressed as an adimensional distance from the edge start
+        };
+
+        struct FaceMeshPolylineIntersection
+        {
+            size_t faceIndex{sizetMissingValue};                ///< The face index
+            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            std::vector<size_t> edgeNodes;                      ///< The location of the intersection expressed as an adimensional distance from the segment start
+            size_t edgeCount{0};
         };
 
         /// @brief Default constructor

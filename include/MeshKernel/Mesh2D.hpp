@@ -265,8 +265,9 @@ namespace meshkernel
 
         /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
         /// @param[in] polyLine An input polyline, defined as a series of points
-        /// @return A vector of MeshPolylineIntersection
-        [[nodiscard]] std::vector<MeshPolylineIntersection> GetPolylineIntersections(const std::vector<Point>& polyLine);
+        /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
+        [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
+                                 std::vector<FaceMeshPolylineIntersection>> GetPolylineIntersections(const std::vector<Point>& polyLine);
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
