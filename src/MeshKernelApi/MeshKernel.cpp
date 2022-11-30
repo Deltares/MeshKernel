@@ -1014,39 +1014,42 @@ namespace meshkernelapi
 
             auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto intersections = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
+            const auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
 
             int edgeNodesCount = 0;
-            int faceNodesCount = 0;
             int edgeCount = 0;
-            std::unordered_set<size_t> intersectedEdges;
-            for (auto i = 0; i < intersections.size(); ++i)
+            for (auto i = 0; i < edgeIntersections.size(); ++i)
             {
-                const auto& intersection = intersections[i];
+                const auto& edgeIntersection = edgeIntersections[i];
 
                 // edge information must be stored only once
-                if (intersectedEdges.find(intersection.edgeIndex) == intersectedEdges.end())
-                {
-                    edgeNodesIntersections[edgeNodesCount] = intersection.edgeFirstNode;
-                    edgeNodesCount++;
-                    edgeNodesIntersections[edgeNodesCount] = intersection.edgeSecondNode;
-                    edgeNodesCount++;
+                edgeNodesIntersections[edgeNodesCount] = edgeIntersection.edgeFirstNode;
+                edgeNodesCount++;
+                edgeNodesIntersections[edgeNodesCount] = edgeIntersection.edgeSecondNode;
+                edgeNodesCount++;
 
-                    // the edge count
-                    edgeDistances[edgeCount] = intersection.edgeDistance;
-                    polylineSegmentIndexes[edgeCount] = intersection.polylineSegmentIndex;
-                    polylineSegmentDistances[edgeCount] = intersection.polylineSegmentDistance;
-                    edgeCount++;
+                // the edge count
+                edgeDistances[edgeCount] = edgeIntersection.edgeDistance;
+                polylineSegmentIndexes[edgeCount] = edgeIntersection.polylineSegmentIndex;
+                polylineSegmentDistances[edgeCount] = edgeIntersection.polylineSegmentDistance;
+                edgeCount++;
+            }
+
+            int faceEdgesCount = 0;
+            int faceNodesCount = 0;
+            for (const auto& intersection : faceIntersections)
+            {
+                for (int i = 0; i < intersection.edgeCount; ++i)
+                {
+                    faceIndexes[faceEdgesCount] = intersection.faceIndex;
+                    faceEdgesCount++;
                 }
 
-                // get the intersected faces
-                const auto faceIndex = intersection.faceIndex;
-                faceIndexes[i] = faceIndex;
-
-                faceNodesIntersections[faceNodesCount] = intersection.edgeFirstNode;
-                faceNodesCount++;
-                faceNodesIntersections[faceNodesCount] = intersection.edgeSecondNode;
-                faceNodesCount++;
+                for (const auto& edgeNode : intersection.edgeNodes)
+                {
+                    faceNodesIntersections[faceNodesCount] = edgeNode;
+                    faceNodesCount++;
+                }
             }
         }
         catch (...)
