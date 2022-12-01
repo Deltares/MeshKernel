@@ -89,7 +89,7 @@ namespace meshkernel
             Mesh2D
         };
 
-        /// Mesh polyline intersection
+        /// edge-segment intersection
         struct EdgeMeshPolylineIntersection
         {
             int polylineSegmentIndex{intMissingValue};          ///< The intersected segment index (a polyline can formed by several segments)
@@ -100,12 +100,13 @@ namespace meshkernel
             double edgeDistance{doubleMissingValue};            ///< The location of the intersection expressed as an adimensional distance from the edge start
         };
 
+        /// face-segment intersection
         struct FaceMeshPolylineIntersection
         {
-            size_t faceIndex{sizetMissingValue}; ///< The face index
-            std::vector<size_t> edgeIndexses;
-            std::vector<size_t> edgeNodes; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            double polylineSegmentDistance{doubleMissingValue};
+            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the face intersection expressed as an adimensional distance from the segment start
+            size_t faceIndex{sizetMissingValue};                ///< The face index
+            std::vector<size_t> edgeIndexses;                   ///< The indexes of crossed edges
+            std::vector<size_t> edgeNodes;                      ///< The indexes of the nodes defining the crossed edges
         };
 
         /// @brief Default constructor
