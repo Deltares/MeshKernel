@@ -2943,8 +2943,8 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     meshkernelapi::MakeGridParameters makeMeshParameters;
     makeMeshParameters.num_columns = 50;
     makeMeshParameters.num_rows = 50;
-    makeMeshParameters.block_size_x = 1.0;
-    makeMeshParameters.block_size_y = 1.0;
+    makeMeshParameters.block_size_x = 2.0;
+    makeMeshParameters.block_size_y = 2.0;
     makeMeshParameters.origin_x = 0.0;
     makeMeshParameters.origin_y = 0.0;
     makeMeshParameters.angle = 0.0;
@@ -2961,8 +2961,8 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dDimensions);
 
     // Set the polyLine
-    std::vector xCoordinates{49.5, 49.5};
-    std::vector yCoordinates{0.5, 49.5};
+    std::vector xCoordinates{-1.0, 99.0};
+    std::vector yCoordinates{1.0, 1.0};
 
     meshkernelapi::GeometryList boundaryPolyLine{};
     boundaryPolyLine.geometry_separator = meshkernel::doubleMissingValue;
@@ -2991,19 +2991,23 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     /// Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(49, faceIndexes[0]);
-    ASSERT_EQ(99, faceIndexes[1]);
-    ASSERT_EQ(99, faceIndexes[2]);
-    ASSERT_EQ(149, faceIndexes[3]);
-    ASSERT_EQ(149, faceIndexes[4]);
-    ASSERT_EQ(199, faceIndexes[5]);
 
-    ASSERT_EQ(faceNodesIntersections[0], 101);
-    ASSERT_EQ(faceNodesIntersections[1], 100);
-    ASSERT_EQ(faceNodesIntersections[2], 101);
-    ASSERT_EQ(faceNodesIntersections[3], 100);
-    ASSERT_EQ(faceNodesIntersections[4], 152);
-    ASSERT_EQ(faceNodesIntersections[5], 151);
+    ASSERT_EQ(faceNodesIntersections[0], 0);
+    ASSERT_EQ(faceNodesIntersections[1], 51);
+
+    //ASSERT_EQ(49, faceIndexes[0]);
+    //ASSERT_EQ(99, faceIndexes[1]);
+    //ASSERT_EQ(99, faceIndexes[2]);
+    //ASSERT_EQ(149, faceIndexes[3]);
+    //ASSERT_EQ(149, faceIndexes[4]);
+    //ASSERT_EQ(199, faceIndexes[5]);
+
+    //ASSERT_EQ(faceNodesIntersections[0], 101);
+    //ASSERT_EQ(faceNodesIntersections[1], 100);
+    //ASSERT_EQ(faceNodesIntersections[2], 101);
+    //ASSERT_EQ(faceNodesIntersections[3], 100);
+    //ASSERT_EQ(faceNodesIntersections[4], 152);
+    //ASSERT_EQ(faceNodesIntersections[5], 151);
 
 
 }
