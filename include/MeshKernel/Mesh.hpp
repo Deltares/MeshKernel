@@ -102,10 +102,10 @@ namespace meshkernel
 
         struct FaceMeshPolylineIntersection
         {
-            size_t faceIndex{sizetMissingValue};                ///< The face index
-            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            std::vector<size_t> edgeNodes;                      ///< The location of the intersection expressed as an adimensional distance from the segment start
-            size_t edgeCount{0};
+            size_t faceIndex{sizetMissingValue}; ///< The face index
+            std::vector<size_t> edgeIndexses;
+            std::vector<size_t> edgeNodes; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            double polylineSegmentDistance{doubleMissingValue};
         };
 
         /// @brief Default constructor

@@ -1039,7 +1039,7 @@ namespace meshkernelapi
             int faceNodesCount = 0;
             for (const auto& intersection : faceIntersections)
             {
-                for (int i = 0; i < intersection.edgeCount; ++i)
+                for (int i = 0; i < intersection.edgeIndexses.size(); ++i)
                 {
                     faceIndexes[faceEdgesCount] = intersection.faceIndex;
                     faceEdgesCount++;

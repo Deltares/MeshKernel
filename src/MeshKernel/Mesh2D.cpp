@@ -1640,26 +1640,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
 
                 if (edgesIntersections[edgeIndex].polylineSegmentDistance > 0.0)
                 {
-                    const auto newEdgeDistance = edgesIntersections[edgeIndex].polylineSegmentDistance;
-                    if (newEdgeDistance > facesIntersections[faceIndex].polylineSegmentDistance)
-                    {
-                        facesIntersections[faceIndex].edgeNodes.emplace_back(edgesIntersections[edgeIndex].edgeFirstNode);
-                        facesIntersections[faceIndex].edgeNodes.emplace_back(edgesIntersections[edgeIndex].edgeSecondNode);
-                    }
-                    else
-                    {
-                        const auto edgeFirstNode = facesIntersections[faceIndex].edgeNodes[0];
-                        const auto edgeSecondNode = facesIntersections[faceIndex].edgeNodes[1];
-                        facesIntersections[faceIndex].edgeNodes[0] = edgesIntersections[edgeIndex].edgeFirstNode;
-                        facesIntersections[faceIndex].edgeNodes[1] = edgesIntersections[edgeIndex].edgeSecondNode;
-
-                        facesIntersections[faceIndex].edgeNodes.emplace_back(edgeFirstNode);
-                        facesIntersections[faceIndex].edgeNodes.emplace_back(edgeSecondNode);
-                    }
-
-                    facesIntersections[faceIndex].polylineSegmentDistance += newEdgeDistance;
-
-                    facesIntersections[faceIndex].edgeCount += 1;
+                    facesIntersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
                     continue;
                 }
 
@@ -1697,11 +1678,43 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
                     edgesIntersections[edgeIndex].edgeIndex = edgeIndex;
 
                     facesIntersections[faceIndex].faceIndex = faceIndex;
-                    facesIntersections[faceIndex].polylineSegmentDistance = polylineSegmentDistance;
-                    facesIntersections[faceIndex].edgeNodes.emplace_back(edgeFirstNode);
-                    facesIntersections[faceIndex].edgeNodes.emplace_back(edgeSecondNode);
-                    facesIntersections[faceIndex].edgeCount += 1;
+                    facesIntersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
                 }
+            }
+        }
+
+        // compute
+        for (auto& facesIntersection : facesIntersections)
+        {
+            if (facesIntersection.edgeIndexses.empty())
+            {
+                continue;
+            }
+
+            if (facesIntersection.edgeIndexses.size() == 1)
+            {
+                const auto edgeIndex = facesIntersection.edgeIndexses[0];
+                facesIntersection.polylineSegmentDistance = edgesIntersections[edgeIndex].polylineSegmentDistance;
+            }
+            if (facesIntersection.edgeIndexses.size() == 2)
+            {
+                const auto firstEdgeIndex = facesIntersection.edgeIndexses[0];
+                const auto secondEdgeIndex = facesIntersection.edgeIndexses[1];
+
+                // swap if needed
+                if (edgesIntersections[firstEdgeIndex].polylineSegmentDistance > edgesIntersections[secondEdgeIndex].polylineSegmentDistance)
+                {
+                    std::swap(facesIntersection.edgeIndexses[0], facesIntersection.edgeIndexses[1]);
+                }
+                facesIntersection.polylineSegmentDistance = 0.5 * (edgesIntersections[firstEdgeIndex].polylineSegmentDistance + edgesIntersections[secondEdgeIndex].polylineSegmentDistance);
+            }
+
+            // push back the intersections
+            for (int e = 0; e < facesIntersection.edgeIndexses.size(); ++e)
+            {
+                const auto edgeIndex = facesIntersection.edgeIndexses[e];
+                facesIntersection.edgeNodes.emplace_back(edgesIntersections[edgeIndex].edgeFirstNode);
+                facesIntersection.edgeNodes.emplace_back(edgesIntersections[edgeIndex].edgeSecondNode);
             }
         }
 
@@ -1709,17 +1722,6 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
         std::stable_sort(edgesIntersections.begin(), edgesIntersections.end(),
                          [](const EdgeMeshPolylineIntersection& first, const EdgeMeshPolylineIntersection& second)
                          { return first.polylineSegmentDistance < second.polylineSegmentDistance; });
-
-        // compute
-        for (auto& facesIntersection : facesIntersections)
-        {
-            if (facesIntersection.edgeCount == 0)
-            {
-                continue;
-            }
-
-            facesIntersection.polylineSegmentDistance = facesIntersection.polylineSegmentDistance / facesIntersection.edgeCount;
-        }
 
         std::stable_sort(facesIntersections.begin(), facesIntersections.end(),
                          [](const FaceMeshPolylineIntersection& first, const FaceMeshPolylineIntersection& second)
