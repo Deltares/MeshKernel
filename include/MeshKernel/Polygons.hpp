@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
+#include <unordered_map>
 
 namespace meshkernel
 {
