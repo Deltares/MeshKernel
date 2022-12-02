@@ -1222,12 +1222,12 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     // Assert. The last value is a geometry separator  to handle the case of multiple splines
     ASSERT_EQ(totalNumPoints, geometryListOut.num_coordinates);
 
-    std::vector<double> computedCoordinatesX(CoordinatesOutX.get(), CoordinatesOutX.get() + totalNumPoints);
-    std::vector<double> ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0};
+    std::vector computedCoordinatesX(CoordinatesOutX.get(), CoordinatesOutX.get() + totalNumPoints);
+    std::vector ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0};
     ASSERT_THAT(computedCoordinatesX, ::testing::ContainerEq(ValidCoordinatesX));
 
-    std::vector<double> computedCoordinatesY(CoordinatesOutY.get(), CoordinatesOutY.get() + totalNumPoints);
-    std::vector<double> ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000};
+    std::vector computedCoordinatesY(CoordinatesOutY.get(), CoordinatesOutY.get() + totalNumPoints);
+    std::vector ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000};
     ASSERT_THAT(computedCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 }
 
@@ -1889,12 +1889,12 @@ TEST_F(ApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
     errorCode = mkernel_mesh1d_get_data(meshKernelId, mesh1dResults);
 
     // Assert
-    std::vector<double> validMeshNodesX(nodesX.get(), nodesX.get() + mesh1d.num_nodes);
-    std::vector<double> computedMeshNodesX(meshNodesX.get(), meshNodesX.get() + mesh1dResults.num_nodes);
+    std::vector validMeshNodesX(nodesX.get(), nodesX.get() + mesh1d.num_nodes);
+    std::vector computedMeshNodesX(meshNodesX.get(), meshNodesX.get() + mesh1dResults.num_nodes);
     ASSERT_THAT(computedMeshNodesX, ::testing::ContainerEq(validMeshNodesX));
 
-    std::vector<double> validMeshNodesY(nodesY.get(), nodesY.get() + mesh1d.num_nodes);
-    std::vector<double> computedMeshNodesY(meshNodesY.get(), meshNodesY.get() + mesh1dResults.num_nodes);
+    std::vector validMeshNodesY(nodesY.get(), nodesY.get() + mesh1d.num_nodes);
+    std::vector computedMeshNodesY(meshNodesY.get(), meshNodesY.get() + mesh1dResults.num_nodes);
     ASSERT_THAT(computedMeshNodesY, ::testing::ContainerEq(validMeshNodesY));
 
     std::vector<double> validEdges(edges.get(), edges.get() + mesh1d.num_edges);
@@ -2055,7 +2055,7 @@ TEST_F(ApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (all nodes indices will be selected)
-    std::vector<int> actualResult(selectedNodes.get(), selectedNodes.get() + mesh2d.num_nodes);
+    std::vector actualResult(selectedNodes.get(), selectedNodes.get() + mesh2d.num_nodes);
     std::vector<int> expectedResult(mesh2d.num_nodes);
     std::iota(expectedResult.begin(), expectedResult.end(), 0);
     ASSERT_THAT(actualResult, ::testing::ContainerEq(expectedResult));
@@ -2316,9 +2316,9 @@ TEST_F(ApiTests, GetObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtus
     // Assert
     ASSERT_EQ(1, numObtuseTriangles);
     const double tolerance = 1e-6;
-    std::vector<double> computedCoordinatesX(coordinatesObtuseTrianglesX.get(), coordinatesObtuseTrianglesX.get() + numObtuseTriangles);
+    std::vector computedCoordinatesX(coordinatesObtuseTrianglesX.get(), coordinatesObtuseTrianglesX.get() + numObtuseTriangles);
     ASSERT_NEAR(computedCoordinatesX[0], 0.66666666666666652, tolerance);
-    std::vector<double> computedCoordinatesY(coordinatesObtuseTrianglesY.get(), coordinatesObtuseTrianglesY.get() + numObtuseTriangles);
+    std::vector computedCoordinatesY(coordinatesObtuseTrianglesY.get(), coordinatesObtuseTrianglesY.get() + numObtuseTriangles);
     ASSERT_NEAR(computedCoordinatesY[0], 0.66666666666666652, tolerance);
 }
 
@@ -2600,7 +2600,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     // Assert the value has been interpolated
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     const double tolerance = 1e-6;
-    std::vector<double> computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
+    std::vector computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
     ASSERT_NEAR(computedResultsValues[4], 3.0, tolerance);
 }
 
@@ -2646,7 +2646,7 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     // Assert the value has been interpolated
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     const double tolerance = 1e-6;
-    std::vector<double> computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
+    std::vector computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
     ASSERT_NEAR(computedResultsValues[8], 5.6666666666666670, tolerance);
 }
 
@@ -2971,12 +2971,12 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     boundaryPolyLine.values = nullptr;
     boundaryPolyLine.num_coordinates = 2;
 
-    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, -1);
-    std::vector<double> polylineSegmentDistances(mesh2dDimensions.num_edges * 2);
-    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2, -1);
-    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, -1);
-    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2, -1);
-    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2, -1);
+    std::vector polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
+    std::vector polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::doubleMissingValue);
+    std::vector edgeNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
+    std::vector edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::doubleMissingValue);
+    std::vector faceIndexes(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
+    std::vector faceNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
 
     /// Execute
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
@@ -2989,8 +2989,17 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
                                                            faceNodesIntersections.data());
 
     /// Assert
+    const double tolerance = 1e-6;
+
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
+    ASSERT_EQ(polylineSegmentIndexes[0], 0);
+    ASSERT_EQ(polylineSegmentIndexes[1], 0);
+    ASSERT_EQ(polylineSegmentIndexes[2], meshkernel::intMissingValue);
+
+    ASSERT_NEAR(polylineSegmentDistances[0], 0.25, tolerance);
+    ASSERT_NEAR(polylineSegmentDistances[1], 0.75, tolerance);
+    ASSERT_NEAR(polylineSegmentDistances[2], meshkernel::doubleMissingValue, tolerance);
 
     ASSERT_EQ(faceNodesIntersections[0], 8);
     ASSERT_EQ(faceNodesIntersections[1], 9);
@@ -3000,11 +3009,12 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(faceNodesIntersections[5], 5);
     ASSERT_EQ(faceNodesIntersections[6], 4);
     ASSERT_EQ(faceNodesIntersections[7], 5);
+    ASSERT_EQ(faceNodesIntersections[8], meshkernel::intMissingValue);
 
     ASSERT_EQ(faceIndexes[0], 6);
     ASSERT_EQ(faceIndexes[1], 3);
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
-    ASSERT_EQ(faceIndexes[4], -1);
+    ASSERT_EQ(faceIndexes[4], meshkernel::intMissingValue);
     
 }
