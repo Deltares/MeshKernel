@@ -2941,10 +2941,10 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
 
     // Create a curvilinear grid in the back-end and convert it into an unstructured grid
     meshkernelapi::MakeGridParameters makeMeshParameters;
-    makeMeshParameters.num_columns = 50;
-    makeMeshParameters.num_rows = 50;
-    makeMeshParameters.block_size_x = 2.0;
-    makeMeshParameters.block_size_y = 2.0;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = 1.0;
+    makeMeshParameters.block_size_y = 1.0;
     makeMeshParameters.origin_x = 0.0;
     makeMeshParameters.origin_y = 0.0;
     makeMeshParameters.angle = 0.0;
@@ -2961,8 +2961,8 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dDimensions);
 
     // Set the polyLine
-    std::vector xCoordinates{-1.0, 99.0};
-    std::vector yCoordinates{1.0, 1.0};
+    std::vector xCoordinates{0.5, 0.5};
+    std::vector yCoordinates{2.5, 0.5};
 
     meshkernelapi::GeometryList boundaryPolyLine{};
     boundaryPolyLine.geometry_separator = meshkernel::doubleMissingValue;
@@ -2971,12 +2971,12 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     boundaryPolyLine.values = nullptr;
     boundaryPolyLine.num_coordinates = 2;
 
-    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2);
+    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, -1);
     std::vector<double> polylineSegmentDistances(mesh2dDimensions.num_edges * 2);
-    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2);
-    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2);
-    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2);
-    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2);
+    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2, -1);
+    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, -1);
+    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2, -1);
+    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2, -1);
 
     /// Execute
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
@@ -2992,22 +2992,19 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
 
-    ASSERT_EQ(faceNodesIntersections[0], 0);
-    ASSERT_EQ(faceNodesIntersections[1], 51);
+    ASSERT_EQ(faceNodesIntersections[0], 8);
+    ASSERT_EQ(faceNodesIntersections[1], 9);
+    ASSERT_EQ(faceNodesIntersections[2], 8);
+    ASSERT_EQ(faceNodesIntersections[3], 9);
+    ASSERT_EQ(faceNodesIntersections[4], 4);
+    ASSERT_EQ(faceNodesIntersections[5], 5);
+    ASSERT_EQ(faceNodesIntersections[6], 4);
+    ASSERT_EQ(faceNodesIntersections[7], 5);
 
-    //ASSERT_EQ(49, faceIndexes[0]);
-    //ASSERT_EQ(99, faceIndexes[1]);
-    //ASSERT_EQ(99, faceIndexes[2]);
-    //ASSERT_EQ(149, faceIndexes[3]);
-    //ASSERT_EQ(149, faceIndexes[4]);
-    //ASSERT_EQ(199, faceIndexes[5]);
-
-    //ASSERT_EQ(faceNodesIntersections[0], 101);
-    //ASSERT_EQ(faceNodesIntersections[1], 100);
-    //ASSERT_EQ(faceNodesIntersections[2], 101);
-    //ASSERT_EQ(faceNodesIntersections[3], 100);
-    //ASSERT_EQ(faceNodesIntersections[4], 152);
-    //ASSERT_EQ(faceNodesIntersections[5], 151);
-
-
+    ASSERT_EQ(faceIndexes[0], 6);
+    ASSERT_EQ(faceIndexes[1], 3);
+    ASSERT_EQ(faceIndexes[2], 3);
+    ASSERT_EQ(faceIndexes[3], 0);
+    ASSERT_EQ(faceIndexes[4], -1);
+    
 }
