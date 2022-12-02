@@ -1631,18 +1631,16 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
     {
         std::fill(edgesIntersections.begin(), edgesIntersections.end(), EdgeMeshPolylineIntersection());
         std::fill(facesIntersections.begin(), facesIntersections.end(), FaceMeshPolylineIntersection());
-
         for (auto faceIndex = 0; faceIndex < GetNumFaces(); ++faceIndex)
         {
             for (auto e = 0; e < m_numFacesNodes[faceIndex]; ++e)
             {
                 const auto edgeIndex = m_facesEdges[faceIndex][e];
 
-                if (edgesIntersections[edgeIndex].polylineSegmentDistance > 0.0)
+                if (edgesIntersections[edgeIndex].polylineSegmentDistance >= 0.0)
                 {
                     facesIntersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
                     facesIntersections[faceIndex].faceIndex = faceIndex;
-
                     continue;
                 }
 
@@ -1690,20 +1688,21 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
         {
             if (facesIntersection.edgeIndexses.size() > 2)
             {
-                throw AlgorithmError("Mesh2D::GetPolylineIntersections: more than 2 edges intersected for face " + std::to_string(facesIntersection.faceIndex));
+                throw AlgorithmError("Mesh2D::GetPolylineIntersections: more than 2 intersected edges for face " +
+                                     std::to_string(facesIntersection.faceIndex));
             }
-
 
             if (facesIntersection.edgeIndexses.empty())
             {
                 continue;
             }
-            
+
             if (facesIntersection.edgeIndexses.size() == 1)
             {
                 const auto edgeIndex = facesIntersection.edgeIndexses[0];
                 facesIntersection.polylineSegmentDistance = edgesIntersections[edgeIndex].polylineSegmentDistance;
             }
+
             if (facesIntersection.edgeIndexses.size() == 2)
             {
                 const auto firstEdgeIndex = facesIntersection.edgeIndexses[0];
