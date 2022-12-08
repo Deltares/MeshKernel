@@ -233,9 +233,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5b7bcc0a8c5e3af905c124e5778a5960">mkernel_mesh2d_count_mesh_boundaries_as_polygons</a> (int meshKernelId, int &amp;numberOfPolygonNodes)</td></tr>
 <tr class="memdesc:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes contained in the mesh boundary polygons computed in function <code>mkernel_mesh2d_get_mesh_boundaries_as_polygons</code>  <a href="namespacemeshkernelapi.html#a5b7bcc0a8c5e3af905c124e5778a5960">More...</a><br /></td></tr>
 <tr class="separator:a5b7bcc0a8c5e3af905c124e5778a5960"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5795173eb55e0b1f6e6eac267d86c2bc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5795173eb55e0b1f6e6eac267d86c2bc">mkernel_mesh2d_get_intersected_edges_from_polyline</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolyLine, int *nodesOfIntersectedEdges, double *edgeAdimensionalIntersections, int *polyLineIndexes, double *lineAdimensionalIntersections)</td></tr>
-<tr class="memdesc:a5795173eb55e0b1f6e6eac267d86c2bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges intersected by a polyline, with additional information on the intersections.  <a href="namespacemeshkernelapi.html#a5795173eb55e0b1f6e6eac267d86c2bc">More...</a><br /></td></tr>
-<tr class="separator:a5795173eb55e0b1f6e6eac267d86c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a620b6a5a6aab6642de83f9a5faf4177d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a620b6a5a6aab6642de83f9a5faf4177d">mkernel_mesh2d_intersections_from_polyline</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolyLine, int *polylineSegmentIndexes, double *polylineSegmentDistances, int *edgeNodesIntersections, double *edgeDistances, int *faceIndexes, int *faceNodesIntersections)</td></tr>
+<tr class="memdesc:a620b6a5a6aab6642de83f9a5faf4177d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges intersected by a polyline, with additional information on the intersections.  <a href="namespacemeshkernelapi.html#a620b6a5a6aab6642de83f9a5faf4177d">More...</a><br /></td></tr>
+<tr class="separator:a620b6a5a6aab6642de83f9a5faf4177d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">mkernel_polygon_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;refinedPolygon)</td></tr>
 <tr class="memdesc:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.  <a href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">More...</a><br /></td></tr>
 <tr class="separator:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3963,72 +3963,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a5795173eb55e0b1f6e6eac267d86c2bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5795173eb55e0b1f6e6eac267d86c2bc">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_intersected_edges_from_polyline()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_intersected_edges_from_polyline </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
-          <td class="paramname"><em>boundaryPolyLine</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>nodesOfIntersectedEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double *&#160;</td>
-          <td class="paramname"><em>edgeAdimensionalIntersections</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>polyLineIndexes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double *&#160;</td>
-          <td class="paramname"><em>lineAdimensionalIntersections</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the edges intersected by a polyline, with additional information on the intersections. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">boundaryPolyLine</td><td>An input polyline, defined as a series of points </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">nodesOfIntersectedEdges</td><td>The node indices of the intersected edges (the first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node)) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">edgeAdimensionalIntersections</td><td>The location of the intersection point on the edge, expressed with as an adimensional distance from the left node </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">polyLineIndexes</td><td>The intersected segment index (a polyline is formed by several segments) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">lineAdimensionalIntersections</td><td>The location of the intersection point on the current segment, expressed with as an adimensional distance from the segment left's node </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
 <a id="a9dd8b018fc9893667066ec6bc59a0107"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9dd8b018fc9893667066ec6bc59a0107">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_mesh_boundaries_as_polygons()</h2>
 
@@ -4493,6 +4427,86 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The x coordinate of the node to insert </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The y coordinate of the node to insert </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td>The index of the new mesh node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a620b6a5a6aab6642de83f9a5faf4177d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620b6a5a6aab6642de83f9a5faf4177d">&#9670;&nbsp;</a></span>mkernel_mesh2d_intersections_from_polyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_intersections_from_polyline </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>boundaryPolyLine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>polylineSegmentIndexes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>polylineSegmentDistances</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>edgeNodesIntersections</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>edgeDistances</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>faceIndexes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>faceNodesIntersections</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the edges intersected by a polyline, with additional information on the intersections. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">boundaryPolyLine</td><td>An input polyline, defined as a series of points </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">polylineSegmentIndexes</td><td>For each intersection, the intersected segment index (a polyline can formed by several segments) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">polylineSegmentDistances</td><td>For each intersection, the location of the intersection expressed as an adimensional distance from the segment start </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">edgeNodesIntersections</td><td>The node indices of the intersected edges (the first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node)) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">edgeDistances</td><td>For each intersection, the location of the intersection expressed as adimensional distance from the edge starting node </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faceIndexes</td><td>For each intersection, the index of the intersected face </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faceNodesIntersections</td><td>For each intersection, the node indices of the intersected edge </td></tr>
   </table>
   </dd>
 </dl>

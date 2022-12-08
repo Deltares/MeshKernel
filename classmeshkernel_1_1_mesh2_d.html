@@ -230,9 +230,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a5dc822de50acdf0f3cb964c1215a960a"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; size_t, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a">IsSegmentCrossingABoundaryEdge</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint) const</td></tr>
 <tr class="memdesc:a5dc822de50acdf0f3cb964c1215a960a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a segment is crossing a face.  <a href="classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a">More...</a><br /></td></tr>
 <tr class="separator:a5dc822de50acdf0f3cb964c1215a960a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1507bce95d36eb825665193d9adeffcd"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; int &gt;, std::vector&lt; double &gt;, std::vector&lt; int &gt;, std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a1507bce95d36eb825665193d9adeffcd">GetIntersectedEdgesFromPolyline</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polyLine)</td></tr>
-<tr class="memdesc:a1507bce95d36eb825665193d9adeffcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges intersected by a polyline, with additional information on the intersections.  <a href="classmeshkernel_1_1_mesh2_d.html#a1507bce95d36eb825665193d9adeffcd">More...</a><br /></td></tr>
-<tr class="separator:a1507bce95d36eb825665193d9adeffcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2aca39594f2a68e3717829f98ba04d0"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a> &gt;, std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">GetPolylineIntersections</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polyLine)</td></tr>
+<tr class="memdesc:ad2aca39594f2a68e3717829f98ba04d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges and faces intersected by a polyline, with additional information on the intersections.  <a href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">More...</a><br /></td></tr>
+<tr class="separator:ad2aca39594f2a68e3717829f98ba04d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd">EdgesMaskOfFacesInPolygons</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, bool invertSelection, bool includeIntersected) const</td></tr>
 <tr class="memdesc:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Masks the edges of all faces entirely included in all polygons.  <a href="classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd">More...</a><br /></td></tr>
 <tr class="separator:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -992,33 +992,6 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="a1507bce95d36eb825665193d9adeffcd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1507bce95d36eb825665193d9adeffcd">&#9670;&nbsp;</a></span>GetIntersectedEdgesFromPolyline()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::tuple&lt;std::vector&lt;int&gt;, std::vector&lt;double&gt;, std::vector&lt;int&gt;, std::vector&lt;double&gt; &gt; meshkernel::Mesh2D::GetIntersectedEdgesFromPolyline </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>polyLine</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the edges intersected by a polyline, with additional information on the intersections. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polyLine</td><td>An input polyline, defined as a series of points </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A tuple containing: The node indices of the intersected edges (the first node of the edge is on the left ( the virtual node ), the second node of the edge is on the right (the inner node)) The location of the intersection point on the edge, expressed with as an adimensional distance from the left node The intersected segment index (a polyline is formed by several segments) The location of the intersection point on the current segment, expressed with as an adimensional distance from the segment left's node </dd></dl>
-
-</div>
-</div>
 <a id="aea6575301bc3c4c17e3a76c5efca4ad5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aea6575301bc3c4c17e3a76c5efca4ad5">&#9670;&nbsp;</a></span>GetObtuseTrianglesCenters()</h2>
 
@@ -1056,6 +1029,33 @@ Coincide circumcenter</div></div>
 
 <p>Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters. </p>
 <dl class="section return"><dt>Returns</dt><dd>The edge orthogonality </dd></dl>
+
+</div>
+</div>
+<a id="ad2aca39594f2a68e3717829f98ba04d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2aca39594f2a68e3717829f98ba04d0">&#9670;&nbsp;</a></span>GetPolylineIntersections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt;std::vector&lt;<a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a>&gt;, std::vector&lt;<a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a>&gt; &gt; meshkernel::Mesh2D::GetPolylineIntersections </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>polyLine</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the edges and faces intersected by a polyline, with additional information on the intersections. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polyLine</td><td>An input polyline, defined as a series of points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections </dd></dl>
 
 </div>
 </div>

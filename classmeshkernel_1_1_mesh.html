@@ -74,6 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -98,6 +99,15 @@ Inheritance diagram for meshkernel::Mesh:</div>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">edge-segment intersection  <a href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">face-segment intersection  <a href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a556f63787abcf8335e8f5e5a27580984"><td class="memItemLeft" align="right" valign="top"><a id="a556f63787abcf8335e8f5e5a27580984"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a556f63787abcf8335e8f5e5a27580984">MeshTypes</a> { <b>Mesh1D</b>, 
@@ -318,7 +328,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes. </p>
-<p>MeshKernel can handle 2d meshes and 1d meshes. Algorithms require cartain mappings to be available for both <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a>, such as a mapping listing all edge indices connected to a particular node. The methods computing these mappings are shared between <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> and <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a>, and implemented in the <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class has the following responsibilities:</p>
+<p>MeshKernel can handle 2d meshes and 1d meshes. Algorithms require certain mappings to be available for both <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a>, such as a mapping listing all edge indices connected to a particular node. The methods computing these mappings are shared between <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> and <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a>, and implemented in the <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class has the following responsibilities:</p>
 <ul>
 <li>Construct the mesh faces from the nodes and edges and other mesh mappings required by all algorithms (Mesh::FindFaces). Mesh::FindFaces is using recursion to find faces with up to 6 edges (<a class="el" href="namespacemeshkernel.html#aae0b022522e1e31499239d5b18d3da9b" title="Maximum number of edges per face.">meshkernel::maximumNumberOfEdgesPerFace</a>).</li>
 <li>Supporting mesh editing, namely:<ul>

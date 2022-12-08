@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['value_974',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['values_975',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList']]]
+  ['use_5fmass_5fcenter_5fwhen_5frefining_995',['use_mass_center_when_refining',['../structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa8adc1b44903661e737c875be38b8dee',1,'meshkernelapi::MeshRefinementParameters']]]
 ];
