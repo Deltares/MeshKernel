@@ -71,7 +71,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
 
     size_t refinedM = 0;
-    for (auto currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
+    for (size_t currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
     {
         size_t localMRefinement = 1;
         if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
@@ -80,7 +80,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
         }
 
         size_t refinedN = 0;
-        for (auto currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
+        for (size_t currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
         {
 
             size_t localNRefinement = 1;
@@ -98,7 +98,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
                 topRefinement.clear();
-                for (auto m = 0; m < localMRefinement + 1; ++m)
+                for (size_t m = 0; m < localMRefinement + 1; ++m)
                 {
                     const auto splineIndex = currentN;
                     const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
@@ -109,7 +109,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                 // Calculate m-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
-                for (auto n = 0; n < localNRefinement + 1; ++n)
+                for (size_t n = 0; n < localNRefinement + 1; ++n)
                 {
                     const auto splineIndex = m_grid.m_numN + currentM;
                     const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
@@ -126,9 +126,9 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
-                for (auto m = 0; m < localMRefinement + 1; ++m)
+                for (size_t m = 0; m < localMRefinement + 1; ++m)
                 {
-                    for (auto n = 0; n < localNRefinement + 1; ++n)
+                    for (size_t n = 0; n < localNRefinement + 1; ++n)
                     {
                         refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
                     }

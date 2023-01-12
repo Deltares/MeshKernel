@@ -196,7 +196,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
         {752.151462, 786.57487}};
 
     std::vector<meshkernel::Edge> edges;
-    for (auto index = 0; index < nodes.size() - 1; ++index)
+    for (size_t index = 0; index < nodes.size() - 1; ++index)
     {
         edges.emplace_back(meshkernel::Edge{index, index + 1});
     }

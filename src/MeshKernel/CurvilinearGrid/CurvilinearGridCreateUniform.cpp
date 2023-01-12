@@ -53,9 +53,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
     // No polygon, use MakeGridParameters as is
 
     std::vector<std::vector<Point>> gridNodes(numN, std::vector<Point>(numM));
-    for (auto n = 0; n < numN; ++n)
+    for (size_t n = 0; n < numN; ++n)
     {
-        for (auto m = 0; m < numM; ++m)
+        for (size_t m = 0; m < numM; ++m)
         {
             const double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
             double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
@@ -132,9 +132,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     auto const numM = static_cast<size_t>(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
 
     std::vector<std::vector<Point>> gridNodes(numN, std::vector<Point>(numM));
-    for (auto n = 0; n < numN; ++n)
+    for (size_t n = 0; n < numN; ++n)
     {
-        for (auto m = 0; m < numM; ++m)
+        for (size_t m = 0; m < numM; ++m)
         {
             const double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
             double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;

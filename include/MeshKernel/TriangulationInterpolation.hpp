@@ -96,4 +96,4 @@ namespace meshkernel
         std::vector<double> m_results;         ///< Results
     };
 
-}; // namespace meshkernel
+} // namespace meshkernel

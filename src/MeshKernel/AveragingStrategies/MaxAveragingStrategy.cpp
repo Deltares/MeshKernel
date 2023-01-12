@@ -29,7 +29,7 @@
 
 namespace meshkernel::averaging
 {
-    void MaxAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
+    void MaxAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
     {
         m_result = std::max(m_result, sampleValue);
     }

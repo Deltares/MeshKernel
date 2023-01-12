@@ -166,8 +166,8 @@ namespace meshkernel
         MeshLocations m_interpolationLocation;          ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
-        size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
         bool m_transformSamples = false;                ///< Wheher to transform samples
+        size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
         RTree m_samplesRtree;               ///< The samples tree
         std::vector<double> m_results;      ///< The results

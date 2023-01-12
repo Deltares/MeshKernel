@@ -52,7 +52,7 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     std::cout << "Elapsed time build " << nodes.size() << " mesh nodes RTree: " << elapsedTime << " s " << std::endl;
 
     start = std::chrono::steady_clock::now();
-    for (auto i = 0; i < nodes.size(); ++i)
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
         rtree.SearchPoints(nodes[i], 1e-8);
         ASSERT_EQ(rtree.GetQueryResultSize(), 1);

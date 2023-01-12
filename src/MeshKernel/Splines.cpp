@@ -33,15 +33,15 @@
 
 using meshkernel::Splines;
 
-Splines::Splines(Projection projection) : m_projection(projection){};
+Splines::Splines(Projection projection) : m_projection(projection){}
 
 Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
     std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
-    for (auto n = 0; n < grid.m_numN; ++n)
+    for (size_t n = 0; n < grid.m_numN; ++n)
     {
-        for (auto m = 0; m < grid.m_numM; ++m)
+        for (size_t m = 0; m < grid.m_numM; ++m)
         {
             mGridLines[n][m] = grid.m_gridNodes[m][n];
         }
@@ -50,7 +50,7 @@ Splines::Splines(CurvilinearGrid const& grid)
 
     // then the m_m m_n-gridlines
     std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
-    for (auto m = 0; m < grid.m_numM; ++m)
+    for (size_t m = 0; m < grid.m_numM; ++m)
     {
         AddSpline(grid.m_gridNodes[m], 0, grid.m_gridNodes[m].size());
     }
@@ -128,9 +128,9 @@ bool Splines::GetSplinesIntersection(size_t first,
     const auto numNodesSecondSpline = m_splineNodes[second].size();
 
     // First find a valid crossing, the closest to spline central point
-    for (auto n = 0; n < numNodesFirstSpline - 1; n++)
+    for (size_t n = 0; n < numNodesFirstSpline - 1; n++)
     {
-        for (auto nn = 0; nn < numNodesSecondSpline - 1; nn++)
+        for (size_t nn = 0; nn < numNodesSecondSpline - 1; nn++)
         {
             Point intersection;
             double crossProduct;
@@ -328,7 +328,7 @@ double Splines::ComputeSplineLength(size_t index,
     double splineLength = 0.0;
 
     auto rightPointCoordinateOnSpline = startAdimensionalCoordinate;
-    for (auto p = 0; p < numPoints; ++p)
+    for (size_t p = 0; p < numPoints; ++p)
     {
         const double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;

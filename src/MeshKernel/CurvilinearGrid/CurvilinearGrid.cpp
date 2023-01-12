@@ -67,9 +67,9 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
     std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
     std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
     // Mark points inside a polygonIndex
-    for (auto n = 0; n < numN; ++n)
+    for (size_t n = 0; n < numN; ++n)
     {
-        for (auto m = 0; m < numM; ++m)
+        for (size_t m = 0; m < numM; ++m)
         {
             const auto isInPolygon = polygons->IsPointInPolygon(m_gridNodes[n][m], polygonIndex);
             if (isInPolygon)
@@ -80,9 +80,9 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
     }
 
     // Mark faces when all nodes are inside
-    for (auto n = 0; n < numN - 1; ++n)
+    for (size_t n = 0; n < numN - 1; ++n)
     {
-        for (auto m = 0; m < numM - 1; ++m)
+        for (size_t m = 0; m < numM - 1; ++m)
         {
             if (!nodeBasedMask[n][m] ||
                 !nodeBasedMask[n + 1][m] ||
@@ -96,9 +96,9 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
 
     // Mark only the nodes of faces completely included in the polygonIndex
     std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
-    for (auto n = 0; n < numN - 1; ++n)
+    for (size_t n = 0; n < numN - 1; ++n)
     {
-        for (auto m = 0; m < numM - 1; ++m)
+        for (size_t m = 0; m < numM - 1; ++m)
         {
             if (faceBasedMask[n][m])
             {
@@ -111,9 +111,9 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
     }
 
     // mark points inside a polygonIndex
-    for (auto n = 0; n < numN; ++n)
+    for (size_t n = 0; n < numN; ++n)
     {
-        for (auto m = 0; m < numM; ++m)
+        for (size_t m = 0; m < numM; ++m)
         {
             if (!nodeBasedMask[n][m])
             {
@@ -164,9 +164,9 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     }
 
     ind = 0;
-    for (auto m = 0; m < m_gridNodes.size() - 1; m++)
+    for (size_t m = 0; m < m_gridNodes.size() - 1; m++)
     {
-        for (auto n = 0; n < m_gridNodes[0].size(); n++)
+        for (size_t n = 0; n < m_gridNodes[0].size(); n++)
         {
             if (nodeIndices[m][n] != sizetMissingValue && nodeIndices[m + 1][n] != sizetMissingValue)
             {
@@ -177,9 +177,9 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
         }
     }
 
-    for (auto m = 0; m < m_gridNodes.size(); m++)
+    for (size_t m = 0; m < m_gridNodes.size(); m++)
     {
-        for (auto n = 0; n < m_gridNodes[0].size() - 1; n++)
+        for (size_t n = 0; n < m_gridNodes[0].size() - 1; n++)
         {
             if (nodeIndices[m][n] != sizetMissingValue && nodeIndices[m][n + 1] != sizetMissingValue)
             {
@@ -249,7 +249,7 @@ bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
            m_gridNodes[m + 1][n].IsValid() &&
            m_gridNodes[m][n + 1].IsValid() &&
            m_gridNodes[m + 1][n + 1].IsValid();
-};
+}
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
@@ -272,9 +272,9 @@ void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
     ResizeAndFill2DVector(m_gridFacesMask, m_numM - 1, m_numN - 1, true, false);
-    for (auto m = 0; m < m_numM - 1; ++m)
+    for (size_t m = 0; m < m_numM - 1; ++m)
     {
-        for (auto n = 0; n < m_numN - 1; ++n)
+        for (size_t n = 0; n < m_numN - 1; ++n)
         {
             // Only if all grid nodes of the face are valid, the face is valid
             if (!IsValidFace(m, n))
@@ -299,9 +299,9 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 
     invalidNodesToRemove = false;
     // Flag nodes not connected to valid faces
-    for (auto m = 1; m < m_numM - 1; ++m)
+    for (size_t m = 1; m < m_numM - 1; ++m)
     {
-        for (auto n = 1; n < m_numN - 1; ++n)
+        for (size_t n = 1; n < m_numN - 1; ++n)
         {
             if (m_gridNodes[m][n].IsValid() &&
                 !m_gridFacesMask[m][n] &&
@@ -315,7 +315,7 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
         }
     }
 
-    for (auto m = 1; m < m_numM - 1; ++m)
+    for (size_t m = 1; m < m_numM - 1; ++m)
     {
         if (m_gridNodes[m][0].IsValid() &&
             !m_gridFacesMask[m - 1][0] &&
@@ -325,7 +325,7 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
         }
     }
 
-    for (auto n = 1; n < m_numN - 1; ++n)
+    for (size_t n = 1; n < m_numN - 1; ++n)
     {
         if (m_gridNodes[0][n].IsValid() &&
             !m_gridFacesMask[0][n - 1] &&
@@ -349,9 +349,9 @@ void CurvilinearGrid::ComputeGridNodeTypes()
     ResizeAndFill2DVector(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
 
     // Flag faces based on boundaries
-    for (auto m = 0; m < m_numM; ++m)
+    for (size_t m = 0; m < m_numM; ++m)
     {
-        for (auto n = 0; n < m_numN; ++n)
+        for (size_t n = 0; n < m_numN; ++n)
         {
 
             if (!m_gridNodes[m][n].IsValid())
@@ -639,26 +639,26 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
     }
 
     if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom ||
-        firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight ||
-        firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::BottomLeft)
+        (firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight) ||
+        (firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::BottomLeft))
     {
         return BoundaryGridLineType::Bottom;
     }
     if (firstNodeType == NodeType::Up || secondNodeType == NodeType::Up ||
-        firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::UpperRight ||
-        firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::UpperLeft)
+        (firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::UpperRight) ||
+        (firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::UpperLeft))
     {
         return BoundaryGridLineType::Up;
     }
     if (firstNodeType == NodeType::Left || secondNodeType == NodeType::Left ||
-        firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::UpperLeft ||
-        firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::BottomLeft)
+        (firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::UpperLeft) ||
+        (firstNodeType == NodeType::UpperLeft && secondNodeType == NodeType::BottomLeft))
     {
         return BoundaryGridLineType::Left;
     }
     if (firstNodeType == NodeType::Right || secondNodeType == NodeType::Right ||
-        firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::UpperRight ||
-        firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::BottomRight)
+        (firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::UpperRight) ||
+        (firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::BottomRight))
     {
         return BoundaryGridLineType::Right;
     }

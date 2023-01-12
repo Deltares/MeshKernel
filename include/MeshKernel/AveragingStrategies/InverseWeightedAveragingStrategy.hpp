@@ -54,11 +54,11 @@ namespace meshkernel::averaging
         /// @brief The wall
         double m_wall = 0.0;
 
-        /// @brief The minimum number of samples for a valid interpolation.
-        size_t m_minNumSamples;
-
         /// @brief The interpolation point from which the inverse weight is calculated.
         Point const& m_interpolationPoint;
+
+        /// @brief The minimum number of samples for a valid interpolation.
+        size_t m_minNumSamples;
 
         /// @brief The projection used to calculate the distance.
         Projection const m_projection;

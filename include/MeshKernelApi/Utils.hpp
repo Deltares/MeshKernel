@@ -110,7 +110,7 @@ namespace meshkernelapi
     {
         std::vector<std::vector<T>> result;
         std::vector<T> chunk;
-        for (auto i = 0; i < input.size(); ++i)
+        for (size_t i = 0; i < input.size(); ++i)
         {
             if (meshkernel::IsEqual(input[i], separator))
             {
@@ -136,7 +136,7 @@ namespace meshkernelapi
     static std::vector<bool> ConvertIntegerArrayToBoolVector(const int inputArray[], size_t inputSize)
     {
         std::vector<bool> result(inputSize);
-        for (auto i = 0; i < inputSize; ++i)
+        for (size_t i = 0; i < inputSize; ++i)
         {
             switch (inputArray[i])
             {
@@ -177,7 +177,7 @@ namespace meshkernelapi
     /// @param[out] result      The converted geometry list
     static void ConvertPointVectorToGeometryList(std::vector<meshkernel::Point> pointVector, GeometryList& result)
     {
-        if (pointVector.size() < result.num_coordinates)
+        if (pointVector.size() < static_cast<size_t>(result.num_coordinates))
         {
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates in the result vector.");
         }
@@ -200,7 +200,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: The size of the valuesCoordinates-vector is not equal to the size of the values-vector");
         }
 
-        if (values.size() < result.num_coordinates)
+        if (values.size() < static_cast<size_t>(result.num_coordinates))
         {
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the value-vector size is smaller than the number of coordinates in the result vector.");
         }
@@ -244,7 +244,7 @@ namespace meshkernelapi
     static void SetMesh2dApiDimensions(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
     {
         size_t num_face_nodes = 0;
-        for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
+        for (size_t f = 0; f < mesh2d->GetNumFaces(); f++)
         {
             num_face_nodes += mesh2d->m_facesNodes[f].size();
         }
@@ -261,13 +261,13 @@ namespace meshkernelapi
     static void SetMesh2dApiData(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
     {
         mesh2d->ComputeEdgesCenters();
-        for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
+        for (size_t n = 0; n < mesh2d->GetNumNodes(); n++)
         {
             mesh2dApi.node_x[n] = mesh2d->m_nodes[n].x;
             mesh2dApi.node_y[n] = mesh2d->m_nodes[n].y;
         }
 
-        for (auto edgeIndex = 0; edgeIndex < mesh2d->GetNumEdges(); edgeIndex++)
+        for (size_t edgeIndex = 0; edgeIndex < mesh2d->GetNumEdges(); edgeIndex++)
         {
             mesh2dApi.edge_x[edgeIndex] = mesh2d->m_edgesCenters[edgeIndex].x;
             mesh2dApi.edge_y[edgeIndex] = mesh2d->m_edgesCenters[edgeIndex].y;
@@ -276,12 +276,12 @@ namespace meshkernelapi
         }
 
         int faceIndex = 0;
-        for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
+        for (size_t f = 0; f < mesh2d->GetNumFaces(); f++)
         {
             mesh2dApi.face_x[f] = mesh2d->m_facesMassCenters[f].x;
             mesh2dApi.face_y[f] = mesh2d->m_facesMassCenters[f].y;
             mesh2dApi.nodes_per_face[f] = static_cast<int>(mesh2d->m_facesNodes[f].size());
-            for (auto n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
+            for (size_t n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
             {
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
                 faceIndex++;
@@ -296,7 +296,7 @@ namespace meshkernelapi
                                           CurvilinearGrid& curvilinearGridApi)
     {
         curvilinearGrid->ComputeEdgesCenters();
-        for (auto n = 0; n < curvilinearGrid->GetNumNodes(); n++)
+        for (size_t n = 0; n < curvilinearGrid->GetNumNodes(); n++)
         {
             curvilinearGridApi.node_x[n] = curvilinearGrid->m_nodes[n].x;
             curvilinearGridApi.node_y[n] = curvilinearGrid->m_nodes[n].y;
@@ -309,14 +309,14 @@ namespace meshkernelapi
     static void SetMesh1dApiData(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
                                  Mesh1D& mesh1dApi)
     {
-        for (auto n = 0; n < mesh1d->GetNumNodes(); n++)
+        for (size_t n = 0; n < mesh1d->GetNumNodes(); n++)
         {
             mesh1dApi.node_x[n] = mesh1d->m_nodes[n].x;
             mesh1dApi.node_y[n] = mesh1d->m_nodes[n].y;
         }
 
         size_t edgeIndex = 0;
-        for (auto e = 0; e < mesh1d->GetNumEdges(); e++)
+        for (size_t e = 0; e < mesh1d->GetNumEdges(); e++)
         {
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].first);
             edgeIndex++;

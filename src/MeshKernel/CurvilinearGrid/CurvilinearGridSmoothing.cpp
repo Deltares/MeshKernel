@@ -47,7 +47,7 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGr
 CurvilinearGrid CurvilinearGridSmoothing::Compute()
 {
     // Perform smoothing iterations
-    for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
+    for (size_t smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
@@ -62,8 +62,8 @@ CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()
     }
 
     // Points are coinciding, this no smoothing zone
-    if (m_lines[0].IsMGridLine() && m_lowerLeft.m_n == m_upperRight.m_n ||
-        m_lines[0].IsNGridLine() && m_lowerLeft.m_m == m_upperRight.m_m)
+    if ((m_lines[0].IsMGridLine() && m_lowerLeft.m_n == m_upperRight.m_n) ||
+        (m_lines[0].IsNGridLine() && m_lowerLeft.m_m == m_upperRight.m_m))
     {
         throw std::invalid_argument("CurvilinearGridSmoothing::Compute The points defining the smoothing area have the same direction of the smoothing line.");
     }
@@ -85,7 +85,7 @@ CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()
     m_upperRight = upperRightBlock;
 
     // Perform smoothing iterations
-    for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
+    for (size_t smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         SolveDirectional();
     }
@@ -97,9 +97,9 @@ void CurvilinearGridSmoothing::SolveDirectional()
 {
 
     // assign current nodal values to the m_gridNodesCache
-    for (auto m = 0; m < m_grid.m_gridNodes.size(); ++m)
+    for (size_t m = 0; m < m_grid.m_gridNodes.size(); ++m)
     {
-        for (auto n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
+        for (size_t n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
         {
             m_gridNodesCache[m][n] = m_grid.m_gridNodes[m][n];
         }
@@ -175,9 +175,9 @@ void CurvilinearGridSmoothing::Solve()
     double const b = 1.0 - a;
 
     // assign current nodal values to the m_gridNodesCache
-    for (auto m = 0; m < m_grid.m_gridNodes.size(); ++m)
+    for (size_t m = 0; m < m_grid.m_gridNodes.size(); ++m)
     {
-        for (auto n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
+        for (size_t n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
         {
             m_gridNodesCache[m][n] = m_grid.m_gridNodes[m][n];
         }

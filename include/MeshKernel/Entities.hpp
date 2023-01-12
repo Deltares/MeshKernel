@@ -246,7 +246,7 @@ namespace meshkernel
         {
             // Build the samples
             std::vector<Sample> samples(numSamples);
-            for (auto i = 0; i < samples.size(); ++i)
+            for (size_t i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
                 samples[i].y = (*samplesYCoordinate)[i];
@@ -303,7 +303,7 @@ namespace meshkernel
             faceCenters[n].y = facey[n];
         }
         return faceCenters;
-    };
+    }
 
     /// @brief Converts array of face centers to corresponding vector
     static std::vector<std::vector<size_t>> ConvertToFaceNodesVector(int num_faces, const int* face_nodes, const int* nodes_per_face)
@@ -324,6 +324,6 @@ namespace meshkernel
             result.emplace_back(nodes);
         }
         return result;
-    };
+    }
 
 } // namespace meshkernel

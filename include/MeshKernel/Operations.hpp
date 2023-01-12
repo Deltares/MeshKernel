@@ -125,7 +125,7 @@ namespace meshkernel
     template <typename T>
     [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
     {
-        for (auto n = 0; n < vec.size(); n++)
+        for (size_t n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
@@ -473,7 +473,7 @@ namespace meshkernel
     template <class T>
     void SwapVectorElements(std::vector<T>& v)
     {
-        for (auto i = 0; i < v.size() / 2; ++i)
+        for (size_t i = 0; i < v.size() / 2; ++i)
         {
             const auto a = v[i];
             v[i] = v[i + 1];

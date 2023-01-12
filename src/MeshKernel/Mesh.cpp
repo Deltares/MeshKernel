@@ -37,12 +37,12 @@ using meshkernel::Mesh;
 
 Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
-           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){};
+           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){}
 
 void Mesh::NodeAdministration()
 {
     // assume no duplicated links
-    for (auto e = 0; e < GetNumEdges(); e++)
+    for (size_t e = 0; e < GetNumEdges(); e++)
     {
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
@@ -59,7 +59,7 @@ void Mesh::NodeAdministration()
 
         // Search for previously connected edges
         auto alreadyAddedEdge = false;
-        for (auto i = 0; i < m_nodesNumEdges[firstNode]; ++i)
+        for (size_t i = 0; i < m_nodesNumEdges[firstNode]; ++i)
         {
             if (const auto currentEdge = m_edges[m_nodesEdges[firstNode][i]]; currentEdge.first == secondNode || currentEdge.second == secondNode)
             {
@@ -75,7 +75,7 @@ void Mesh::NodeAdministration()
 
         // Search for previously connected edges
         alreadyAddedEdge = false;
-        for (auto i = 0; i < m_nodesNumEdges[secondNode]; ++i)
+        for (size_t i = 0; i < m_nodesNumEdges[secondNode]; ++i)
         {
             if (const auto currentEdge = m_edges[m_nodesEdges[secondNode][i]]; currentEdge.first == firstNode || currentEdge.second == firstNode)
             {
@@ -91,7 +91,7 @@ void Mesh::NodeAdministration()
     }
 
     // resize
-    for (auto n = 0; n < GetNumNodes(); n++)
+    for (size_t n = 0; n < GetNumNodes(); n++)
     {
         m_nodesEdges[n].resize(m_nodesNumEdges[n]);
     }
@@ -117,7 +117,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
     // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
     size_t numInvalidNodes = 0;
-    for (auto n = 0; n < m_nodes.size(); ++n)
+    for (size_t n = 0; n < m_nodes.size(); ++n)
     {
         // invalidate nodes that are not connected
         if (!connectedNodes[n])
@@ -141,7 +141,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     std::vector<size_t> validNodesIndices(m_nodes.size());
     std::fill(validNodesIndices.begin(), validNodesIndices.end(), sizetMissingValue);
     size_t validIndex = 0;
-    for (auto n = 0; n < m_nodes.size(); ++n)
+    for (size_t n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
         {
@@ -190,14 +190,14 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    for (size_t n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto firstEdge = m_edges[firstEdgeIndex];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
         if (firstEdgeOtherNode != sizetMissingValue && firstEdgeOtherNode != secondNodeIndex)
         {
-            for (auto nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
+            for (size_t nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
                 const auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
                 auto secondEdge = m_edges[secondEdgeIndex];
@@ -214,7 +214,7 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     // add all valid edges starting at secondNode
     std::vector<size_t> secondNodeEdges(maximumNumberOfEdgesPerNode, sizetMissingValue);
     size_t numSecondNodeEdges = 0;
-    for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
+    for (size_t n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[secondNodeIndex][n];
         if (m_edges[edgeIndex].first != sizetMissingValue)
@@ -225,7 +225,7 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     }
 
     // add all valid edges starting at firstNode are assigned to the second node
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    for (size_t n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[firstNodeIndex][n];
         if (m_edges[edgeIndex].first != sizetMissingValue)
@@ -262,7 +262,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     std::vector<Point> filteredNodes(GetNumNodes());
     std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
     size_t index = 0;
-    for (auto i = 0; i < GetNumNodes(); ++i)
+    for (size_t i = 0; i < GetNumNodes(); ++i)
     {
         const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
         if (inPolygon)
@@ -280,14 +280,14 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
-    for (auto i = 0; i < filteredNodes.size(); ++i)
+    for (size_t i = 0; i < filteredNodes.size(); ++i)
     {
         nodesRtree.SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)
         {
-            for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
+            for (size_t j = 0; j < nodesRtree.GetQueryResultSize(); j++)
             {
                 const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
                 if (nodeIndexInFilteredNodes != i)
@@ -345,7 +345,7 @@ void Mesh::DeleteNode(size_t node)
         throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
     }
 
-    for (auto e = 0; e < m_nodesNumEdges[node]; e++)
+    for (size_t e = 0; e < m_nodesNumEdges[node]; e++)
     {
         const auto edgeIndex = m_nodesEdges[node][e];
         DeleteEdge(edgeIndex);
@@ -372,7 +372,7 @@ void Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
-    for (auto e = 0; e < numEdges; e++)
+    for (size_t e = 0; e < numEdges; e++)
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
@@ -417,7 +417,7 @@ size_t Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
     }
 
     size_t edgeIndex = sizetMissingValue;
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    for (size_t n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[localEdgeIndex], firstNodeIndex);
@@ -477,7 +477,7 @@ size_t Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNod
     }
 
     // resultSize > 0, a mask is applied
-    for (auto index = 0; index < resultSize; ++index)
+    for (size_t index = 0; index < resultSize; ++index)
     {
         const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
         if (oneDNodeMask[nodeIndex])
@@ -514,7 +514,7 @@ void Mesh::MoveNode(Point newPoint, size_t nodeindex)
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
     const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
-    for (auto n = 0; n < GetNumNodes(); ++n)
+    for (size_t n = 0; n < GetNumNodes(); ++n)
     {
         const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
         const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
@@ -535,7 +535,7 @@ bool Mesh::IsFaceOnBoundary(size_t face) const
 
     bool isFaceOnBoundary = false;
 
-    for (auto e = 0; e < GetNumFaceEdges(face); ++e)
+    for (size_t e = 0; e < GetNumFaceEdges(face); ++e)
     {
         const auto edge = m_facesEdges[face][e];
         if (IsEdgeOnBoundary(edge))
@@ -563,7 +563,7 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
         double phi0 = 0.0;
         double phi;
         std::fill(edgeAngles.begin(), edgeAngles.end(), 0.0);
-        for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
+        for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
         {
 
             auto firstNode = m_edges[m_nodesEdges[n][edgeIndex]].first;
@@ -785,7 +785,7 @@ double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
     }
 
     auto maxEdgeLength = std::numeric_limits<double>::lowest();
-    for (auto ee = 0; ee < m_nodesNumEdges[node]; ++ee)
+    for (size_t ee = 0; ee < m_nodesNumEdges[node]; ++ee)
     {
         const auto edge = m_nodesEdges[node][ee];
         maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);

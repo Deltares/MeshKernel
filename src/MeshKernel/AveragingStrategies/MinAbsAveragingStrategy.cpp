@@ -29,7 +29,7 @@
 
 namespace meshkernel::averaging
 {
-    void MinAbsAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
+    void MinAbsAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
     {
         m_result = std::min(m_result, std::abs(sampleValue));
     }
