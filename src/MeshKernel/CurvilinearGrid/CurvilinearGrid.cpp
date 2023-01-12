@@ -765,7 +765,7 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
 
     if (direction == CurvilinearGridLine::GridLineDirection::MDirection)
     {
-        int numEdges = 0.0;
+        double numEdges = 0.0;
         double leftDistance = 0.0;
         double rightDistance = 0.0;
         if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid())
@@ -782,7 +782,7 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
     }
     if (direction == CurvilinearGridLine::GridLineDirection::NDirection)
     {
-        int numEdges = 0;
+        double numEdges = 0.0;
         double bottomDistance = 0.0;
         double upDistance = 0.0;
         if (index.m_n > 0 && m_gridNodes[index.m_m][index.m_n - 1].IsValid())

@@ -845,7 +845,7 @@ CurvilinearGridFromSplines::FindFront()
         {
             if (!m_gridPoints[n][m].IsValid() || !m_gridPoints[n][m + 1].IsValid())
             {
-                frontPosition[m] = n - 1;
+                frontPosition[m] = static_cast<int>(n) - 1;
                 break;
             }
         }

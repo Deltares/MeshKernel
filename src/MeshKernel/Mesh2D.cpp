@@ -1670,7 +1670,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
                         edgeSecondNode = m_edges[edgeIndex].first;
                     }
 
-                    edgesIntersections[edgeIndex].polylineSegmentIndex = segmentIndex;
+                    edgesIntersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
                     edgesIntersections[edgeIndex].polylineSegmentDistance = polylineSegmentDistance;
                     edgesIntersections[edgeIndex].edgeFirstNode = edgeFirstNode;
                     edgesIntersections[edgeIndex].edgeSecondNode = edgeSecondNode;

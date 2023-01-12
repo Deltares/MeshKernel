@@ -450,13 +450,13 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = static_cast<double>(std::floor(pointAdimensionalCoordinate));
-        if (pointAdimensionalCoordinate - intCoordinate < eps)
+        const auto coordinate = std::floor(pointAdimensionalCoordinate);
+        if (pointAdimensionalCoordinate - coordinate < eps)
         {
-            return pointCoordinate = coordinates[intCoordinate];
+            return pointCoordinate = coordinates[static_cast<size_t>(coordinate)];
         }
 
-        const size_t low = intCoordinate;
+        const size_t low = static_cast<size_t>(coordinate);
         const size_t high = low + 1;
         const double a = high - pointAdimensionalCoordinate;
         const double b = pointAdimensionalCoordinate - low;

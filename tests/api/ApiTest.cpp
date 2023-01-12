@@ -42,8 +42,8 @@ public:
         // Set-up new mesh
         const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(n, m, delta);
         meshkernelapi::Mesh2D mesh2d{};
-        mesh2d.num_edges = num_edges;
-        mesh2d.num_nodes = num_nodes;
+        mesh2d.num_edges = static_cast<int>(num_edges);
+        mesh2d.num_nodes = static_cast<int>(num_nodes);
         mesh2d.node_x = node_x.get();
         mesh2d.node_y = node_y.get();
         mesh2d.edge_nodes = edge_nodes.get();
@@ -1212,7 +1212,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     geometryListOut.coordinates_x = CoordinatesOutX.get();
     geometryListOut.coordinates_y = CoordinatesOutY.get();
     geometryListOut.values = valuesOut.get();
-    geometryListOut.num_coordinates = totalNumPoints;
+    geometryListOut.num_coordinates = static_cast<int>(totalNumPoints);
     geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
 
     // Execute
@@ -1240,8 +1240,8 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
 
     const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
     meshkernelapi::Mesh2D mesh2d;
-    mesh2d.num_edges = num_edges;
-    mesh2d.num_nodes = num_nodes;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
     mesh2d.node_x = node_x.get();
     mesh2d.node_y = node_y.get();
     mesh2d.edge_nodes = edge_nodes.get();
@@ -2572,7 +2572,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
 
     int const locationType = 1;          // Nodes
     int const averagingMethodType = 1;   // Simple averaging
-    int const relativeSearchSize = 1.01; // The relative search size
+    double const relativeSearchSize = 1.01; // The relative search size
 
     meshkernelapi::Mesh2D mesh2d;
     auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
@@ -2795,8 +2795,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeRealMeshWithHexagon_ShouldOrtho
 
     const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshWithHexagon.nc");
     meshkernelapi::Mesh2D mesh2d;
-    mesh2d.num_edges = num_edges;
-    mesh2d.num_nodes = num_nodes;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
     mesh2d.node_x = node_x.get();
     mesh2d.node_y = node_y.get();
     mesh2d.edge_nodes = edge_nodes.get();
@@ -2848,9 +2848,9 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
     mesh2d.face_nodes = &face_nodes[0];
     mesh2d.nodes_per_face = &num_face_nodes[0];
 
-    mesh2d.num_nodes = nodes_x.size();
+    mesh2d.num_nodes = static_cast<int>(nodes_x.size());
     mesh2d.num_edges = static_cast<int>(edges.size() / 2);
-    mesh2d.num_faces = num_face_nodes.size();
+    mesh2d.num_faces = static_cast<int>(num_face_nodes.size());
 
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2898,7 +2898,7 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
     polygon.coordinates_x = xCoordinates.data();
     polygon.coordinates_y = yCoordinates.data();
     polygon.values = zCoordinates.data();
-    polygon.num_coordinates = xCoordinates.size();
+    polygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
     errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.get(), polygon);

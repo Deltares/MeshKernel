@@ -125,7 +125,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
         if (node_type[i] == nodeType || node_type[i] == 0)
         {
             nodes.emplace_back(node_x.get()[i], node_y.get()[i]);
-            nodeMapping[i] = nodes.size() - 1;
+            nodeMapping[i] = static_cast<int>(nodes.size()) - 1;
         }
     }
 
@@ -221,9 +221,9 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     {
         for (auto j = 0; j < m; ++j)
         {
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = indicesValues[i + 1][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i + 1][j]);
             edgeIndex++;
         }
     }
@@ -232,9 +232,9 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     {
         for (auto j = 0; j < m - 1; ++j)
         {
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j + 1];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
         }
     }

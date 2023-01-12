@@ -104,7 +104,7 @@ namespace meshkernel
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
             while (numFaces < 0)
             {
-                numFaces = estimatedNumberOfTriangles;
+                numFaces = static_cast<int>(estimatedNumberOfTriangles);
                 faceNodesFlat.resize(numFaces * 3);
                 edgeNodesFlat.resize(numFaces * 2);
                 faceEdgesFlat.resize(numFaces * 3);

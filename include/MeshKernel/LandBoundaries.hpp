@@ -173,7 +173,7 @@ namespace meshkernel
         /// @param[in] node              The node
         /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary,
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
-        std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(int landBoundaryIndex, const Point& node);
+        std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(size_t landBoundaryIndex, const Point& node);
 
         std::shared_ptr<Mesh2D> m_mesh;                               ///< A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;                         ///< A pointer to polygons

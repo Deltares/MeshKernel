@@ -27,7 +27,7 @@
 
 #include <map>
 #include <stdexcept>
-#include <string.h>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -76,7 +76,7 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static char exceptionMessage[512] = "";
+    static std::string exceptionMessage{};
     static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError();
 
     int HandleExceptions(const std::exception_ptr exceptionPtr)
@@ -88,12 +88,12 @@ namespace meshkernelapi
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
-            strcpy(exceptionMessage, e.what());
+            exceptionMessage = e.what();
             return InvalidGeometry;
         }
         catch (const std::exception& e)
         {
-            strcpy(exceptionMessage, e.what());
+            exceptionMessage = e.what();
             return Exception;
         }
     }
@@ -404,8 +404,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            curvilinearGrid.num_n = meshKernelState[meshKernelId].m_curvilinearGrid->m_numN;
-            curvilinearGrid.num_m = meshKernelState[meshKernelId].m_curvilinearGrid->m_numM;
+            curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numN);
+            curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numM);
         }
         catch (...)
         {
@@ -1023,9 +1023,9 @@ namespace meshkernelapi
                 const auto& edgeIntersection = edgeIntersections[i];
 
                 // edge information must be stored only once
-                edgeNodesIntersections[edgeNodesCount] = edgeIntersection.edgeFirstNode;
+                edgeNodesIntersections[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeFirstNode);
                 edgeNodesCount++;
-                edgeNodesIntersections[edgeNodesCount] = edgeIntersection.edgeSecondNode;
+                edgeNodesIntersections[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeSecondNode);
                 edgeNodesCount++;
 
                 // the edge count
@@ -1041,13 +1041,13 @@ namespace meshkernelapi
             {
                 for (size_t i = 0; i < intersection.edgeIndexses.size(); ++i)
                 {
-                    faceIndexes[faceEdgesCount] = intersection.faceIndex;
+                    faceIndexes[faceEdgesCount] = static_cast<int>(intersection.faceIndex);
                     faceEdgesCount++;
                 }
 
                 for (const auto& edgeNode : intersection.edgeNodes)
                 {
-                    faceNodesIntersections[faceNodesCount] = edgeNode;
+                    faceNodesIntersections[faceNodesCount] = static_cast<int>(edgeNode);
                     faceNodesCount++;
                 }
             }
@@ -1178,7 +1178,7 @@ namespace meshkernelapi
             {
                 if (nodeMask[i] > 0)
                 {
-                    selectedNodes[index] = i;
+                    selectedNodes[index] = static_cast<int>(i);
                     index++;
                 }
             }
@@ -1649,7 +1649,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
-        error_message = exceptionMessage;
+        error_message = exceptionMessage.c_str();
         return Success;
     }
 
