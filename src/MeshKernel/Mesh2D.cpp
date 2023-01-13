@@ -880,8 +880,8 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 
         double minCosPhiSmallTriangle = 1.0;
         size_t nodeToPreserve = sizetMissingValue;
-        size_t firstNodeToMerge;
-        size_t secondNodeToMerge;
+        size_t firstNodeToMerge = sizetMissingValue;
+        size_t secondNodeToMerge = sizetMissingValue;
         size_t thirdEdgeSmallTriangle = sizetMissingValue;
         for (size_t e = 0; e < numNodesInTriangle; ++e)
         {
