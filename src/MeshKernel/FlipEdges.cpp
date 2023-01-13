@@ -133,10 +133,10 @@ void FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            size_t firstEdgeLeftFace;
-            size_t firstEdgeRightFace;
-            size_t secondEdgeLeftFace;
-            size_t secondEdgeRightFace;
+            size_t firstEdgeLeftFace = sizetMissingValue;
+            size_t firstEdgeRightFace = sizetMissingValue;
+            size_t secondEdgeLeftFace = sizetMissingValue;
+            size_t secondEdgeRightFace = sizetMissingValue;
             for (size_t i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
