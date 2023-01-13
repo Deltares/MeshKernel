@@ -38,7 +38,7 @@ TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>&
                                                        const std::vector<Sample>& samples,
                                                        Projection projection) : m_locations(m_locations),
                                                                                 m_samples(samples),
-                                                                                m_projection(projection){}
+                                                                                m_projection(projection) {}
 
 void TriangulationInterpolation::Compute()
 {

@@ -33,7 +33,7 @@
 
 using meshkernel::Splines;
 
-Splines::Splines(Projection projection) : m_projection(projection){}
+Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
 {

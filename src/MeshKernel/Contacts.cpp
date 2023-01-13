@@ -378,7 +378,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             // the face is not inside a polygon
-            if (!facePolygonIndices[face]) //if (facePolygonIndices[face] == sizetMissingValue) : always evals to false + compiler warning
+            if (!facePolygonIndices[face]) // if (facePolygonIndices[face] == sizetMissingValue) : always evals to false + compiler warning
             {
                 isValidFace[face] = false;
                 continue;

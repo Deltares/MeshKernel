@@ -34,7 +34,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridFromPolygon;
 
-CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){}
+CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon) {}
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
                                                     size_t secondNode,

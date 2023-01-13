@@ -48,7 +48,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters) : m_mesh(mesh),
                                                                                                           m_polygons(polygon),
-                                                                                                          m_meshRefinementParameters(meshRefinementParameters){}
+                                                                                                          m_meshRefinementParameters(meshRefinementParameters) {}
 
 void MeshRefinement::Compute()
 {

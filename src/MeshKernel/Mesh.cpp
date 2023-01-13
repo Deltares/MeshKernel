@@ -37,7 +37,7 @@ using meshkernel::Mesh;
 
 Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
-           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){}
+           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection) {}
 
 void Mesh::NodeAdministration()
 {

@@ -30,7 +30,7 @@
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
-                                 Projection projection) : m_projection(projection) , m_polyLines(polyLines)
+                                 Projection projection) : m_projection(projection), m_polyLines(polyLines)
 {
     m_chainages.resize(m_polyLines.size());
 
