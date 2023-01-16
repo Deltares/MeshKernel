@@ -844,7 +844,6 @@ void Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
 void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 {
     // On the second part, the small triangles at the boundaries are checked
-    const double minCosPhi = 0.2;
     std::vector<std::vector<size_t>> smallTrianglesNodes;
     for (size_t face = 0; face < GetNumFaces(); ++face)
     {

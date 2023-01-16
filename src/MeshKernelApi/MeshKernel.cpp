@@ -25,9 +25,9 @@
 //
 //------------------------------------------------------------------------------
 
+#include <cstring>
 #include <map>
 #include <stdexcept>
-#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -76,7 +76,7 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static std::string exceptionMessage{};
+    static char exceptionMessage[512] = "";
     static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError();
 
     int HandleExceptions(const std::exception_ptr exceptionPtr)
@@ -88,12 +88,12 @@ namespace meshkernelapi
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
-            exceptionMessage = e.what();
+            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return InvalidGeometry;
         }
         catch (const std::exception& e)
         {
-            exceptionMessage = e.what();
+            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return Exception;
         }
     }
@@ -1649,7 +1649,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
-        error_message = exceptionMessage.c_str();
+        error_message = exceptionMessage;
         return Success;
     }
 
