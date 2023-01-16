@@ -61,13 +61,19 @@ endif()
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
-# NetCDF
+# NetCDF:
+# Even though only the dlls are needed, use find_package to cleanly determine:
+# - the install prefix, which allows constructing and setting the path to the bin directory
+# - the include directory
+# Invoke find_package quietly to allow issuing a descriptive configuration error
 if(WIN32)
-  find_path(
-    NETCDF_BIN_PATH
-    NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}netcdf${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    HINTS "${CMAKE_CURRENT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin")
-  message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
+find_package(netCDF QUIET)
+  if (netCDF_FOUND)
+    set (netCDF_BIN_DIR "${netCDF_INSTALL_PREFIX}/bin")
+    include_directories(${netCDF_INCLUDE_DIR})
+  else()
+    message(FATAL_ERROR "Could not find NetCDF. Make sure it is installed and available in the system path.")
+  endif()
 endif()
 
 # OpenMP

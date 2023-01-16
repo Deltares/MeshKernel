@@ -28,14 +28,24 @@ if(WIN32)
     GLOB
     NETCDF_FILES_LIST
     CONFIGURE_DEPENDS
-    "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${netCDF_BIN_DIR}/*.dll"
   )
   foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
     add_custom_command(
-      TARGET ${target_name} 
+      TARGET ${target_name}
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
               "$<TARGET_FILE_DIR:${target_name}>"
-      COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
+      COMMENT "Copying NetCDF lib file: ${CurrentNetcdfLibFile}")
   endforeach()
+endif()
+
+# Set the working directory in debug mode so that the test exe knows where the NetCDF dlls are located
+if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set_target_properties(
+    ${target_name}
+    PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY
+    "${CMAKE_CURRENT_BINARY_DIR}/Debug"
+  )
 endif()

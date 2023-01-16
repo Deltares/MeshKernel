@@ -3,7 +3,7 @@
 
 #include <boost/dll.hpp>
 
-#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include "netcdf.h"
 
 #include <TestUtils/MakeMeshes.hpp>
 
