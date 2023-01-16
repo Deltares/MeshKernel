@@ -213,7 +213,7 @@ namespace meshkernel
     /// @brief Describes an edge with two indices
     typedef std::pair<size_t, size_t> Edge;
 
-    /// @brief Get the index of the node on the other side of the edge
+    /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
     /// @returns Node index of other node of the edge

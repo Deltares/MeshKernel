@@ -441,7 +441,8 @@ TEST(Mesh2D, GetNodeIndexShouldTriggerNodesRTreeBuild)
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
     const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
-    ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
+
+    ASSERT_EQ(index, 3);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());
@@ -457,7 +458,8 @@ TEST(Mesh2D, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
     const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
-    ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
+
+    ASSERT_EQ(index, 1);
 
     // m_nodesRTree is not build when searching for edges
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());

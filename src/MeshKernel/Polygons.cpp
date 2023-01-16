@@ -389,7 +389,7 @@ std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
 
 std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const
 {
-    std::vector<bool> result(points.size());
+    std::vector<bool> result(points.size(), false);
     for (size_t i = 0; i < points.size(); ++i)
     {
         const auto [isInPolygon, polygonIndex] = IsPointInPolygons(points[i]);

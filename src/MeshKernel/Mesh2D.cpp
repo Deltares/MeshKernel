@@ -898,14 +898,14 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
             if (cosphi < minCosPhiSmallTriangle)
             {
                 minCosPhiSmallTriangle = cosphi;
-                firstNodeToMerge = k0;
                 nodeToPreserve = k1;
+                firstNodeToMerge = k0;
                 secondNodeToMerge = k2;
                 thirdEdgeSmallTriangle = m_facesEdges[face][nextEdge];
             }
         }
 
-        if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle != sizetMissingValue && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
+        if (thirdEdgeSmallTriangle != sizetMissingValue && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
         {
             smallTrianglesNodes.emplace_back(std::initializer_list<size_t>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
