@@ -802,7 +802,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
 
         for (size_t n = 0; n < numFaceNodes; n++)
         {
-            double theta = dTheta * (n - static_cast<int>(nodeIndex));
+            double theta = dTheta * (static_cast<int>(n) - static_cast<int>(nodeIndex));
             double xip = radius - radius * std::cos(theta);
             double ethap = -radius * std::sin(theta);
 
