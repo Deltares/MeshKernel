@@ -63,17 +63,18 @@ include_directories(${Boost_INCLUDE_DIR})
 
 # NetCDF:
 # Even though only the dlls are needed, use find_package to cleanly determine:
-# - the install prefix, which allows constructing and setting the path to the bin directory
+# - the install prefix, which allows constructing and setting the path to the bin directory (win only)
 # - the include directory
 # Invoke find_package quietly to allow issuing a descriptive configuration error
-if(WIN32)
 find_package(netCDF QUIET)
-  if (netCDF_FOUND)
+if (netCDF_FOUND)
+  if(WIN32)
+    message(STATUS "Found NetCDF in ${netCDF_INSTALL_PREFIX}")
     set (netCDF_BIN_DIR "${netCDF_INSTALL_PREFIX}/bin")
-    include_directories(${netCDF_INCLUDE_DIR})
-  else()
-    message(FATAL_ERROR "Could not find NetCDF. Make sure it is installed and available in the system path.")
   endif()
+  include_directories(${netCDF_INCLUDE_DIR})
+else()
+  message(FATAL_ERROR "Could not find NetCDF. Please make sure it is installed and available in the system path.")
 endif()
 
 # OpenMP
