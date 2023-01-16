@@ -48,9 +48,10 @@ A mesh can be refined in areas based on samples or polygon selections.
 ## Build
 
 The requirements are:
-- CMake 3.19 or higher
+- CMake 3.14 or higher
 - A C++17 compatible compiler
 - The Boost libraries
+- NetCDF-C Libraries
 - Git
 - Doxygen (optional)
 
@@ -64,6 +65,17 @@ Once installed, modify boost environmental variables accordingly. For example:
 BOOST_INCLUDEDIR=C:\Apps\boost_1_74_0
 BOOST_LIBRARYDIR=C:\Apps\boost_1_74_0\lib64-msvc-14.2
 ```
+
+Under Linux, NetCDF can be installed from the distro's software repository. For example, under Ubuntu:
+```powershell
+sudo apt-get install libnetcdf-dev
+```
+Under windows, precompiled binaries are available here:
+
+https://downloads.unidata.ucar.edu/netcdf/
+
+When prompted during installation, allow the installer to add NetCDF to the system PATH. This can be also done later manually.
+
 ### IDE
 To use an IDE, such as Visual Studio:
 

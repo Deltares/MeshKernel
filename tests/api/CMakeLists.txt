@@ -31,15 +31,20 @@ add_test(NAME MeshKernelApiTests COMMAND MeshKernelApiTests)
 # On Windows we bundle the netcdf dlls and then copy them to the target file
 # directory
 if(WIN32)
-  file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS
-       "${PROJECT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin/*.dll")
+  file(
+    GLOB
+    NETCDF_FILES_LIST
+    CONFIGURE_DEPENDS
+    "${netCDF_BIN_DIR}/*.dll"
+  )
   foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
     add_custom_command(
       TARGET MeshKernelApiTests
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
               "$<TARGET_FILE_DIR:MeshKernelApiTests>"
-      COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
+      COMMENT "Copying NetCDF lib file: ${CurrentNetcdfLibFile}"
+    )
   endforeach()
 endif()
 
@@ -49,4 +54,15 @@ add_custom_command(
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MeshKernelApi>"
           "$<TARGET_FILE_DIR:MeshKernelApiTests>"
-  COMMENT "Copying MeshKernel shared library")
+  COMMENT "Copying MeshKernel shared library"
+  )
+
+  # Set the working directory in debug mode so that the test exe knows where the NetCDF dlls are located
+if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+set_target_properties(
+  MeshKernelApiTests
+  PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY
+  "${CMAKE_CURRENT_BINARY_DIR}/Debug"
+)
+endif()
