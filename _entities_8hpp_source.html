@@ -291,7 +291,7 @@ $(function() {
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        {</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            <span class="comment">// Build the samples</span></div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            std::vector&lt;Sample&gt; samples(numSamples);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; samples.size(); ++i)</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; samples.size(); ++i)</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            {</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;                samples[i].x = (*samplesXCoordinate)[i];</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                samples[i].y = (*samplesYCoordinate)[i];</div>
@@ -344,7 +344,7 @@ $(function() {
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            faceCenters[n].y = facey[n];</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        }</div>
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <span class="keywordflow">return</span> faceCenters;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    };</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    }</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; </div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keyword">static</span> std::vector&lt;std::vector&lt;size_t&gt;&gt; ConvertToFaceNodesVector(<span class="keywordtype">int</span> num_faces, <span class="keyword">const</span> <span class="keywordtype">int</span>* face_nodes, <span class="keyword">const</span> <span class="keywordtype">int</span>* nodes_per_face)</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    {</div>
@@ -364,7 +364,7 @@ $(function() {
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            result.emplace_back(nodes);</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        }</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    };</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    }</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160; </div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
