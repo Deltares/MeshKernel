@@ -66,11 +66,8 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 find_package(netCDF REQUIRED)
 if (netCDF_FOUND)
   message(STATUS "Found NetCDF: in ${netCDF_INSTALL_PREFIX} (found version \"${NetCDFVersion}\")")
-# Invoke find_package quietly to allow issuing a descriptive configuration error
-find_package(netCDF QUIET)
-if (netCDF_FOUND)
-  message(STATUS "Found NetCDF: in ${netCDF_INSTALL_PREFIX} (found version \"${NetCDFVersion}\")")
 endif()
+#include_directories(${netCDF_INCLUDE_DIR})
 
 # OpenMP
 find_package(OpenMP REQUIRED)

@@ -11,7 +11,7 @@ add_library(UtilsStatic STATIC ${UTILS_HEADER_LIST} ${UTILS_SOURCE_LIST})
 # Should be linked to the main (static) library
 target_link_libraries(UtilsStatic PRIVATE MeshKernel)
 
+target_include_directories(UtilsStatic PRIVATE ${netCDF_INCLUDE_DIR})
+
 # Expose the interface of the utils library
 target_include_directories(UtilsStatic PUBLIC include)
-
-target_include_directories(UtilsStatic PUBLIC ${netCDF_INCLUDE_DIR})

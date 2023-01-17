@@ -12,8 +12,6 @@ if (UNIX)
    target_link_libraries(${target_name} PUBLIC ${CMAKE_DL_LIBS})
 endif (UNIX)
 
-target_include_directories(${target_name} PRIVATE ${netCDF_INCLUDE_DIR})
-
 # Make sure that coverage information is produced when using gcc
 if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties( ${target_name} PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
