@@ -13,3 +13,5 @@ target_link_libraries(UtilsStatic PRIVATE MeshKernel)
 
 # Expose the interface of the utils library
 target_include_directories(UtilsStatic PUBLIC include)
+
+target_include_directories(UtilsStatic PUBLIC ${netCDF_INCLUDE_DIR})

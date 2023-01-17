@@ -15,6 +15,8 @@ if (UNIX)
    target_link_libraries(MeshKernelApiTests PUBLIC ${CMAKE_DL_LIBS})
 endif (UNIX)
 
+target_include_directories(MeshKernelApiTests PRIVATE ${netCDF_INCLUDE_DIR})
+
 # Add precompiled header to speed up compilation
 target_precompile_headers(MeshKernelApiTests PRIVATE <exception> <memory> <numeric>)
 
@@ -35,7 +37,7 @@ if(WIN32)
     GLOB
     NETCDF_FILES_LIST
     CONFIGURE_DEPENDS
-    "${netCDF_BIN_DIR}/*.dll"
+    "${netCDF_INSTALL_PREFIX}/bin/*.dll"
   )
   foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
     add_custom_command(
