@@ -38,9 +38,8 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Mesh2D ctor
+        /// @brief Mesh2D constructor
         /// @brief mesh
-        /// @returns
         explicit Smoother(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Computes the smoother weights

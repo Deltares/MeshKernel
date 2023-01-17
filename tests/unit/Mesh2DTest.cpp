@@ -383,7 +383,7 @@ TEST(Mesh2D, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->BuildTree(meshkernel::MeshLocations::Nodes);
-    const auto newNodeIndex = mesh->InsertNode(newPoint);
+    mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     mesh->DeleteNode(0);
@@ -440,7 +440,9 @@ TEST(Mesh2D, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
+    const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
+
+    ASSERT_EQ(index, 3);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());
@@ -455,7 +457,9 @@ TEST(Mesh2D, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
-    const auto edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
+    const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
+
+    ASSERT_EQ(index, 1);
 
     // m_nodesRTree is not build when searching for edges
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());

@@ -32,7 +32,7 @@ namespace meshkernel::averaging
 
     SimpleAveragingStrategy::SimpleAveragingStrategy(size_t minNumSamples) : m_minNumPoints(minNumSamples) {}
 
-    void SimpleAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
+    void SimpleAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
     {
         m_result += sampleValue;
         m_nAdds += 1;

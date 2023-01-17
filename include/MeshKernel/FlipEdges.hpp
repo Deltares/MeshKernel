@@ -47,7 +47,6 @@ namespace meshkernel
         /// @param[in] landBoundary          The land boundary
         /// @param[in] triangulateFaces      Whether to triangulate all faces or not
         /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
-        /// @returns If the method succeeded
         FlipEdges(std::shared_ptr<Mesh2D> mesh,
                   std::shared_ptr<LandBoundaries> landBoundary,
                   bool triangulateFaces,

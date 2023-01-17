@@ -38,8 +38,7 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Ctor
-        /// @returns
+        /// @brief Constructor
         explicit Orthogonalizer(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Computes the smoother weights and the right hans side

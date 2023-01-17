@@ -47,14 +47,14 @@ void Orthogonalizer::Compute()
     // Compute mesh aspect ratios
     m_mesh->ComputeAspectRatios(m_aspectRatios);
 
-    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         if (m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2)
         {
             continue;
         }
 
-        for (auto nn = 0; nn < m_mesh->m_nodesNumEdges[n]; nn++)
+        for (size_t nn = 0; nn < m_mesh->m_nodesNumEdges[n]; nn++)
         {
 
             const auto edgeIndex = m_mesh->m_nodesEdges[n][nn];

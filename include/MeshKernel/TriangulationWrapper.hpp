@@ -77,7 +77,7 @@ namespace meshkernel
 
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
-            for (auto i = 0; i < inputNodes.size(); ++i)
+            for (size_t i = 0; i < inputNodes.size(); ++i)
             {
                 xLocalPolygon[i] = inputNodes[i].x;
                 yLocalPolygon[i] = inputNodes[i].y;
@@ -104,7 +104,7 @@ namespace meshkernel
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
             while (numFaces < 0)
             {
-                numFaces = estimatedNumberOfTriangles;
+                numFaces = static_cast<int>(estimatedNumberOfTriangles);
                 faceNodesFlat.resize(numFaces * 3);
                 edgeNodesFlat.resize(numFaces * 2);
                 faceEdgesFlat.resize(numFaces * 3);
@@ -135,7 +135,7 @@ namespace meshkernel
 
             // Create nodes
             m_nodes.resize(m_numNodes);
-            for (auto i = 0; i < m_numNodes; ++i)
+            for (size_t i = 0; i < m_numNodes; ++i)
             {
                 m_nodes[i] = {xNodesFlat[i], yNodesFlat[i]};
             }
@@ -144,7 +144,7 @@ namespace meshkernel
             ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, sizetMissingValue);
             ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, sizetMissingValue);
             size_t faceCounter = 0;
-            for (auto f = 0; f < m_numFaces; ++f)
+            for (size_t f = 0; f < m_numFaces; ++f)
             {
                 m_faceNodes[f][0] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
                 m_faceEdges[f][0] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
@@ -165,7 +165,7 @@ namespace meshkernel
 
             ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, sizetMissingValue);
             size_t edgeCounter = 0;
-            for (auto e = 0; e < m_numEdges; ++e)
+            for (size_t e = 0; e < m_numEdges; ++e)
             {
                 m_edgeNodes[e][0] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
                 edgeCounter++;
@@ -175,10 +175,10 @@ namespace meshkernel
 
             ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, sizetMissingValue);
             edgeCounter = 0;
-            for (auto f = 0; f < m_numFaces; ++f)
+            for (size_t f = 0; f < m_numFaces; ++f)
             {
 
-                for (auto n = 0; n < numNodesInTriangle; ++n)
+                for (size_t n = 0; n < numNodesInTriangle; ++n)
                 {
                     auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
                     edgeCounter++;

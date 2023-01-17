@@ -53,8 +53,8 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
     }
 
     // Points are coinciding, no attraction/repulsion zone defined
-    if (m_lines[0].IsMGridLine() && m_lowerLeft.m_n == m_upperRight.m_n ||
-        m_lines[0].IsNGridLine() && m_lowerLeft.m_m == m_upperRight.m_m)
+    if ((m_lines[0].IsMGridLine() && m_lowerLeft.m_n == m_upperRight.m_n) ||
+        (m_lines[0].IsNGridLine() && m_lowerLeft.m_m == m_upperRight.m_m))
     {
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute The points defining the attraction area have the same direction of the attraction line.");
     }

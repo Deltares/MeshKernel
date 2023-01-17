@@ -37,7 +37,7 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
     // Execute
     contacts.ComputeSingleContacts(onedNodeMask, polygon);
 
-    //Assert
+    // Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(5, contacts.m_mesh2dIndices.size());
 
@@ -79,7 +79,7 @@ TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
     // Execute
     contacts.ComputeMultipleContacts(onedNodeMask);
 
-    //Assert
+    // Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(5, contacts.m_mesh2dIndices.size());
 
@@ -127,7 +127,7 @@ TEST(Contacts, ComputeContactsWithPoints)
     // Execute
     contacts.ComputeContactsWithPoints(onedNodeMask, pointsToConnect);
 
-    //Assert
+    // Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(4, contacts.m_mesh2dIndices.size());
 
@@ -196,7 +196,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
         {752.151462, 786.57487}};
 
     std::vector<meshkernel::Edge> edges;
-    for (auto index = 0; index < nodes.size() - 1; ++index)
+    for (size_t index = 0; index < nodes.size() - 1; ++index)
     {
         edges.emplace_back(meshkernel::Edge{index, index + 1});
     }
@@ -257,7 +257,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
     // Execute
     contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
 
-    //Assert
+    // Assert
     ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(6, contacts.m_mesh2dIndices.size());
 
@@ -305,7 +305,7 @@ TEST(Contacts, ComputeBoundaryContacts)
     // Execute
     contacts.ComputeBoundaryContacts(onedNodeMask, polygon, 200.0);
 
-    //Assert
+    // Assert
     ASSERT_EQ(8, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(8, contacts.m_mesh2dIndices.size());
 

@@ -38,7 +38,7 @@ TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>&
                                                        const std::vector<Sample>& samples,
                                                        Projection projection) : m_locations(m_locations),
                                                                                 m_samples(samples),
-                                                                                m_projection(projection){};
+                                                                                m_projection(projection) {}
 
 void TriangulationInterpolation::Compute()
 {
@@ -69,10 +69,10 @@ void TriangulationInterpolation::Compute()
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
 
-    for (auto f = 0; f < triangulationWrapper.m_numFaces; ++f)
+    for (size_t f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
         // compute triangle polygons
-        for (auto n = 0; n < numNodesInTriangle; ++n)
+        for (size_t n = 0; n < numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.m_faceNodes[f][n];
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -91,7 +91,7 @@ void TriangulationInterpolation::Compute()
     const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
 
     // loop over locations
-    for (auto n = 0; n < m_locations.size(); ++n)
+    for (size_t n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsEqual(m_results[n], doubleMissingValue))
@@ -123,7 +123,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (auto i = 0; i < numNodesInTriangle; ++i)
+            for (size_t i = 0; i < numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.m_faceEdges[triangle][i];
                 if (triangulationWrapper.m_edgesFaces[edge][1] == 0)

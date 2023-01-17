@@ -99,11 +99,11 @@ CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
-    for (auto n = 0; n < m_grid.m_numN; ++n)
+    for (size_t n = 0; n < m_grid.m_numN; ++n)
     {
         size_t startM = sizetMissingValue;
         int nextVertical = 0;
-        for (auto m = 0; m < m_grid.m_numM; ++m)
+        for (size_t m = 0; m < m_grid.m_numM; ++m)
         {
             const auto nodeType = m_grid.m_gridNodesTypes[m][n];
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)
@@ -178,11 +178,11 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
     // m gridlines (vertical)
-    for (auto m = 0; m < m_grid.m_numM; ++m)
+    for (size_t m = 0; m < m_grid.m_numM; ++m)
     {
         size_t startN = sizetMissingValue;
         int nextHorizontal = 0;
-        for (auto n = 0; n < m_grid.m_numN; ++n)
+        for (size_t n = 0; n < m_grid.m_numN; ++n)
         {
             const auto nodeType = m_grid.m_gridNodesTypes[m][n];
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::BottomRight)

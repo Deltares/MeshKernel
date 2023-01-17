@@ -72,4 +72,4 @@ namespace meshkernel
         size_t m_m; ///< Columns
         size_t m_n; ///< Rows
     };
-}; // namespace meshkernel
+} // namespace meshkernel
