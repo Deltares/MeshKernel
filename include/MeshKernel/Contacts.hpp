@@ -130,8 +130,13 @@ namespace meshkernel
                                      const Polygons& polygons,
                                      double searchRadius);
 
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        /// @brief Gets the 1d mesh indices
+        /// @return Vector of 1d mesh indices
+        std::vector<size_t> const& Mesh1dIndices() const { return m_mesh1dIndices; }
+
+        /// @brief Gets the 2d mesh indices
+        /// @return Vector of 2d mesh indices
+        std::vector<size_t> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
@@ -146,7 +151,9 @@ namespace meshkernel
         /// @return True if the contact is crossing an existing contact
         [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
 
-        std::shared_ptr<Mesh1D> m_mesh1d; ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d; ///< The 2-d mesh to connect
+        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
+        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
+        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
     };
 } // namespace meshkernel
