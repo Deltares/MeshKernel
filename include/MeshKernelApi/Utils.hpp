@@ -175,7 +175,7 @@ namespace meshkernelapi
     /// @brief Converts a vector<Point> to a GeometryList
     /// @param[in]  pointVector The point vector to convert
     /// @param[out] result      The converted geometry list
-    static void ConvertPointVectorToGeometryList(std::vector<meshkernel::Point> pointVector, GeometryList& result)
+    static void ConvertPointVectorToGeometryList(std::vector<meshkernel::Point> const& pointVector, GeometryList& result)
     {
         if (pointVector.size() < static_cast<size_t>(result.num_coordinates))
         {
