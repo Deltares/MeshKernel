@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_contacts-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::Contacts Class Reference</div>  </div>
@@ -111,17 +110,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ec01984b66446a3db7cd48de077e5df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">ComputeBoundaryContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double searchRadius)</td></tr>
 <tr class="memdesc:a4ec01984b66446a3db7cd48de077e5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">More...</a><br /></td></tr>
 <tr class="separator:a4ec01984b66446a3db7cd48de077e5df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:aec43d442a7813e0ed828e53e8053364e"><td class="memItemLeft" align="right" valign="top"><a id="aec43d442a7813e0ed828e53e8053364e"></a>
-std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#aec43d442a7813e0ed828e53e8053364e">m_mesh2dIndices</a></td></tr>
-<tr class="memdesc:aec43d442a7813e0ed828e53e8053364e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The indices of the connected 2-d faces. <br /></td></tr>
-<tr class="separator:aec43d442a7813e0ed828e53e8053364e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a509ac58fcad8f8abf8edc9de53b9f7cb"><td class="memItemLeft" align="right" valign="top"><a id="a509ac58fcad8f8abf8edc9de53b9f7cb"></a>
-std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a509ac58fcad8f8abf8edc9de53b9f7cb">m_mesh1dIndices</a></td></tr>
-<tr class="memdesc:a509ac58fcad8f8abf8edc9de53b9f7cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The indices of the connected 1-d nodes. <br /></td></tr>
-<tr class="separator:a509ac58fcad8f8abf8edc9de53b9f7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cfee1f3e47ed4550a9f5823dd760229"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a9cfee1f3e47ed4550a9f5823dd760229">Mesh1dIndices</a> () const</td></tr>
+<tr class="memdesc:a9cfee1f3e47ed4550a9f5823dd760229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 1d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#a9cfee1f3e47ed4550a9f5823dd760229">More...</a><br /></td></tr>
+<tr class="separator:a9cfee1f3e47ed4550a9f5823dd760229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ae756e610f1c155ba9dbbe12b95d7f16e">Mesh2dIndices</a> () const</td></tr>
+<tr class="memdesc:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 2d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#ae756e610f1c155ba9dbbe12b95d7f16e">More...</a><br /></td></tr>
+<tr class="separator:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an 1d-2d contacts. </p>
@@ -372,6 +366,62 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a9cfee1f3e47ed4550a9f5823dd760229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cfee1f3e47ed4550a9f5823dd760229">&#9670;&nbsp;</a></span>Mesh1dIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;size_t&gt; const&amp; meshkernel::Contacts::Mesh1dIndices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the 1d mesh indices. </p>
+<dl class="section return"><dt>Returns</dt><dd>Vector of 1d mesh indices </dd></dl>
+
+</div>
+</div>
+<a id="ae756e610f1c155ba9dbbe12b95d7f16e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae756e610f1c155ba9dbbe12b95d7f16e">&#9670;&nbsp;</a></span>Mesh2dIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;size_t&gt; const&amp; meshkernel::Contacts::Mesh2dIndices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the 2d mesh indices. </p>
+<dl class="section return"><dt>Returns</dt><dd>Vector of 2d mesh indices </dd></dl>
 
 </div>
 </div>
