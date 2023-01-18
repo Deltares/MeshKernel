@@ -27,49 +27,47 @@
 
 #pragma once
 
+#include <cmath>
 #include <limits>
-
-#ifndef M_PI
-#define M_PI (3.14159265358979323846)
-#endif
+#include <math.h>
 
 namespace meshkernel
 {
     // missing values
-    const double innerOuterSeparator = -998.0;                                     ///< Double value used to separate the inner part of a polygon from its outer part
-    const double doubleMissingValue = -999.0;                                      ///< Double value used as missing value
-    const int intMissingValue = -999;                                              ///< Integer value used as missing value
-    const std::size_t sizetMissingValue = std::numeric_limits<std::size_t>::max(); ///< std::size_t missing value used for invalid indices
+    constexpr double innerOuterSeparator = -998.0;                           ///< Double value used to separate the inner part of a polygon from its outer part
+    constexpr double doubleMissingValue = -999.0;                            ///< Double value used as missing value
+    constexpr int intMissingValue = -999;                                    ///< Integer value used as missing value
+    constexpr size_t sizetMissingValue = std::numeric_limits<size_t>::max(); ///< std::size_t missing value used for invalid indices
 
     // often used values
-    const double squareRootOfThree = 1.73205080756887729352; ///< The result of sqrt(3)
-    const double oneThird = 1.0 / 3.0;                       ///< The result of 1 / 3
+    static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
+    constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
 
     // geometric constants
-    const double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
-    const double raddeg_hp = 180.0 / M_PI;                   ///< Conversion factor from radians to degrees(180 / pi)
-    const double earth_radius = 6378137.0;                   ///< Earth radius(m)
-    const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
-    const double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
+    constexpr double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
+    constexpr double raddeg_hp = 180.0 / M_PI;                   ///< Conversion factor from radians to degrees(180 / pi)
+    constexpr double earth_radius = 6378137.0;                   ///< Earth radius(m)
+    constexpr double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
+    constexpr double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
 
     // mesh constants
-    const double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
-    const std::size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
-    const std::size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
-    const std::size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
-    const std::size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-    const double minimumCellArea = 1e-12;                                              ///< Minimum cell area
-    const double weightCircumCenter = 1.0;                                             ///< Weight circum center
-    const std::size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
-    const std::size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
+    constexpr double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
+    constexpr std::size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
+    constexpr std::size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
+    constexpr std::size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
+    constexpr std::size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+    constexpr double minimumCellArea = 1e-12;                                              ///< Minimum cell area
+    constexpr double weightCircumCenter = 1.0;                                             ///< Weight circum center
+    constexpr std::size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
+    constexpr std::size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
 
     // orthogonalization
-    const double minimumEdgeLength = 1e-4;                   ///< Minimum edge length
-    const double curvilinearToOrthogonalRatio = 0.5;         ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-    const double orthogonalizationToSmoothingFactor = 0.975; ///< Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
+    constexpr double minimumEdgeLength = 1e-4;                   ///< Minimum edge length
+    constexpr double curvilinearToOrthogonalRatio = 0.5;         ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+    constexpr double orthogonalizationToSmoothingFactor = 0.975; ///< Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
 
     // physical constants
-    const double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
+    constexpr double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
 
     ///@brief Operations averaging methods
     enum class AveragingMethod
