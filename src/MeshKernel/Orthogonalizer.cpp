@@ -61,7 +61,7 @@ void Orthogonalizer::Compute()
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (IsEqual(aspectRatio, doubleMissingValue))
+            if (IsEqual(aspectRatio, constants::missing::doubleValue))
             {
                 continue;
             }

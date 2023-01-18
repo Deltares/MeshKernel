@@ -18,7 +18,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     auto polygon = std::make_shared<meshkernel::Polygons>();
     std::vector<meshkernel::Point> landBoundary{{-1.369282, 21.249086},
                                                 {20.885406, 21.539995},
-                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+                                                {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 

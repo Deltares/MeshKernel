@@ -102,19 +102,19 @@ namespace meshkernel
         /// edge-segment intersection
         struct EdgeMeshPolylineIntersection
         {
-            int polylineSegmentIndex{intMissingValue};          ///< The intersected segment index (a polyline can formed by several segments)
-            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            size_t edgeIndex{sizetMissingValue};                ///< The first node of the edge is on the left (the virtual node)
-            size_t edgeFirstNode{sizetMissingValue};            ///< The first node of the edge is on the left (the virtual node)
-            size_t edgeSecondNode{sizetMissingValue};           ///< The second node of the edge is on the right (the inner node)
-            double edgeDistance{doubleMissingValue};            ///< The location of the intersection expressed as an adimensional distance from the edge start
+            int polylineSegmentIndex{constants::missing::intValue};          ///< The intersected segment index (a polyline can formed by several segments)
+            double polylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            size_t edgeIndex{constants::missing::sizetValue};                ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeFirstNode{constants::missing::sizetValue};            ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeSecondNode{constants::missing::sizetValue};           ///< The second node of the edge is on the right (the inner node)
+            double edgeDistance{constants::missing::doubleValue};            ///< The location of the intersection expressed as an adimensional distance from the edge start
         };
 
         /// face-segment intersection
         struct FaceMeshPolylineIntersection
         {
-            double polylineSegmentDistance{doubleMissingValue}; ///< The location of the face intersection expressed as an adimensional distance from the segment start
-            size_t faceIndex{sizetMissingValue};                ///< The face index
+            double polylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the face intersection expressed as an adimensional distance from the segment start
+            size_t faceIndex{constants::missing::sizetValue};                ///< The face index
             std::vector<size_t> edgeIndexses;                   ///< The indexes of crossed edges
             std::vector<size_t> edgeNodes;                      ///< The indexes of the nodes defining the crossed edges
         };
@@ -228,7 +228,7 @@ namespace meshkernel
         /// This method uses return parameters since the success is evaluated in a hot loop
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
-        /// @return The shared node (sizetMissingValue if no node is found)
+        /// @return The shared node (constants::missing::sizetValue if no node is found)
         [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go

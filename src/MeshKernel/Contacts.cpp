@@ -48,7 +48,7 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         }
 
         // if a node is inside a face, connect the 1d node with the face including the node. No more work to do
-        if (node1dFaceIndices[n] != sizetMissingValue)
+        if (node1dFaceIndices[n] != constants::missing::sizetValue)
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(node1dFaceIndices[n]);
@@ -195,7 +195,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
                 }
 
                 // the 1d mesh node to be connected needs to be included in the 2d mesh
-                if (node1dFaceIndices[nodeToConnect] == sizetMissingValue)
+                if (node1dFaceIndices[nodeToConnect] == constants::missing::sizetValue)
                 {
                     continue;
                 }
@@ -228,7 +228,7 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     m_mesh1d->AdministrateNodesEdges();
 
     // for each mesh2d face, store polygon index
-    std::vector<size_t> facePolygonIndex(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    std::vector<size_t> facePolygonIndex(m_mesh2d->GetNumFaces(), constants::missing::sizetValue);
     std::vector<bool> faceInPolygon(m_mesh2d->GetNumFaces(), false);
     for (size_t faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
@@ -238,9 +238,9 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     }
 
     // for each polygon, find closest 1d node to any 2d mass center within the polygon
-    std::vector<double> minimalDistance(polygons.GetNumPolygons(), doubleMissingValue);
-    std::vector<size_t> closest1dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
-    std::vector<size_t> closest2dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
+    std::vector<double> minimalDistance(polygons.GetNumPolygons(), constants::missing::doubleValue);
+    std::vector<size_t> closest1dNodeIndices(polygons.GetNumPolygons(), constants::missing::sizetValue);
+    std::vector<size_t> closest2dNodeIndices(polygons.GetNumPolygons(), constants::missing::sizetValue);
     for (size_t faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         // if face is not within a polygon, continue
@@ -258,7 +258,7 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         // if it is the first found node of this polygon or
         // there is already a distance stored, but ours is smaller
         // -> store
-        if (IsEqual(minimalDistance[polygonIndex], doubleMissingValue) || squaredDistance < minimalDistance[polygonIndex])
+        if (IsEqual(minimalDistance[polygonIndex], constants::missing::doubleValue) || squaredDistance < minimalDistance[polygonIndex])
         {
             closest1dNodeIndices[polygonIndex] = close1DNodeIndex;
             closest2dNodeIndices[polygonIndex] = faceIndex;
@@ -293,7 +293,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     for (size_t i = 0; i < points.size(); ++i)
     {
         // point not in the mesh
-        if (pointsFaceIndices[i] == sizetMissingValue)
+        if (pointsFaceIndices[i] == constants::missing::sizetValue)
         {
             continue;
         }
@@ -335,7 +335,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     bool computeLocalSearchRadius = true;
     double localSearchRadius = 0.0;
-    if (!IsEqual(searchRadius, doubleMissingValue))
+    if (!IsEqual(searchRadius, constants::missing::doubleValue))
     {
         computeLocalSearchRadius = false;
         localSearchRadius = searchRadius;
@@ -343,7 +343,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     // Loop over 1d edges
     std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);
-    std::vector<size_t> faceTo1DNode(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    std::vector<size_t> faceTo1DNode(m_mesh2d->GetNumFaces(), constants::missing::sizetValue);
     for (size_t n = 0; n < m_mesh1d->GetNumNodes(); ++n)
     {
         // Account for 1d node mask if present
@@ -385,7 +385,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             // a candidate contact does not exist
-            if (faceTo1DNode[face] == sizetMissingValue)
+            if (faceTo1DNode[face] == constants::missing::sizetValue)
             {
                 faceTo1DNode[face] = n;
                 continue;
@@ -407,7 +407,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     for (size_t f = 0; f < m_mesh2d->GetNumFaces(); ++f)
     {
-        if (faceTo1DNode[f] != sizetMissingValue && isValidFace[f])
+        if (faceTo1DNode[f] != constants::missing::sizetValue && isValidFace[f])
         {
 
             m_mesh1dIndices.emplace_back(faceTo1DNode[f]);

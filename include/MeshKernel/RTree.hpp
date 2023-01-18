@@ -79,7 +79,7 @@ namespace meshkernel
 
             for (size_t n = 0; n < nodes.size(); ++n)
             {
-                if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
+                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
                 {
                     m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                 }

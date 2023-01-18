@@ -86,7 +86,7 @@ namespace meshkernel
         double y; ///< Y-coordinate
 
         /// @brief Constructor initializing with missing values
-        Point() : x(doubleMissingValue), y(doubleMissingValue) {}
+        Point() : x(constants::missing::doubleValue), y(constants::missing::doubleValue) {}
 
         /// @brief Constructor initializing with given arguments
         /// @param[in] x
@@ -199,12 +199,12 @@ namespace meshkernel
         }
 
         /// @brief Determines if one of the point coordinates equals to \p missingValue
-        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = constants::missing::doubleValue) const
         {
             const bool isInvalid = IsEqual(x, missingValue) ||
                                    IsEqual(y, missingValue) ||
-                                   IsEqual(x, innerOuterSeparator) ||
-                                   IsEqual(y, innerOuterSeparator);
+                                   IsEqual(x, constants::missing::innerOuterSeparator) ||
+                                   IsEqual(y, constants::missing::innerOuterSeparator);
 
             return !isInvalid;
         }
@@ -256,7 +256,7 @@ namespace meshkernel
         }
 
         /// @brief Determines if the sample instance has valid coordinates
-        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = constants::missing::doubleValue) const
         {
             bool isInvalid = IsEqual(x, missingValue) ||
                              IsEqual(y, missingValue);

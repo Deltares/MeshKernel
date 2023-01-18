@@ -142,7 +142,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                                distances);
 
         const auto [points, adimensionalDistances] = m_splines->ComputePointOnSplineFromAdimensionalDistance(splineIndex,
-                                                                                                             doubleMissingValue,
+                                                                                                             constants::missing::doubleValue,
                                                                                                              false,
                                                                                                              distances);
 

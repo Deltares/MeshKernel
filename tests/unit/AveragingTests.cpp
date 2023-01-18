@@ -752,7 +752,7 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
     // Assert: only 12 edges gets a valid value, as the provided sample set
     auto interpolationResults = averaging.GetResults();
 
-    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::constants::missing::doubleValue);
     expectedInterpolationResults[11] = 1.0;
     expectedInterpolationResults[12] = 1.0;
     expectedInterpolationResults[13] = 1.0;
@@ -801,7 +801,7 @@ TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
     // Assert: only 12 edges gets a valid value
     auto interpolationResults = averaging.GetResults();
 
-    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::constants::missing::doubleValue);
     expectedInterpolationResults[11] = 1.0;
     expectedInterpolationResults[12] = 1.0;
     expectedInterpolationResults[13] = 1.0;

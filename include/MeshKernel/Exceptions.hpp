@@ -23,7 +23,7 @@ namespace meshkernel
     {
     public:
         /// @brief Default exception for an invalid mesh
-        MeshGeometryError() : runtime_error(""), m_invalidIndex(sizetMissingValue), m_location(Mesh::Location::Unknown){};
+        MeshGeometryError() : runtime_error(""), m_invalidIndex(constants::missing::sizetValue), m_location(Mesh::Location::Unknown){};
 
         /// @brief Exception for an invalid mesh accepting a message string
         /// @param msg the error message string

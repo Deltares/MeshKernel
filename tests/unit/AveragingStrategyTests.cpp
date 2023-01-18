@@ -15,12 +15,12 @@ namespace meshkernel::averaging
         [[nodiscard]] static std::vector<std::pair<AveragingInterpolation::Method, double>> GetData()
         {
             return {
-                {AveragingInterpolation::Method::SimpleAveraging, doubleMissingValue},
-                {AveragingInterpolation::Method::Closest, doubleMissingValue},
-                {AveragingInterpolation::Method::Max, doubleMissingValue},
-                {AveragingInterpolation::Method::Min, doubleMissingValue},
-                {AveragingInterpolation::Method::InverseWeightedDistance, doubleMissingValue},
-                {AveragingInterpolation::Method::MinAbsValue, doubleMissingValue},
+                {AveragingInterpolation::Method::SimpleAveraging, constants::missing::doubleValue},
+                {AveragingInterpolation::Method::Closest, constants::missing::doubleValue},
+                {AveragingInterpolation::Method::Max, constants::missing::doubleValue},
+                {AveragingInterpolation::Method::Min, constants::missing::doubleValue},
+                {AveragingInterpolation::Method::InverseWeightedDistance, constants::missing::doubleValue},
+                {AveragingInterpolation::Method::MinAbsValue, constants::missing::doubleValue},
             };
         }
     };

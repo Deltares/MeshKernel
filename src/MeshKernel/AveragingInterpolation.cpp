@@ -70,7 +70,7 @@ void AveragingInterpolation::Compute()
     // for edges, an average of the nodal interpolated value is made
     if (m_interpolationLocation == Mesh::Location::Edges)
     {
-        m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
+        m_results.resize(m_mesh->GetNumEdges(), constants::missing::doubleValue);
         for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             const auto first = m_mesh->m_edges[e].first;
@@ -79,7 +79,7 @@ void AveragingInterpolation::Compute()
             const auto firstValue = interpolatedResults[first];
             const auto secondValue = interpolatedResults[second];
 
-            if (!IsEqual(firstValue, doubleMissingValue) && !IsEqual(secondValue, doubleMissingValue))
+            if (!IsEqual(firstValue, constants::missing::doubleValue) && !IsEqual(secondValue, constants::missing::doubleValue))
             {
                 m_results[e] = (firstValue + secondValue) * 0.5;
             }
@@ -93,7 +93,7 @@ void AveragingInterpolation::Compute()
 
 std::vector<double> AveragingInterpolation::ComputeOnFaces()
 {
-    std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), doubleMissingValue);
+    std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), constants::missing::doubleValue);
     std::vector<Point> polygonNodesCache(maximumNumberOfNodesPerFace + 1);
     std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
     for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
@@ -129,7 +129,7 @@ std::vector<double> AveragingInterpolation::ComputeOnFaces()
 std::vector<double> AveragingInterpolation::ComputeOnNodesOrEdges()
 {
     std::vector<Point> dualFacePolygon;
-    std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), doubleMissingValue);
+    std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), constants::missing::doubleValue);
     // make sure edge centers are computed
     m_mesh->ComputeEdgesCenters();
     for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
@@ -222,7 +222,7 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::uniq
         auto const sampleIndex = m_samplesRtree.GetQueryResult(i);
         auto const sampleValue = m_samples[sampleIndex].value;
 
-        if (sampleValue <= doubleMissingValue)
+        if (sampleValue <= constants::missing::doubleValue)
         {
             continue;
         }
@@ -259,7 +259,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (!m_samplesRtree.HasQueryResults() && m_useClosestSampleIfNoneAvailable)
     {
         m_samplesRtree.SearchNearestPoint(interpolationPoint);
-        return m_samplesRtree.HasQueryResults() ? GetSampleValueFromRTree(0) : doubleMissingValue;
+        return m_samplesRtree.HasQueryResults() ? GetSampleValueFromRTree(0) : constants::missing::doubleValue;
     }
     if (m_samplesRtree.HasQueryResults())
     {
@@ -268,5 +268,5 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
         return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
     }
 
-    return doubleMissingValue;
+    return constants::missing::doubleValue;
 }

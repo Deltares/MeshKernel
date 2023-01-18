@@ -36,7 +36,7 @@ using meshkernel::Polygons;
 Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
 {
     // Find the polygons in the current list of points
-    m_outer_polygons_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
+    m_outer_polygons_indices = FindIndices(polygon, 0, polygon.size(), constants::missing::doubleValue);
     for (size_t i = 0; i < m_outer_polygons_indices.size(); ++i)
     {
         m_inner_polygons_indices[i] = std::vector<std::pair<size_t, size_t>>{};
@@ -44,7 +44,7 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
         const auto& [outer_start, outer_end] = m_outer_polygons_indices[i];
 
         // The inner polygon indices, the first interval corresponds to the outer polygon
-        const auto inner_polygons_indices = FindIndices(polygon, outer_start, outer_end, innerOuterSeparator);
+        const auto inner_polygons_indices = FindIndices(polygon, outer_start, outer_end, constants::missing::innerOuterSeparator);
 
         // No inner polygon found
         if (inner_polygons_indices.size() <= 1)
@@ -294,7 +294,7 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
         distance = distance / (earth_radius * degrad_hp);
     }
 
-    std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
+    std::vector<Point> newPolygonPoints(sizenewPolygon, {constants::missing::doubleValue, constants::missing::doubleValue});
     for (size_t i = 0; i < GetNumNodes(); ++i)
     {
         auto dx = normalVectors[i].x * distance;
@@ -344,7 +344,7 @@ std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
     // empty polygon means everything is included
     if (m_outer_polygons_indices.empty())
     {
-        return {true, sizetMissingValue};
+        return {true, constants::missing::sizetValue};
     }
 
     bool inPolygon = false;
@@ -377,14 +377,14 @@ std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
             {
                 if (IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), startInner, endInner))
                 {
-                    return {false, sizetMissingValue};
+                    return {false, constants::missing::sizetValue};
                 }
             }
             return {true, polygonIndex};
         }
     }
 
-    return {false, sizetMissingValue};
+    return {false, constants::missing::sizetValue};
 }
 
 std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const

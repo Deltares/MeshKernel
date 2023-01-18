@@ -93,5 +93,5 @@ void RTree::DeleteNode(size_t position)
     {
         throw std::invalid_argument("DeleteNode: Could not remove node at given position.");
     }
-    m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
+    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<size_t>::max()};
 }

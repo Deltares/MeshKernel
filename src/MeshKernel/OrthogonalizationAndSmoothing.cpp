@@ -95,7 +95,7 @@ void OrthogonalizationAndSmoothing::Initialize()
             m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
 
-        m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {doubleMissingValue, doubleMissingValue});
+        m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
     }
 }
 
@@ -247,8 +247,8 @@ void OrthogonalizationAndSmoothing::Solve()
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
-    Point normalSecondPoint{doubleMissingValue, doubleMissingValue};
-    Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
+    Point normalSecondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
+    Point normalThirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
 
     // in this case the nearest point is the point itself
     std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
@@ -267,10 +267,10 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
             size_t numNodes = 0;
-            size_t leftNode = sizetMissingValue;
-            size_t rightNode = sizetMissingValue;
-            Point secondPoint{doubleMissingValue, doubleMissingValue};
-            Point thirdPoint{doubleMissingValue, doubleMissingValue};
+            size_t leftNode = constants::missing::sizetValue;
+            size_t rightNode = constants::missing::sizetValue;
+            Point secondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
+            Point thirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             for (size_t nn = 0; nn < numEdges; nn++)
             {
                 const auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
@@ -280,7 +280,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     if (numNodes == 1)
                     {
                         leftNode = m_mesh->m_nodesNodes[n][nn];
-                        if (leftNode == sizetMissingValue)
+                        if (leftNode == constants::missing::sizetValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
@@ -289,7 +289,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     else if (numNodes == 2)
                     {
                         rightNode = m_mesh->m_nodesNodes[n][nn];
-                        if (rightNode == sizetMissingValue)
+                        if (rightNode == constants::missing::sizetValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }

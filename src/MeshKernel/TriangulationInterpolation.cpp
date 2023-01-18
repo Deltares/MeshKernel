@@ -43,7 +43,7 @@ TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>&
 void TriangulationInterpolation::Compute()
 {
     // allocate and initialize result vector
-    m_results.resize(m_locations.size(), doubleMissingValue);
+    m_results.resize(m_locations.size(), constants::missing::doubleValue);
 
     // no samples available, return
     if (m_samples.empty())
@@ -65,9 +65,9 @@ void TriangulationInterpolation::Compute()
     }
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
-    std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {doubleMissingValue, doubleMissingValue});
+    std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4));
-    std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
+    std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, constants::missing::doubleValue));
 
     for (size_t f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
@@ -94,7 +94,7 @@ void TriangulationInterpolation::Compute()
     for (size_t n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
-            !IsEqual(m_results[n], doubleMissingValue))
+            !IsEqual(m_results[n], constants::missing::doubleValue))
         {
             continue;
         }
@@ -110,7 +110,7 @@ void TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         size_t numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.m_numFaces)
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -158,7 +158,7 @@ void TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
+        if (isInTriangle && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.m_numFaces)
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

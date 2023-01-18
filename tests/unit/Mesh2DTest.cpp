@@ -70,11 +70,11 @@ TEST(Mesh2D, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
     ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
 
-    // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::sizetMissingValue)
-    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[0][1]);
-    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[1][1]);
-    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[2][1]);
-    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[3][1]);
+    // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::constants::missing::sizetValue)
+    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[0][1]);
+    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[1][1]);
+    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[2][1]);
+    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[3][1]);
 }
 
 TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)

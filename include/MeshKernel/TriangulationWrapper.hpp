@@ -108,8 +108,8 @@ namespace meshkernel
                 faceNodesFlat.resize(numFaces * 3);
                 edgeNodesFlat.resize(numFaces * 2);
                 faceEdgesFlat.resize(numFaces * 3);
-                xNodesFlat.resize(numFaces * 3, doubleMissingValue);
-                yNodesFlat.resize(numFaces * 3, doubleMissingValue);
+                xNodesFlat.resize(numFaces * 3, constants::missing::doubleValue);
+                yNodesFlat.resize(numFaces * 3, constants::missing::doubleValue);
                 Triangulation(&intTriangulationOption,
                               &xLocalPolygon[0],
                               &yLocalPolygon[0],
@@ -141,8 +141,8 @@ namespace meshkernel
             }
 
             // Create m_faceNodes
-            ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, sizetMissingValue);
-            ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, sizetMissingValue);
+            ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::sizetValue);
+            ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::sizetValue);
             size_t faceCounter = 0;
             for (size_t f = 0; f < m_numFaces; ++f)
             {
@@ -163,7 +163,7 @@ namespace meshkernel
                 return;
             }
 
-            ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, sizetMissingValue);
+            ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::sizetValue);
             size_t edgeCounter = 0;
             for (size_t e = 0; e < m_numEdges; ++e)
             {
@@ -173,7 +173,7 @@ namespace meshkernel
                 edgeCounter++;
             }
 
-            ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, sizetMissingValue);
+            ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::sizetValue);
             edgeCounter = 0;
             for (size_t f = 0; f < m_numFaces; ++f)
             {
@@ -183,7 +183,7 @@ namespace meshkernel
                     auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
                     edgeCounter++;
                     // For each edge, the shared face index
-                    if (m_edgesFaces[edge][0] == sizetMissingValue)
+                    if (m_edgesFaces[edge][0] == constants::missing::sizetValue)
                     {
                         m_edgesFaces[edge][0] = f;
                     }

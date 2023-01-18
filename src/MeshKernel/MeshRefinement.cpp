@@ -62,8 +62,8 @@ void MeshRefinement::Compute()
     m_edgeMask.resize(m_mesh->GetNumEdges(), -1);
 
     // get bounding box
-    Point lowerLeft{doubleMissingValue, doubleMissingValue};
-    Point upperRight{doubleMissingValue, doubleMissingValue};
+    Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
+    Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
     if (m_mesh->m_projection == Projection::spherical)
     {
         const auto boundingBox = GetBoundingBox(m_mesh->m_nodes);
@@ -203,13 +203,13 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
     for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
     {
         const auto brotherEdgeIndex = m_brotherEdges[e];
-        if (brotherEdgeIndex == sizetMissingValue)
+        if (brotherEdgeIndex == constants::missing::sizetValue)
         {
             continue;
         }
 
         const auto commonNode = m_mesh->FindCommonNode(e, brotherEdgeIndex);
-        if (commonNode == sizetMissingValue)
+        if (commonNode == constants::missing::sizetValue)
         {
             continue;
         }
@@ -280,7 +280,7 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
 
             m_mesh->DeleteEdge(brotherEdgeIndex);
 
-            m_brotherEdges[brotherEdgeIndex] = sizetMissingValue;
+            m_brotherEdges[brotherEdgeIndex] = constants::missing::sizetValue;
 
             numRemovedIsolatedHangingNodes++;
         }
@@ -290,13 +290,13 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
 
 void MeshRefinement::ConnectHangingNodes()
 {
-    std::vector<size_t> edgeEndNodeCache(maximumNumberOfNodesPerFace, sizetMissingValue);
-    std::vector<size_t> hangingNodeCache(maximumNumberOfNodesPerFace, sizetMissingValue);
+    std::vector<size_t> edgeEndNodeCache(maximumNumberOfNodesPerFace, constants::missing::sizetValue);
+    std::vector<size_t> hangingNodeCache(maximumNumberOfNodesPerFace, constants::missing::sizetValue);
 
     for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
     {
-        std::fill(edgeEndNodeCache.begin(), edgeEndNodeCache.end(), sizetMissingValue);
-        std::fill(hangingNodeCache.begin(), hangingNodeCache.end(), sizetMissingValue);
+        std::fill(edgeEndNodeCache.begin(), edgeEndNodeCache.end(), constants::missing::sizetValue);
+        std::fill(hangingNodeCache.begin(), hangingNodeCache.end(), constants::missing::sizetValue);
         const auto numEdges = m_mesh->GetNumFaceEdges(f);
         if (numEdges > maximumNumberOfNodesPerFace)
         {
@@ -323,7 +323,7 @@ void MeshRefinement::ConnectHangingNodes()
             }
 
             edgeEndNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
-            if (edgeEndNodeCache[numNonHangingNodes] == sizetMissingValue)
+            if (edgeEndNodeCache[numNonHangingNodes] == constants::missing::sizetValue)
             {
                 throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
             }
@@ -331,7 +331,7 @@ void MeshRefinement::ConnectHangingNodes()
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
             {
                 hangingNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
-                if (hangingNodeCache[numNonHangingNodes] == sizetMissingValue)
+                if (hangingNodeCache[numNonHangingNodes] == constants::missing::sizetValue)
                 {
                     throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
                 }
@@ -351,7 +351,7 @@ void MeshRefinement::ConnectHangingNodes()
             case 1: // one hanging node
                 for (size_t n = 0; n < numNonHangingNodes; ++n)
                 {
-                    if (hangingNodeCache[n] == sizetMissingValue)
+                    if (hangingNodeCache[n] == constants::missing::sizetValue)
                     {
                         continue;
                     }
@@ -368,7 +368,7 @@ void MeshRefinement::ConnectHangingNodes()
             case 2: // two hanging node
                 for (size_t n = 0; n < numNonHangingNodes; ++n)
                 {
-                    if (hangingNodeCache[n] == sizetMissingValue)
+                    if (hangingNodeCache[n] == constants::missing::sizetValue)
                     {
                         continue;
                     }
@@ -376,19 +376,19 @@ void MeshRefinement::ConnectHangingNodes()
                     const auto e = NextCircularBackwardIndex(n, numNonHangingNodes);
                     const auto ee = NextCircularForwardIndex(n, numNonHangingNodes);
                     const auto eee = NextCircularForwardIndex(n + 1, numNonHangingNodes);
-                    if (hangingNodeCache[e] != sizetMissingValue) // left neighbor
+                    if (hangingNodeCache[e] != constants::missing::sizetValue) // left neighbor
                     {
                         m_mesh->ConnectNodes(hangingNodeCache[e], hangingNodeCache[n]);
                         m_mesh->ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[ee]);
                         m_mesh->ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[e]);
                     }
-                    else if (hangingNodeCache[ee] != sizetMissingValue) // right neighbor
+                    else if (hangingNodeCache[ee] != constants::missing::sizetValue) // right neighbor
                     {
                         m_mesh->ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee]);
                         m_mesh->ConnectNodes(hangingNodeCache[ee], edgeEndNodeCache[eee]);
                         m_mesh->ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n]);
                     }
-                    else if (hangingNodeCache[eee] != sizetMissingValue) // hanging nodes must be opposing
+                    else if (hangingNodeCache[eee] != constants::missing::sizetValue) // hanging nodes must be opposing
                     {
                         m_mesh->ConnectNodes(hangingNodeCache[n], hangingNodeCache[eee]);
                     }
@@ -406,7 +406,7 @@ void MeshRefinement::ConnectHangingNodes()
             case 1: // one hanging node
                 for (size_t n = 0; n < numNonHangingNodes; ++n)
                 {
-                    if (hangingNodeCache[n] == sizetMissingValue)
+                    if (hangingNodeCache[n] == constants::missing::sizetValue)
                     {
                         continue;
                     }
@@ -418,13 +418,13 @@ void MeshRefinement::ConnectHangingNodes()
             case 2: // two hanging node
                 for (size_t n = 0; n < numNonHangingNodes; ++n)
                 {
-                    if (hangingNodeCache[n] == sizetMissingValue)
+                    if (hangingNodeCache[n] == constants::missing::sizetValue)
                     {
                         continue;
                     }
                     const auto e = NextCircularBackwardIndex(n, numNonHangingNodes);
                     const auto ee = NextCircularForwardIndex(n, numNonHangingNodes);
-                    if (hangingNodeCache[e] != sizetMissingValue) // left neighbor
+                    if (hangingNodeCache[e] != constants::missing::sizetValue) // left neighbor
                     {
                         m_mesh->ConnectNodes(hangingNodeCache[n], hangingNodeCache[e]);
                     }
@@ -554,23 +554,23 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
             mappedEdge = m_localNodeIndicesCache[secondEdge];
             const auto secondEdgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
 
-            if (edgeIndex == sizetMissingValue)
+            if (edgeIndex == constants::missing::sizetValue)
             {
                 continue;
             }
 
-            if (m_brotherEdges[edgeIndex] == secondEdgeIndex && secondEdgeIndex != sizetMissingValue)
+            if (m_brotherEdges[edgeIndex] == secondEdgeIndex && secondEdgeIndex != constants::missing::sizetValue)
             {
                 numBrotherEdges++;
                 const auto newNode = m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex]);
-                if (newNode == sizetMissingValue)
+                if (newNode == constants::missing::sizetValue)
                 {
                     throw AlgorithmError("MeshRefinement::RefineFacesBySplittingEdges: Could not find common node.");
                 }
 
                 notHangingFaceNodes.emplace_back(newNode);
             }
-            else if ((m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] == sizetMissingValue) && m_edgeMask[edgeIndex] != 0)
+            else if ((m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] == constants::missing::sizetValue) && m_edgeMask[edgeIndex] != 0)
             {
                 notHangingFaceNodes.emplace_back(m_edgeMask[edgeIndex]);
             }
@@ -581,7 +581,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
             }
 
             // check if start of this link is hanging
-            if (m_brotherEdges[edgeIndex] != firstEdgeIndex || firstEdgeIndex != sizetMissingValue)
+            if (m_brotherEdges[edgeIndex] != firstEdgeIndex || firstEdgeIndex != constants::missing::sizetValue)
             {
                 nonHangingEdges.emplace_back(e);
             }
@@ -596,7 +596,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
 
             const auto mappedEdge = m_localNodeIndicesCache[edge];
             const auto edgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
-            if (edgeIndex != sizetMissingValue)
+            if (edgeIndex != constants::missing::sizetValue)
             {
                 localEdgesNumFaces.emplace_back(m_mesh->m_edgesNumFaces[edgeIndex]);
             }
@@ -719,8 +719,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
-    m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, sizetMissingValue);
-    m_globalEdgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, sizetMissingValue);
+    m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, constants::missing::sizetValue);
+    m_globalEdgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, constants::missing::sizetValue);
     std::vector<size_t> refineEdgeCache(maximumNumberOfEdgesPerFace);
 
     // Compute all interpolated values
@@ -744,7 +744,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
                 if (refineEdgeCache[n] == 1)
                 {
                     const auto edgeIndex = m_mesh->m_facesEdges[f][n];
-                    if (edgeIndex != sizetMissingValue)
+                    if (edgeIndex != constants::missing::sizetValue)
                     {
                         m_edgeMask[edgeIndex] = 1;
                     }
@@ -782,18 +782,18 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
         }
 
         // check if the parent edge is in the cell
-        if (m_brotherEdges[edgeIndex] != sizetMissingValue)
+        if (m_brotherEdges[edgeIndex] != constants::missing::sizetValue)
         {
             const auto e = NextCircularBackwardIndex(n, numFaceNodes);
             const auto ee = NextCircularForwardIndex(n, numFaceNodes);
             const auto firstEdgeIndex = m_mesh->m_facesEdges[face][e];
             const auto secondEdgeIndex = m_mesh->m_facesEdges[face][ee];
 
-            size_t commonNode = sizetMissingValue;
+            size_t commonNode = constants::missing::sizetValue;
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
             {
                 commonNode = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
-                if (commonNode == sizetMissingValue)
+                if (commonNode == constants::missing::sizetValue)
                 {
                     throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
                 }
@@ -801,13 +801,13 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
             else if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
             {
                 commonNode = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
-                if (commonNode == sizetMissingValue)
+                if (commonNode == constants::missing::sizetValue)
                 {
                     throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
                 }
             }
 
-            if (commonNode != sizetMissingValue)
+            if (commonNode != constants::missing::sizetValue)
             {
                 m_isHangingEdgeCache[n] = true;
                 numHangingEdges++;
@@ -842,7 +842,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
         return;
     }
 
-    if (IsEqual(refinementValue, doubleMissingValue))
+    if (IsEqual(refinementValue, constants::missing::doubleValue))
     {
         return;
     }
@@ -1149,7 +1149,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
 void MeshRefinement::FindBrotherEdges()
 {
     m_brotherEdges.resize(m_mesh->GetNumEdges());
-    std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), sizetMissingValue);
+    std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), constants::missing::sizetValue);
 
     for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
     {

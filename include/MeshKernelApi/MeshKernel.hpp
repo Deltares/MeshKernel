@@ -664,7 +664,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state.
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in] polygons     The points selecting the faces to connect.
-        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
+        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to constants::missing::doubleValue, the search radius will be calculated internally.
         /// @return Error code
         MKERNEL_API int mkernel_contacts_compute_boundary(int meshKernelId,
                                                           const int* oneDNodeMask,

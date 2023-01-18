@@ -33,11 +33,17 @@
 
 namespace meshkernel
 {
-    // missing values
-    constexpr double innerOuterSeparator = -998.0;                           ///< Double value used to separate the inner part of a polygon from its outer part
-    constexpr double doubleMissingValue = -999.0;                            ///< Double value used as missing value
-    constexpr int intMissingValue = -999;                                    ///< Integer value used as missing value
-    constexpr size_t sizetMissingValue = std::numeric_limits<size_t>::max(); ///< std::size_t missing value used for invalid indices
+    namespace constants
+    {
+        // missing values
+        namespace missing
+        {
+            constexpr double innerOuterSeparator = -998.0;                    ///< Double value used to separate the inner part of a polygon from its outer part
+            constexpr double doubleValue = -999.0;                            ///< Double value used as missing value
+            constexpr int intValue = -999;                                    ///< Integer value used as missing value
+            constexpr size_t sizetValue = std::numeric_limits<size_t>::max(); ///< std::size_t missing value used for invalid indices
+        }                                                                     // namespace missing
+    }                                                                         // namespace constants
 
     // often used values
     static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)

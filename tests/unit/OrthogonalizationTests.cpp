@@ -355,12 +355,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                                 {265.953522, 436.515747},
                                                 {429.349854, 450.959656},
                                                 {535.271545, 386.262909},
-                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+                                                {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
                                                 {246.995941, 262.285858},
                                                 {351.112183, 237.309906},
                                                 {443.191895, 262.285858},
                                                 {553.627319, 327.283539},
-                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+                                                {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     // snap to land boundaries
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary;

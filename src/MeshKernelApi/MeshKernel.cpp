@@ -807,7 +807,7 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.coordinates_y[i];
             }
 
-            const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
+            const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::constants::missing::doubleValue);
             const auto numSplines = indices.size();
 
             int index = 0;
@@ -835,21 +835,21 @@ namespace meshkernelapi
 
                         geometryListOut.coordinates_x[index] = pointCoordinate.x;
                         geometryListOut.coordinates_y[index] = pointCoordinate.y;
-                        geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                        geometryListOut.values[index] = meshkernel::constants::missing::doubleValue;
                         index++;
                     }
                 }
 
                 geometryListOut.coordinates_x[index] = coordinates.back().x;
                 geometryListOut.coordinates_y[index] = coordinates.back().y;
-                geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                geometryListOut.values[index] = meshkernel::constants::missing::doubleValue;
                 index++;
 
                 if (s != numSplines - 1)
                 {
-                    geometryListOut.coordinates_x[index] = meshkernel::doubleMissingValue;
-                    geometryListOut.coordinates_y[index] = meshkernel::doubleMissingValue;
-                    geometryListOut.values[index] = meshkernel::doubleMissingValue;
+                    geometryListOut.coordinates_x[index] = meshkernel::constants::missing::doubleValue;
+                    geometryListOut.coordinates_y[index] = meshkernel::constants::missing::doubleValue;
+                    geometryListOut.values[index] = meshkernel::constants::missing::doubleValue;
                     index++;
                 }
             }
@@ -2773,12 +2773,12 @@ namespace meshkernelapi
 
     MKERNEL_API double mkernel_get_separator()
     {
-        return meshkernel::doubleMissingValue;
+        return meshkernel::constants::missing::doubleValue;
     }
 
     MKERNEL_API double mkernel_get_inner_outer_separator()
     {
-        return meshkernel::innerOuterSeparator;
+        return meshkernel::constants::missing::innerOuterSeparator;
     }
 
     MKERNEL_API int mkernel_mesh2d_averaging_interpolation(int meshKernelId,

@@ -125,7 +125,7 @@ namespace meshkernel
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
+        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to constants::missing::doubleValue, the search radius will be calculated internally.
         void ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
                                      const Polygons& polygons,
                                      double searchRadius);

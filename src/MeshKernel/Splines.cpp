@@ -78,7 +78,7 @@ void Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t 
 
     // compute second order derivatives
     std::vector<Point> splineDerivatives(splinesNodes.size());
-    const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), doubleMissingValue);
+    const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), constants::missing::doubleValue);
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
@@ -245,8 +245,8 @@ bool Splines::GetSplinesIntersection(size_t first,
         Point oldIntersection = closestIntersection;
 
         double crossProduct;
-        double firstRatio = doubleMissingValue;
-        double secondRatio = doubleMissingValue;
+        double firstRatio = constants::missing::doubleValue;
+        double secondRatio = constants::missing::doubleValue;
         const bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
                                                      firstRightSplinePoint,
                                                      secondLeftSplinePoint,

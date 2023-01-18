@@ -324,7 +324,7 @@ namespace meshkernel
             std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
             m_edgesFaces.resize(m_edges.size());
-            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, sizetMissingValue));
+            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, constants::missing::sizetValue));
 
             m_facesMassCenters.clear();
             m_faceArea.clear();
