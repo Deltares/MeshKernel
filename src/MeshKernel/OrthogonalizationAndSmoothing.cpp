@@ -181,7 +181,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         {
             continue;
         }
-        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
+        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != Mesh::m_numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
         {
             continue;
         }

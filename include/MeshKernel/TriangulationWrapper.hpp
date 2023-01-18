@@ -178,7 +178,7 @@ namespace meshkernel
             for (size_t f = 0; f < m_numFaces; ++f)
             {
 
-                for (size_t n = 0; n < numNodesInTriangle; ++n)
+                for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
                 {
                     auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
                     edgeCounter++;

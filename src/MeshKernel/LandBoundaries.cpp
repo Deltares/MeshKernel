@@ -46,7 +46,7 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
         size_t const nodeVectorPreallocation = 10000;
         m_nodes.reserve(nodeVectorPreallocation);
         std::copy(landBoundary.begin(), landBoundary.end(), std::back_inserter(m_nodes));
-        m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
+        m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace);
     }
 }
 
@@ -608,7 +608,7 @@ void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, const std::vecto
         else
         {
             // Face is crossed
-            if (m_mesh->GetNumFaces() < numNodesInTriangle)
+            if (m_mesh->GetNumFaces() < Mesh::m_numNodesInTriangle)
             {
                 continue;
             }

@@ -324,7 +324,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
 
     std::vector<std::vector<Point>> gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
 
-    for (size_t t = 0; t < numNodesInTriangle; ++t)
+    for (size_t t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
         std::fill(sideTwo.begin(), sideTwo.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});

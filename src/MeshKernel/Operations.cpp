@@ -27,6 +27,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/RTree.hpp>
 
@@ -165,7 +166,7 @@ namespace meshkernel
         }
 
         const auto currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < Mesh::m_numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -1159,7 +1160,7 @@ namespace meshkernel
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
         }
 
-        if (polygon.size() - 1 < numNodesInTriangle)
+        if (polygon.size() - 1 < Mesh::m_numNodesInTriangle)
         {
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
         }

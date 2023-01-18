@@ -67,21 +67,4 @@ namespace meshkernel
         }                                                               // namespace geometric
 
     } // namespace constants
-
-    // mesh constants
-    constexpr double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate
-    constexpr std::size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
-    constexpr std::size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
-    constexpr std::size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
-    constexpr std::size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-    constexpr double minimumCellArea = 1e-12;                                              ///< Minimum cell area
-    constexpr double weightCircumCenter = 1.0;                                             ///< Weight circum center
-    constexpr std::size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
-    constexpr std::size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
-
-    // orthogonalization
-    constexpr double minimumEdgeLength = 1e-4;                   ///< Minimum edge length
-    constexpr double curvilinearToOrthogonalRatio = 0.5;         ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-    constexpr double orthogonalizationToSmoothingFactor = 0.975; ///< Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
-
 } // namespace meshkernel

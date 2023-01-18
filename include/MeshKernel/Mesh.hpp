@@ -49,7 +49,7 @@ namespace meshkernel
     ///
     /// -   Construct the mesh faces from the nodes and edges and other mesh
     ///     mappings required by all algorithms (Mesh::FindFaces).
-    ///     Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::maximumNumberOfEdgesPerFace).
+    ///     Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::Mesh::m_maximumNumberOfEdgesPerFace).
     ///
     /// -   Supporting mesh editing, namely:
     ///
@@ -115,8 +115,8 @@ namespace meshkernel
         {
             double polylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the face intersection expressed as an adimensional distance from the segment start
             size_t faceIndex{constants::missing::sizetValue};                ///< The face index
-            std::vector<size_t> edgeIndexses;                   ///< The indexes of crossed edges
-            std::vector<size_t> edgeNodes;                      ///< The indexes of the nodes defining the crossed edges
+            std::vector<size_t> edgeIndexses;                                ///< The indexes of crossed edges
+            std::vector<size_t> edgeNodes;                                   ///< The indexes of the nodes defining the crossed edges
         };
 
         /// @brief Default constructor
@@ -332,5 +332,16 @@ namespace meshkernel
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
+
+        // constants
+        static constexpr size_t m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
+        static constexpr size_t m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
+        static constexpr size_t m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
+        static constexpr size_t m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+        static constexpr size_t m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
+        static constexpr size_t m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
+
+    private:
+        static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
     };
 } // namespace meshkernel

@@ -82,12 +82,12 @@ void Smoother::ComputeOperators()
 
     // allocate caches
     m_boundaryEdgesCache.resize(2, constants::missing::sizetValue);
-    m_leftXFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
-    m_leftYFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
-    m_rightXFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
-    m_rightYFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
-    m_xisCache.resize(maximumNumberOfEdgesPerNode, 0.0);
-    m_etasCache.resize(maximumNumberOfEdgesPerNode, 0.0);
+    m_leftXFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
+    m_leftYFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
+    m_rightXFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
+    m_rightYFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
+    m_xisCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
+    m_etasCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
 
     std::vector<bool> isNewTopology(m_topologyConnectedNodes.size(), true);
 
@@ -753,7 +753,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
         }
 
         const auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
-        if (numFaceNodes > maximumNumberOfEdgesPerNode)
+        if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
         {
             throw AlgorithmError("Smoother::ComputeNodeXiEta: The number of face nodes is greater than the maximum number of edges per node.");
         }
@@ -895,7 +895,7 @@ void Smoother::NodeAdministration(size_t currentNode)
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
     if (m_faceNodeMappingCache.size() < m_sharedFacesCache.size())
     {
-        ResizeAndFill2DVector(m_faceNodeMappingCache, m_sharedFacesCache.size(), maximumNumberOfNodesPerFace);
+        ResizeAndFill2DVector(m_faceNodeMappingCache, m_sharedFacesCache.size(), Mesh::m_maximumNumberOfNodesPerFace);
     }
     for (size_t f = 0; f < m_sharedFacesCache.size(); f++)
     {
@@ -978,19 +978,19 @@ void Smoother::Initialize()
     std::fill(m_numConnectedNodes.begin(), m_numConnectedNodes.end(), 0);
 
     m_connectedNodes.resize(m_mesh->GetNumNodes());
-    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
+    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(Mesh::m_maximumNumberOfConnectedNodes, 0));
 
-    m_sharedFacesCache.reserve(maximumNumberOfEdgesPerNode);
+    m_sharedFacesCache.reserve(Mesh::m_maximumNumberOfEdgesPerNode);
 
-    m_connectedNodesCache.reserve(maximumNumberOfConnectedNodes);
+    m_connectedNodesCache.reserve(Mesh::m_maximumNumberOfConnectedNodes);
 
-    m_faceNodeMappingCache.resize(maximumNumberOfConnectedNodes);
-    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
+    m_faceNodeMappingCache.resize(Mesh::m_maximumNumberOfConnectedNodes);
+    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(Mesh::m_maximumNumberOfNodesPerFace, 0));
 
-    m_xiCache.resize(maximumNumberOfConnectedNodes, 0.0);
+    m_xiCache.resize(Mesh::m_maximumNumberOfConnectedNodes, 0.0);
     std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
 
-    m_etaCache.resize(maximumNumberOfConnectedNodes, 0.0);
+    m_etaCache.resize(Mesh::m_maximumNumberOfConnectedNodes, 0.0);
     std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
 
     m_nodeTopologyMapping.resize(m_mesh->GetNumNodes());

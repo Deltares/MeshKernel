@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <cmath>
 #include <numeric>
 
 #include <MeshKernel/Entities.hpp>
@@ -52,7 +53,7 @@ void Mesh::NodeAdministration()
             continue;
         }
 
-        if (m_nodesNumEdges[firstNode] >= maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= maximumNumberOfEdgesPerNode)
+        if (m_nodesNumEdges[firstNode] >= Mesh::m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= Mesh::m_maximumNumberOfEdgesPerNode)
         {
             continue;
         }
@@ -212,7 +213,7 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     }
 
     // add all valid edges starting at secondNode
-    std::vector<size_t> secondNodeEdges(maximumNumberOfEdgesPerNode, constants::missing::sizetValue);
+    std::vector<size_t> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue);
     size_t numSecondNodeEdges = 0;
     for (size_t n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
@@ -550,9 +551,9 @@ bool Mesh::IsFaceOnBoundary(size_t face) const
 void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 {
 
-    std::vector<double> edgeAngles(maximumNumberOfEdgesPerNode);
-    std::vector<std::size_t> indices(maximumNumberOfEdgesPerNode);
-    std::vector<size_t> edgeNodeCopy(maximumNumberOfEdgesPerNode);
+    std::vector<double> edgeAngles(Mesh::m_maximumNumberOfEdgesPerNode);
+    std::vector<std::size_t> indices(Mesh::m_maximumNumberOfEdgesPerNode);
+    std::vector<size_t> edgeNodeCopy(Mesh::m_maximumNumberOfEdgesPerNode);
     for (auto n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
@@ -581,7 +582,7 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 
             const auto deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
             const auto deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-            if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
+            if (std::abs(deltaX) < m_minimumDeltaCoordinate && std::abs(deltaY) < m_minimumDeltaCoordinate)
             {
                 if (deltaY < 0.0)
                 {
@@ -594,7 +595,7 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
             }
             else
             {
-                phi = atan2(deltaY, deltaX);
+                phi = std::atan2(deltaY, deltaX);
             }
 
             if (edgeIndex == 0)
@@ -761,7 +762,7 @@ void Mesh::AdministrateNodesEdges()
     }
 
     m_nodesEdges.resize(m_nodes.size());
-    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<size_t>(maximumNumberOfEdgesPerNode, constants::missing::sizetValue));
+    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<size_t>(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue));
 
     m_nodesNumEdges.resize(m_nodes.size());
     std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);

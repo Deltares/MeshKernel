@@ -94,7 +94,7 @@ void AveragingInterpolation::Compute()
 std::vector<double> AveragingInterpolation::ComputeOnFaces()
 {
     std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), constants::missing::doubleValue);
-    std::vector<Point> polygonNodesCache(maximumNumberOfNodesPerFace + 1);
+    std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
     std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
     for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
     {

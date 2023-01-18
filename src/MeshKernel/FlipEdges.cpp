@@ -86,7 +86,7 @@ void FlipEdges::Compute() const
 
             const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
-            if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
+            if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
             {
                 return;
             }
@@ -288,7 +288,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
-    if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
+    if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
     {
         return largeTopologyFunctionalValue;
     }
