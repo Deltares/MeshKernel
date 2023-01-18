@@ -37,18 +37,20 @@ using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<AveragingInterpolation> averaging,
-                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters) : m_mesh(mesh),
-                                                                                                          m_averaging(averaging),
-                                                                                                          m_meshRefinementParameters(meshRefinementParameters)
+                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters)
+    : m_mesh(mesh),
+      m_averaging(averaging),
+      m_meshRefinementParameters(meshRefinementParameters)
 {
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
-                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters) : m_mesh(mesh),
-                                                                                                          m_polygons(polygon),
-                                                                                                          m_meshRefinementParameters(meshRefinementParameters) {}
+                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters)
+    : m_mesh(mesh),
+      m_polygons(polygon),
+      m_meshRefinementParameters(meshRefinementParameters) {}
 
 void MeshRefinement::Compute()
 {
@@ -864,8 +866,8 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
         if (m_refinementType == RefinementType::WaveCourant)
         {
             const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
-            const double c = std::sqrt(gravity * std::abs(refinementValue));
-            const double waveCourant = c * (m_meshRefinementParameters.min_face_size / std::sqrt(gravity)) / m_mesh->m_edgeLengths[edgeIndex];
+            const double c = m_sqrt_gravity * std::sqrt(std::abs(refinementValue));
+            const double waveCourant = c * (m_meshRefinementParameters.min_face_size / m_sqrt_gravity) / m_mesh->m_edgeLengths[edgeIndex];
             doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_meshRefinementParameters.min_face_size) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_meshRefinementParameters.min_face_size);
         }
 
