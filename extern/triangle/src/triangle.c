@@ -338,7 +338,7 @@
 
 /* And here's one for those of you who are intimidated by math.              */
 
-#define ONETHIRD 0.333333333333333333333333333333333333333333333333333333333333
+#define constants::numeric::oneThird 0.333333333333333333333333333333333333333333333333333333333333
 
 
 /* Define the size large enough to store and operate on a pointer.           */

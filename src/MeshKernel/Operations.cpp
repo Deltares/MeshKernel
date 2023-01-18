@@ -1022,7 +1022,7 @@ namespace meshkernel
         }
         if (projection == Projection::spherical)
         {
-            const double phi = (firstNode.y + secondNode.y + thirdNode.y) * oneThird;
+            const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
             const double xf = 1.0 / cos(degrad_hp * phi);
             circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
             circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;

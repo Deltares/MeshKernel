@@ -211,19 +211,19 @@ void CurvilinearGridSmoothing::Solve()
             Point newNodePosition;
             if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Bottom)
             {
-                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n + 1]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n + 1]) * constants::numeric::oneThird * b;
             }
             if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Up)
             {
-                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n - 1]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n - 1]) * constants::numeric::oneThird * b;
             }
             if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Right)
             {
-                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m - 1][n]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m - 1][n]) * constants::numeric::oneThird * b;
             }
             if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::Left)
             {
-                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * constants::numeric::oneThird * b;
             }
 
             ProjectPointOnClosestGridBoundary(newNodePosition, m, n);

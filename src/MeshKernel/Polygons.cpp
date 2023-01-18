@@ -97,7 +97,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
 
         // average triangle size
         const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
-        const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+        const double averageTriangleArea = 0.25 * constants::numeric::squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles
         const size_t SafetySize = 11;

@@ -43,11 +43,15 @@ namespace meshkernel
             constexpr int intValue = -999;                                    ///< Integer value used as missing value
             constexpr size_t sizetValue = std::numeric_limits<size_t>::max(); ///< std::size_t missing value used for invalid indices
         }                                                                     // namespace missing
-    }                                                                         // namespace constants
 
-    // often used values
-    static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
-    constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
+        // often used values
+        namespace numeric
+        {
+            static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
+            constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
+        }                                                           // namespace numeric
+
+    } // namespace constants
 
     // geometric constants
     constexpr double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
