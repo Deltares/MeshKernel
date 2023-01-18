@@ -7,7 +7,8 @@
 using meshkernel::Contacts;
 
 Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
-                   std::shared_ptr<Mesh2D> mesh2d) : m_mesh1d(mesh1d), m_mesh2d(mesh2d)
+                   std::shared_ptr<Mesh2D> mesh2d)
+    : m_mesh1d(mesh1d), m_mesh2d(mesh2d), m_mesh1dIndices(), m_mesh2dIndices()
 {
     // assert mesh1d and mesh have the same projection
     if (m_mesh1d->m_projection != m_mesh2d->m_projection)

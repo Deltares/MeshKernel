@@ -38,20 +38,25 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
     contacts.ComputeSingleContacts(onedNodeMask, polygon);
 
     // Assert
-    ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(5, contacts.m_mesh2dIndices.size());
+    {
+        auto const& mesh1dIndices = contacts.Mesh1dIndices();
+        ASSERT_EQ(5, mesh1dIndices.size());
+        ASSERT_EQ(1, mesh1dIndices[0]);
+        ASSERT_EQ(2, mesh1dIndices[1]);
+        ASSERT_EQ(3, mesh1dIndices[2]);
+        ASSERT_EQ(4, mesh1dIndices[3]);
+        ASSERT_EQ(5, mesh1dIndices[4]);
+    }
 
-    ASSERT_EQ(1, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(3, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(4, contacts.m_mesh1dIndices[3]);
-    ASSERT_EQ(5, contacts.m_mesh1dIndices[4]);
-
-    ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(4, contacts.m_mesh2dIndices[2]);
-    ASSERT_EQ(7, contacts.m_mesh2dIndices[3]);
-    ASSERT_EQ(8, contacts.m_mesh2dIndices[4]);
+    {
+        auto const& mesh2dIndices = contacts.Mesh2dIndices();
+        ASSERT_EQ(5, mesh2dIndices.size());
+        ASSERT_EQ(0, mesh2dIndices[0]);
+        ASSERT_EQ(1, mesh2dIndices[1]);
+        ASSERT_EQ(4, mesh2dIndices[2]);
+        ASSERT_EQ(7, mesh2dIndices[3]);
+        ASSERT_EQ(8, mesh2dIndices[4]);
+    }
 }
 
 TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
@@ -80,20 +85,26 @@ TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
     contacts.ComputeMultipleContacts(onedNodeMask);
 
     // Assert
-    ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(5, contacts.m_mesh2dIndices.size());
 
-    ASSERT_EQ(1, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(3, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(4, contacts.m_mesh1dIndices[3]);
-    ASSERT_EQ(5, contacts.m_mesh1dIndices[4]);
+    {
+        auto const& mesh1dIndices = contacts.Mesh1dIndices();
+        ASSERT_EQ(5, mesh1dIndices.size());
+        ASSERT_EQ(1, mesh1dIndices[0]);
+        ASSERT_EQ(2, mesh1dIndices[1]);
+        ASSERT_EQ(3, mesh1dIndices[2]);
+        ASSERT_EQ(4, mesh1dIndices[3]);
+        ASSERT_EQ(5, mesh1dIndices[4]);
+    }
 
-    ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(4, contacts.m_mesh2dIndices[2]);
-    ASSERT_EQ(7, contacts.m_mesh2dIndices[3]);
-    ASSERT_EQ(8, contacts.m_mesh2dIndices[4]);
+    {
+        auto const& mesh2dIndices = contacts.Mesh2dIndices();
+        ASSERT_EQ(5, mesh2dIndices.size());
+        ASSERT_EQ(0, mesh2dIndices[0]);
+        ASSERT_EQ(1, mesh2dIndices[1]);
+        ASSERT_EQ(4, mesh2dIndices[2]);
+        ASSERT_EQ(7, mesh2dIndices[3]);
+        ASSERT_EQ(8, mesh2dIndices[4]);
+    }
 }
 
 TEST(Contacts, ComputeContactsWithPoints)
@@ -128,18 +139,24 @@ TEST(Contacts, ComputeContactsWithPoints)
     contacts.ComputeContactsWithPoints(onedNodeMask, pointsToConnect);
 
     // Assert
-    ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(4, contacts.m_mesh2dIndices.size());
+    {
+        auto const& mesh1dIndices = contacts.Mesh1dIndices();
+        ASSERT_EQ(4, mesh1dIndices.size());
+        ASSERT_EQ(2, mesh1dIndices[0]);
+        ASSERT_EQ(3, mesh1dIndices[1]);
+        ASSERT_EQ(4, mesh1dIndices[2]);
+        ASSERT_EQ(5, mesh1dIndices[3]);
+    }
 
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(3, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(4, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(5, contacts.m_mesh1dIndices[3]);
+    {
 
-    ASSERT_EQ(1, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(3, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(7, contacts.m_mesh2dIndices[2]);
-    ASSERT_EQ(8, contacts.m_mesh2dIndices[3]);
+        auto const& mesh2dIndices = contacts.Mesh2dIndices();
+        ASSERT_EQ(4, mesh2dIndices.size());
+        ASSERT_EQ(1, mesh2dIndices[0]);
+        ASSERT_EQ(3, mesh2dIndices[1]);
+        ASSERT_EQ(7, mesh2dIndices[2]);
+        ASSERT_EQ(8, mesh2dIndices[3]);
+    }
 }
 
 TEST(Contacts, ComputeContactsWithPolygons)
@@ -258,22 +275,27 @@ TEST(Contacts, ComputeContactsWithPolygons)
     contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
 
     // Assert
-    ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(6, contacts.m_mesh2dIndices.size());
+    {
+        auto const& mesh1dIndices = contacts.Mesh1dIndices();
+        ASSERT_EQ(6, mesh1dIndices.size());
+        ASSERT_EQ(2, mesh1dIndices[0]);
+        ASSERT_EQ(10, mesh1dIndices[1]);
+        ASSERT_EQ(19, mesh1dIndices[2]);
+        ASSERT_EQ(23, mesh1dIndices[3]);
+        ASSERT_EQ(31, mesh1dIndices[4]);
+        ASSERT_EQ(44, mesh1dIndices[5]);
+    }
 
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(10, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(19, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(23, contacts.m_mesh1dIndices[3]);
-    ASSERT_EQ(31, contacts.m_mesh1dIndices[4]);
-    ASSERT_EQ(44, contacts.m_mesh1dIndices[5]);
-
-    ASSERT_EQ(1709, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(2121, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(3999, contacts.m_mesh2dIndices[2]);
-    ASSERT_EQ(4703, contacts.m_mesh2dIndices[3]);
-    ASSERT_EQ(6482, contacts.m_mesh2dIndices[4]);
-    ASSERT_EQ(6805, contacts.m_mesh2dIndices[5]);
+    {
+        auto const& mesh2dIndices = contacts.Mesh2dIndices();
+        ASSERT_EQ(6, mesh2dIndices.size());
+        ASSERT_EQ(1709, mesh2dIndices[0]);
+        ASSERT_EQ(2121, mesh2dIndices[1]);
+        ASSERT_EQ(3999, mesh2dIndices[2]);
+        ASSERT_EQ(4703, mesh2dIndices[3]);
+        ASSERT_EQ(6482, mesh2dIndices[4]);
+        ASSERT_EQ(6805, mesh2dIndices[5]);
+    }
 }
 
 TEST(Contacts, ComputeBoundaryContacts)
@@ -306,24 +328,29 @@ TEST(Contacts, ComputeBoundaryContacts)
     contacts.ComputeBoundaryContacts(onedNodeMask, polygon, 200.0);
 
     // Assert
-    ASSERT_EQ(8, contacts.m_mesh1dIndices.size());
-    ASSERT_EQ(8, contacts.m_mesh2dIndices.size());
+    {
+        auto const& mesh1dIndices = contacts.Mesh1dIndices();
+        ASSERT_EQ(8, mesh1dIndices.size());
+        ASSERT_EQ(0, mesh1dIndices[0]);
+        ASSERT_EQ(2, mesh1dIndices[1]);
+        ASSERT_EQ(6, mesh1dIndices[2]);
+        ASSERT_EQ(0, mesh1dIndices[3]);
+        ASSERT_EQ(7, mesh1dIndices[4]);
+        ASSERT_EQ(7, mesh1dIndices[5]);
+        ASSERT_EQ(7, mesh1dIndices[6]);
+        ASSERT_EQ(7, mesh1dIndices[7]);
+    }
 
-    ASSERT_EQ(0, contacts.m_mesh1dIndices[0]);
-    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
-    ASSERT_EQ(6, contacts.m_mesh1dIndices[2]);
-    ASSERT_EQ(0, contacts.m_mesh1dIndices[3]);
-    ASSERT_EQ(7, contacts.m_mesh1dIndices[4]);
-    ASSERT_EQ(7, contacts.m_mesh1dIndices[5]);
-    ASSERT_EQ(7, contacts.m_mesh1dIndices[6]);
-    ASSERT_EQ(7, contacts.m_mesh1dIndices[7]);
-
-    ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
-    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
-    ASSERT_EQ(2, contacts.m_mesh2dIndices[2]);
-    ASSERT_EQ(3, contacts.m_mesh2dIndices[3]);
-    ASSERT_EQ(5, contacts.m_mesh2dIndices[4]);
-    ASSERT_EQ(6, contacts.m_mesh2dIndices[5]);
-    ASSERT_EQ(7, contacts.m_mesh2dIndices[6]);
-    ASSERT_EQ(8, contacts.m_mesh2dIndices[7]);
+    {
+        auto const& mesh2dIndices = contacts.Mesh2dIndices();
+        ASSERT_EQ(8, mesh2dIndices.size());
+        ASSERT_EQ(0, mesh2dIndices[0]);
+        ASSERT_EQ(1, mesh2dIndices[1]);
+        ASSERT_EQ(2, mesh2dIndices[2]);
+        ASSERT_EQ(3, mesh2dIndices[3]);
+        ASSERT_EQ(5, mesh2dIndices[4]);
+        ASSERT_EQ(6, mesh2dIndices[5]);
+        ASSERT_EQ(7, mesh2dIndices[6]);
+        ASSERT_EQ(8, mesh2dIndices[7]);
+    }
 }
