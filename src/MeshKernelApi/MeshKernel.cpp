@@ -443,7 +443,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->m_mesh2dIndices.size());
+            contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
         {
@@ -462,10 +462,12 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
+            auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();
+            auto const& mesh2dIndices = meshKernelState[meshKernelId].m_contacts->Mesh2dIndices();
             for (auto i = 0; i < contacts.num_contacts; ++i)
             {
-                contacts.mesh1d_indices[i] = static_cast<int>(meshKernelState[meshKernelId].m_contacts->m_mesh1dIndices[i]);
-                contacts.mesh2d_indices[i] = static_cast<int>(meshKernelState[meshKernelId].m_contacts->m_mesh2dIndices[i]);
+                contacts.mesh1d_indices[i] = static_cast<int>(mesh1dIndices[i]);
+                contacts.mesh2d_indices[i] = static_cast<int>(mesh2dIndices[i]);
             }
         }
         catch (...)
@@ -1366,7 +1368,7 @@ namespace meshkernelapi
             const bool inWardBool = inWard == 1 ? true : false;
             const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
 
-            ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
+            ConvertPointVectorToGeometryList(newPolygon.Nodes(), geometryListOut);
         }
         catch (...)
         {

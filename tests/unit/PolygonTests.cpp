@@ -230,17 +230,17 @@ TEST(Polygons, OffsetCopy)
 
     const double tolerance = 1e-5;
 
-    ASSERT_NEAR(newPolygon.m_nodes[0].x, 286.75373149966771, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[1].x, 284.34914611880089, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[2].x, 588.17047010011993, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[3].x, 598.35275776004642, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[4].x, 307.96231942308754, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[5].x, 296.75247200000001, tolerance);
+    ASSERT_NEAR(newPolygon.Node(0).x, 286.75373149966771, tolerance);
+    ASSERT_NEAR(newPolygon.Node(1).x, 284.34914611880089, tolerance);
+    ASSERT_NEAR(newPolygon.Node(2).x, 588.17047010011993, tolerance);
+    ASSERT_NEAR(newPolygon.Node(3).x, 598.35275776004642, tolerance);
+    ASSERT_NEAR(newPolygon.Node(4).x, 307.96231942308754, tolerance);
+    ASSERT_NEAR(newPolygon.Node(5).x, 296.75247200000001, tolerance);
 
-    ASSERT_NEAR(newPolygon.m_nodes[0].y, 398.03834755999270, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[1].y, 246.54793497426144, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[2].y, 233.72165300742589, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[3].y, 410.21520441451258, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[4].y, 407.87963900000000, tolerance);
-    ASSERT_NEAR(newPolygon.m_nodes[5].y, 407.87963900000000, tolerance);
+    ASSERT_NEAR(newPolygon.Node(0).y, 398.03834755999270, tolerance);
+    ASSERT_NEAR(newPolygon.Node(1).y, 246.54793497426144, tolerance);
+    ASSERT_NEAR(newPolygon.Node(2).y, 233.72165300742589, tolerance);
+    ASSERT_NEAR(newPolygon.Node(3).y, 410.21520441451258, tolerance);
+    ASSERT_NEAR(newPolygon.Node(4).y, 407.87963900000000, tolerance);
+    ASSERT_NEAR(newPolygon.Node(5).y, 407.87963900000000, tolerance);
 }

@@ -71,7 +71,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const
 {
-    if (polygons->m_projection != m_projection)
+    if (polygons->GetProjection() != m_projection)
     {
         throw std::invalid_argument("CurvilinearGridCreateUniform::Compute polygon projection is not equal to CurvilinearGridCreateUniform projection ");
     }
@@ -82,12 +82,13 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     }
 
     Point referencePoint{constants::missing::doubleValue, constants::missing::doubleValue};
-    auto const& [startPolygonIndex, endPolygonIndex] = polygons->m_outer_polygons_indices[polygonIndex];
+    auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {
-        if (polygons->m_nodes[i].IsValid())
+        auto const& polygonNode = polygons->Node(i);
+        if (polygonNode.IsValid())
         {
-            referencePoint = polygons->m_nodes[i];
+            referencePoint = polygonNode;
             break;
         }
     }
@@ -103,12 +104,15 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     const double cosineAngle = std::cos(m_makeGridParameters.angle * constants::conversion::degToRad);
     const double sinAngle = std::sin(m_makeGridParameters.angle * constants::conversion::degToRad);
 
+    Projection const polygonProjection = polygons->GetProjection();
+
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {
-        if (polygons->m_nodes[i].IsValid())
+        auto const& polygonNode = polygons->Node(i);
+        if (polygonNode.IsValid())
         {
-            const double dx = GetDx(referencePoint, polygons->m_nodes[i], polygons->m_projection);
-            const double dy = GetDy(referencePoint, polygons->m_nodes[i], polygons->m_projection);
+            const double dx = GetDx(referencePoint, polygonNode, polygonProjection);
+            const double dy = GetDy(referencePoint, polygonNode, polygonProjection);
             double xi = dx * cosineAngle + dy * sinAngle;
             double eta = -dx * sinAngle + dy * cosineAngle;
             xmin = std::min(xmin, xi);
@@ -120,7 +124,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
 
     double xShift = xmin * cosineAngle - etamin * sinAngle;
     double yShift = xmin * sinAngle + etamin * cosineAngle;
-    if (polygons->m_projection == Projection::spherical)
+    if (polygonProjection == Projection::spherical)
     {
         xShift = xShift / constants::geometric::earth_radius * constants::conversion::radToDeg;
         yShift = yShift / (constants::geometric::earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
@@ -138,7 +142,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
         {
             const double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
             double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
-            if (polygons->m_projection == Projection::spherical && n > 0)
+            if (polygonProjection == Projection::spherical && n > 0)
             {
                 newPointYCoordinate = XGridBlockSize * cos(constants::conversion::degToRad * gridNodes[n - 1][m].y);
             }

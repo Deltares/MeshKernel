@@ -28,6 +28,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
@@ -55,8 +56,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     // for the current polygon find the number of nodes
-    auto start = m_polygon->m_outer_polygons_indices[0].first;
-    auto end = m_polygon->m_outer_polygons_indices[0].second;
+    auto const& [start, end] = m_polygon->OuterIndices(0);
 
     if (end <= start)
     {
@@ -166,7 +166,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     {
         for (size_t i = 0; i < numPointsSide; i++)
         {
-            sideToFill[i] = m_polygon->m_nodes[nodeIndex];
+            sideToFill[i] = m_polygon->Node(nodeIndex);
 
             if ((nodeIndex == 0 && dir == -1) || nodeIndex + dir < start)
             {
@@ -193,8 +193,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         for (size_t i = 0; i < numNNodes; i++)
         {
             const double fac = static_cast<double>(i) / static_cast<double>(numNNodes - 1);
-            sideOne[i] = m_polygon->m_nodes[firstNode] * (1.0 - fac) +
-                         m_polygon->m_nodes[fourthNode] * fac;
+            sideOne[i] = m_polygon->Node(firstNode) * (1.0 - fac) +
+                         m_polygon->Node(fourthNode) * fac;
         }
     }
 
@@ -202,7 +202,10 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour, m_polygon->m_projection, numMNodes - 1, numNNodes - 1);
+    Projection const polygonProjection = m_polygon->GetProjection();
+
+    const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
+                                              polygonProjection, numMNodes - 1, numNNodes - 1);
 
     // Assign the points to the curvilinear grid
     std::vector<std::vector<Point>> gridNodes(numMNodes, std::vector<Point>(numNNodes));
@@ -213,7 +216,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
             gridNodes[i][j] = result[i][j];
         }
     }
-    return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
+    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
 }
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
@@ -235,7 +238,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto& [start, end] = m_polygon->m_outer_polygons_indices[0];
+    const auto& [start, end] = m_polygon->OuterIndices(0);
 
     if (end <= start)
     {
@@ -309,9 +312,11 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     const auto xib = static_cast<double>(n2) / static_cast<double>(numPointsSecondSide);
     const auto xic = static_cast<double>(n3) / static_cast<double>(numPointsThirdSide);
 
-    const auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
-                                 (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
-                                 (m_polygon->m_nodes[thirdNode] * (1.0 - xic) + m_polygon->m_nodes[firstNode] * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) *
+    auto const& polygonNodes = m_polygon->Nodes();
+
+    const auto triangleCenter = ((polygonNodes[firstNode] * (1.0 - xia) + polygonNodes[secondNode] * xia) * xic + polygonNodes[thirdNode] * (1.0 - xic) +
+                                 (polygonNodes[secondNode] * (1.0 - xib) + polygonNodes[thirdNode] * xib) * xia + polygonNodes[firstNode] * (1.0 - xia) +
+                                 (polygonNodes[thirdNode] * (1.0 - xic) + polygonNodes[firstNode] * xic) * xib + polygonNodes[secondNode] * (1.0 - xib)) *
                                 constants::numeric::oneThird;
 
     const auto maxM = *std::max_element(numM.begin(), numM.end());
@@ -324,6 +329,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
 
     std::vector<std::vector<Point>> gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
 
+    Projection const polygonProjection = m_polygon->GetProjection();
+
     for (size_t t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
@@ -335,7 +342,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         auto cornerIndex = cornerPoints[t];
         for (size_t i = 0; i < numN[t] + 1; ++i)
         {
-            sideOne[i] = m_polygon->m_nodes[cornerIndex];
+            sideOne[i] = polygonNodes[cornerIndex];
             if (cornerIndex == 0 || cornerIndex < start)
             {
                 cornerIndex = cornerIndex + numPolygonNodes - 1;
@@ -354,7 +361,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         cornerIndex = cornerPoints[t];
         for (size_t i = 0; i < numM[t] + 1; ++i)
         {
-            sideThree[i] = m_polygon->m_nodes[cornerIndex];
+            sideThree[i] = polygonNodes[cornerIndex];
             cornerIndex += 1;
             if (cornerIndex < start)
             {
@@ -370,21 +377,21 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         for (size_t i = 0; i < numM[t] + 1; ++i)
         {
             double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
-            sideFour[i] = m_polygon->m_nodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
+            sideFour[i] = polygonNodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
         for (size_t i = 0; i < numN[t] + 1; ++i)
         {
             double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
-            sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
+            sideTwo[i] = polygonNodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         const auto result = DiscretizeTransfinite(sideOne,
                                                   sideTwo,
                                                   sideThree,
                                                   sideFour,
-                                                  m_polygon->m_projection,
+                                                  polygonProjection,
                                                   numM[t],
                                                   numN[t]);
 
@@ -424,5 +431,5 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
         }
     }
 
-    return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
+    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
 }
