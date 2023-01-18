@@ -122,8 +122,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     double yShift = xmin * sinAngle + etamin * cosineAngle;
     if (polygons->m_projection == Projection::spherical)
     {
-        xShift = xShift / earth_radius * constants::conversion::radToDeg;
-        yShift = yShift / (earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
+        xShift = xShift / constants::geometric::earth_radius * constants::conversion::radToDeg;
+        yShift = yShift / (constants::geometric::earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
     }
 
     auto const OriginXCoordinate = referencePoint.x + xShift;

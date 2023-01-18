@@ -51,18 +51,22 @@ namespace meshkernel
             constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
         }                                                           // namespace numeric
 
+        // unit conversion constants
         namespace conversion
         {
             constexpr double degToRad = M_PI / 180.0;   ///< Conversion factor from degrees to radians(pi / 180)
             constexpr double radToDeg = 1.0 / degToRad; ///< Conversion factor from radians to degrees(180 / pi)
         }                                               // namespace conversion
 
-    } // namespace constants
+        // geometric constants
+        namespace geometric
+        {
+            constexpr double earth_radius = 6378137.0;                  ///< Earth radius(m)
+            constexpr double inverse_earth_radius = 1.0 / earth_radius; ///< One over constants::geometric::earth_radius(m-1);
+            constexpr double absLatitudeAtPoles = 0.0001;               ///< Pole tolerance in degrees
+        }                                                               // namespace geometric
 
-    // geometric constants
-    constexpr double earth_radius = 6378137.0;                   ///< Earth radius(m)
-    constexpr double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
-    constexpr double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
+    } // namespace constants
 
     // mesh constants
     constexpr double minimumDeltaCoordinate = 1e-14;                                       ///< Minimum delta coordinate

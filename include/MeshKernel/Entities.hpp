@@ -194,8 +194,8 @@ namespace meshkernel
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
-            x = x * constants::conversion::degToRad * earth_radius * std::cos(constants::conversion::degToRad * referenceLatitude);
-            y = y * constants::conversion::degToRad * earth_radius;
+            x = x * constants::conversion::degToRad * constants::geometric::earth_radius * std::cos(constants::conversion::degToRad * referenceLatitude);
+            y = y * constants::conversion::degToRad * constants::geometric::earth_radius;
         }
 
         /// @brief Determines if one of the point coordinates equals to \p missingValue

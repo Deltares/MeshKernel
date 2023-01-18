@@ -411,9 +411,9 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
 
         if (m_mesh->m_projection == Projection::spherical)
         {
-            const double wwxTransformed = wwx * earth_radius * constants::conversion::degToRad *
+            const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad *
                                           std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * constants::conversion::degToRad);
-            const double wwyTransformed = wwy * earth_radius * constants::conversion::degToRad;
+            const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;
 
             dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
             dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
@@ -422,8 +422,8 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
         }
         if (m_mesh->m_projection == Projection::sphericalAccurate)
         {
-            const double wwxTransformed = wwx * earth_radius * constants::conversion::degToRad;
-            const double wwyTransformed = wwy * earth_radius * constants::conversion::degToRad;
+            const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad;
+            const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;
 
             dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].x;
             dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].y;

@@ -301,7 +301,7 @@ void CurvilinearGridFromSplines::Initialize()
             }
             if (m_splines->m_projection == Projection::spherical)
             {
-                const double factor = 1.0 / (earth_radius * constants::conversion::degToRad);
+                const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
                 xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
                 xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x * factor;
                 ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y * factor;
@@ -1018,8 +1018,8 @@ CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(size_t layerIndex)
 
         if (m_splines->m_projection == Projection::spherical)
         {
-            velocityVector[m].x = velocityVector[m].x * one_over_earth_radius * constants::conversion::radToDeg / std::cos(constants::conversion::degToRad * m_gridPoints[layerIndex][m].y);
-            velocityVector[m].y = velocityVector[m].y * one_over_earth_radius * constants::conversion::radToDeg;
+            velocityVector[m].x = velocityVector[m].x * constants::geometric::inverse_earth_radius * constants::conversion::radToDeg / std::cos(constants::conversion::degToRad * m_gridPoints[layerIndex][m].y);
+            velocityVector[m].y = velocityVector[m].y * constants::geometric::inverse_earth_radius * constants::conversion::radToDeg;
         }
     }
 

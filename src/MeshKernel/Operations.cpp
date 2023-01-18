@@ -110,14 +110,14 @@ namespace meshkernel
 
     bool IsPointOnPole(const Point& point)
     {
-        return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
+        return std::abs(std::abs(point.y) - 90.0) < constants::geometric::absLatitudeAtPoles;
     }
 
     Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint)
     {
         Cartesian3DPoint result;
-        result.z = earth_radius * sin(sphericalPoint.y * constants::conversion::degToRad);
-        const double rr = earth_radius * cos(sphericalPoint.y * constants::conversion::degToRad);
+        result.z = constants::geometric::earth_radius * sin(sphericalPoint.y * constants::conversion::degToRad);
+        const double rr = constants::geometric::earth_radius * cos(sphericalPoint.y * constants::conversion::degToRad);
         result.x = rr * cos(sphericalPoint.x * constants::conversion::degToRad);
         result.y = rr * sin(sphericalPoint.x * constants::conversion::degToRad);
         return result;
@@ -348,7 +348,7 @@ namespace meshkernel
             const double firstPointY = firstPoint.y * constants::conversion::degToRad;
             const double secondPointY = secondPoint.y * constants::conversion::degToRad;
             const double cosPhi = cos(0.5 * (firstPointY + secondPointY));
-            const double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
+            const double dx = constants::geometric::earth_radius * cosPhi * (secondPointX - firstPointX);
             return dx;
         }
         return constants::missing::doubleValue;
@@ -366,7 +366,7 @@ namespace meshkernel
         {
             const double firstPointY = firstPoint.y * constants::conversion::degToRad;
             const double secondPointY = secondPoint.y * constants::conversion::degToRad;
-            const double dy = earth_radius * (secondPointY - firstPointY);
+            const double dy = constants::geometric::earth_radius * (secondPointY - firstPointY);
             return dy;
         }
         return constants::missing::doubleValue;
@@ -729,7 +729,7 @@ namespace meshkernel
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
             const double xf = 1.0 / std::cos(constants::conversion::degToRad * referencePoint.y);
-            const double convertedIncrement = constants::conversion::radToDeg * increment / earth_radius;
+            const double convertedIncrement = constants::conversion::radToDeg * increment / constants::geometric::earth_radius;
             point.x = point.x + normal.x * convertedIncrement * xf;
             point.y = point.y + normal.y * convertedIncrement;
         }
@@ -1024,8 +1024,8 @@ namespace meshkernel
         {
             const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
             const double xf = 1.0 / cos(constants::conversion::degToRad * phi);
-            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / earth_radius;
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / earth_radius;
+            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
+            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
         }
         if (projection == Projection::sphericalAccurate)
         {
@@ -1202,8 +1202,8 @@ namespace meshkernel
 
         if (projection == Projection::spherical)
         {
-            yCenterOfMass = yCenterOfMass / (earth_radius * constants::conversion::degToRad);
-            xCenterOfMass = xCenterOfMass / (earth_radius * constants::conversion::degToRad * std::cos((yCenterOfMass + reference.y) * constants::conversion::degToRad));
+            yCenterOfMass = yCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad);
+            xCenterOfMass = xCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((yCenterOfMass + reference.y) * constants::conversion::degToRad));
         }
 
         Point centerOfMass;

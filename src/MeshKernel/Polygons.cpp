@@ -291,7 +291,7 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     distance = -distance;
     if (m_projection == Projection::spherical)
     {
-        distance = distance / (earth_radius * constants::conversion::degToRad);
+        distance = distance / (constants::geometric::earth_radius * constants::conversion::degToRad);
     }
 
     std::vector<Point> newPolygonPoints(sizenewPolygon, {constants::missing::doubleValue, constants::missing::doubleValue});
