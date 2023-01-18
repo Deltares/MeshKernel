@@ -37,18 +37,19 @@ using meshkernel::AveragingInterpolation;
 AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                                std::vector<Sample>& samples,
                                                Method method,
-                                               MeshLocations locationType,
+                                               Mesh::Location locationType,
                                                double relativeSearchRadius,
                                                bool useClosestSampleIfNoneAvailable,
                                                bool transformSamples,
-                                               size_t minNumSamples) : m_mesh(mesh),
-                                                                       m_samples(samples),
-                                                                       m_method(method),
-                                                                       m_interpolationLocation(locationType),
-                                                                       m_relativeSearchRadius(relativeSearchRadius),
-                                                                       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
-                                                                       m_transformSamples(transformSamples),
-                                                                       m_minNumSamples(minNumSamples)
+                                               size_t minNumSamples)
+    : m_mesh(mesh),
+      m_samples(samples),
+      m_method(method),
+      m_interpolationLocation(locationType),
+      m_relativeSearchRadius(relativeSearchRadius),
+      m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
+      m_transformSamples(transformSamples),
+      m_minNumSamples(minNumSamples)
 {
 }
 
@@ -67,7 +68,7 @@ void AveragingInterpolation::Compute()
     auto interpolatedResults = ComputeOnLocations();
 
     // for edges, an average of the nodal interpolated value is made
-    if (m_interpolationLocation == MeshLocations::Edges)
+    if (m_interpolationLocation == Mesh::Location::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
         for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
@@ -153,15 +154,11 @@ std::vector<double> AveragingInterpolation::ComputeOnLocations()
 {
     switch (m_interpolationLocation)
     {
-    case MeshLocations::Faces:
-    {
+    case Mesh::Location::Faces:
         return ComputeOnFaces();
-    }
-    case MeshLocations::Nodes:
-    case MeshLocations::Edges:
-    {
+    case Mesh::Location::Nodes:
+    case Mesh::Location::Edges:
         return ComputeOnNodesOrEdges();
-    }
     default:
         return std::vector<double>{};
     }

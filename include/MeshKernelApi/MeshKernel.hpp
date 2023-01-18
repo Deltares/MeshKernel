@@ -1005,7 +1005,7 @@ namespace meshkernelapi
         /// \see meshkernel::TriangulationInterpolation
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  samples            The samples coordinates and values
-        /// @param[in]  locationType       The location type (see \ref meshkernel::MeshLocations enum)
+        /// @param[in]  locationType       The location type (see \ref meshkernel::Mesh::Location enum)
         /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
         MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,
@@ -1018,7 +1018,7 @@ namespace meshkernelapi
         /// \see meshkernel::AveragingInterpolation
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] samples                The samples coordinates and values
-        /// @param[in] locationType           The location type (see \ref meshkernel::MeshLocations enum)
+        /// @param[in] locationType           The location type (see \ref meshkernel::Mesh::Location enum)
         /// @param[in] averagingMethodType    The averaging method (see Method enum)
         /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
         /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
@@ -1092,11 +1092,6 @@ namespace meshkernelapi
         /// @param[out] method The int indicating the minimum absolute value averaging method type
         /// @returns Error code
         MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method);
-
-        /// @brief Gets an int indicating the kdtree averaging method type
-        /// @param[out] method The int indicating the kdtree averaging method type
-        /// @returns Error code
-        MKERNEL_API int mkernel_get_averaging_method_kdtree(int& method);
 
         /// @brief Gets an int indicating the cartesian projection
         /// @param[out] projection The int indicating the cartesian projection

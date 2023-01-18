@@ -12,7 +12,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 {
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projection::cartesian);
 
-    //sample points
+    // sample points
     std::vector<meshkernel::Sample> samples{
         {14.7153645, 14.5698833, 1.0},
         {24.7033062, 14.4729137, 1.0},
@@ -22,7 +22,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -43,7 +43,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
     // 3 Validation edges connecting hanging nodes
 
-    //bottom side
+    // bottom side
     ASSERT_EQ(5, mesh->m_edges[73].first);
     ASSERT_EQ(25, mesh->m_edges[73].second);
 
@@ -56,7 +56,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(15, mesh->m_edges[76].first);
     ASSERT_EQ(28, mesh->m_edges[76].second);
 
-    //right side
+    // right side
     ASSERT_EQ(21, mesh->m_edges[81].first);
     ASSERT_EQ(35, mesh->m_edges[81].second);
 
@@ -69,7 +69,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(23, mesh->m_edges[82].first);
     ASSERT_EQ(36, mesh->m_edges[82].second);
 
-    //upper side
+    // upper side
     ASSERT_EQ(19, mesh->m_edges[79].first);
     ASSERT_EQ(30, mesh->m_edges[79].second);
 
@@ -82,7 +82,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(9, mesh->m_edges[74].first);
     ASSERT_EQ(27, mesh->m_edges[74].second);
 
-    //left side
+    // left side
     ASSERT_EQ(3, mesh->m_edges[71].first);
     ASSERT_EQ(32, mesh->m_edges[71].second);
 
@@ -103,7 +103,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 {
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
 
-    //sample points
+    // sample points
     std::vector<meshkernel::Sample> samples{
         {14.7153645, 14.5698833, 1.0},
         {24.7033062, 14.4729137, 1.0},
@@ -113,7 +113,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -131,11 +131,11 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
-    //Assert number of edges and nodes
+    // Assert number of edges and nodes
     ASSERT_EQ(131, mesh->GetNumEdges());
     ASSERT_EQ(62, mesh->GetNumNodes());
 
-    //Assert edges
+    // Assert edges
     ASSERT_EQ(0, mesh->m_edges[0].first);
     ASSERT_EQ(4, mesh->m_edges[0].second);
 
@@ -205,7 +205,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
-    //sample points
+    // sample points
     std::vector<meshkernel::Sample> samples{
         {359.8657532, 350.3144836, 1.0},
         {387.5152588, 299.2614746, 1.0}};
@@ -213,7 +213,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -306,7 +306,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
 
-    //sample points
+    // sample points
     std::vector<meshkernel::Sample> samples{
         {2.7091951, 5.4000854, 0.0000000},
         {6.4910383, 2.4182367, 0.0000000},
@@ -339,7 +339,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -408,7 +408,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -473,7 +473,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::Max,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.01,
                                                                                    false,
                                                                                    true,
@@ -621,7 +621,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
 
-    //sample points
+    // sample points
     std::vector<meshkernel::Sample> samples{
         {41.1050110, 41.1049728, 1.0},
         {41.1084785, 41.1048775, 1.0},
@@ -631,7 +631,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::MeshLocations::Faces,
+                                                                                   meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
                                                                                    false,
@@ -652,7 +652,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     ASSERT_EQ(60, mesh->GetNumEdges());
     ASSERT_EQ(32, mesh->GetNumNodes());
 
-    //sides of the refined part
+    // sides of the refined part
     ASSERT_EQ(5, mesh->m_edges[5].first);
     ASSERT_EQ(16, mesh->m_edges[5].second);
 

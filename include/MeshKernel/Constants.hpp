@@ -69,25 +69,4 @@ namespace meshkernel
     // physical constants
     constexpr double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
 
-    ///@brief Operations averaging methods
-    enum class AveragingMethod
-    {
-        SimpleAveraging = 1,
-        ClosestPoint = 2,
-        Max = 3,
-        Min = 4,
-        InverseDistanceWeighting = 5,
-        MinAbs = 6,
-        KdTree = 7
-    };
-
-    /// @brief MeshLocations locations
-    enum class MeshLocations
-    {
-        Faces = 0, ///< Faces
-        Nodes = 1, ///< Nodes
-        Edges = 2, ///< Edges
-        None       ///< None
-    };
-
 } // namespace meshkernel

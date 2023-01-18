@@ -356,7 +356,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::MeshLocations::Nodes);
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
@@ -380,7 +380,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     meshkernel::Point newPoint{10.0, 10.0};
-    mesh->BuildTree(meshkernel::MeshLocations::Nodes);
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
     mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
@@ -396,7 +396,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::MeshLocations::Edges);
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     meshkernel::Point newPoint{10.0, 10.0};
 
@@ -418,7 +418,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::MeshLocations::Edges);
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     mesh->DeleteEdge(0);
@@ -654,7 +654,7 @@ class MeshDeletionWithInnerPolygons : public ::testing::TestWithParam<std::tuple
         {1.5, 1.5},
     };
 
-        static inline std::vector<meshkernel::Point> secondPolygon_{
+    static inline std::vector<meshkernel::Point> secondPolygon_{
         {-0.5, -0.5},
         {7.5, -0.5},
         {7.5, 7.5},
@@ -667,8 +667,7 @@ class MeshDeletionWithInnerPolygons : public ::testing::TestWithParam<std::tuple
         {2.7, 4.5},
         {2.7, 3.3},
         {1.5, 3.3},
-        {1.5, 1.5}
-    };
+        {1.5, 1.5}};
 
 public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>> GetData()
@@ -677,8 +676,7 @@ public:
             {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, firstPolygon_, 9},
             {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, firstPolygon_, 40},
             {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, secondPolygon_, 41},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, secondPolygon_, 24}
-        };
+            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, secondPolygon_, 24}};
     }
 };
 

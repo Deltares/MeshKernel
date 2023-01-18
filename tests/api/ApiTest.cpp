@@ -1285,7 +1285,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     int invalidIndex;
     int type;
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
-    ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
+    ASSERT_EQ(static_cast<int>(meshkernel::Mesh::Location::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
 
@@ -2570,8 +2570,8 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     samples.values = values.get();
     samples.num_coordinates = numCoordinates;
 
-    int const locationType = 1;          // Nodes
-    int const averagingMethodType = 1;   // Simple averaging
+    int const locationType = 1;             // Nodes
+    int const averagingMethodType = 1;      // Simple averaging
     double const relativeSearchSize = 1.01; // The relative search size
 
     meshkernelapi::Mesh2D mesh2d;
@@ -2962,7 +2962,7 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
 
     // Set the polyLine
     std::vector<double> xCoordinates{0.6, 0.6};
-    std::vector<double> yCoordinates{2.5, 0.5 };
+    std::vector<double> yCoordinates{2.5, 0.5};
 
     meshkernelapi::GeometryList boundaryPolyLine{};
     boundaryPolyLine.geometry_separator = meshkernel::doubleMissingValue;
@@ -3020,5 +3020,4 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
     ASSERT_EQ(faceIndexes[4], meshkernel::intMissingValue);
-    
 }

@@ -193,7 +193,7 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     for (size_t n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdge = m_edges[firstEdgeIndex];
+        const auto& firstEdge = m_edges[firstEdgeIndex];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
         if (firstEdgeOtherNode != sizetMissingValue && firstEdgeOtherNode != secondNodeIndex)
         {
@@ -437,11 +437,11 @@ size_t Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    SearchNearestLocation(point, searchRadius * searchRadius, MeshLocations::Nodes);
+    SearchNearestLocation(point, searchRadius * searchRadius, Location::Nodes);
 
-    if (GetNumLocations(MeshLocations::Nodes) > 0)
+    if (GetNumLocations(Location::Nodes) > 0)
     {
-        return GetLocationsIndices(0, MeshLocations::Nodes);
+        return GetLocationsIndices(0, Location::Nodes);
     }
 
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
@@ -496,11 +496,11 @@ size_t Mesh::FindEdgeCloseToAPoint(Point point)
         throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
 
-    SearchNearestLocation(point, MeshLocations::Edges);
+    SearchNearestLocation(point, Location::Edges);
 
-    if (GetNumLocations(MeshLocations::Edges) >= 1)
+    if (GetNumLocations(Location::Edges) >= 1)
     {
-        return GetLocationsIndices(0, MeshLocations::Edges);
+        return GetLocationsIndices(0, Location::Edges);
     }
 
     throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
@@ -624,122 +624,117 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
     }
 }
 
-void Mesh::BuildTree(MeshLocations meshLocation)
+void Mesh::BuildTree(Location meshLocation)
 {
-    if (meshLocation == MeshLocations::Nodes && m_nodesRTree.Empty())
+    if (meshLocation == Location::Nodes && m_nodesRTree.Empty())
     {
         m_nodesRTree.BuildTree(m_nodes);
         m_nodesRTreeRequiresUpdate = false;
     }
 
-    if (meshLocation == MeshLocations::Edges && m_edgesRTree.Empty())
+    if (meshLocation == Location::Edges && m_edgesRTree.Empty())
     {
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters);
         m_edgesRTreeRequiresUpdate = false;
     }
 
-    if (meshLocation == MeshLocations::Faces && m_facesRTree.Empty())
+    if (meshLocation == Location::Faces && m_facesRTree.Empty())
     {
         m_facesRTree.BuildTree(m_facesCircumcenters);
     }
 }
 
-void Mesh::SearchNearestLocation(Point point, MeshLocations meshLocation)
+void Mesh::SearchNearestLocation(Point point, Location meshLocation)
 {
     BuildTree(meshLocation);
-    if (meshLocation == MeshLocations::Nodes)
+    switch (meshLocation)
     {
+    case Location::Nodes:
         m_nodesRTree.SearchNearestPoint(point);
-    }
-
-    if (meshLocation == MeshLocations::Edges)
-    {
+        break;
+    case Location::Edges:
         m_edgesRTree.SearchNearestPoint(point);
-    }
-
-    if (meshLocation == MeshLocations::Faces)
-    {
+        break;
+    case Location::Faces:
         m_facesRTree.SearchNearestPoint(point);
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchNearestLocation: Mesh location has not been set.");
     }
 }
 
-void Mesh::SearchNearestLocation(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)
 {
     BuildTree(meshLocation);
-    if (meshLocation == MeshLocations::Nodes)
+    switch (meshLocation)
     {
-        m_nodesRTree.SearchNearestPoint(point, squaredRadius);
-    }
-
-    if (meshLocation == MeshLocations::Edges)
-    {
-        m_edgesRTree.SearchNearestPoint(point, squaredRadius);
-    }
-
-    if (meshLocation == MeshLocations::Faces)
-    {
+    case Location::Faces:
         m_facesRTree.SearchNearestPoint(point, squaredRadius);
+        break;
+    case Location::Nodes:
+        m_nodesRTree.SearchNearestPoint(point, squaredRadius);
+        break;
+    case Location::Edges:
+        m_edgesRTree.SearchNearestPoint(point, squaredRadius);
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchNearestLocation: Mesh location has not been set.");
     }
 }
 
-void Mesh::SearchLocations(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocation)
 {
     BuildTree(meshLocation);
-    if (meshLocation == MeshLocations::Nodes)
+    switch (meshLocation)
     {
-        m_nodesRTree.SearchPoints(point, squaredRadius);
-    }
-
-    if (meshLocation == MeshLocations::Edges)
-    {
-        m_edgesRTree.SearchPoints(point, squaredRadius);
-    }
-
-    if (meshLocation == MeshLocations::Faces)
-    {
+    case Location::Faces:
         m_facesRTree.SearchPoints(point, squaredRadius);
+        break;
+    case Location::Nodes:
+        m_nodesRTree.SearchPoints(point, squaredRadius);
+        break;
+    case Location::Edges:
+        m_edgesRTree.SearchPoints(point, squaredRadius);
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
     }
 }
 
-size_t Mesh::GetNumLocations(MeshLocations meshLocation) const
+size_t Mesh::GetNumLocations(Location meshLocation) const
 {
-    if (meshLocation == MeshLocations::Nodes)
+    switch (meshLocation)
     {
-        return m_nodesRTree.GetQueryResultSize();
-    }
-
-    if (meshLocation == MeshLocations::Edges)
-    {
-        return m_edgesRTree.GetQueryResultSize();
-    }
-
-    if (meshLocation == MeshLocations::Faces)
-    {
+    case Location::Faces:
         return m_facesRTree.GetQueryResultSize();
+    case Location::Nodes:
+        return m_nodesRTree.GetQueryResultSize();
+    case Location::Edges:
+        return m_edgesRTree.GetQueryResultSize();
+    case Location::Unknown:
+    default:
+        return sizetMissingValue;
     }
-
-    return sizetMissingValue;
 }
 
-size_t Mesh::GetLocationsIndices(size_t index, MeshLocations meshLocation)
+size_t Mesh::GetLocationsIndices(size_t index, Location meshLocation)
 {
-    if (meshLocation == MeshLocations::Nodes)
+    switch (meshLocation)
     {
-        return m_nodesRTree.GetQueryResult(index);
-    }
-
-    if (meshLocation == MeshLocations::Edges)
-    {
-        return m_edgesRTree.GetQueryResult(index);
-    }
-
-    if (meshLocation == MeshLocations::Faces)
-    {
+    case Location::Faces:
         return m_facesRTree.GetQueryResult(index);
+    case Location::Nodes:
+        return m_nodesRTree.GetQueryResult(index);
+    case Location::Edges:
+        return m_edgesRTree.GetQueryResult(index);
+    case Location::Unknown:
+    default:
+        return sizetMissingValue;
     }
-
-    return sizetMissingValue;
 }
 
 void Mesh::AdministrateNodesEdges()
@@ -794,10 +789,10 @@ double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
     return maxEdgeLength;
 }
 
-std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) const
+std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
 {
     std::vector<Point> result;
-    if (location == MeshLocations::Nodes)
+    if (location == Location::Nodes)
     {
         result.reserve(GetNumNodes());
         for (const auto& n : m_nodes)
@@ -805,7 +800,7 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) co
             result.emplace_back(n);
         }
     }
-    if (location == MeshLocations::Edges)
+    if (location == Location::Edges)
     {
         result.reserve(GetNumEdges());
         for (const auto& [firstNode, secondNode] : m_edges)
@@ -821,7 +816,7 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(MeshLocations location) co
             }
         }
     }
-    if (location == MeshLocations::Faces)
+    if (location == Location::Faces)
     {
         result.reserve(GetNumFaces());
         for (const auto& massCentre : m_facesMassCenters)

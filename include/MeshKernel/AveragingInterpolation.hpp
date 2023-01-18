@@ -40,7 +40,7 @@ namespace meshkernel
 
     /// @brief The class used to interpolate based on averaging
     ///
-    /// The averaging interpolation operates on three specific \ref MeshLocations - Faces
+    /// The averaging interpolation operates on three specific \ref Mesh::Location - Faces
     /// (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to
     /// collect all samples close to the locations and perform a mathematical
     /// operation on their values. The \ref Method enum describes available operations.
@@ -56,7 +56,7 @@ namespace meshkernel
     ///         (relativeSearchRadius > 1 increased, relativeSearchRadius < 1
     ///         decreased).
     ///
-    ///     2.  For \ref MeshLocations Nodes and \ref MeshLocations Edges locations, the dual face around the node is
+    ///     2.  For \ref Mesh::Location Nodes and \ref Mesh::Location Edges locations, the dual face around the node is
     ///         constructed by connecting the mid-points of all edges connected
     ///         to the node. As above, the resulting polygon can be
     ///         increased/decreased by the relativeSearchRadius parameter.
@@ -69,7 +69,7 @@ namespace meshkernel
     ///
     /// -   The operations described above are executed on the found samples.
     ///
-    /// -   For the \ref MeshLocations Edges location, the interpolated values at the node are
+    /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
     ///     averaged.
     class AveragingInterpolation
     {
@@ -97,7 +97,7 @@ namespace meshkernel
         AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                std::vector<Sample>& samples,
                                Method method,
-                               MeshLocations locationType,
+                               Mesh::Location locationType,
                                double relativeSearchRadius,
                                bool useClosestSampleIfNoneAvailable,
                                bool subtractSampleValues,
@@ -163,7 +163,7 @@ namespace meshkernel
         const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
         Method m_method;                                ///< The method to use for the interpolation
-        MeshLocations m_interpolationLocation;          ///< Interpolation location
+        Mesh::Location m_interpolationLocation;         ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
