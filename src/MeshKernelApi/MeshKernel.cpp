@@ -1368,7 +1368,7 @@ namespace meshkernelapi
             const bool inWardBool = inWard == 1 ? true : false;
             const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
 
-            ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
+            ConvertPointVectorToGeometryList(newPolygon.Nodes(), geometryListOut);
         }
         catch (...)
         {
