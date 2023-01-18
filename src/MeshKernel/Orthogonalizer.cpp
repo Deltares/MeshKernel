@@ -88,7 +88,7 @@ void Orthogonalizer::Compute()
 
             if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
             {
-                normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
+                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
             }
 
             m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;

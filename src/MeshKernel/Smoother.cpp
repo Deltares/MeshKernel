@@ -1088,7 +1088,7 @@ void Smoother::ComputeJacobian(size_t currentNode, std::vector<double>& J) const
     }
     if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        const auto cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
+        const auto cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * constants::conversion::degToRad);
         J[0] = 0.0;
         J[1] = 0.0;
         J[2] = 0.0;

@@ -226,7 +226,7 @@ bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, cons
         Point x2 = nodes[faceNodes[nodePermutations[i][2]]];
 
         const auto cosphi = NormalizedInnerProductTwoSegments(x1, x0, x1, x2, m_projection);
-        const auto phi = std::acos(std::min(std::max(cosphi, -1.0), 1.0)) * raddeg_hp;
+        const auto phi = std::acos(std::min(std::max(cosphi, -1.0), 1.0)) * constants::conversion::radToDeg;
         phiMin = std::min(phiMin, phi);
         phiMax = std::max(phiMax, phi);
         if (phi < triangleMinimumAngle || phi > triangleMaximumAngle)

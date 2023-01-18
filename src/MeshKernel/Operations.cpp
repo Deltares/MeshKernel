@@ -116,18 +116,18 @@ namespace meshkernel
     Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint)
     {
         Cartesian3DPoint result;
-        result.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
-        const double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
-        result.x = rr * cos(sphericalPoint.x * degrad_hp);
-        result.y = rr * sin(sphericalPoint.x * degrad_hp);
+        result.z = earth_radius * sin(sphericalPoint.y * constants::conversion::degToRad);
+        const double rr = earth_radius * cos(sphericalPoint.y * constants::conversion::degToRad);
+        result.x = rr * cos(sphericalPoint.x * constants::conversion::degToRad);
+        result.y = rr * sin(sphericalPoint.x * constants::conversion::degToRad);
         return result;
     }
 
     Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
     {
         Point sphericalPoint;
-        const double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
-        sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
+        const double angle = atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
+        sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
         return sphericalPoint;
     }
@@ -242,7 +242,7 @@ namespace meshkernel
             const Cartesian3DPoint pointCartesian3D{SphericalToCartesian3D(point)};
 
             // get test direction: e_lambda
-            const double lambda = point.x * degrad_hp;
+            const double lambda = point.x * constants::conversion::degToRad;
             const Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
             int inside = 0;
 
@@ -286,8 +286,8 @@ namespace meshkernel
 
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
-        const double phi0 = point.y * degrad_hp;
-        const double lambda0 = point.x * degrad_hp;
+        const double phi0 = point.y * constants::conversion::degToRad;
+        const double lambda0 = point.x * constants::conversion::degToRad;
 
         exxp[0] = cos(phi0) * cos(lambda0);
         exxp[1] = cos(phi0) * sin(lambda0);
@@ -304,8 +304,8 @@ namespace meshkernel
 
     void ComputeTwoBaseComponents(const Point& point, std::array<double, 3>& elambda, std::array<double, 3>& ephi)
     {
-        const double phi0 = point.y * degrad_hp;
-        const double lambda0 = point.x * degrad_hp;
+        const double phi0 = point.y * constants::conversion::degToRad;
+        const double lambda0 = point.x * constants::conversion::degToRad;
 
         elambda[0] = -sin(lambda0);
         elambda[1] = cos(lambda0);
@@ -343,10 +343,10 @@ namespace meshkernel
                 firstPointX += 360.0;
             }
 
-            firstPointX = firstPointX * degrad_hp;
-            secondPointX = secondPointX * degrad_hp;
-            const double firstPointY = firstPoint.y * degrad_hp;
-            const double secondPointY = secondPoint.y * degrad_hp;
+            firstPointX = firstPointX * constants::conversion::degToRad;
+            secondPointX = secondPointX * constants::conversion::degToRad;
+            const double firstPointY = firstPoint.y * constants::conversion::degToRad;
+            const double secondPointY = secondPoint.y * constants::conversion::degToRad;
             const double cosPhi = cos(0.5 * (firstPointY + secondPointY));
             const double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
             return dx;
@@ -364,8 +364,8 @@ namespace meshkernel
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
-            const double firstPointY = firstPoint.y * degrad_hp;
-            const double secondPointY = secondPoint.y * degrad_hp;
+            const double firstPointY = firstPoint.y * constants::conversion::degToRad;
+            const double secondPointY = secondPoint.y * constants::conversion::degToRad;
             const double dy = earth_radius * (secondPointY - firstPointY);
             return dy;
         }
@@ -664,7 +664,7 @@ namespace meshkernel
 
             if (projection == Projection::spherical)
             {
-                result.x = result.x / cos(degrad_hp * 0.5 * (firstPoint.y + secondPoint.y));
+                result.x = result.x / cos(constants::conversion::degToRad * 0.5 * (firstPoint.y + secondPoint.y));
                 result.y = result.y;
             }
             return result;
@@ -728,8 +728,8 @@ namespace meshkernel
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
-            const double xf = 1.0 / std::cos(degrad_hp * referencePoint.y);
-            const double convertedIncrement = raddeg_hp * increment / earth_radius;
+            const double xf = 1.0 / std::cos(constants::conversion::degToRad * referencePoint.y);
+            const double convertedIncrement = constants::conversion::radToDeg * increment / earth_radius;
             point.x = point.x + normal.x * convertedIncrement * xf;
             point.y = point.y + normal.y * convertedIncrement;
         }
@@ -1023,9 +1023,9 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
-            const double xf = 1.0 / cos(degrad_hp * phi);
-            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
+            const double xf = 1.0 / cos(constants::conversion::degToRad * phi);
+            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / earth_radius;
+            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / earth_radius;
         }
         if (projection == Projection::sphericalAccurate)
         {
@@ -1202,8 +1202,8 @@ namespace meshkernel
 
         if (projection == Projection::spherical)
         {
-            yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
-            xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * std::cos((yCenterOfMass + reference.y) * degrad_hp));
+            yCenterOfMass = yCenterOfMass / (earth_radius * constants::conversion::degToRad);
+            xCenterOfMass = xCenterOfMass / (earth_radius * constants::conversion::degToRad * std::cos((yCenterOfMass + reference.y) * constants::conversion::degToRad));
         }
 
         Point centerOfMass;
