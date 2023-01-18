@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_polygons-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::Polygons Class Reference</div>  </div>
@@ -123,25 +122,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a456c08fc862cac554b00a44e12f1dd41"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">GetNumNodes</a> () const</td></tr>
 <tr class="memdesc:a456c08fc862cac554b00a44e12f1dd41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of polygon nodes.  <a href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">More...</a><br /></td></tr>
 <tr class="separator:a456c08fc862cac554b00a44e12f1dd41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ab1ba80757e1c4e87c52a95c945ce479e"><td class="memItemLeft" align="right" valign="top"><a id="ab1ba80757e1c4e87c52a95c945ce479e"></a>
-std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ab1ba80757e1c4e87c52a95c945ce479e">m_nodes</a></td></tr>
-<tr class="memdesc:ab1ba80757e1c4e87c52a95c945ce479e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The polygon nodes. <br /></td></tr>
-<tr class="separator:ab1ba80757e1c4e87c52a95c945ce479e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73d8ec098d1a08b3d7d56b101012ce47"><td class="memItemLeft" align="right" valign="top"><a id="a73d8ec098d1a08b3d7d56b101012ce47"></a>
-<a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a73d8ec098d1a08b3d7d56b101012ce47">m_projection</a></td></tr>
-<tr class="memdesc:a73d8ec098d1a08b3d7d56b101012ce47"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current projection. <br /></td></tr>
-<tr class="separator:a73d8ec098d1a08b3d7d56b101012ce47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cb38edb08c3ee55f3e3d817deb51155"><td class="memItemLeft" align="right" valign="top"><a id="a3cb38edb08c3ee55f3e3d817deb51155"></a>
-std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3cb38edb08c3ee55f3e3d817deb51155">m_outer_polygons_indices</a></td></tr>
-<tr class="memdesc:a3cb38edb08c3ee55f3e3d817deb51155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start-end indices of each outer polygon in m_nodes. <br /></td></tr>
-<tr class="separator:a3cb38edb08c3ee55f3e3d817deb51155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a311443dbf47ecbd9b4a3542284097c26"><td class="memItemLeft" align="right" valign="top"><a id="a311443dbf47ecbd9b4a3542284097c26"></a>
-std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a311443dbf47ecbd9b4a3542284097c26">m_inner_polygons_indices</a></td></tr>
-<tr class="memdesc:a311443dbf47ecbd9b4a3542284097c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each outer polygon, the indices of each inner polygon. <br /></td></tr>
-<tr class="separator:a311443dbf47ecbd9b4a3542284097c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a86ed0a9a3f5c9198f8cc662d3e166413">GetProjection</a> () const</td></tr>
+<tr class="memdesc:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the projection.  <a href="classmeshkernel_1_1_polygons.html#a86ed0a9a3f5c9198f8cc662d3e166413">More...</a><br /></td></tr>
+<tr class="separator:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6f475f12fdc61fc0267da0de9c29e1c"><td class="memItemLeft" align="right" valign="top">std::pair&lt; size_t, size_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c">OuterIndices</a> (size_t i) const</td></tr>
+<tr class="memdesc:aa6f475f12fdc61fc0267da0de9c29e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the start-end indices of each outer polygon.  <a href="classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c">More...</a><br /></td></tr>
+<tr class="separator:aa6f475f12fdc61fc0267da0de9c29e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e1366273d0308573fc9866a2d748439"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439">Nodes</a> () const</td></tr>
+<tr class="memdesc:a7e1366273d0308573fc9866a2d748439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the nodes of the polygon.  <a href="classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439">More...</a><br /></td></tr>
+<tr class="separator:a7e1366273d0308573fc9866a2d748439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8e23511289fe8cddb60ca69ee5565e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ac8e23511289fe8cddb60ca69ee5565e3">Node</a> (size_t i) const</td></tr>
+<tr class="memdesc:ac8e23511289fe8cddb60ca69ee5565e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of a node by index.  <a href="classmeshkernel_1_1_polygons.html#ac8e23511289fe8cddb60ca69ee5565e3">More...</a><br /></td></tr>
+<tr class="separator:ac8e23511289fe8cddb60ca69ee5565e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing polygons. </p>
@@ -228,7 +220,7 @@ std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt;
 </div><div class="memdoc">
 
 <p>Gets the number of polygon nodes. </p>
-<dl class="section return"><dt>Returns</dt><dd>the number of polygon nodes </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of polygon nodes </dd></dl>
 
 </div>
 </div>
@@ -249,6 +241,34 @@ std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt;
 
 <p>Gives the number of polygons. </p>
 <dl class="section return"><dt>Returns</dt><dd>Number of polygons </dd></dl>
+
+</div>
+</div>
+<a id="a86ed0a9a3f5c9198f8cc662d3e166413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86ed0a9a3f5c9198f8cc662d3e166413">&#9670;&nbsp;</a></span>GetProjection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> meshkernel::Polygons::GetProjection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the projection. </p>
+<dl class="section return"><dt>Returns</dt><dd>The projection </dd></dl>
 
 </div>
 </div>
@@ -337,6 +357,69 @@ std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt;
 
 </div>
 </div>
+<a id="ac8e23511289fe8cddb60ca69ee5565e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8e23511289fe8cddb60ca69ee5565e3">&#9670;&nbsp;</a></span>Node()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const&amp; meshkernel::Polygons::Node </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the coordinates of a node by index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>Node index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Node coordinates </dd></dl>
+
+</div>
+</div>
+<a id="a7e1366273d0308573fc9866a2d748439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e1366273d0308573fc9866a2d748439">&#9670;&nbsp;</a></span>Nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt; const&amp; meshkernel::Polygons::Nodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the nodes of the polygon. </p>
+<dl class="section return"><dt>Returns</dt><dd>Vector of nodes of the polygon </dd></dl>
+
+</div>
+</div>
 <a id="a18b31cd6a49f8212bba9184547e36369"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a18b31cd6a49f8212bba9184547e36369">&#9670;&nbsp;</a></span>OffsetCopy()</h2>
 
@@ -372,6 +455,41 @@ std::unordered_map&lt; size_t, std::vector&lt; std::pair&lt; size_t, size_t &gt;
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new offset polygon </dd></dl>
+
+</div>
+</div>
+<a id="aa6f475f12fdc61fc0267da0de9c29e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6f475f12fdc61fc0267da0de9c29e1c">&#9670;&nbsp;</a></span>OuterIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt;size_t, size_t&gt; const&amp; meshkernel::Polygons::OuterIndices </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the start-end indices of each outer polygon. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>Outer polygon index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pair of start and end indices </dd></dl>
 
 </div>
 </div>

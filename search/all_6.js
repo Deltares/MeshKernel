@@ -23,13 +23,14 @@ var searchData=
   ['getobtusetrianglescenters_146',['GetObtuseTrianglesCenters',['../classmeshkernel_1_1_mesh2_d.html#aea6575301bc3c4c17e3a76c5efca4ad5',1,'meshkernel::Mesh2D']]],
   ['getorthogonality_147',['GetOrthogonality',['../classmeshkernel_1_1_mesh2_d.html#afaa6bfaadd219f15bbb7b45ee696a256',1,'meshkernel::Mesh2D']]],
   ['getpolylineintersections_148',['GetPolylineIntersections',['../classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0',1,'meshkernel::Mesh2D']]],
-  ['getqueryresult_149',['GetQueryResult',['../classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72',1,'meshkernel::RTree']]],
-  ['getqueryresultsize_150',['GetQueryResultSize',['../classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a',1,'meshkernel::RTree']]],
-  ['getresults_151',['GetResults',['../classmeshkernel_1_1_averaging_interpolation.html#ad38724170f50509b755ce83087447410',1,'meshkernel::AveragingInterpolation::GetResults()'],['../classmeshkernel_1_1_triangulation_interpolation.html#abe75c6ebdc32a884d923d961559ad8cc',1,'meshkernel::TriangulationInterpolation::GetResults()']]],
-  ['getrighthandside_152',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb',1,'meshkernel::Orthogonalizer']]],
-  ['getsmoothness_153',['GetSmoothness',['../classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162',1,'meshkernel::Mesh2D']]],
-  ['getsplinesintersection_154',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb',1,'meshkernel::Splines']]],
-  ['getweight_155',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a9757819524c86e1f5c817f15cfeeb939',1,'meshkernel::Smoother::GetWeight()']]],
-  ['gravity_156',['gravity',['../namespacemeshkernel.html#a0a6334ee0cd66333a5ae4bff56c0165d',1,'meshkernel']]],
-  ['grow_5fgrid_5foutside_157',['grow_grid_outside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aae19f194cd5cd79a1bd19e43bce54e84',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
+  ['getprojection_149',['GetProjection',['../classmeshkernel_1_1_polygons.html#a86ed0a9a3f5c9198f8cc662d3e166413',1,'meshkernel::Polygons']]],
+  ['getqueryresult_150',['GetQueryResult',['../classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72',1,'meshkernel::RTree']]],
+  ['getqueryresultsize_151',['GetQueryResultSize',['../classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a',1,'meshkernel::RTree']]],
+  ['getresults_152',['GetResults',['../classmeshkernel_1_1_averaging_interpolation.html#ad38724170f50509b755ce83087447410',1,'meshkernel::AveragingInterpolation::GetResults()'],['../classmeshkernel_1_1_triangulation_interpolation.html#abe75c6ebdc32a884d923d961559ad8cc',1,'meshkernel::TriangulationInterpolation::GetResults()']]],
+  ['getrighthandside_153',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb',1,'meshkernel::Orthogonalizer']]],
+  ['getsmoothness_154',['GetSmoothness',['../classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162',1,'meshkernel::Mesh2D']]],
+  ['getsplinesintersection_155',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb',1,'meshkernel::Splines']]],
+  ['getweight_156',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a9757819524c86e1f5c817f15cfeeb939',1,'meshkernel::Smoother::GetWeight()']]],
+  ['gravity_157',['gravity',['../namespacemeshkernel.html#a0a6334ee0cd66333a5ae4bff56c0165d',1,'meshkernel']]],
+  ['grow_5fgrid_5foutside_158',['grow_grid_outside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aae19f194cd5cd79a1bd19e43bce54e84',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
 ];

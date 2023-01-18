@@ -22,5 +22,6 @@ var searchData=
   ['orthogonalizer_439',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html',1,'meshkernel::Orthogonalizer'],['../classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb',1,'meshkernel::Orthogonalizer::Orthogonalizer()']]],
   ['orthogonalprojectiononsegment_440',['OrthogonalProjectionOnSegment',['../namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450',1,'meshkernel']]],
   ['outer_5fiterations_441',['outer_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a07cf13ba093c857d6481b2bf9f45e5cc',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['outerproducttwosegments_442',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
+  ['outerindices_442',['OuterIndices',['../classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c',1,'meshkernel::Polygons']]],
+  ['outerproducttwosegments_443',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
 ];
