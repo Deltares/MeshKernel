@@ -162,23 +162,29 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [this, &start, &end, &numPolygonNodes](size_t nodeIndex, size_t numPointsSide, int dir, std::vector<Point>& sideToFill)
+    auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon->Nodes()),
+                                         startIndex = start,
+                                         endIndex = end,
+                                         numPolygonNodes](size_t nodeIndex,
+                                                          size_t numPointsSide,
+                                                          int direction,
+                                                          std::vector<Point>& sideToFill)
     {
         for (size_t i = 0; i < numPointsSide; i++)
         {
-            sideToFill[i] = m_polygon->Node(nodeIndex);
+            sideToFill[i] = nodes[nodeIndex];
 
-            if ((nodeIndex == 0 && dir == -1) || nodeIndex + dir < start)
+            if ((nodeIndex == 0 && direction == -1) || nodeIndex + direction < startIndex)
             {
-                nodeIndex = nodeIndex + numPolygonNodes + dir;
+                nodeIndex = nodeIndex + numPolygonNodes + direction;
             }
-            else if (nodeIndex + dir > end)
+            else if (nodeIndex + direction > endIndex)
             {
-                nodeIndex = nodeIndex + dir - numPolygonNodes;
+                nodeIndex = nodeIndex + direction - numPolygonNodes;
             }
             else
             {
-                nodeIndex = nodeIndex + dir;
+                nodeIndex = nodeIndex + direction;
             }
         }
     };
