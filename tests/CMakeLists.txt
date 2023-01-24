@@ -16,3 +16,4 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/utils/include/TestUtils/Definitions.
 add_subdirectory(utils)
 add_subdirectory(unit)
 add_subdirectory(api)
+add_subdirectory(benchmark)
