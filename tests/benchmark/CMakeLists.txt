@@ -13,15 +13,16 @@ FetchContent_Declare(
   GIT_TAG v1.7.1
 )
 
-FetchContent_MakeAvailable(googlebenchmark)
-
-#find_package(benchmark REQUIRED)
-
-#FetchContent_GetProperties(benchmark)
-#if(NOT benchmark_POPULATED)
-#  FetchContent_Populate(benchmark)
-#  add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR} EXCLUDE_FROM_ALL)
-#endif()
+FetchContent_GetProperties(benchmark)
+if(NOT googlebenchmark_POPULATED)
+  FetchContent_Populate(googlebenchmark)
+  add_subdirectory(
+    ${googlebenchmark_SOURCE_DIR}
+    ${googlebenchmark_BINARY_DIR}
+    EXCLUDE_FROM_ALL
+    SYSTEM
+  )
+endif()
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(
@@ -29,6 +30,7 @@ target_link_libraries(
   PRIVATE
   MeshKernel
   UtilsStatic
+  gtest
   benchmark::benchmark
   benchmark::benchmark_main
 )
