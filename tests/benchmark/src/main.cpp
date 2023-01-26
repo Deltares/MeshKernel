@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
@@ -5,6 +7,7 @@
 
 int main(int argc, char** argv)
 {
+
     ::testing::InitGoogleTest(&argc, argv);
     int test_ret = RUN_ALL_TESTS();
 
@@ -25,6 +28,11 @@ int main(int argc, char** argv)
     }
     ::benchmark::RunSpecifiedBenchmarks();
     ::benchmark::Shutdown();
+
+    // is it possible to an atexit test?
+    std::cout << "MAIN TRACKMEM: "
+              << MEMORY_MANAGER.Allocations() << ' '
+              << MEMORY_MANAGER.Deallocations() << '\n';
 
     return test_ret;
 }

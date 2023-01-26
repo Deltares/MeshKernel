@@ -1,9 +1,10 @@
 #include <algorithm>
-#include <benchmark/benchmark.h>
 #include <cmath>
 #include <iterator>
 #include <random>
 #include <vector>
+
+#include <benchmark/benchmark.h>
 
 static std::vector<double> VectorFilledWithRandomNumbers(size_t n, double lower_bound, double upper_bound)
 {
