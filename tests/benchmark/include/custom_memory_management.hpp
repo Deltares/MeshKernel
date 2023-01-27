@@ -10,25 +10,38 @@
 /// @param[ptr] Pointer to the memory block to deallocate
 inline static void custom_free(void* ptr)
 {
-    // printf("custom_free\n");
-    MEMORY_MANAGER.RegisterDeallocation(ptr);
+    // printf("custom_free::");
+    MEMORY_MANAGER.Unregister(ptr);
     std::free(ptr);
 }
 #define free(ptr) custom_free(ptr)
+
+#if defined(_WIN32)
+/// @brief Custom _aligned_free wrapper (WIN32 only, free does the job under LINUX)
+///        and registers the allocation in a global BenchmarkMemoryManager object
+/// @param[ptr] Pointer to the memory block to deallocate
+inline static void custom_aligned_free(void* ptr)
+{
+    // printf("custom_aligned_free\n");
+    MEMORY_MANAGER.Unregister(ptr);
+    _aligned_free(ptr);
+}
+#define _aligned_free(ptr) custom_aligned_free(ptr)
+#endif
 
 /// @brief Custom std::malloc wrapper which registers the allocation in a global BenchmarkMemoryManager object
 /// @param[size] Number of bytes of uninitialized storage to be allocated
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_malloc(size_t size)
 {
-    // printf("custom_malloc\n");
+    // printf("custom_malloc::");
     if (size == 0)
     {
         return nullptr;
     }
     if (void* ptr = std::malloc(size))
     {
-        MEMORY_MANAGER.RegisterAllocation(ptr, size);
+        MEMORY_MANAGER.Register(ptr, size);
         return ptr;
     }
     return nullptr;
@@ -48,7 +61,7 @@ inline static void* custom_calloc(std::size_t num, size_t size)
     }
     if (void* ptr = std::calloc(num, size))
     {
-        MEMORY_MANAGER.RegisterAllocation(ptr, size * num);
+        MEMORY_MANAGER.Register(ptr, size * num);
         return ptr;
     }
     return nullptr;
@@ -69,7 +82,7 @@ inline static void* custom_realloc(void* ptr, std::size_t new_size)
     }
     if (void* new_ptr = std::realloc(ptr, new_size))
     {
-        MEMORY_MANAGER.RegisterAllocation(new_ptr, new_size);
+        MEMORY_MANAGER.Register(new_ptr, new_size);
         return new_ptr;
     }
     return nullptr;
@@ -92,7 +105,7 @@ inline static void* custom_aligned_malloc(size_t size, size_t alignment)
 #endif
     if (ptr)
     {
-        MEMORY_MANAGER.RegisterAllocation(ptr, size);
+        MEMORY_MANAGER.Register(ptr, size);
         return ptr;
     }
     return nullptr;
@@ -101,18 +114,6 @@ inline static void* custom_aligned_malloc(size_t size, size_t alignment)
 #define _aligned_malloc(size, alignment) custom_aligned_malloc(size, alignment)
 #else
 #define aligned_alloc(alignment, size) custom_aligned_malloc(size, alignment)
-#endif
-
-#if defined(_WIN32)
-/// @brief Custom _aligned_free wrapper (WIN32 only, free does the job under LINUX)
-///        and registers the allocation in a global BenchmarkMemoryManager object
-/// @param[ptr] Pointer to the memory block to deallocate
-inline static void custom_aligned_free(void* ptr)
-{
-    MEMORY_MANAGER.RegisterDeallocation(ptr);
-    _aligned_free(ptr);
-}
-#define _aligned_free(ptr) custom_aligned_free(ptr)
 #endif
 
 #endif // DO_MANAGE_MEMORY

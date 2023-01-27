@@ -6,6 +6,8 @@
 
 #include <benchmark/benchmark.h>
 
+#include "benchmark_memory_manager.hpp"
+
 static std::vector<double> VectorFilledWithRandomNumbers(size_t n, double lower_bound, double upper_bound)
 {
     std::random_device random_device;
@@ -35,7 +37,7 @@ static void BM_Test1(benchmark::State& state)
     for (auto _ : state)
     {
         auto const vector = VectorFilledWithRandomNumbers(10000, 1, 10);
-        auto const result = SumOfPowerOfVectorElements(vector, 4);
+        SumOfPowerOfVectorElements(vector, 4);
     }
 }
 BENCHMARK(BM_Test1);
@@ -45,7 +47,7 @@ static void BM_Test2(benchmark::State& state)
     for (auto _ : state)
     {
         auto const vector = VectorFilledWithRandomNumbers(100000, 1, 100);
-        auto const result = SumOfPowerOfVectorElements(vector, 5.666);
+        SumOfPowerOfVectorElements(vector, 5.666);
     }
 }
 BENCHMARK(BM_Test2);
@@ -57,7 +59,7 @@ static void BM_Test2PauseFill(benchmark::State& state)
         state.PauseTiming();
         auto const vector = VectorFilledWithRandomNumbers(100000, 1, 100);
         state.ResumeTiming();
-        auto const result = SumOfPowerOfVectorElements(vector, 5.666);
+        SumOfPowerOfVectorElements(vector, 5.666);
     }
 }
 BENCHMARK(BM_Test2PauseFill);

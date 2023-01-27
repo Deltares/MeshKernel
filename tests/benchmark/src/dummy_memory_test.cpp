@@ -4,6 +4,8 @@
 
 #include <benchmark/benchmark.h>
 
+#include "benchmark_memory_manager.hpp"
+
 static void BM_memory1(benchmark::State& state)
 {
     for (auto _ : state)
@@ -11,7 +13,7 @@ static void BM_memory1(benchmark::State& state)
         for (int i = 0; i < 10; ++i)
         {
             std::shared_ptr<std::vector<double>> ptr(std::make_shared<std::vector<double>>());
-            //::benchmark::DoNotOptimize(ptr);
+            ::benchmark::DoNotOptimize(ptr);
             for (size_t j = 0; j < 10; ++j)
             {
                 ptr->push_back(static_cast<double>(i + j));
@@ -28,7 +30,7 @@ static void BM_memory2(benchmark::State& state)
         for (int i = 0; i < 10; ++i)
         {
             std::vector<std::shared_ptr<double>> vector;
-            //::benchmark::DoNotOptimize(vector);
+            ::benchmark::DoNotOptimize(vector);
             for (size_t j = 0; j < 10; ++j)
             {
                 vector.push_back(std::make_shared<double>());

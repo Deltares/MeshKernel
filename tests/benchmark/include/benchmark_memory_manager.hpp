@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cassert>
 #include <map>
+#include <memory>
+#include <stdexcept>
 #include <stdint.h>
 
 #include <benchmark/benchmark.h>
 
-// #include "custom_memory_management.hpp"
-
 /// @brief Custom memory manager for registration via ::benchmark::RegisterMemoryManager
-///        (implemented as a therad-safe singleton)
+///        (implemented as a therad-safe singleton that does not register its members)
 class BenchmarkMemoryManager final : public ::benchmark::MemoryManager
 {
 public:
@@ -16,6 +17,11 @@ public:
     static BenchmarkMemoryManager& Instance()
     {
         static BenchmarkMemoryManager instance;
+        m_count++;
+        if (m_count == 2)
+        {
+            DelayedInitialisation();
+        }
         return instance;
     }
 
@@ -38,22 +44,33 @@ public:
     }
 
     /// @brief Registers an allocation
-    /// @param[size] Size of allocated memory
-    void RegisterAllocation(void const* const ptr, size_t size)
+    /// @param[ptr] The pointer to register
+    /// @param[size] Size of allocated memory pointed to by pointer
+    void Register(void const* const ptr, size_t size)
     {
-        m_num_allocations++;
-        m_total_allocated_bytes += size;
-        m_max_bytes_used = std::max(m_max_bytes_used, m_total_allocated_bytes);
-        // m_sizeof.insert({ptr, size});
+        if (m_is_initialised)
+        {
+            // printf("Register\n");
+            m_num_allocations++;
+            m_total_allocated_bytes += size;
+            m_max_bytes_used = std::max(m_max_bytes_used, m_total_allocated_bytes);
+            //(*m_ptr_size_map)[ptr] = size;
+            // m_ptr_size_map->insert({ptr, size});
+            // m_ptr_size_map->try_emplace(ptr, size);
+        }
     }
 
-    /// @brief Registers an deallocation
-    /// @param[ptr] size of allocated memory
-    void RegisterDeallocation(void const* const ptr)
+    /// @brief Unregisters an allocation
+    /// @param[ptr] The pointer to deregister
+    void Unregister(void const* const ptr)
     {
-        m_num_deallocations++;
-        m_total_allocated_bytes -= 0; // m_sizeof[ptr];
-        // m_sizeof.erase(ptr);
+        if (m_is_initialised)
+        {
+            // printf("Unregister\n");
+            m_num_deallocations++;
+            // m_total_allocated_bytes -= (*m_ptr_size_map)[ptr];
+            // m_ptr_size_map->erase(ptr);
+        }
     }
 
     /// @brief Gets the total number of allocations
@@ -81,14 +98,27 @@ public:
 private:
     BenchmarkMemoryManager() = default;
     ~BenchmarkMemoryManager() = default;
+    // class is non-copyable
     BenchmarkMemoryManager(BenchmarkMemoryManager const&) = delete;
     BenchmarkMemoryManager& operator=(BenchmarkMemoryManager const&) = delete;
+
+    static void DelayedInitialisation()
+    {
+        if (!m_is_initialised)
+        {
+            m_ptr_size_map = std::make_unique<PtrSizeMap>();
+            m_is_initialised = true;
+        }
+    }
 
     int64_t m_num_allocations = 0;       ///< The number of allocations made in total between Start and Stop
     int64_t m_num_deallocations = 0;     ///< The number of deallocations made in total between Start and Stop (not written to ::benchmark::MemoryManager::Result)
     int64_t m_total_allocated_bytes = 0; ///< The total memory allocated in bytes between Start and Stop
     int64_t m_max_bytes_used = 0;        ///< The peak memory use in bytes between Start and Stop
-    // std::map<void const* const, size_t> m_sizeof; ///< Map with a void pointer as key and the size of the objcet pointed to as value
+    using PtrSizeMap = std::map<void const* const, size_t>;
+    inline static std::unique_ptr<PtrSizeMap> m_ptr_size_map = nullptr; ///< Map with a void pointer as key and the size of the objcet pointed to as value
+    inline static size_t m_count = 0;
+    inline static bool m_is_initialised = false;
 };
 
 #define MEMORY_MANAGER BenchmarkMemoryManager::Instance()
