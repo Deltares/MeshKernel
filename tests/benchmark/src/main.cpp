@@ -3,16 +3,18 @@
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
-#include "benchmark_memory_manager.hpp"
-
 #define DO_MANAGE_MEMORY true
+#include "benchmark_memory_manager.hpp"
 #include "custom_memory_management.cpp"
 
 int main(int argc, char** argv)
 {
     // Unit tests
     ::testing::InitGoogleTest(&argc, argv);
-    int test_ret = RUN_ALL_TESTS();
+    if (RUN_ALL_TESTS() != 0)
+    {
+        return EXIT_FAILURE;
+    }
 
     // Benchmarks
     if (!argv)
@@ -24,7 +26,7 @@ int main(int argc, char** argv)
     }
     ::benchmark::Initialize(&argc, argv);
     ::benchmark::SetDefaultTimeUnit(::benchmark::kMillisecond);
-    ::benchmark::RegisterMemoryManager(&MEMORY_MANAGER);
+    ::benchmark::RegisterMemoryManager(&CUSTOM_MEMORY_MANAGER);
     if (::benchmark::ReportUnrecognizedArguments(argc, argv))
     {
         return EXIT_FAILURE;
@@ -32,12 +34,5 @@ int main(int argc, char** argv)
     ::benchmark::RunSpecifiedBenchmarks();
     ::benchmark::Shutdown();
 
-    // is it possible to do an atexit test?
-    std::cout << "MAIN TRACKMEM: "
-              << MEMORY_MANAGER.Allocations() << ' '
-              << MEMORY_MANAGER.Deallocations() << '\n';
-
-    // return test_ret;
-
-    return 0;
+    return EXIT_SUCCESS;
 }

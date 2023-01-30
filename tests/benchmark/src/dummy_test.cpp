@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <iterator>
 #include <random>
 #include <vector>
@@ -52,6 +53,22 @@ static void BM_Test2(benchmark::State& state)
 }
 BENCHMARK(BM_Test2);
 
+static void BM_Test2Cycles(benchmark::State& state)
+{
+    for (auto _ : state)
+    {
+        for (int i = 0; i < 10; ++i)
+        {
+            auto vector = VectorFilledWithRandomNumbers(100000, 1, 100);
+            SumOfPowerOfVectorElements(vector, 5.666);
+            vector.clear();
+            vector.shrink_to_fit();
+        }
+    }
+}
+BENCHMARK(BM_Test2Cycles);
+
+/*
 static void BM_Test2PauseFill(benchmark::State& state)
 {
     for (auto _ : state)
@@ -63,3 +80,4 @@ static void BM_Test2PauseFill(benchmark::State& state)
     }
 }
 BENCHMARK(BM_Test2PauseFill);
+*/

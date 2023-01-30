@@ -1,37 +1,26 @@
 #pragma once
 
-#include <cassert>
-#include <map>
-#include <memory>
-#include <stdexcept>
+#include <algorithm>
 #include <stdint.h>
 
 #include <benchmark/benchmark.h>
 
 /// @brief Custom memory manager for registration via ::benchmark::RegisterMemoryManager
-///        (implemented as a therad-safe singleton that does not register its members)
-class BenchmarkMemoryManager final : public ::benchmark::MemoryManager
+///        (implemented as a therad-safe singleton)
+class CustomMemoryManager final : public ::benchmark::MemoryManager
 {
 public:
     /// @brief Gets static instance of class
-    static BenchmarkMemoryManager& Instance()
+    static CustomMemoryManager& Instance()
     {
-        static BenchmarkMemoryManager instance;
-        m_count++;
-        if (m_count == 2)
-        {
-            DelayedInitialisation();
-        }
+        static CustomMemoryManager instance;
         return instance;
     }
 
     /// @brief Starts recording allocation information
     void Start() override
     {
-        m_num_allocations = 0;
-        m_num_deallocations = 0;
-        m_total_allocated_bytes = 0;
-        m_max_bytes_used = 0;
+        ResetStatistics();
     }
 
     /// @brief Stop recording and fills out the given Result structure
@@ -39,38 +28,31 @@ public:
     void Stop(Result* result) override
     {
         result->num_allocs = m_num_allocations;
-        result->total_allocated_bytes = m_total_allocated_bytes;
         result->max_bytes_used = m_max_bytes_used;
+        result->total_allocated_bytes = m_total_allocated_bytes;
+        result->net_heap_growth = m_net_heap_growth;
     }
 
     /// @brief Registers an allocation
-    /// @param[ptr] The pointer to register
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Register(void const* const ptr, size_t size)
+    void Register(size_t size, bool ptr_was_freed = true)
     {
-        if (m_is_initialised)
+        if (ptr_was_freed)
         {
-            // printf("Register\n");
             m_num_allocations++;
-            m_total_allocated_bytes += size;
-            m_max_bytes_used = std::max(m_max_bytes_used, m_total_allocated_bytes);
-            //(*m_ptr_size_map)[ptr] = size;
-            // m_ptr_size_map->insert({ptr, size});
-            // m_ptr_size_map->try_emplace(ptr, size);
         }
+        m_total_allocated_bytes += size;
+        m_net_heap_growth += size;
+        m_max_bytes_used = std::min(m_max_bytes_used, m_net_heap_growth);
     }
 
     /// @brief Unregisters an allocation
-    /// @param[ptr] The pointer to deregister
-    void Unregister(void const* const ptr)
+    /// @param[size] Size of allocated memory pointed to by pointer
+    void Unregister(size_t size)
     {
-        if (m_is_initialised)
-        {
-            // printf("Unregister\n");
-            m_num_deallocations++;
-            // m_total_allocated_bytes -= (*m_ptr_size_map)[ptr];
-            // m_ptr_size_map->erase(ptr);
-        }
+        m_num_deallocations++;
+        m_net_heap_growth -= size;
+        m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
     }
 
     /// @brief Gets the total number of allocations
@@ -89,36 +71,32 @@ public:
     /// @return Peak memory use in bytes between Start and Stop
     size_t MaxBytesUsed() const { return m_max_bytes_used; }
 
-    // remove me: used to overcome gtest leaks
-    void ResetAllocations() { m_num_allocations = 0; }
+    /// @brief Gets the net changes in memory in bytes between Start and Stop
+    /// @return Net changes in memory in bytes between Start and Stop
+    size_t NetHeapGrowth() const { return m_net_heap_growth; }
 
-    // remove me: used to overcome gtest leaks
-    void ResetDeallocations() { m_num_deallocations = 0; }
-
-private:
-    BenchmarkMemoryManager() = default;
-    ~BenchmarkMemoryManager() = default;
-    // class is non-copyable
-    BenchmarkMemoryManager(BenchmarkMemoryManager const&) = delete;
-    BenchmarkMemoryManager& operator=(BenchmarkMemoryManager const&) = delete;
-
-    static void DelayedInitialisation()
+    /// @brief Resets the memory statistics
+    void ResetStatistics()
     {
-        if (!m_is_initialised)
-        {
-            m_ptr_size_map = std::make_unique<PtrSizeMap>();
-            m_is_initialised = true;
-        }
+        m_num_allocations = 0;
+        m_num_deallocations = 0;
+        m_total_allocated_bytes = 0;
+        m_max_bytes_used = TombstoneValue;
+        m_net_heap_growth = 0;
     }
 
-    int64_t m_num_allocations = 0;       ///< The number of allocations made in total between Start and Stop
-    int64_t m_num_deallocations = 0;     ///< The number of deallocations made in total between Start and Stop (not written to ::benchmark::MemoryManager::Result)
-    int64_t m_total_allocated_bytes = 0; ///< The total memory allocated in bytes between Start and Stop
-    int64_t m_max_bytes_used = 0;        ///< The peak memory use in bytes between Start and Stop
-    using PtrSizeMap = std::map<void const* const, size_t>;
-    inline static std::unique_ptr<PtrSizeMap> m_ptr_size_map = nullptr; ///< Map with a void pointer as key and the size of the objcet pointed to as value
-    inline static size_t m_count = 0;
-    inline static bool m_is_initialised = false;
+private:
+    CustomMemoryManager() = default;
+    ~CustomMemoryManager() = default;
+    // class is non-copyable
+    CustomMemoryManager(CustomMemoryManager const&) = delete;
+    CustomMemoryManager& operator=(CustomMemoryManager const&) = delete;
+
+    int64_t m_num_allocations = 0;             ///< The number of allocations made in total between Start and Stop
+    int64_t m_num_deallocations = 0;           ///< The number of deallocations made in total between Start and Stop (not written to ::benchmark::MemoryManager::Result)
+    int64_t m_total_allocated_bytes = 0;       ///< The total memory allocated in bytes between Start and Stop
+    int64_t m_max_bytes_used = TombstoneValue; ///< The peak memory use in bytes between Start and Stop
+    int64_t m_net_heap_growth = 0;             ///< The net changes in memory in bytes between Start and Stop
 };
 
-#define MEMORY_MANAGER BenchmarkMemoryManager::Instance()
+#define CUSTOM_MEMORY_MANAGER CustomMemoryManager::Instance()

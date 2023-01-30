@@ -1,7 +1,5 @@
 #if (DO_MANAGE_MEMORY)
 
-#include <new>
-
 #include "custom_memory_management.hpp"
 
 // Note on gloabl replacement for the new operator:
@@ -13,7 +11,6 @@
 /// @return If successful, a non-null pointer, throws an allocation failure exception otherwise
 void* operator new(size_t size)
 {
-    // printf("custom_new::");
     if (void* ptr = malloc(size))
     {
         return ptr;
@@ -45,15 +42,11 @@ void* operator new(std::size_t size, std::align_val_t alignment)
 
 /// @brief Gloabl replacement for void operator delete ( void* ptr ) noexcept
 /// @param[ptr] Pointer to the memory block to deallocate
-void operator delete(void* ptr) noexcept
-{
-    // printf("custom_delete::");
-    free(ptr);
-}
+void operator delete(void* ptr) noexcept { free(ptr); }
 
 /// @brief Gloabl replacement for void operator delete(void* ptr, size_t size) noexcept
 /// @param[ptr] Pointer to the memory block to deallocate
-void operator delete(void* ptr, size_t /*size*/) noexcept { free(ptr); };
+void operator delete(void* ptr, size_t /*size*/) noexcept { free(ptr); }
 
 /// @brief Gloabl replacement for void operator delete(void* ptr, std::align_val_t alignment) noexcept
 /// @param[ptr] Pointer to the memory block to deallocate

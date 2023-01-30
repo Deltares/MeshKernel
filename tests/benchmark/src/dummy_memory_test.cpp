@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -29,12 +30,14 @@ static void BM_memory2(benchmark::State& state)
     {
         for (int i = 0; i < 10; ++i)
         {
-            std::vector<std::shared_ptr<double>> vector;
+            std::vector<std::shared_ptr<size_t>> vector;
             ::benchmark::DoNotOptimize(vector);
-            for (size_t j = 0; j < 10; ++j)
+            for (size_t j = 0; j < 100; ++j)
             {
-                vector.push_back(std::make_shared<double>());
+                vector.push_back(std::make_shared<size_t>());
             }
+            vector.clear();
+            vector.shrink_to_fit();
         }
     }
 }

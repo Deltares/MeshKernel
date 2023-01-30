@@ -1,7 +1,7 @@
 # Tests need to be added as executables first
 file(GLOB BENCHMARK_TEST_LIST CONFIGURE_DEPENDS "src/*.cpp")
 
-set(target_name MeshKernelBenchmarkTests )
+set(target_name MeshKernelBenchmarkTests)
 
 add_executable(${target_name} ${BENCHMARK_TEST_LIST})
 
@@ -20,7 +20,6 @@ if(NOT googlebenchmark_POPULATED)
     ${googlebenchmark_SOURCE_DIR}
     ${googlebenchmark_BINARY_DIR}
     EXCLUDE_FROM_ALL
-    SYSTEM
   )
 endif()
 

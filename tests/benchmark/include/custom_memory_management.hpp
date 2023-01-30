@@ -3,16 +3,26 @@
 #if (DO_MANAGE_MEMORY)
 
 #include <cstdlib>
+#include <malloc.h>
+#include <new>
 
 #include "benchmark_memory_manager.hpp"
 
+inline static size_t MemoryBlockSize(void* ptr)
+{
+#if defined(_WIN32)
+    return _msize(ptr);
+#else
+    return malloc_usable_size(ptr);
+#endif
+}
 /// @brief Custom std::free wrapper which registers the deallocation in a global BenchmarkMemoryManager object
 /// @param[ptr] Pointer to the memory block to deallocate
 inline static void custom_free(void* ptr)
 {
-    // printf("custom_free::");
-    MEMORY_MANAGER.Unregister(ptr);
+    CUSTOM_MEMORY_MANAGER.Unregister(MemoryBlockSize(ptr));
     std::free(ptr);
+    ptr = nullptr;
 }
 #define free(ptr) custom_free(ptr)
 
@@ -22,9 +32,9 @@ inline static void custom_free(void* ptr)
 /// @param[ptr] Pointer to the memory block to deallocate
 inline static void custom_aligned_free(void* ptr)
 {
-    // printf("custom_aligned_free\n");
-    MEMORY_MANAGER.Unregister(ptr);
+    CUSTOM_MEMORY_MANAGER.Unregister(MemoryBlockSize(ptr));
     _aligned_free(ptr);
+    ptr = nullptr;
 }
 #define _aligned_free(ptr) custom_aligned_free(ptr)
 #endif
@@ -34,14 +44,9 @@ inline static void custom_aligned_free(void* ptr)
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_malloc(size_t size)
 {
-    // printf("custom_malloc::");
-    if (size == 0)
-    {
-        return nullptr;
-    }
     if (void* ptr = std::malloc(size))
     {
-        MEMORY_MANAGER.Register(ptr, size);
+        CUSTOM_MEMORY_MANAGER.Register(size);
         return ptr;
     }
     return nullptr;
@@ -54,14 +59,9 @@ inline static void* custom_malloc(size_t size)
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_calloc(std::size_t num, size_t size)
 {
-    // printf("custom_calloc\n");
-    if (size == 0)
-    {
-        return nullptr;
-    }
     if (void* ptr = std::calloc(num, size))
     {
-        MEMORY_MANAGER.Register(ptr, size * num);
+        CUSTOM_MEMORY_MANAGER.Register(size * num);
         return ptr;
     }
     return nullptr;
@@ -74,15 +74,10 @@ inline static void* custom_calloc(std::size_t num, size_t size)
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_realloc(void* ptr, std::size_t new_size)
 {
-    // printf("custom_realloc\n");
-    if (new_size == 0)
-    {
-        free(ptr); // should this be this function's responsibility? Prob not.
-        return nullptr;
-    }
     if (void* new_ptr = std::realloc(ptr, new_size))
     {
-        MEMORY_MANAGER.Register(new_ptr, new_size);
+        bool const ptr_was_freed = (new_ptr != ptr);
+        CUSTOM_MEMORY_MANAGER.Register(new_size, ptr_was_freed);
         return new_ptr;
     }
     return nullptr;
@@ -96,7 +91,6 @@ inline static void* custom_realloc(void* ptr, std::size_t new_size)
 /// @return The pointer to the beginning of newly allocated memory
 inline static void* custom_aligned_malloc(size_t size, size_t alignment)
 {
-    // printf("custom_aligned_malloc\n");
 #if defined(_WIN32)
     // std::aligned_alloc is not implemented in VS
     void* ptr = _aligned_malloc(size, alignment);
@@ -105,7 +99,7 @@ inline static void* custom_aligned_malloc(size_t size, size_t alignment)
 #endif
     if (ptr)
     {
-        MEMORY_MANAGER.Register(ptr, size);
+        CUSTOM_MEMORY_MANAGER.Register(size);
         return ptr;
     }
     return nullptr;
