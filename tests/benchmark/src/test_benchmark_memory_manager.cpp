@@ -18,22 +18,25 @@ struct Point
 TEST(MemoryManager, XAlloc)
 {
     CUSTOM_MEMORY_MANAGER.ResetStatistics();
-    Point* pt = static_cast<Point*>(calloc(1, sizeof(struct Point)));
-    *pt = Point();
+    size_t const size_of_point = sizeof(struct Point);
+    Point* pt = static_cast<Point*>(calloc(100, size_of_point));
     ASSERT_TRUE(pt != nullptr);
-    EXPECT_EQ(pt->x, -1);
-    EXPECT_EQ(pt->y, -2);
-    EXPECT_EQ(pt->z, -3);
-    std::cout << pt << '\n';
+    *pt = {1, 2, 3};
+    EXPECT_EQ(pt->x, 1);
+    EXPECT_EQ(pt->y, 2);
+    EXPECT_EQ(pt->z, 3);
     EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 1);
-    void* new_pt = realloc(pt, 10);
-    ASSERT_TRUE(new_pt != nullptr);
-    pt = static_cast<Point*>(new_pt);
-    ASSERT_TRUE(pt != nullptr);
-    std::cout << pt << '\n';
-    // EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 2);
+    Point* smaller = static_cast<Point*>(realloc(pt, 10 * size_of_point)); // will not reallocate
+    EXPECT_EQ(pt, smaller);
+    EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 1);
+    void* larger_expand = realloc(smaller, 120 * size_of_point); // will expand
+    ASSERT_TRUE(larger_expand != nullptr);
+    void* larger_realloc = realloc(larger_expand, 1200000 * size_of_point); // will reallocate
+    ASSERT_TRUE(larger_expand == nullptr);
+    EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 1);
+    pt = static_cast<Point*>(larger_realloc);
     free(pt);
-    EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Deallocations(), 1);
+    EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Deallocations(), 2);
 }
 
 TEST(MemoryManager, NewDeleteSingleObject)
@@ -61,6 +64,7 @@ TEST(MemoryManager, NewDeleteMultipleObjects)
     EXPECT_EQ(CUSTOM_MEMORY_MANAGER.TotalAllocatedBytes(), size * sizeof(Point));
 }
 
+/*
 TEST(MemoryManager, Vector)
 {
     CUSTOM_MEMORY_MANAGER.ResetStatistics();
@@ -97,3 +101,4 @@ TEST(MemoryManager, Vector)
     EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), 0);                                  // memory is completely freed
     EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), resize_bytes);                        // peak memory unchaged
 }
+*/

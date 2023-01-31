@@ -35,9 +35,9 @@ public:
 
     /// @brief Registers an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Register(size_t size, bool ptr_was_freed = true)
+    void Register(size_t size, bool incrrement_num_allocations = true)
     {
-        if (ptr_was_freed)
+        if (incrrement_num_allocations)
         {
             m_num_allocations++;
         }
@@ -57,23 +57,23 @@ public:
 
     /// @brief Gets the total number of allocations
     /// @return Number of allocations
-    size_t Allocations() const { return m_num_allocations; }
+    int64_t Allocations() const { return m_num_allocations; }
 
     /// @brief Gets the total number of deallocations
     /// @return Number of deallocations
-    size_t Deallocations() const { return m_num_deallocations; }
+    int64_t Deallocations() const { return m_num_deallocations; }
 
     /// @brief Gets the total memory allocated in bytes between Start and Stop
     /// @return Total memory allocated in bytes
-    size_t TotalAllocatedBytes() const { return m_total_allocated_bytes; }
+    int64_t TotalAllocatedBytes() const { return m_total_allocated_bytes; }
 
     /// @brief Gets the peak memory use in bytes between Start and Stop
     /// @return Peak memory use in bytes between Start and Stop
-    size_t MaxBytesUsed() const { return m_max_bytes_used; }
+    int64_t MaxBytesUsed() const { return m_max_bytes_used; }
 
     /// @brief Gets the net changes in memory in bytes between Start and Stop
     /// @return Net changes in memory in bytes between Start and Stop
-    size_t NetHeapGrowth() const { return m_net_heap_growth; }
+    int64_t NetHeapGrowth() const { return m_net_heap_growth; }
 
     /// @brief Resets the memory statistics
     void ResetStatistics()
@@ -88,7 +88,6 @@ public:
 private:
     CustomMemoryManager() = default;
     ~CustomMemoryManager() = default;
-    // class is non-copyable
     CustomMemoryManager(CustomMemoryManager const&) = delete;
     CustomMemoryManager& operator=(CustomMemoryManager const&) = delete;
 
