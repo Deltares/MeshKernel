@@ -1,24 +1,31 @@
 #pragma once
 
-#if (DO_MANAGE_MEMORY)
-
 #include <cstdlib>
 #include <cstring>
 #include <malloc.h>
-#include <new>
 
 #include "benchmark_memory_manager.hpp"
 
+/// @brief Returns the size, in bytes, of a memory block allocated in the heap
+/// @param[ptr] Pointer to the memory block
 inline static size_t MemoryBlockSize(void* ptr)
 {
+    if (ptr)
+    {
 #if defined(_WIN32) && defined(_MSC_VER)
-    return _msize(ptr);
+        return _msize(ptr);
 #elif defined(__linux__) && define(__GNUC__)
-    return malloc_usable_size(ptr);
+        return malloc_usable_size(ptr);
 #else
 #error "Unsupported platform and/or compiler"
 #endif
+    }
+    else
+    {
+        return 0;
+    }
 }
+
 /// @brief Custom std::free wrapper which registers the deallocation in a global BenchmarkMemoryManager object
 /// @param[ptr] Pointer to the memory block to deallocate
 inline static void custom_free(void* ptr)
@@ -28,21 +35,21 @@ inline static void custom_free(void* ptr)
     ptr = nullptr;
 }
 
-#if defined(_WIN32)
-#if defined(_MSC_VER)
 /// @brief Custom _aligned_free wrapper (WIN32 only, free does the job under LINUX)
 ///        and registers the allocation in a global BenchmarkMemoryManager object
 /// @param[ptr] Pointer to the memory block to deallocate
 inline static void custom_aligned_free(void* ptr)
 {
     CUSTOM_MEMORY_MANAGER.Unregister(MemoryBlockSize(ptr));
+#if defined(_WIN32) && defined(_MSC_VER)
     _aligned_free(ptr);
+#elif defined(__linux__) && define(__GNUC__)
+    std::free(ptr);
+#else
+#error "Unsupported platform and/or compiler"
+#endif
     ptr = nullptr;
 }
-#else
-#error "Unsupported compiler"
-#endif
-#endif
 
 /// @brief Custom std::malloc wrapper which registers the allocation in a global BenchmarkMemoryManager object
 /// @param[size] Number of bytes of uninitialized storage to be allocated
@@ -77,69 +84,31 @@ inline static void* custom_calloc(std::size_t num, size_t size)
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_realloc(void* ptr, std::size_t new_size)
 {
-    if (!ptr)
+    // store the old size prior to reallocation to allow modifying the counters of CUSTOM_MEMORY_MANAGER
+    size_t const old_size = MemoryBlockSize(ptr);
+    if (void* new_ptr = std::realloc(ptr, new_size))
     {
-        // allocate a new memory block of new_size bytes (realloc is equivalent to malloc)
-        if (ptr = std::malloc(new_size))
+        // did realloc call expand or malloc?
+        bool const do_modify_counters = (new_ptr != ptr);
+        if (do_modify_counters)
         {
-            CUSTOM_MEMORY_MANAGER.Register(new_size);
-            return ptr;
-        }
-        // malloc failed
-        return nullptr;
-    }
-    else
-    {
-        if (new_size == 0)
-        {
-            // std::free(ptr);
-            // CUSTOM_MEMORY_MANAGER.Unregister(old_size);
-            return nullptr;
-        }
-        else if (new_size <= MemoryBlockSize(ptr))
-        {
-            // memory block is sufficiently large, do nothing
-            return ptr;
+            printf("realloc: malloc\n");
         }
         else
         {
-            // first, try to expand without copying
-#if defined(_WIN32) && defined(_MSC_VER)
-            void* new_ptr = _expand(ptr, new_size);
-#elif defined(__linux__) && define(__GNUC__)
-            // TODO: what's the GCC equiv?
-#error "Equivalent of _expand for GNU is needed"
-#else
-#error "Unsupported platform and/or compiler"
-#endif
-            if (new_ptr)
+            if (new_size > old_size)
             {
-                std::cout << "called expand, address: old = " << ptr << " new = " << new_ptr << '\n';
-                CUSTOM_MEMORY_MANAGER.Register(new_size - MemoryBlockSize(ptr), false);
-                return new_ptr;
+                printf("realloc: expand\n");
             }
             else
             {
-                // expansion failed, allocate a new memory block of new_size bytes
-                if (new_ptr = std::malloc(new_size))
-                {
-                    std::cout << "called malloc\n";
-                    // malloc succeeded, copy the old memory to the new one then free the old memory
-                    size_t const old_size = MemoryBlockSize(ptr);
-                    std::cout << "realloc size   : " << old_size << ' ' << new_size << '\n';
-                    std::cout << "realloc address: " << ptr << ' ' << new_ptr << '\n';
-                    std::memcpy(new_ptr, ptr, old_size);
-                    std::free(ptr);
-                    ptr = nullptr;
-                    CUSTOM_MEMORY_MANAGER.Register(new_size);
-                    CUSTOM_MEMORY_MANAGER.Unregister(old_size);
-                    return new_ptr;
-                }
-                // malloc failed, a nullptr is returned, the old memory remains unchanged
-                return nullptr;
+                printf("realloc: shrink\n");
             }
         }
+        CUSTOM_MEMORY_MANAGER.Register(new_size, do_modify_counters);
+        CUSTOM_MEMORY_MANAGER.Unregister(old_size, do_modify_counters);
     }
+    return nullptr;
 }
 
 /// @brief Custom _aligned_malloc (WIN32) or std::aligned_alloc (LINUX) wrapper
@@ -147,7 +116,7 @@ inline static void* custom_realloc(void* ptr, std::size_t new_size)
 /// @param[size] Number of bytes of uninitialized storage to be allocated
 /// @param[alignment] Specifies the alignment
 /// @return The pointer to the beginning of newly allocated memory
-inline static void* custom_aligned_malloc(size_t size, size_t alignment)
+inline static void* custom_aligned_alloc(size_t size, size_t alignment)
 {
 #if defined(_WIN32) && defined(_MSC_VER)
     // std::aligned_alloc is not implemented in VS
@@ -165,18 +134,7 @@ inline static void* custom_aligned_malloc(size_t size, size_t alignment)
     return nullptr;
 }
 
-// Redefnition of xalloc/free functions (must be done after all custom functions are defined)
-// realloc uses
-
-#define free(ptr) custom_free(ptr)
-
-#if defined(_WIN32)
-#if defined(_MSC_VER)
-#define _aligned_free(ptr) custom_aligned_free(ptr)
-#else
-#error "Unsupported compiler"
-#endif
-#endif
+// Redefinition of xalloc/free  et al. functions
 
 #define malloc(size) custom_malloc(size)
 
@@ -184,12 +142,17 @@ inline static void* custom_aligned_malloc(size_t size, size_t alignment)
 
 #define realloc(ptr, new_size) custom_realloc(ptr, new_size)
 
+#define free(ptr) custom_free(ptr)
+
+// std::aligned_alloc is part of c++17 standard, however it's not available in MSVC due
+// to C11 restrictions. It provides _aligned_malloc instead, which should be freed by _aligned_free.
+// On the other hand, GCC provides std::aligned_alloc. std::free is used to free the associated memory.
+// In the defs below, the call to std::aligned_alloc is redirected to custom_aligned_alloc
+// but under Linux, the order of parameters is reversed in order to have a unified function signature.
 #if defined(_WIN32) && defined(_MSC_VER)
-#define _aligned_malloc(size, alignment) custom_aligned_malloc(size, alignment)
-#elif defined(__linux__) && define(__GNUC__) // this is really part of c++17
-#define aligned_alloc(alignment, size) custom_aligned_malloc(size, alignment)
-#else
+#define _aligned_malloc(size, alignment) custom_aligned_alloc(size, alignment)
+#define _aligned_free(ptr) custom_aligned_free(ptr)
+#elif defined(__linux__) && define(__GNUC__)
+#define aligned_alloc(alignment, size) custom_aligned_alloc(size, alignment)
 #error "Unsupported platform and/or compiler"
 #endif
-
-#endif // DO_MANAGE_MEMORY

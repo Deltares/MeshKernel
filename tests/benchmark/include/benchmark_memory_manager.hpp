@@ -48,9 +48,12 @@ public:
 
     /// @brief Unregisters an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Unregister(size_t size)
+    void Unregister(size_t size, bool decrrement_num_allocations = true)
     {
-        m_num_deallocations++;
+        if (decrrement_num_allocations)
+        {
+            m_num_deallocations++;
+        }
         m_net_heap_growth -= size;
         m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
     }
