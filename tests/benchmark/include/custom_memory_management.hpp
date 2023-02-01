@@ -84,29 +84,25 @@ inline static void* custom_calloc(std::size_t num, size_t size)
 /// @return Pointer to the beginning of newly allocated memory
 inline static void* custom_realloc(void* ptr, std::size_t new_size)
 {
-    // store the old size prior to reallocation to allow modifying the counters of CUSTOM_MEMORY_MANAGER
+    // store the old size prior toreallocation
     size_t const old_size = MemoryBlockSize(ptr);
     if (void* new_ptr = std::realloc(ptr, new_size))
     {
-        // did realloc call expand or malloc?
-        bool const do_modify_counters = (new_ptr != ptr);
-        if (do_modify_counters)
+        if (new_ptr != ptr)
         {
-            printf("realloc: malloc\n");
+            // the address has changed because new ptr was malloced
+            // register new allocation due malloc of new ptr
+            CUSTOM_MEMORY_MANAGER.Register(new_size);
+            // register deallocation due to free of old ptr
+            CUSTOM_MEMORY_MANAGER.Unregister(old_size);
         }
         else
         {
-            if (new_size > old_size)
-            {
-                printf("realloc: expand\n");
-            }
-            else
-            {
-                printf("realloc: shrink\n");
-            }
+            // the address did not change, the memory block was either expanded or shrunk
+            // register only the size difference without incrementing the number of allocations
+            CUSTOM_MEMORY_MANAGER.Register(new_size - old_size, false);
         }
-        CUSTOM_MEMORY_MANAGER.Register(new_size, do_modify_counters);
-        CUSTOM_MEMORY_MANAGER.Unregister(old_size, do_modify_counters);
+        return new_ptr;
     }
     return nullptr;
 }

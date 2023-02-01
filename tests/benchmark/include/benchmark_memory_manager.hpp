@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 #include <stdint.h>
 
 #include <benchmark/benchmark.h>
@@ -35,7 +36,7 @@ public:
 
     /// @brief Registers an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Register(size_t size, bool incrrement_num_allocations = true)
+    void Register(int64_t size, bool incrrement_num_allocations = true)
     {
         if (incrrement_num_allocations)
         {
@@ -48,12 +49,9 @@ public:
 
     /// @brief Unregisters an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Unregister(size_t size, bool decrrement_num_allocations = true)
+    void Unregister(int64_t size)
     {
-        if (decrrement_num_allocations)
-        {
-            m_num_deallocations++;
-        }
+        m_num_deallocations++;
         m_net_heap_growth -= size;
         m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
     }
@@ -88,6 +86,8 @@ public:
         m_net_heap_growth = 0;
     }
 
+    friend std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager);
+
 private:
     CustomMemoryManager() = default;
     ~CustomMemoryManager() = default;
@@ -100,5 +100,17 @@ private:
     int64_t m_max_bytes_used = TombstoneValue; ///< The peak memory use in bytes between Start and Stop
     int64_t m_net_heap_growth = 0;             ///< The net changes in memory in bytes between Start and Stop
 };
+
+inline static std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager)
+{
+    ostream << "Current memory manager statistics:"
+            << "\nNumber of allocations  : " << custom_memory_manager.m_num_allocations
+            << "\nNumber of deallocations: " << custom_memory_manager.m_num_deallocations
+            << "\nTotal allocated bytes  : " << custom_memory_manager.m_total_allocated_bytes
+            << "\nMax bytes used         : " << custom_memory_manager.m_max_bytes_used
+            << "\nNet heap growth        : " << custom_memory_manager.m_net_heap_growth
+            << '\n';
+    return ostream;
+}
 
 #define CUSTOM_MEMORY_MANAGER CustomMemoryManager::Instance()
