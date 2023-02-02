@@ -1,4 +1,4 @@
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   # Fetch google benchmark dependency
   FetchContent_Declare(
     googlebenchmark
