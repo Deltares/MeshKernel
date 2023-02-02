@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <stdint.h>
+#include <string>
 
 #include <benchmark/benchmark.h>
 
@@ -76,6 +78,8 @@ public:
     /// @return Net changes in memory in bytes between Start and Stop
     int64_t NetHeapGrowth() const { return m_net_heap_growth; }
 
+    bool HasLeaks() const { return ((m_num_allocations != m_num_deallocations) || (m_net_heap_growth != 0)); }
+
     /// @brief Resets the memory statistics
     void ResetStatistics()
     {
@@ -87,6 +91,17 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager);
+
+    std::string Statistics(std::string const& caller = std::string()) const
+    {
+        std::ostringstream oss;
+        if (!caller.empty())
+        {
+            oss << caller << '\n';
+        }
+        oss << *this;
+        return oss.str();
+    }
 
 private:
     CustomMemoryManager() = default;
