@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "benchmark_memory_manager.hpp"
-#include "custom_memory_management.hpp"
+#include "memory_management.hpp"
+
 #include "test_config.hpp"
 #include "test_types.hpp"
 

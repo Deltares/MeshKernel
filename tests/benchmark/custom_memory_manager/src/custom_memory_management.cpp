@@ -1,58 +1,183 @@
-#include <new>
+#include "custom_memory_manager.hpp"
 
-#include "custom_memory_management.hpp"
+#include <algorithm>
+#include <sstream>
 
-// Definition of of the global repacements of the new and delete operators:
-// The replacements below redirect the new and delete operators to the low-level custom memory management functions
-// which are capable of registering the number of allocations (or deallocation) and bytes allocated (or deallocated)
+#include "platform.hpp"
 
-// Note on gloabl replacement for the new operator:
-// Replacing the throwing single object allocation functions is sufficient to handle all allocations.
-// See section "Global replacements" in https://en.cppreference.com/w/cpp/memory/new/operator_new
-
-/// @brief Gloabl replacement for void* operator new (std::size_t size)
-/// @param[size] Number of bytes of uninitialized storage to be allocated
-/// @return If successful, a non-null pointer, throws an allocation failure exception otherwise
-void* operator new(size_t size)
+CustomMemoryManager& CustomMemoryManager::Instance()
 {
-    if (void* ptr = custom_malloc(size))
-    {
-        return ptr;
-    }
-    throw std::bad_alloc{};
+    static CustomMemoryManager instance;
+    return instance;
 }
 
-/// @brief Gloabl replacement for void* operator new (std::size_t size, std::align_val_t alignment)
-/// @param[size] Number of bytes of uninitialized storage to be allocated
-/// @param[alignment] Specifies the alignment
-/// @return If successful, a non-null pointer pointing to aligned memory, throws an allocation failure exception otherwise
-void* operator new(std::size_t size, std::align_val_t alignment)
+void CustomMemoryManager::Start() { ResetStatistics(); }
+
+void CustomMemoryManager::Stop(Result* result)
 {
-    if (void* ptr = custom_aligned_alloc(static_cast<std::size_t>(alignment), size))
-    {
-        return ptr;
-    }
-    throw std::bad_alloc{};
+    result->num_allocs = m_num_allocations;
+    result->max_bytes_used = m_max_bytes_used;
+    result->total_allocated_bytes = m_total_allocated_bytes;
+    result->net_heap_growth = m_net_heap_growth;
 }
 
-// Note on gloabl replacement for the delete operator:
-// Rreplacing the throwing single object deallocation functions is sufficient to handle all deallocation
-// See section "Global replacements" in https://en.cppreference.com/w/cpp/memory/new/operator_delete
+void CustomMemoryManager::Free(void* ptr)
+{
+    Unregister(MemoryBlockSize(ptr));
+    std::free(ptr);
+    ptr = nullptr;
+}
 
-/// @brief Gloabl replacement for void operator delete (void* ptr) noexcept
-/// @param[ptr] Pointer to the memory block to deallocate
-void operator delete(void* ptr) noexcept { custom_free(ptr); }
+void CustomMemoryManager::AlignedFree(void* ptr)
+{
+    Unregister(MemoryBlockSize(ptr));
+#if defined(WIN_MSVC)
+    _aligned_free(ptr);
+#elif defined(LINUX_GNUC)
+    std::free(ptr);
+#endif
+    ptr = nullptr;
+}
 
-/// @brief Gloabl replacement for void operator delete(void* ptr, size_t size) noexcept
-/// @param[ptr] Pointer to the memory block to deallocate
-void operator delete(void* ptr, size_t /*size*/) noexcept { custom_free(ptr); }
+void* CustomMemoryManager::Malloc(size_t size)
+{
+    if (void* ptr = std::malloc(size))
+    {
+        Register(size);
+        return ptr;
+    }
+    return nullptr;
+}
 
-/// @brief Gloabl replacement for void operator delete(void* ptr, std::align_val_t alignment) noexcept
-/// @param[ptr] Pointer to the memory block to deallocate
-/// @param[alignment] Specifies the alignment (unused)
-void operator delete(void* ptr, std::align_val_t /*alignment*/) noexcept { custom_aligned_free(ptr); }
+void* CustomMemoryManager::Calloc(std::size_t num, size_t size)
+{
+    if (void* ptr = std::calloc(num, size))
+    {
+        Register(size * num);
+        return ptr;
+    }
+    return nullptr;
+}
 
-/// @brief Gloabl replacement for void operator delete(void* ptr, size_t size, std::align_val_t alignment) noexcept
-/// @param[ptr] Pointer to the memory block to deallocate
-/// @param[alignment] Specifies the alignment (unused)
-void operator delete(void* ptr, size_t /*size*/, std::align_val_t /*alignment*/) noexcept { custom_aligned_free(ptr); }
+void* CustomMemoryManager::Realloc(void* ptr, std::size_t new_size)
+{
+    // store the old size prior toreallocation
+    size_t const old_size = MemoryBlockSize(ptr);
+    if (void* new_ptr = std::realloc(ptr, new_size))
+    {
+        if (new_ptr != ptr)
+        {
+            // the address has changed because new ptr was malloced
+            // register new allocation due malloc of new ptr
+            Register(new_size);
+            // register deallocation due to free of old ptr
+            Unregister(old_size);
+        }
+        else
+        {
+            // the address did not change, the memory block was either expanded or shrunk
+            // register only the size difference without incrementing the number of allocations
+            Register(new_size - old_size, false);
+        }
+        return new_ptr;
+    }
+    return nullptr;
+}
+
+void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment)
+{
+    void* ptr = nullptr;
+#if defined(WIN_MSVC)
+    // std::aligned_alloc is not implemented in VS
+    ptr = _aligned_malloc(size, alignment);
+#elif defined(LINUX_GNUC)
+    ptr = std::aligned_alloc(alignment, size);
+#endif
+    if (ptr)
+    {
+        Register(size);
+        return ptr;
+    }
+    return nullptr;
+}
+
+void CustomMemoryManager::ResetStatistics()
+{
+    m_num_allocations = 0;
+    m_num_deallocations = 0;
+    m_total_allocated_bytes = 0;
+    m_max_bytes_used = TombstoneValue;
+    m_net_heap_growth = 0;
+}
+
+std::string CustomMemoryManager::Statistics(std::string const& caller) const
+{
+    std::ostringstream oss;
+    if (!caller.empty())
+    {
+        oss << caller << '\n';
+    }
+    oss << *this;
+    return oss.str();
+}
+
+int64_t CustomMemoryManager::Allocations() const { return m_num_allocations; }
+
+int64_t CustomMemoryManager::Deallocations() const { return m_num_deallocations; }
+
+int64_t CustomMemoryManager::TotalAllocatedBytes() const { return m_total_allocated_bytes; }
+
+int64_t CustomMemoryManager::MaxBytesUsed() const { return m_max_bytes_used; }
+
+int64_t CustomMemoryManager::NetHeapGrowth() const { return m_net_heap_growth; }
+
+bool CustomMemoryManager::HasLeaks() const
+{
+    return ((m_num_allocations != m_num_deallocations) || (m_net_heap_growth != 0));
+}
+
+void CustomMemoryManager::Register(int64_t size, bool incrrement_num_allocations)
+{
+    if (incrrement_num_allocations)
+    {
+        m_num_allocations++;
+    }
+    m_total_allocated_bytes += size;
+    m_net_heap_growth += size;
+    m_max_bytes_used = std::min(m_max_bytes_used, m_net_heap_growth);
+}
+
+void CustomMemoryManager::Unregister(int64_t size)
+{
+    m_num_deallocations++;
+    m_net_heap_growth -= size;
+    m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
+}
+
+size_t CustomMemoryManager::MemoryBlockSize(void* ptr)
+{
+    if (ptr)
+    {
+#if defined(WIN_MSVC)
+        return _msize(ptr);
+#elif defined(LINUX_GNUC)
+        return malloc_usable_size(ptr);
+#endif
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager)
+{
+    ostream << "Current memory manager statistics:"
+            << "\nNumber of allocations  : " << custom_memory_manager.m_num_allocations
+            << "\nNumber of deallocations: " << custom_memory_manager.m_num_deallocations
+            << "\nTotal allocated bytes  : " << custom_memory_manager.m_total_allocated_bytes
+            << "\nMax bytes used         : " << custom_memory_manager.m_max_bytes_used
+            << "\nNet heap growth        : " << custom_memory_manager.m_net_heap_growth
+            << '\n';
+    return ostream;
+}

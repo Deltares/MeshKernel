@@ -2,8 +2,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "benchmark_memory_manager.hpp"
-#include "custom_memory_management.hpp"
+#include "memory_management.hpp"
 
 int main(int argc, char** argv)
 {

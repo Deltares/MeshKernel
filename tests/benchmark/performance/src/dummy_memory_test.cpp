@@ -5,7 +5,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "benchmark_memory_manager.hpp"
+#include "memory_management.hpp"
 
 static void BM_memory1(benchmark::State& state)
 {

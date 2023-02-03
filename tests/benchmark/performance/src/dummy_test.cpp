@@ -7,7 +7,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "benchmark_memory_manager.hpp"
+#include "memory_management.hpp"
 
 static std::vector<double> VectorFilledWithRandomNumbers(size_t n, double lower_bound, double upper_bound)
 {
@@ -67,17 +67,3 @@ static void BM_Test2Cycles(benchmark::State& state)
     }
 }
 BENCHMARK(BM_Test2Cycles);
-
-/*
-static void BM_Test2PauseFill(benchmark::State& state)
-{
-    for (auto _ : state)
-    {
-        state.PauseTiming();
-        auto const vector = VectorFilledWithRandomNumbers(100000, 1, 100);
-        state.ResumeTiming();
-        SumOfPowerOfVectorElements(vector, 5.666);
-    }
-}
-BENCHMARK(BM_Test2PauseFill);
-*/
