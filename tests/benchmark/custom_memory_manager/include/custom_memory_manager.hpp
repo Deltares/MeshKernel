@@ -28,31 +28,31 @@ public:
     /// @brief Custom _aligned_free wrapper (WIN32 only, free does the job under LINUX)
     ///        and registers the allocation in a global BenchmarkMemoryManager object
     /// @param[ptr] Pointer to the memory block to deallocate
-    void CustomMemoryManager::AlignedFree(void* ptr);
+    void AlignedFree(void* ptr);
 
     /// @brief Custom std::malloc wrapper which registers the allocation in a global BenchmarkMemoryManager object
     /// @param[size] Number of bytes of uninitialized storage to be allocated
     /// @return Pointer to the beginning of newly allocated memory
-    void* CustomMemoryManager::Malloc(size_t size);
+    void* Malloc(size_t size);
 
     /// @brief Custom std::calloc wrapper which registers the allocation in a global BenchmarkMemoryManager object
     /// @param[num] Number of objects
     /// @param[size] Number of bytes of uninitialized storage to be allocated per object
     /// @return Pointer to the beginning of newly allocated memory
-    void* CustomMemoryManager::Calloc(std::size_t num, size_t size);
+    void* Calloc(std::size_t num, size_t size);
 
     /// @brief Custom std::realloc wrapper which registers the re-allocation in a global BenchmarkMemoryManager object
     /// @param[ptr] Pointer to the memory area to be reallocated
     /// @param [new_size] New size of the array
     /// @return Pointer to the beginning of newly allocated memory
-    void* CustomMemoryManager::Realloc(void* ptr, std::size_t new_size);
+    void* Realloc(void* ptr, std::size_t new_size);
 
     /// @brief Custom _aligned_malloc (WIN32) or std::aligned_alloc (LINUX) wrapper
     ///        which registers the allocation in a global BenchmarkMemoryManager object
     /// @param[size] Number of bytes of uninitialized storage to be allocated
     /// @param[alignment] Specifies the alignment
     /// @return The pointer to the beginning of newly allocated memory
-    void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment);
+    void* AlignedAlloc(size_t size, size_t alignment);
 
     /// @brief Gets the total number of allocations
     /// @return Number of allocations

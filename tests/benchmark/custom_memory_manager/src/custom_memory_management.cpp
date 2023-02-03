@@ -1,6 +1,7 @@
 #include "custom_memory_manager.hpp"
 
 #include <algorithm>
+#include <malloc.h>
 #include <sstream>
 
 #include "platform.hpp"

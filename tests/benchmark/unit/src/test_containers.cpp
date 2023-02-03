@@ -115,7 +115,12 @@ TEST(Containers, Array)
     // let's use a scope here because we're using containers, we want them to
     // be destructed before we check for leaks towrads the end of the test
     {
+        // arrays go on the stack
         std::array<Point, 3> arr{{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}};
+        EXPECT_EQ(arr.size(), 3); // dummy test to prevent the compiler from treating the var arr as unused (treated as error)
+        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 0);
+        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Deallocations(), 0);
+        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), 0);
     }
 
     // is there a leak?

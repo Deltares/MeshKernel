@@ -15,7 +15,6 @@ target_include_directories(
   ../custom_memory_manager/include
 )
 
-# Should be linked to the main library, as well as the google test library
 target_link_libraries(
   ${target_name}
   PRIVATE
@@ -34,6 +33,7 @@ if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(${target_name} PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
-# If you register a test, then ctest and make test will run it. You can also run
-# examples and check the output, as well. Command can be a target.
-add_test(NAME ${target_name}  COMMAND ${target_name} )
+add_test(
+  NAME ${target_name}
+  COMMAND ${target_name}
+)

@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <cstring>
-#include <malloc.h>
 #include <new>
 
 #include "custom_memory_manager.hpp"

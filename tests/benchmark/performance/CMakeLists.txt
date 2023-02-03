@@ -22,7 +22,7 @@ target_link_libraries(
   MeshKernel
   UtilsStatic
   benchmark::benchmark
-  benchmark::benchmark_main
+  #benchmark::benchmark_main
 )
 
 if (UNIX)
@@ -35,9 +35,11 @@ if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(${target_name} PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
-# If you register a test, then ctest and make test will run it. You can also run
-# examples and check the output, as well. Command can be a target.
-add_test(NAME ${target_name}  COMMAND ${target_name} )
+add_test(
+  NAME ${target_name}
+  COMMAND ${target_name}
+  --C ${CMAKE_BUILD_TYPE}
+)
 
 # On Windows we bundle the dlls and then copy them to the target file directory
 if(WIN32)
