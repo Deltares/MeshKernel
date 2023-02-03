@@ -16,6 +16,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebI
     )
   endif()
 
+  set(BENCHMARK_ENABLE_TESTING OFF)
+
   # add unit and performance tests
   add_subdirectory(unit)
   add_subdirectory(performance)

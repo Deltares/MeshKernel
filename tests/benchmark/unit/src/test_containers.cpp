@@ -14,7 +14,7 @@ TEST(Containers, Vector)
     // let's use a scope here because we're using containers, we want them to
     // be destructed before we check for leaks towrads the end of the test
     {
-        size_t const initial_size = 20;
+        size_t constexpr initial_size = 20;
 
         // construction
         std::vector<Point> vec(initial_size);

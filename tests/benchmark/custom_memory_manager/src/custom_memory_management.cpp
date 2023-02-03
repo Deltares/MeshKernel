@@ -32,9 +32,9 @@ void CustomMemoryManager::Free(void* ptr)
 void CustomMemoryManager::AlignedFree(void* ptr)
 {
     Unregister(MemoryBlockSize(ptr));
-#if defined(WIN_MSVC)
+#if defined(WIN_MSVC_BENCHMARK)
     _aligned_free(ptr);
-#elif defined(LINUX_GNUC)
+#elif defined(LINUX_GNUC_BENCHMARK)
     std::free(ptr);
 #endif
     ptr = nullptr;
@@ -88,10 +88,10 @@ void* CustomMemoryManager::Realloc(void* ptr, std::size_t new_size)
 void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment)
 {
     void* ptr = nullptr;
-#if defined(WIN_MSVC)
+#if defined(WIN_MSVC_BENCHMARK)
     // std::aligned_alloc is not implemented in VS
     ptr = _aligned_malloc(size, alignment);
-#elif defined(LINUX_GNUC)
+#elif defined(LINUX_GNUC_BENCHMARK)
     ptr = std::aligned_alloc(alignment, size);
 #endif
     if (ptr)
@@ -134,12 +134,12 @@ int64_t CustomMemoryManager::NetHeapGrowth() const { return m_net_heap_growth; }
 
 bool CustomMemoryManager::HasLeaks() const
 {
-    return ((m_num_allocations != m_num_deallocations) || (m_net_heap_growth != 0));
+    return (m_num_allocations != m_num_deallocations) || (m_net_heap_growth != 0);
 }
 
-void CustomMemoryManager::Register(int64_t size, bool incrrement_num_allocations)
+void CustomMemoryManager::Register(int64_t size, bool increment_num_allocations)
 {
-    if (incrrement_num_allocations)
+    if (increment_num_allocations)
     {
         m_num_allocations++;
     }
@@ -159,9 +159,9 @@ size_t CustomMemoryManager::MemoryBlockSize(void* ptr)
 {
     if (ptr)
     {
-#if defined(WIN_MSVC)
+#if defined(WIN_MSVC_BENCHMARK)
         return _msize(ptr);
-#elif defined(LINUX_GNUC)
+#elif defined(LINUX_GNUC_BENCHMARK)
         return malloc_usable_size(ptr);
 #endif
     }

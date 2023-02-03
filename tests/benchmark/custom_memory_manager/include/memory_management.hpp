@@ -19,9 +19,9 @@
 // In the defs below, the call to std::aligned_alloc is redirected to custom_aligned_alloc
 // but under Linux, the order of parameters is reversed in order to have a unified function signature.
 // free frees ptr allocated by aligned_alloc.
-#if defined(WIN_MSVC)
+#if defined(WIN_MSVC_BENCHMARK)
 #define _aligned_malloc(size, alignment) CUSTOM_MEMORY_MANAGER.AlignedAlloc(size, alignment)
 #define _aligned_free(ptr) CUSTOM_MEMORY_MANAGER.AlignedFree(ptr)
-#elif defined(LINUX_GNUC)
+#elif defined(LINUX_GNUC_BENCHMARK)
 #define aligned_alloc(alignment, size) CUSTOM_MEMORY_MANAGER.AlignedAlloc(size, alignment)
 #endif

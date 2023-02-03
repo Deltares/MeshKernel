@@ -82,8 +82,14 @@ public:
     /// @brief Resets the memory statistics
     void ResetStatistics();
 
+    /// @brief Overlaod of oepartor << for printing the statistics of the class CustomMemoryManager
+    /// @param[ostream] Output stream
+    /// @param[ostream] Custom memory manager instance
+    /// @return Output stream
     friend std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager);
 
+    /// @brief Gets the current statistics
+    /// @return The statistics as a ormatted string
     std::string Statistics(std::string const& caller = std::string()) const;
 
 private:
@@ -100,7 +106,7 @@ private:
 
     /// @brief Registers an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
-    void Register(int64_t size, bool incrrement_num_allocations = true);
+    void Register(int64_t size, bool increment_num_allocations = true);
 
     /// @brief Unregisters an allocation
     /// @param[size] Size of allocated memory pointed to by pointer
@@ -112,6 +118,9 @@ private:
 };
 
 /// @brief Overlaod of oepartor << for printing the statistics of the class CustomMemoryManager
+/// @param[ostream] Output stream
+/// @param[ostream] Custom memory manager instance
+/// @return Output stream
 std::ostream& operator<<(std::ostream& ostream, CustomMemoryManager const& custom_memory_manager);
 
 #define CUSTOM_MEMORY_MANAGER CustomMemoryManager::Instance()

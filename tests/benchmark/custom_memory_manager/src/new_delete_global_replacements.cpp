@@ -4,7 +4,7 @@
 
 #include "custom_memory_manager.hpp"
 
-// Definition of of the global repacements of the new and delete operators:
+// Definition of of the global replacements of the new and delete operators:
 // The replacements below redirect the new and delete operators to the low-level custom memory management functions
 // which are capable of registering the number of allocations (or deallocation) and bytes allocated (or deallocated)
 

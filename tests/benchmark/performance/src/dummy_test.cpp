@@ -15,7 +15,7 @@ static std::vector<double> VectorFilledWithRandomNumbers(size_t n, double lower_
     std::mt19937 mersenne_engine{random_device()};
     std::normal_distribution<double> distribution(lower_bound, upper_bound);
 
-    auto generator = [&distribution, &mersenne_engine]() -> double
+    auto generator = [&distribution, &mersenne_engine]()
     {
         return distribution(mersenne_engine);
     };
