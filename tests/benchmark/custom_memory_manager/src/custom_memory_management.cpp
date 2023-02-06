@@ -151,7 +151,7 @@ void CustomMemoryManager::Register(int64_t size, bool increment_num_allocations)
 void CustomMemoryManager::Unregister(int64_t size)
 {
     m_num_deallocations++;
-    m_net_heap_growth -= size;
+    m_net_heap_growth -= static_cast<int64_t>(size);
     m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
 }
 
