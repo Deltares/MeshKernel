@@ -1373,9 +1373,6 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
                 meshBoundaryPolygon[replaceIndex] = backupPoint;
             }
         }
-
-        // Start a new polyline
-        meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
     }
     return meshBoundaryPolygon;
 }

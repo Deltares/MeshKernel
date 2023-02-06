@@ -13,7 +13,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh->MeshBoundaryToPolygon(polygonNodes);
 
-    ASSERT_EQ(9, meshBoundaryPolygon.size());
+    ASSERT_EQ(8, meshBoundaryPolygon.size());
 
     constexpr double tolerance = 1e-5;
 
