@@ -99,7 +99,7 @@ namespace meshkernel::averaging
         std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().method_, 1,
                                                                                                       p, Projection::cartesian);
 
-        for (auto const p : GetParam().addData_)
+        for (auto const& p : GetParam().addData_)
         {
             pStrategy->Add(p.first, p.second);
         }
