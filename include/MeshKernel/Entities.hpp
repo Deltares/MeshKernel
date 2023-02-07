@@ -44,30 +44,27 @@ namespace meshkernel
     //    t.IsValid
     //};
 
-    /// @brief Generic function determining if two values are equal
-    ///
-    /// This is especially useful for floating point values.
-    template <typename T>
-    static bool IsEqual(T value, T referenceValue)
+    /// @brief Generic function determining if two floating point values are equal
+    /// @param[value] The value to comapre
+    /// @param[ref_value] The reference value to compare to
+    /// @param[eps_mutilpier] Multiplier of machine precision
+    /// @return Boolean indicating whether the vlaue and reference value are equal
+    ///         within machine precision multiplied by the multiplier
+    // template <std::floating_point T> // prefer this in this c++20
+    template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+    static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
     {
-        if constexpr (std::is_integral<T>::value)
+        if (value == ref_value)
         {
-            return value == referenceValue;
+            return true;
         }
         else
         {
-            if (value == referenceValue)
-            {
-                return true;
-            }
-
-            const auto absDiff = std::abs(value - referenceValue);
-            const auto absValue = std::abs(value);
-            const auto absReferenceValue = std::abs(referenceValue);
-            const auto tol = 10 * std::numeric_limits<T>::epsilon();
-
-            return absDiff < tol * std::min(absValue, absReferenceValue);
-            
+            const T abs_diff = std::abs(value - ref_value);
+            const T abs_value = std::abs(value);
+            const T abs_ref_value = std::abs(ref_value);
+            static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
+            return abs_diff < tol * std::min(abs_value, abs_ref_value);
         }
     }
 

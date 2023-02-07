@@ -347,6 +347,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 {
+    using namespace meshkernel::constants;
+
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
@@ -355,12 +357,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                                 {265.953522, 436.515747},
                                                 {429.349854, 450.959656},
                                                 {535.271545, 386.262909},
-                                                {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                {missing::doubleValue, missing::doubleValue},
                                                 {246.995941, 262.285858},
                                                 {351.112183, 237.309906},
                                                 {443.191895, 262.285858},
                                                 {553.627319, 327.283539},
-                                                {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+                                                {missing::doubleValue, missing::doubleValue}};
 
     // snap to land boundaries
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary;
@@ -417,7 +419,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projection::spherical, {41.1, 41.1});
 
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
