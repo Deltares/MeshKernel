@@ -20,7 +20,11 @@ endif()
 
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
-add_test(NAME ${target_name}  COMMAND ${target_name} )
+add_test(
+  NAME ${target_name}
+  COMMAND ${target_name}
+  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+)
 
 # On Windows we bundle the dlls and then copy them to the target file directory
 if(WIN32)
