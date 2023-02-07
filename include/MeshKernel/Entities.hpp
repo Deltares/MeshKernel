@@ -44,12 +44,11 @@ namespace meshkernel
     //    t.IsValid
     //};
 
-    /// @brief Generic function determining if two floating point values are equal
-    /// @param[value] The value to comapre
+    /// @brief Generic function for determining if two floating point values are equal
+    /// @param[value] The value to compare
     /// @param[ref_value] The reference value to compare to
     /// @param[eps_mutilpier] Multiplier of machine precision
-    /// @return Boolean indicating whether the vlaue and reference value are equal
-    ///         within machine precision multiplied by the multiplier
+    /// @return Boolean indicating whether the value and reference value are equal within machine precision multiplied by the multiplier
     // template <std::floating_point T> // prefer this in this c++20
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
     static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
