@@ -496,13 +496,13 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
     geometryListOut.num_coordinates = numberOfpolygonNodes;
 
-    std::unique_ptr<double> const xCoordinates(new double[numberOfpolygonNodes]);
-    std::unique_ptr<double> const yCoordinates(new double[numberOfpolygonNodes]);
-    std::unique_ptr<double> const zCoordinates(new double[numberOfpolygonNodes]);
+    std::vector<double> xCoordinates(numberOfpolygonNodes);
+    std::vector<double> yCoordinates(numberOfpolygonNodes);
+    std::vector<double> zCoordinates(numberOfpolygonNodes);
 
-    geometryListOut.coordinates_x = xCoordinates.get();
-    geometryListOut.coordinates_y = yCoordinates.get();
-    geometryListOut.values = zCoordinates.get();
+    geometryListOut.coordinates_x = xCoordinates.data();
+    geometryListOut.coordinates_y = yCoordinates.data();
+    geometryListOut.values = zCoordinates.data();
 
     // Execute
     errorCode = mkernel_mesh2d_get_mesh_boundaries_as_polygons(meshKernelId, geometryListOut);
