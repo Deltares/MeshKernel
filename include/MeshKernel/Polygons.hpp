@@ -71,7 +71,7 @@ namespace meshkernel
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
-        /// @return The index of a polygon where the point is included or if none has been found, sizetMissingValue
+        /// @return The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue
         [[nodiscard]] std::tuple<bool, size_t> IsPointInPolygons(Point point) const;
 
         /// @brief For each point, compute the index of the polygon including it

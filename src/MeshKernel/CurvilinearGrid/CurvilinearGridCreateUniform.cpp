@@ -45,8 +45,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
     auto numN = static_cast<size_t>(m_makeGridParameters.num_rows + 1);
     const double XGridBlockSize = m_makeGridParameters.block_size_x;
     const double YGridBlockSize = m_makeGridParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeGridParameters.angle * degrad_hp);
-    const double sinAngle = std::sin(m_makeGridParameters.angle * degrad_hp);
+    const double cosineAngle = std::cos(m_makeGridParameters.angle * constants::conversion::degToRad);
+    const double sinAngle = std::sin(m_makeGridParameters.angle * constants::conversion::degToRad);
     double OriginXCoordinate = m_makeGridParameters.origin_x;
     double OriginYCoordinate = m_makeGridParameters.origin_y;
 
@@ -61,7 +61,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
             double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
             if (m_projection == Projection::spherical && n > 0)
             {
-                newPointYCoordinate = XGridBlockSize * cos(degrad_hp * gridNodes[n - 1][m].y);
+                newPointYCoordinate = XGridBlockSize * cos(constants::conversion::degToRad * gridNodes[n - 1][m].y);
             }
             gridNodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
         }
@@ -81,7 +81,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
         return {};
     }
 
-    Point referencePoint{doubleMissingValue, doubleMissingValue};
+    Point referencePoint{constants::missing::doubleValue, constants::missing::doubleValue};
     auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {
@@ -101,8 +101,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
 
     const double XGridBlockSize = m_makeGridParameters.block_size_x;
     const double YGridBlockSize = m_makeGridParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeGridParameters.angle * degrad_hp);
-    const double sinAngle = std::sin(m_makeGridParameters.angle * degrad_hp);
+    const double cosineAngle = std::cos(m_makeGridParameters.angle * constants::conversion::degToRad);
+    const double sinAngle = std::sin(m_makeGridParameters.angle * constants::conversion::degToRad);
 
     Projection const polygonProjection = polygons->GetProjection();
 
@@ -126,8 +126,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     double yShift = xmin * sinAngle + etamin * cosineAngle;
     if (polygonProjection == Projection::spherical)
     {
-        xShift = xShift / earth_radius * raddeg_hp;
-        yShift = yShift / (earth_radius * std::cos(referencePoint.y * degrad_hp)) * raddeg_hp;
+        xShift = xShift / constants::geometric::earth_radius * constants::conversion::radToDeg;
+        yShift = yShift / (constants::geometric::earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
     }
 
     auto const OriginXCoordinate = referencePoint.x + xShift;
@@ -144,7 +144,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
             double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
             if (polygonProjection == Projection::spherical && n > 0)
             {
-                newPointYCoordinate = XGridBlockSize * cos(degrad_hp * gridNodes[n - 1][m].y);
+                newPointYCoordinate = XGridBlockSize * cos(constants::conversion::degToRad * gridNodes[n - 1][m].y);
             }
             gridNodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
         }

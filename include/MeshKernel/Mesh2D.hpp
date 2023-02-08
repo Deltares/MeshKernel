@@ -267,7 +267,8 @@ namespace meshkernel
         /// @param[in] polyLine An input polyline, defined as a series of points
         /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
         [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
-                                 std::vector<FaceMeshPolylineIntersection>> GetPolylineIntersections(const std::vector<Point>& polyLine);
+                                 std::vector<FaceMeshPolylineIntersection>>
+        GetPolylineIntersections(const std::vector<Point>& polyLine);
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
@@ -290,6 +291,12 @@ namespace meshkernel
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
+        // orthogonalization
+        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
         /// @param[in] node The current node
@@ -324,7 +331,7 @@ namespace meshkernel
             std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
             m_edgesFaces.resize(m_edges.size());
-            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, sizetMissingValue));
+            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, constants::missing::sizetValue));
 
             m_facesMassCenters.clear();
             m_faceArea.clear();

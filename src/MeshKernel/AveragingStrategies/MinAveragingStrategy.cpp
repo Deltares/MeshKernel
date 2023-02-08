@@ -36,6 +36,6 @@ namespace meshkernel::averaging
 
     double MinAveragingStrategy::Calculate() const
     {
-        return m_result != std::numeric_limits<double>::max() ? m_result : doubleMissingValue;
+        return m_result != std::numeric_limits<double>::max() ? m_result : constants::missing::doubleValue;
     }
 } // namespace meshkernel::averaging

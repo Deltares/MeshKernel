@@ -34,7 +34,7 @@
 
 std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string const& filePath);
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::MeshTypes meshType);
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::Type meshType);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
 

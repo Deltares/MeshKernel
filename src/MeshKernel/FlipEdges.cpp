@@ -62,7 +62,7 @@ void FlipEdges::Compute() const
 
     const size_t MaxIter = 10;
     const auto numEdges = m_mesh->GetNumEdges();
-    size_t numFlippedEdges = sizetMissingValue;
+    size_t numFlippedEdges = constants::missing::sizetValue;
 
     for (size_t iteration = 0; iteration < MaxIter; ++iteration)
     {
@@ -86,13 +86,13 @@ void FlipEdges::Compute() const
 
             const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
-            if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
+            if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
             {
                 return;
             }
 
-            size_t nodeLeft = sizetMissingValue;
-            size_t nodeRight = sizetMissingValue;
+            size_t nodeLeft = constants::missing::sizetValue;
+            size_t nodeRight = constants::missing::sizetValue;
             const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
             if (topologyFunctional >= 0)
@@ -133,10 +133,10 @@ void FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            size_t firstEdgeLeftFace = sizetMissingValue;
-            size_t firstEdgeRightFace = sizetMissingValue;
-            size_t secondEdgeLeftFace = sizetMissingValue;
-            size_t secondEdgeRightFace = sizetMissingValue;
+            size_t firstEdgeLeftFace = constants::missing::sizetValue;
+            size_t firstEdgeRightFace = constants::missing::sizetValue;
+            size_t secondEdgeLeftFace = constants::missing::sizetValue;
+            size_t secondEdgeRightFace = constants::missing::sizetValue;
             for (size_t i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
@@ -288,7 +288,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
-    if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
+    if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
     {
         return largeTopologyFunctionalValue;
     }
@@ -305,7 +305,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
     nodeLeft = sumIndicesLeftFace - firstNode - secondNode;
     nodeRight = sumIndicesRightFace - firstNode - secondNode;
 
-    if (nodeLeft == sizetMissingValue || nodeRight == sizetMissingValue)
+    if (nodeLeft == constants::missing::sizetValue || nodeRight == constants::missing::sizetValue)
     {
         return largeTopologyFunctionalValue;
     }
@@ -350,7 +350,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
 
     if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
-        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != sizetMissingValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != sizetMissingValue)
+        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != constants::missing::sizetValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != constants::missing::sizetValue)
         {
             // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;
@@ -385,7 +385,7 @@ int FlipEdges::ComputeTopologyFunctional(size_t edge,
 
 int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
 {
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == sizetMissingValue)
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::sizetValue)
     {
         return static_cast<int>(m_mesh->m_nodesNumEdges[nodeIndex]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeIndex));
     }
@@ -401,7 +401,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
     }
 
     // Find the first edge connecting firstNode
-    size_t edgeIndexConnectingFirstNode = sizetMissingValue;
+    size_t edgeIndexConnectingFirstNode = constants::missing::sizetValue;
     for (size_t i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -413,13 +413,13 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         }
     }
 
-    if (edgeIndexConnectingFirstNode == sizetMissingValue)
+    if (edgeIndexConnectingFirstNode == constants::missing::sizetValue)
     {
         return 0;
     }
 
     // Find the first edge connecting secondNode
-    size_t edgeIndexConnectingSecondNode = sizetMissingValue;
+    size_t edgeIndexConnectingSecondNode = constants::missing::sizetValue;
     for (size_t i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -431,7 +431,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         }
     }
 
-    if (edgeIndexConnectingSecondNode == sizetMissingValue)
+    if (edgeIndexConnectingSecondNode == constants::missing::sizetValue)
     {
         return 0;
     }
@@ -443,7 +443,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
     auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
     size_t num = 1;
-    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == sizetMissingValue &&
+    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
@@ -453,22 +453,22 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         num++;
     }
 
-    size_t firstEdgeInPathIndex = sizetMissingValue;
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != sizetMissingValue ||
+    size_t firstEdgeInPathIndex = constants::missing::sizetValue;
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
         firstEdgeInPathIndex = edgeIndex;
     }
 
     // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
-    size_t secondEdgeInPathIndex = sizetMissingValue;
+    size_t secondEdgeInPathIndex = constants::missing::sizetValue;
     if (currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
         edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
         otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
         num = num + 1;
-        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == sizetMissingValue &&
+        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
                !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
                currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode &&
                edgeIndex != firstEdgeInPathIndex)
@@ -483,7 +483,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
             }
         }
 
-        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != sizetMissingValue ||
+        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
              m_mesh->IsEdgeOnBoundary(edgeIndex)) &&
             edgeIndex != firstEdgeInPathIndex)
         {
@@ -497,7 +497,7 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
         return 0;
     }
 
-    if (firstEdgeInPathIndex != sizetMissingValue && secondEdgeInPathIndex != sizetMissingValue)
+    if (firstEdgeInPathIndex != constants::missing::sizetValue && secondEdgeInPathIndex != constants::missing::sizetValue)
     {
         // Internal boundary
         return 4;

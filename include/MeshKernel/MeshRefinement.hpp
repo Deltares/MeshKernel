@@ -74,13 +74,6 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
-        /// @brief Enumerator describing the different refinement types
-        enum class RefinementType
-        {
-            WaveCourant = 1,
-            RefinementLevels = 2
-        };
-
     public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
@@ -157,6 +150,15 @@ namespace meshkernel
         /// @brief The refinement operation by splitting the face (refine_cells)
         /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
+
+        /// @brief Enumerator describing the different refinement types
+        enum class RefinementType
+        {
+            WaveCourant = 1,
+            RefinementLevels = 2
+        };
+
+        inline static double const m_sqrt_gravity = std::sqrt(9.80665); ///< Square root of gravitational acceleration on earth (m/s^2)
 
         RTree m_samplesRTree; ///< The sample node RTree
 

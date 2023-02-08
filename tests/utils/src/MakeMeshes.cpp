@@ -99,7 +99,7 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     return {num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type};
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::MeshTypes meshType)
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::Type meshType)
 {
     const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(filePath);
     std::vector<meshkernel::Edge> edges;
@@ -110,11 +110,11 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
     nodeMapping.resize(num_nodes);
 
     int nodeType = 0;
-    if (meshType == meshkernel::Mesh::MeshTypes::Mesh1D)
+    if (meshType == meshkernel::Mesh::Type::Mesh1D)
     {
         nodeType = 1;
     }
-    if (meshType == meshkernel::Mesh::MeshTypes::Mesh2D)
+    if (meshType == meshkernel::Mesh::Type::Mesh2D)
     {
         nodeType = 2;
     }
@@ -147,13 +147,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
 
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string const& filePath, meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh2D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh2D);
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
 std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(std::string const& filePath, meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh1D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh1D);
     return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
 }
 

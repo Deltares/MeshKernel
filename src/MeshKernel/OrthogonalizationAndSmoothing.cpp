@@ -95,7 +95,7 @@ void OrthogonalizationAndSmoothing::Initialize()
             m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
 
-        m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {doubleMissingValue, doubleMissingValue});
+        m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
     }
 }
 
@@ -181,7 +181,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         {
             continue;
         }
-        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
+        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != Mesh::m_numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
         {
             continue;
         }
@@ -247,8 +247,8 @@ void OrthogonalizationAndSmoothing::Solve()
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
-    Point normalSecondPoint{doubleMissingValue, doubleMissingValue};
-    Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
+    Point normalSecondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
+    Point normalThirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
 
     // in this case the nearest point is the point itself
     std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
@@ -267,10 +267,10 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
             size_t numNodes = 0;
-            size_t leftNode = sizetMissingValue;
-            size_t rightNode = sizetMissingValue;
-            Point secondPoint{doubleMissingValue, doubleMissingValue};
-            Point thirdPoint{doubleMissingValue, doubleMissingValue};
+            size_t leftNode = constants::missing::sizetValue;
+            size_t rightNode = constants::missing::sizetValue;
+            Point secondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
+            Point thirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             for (size_t nn = 0; nn < numEdges; nn++)
             {
                 const auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
@@ -280,7 +280,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     if (numNodes == 1)
                     {
                         leftNode = m_mesh->m_nodesNodes[n][nn];
-                        if (leftNode == sizetMissingValue)
+                        if (leftNode == constants::missing::sizetValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
@@ -289,7 +289,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     else if (numNodes == 2)
                     {
                         rightNode = m_mesh->m_nodesNodes[n][nn];
-                        if (rightNode == sizetMissingValue)
+                        if (rightNode == constants::missing::sizetValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }
@@ -411,9 +411,9 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
 
         if (m_mesh->m_projection == Projection::spherical)
         {
-            const double wwxTransformed = wwx * earth_radius * degrad_hp *
-                                          std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
-            const double wwyTransformed = wwy * earth_radius * degrad_hp;
+            const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad *
+                                          std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * constants::conversion::degToRad);
+            const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;
 
             dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
             dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
@@ -422,8 +422,8 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
         }
         if (m_mesh->m_projection == Projection::sphericalAccurate)
         {
-            const double wwxTransformed = wwx * earth_radius * degrad_hp;
-            const double wwyTransformed = wwy * earth_radius * degrad_hp;
+            const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad;
+            const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;
 
             dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].x;
             dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].y;

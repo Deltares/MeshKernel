@@ -19,6 +19,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_compile_options("/EHsc;/MP;/std:c++17;/W3;/WX")
     add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:/Od;/DEBUG>")
+    add_compile_definitions("_USE_MATH_DEFINES")
   endif()
 
   # Create position independent binaries

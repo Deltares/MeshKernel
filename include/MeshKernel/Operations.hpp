@@ -276,9 +276,9 @@ namespace meshkernel
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
-                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue},
-                                             size_t startNode = sizetMissingValue,
-                                             size_t endNode = sizetMissingValue);
+                                             Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
+                                             size_t startNode = constants::missing::sizetValue,
+                                             size_t endNode = constants::missing::sizetValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);

@@ -34,7 +34,7 @@ namespace meshkernel
     /// @brief A class used for triangulation interpolation
     ///
     /// As for averaging, the triangle interpolation operates at three specific
-    /// \ref MeshLocations - Faces, Nodes, and Edges.
+    /// \ref Mesh::Location - Faces, Nodes, and Edges.
     /// Only the values at the nodes of the identified triangle are used in
     /// the computation of each location.
     /// The algorithm operates as follow:

@@ -204,22 +204,22 @@ TEST_F(ApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
         -0.5,
         -0.5,
         4.0,
-        meshkernel::doubleMissingValue});
+        meshkernel::constants::missing::doubleValue});
 
     std::unique_ptr<double> const yCoordinates(new double[4]{
         3.0,
         -0.5,
         -0.5,
-        meshkernel::doubleMissingValue});
+        meshkernel::constants::missing::doubleValue});
 
     std::unique_ptr<double> const zCoordinates(new double[4]{
         0.0,
         0.0,
         0.0,
-        meshkernel::doubleMissingValue});
+        meshkernel::constants::missing::doubleValue});
 
     meshkernelapi::GeometryList landBoundaries{};
-    landBoundaries.geometry_separator = meshkernel::doubleMissingValue;
+    landBoundaries.geometry_separator = meshkernel::constants::missing::doubleValue;
     landBoundaries.coordinates_x = xCoordinates.get();
     landBoundaries.coordinates_y = yCoordinates.get();
     landBoundaries.values = zCoordinates.get();
@@ -354,7 +354,7 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinates(new double[17]{
         415.319672,
         390.271973,
@@ -438,7 +438,7 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
 
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinates(new double[5]{
         0.0,
@@ -493,7 +493,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList geometryListOut;
-    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
     geometryListOut.num_coordinates = numberOfpolygonNodes;
 
     std::vector<double> xCoordinates(numberOfpolygonNodes);
@@ -521,7 +521,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     geometryListIn.num_coordinates = 4;
 
     std::unique_ptr<double> const xCoordinatesIn(new double[4]{
@@ -555,7 +555,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListOut;
 
     geometryListOut.num_coordinates = numberOfpolygonNodes;
-    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinatesOut(new double[numberOfpolygonNodes]);
     std::unique_ptr<double> const yCoordinatesOut(new double[numberOfpolygonNodes]);
@@ -579,7 +579,7 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     geometryListIn.num_coordinates = 3;
     std::unique_ptr<double> const xCoordinatesIn(new double[3]{
         76.251099,
@@ -608,7 +608,7 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
 
     meshkernelapi::GeometryList geometryListOut;
     geometryListOut.num_coordinates = numberOfpolygonNodes;
-    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinatesOut(new double[numberOfpolygonNodes]);
     std::unique_ptr<double> const yCoordinatesOut(new double[numberOfpolygonNodes]);
     std::unique_ptr<double> const valuesOut(new double[numberOfpolygonNodes]);
@@ -631,7 +631,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinatesIn(new double[9]{
         50.0,
         150.0,
@@ -700,7 +700,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinatesIn(new double[9]{
         50.0,
         150.0,
@@ -800,7 +800,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
-    polygon.geometry_separator = meshkernel::doubleMissingValue;
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinates(new double[5]{-30, 40, 40, -40, -30});
     std::unique_ptr<double> const yCoordinates(new double[5]{-20, -20, 50, 50, -20});
@@ -959,7 +959,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
-    polygon.geometry_separator = meshkernel::doubleMissingValue;
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinates(new double[5]{25, 50, 50, 25, 25});
     std::unique_ptr<double> const yCoordinates(new double[5]{25, 25, 50, 50, 25});
@@ -1035,7 +1035,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 
     // Init polygon
     meshkernelapi::GeometryList points;
-    points.geometry_separator = meshkernel::doubleMissingValue;
+    points.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinates(new double[4]{
         5,
@@ -1128,7 +1128,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
-    polygon.geometry_separator = meshkernel::doubleMissingValue;
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::unique_ptr<double> const xCoordinates(new double[5]{
         -30,
@@ -1201,7 +1201,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     geometryListIn.coordinates_y = splineCoordinatesY.get();
     geometryListIn.values = values.get();
     geometryListIn.num_coordinates = 3;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     meshkernelapi::GeometryList geometryListOut;
     int const numberOfPointsBetweenNodes = 3;
@@ -1213,7 +1213,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     geometryListOut.coordinates_y = CoordinatesOutY.get();
     geometryListOut.values = valuesOut.get();
     geometryListOut.num_coordinates = static_cast<int>(totalNumPoints);
-    geometryListOut.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     // Execute
     auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
@@ -1285,7 +1285,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     int invalidIndex;
     int type;
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
-    ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
+    ASSERT_EQ(static_cast<int>(meshkernel::Mesh::Location::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
 
@@ -1322,7 +1322,7 @@ TEST_F(ApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCur
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinatesIn(new double[9]{0, 5, 10, 10, 10, 5, 0, 0, 0});
 
     std::unique_ptr<double> const yCoordinatesIn(new double[9]{0, 0, 0, 5, 10, 10, 10, 5, 0});
@@ -1376,7 +1376,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::unique_ptr<double> const xCoordinatesIn(new double[10]{
         444.504791,
         427.731781,
@@ -1493,20 +1493,20 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
-    std::unique_ptr<double> const xCoordinates(new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
-                                                              2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
-                                                              1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::unique_ptr<double> const xCoordinates(new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::constants::missing::doubleValue,
+                                                              2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::constants::missing::doubleValue,
+                                                              1.002513E+02, 4.610035E+02, meshkernel::constants::missing::doubleValue,
                                                               6.522547E+02, 7.197551E+02});
 
-    std::unique_ptr<double> const yCoordinates(new double[13]{2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
-                                                              6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::doubleMissingValue,
-                                                              4.068797E+02, 7.912642E+01, meshkernel::doubleMissingValue,
+    std::unique_ptr<double> const yCoordinates(new double[13]{2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::constants::missing::doubleValue,
+                                                              6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::constants::missing::doubleValue,
+                                                              4.068797E+02, 7.912642E+01, meshkernel::constants::missing::doubleValue,
                                                               6.026317E+02, 2.681283E+02});
 
-    std::unique_ptr<double> const zCoordinates(new double[13]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                                              0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                                              0.0, 0.0, meshkernel::doubleMissingValue,
+    std::unique_ptr<double> const zCoordinates(new double[13]{0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
+                                                              0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
+                                                              0.0, 0.0, meshkernel::constants::missing::doubleValue,
                                                               0.0, 0.0});
 
     geometryListIn.coordinates_x = xCoordinates.get();
@@ -1543,14 +1543,14 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
 
-    geometryListIn.geometry_separator = meshkernel::doubleMissingValue;
-    std::unique_ptr<double> const xCoordinates(new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::unique_ptr<double> const xCoordinates(new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::constants::missing::doubleValue,
                                                              4.100089E+01, 3.410027E+02});
 
-    std::unique_ptr<double> const yCoordinates(new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
+    std::unique_ptr<double> const yCoordinates(new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::constants::missing::doubleValue,
                                                              2.388780E+02, 2.137584E+01});
 
-    std::unique_ptr<double> const zCoordinates(new double[6]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+    std::unique_ptr<double> const zCoordinates(new double[6]{0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
                                                              0.0, 0.0});
 
     geometryListIn.coordinates_x = xCoordinates.get();
@@ -2570,8 +2570,8 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     samples.values = values.get();
     samples.num_coordinates = numCoordinates;
 
-    int const locationType = 1;          // Nodes
-    int const averagingMethodType = 1;   // Simple averaging
+    int const locationType = 1;             // Nodes
+    int const averagingMethodType = 1;      // Simple averaging
     double const relativeSearchSize = 1.01; // The relative search size
 
     meshkernelapi::Mesh2D mesh2d;
@@ -2890,7 +2890,7 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
-    polygon.geometry_separator = meshkernel::doubleMissingValue;
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     std::vector<double> xCoordinates{-30, 40, 40, -40, -30};
     std::vector<double> yCoordinates{-20, -20, 50, 50, -20};
@@ -2962,21 +2962,21 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
 
     // Set the polyLine
     std::vector<double> xCoordinates{0.6, 0.6};
-    std::vector<double> yCoordinates{2.5, 0.5 };
+    std::vector<double> yCoordinates{2.5, 0.5};
 
     meshkernelapi::GeometryList boundaryPolyLine{};
-    boundaryPolyLine.geometry_separator = meshkernel::doubleMissingValue;
+    boundaryPolyLine.geometry_separator = meshkernel::constants::missing::doubleValue;
     boundaryPolyLine.coordinates_x = xCoordinates.data();
     boundaryPolyLine.coordinates_y = yCoordinates.data();
     boundaryPolyLine.values = nullptr;
     boundaryPolyLine.num_coordinates = 2;
 
-    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
-    std::vector<double> polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::doubleMissingValue);
-    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
-    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::doubleMissingValue);
-    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
-    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::intMissingValue);
+    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    std::vector<double> polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
 
     /// Execute
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
@@ -2995,15 +2995,15 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
 
     ASSERT_EQ(polylineSegmentIndexes[0], 0);
     ASSERT_EQ(polylineSegmentIndexes[1], 0);
-    ASSERT_EQ(polylineSegmentIndexes[2], meshkernel::intMissingValue);
+    ASSERT_EQ(polylineSegmentIndexes[2], meshkernel::constants::missing::intValue);
 
     ASSERT_NEAR(polylineSegmentDistances[0], 0.25, tolerance);
     ASSERT_NEAR(polylineSegmentDistances[1], 0.75, tolerance);
-    ASSERT_NEAR(polylineSegmentDistances[2], meshkernel::doubleMissingValue, tolerance);
+    ASSERT_NEAR(polylineSegmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
 
     ASSERT_NEAR(edgeDistances[0], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[1], 0.6, tolerance);
-    ASSERT_NEAR(edgeDistances[2], meshkernel::doubleMissingValue, tolerance);
+    ASSERT_NEAR(edgeDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
 
     ASSERT_EQ(faceNodesIntersections[0], 8);
     ASSERT_EQ(faceNodesIntersections[1], 9);
@@ -3013,12 +3013,11 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(faceNodesIntersections[5], 5);
     ASSERT_EQ(faceNodesIntersections[6], 4);
     ASSERT_EQ(faceNodesIntersections[7], 5);
-    ASSERT_EQ(faceNodesIntersections[8], meshkernel::intMissingValue);
+    ASSERT_EQ(faceNodesIntersections[8], meshkernel::constants::missing::intValue);
 
     ASSERT_EQ(faceIndexes[0], 6);
     ASSERT_EQ(faceIndexes[1], 3);
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
-    ASSERT_EQ(faceIndexes[4], meshkernel::intMissingValue);
-    
+    ASSERT_EQ(faceIndexes[4], meshkernel::constants::missing::intValue);
 }

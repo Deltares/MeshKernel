@@ -28,6 +28,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
@@ -155,29 +156,35 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     const auto maximumNumberOfNodes = std::max(numNNodes, numMNodes);
-    std::vector<Point> sideOne(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideTwo(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideThree(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
+    std::vector<Point> sideOne(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideTwo(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideThree(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [this, &start, &end, &numPolygonNodes](size_t nodeIndex, size_t numPointsSide, int dir, std::vector<Point>& sideToFill)
+    auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon->Nodes()),
+                                         startIndex = start,
+                                         endIndex = end,
+                                         numPolygonNodes](size_t nodeIndex,
+                                                          size_t numPointsSide,
+                                                          int direction,
+                                                          std::vector<Point>& sideToFill)
     {
         for (size_t i = 0; i < numPointsSide; i++)
         {
-            sideToFill[i] = m_polygon->Node(nodeIndex);
+            sideToFill[i] = nodes[nodeIndex];
 
-            if ((nodeIndex == 0 && dir == -1) || nodeIndex + dir < start)
+            if ((nodeIndex == 0 && direction == -1) || nodeIndex + direction < startIndex)
             {
-                nodeIndex = nodeIndex + numPolygonNodes + dir;
+                nodeIndex = nodeIndex + numPolygonNodes + direction;
             }
-            else if (nodeIndex + dir > end)
+            else if (nodeIndex + direction > endIndex)
             {
-                nodeIndex = nodeIndex + dir - numPolygonNodes;
+                nodeIndex = nodeIndex + direction - numPolygonNodes;
             }
             else
             {
-                nodeIndex = nodeIndex + dir;
+                nodeIndex = nodeIndex + direction;
             }
         }
     };
@@ -316,26 +323,26 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
     const auto triangleCenter = ((polygonNodes[firstNode] * (1.0 - xia) + polygonNodes[secondNode] * xia) * xic + polygonNodes[thirdNode] * (1.0 - xic) +
                                  (polygonNodes[secondNode] * (1.0 - xib) + polygonNodes[thirdNode] * xib) * xia + polygonNodes[firstNode] * (1.0 - xia) +
                                  (polygonNodes[thirdNode] * (1.0 - xic) + polygonNodes[firstNode] * xic) * xib + polygonNodes[secondNode] * (1.0 - xib)) *
-                                oneThird;
+                                constants::numeric::oneThird;
 
     const auto maxM = *std::max_element(numM.begin(), numM.end());
     const auto maxN = *std::max_element(numN.begin(), numN.end());
     const auto maximumNumberOfNodes = std::max(maxM, maxN) + 1;
-    std::vector<Point> sideOne(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideTwo(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideThree(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
-    std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
+    std::vector<Point> sideOne(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideTwo(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideThree(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
 
     std::vector<std::vector<Point>> gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
 
     Projection const polygonProjection = m_polygon->GetProjection();
 
-    for (size_t t = 0; t < numNodesInTriangle; ++t)
+    for (size_t t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
-        std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
-        std::fill(sideTwo.begin(), sideTwo.end(), Point{doubleMissingValue, doubleMissingValue});
-        std::fill(sideThree.begin(), sideThree.end(), Point{doubleMissingValue, doubleMissingValue});
-        std::fill(sideFour.begin(), sideFour.end(), Point{doubleMissingValue, doubleMissingValue});
+        std::fill(sideOne.begin(), sideOne.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::fill(sideTwo.begin(), sideTwo.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::fill(sideThree.begin(), sideThree.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::fill(sideFour.begin(), sideFour.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
 
         // backward
         auto cornerIndex = cornerPoints[t];

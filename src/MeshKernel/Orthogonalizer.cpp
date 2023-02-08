@@ -61,7 +61,7 @@ void Orthogonalizer::Compute()
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (IsEqual(aspectRatio, doubleMissingValue))
+            if (IsEqual(aspectRatio, constants::missing::doubleValue))
             {
                 continue;
             }
@@ -88,7 +88,7 @@ void Orthogonalizer::Compute()
 
             if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
             {
-                normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
+                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
             }
 
             m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;

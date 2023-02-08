@@ -161,6 +161,8 @@ TEST(Contacts, ComputeContactsWithPoints)
 
 TEST(Contacts, ComputeContactsWithPolygons)
 {
+    using namespace meshkernel::constants;
+
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{
         {144.578313, 230.636833},
@@ -235,39 +237,39 @@ TEST(Contacts, ComputeContactsWithPolygons)
         {283.035034, 284.246307},
         {300.004883, 205.457642},
         {260.004578, 180.002838},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
         {212.731567, 422.429504},
         {153.337280, 424.853821},
         {149.700867, 520.612366},
         {245.459045, 525.460876},
         {268.489502, 474.551270},
         {212.731567, 422.429504},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
         {483.036316, 307.276855},
         {378.793213, 329.095245},
         {404.247925, 403.035400},
         {510.915283, 394.550476},
         {483.036316, 307.276855},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
         {476.975647, 498.793945},
         {434.551147, 495.157532},
         {416.369202, 587.279663},
         {526.672974, 589.703979},
         {476.975647, 498.793945},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
         {719.401428, 370.307800},
         {655.158630, 395.762604},
         {652.734314, 475.763428},
         {753.341003, 487.884766},
         {719.401428, 370.307800},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
         {632.128113, 667.280518},
         {575.158142, 732.735718},
         {583.643005, 778.796753},
         {645.461609, 792.130249},
         {691.522522, 732.735718},
         {632.128113, 667.280518},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {missing::doubleValue, missing::doubleValue},
     };
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
