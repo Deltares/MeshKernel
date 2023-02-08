@@ -8,8 +8,7 @@ add_executable(${target_name})
 set(
   TARGET_SRC_LIST
   src/main.cpp
-  src/dummy_memory_test.cpp
-  src/dummy_test.cpp
+  src/perf_rtree.cpp
 )
 
 # list of tagret headers
