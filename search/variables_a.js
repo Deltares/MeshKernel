@@ -1,11 +1,5 @@
 var searchData=
 [
-  ['one_5fover_5fearth_5fradius_980',['one_over_earth_radius',['../namespacemeshkernel.html#ad55f3fbe82e4eafea2440902f33f9118',1,'meshkernel']]],
-  ['onethird_981',['oneThird',['../namespacemeshkernel.html#ad7578679f0ae08f2f5dd29d900551ec0',1,'meshkernel']]],
-  ['origin_5fx_982',['origin_x',['../structmeshkernelapi_1_1_make_grid_parameters.html#aedb36bbf50dcd9c31964a2cea1a0f4f4',1,'meshkernelapi::MakeGridParameters']]],
-  ['origin_5fy_983',['origin_y',['../structmeshkernelapi_1_1_make_grid_parameters.html#abe51565b69813612451d17d1bc2101fd',1,'meshkernelapi::MakeGridParameters']]],
-  ['orthogonalization_5fto_5fsmoothing_5ffactor_984',['orthogonalization_to_smoothing_factor',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ab60568df173267aea4eab7e4ce77d59e',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['orthogonalization_5fto_5fsmoothing_5ffactor_5fat_5fboundary_985',['orthogonalization_to_smoothing_factor_at_boundary',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a3f8634bf7f4b8b7c4dc394bdd3dda1af',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['orthogonalizationtosmoothingfactor_986',['orthogonalizationToSmoothingFactor',['../namespacemeshkernel.html#aee3e69315b63b86bc8b6e7ed97958dee',1,'meshkernel']]],
-  ['outer_5fiterations_987',['outer_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a07cf13ba093c857d6481b2bf9f45e5cc',1,'meshkernelapi::OrthogonalizationParameters']]]
+  ['polylinesegmentdistance_953',['polylineSegmentDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#ab4b6628e2c6619287538220e6b4d4280',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection::polylineSegmentDistance()'],['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a3ba56cd60f32c7cdfd302d3c12e2083f',1,'meshkernel::Mesh::FaceMeshPolylineIntersection::polylineSegmentDistance()']]],
+  ['polylinesegmentindex_954',['polylineSegmentIndex',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a9718c9a82d78df9aab8a9f0381f1eff5',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]]
 ];

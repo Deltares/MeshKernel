@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['face_5fnodes_887',['face_nodes',['../structmeshkernelapi_1_1_mesh2_d.html#afbbd9607736441d2d6a8a4d4550757b9',1,'meshkernelapi::Mesh2D']]],
-  ['face_5fx_888',['face_x',['../structmeshkernelapi_1_1_mesh2_d.html#a9987288b1fbedc937b21399f23154c92',1,'meshkernelapi::Mesh2D']]],
-  ['face_5fy_889',['face_y',['../structmeshkernelapi_1_1_mesh2_d.html#afd84a2fa9021d8232cefb4a0d449bf24',1,'meshkernelapi::Mesh2D']]],
-  ['faceindex_890',['faceIndex',['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a3c5d1f7ad3b070c40d67576564dbbd2d',1,'meshkernel::Mesh::FaceMeshPolylineIntersection']]]
+  ['geometry_5fseparator_865',['geometry_separator',['../structmeshkernelapi_1_1_geometry_list.html#ae9f007e7e6475e4a0f783666173324b3',1,'meshkernelapi::GeometryList']]],
+  ['grow_5fgrid_5foutside_866',['grow_grid_outside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aae19f194cd5cd79a1bd19e43bce54e84',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
 ];

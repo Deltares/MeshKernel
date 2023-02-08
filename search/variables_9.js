@@ -1,20 +1,8 @@
 var searchData=
 [
-  ['n_5frefinement_963',['n_refinement',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ac7b3f3478c5b473b2936c5547f24a58d',1,'meshkernelapi::CurvilinearParameters']]],
-  ['node_5fx_964',['node_x',['../structmeshkernelapi_1_1_curvilinear_grid.html#a25189b10d35910b3c6dc020d49b7046f',1,'meshkernelapi::CurvilinearGrid::node_x()'],['../structmeshkernelapi_1_1_mesh1_d.html#a97f68f54d7b204c198fe655b9551b4cb',1,'meshkernelapi::Mesh1D::node_x()'],['../structmeshkernelapi_1_1_mesh2_d.html#adfc825d66e9fe09ee30d0f526b81a8c4',1,'meshkernelapi::Mesh2D::node_x()']]],
-  ['node_5fy_965',['node_y',['../structmeshkernelapi_1_1_curvilinear_grid.html#a8b9eac5ad3043c3549b2deb39058025f',1,'meshkernelapi::CurvilinearGrid::node_y()'],['../structmeshkernelapi_1_1_mesh1_d.html#a6471e0c2a8f03e8e3cc4819f7af1c9d5',1,'meshkernelapi::Mesh1D::node_y()'],['../structmeshkernelapi_1_1_mesh2_d.html#a1411afdfd80ed03509e958275aae00c9',1,'meshkernelapi::Mesh2D::node_y()']]],
-  ['nodes_5fon_5ftop_5fof_5feach_5fother_5ftolerance_966',['nodes_on_top_of_each_other_tolerance',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a21e47ea96722a2683317d4a4ba2bdde0',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['nodes_5fper_5fface_967',['nodes_per_face',['../structmeshkernelapi_1_1_mesh2_d.html#a8e057108b3d686304472e14bda5bb2d7',1,'meshkernelapi::Mesh2D']]],
-  ['num_5fcolumns_968',['num_columns',['../structmeshkernelapi_1_1_make_grid_parameters.html#a778ab7202850159df970bfa0ad8ce8f2',1,'meshkernelapi::MakeGridParameters']]],
-  ['num_5fcontacts_969',['num_contacts',['../structmeshkernelapi_1_1_contacts.html#a8f675941c758f968dd337e0a5bcb6b8d',1,'meshkernelapi::Contacts']]],
-  ['num_5fcoordinates_970',['num_coordinates',['../structmeshkernelapi_1_1_geometry_list.html#a97c41744104bdc2f5d40dff6ba1703b1',1,'meshkernelapi::GeometryList']]],
-  ['num_5fedges_971',['num_edges',['../structmeshkernelapi_1_1_mesh1_d.html#af1a1e2f5f2b2761803b5b42b4e54bc3f',1,'meshkernelapi::Mesh1D::num_edges()'],['../structmeshkernelapi_1_1_mesh2_d.html#af4e654b2178f910de786faafff0a5fd3',1,'meshkernelapi::Mesh2D::num_edges()']]],
-  ['num_5fface_5fnodes_972',['num_face_nodes',['../structmeshkernelapi_1_1_mesh2_d.html#ad9fe8b14088f7d71d6100cfd14c3edbc',1,'meshkernelapi::Mesh2D']]],
-  ['num_5ffaces_973',['num_faces',['../structmeshkernelapi_1_1_mesh2_d.html#a1723f757aa2c6fb59cef5f7e44bc5086',1,'meshkernelapi::Mesh2D']]],
-  ['num_5fm_974',['num_m',['../structmeshkernelapi_1_1_curvilinear_grid.html#a03cdb31ee9fe4f3be9abc88809eeeb9d',1,'meshkernelapi::CurvilinearGrid']]],
-  ['num_5fn_975',['num_n',['../structmeshkernelapi_1_1_curvilinear_grid.html#aa60984f08943678809d13161fb855c11',1,'meshkernelapi::CurvilinearGrid']]],
-  ['num_5fnodes_976',['num_nodes',['../structmeshkernelapi_1_1_mesh1_d.html#a062befa1256e3080889ffe68fda0488e',1,'meshkernelapi::Mesh1D::num_nodes()'],['../structmeshkernelapi_1_1_mesh2_d.html#aa70e4ad83dc142ed75fd96ffe01a0b0c',1,'meshkernelapi::Mesh2D::num_nodes()']]],
-  ['num_5frows_977',['num_rows',['../structmeshkernelapi_1_1_make_grid_parameters.html#a43ecaa3e5396f1cbbb982d457690b991',1,'meshkernelapi::MakeGridParameters']]],
-  ['numnodesintriangle_978',['numNodesInTriangle',['../namespacemeshkernel.html#afabf9e9ee0f448b4e02453335ccbbd7a',1,'meshkernel']]],
-  ['numnodesquads_979',['numNodesQuads',['../namespacemeshkernel.html#a0e00516445c7c93085a126981c6aa521',1,'meshkernel']]]
+  ['origin_5fx_948',['origin_x',['../structmeshkernelapi_1_1_make_grid_parameters.html#aedb36bbf50dcd9c31964a2cea1a0f4f4',1,'meshkernelapi::MakeGridParameters']]],
+  ['origin_5fy_949',['origin_y',['../structmeshkernelapi_1_1_make_grid_parameters.html#abe51565b69813612451d17d1bc2101fd',1,'meshkernelapi::MakeGridParameters']]],
+  ['orthogonalization_5fto_5fsmoothing_5ffactor_950',['orthogonalization_to_smoothing_factor',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ab60568df173267aea4eab7e4ce77d59e',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['orthogonalization_5fto_5fsmoothing_5ffactor_5fat_5fboundary_951',['orthogonalization_to_smoothing_factor_at_boundary',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a3f8634bf7f4b8b7c4dc394bdd3dda1af',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['outer_5fiterations_952',['outer_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a07cf13ba093c857d6481b2bf9f45e5cc',1,'meshkernelapi::OrthogonalizationParameters']]]
 ];

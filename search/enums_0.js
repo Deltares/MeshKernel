@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['averagingmethod_1006',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
+  ['deletemeshoptions_967',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e',1,'meshkernel::Mesh2D']]]
 ];

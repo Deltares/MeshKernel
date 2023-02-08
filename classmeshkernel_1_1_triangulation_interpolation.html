@@ -101,7 +101,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class used for triangulation interpolation. </p>
-<p>As for averaging, the triangle interpolation operates at three specific <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> - Faces, Nodes, and Edges. Only the values at the nodes of the identified triangle are used in the computation of each location. The algorithm operates as follow:</p>
+<p>As for averaging, the triangle interpolation operates at three specific <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> - Faces, Nodes, and Edges. Only the values at the nodes of the identified triangle are used in the computation of each location. The algorithm operates as follow:</p>
 <ul>
 <li>The triangulation of the samples is computed</li>
 <li>For each triangle, the circumcenter is computed</li>
@@ -114,7 +114,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </li>
 <li>If the next triangle does not contain the location, repeat the step above for a maximum number of times equal to two times the number of triangles.</li>
 </ul>
-<p>When a triangle enclosing a specific location is not found, the interpolated value at that location is invalid. The handling of spherical accurate projection occurs at low-level geometrical functions (<a class="el" href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">IsPointInPolygonNodes</a>, <a class="el" href="namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba">AreSegmentsCrossing</a>). Therefore, the algorithm is independent of the implementation details that occur at the level of the geometrical functions. </p>
+<p>When a triangle enclosing a specific location is not found, the interpolated value at that location is invalid. The handling of spherical accurate projection occurs at low-level geometrical functions (<a class="el" href="namespacemeshkernel.html#aac59544317d881800618e18e95d7838f">IsPointInPolygonNodes</a>, <a class="el" href="namespacemeshkernel.html#abb4473bf53d165558b563b4e35ed8dba">AreSegmentsCrossing</a>). Therefore, the algorithm is independent of the implementation details that occur at the level of the geometrical functions. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6b346ed9279976a221de5e4903fffc1c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b346ed9279976a221de5e4903fffc1c">&#9670;&nbsp;</a></span>TriangulationInterpolation()</h2>

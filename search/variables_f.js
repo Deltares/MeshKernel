@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['value_999',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['values_1000',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList']]]
+  ['x_963',['x',['../structmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a',1,'meshkernel::Point::x()'],['../structmeshkernel_1_1_cartesian3_d_point.html#a9d9cd481cc25c8de8c69c6529ac99436',1,'meshkernel::Cartesian3DPoint::x()'],['../structmeshkernel_1_1_sample.html#ac176708fc03b82764d55e09b600ba9ee',1,'meshkernel::Sample::x()']]]
 ];

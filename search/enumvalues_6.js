@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nodes_1024',['Nodes',['../namespacemeshkernel.html#acb97240557899a7564683794daab5016a187c6ad3a74cc93ac6c2229d398e383e',1,'meshkernel']]],
-  ['none_1025',['None',['../namespacemeshkernel.html#acb97240557899a7564683794daab5016a6adf97f83acf6453d4a6a4b1070f3754',1,'meshkernel']]]
+  ['nodes_986',['Nodes',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e',1,'meshkernel::Mesh']]]
 ];

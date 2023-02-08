@@ -462,9 +462,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a0c609b8166a7bb1f1eefc8e70895e201"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0c609b8166a7bb1f1eefc8e70895e201">mkernel_get_averaging_method_min_absolute_value</a> (int &amp;method)</td></tr>
 <tr class="memdesc:a0c609b8166a7bb1f1eefc8e70895e201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the minimum absolute value averaging method type.  <a href="namespacemeshkernelapi.html#a0c609b8166a7bb1f1eefc8e70895e201">More...</a><br /></td></tr>
 <tr class="separator:a0c609b8166a7bb1f1eefc8e70895e201"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae32fc7171af89adbd695f2abbf354352"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae32fc7171af89adbd695f2abbf354352">mkernel_get_averaging_method_kdtree</a> (int &amp;method)</td></tr>
-<tr class="memdesc:ae32fc7171af89adbd695f2abbf354352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the kdtree averaging method type.  <a href="namespacemeshkernelapi.html#ae32fc7171af89adbd695f2abbf354352">More...</a><br /></td></tr>
-<tr class="separator:ae32fc7171af89adbd695f2abbf354352"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24b5723e697138e4f4c0cd89fd7c7016"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a24b5723e697138e4f4c0cd89fd7c7016">mkernel_get_projection_cartesian</a> (int &amp;projection)</td></tr>
 <tr class="memdesc:a24b5723e697138e4f4c0cd89fd7c7016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the cartesian projection.  <a href="namespacemeshkernelapi.html#a24b5723e697138e4f4c0cd89fd7c7016">More...</a><br /></td></tr>
 <tr class="separator:a24b5723e697138e4f4c0cd89fd7c7016"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -561,7 +558,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The points selecting the faces to connect. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius used for searching neighboring faces, if equal to constants::missing::doubleValue, the search radius will be calculated internally. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2452,33 +2449,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="ae32fc7171af89adbd695f2abbf354352"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae32fc7171af89adbd695f2abbf354352">&#9670;&nbsp;</a></span>mkernel_get_averaging_method_kdtree()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_averaging_method_kdtree </td>
-          <td>(</td>
-          <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>method</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets an int indicating the kdtree averaging method type. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">method</td><td>The int indicating the kdtree averaging method type </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
 <a id="aebd755a42334c133d093230297814729"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aebd755a42334c133d093230297814729">&#9670;&nbsp;</a></span>mkernel_get_averaging_method_max()</h2>
 
@@ -3102,7 +3072,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The samples coordinates and values </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a> enum) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">meshkernel::Mesh::Location</a> enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">averagingMethodType</td><td>The averaging method (see Method enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchSize</td><td>The relative search size around the location (larger increases the number of samples considered) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minNumSamples</td><td>The minimum number of samples used for some interpolation algorithms to perform a valid interpolation </td></tr>
@@ -4990,7 +4960,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The samples coordinates and values </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a> enum) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type (see <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">meshkernel::Mesh::Location</a> enum) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">results</td><td>The interpolation results with x and y coordinates </td></tr>
   </table>
   </dd>
