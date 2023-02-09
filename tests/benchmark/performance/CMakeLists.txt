@@ -41,6 +41,16 @@ target_link_libraries(
   benchmark::benchmark
 )
 
+#set(SCRIPTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+#add_custom_command(
+#  TARGET ${target_name} 
+#  POST_BUILD
+#  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#          ${googlebenchmark_SOURCE_DIR}/tools/comapre.py
+#          ${SCRIPTS_DIR}
+#  COMMENT "Copying Google Benchmark tools to ${SCRIPTS_DIR}"
+#)
+
 # group the sources and headers:
 # target
 source_group("Source Files" FILES ${TARGET_SRC_LIST})

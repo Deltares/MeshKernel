@@ -71,6 +71,57 @@ if(ENABLE_BENCHMARKING)
 
     # Add unit performance tests
     add_subdirectory(performance)
+
+    # This is not good practice because CMake is a build tool, it should not modify the source
+    function (SyncPyScriptsFromFetchedContent)
+      set(DO_SYNC 0)
+      set(SOURCE_DIR ${googlebenchmark_SOURCE_DIR}/tools)
+      file(GLOB_RECURSE SOURCE_PY_SCRIPTS ${SOURCE_DIR}/*.py)
+      list(SORT SOURCE_PY_SCRIPTS COMPARE STRING)
+      set(DESTINATION_DIR ${CMAKE_CURRENT_SOURCE_DIR}/performance/scripts/googlebechmark/tools)
+      file(GLOB_RECURSE DESTINATION_PY_SCRIPTS ${DESTINATION_DIR}/*.py)
+      list(LENGTH DESTINATION_PY_SCRIPTS N)
+      if( ${N} EQUAL 0)
+       set(DO_SYNC 1)
+      else()
+        list(SORT DESTINATION_PY_SCRIPTS COMPARE STRING)
+        set(COUNTER 0)
+        foreach(SOURCE_PY_SCRIPT IN LISTS SOURCE_PY_SCRIPTS)
+          list(GET DESTINATION_PY_SCRIPTS ${COUNTER} DESTINATION_PY_SCRIPT)
+          # The process below does not compare timestamps, meaning that the files will remain
+          # identical even if the build dir is deleted and the content is refetched in the next build
+          # (the fetched content will have a time stamp newer than the one of the file in the destination)
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E compare_files ${SOURCE_PY_SCRIPT} ${DESTINATION_PY_SCRIPT}
+            RESULT_VARIABLE COMPARE_FILES_RETURN_VALUE
+          )
+          # Use brute force: if anything is incoherent with the source, remove the 
+          # destination all together and copy all files from source
+          if(NOT(COMPARE_FILES_RETURN_VALUE EQUAL 0))
+            file(REMOVE_RECURSE ${DESTINATION_DIR})
+            set(DO_SYNC 1)
+            break()
+          endif()
+          # increment counter
+          math(EXPR COUNTER "${COUNTER} + 1")
+        endforeach()
+      endif()
+
+      if(DO_SYNC EQUAL 1)
+        # copy everything from the source dir and remove the write permissions
+        file(
+          COPY ${SOURCE_DIR}/ # do not remove trailing /
+          DESTINATION ${DESTINATION_DIR}
+          FILE_PERMISSIONS WORLD_READ WORLD_EXECUTE
+          FILES_MATCHING
+            PATTERN "*.py"
+            PATTERN "Inputs" EXCLUDE
+        )
+      endif()
+    endfunction()
+
+    SyncPyScriptsFromFetchedContent()
+
   else()
     message(
       AUTHOR_WARNING
