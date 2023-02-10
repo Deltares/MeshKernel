@@ -72,8 +72,8 @@ if(ENABLE_BENCHMARKING)
     # Add unit performance tests
     add_subdirectory(performance)
 
-
     # Syncs the python tools of the fetched google benchmark with the repository
+    # Line endings are ignored
     # This is not good practice because CMake is a build tool, it should not modify the source
     function (SyncPyScriptsFromFetchedContent)
       set(DO_SYNC FALSE)
@@ -95,7 +95,9 @@ if(ENABLE_BENCHMARKING)
           # identical even if the build dir is deleted and the content is refetched in the next build
           # (the fetched content will have a time stamp newer than the one of the file in the destination)
           execute_process(
-            COMMAND ${CMAKE_COMMAND} -E compare_files ${SOURCE_PY_SCRIPT} ${DESTINATION_PY_SCRIPT}
+            COMMAND ${CMAKE_COMMAND} -E compare_files --ignore-eol
+            ${SOURCE_PY_SCRIPT}
+            ${DESTINATION_PY_SCRIPT}
             RESULT_VARIABLE COMPARE_FILES_RETURN_VALUE
           )
           # Use brute force: if anything is incoherent with a source, 
