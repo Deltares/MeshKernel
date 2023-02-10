@@ -72,22 +72,25 @@ if(ENABLE_BENCHMARKING)
     # Add unit performance tests
     add_subdirectory(performance)
 
+
+    # Syncs the python tools of the fetched google benchmark with the repository
     # This is not good practice because CMake is a build tool, it should not modify the source
     function (SyncPyScriptsFromFetchedContent)
-      set(DO_SYNC 0)
+      set(DO_SYNC FALSE)
       set(SOURCE_DIR ${googlebenchmark_SOURCE_DIR}/tools)
-      file(GLOB_RECURSE SOURCE_PY_SCRIPTS ${SOURCE_DIR}/*.py)
-      list(SORT SOURCE_PY_SCRIPTS COMPARE STRING)
+      file(GLOB_RECURSE SOURCE_LIST ${SOURCE_DIR}/*.py)
+      list(SORT SOURCE_LIST COMPARE STRING)
       set(DESTINATION_DIR ${CMAKE_CURRENT_SOURCE_DIR}/performance/scripts/googlebechmark/tools)
-      file(GLOB_RECURSE DESTINATION_PY_SCRIPTS ${DESTINATION_DIR}/*.py)
-      list(LENGTH DESTINATION_PY_SCRIPTS N)
-      if( ${N} EQUAL 0)
-       set(DO_SYNC 1)
+      file(GLOB_RECURSE DESTINATION_LIST ${DESTINATION_DIR}/*.py)
+      list(LENGTH DESTINATION_LIST DESTINATION_LIST_LENGTH)
+      if( ${DESTINATION_LIST_LENGTH} EQUAL 0)
+       # destination is empty, prepare to sync
+       set(DO_SYNC TRUE)
       else()
-        list(SORT DESTINATION_PY_SCRIPTS COMPARE STRING)
+        list(SORT DESTINATION_LIST COMPARE STRING)
         set(COUNTER 0)
-        foreach(SOURCE_PY_SCRIPT IN LISTS SOURCE_PY_SCRIPTS)
-          list(GET DESTINATION_PY_SCRIPTS ${COUNTER} DESTINATION_PY_SCRIPT)
+        foreach(SOURCE_PY_SCRIPT IN LISTS SOURCE_LIST)
+          list(GET DESTINATION_LIST ${COUNTER} DESTINATION_PY_SCRIPT)
           # The process below does not compare timestamps, meaning that the files will remain
           # identical even if the build dir is deleted and the content is refetched in the next build
           # (the fetched content will have a time stamp newer than the one of the file in the destination)
@@ -95,23 +98,26 @@ if(ENABLE_BENCHMARKING)
             COMMAND ${CMAKE_COMMAND} -E compare_files ${SOURCE_PY_SCRIPT} ${DESTINATION_PY_SCRIPT}
             RESULT_VARIABLE COMPARE_FILES_RETURN_VALUE
           )
-          # Use brute force: if anything is incoherent with the source, remove the 
-          # destination all together and copy all files from source
+          # Use brute force: if anything is incoherent with a source, 
+          # assume all other source files need to be updatedhave
+          # remove the destination directory all together and prepare to sync
           if(NOT(COMPARE_FILES_RETURN_VALUE EQUAL 0))
             file(REMOVE_RECURSE ${DESTINATION_DIR})
-            set(DO_SYNC 1)
+            set(DO_SYNC TRUE)
             break()
           endif()
-          # increment counter
+          # increment the counter
           math(EXPR COUNTER "${COUNTER} + 1")
         endforeach()
       endif()
 
-      if(DO_SYNC EQUAL 1)
-        # copy everything from the source dir and remove the write permissions
+      if(DO_SYNC)
+        # copy the py scripts from the source dir and remove the write permissions
+        # note: do not remove the trailing / from the source directory after COPY
         file(
-          COPY ${SOURCE_DIR}/ # do not remove trailing /
+          COPY ${SOURCE_DIR}/
           DESTINATION ${DESTINATION_DIR}
+          NO_SOURCE_PERMISSIONS
           FILE_PERMISSIONS WORLD_READ WORLD_EXECUTE
           FILES_MATCHING
             PATTERN "*.py"
