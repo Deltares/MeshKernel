@@ -9,6 +9,7 @@ set(
   TARGET_SRC_LIST
   src/main.cpp
   src/perf_rtree.cpp
+  src/perf_mesh_refinement.cpp
 )
 
 # list of tagret headers

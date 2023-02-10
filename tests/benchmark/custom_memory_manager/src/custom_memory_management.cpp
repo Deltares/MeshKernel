@@ -78,7 +78,7 @@ void* CustomMemoryManager::Realloc(void* ptr, std::size_t new_size)
         {
             // the address did not change, the memory block was either expanded or shrunk
             // register only the size difference without incrementing the number of allocations
-            Register(new_size - old_size, false);
+            Register(static_cast<int64_t>(new_size) - static_cast<int64_t>(old_size), false);
         }
         return new_ptr;
     }
