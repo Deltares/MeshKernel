@@ -29,7 +29,6 @@ endif()
 add_test(
   NAME MeshKernelApiTests
   COMMAND MeshKernelApiTests
-  #WORKING_DIRECTORY ${BIN_DIR}
 )
 
 # On Windows we bundle the netcdf dlls and then copy them to the target file

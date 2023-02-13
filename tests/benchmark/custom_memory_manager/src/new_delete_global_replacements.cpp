@@ -17,7 +17,7 @@
 /// @return If successful, a non-null pointer, throws an allocation failure exception otherwise
 void* operator new(size_t size)
 {
-    if (void* ptr = CUSTOM_MEMORY_MANAGER.Malloc(size))
+    if (void* ptr = CUSTOM_MEMORY_MANAGER.Alloc(size))
     {
         return ptr;
     }

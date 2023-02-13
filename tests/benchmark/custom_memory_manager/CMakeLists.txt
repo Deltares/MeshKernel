@@ -1,20 +1,21 @@
 # target name
-set(target_name MeshKernelBenchmarkPerformanceTests)
+set(target_name MeshKernelBenchmarkMemoryManager)
 
 # executable
-add_executable(${target_name})
+add_library(${target_name} STATIC)
 
 # list of target sources
 set(
   TARGET_SRC_LIST
-  src/main.cpp
-  src/perf_rtree.cpp
-  src/perf_mesh_refinement.cpp
+  src/custom_memory_manager.cpp
+  src/new_delete_global_replacements.cpp
 )
 
 # list of tagret headers
 set(
   TARGET_HEADER_LIST
+  include/custom_memory_manager.hpp
+  include/platform.hpp
 )
 
 # add sources to target
@@ -22,7 +23,7 @@ target_sources(
   ${target_name}
   PRIVATE
     ${TARGET_SRC_LIST}
-  PRIVATE
+  PUBLIC
     FILE_SET HEADERS
       BASE_DIRS include
       FILES ${TARGET_HEADER_LIST}
@@ -32,22 +33,9 @@ target_sources(
 target_link_libraries(
   ${target_name}
   PRIVATE
-  MeshKernel
-  UtilsStatic
   benchmark::benchmark
-  MeshKernelBenchmarkMemoryManager
 )
-
-if (UNIX)
-   target_link_libraries(${target_name} PUBLIC ${CMAKE_DL_LIBS})
-endif (UNIX)
 
 # group the sources and headers
 source_group("Source Files" FILES ${TARGET_SRC_LIST})
 source_group("Header Files" FILES ${TARGET_HEADER_LIST})
-
-# add the test to ctest
-add_test(
-  NAME ${target_name}
-  COMMAND ${target_name}
-)

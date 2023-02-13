@@ -23,7 +23,6 @@ endif()
 add_test(
   NAME ${target_name}
   COMMAND ${target_name}
-  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
 )
 
 # On Windows we bundle the dlls and then copy them to the target file directory

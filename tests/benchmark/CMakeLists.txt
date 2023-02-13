@@ -48,23 +48,8 @@ if(ENABLE_BENCHMARKING)
       )
     endif()
 
-      # set the root, src and include paths to custom memory manager
-    set(CUSTOM_MEMORY_MANAGER_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/custom_memory_manager)
-    set(CUSTOM_MEMORY_MANAGER_SRC_DIR ${CUSTOM_MEMORY_MANAGER_ROOT_DIR}/src)
-    set(CUSTOM_MEMORY_MANAGER_INCLUDE_DIR ${CUSTOM_MEMORY_MANAGER_ROOT_DIR}/include)
-
-    # list of custom memory manager sources
-    set(CUSTOM_MEMORY_MANAGER_SRC_LIST
-      ${CUSTOM_MEMORY_MANAGER_SRC_DIR}/custom_memory_management.cpp
-      ${CUSTOM_MEMORY_MANAGER_SRC_DIR}/new_delete_global_replacements.cpp
-    )
-
-    # list of custom memory manager headers
-    set(CUSTOM_MEMORY_MANAGER_HEADER_LIST
-      ${CUSTOM_MEMORY_MANAGER_INCLUDE_DIR}/custom_memory_manager.hpp
-      ${CUSTOM_MEMORY_MANAGER_INCLUDE_DIR}/memory_management.hpp
-      ${CUSTOM_MEMORY_MANAGER_INCLUDE_DIR}/platform.hpp
-    )
+    # Add custom_memory_manager
+    add_subdirectory(custom_memory_manager)
 
     # Add unit tests
     add_subdirectory(unit)
@@ -101,7 +86,7 @@ if(ENABLE_BENCHMARKING)
             RESULT_VARIABLE COMPARE_FILES_RETURN_VALUE
           )
           # Use brute force: if anything is incoherent with a source, 
-          # assume all other source files need to be updatedhave
+          # assume all other source files need to be updated
           # remove the destination directory all together and prepare to sync
           if(NOT(COMPARE_FILES_RETURN_VALUE EQUAL 0))
             file(REMOVE_RECURSE ${DESTINATION_DIR})

@@ -16,71 +16,18 @@ void CustomMemoryManager::Start() { ResetStatistics(); }
 
 void CustomMemoryManager::Stop(Result* result)
 {
-    result->num_allocs = m_num_allocations;
-    result->max_bytes_used = m_max_bytes_used;
-    result->total_allocated_bytes = m_total_allocated_bytes;
-    result->net_heap_growth = m_net_heap_growth;
+    result->num_allocs = m_num_allocations.load();
+    result->max_bytes_used = m_max_bytes_used.load();
+    result->total_allocated_bytes = m_total_allocated_bytes.load();
+    result->net_heap_growth = m_net_heap_growth.load();
 }
 
-void CustomMemoryManager::Free(void* ptr)
-{
-    Unregister(MemoryBlockSize(ptr));
-    std::free(ptr);
-    ptr = nullptr;
-}
-
-void CustomMemoryManager::AlignedFree(void* ptr)
-{
-    Unregister(MemoryBlockSize(ptr));
-#if defined(WIN_MSVC_BENCHMARK)
-    _aligned_free(ptr);
-#elif defined(LINUX_GNUC_BENCHMARK)
-    std::free(ptr);
-#endif
-    ptr = nullptr;
-}
-
-void* CustomMemoryManager::Malloc(size_t size)
+void* CustomMemoryManager::Alloc(size_t size)
 {
     if (void* ptr = std::malloc(size))
     {
         Register(size);
         return ptr;
-    }
-    return nullptr;
-}
-
-void* CustomMemoryManager::Calloc(std::size_t num, size_t size)
-{
-    if (void* ptr = std::calloc(num, size))
-    {
-        Register(size * num);
-        return ptr;
-    }
-    return nullptr;
-}
-
-void* CustomMemoryManager::Realloc(void* ptr, std::size_t new_size)
-{
-    // store the old size prior toreallocation
-    size_t const old_size = MemoryBlockSize(ptr);
-    if (void* new_ptr = std::realloc(ptr, new_size))
-    {
-        if (new_ptr != ptr)
-        {
-            // the address has changed because new ptr was malloced
-            // register new allocation due malloc of new ptr
-            Register(new_size);
-            // register deallocation due to free of old ptr
-            Unregister(old_size);
-        }
-        else
-        {
-            // the address did not change, the memory block was either expanded or shrunk
-            // register only the size difference without incrementing the number of allocations
-            Register(static_cast<int64_t>(new_size) - static_cast<int64_t>(old_size), false);
-        }
-        return new_ptr;
     }
     return nullptr;
 }
@@ -100,6 +47,24 @@ void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment)
         return ptr;
     }
     return nullptr;
+}
+
+void CustomMemoryManager::Free(void* ptr)
+{
+    Unregister(MemoryBlockSize(ptr));
+    std::free(ptr);
+    ptr = nullptr;
+}
+
+void CustomMemoryManager::AlignedFree(void* ptr)
+{
+    Unregister(MemoryBlockSize(ptr));
+#if defined(WIN_MSVC_BENCHMARK)
+    _aligned_free(ptr);
+#elif defined(LINUX_GNUC_BENCHMARK)
+    std::free(ptr);
+#endif
+    ptr = nullptr;
 }
 
 void CustomMemoryManager::ResetStatistics()
@@ -137,22 +102,19 @@ bool CustomMemoryManager::HasLeaks() const
     return (m_num_allocations != m_num_deallocations) || (m_net_heap_growth != 0);
 }
 
-void CustomMemoryManager::Register(int64_t size, bool increment_num_allocations)
+void CustomMemoryManager::Register(int64_t size)
 {
-    if (increment_num_allocations)
-    {
-        m_num_allocations++;
-    }
+    m_num_allocations++;
     m_total_allocated_bytes += size;
     m_net_heap_growth += size;
-    m_max_bytes_used = std::min(m_max_bytes_used, m_net_heap_growth);
+    m_max_bytes_used.store(std::min(m_max_bytes_used, m_net_heap_growth));
 }
 
 void CustomMemoryManager::Unregister(int64_t size)
 {
     m_num_deallocations++;
     m_net_heap_growth -= static_cast<int64_t>(size);
-    m_max_bytes_used = std::max(m_max_bytes_used, m_net_heap_growth);
+    m_max_bytes_used.store(std::max(m_max_bytes_used, m_net_heap_growth));
 }
 
 size_t CustomMemoryManager::MemoryBlockSize(void* ptr)
