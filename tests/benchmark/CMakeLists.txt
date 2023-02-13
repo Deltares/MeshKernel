@@ -51,9 +51,6 @@ if(ENABLE_BENCHMARKING)
     # Add custom_memory_manager
     add_subdirectory(custom_memory_manager)
 
-    # Add unit tests
-    add_subdirectory(unit)
-
     # Add unit performance tests
     add_subdirectory(performance)
 

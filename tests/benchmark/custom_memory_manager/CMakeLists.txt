@@ -39,3 +39,6 @@ target_link_libraries(
 # group the sources and headers
 source_group("Source Files" FILES ${TARGET_SRC_LIST})
 source_group("Header Files" FILES ${TARGET_HEADER_LIST})
+
+# add unit tests subdirectory
+add_subdirectory(test)

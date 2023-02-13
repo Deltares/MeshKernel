@@ -1,5 +1,5 @@
 # target name
-set(target_name MeshKernelBenchmarkUnitTests)
+set(target_name MeshKernelBenchmarkMemoryManagerUnitTests)
 
 # executable
 add_executable(${target_name})
