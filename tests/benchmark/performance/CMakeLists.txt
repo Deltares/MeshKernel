@@ -52,13 +52,27 @@ add_test(
   COMMAND ${target_name}
 )
 
-#message("${CMAKE_CURRENT_BINARY_DIR}")
+file(
+  WRITE ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+  "file(
+    COPY \$\{SOURCE_DIR\} 
+    DESTINATION \$\{DESTINATION_DIR\}
+    FILE_PERMISSIONS WORLD_READ WORLD_EXECUTE
+    FILES_MATCHING PATTERN \"*.py\"
+  )"
+)
 
 add_custom_command(
-  TARGET ${target_name} 
+  TARGET ${target_name}
   POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory 
-     ${googlebenchmark_SOURCE_DIR}/tools/
-    $<TARGET_FILE_DIR:${target_name}>/tools
-  COMMENT "Copying Google Benchmarl python tools"
+  COMMAND ${CMAKE_COMMAND}
+    -DSOURCE_DIR=${googlebenchmark_SOURCE_DIR}/tools/
+    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/googlebenchmark/tools
+    -DPATTERN_EXCLUDE=Inputs
+    -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+  COMMAND ${CMAKE_COMMAND}
+    -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts/
+    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts
+    -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+  COMMENT "Copying Google Benchmark tools..."
 )
