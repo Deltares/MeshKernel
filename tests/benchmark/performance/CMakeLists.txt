@@ -51,3 +51,14 @@ add_test(
   NAME ${target_name}
   COMMAND ${target_name}
 )
+
+#message("${CMAKE_CURRENT_BINARY_DIR}")
+
+add_custom_command(
+  TARGET ${target_name} 
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory 
+     ${googlebenchmark_SOURCE_DIR}/tools/
+    $<TARGET_FILE_DIR:${target_name}>/tools
+  COMMENT "Copying Google Benchmarl python tools"
+)
