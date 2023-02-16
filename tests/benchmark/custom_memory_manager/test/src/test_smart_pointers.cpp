@@ -34,7 +34,7 @@ TEST(SmartPointer, SharedSingleObject)
     }
 }
 
-TEST(SmartPointer, UniqueMultipleObject)
+TEST(SmartPointer, UniqueMultipleObjects)
 {
     CUSTOM_MEMORY_MANAGER.ResetStatistics();
     // let's use a scope here because we're using containers, we want them to

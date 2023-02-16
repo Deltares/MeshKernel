@@ -44,14 +44,14 @@ TEST(Containers, Vector)
 
         // clear
         vec.clear();                                                                          // capacity unchaged => no reallocation
-        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 2);                                    // unchaged
+        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.Allocations(), 2);                                    // unchanged
         EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), resize_bytes);                        // unchanged
         EXPECT_EQ(CUSTOM_MEMORY_MANAGER.TotalAllocatedBytes(), initial_bytes + resize_bytes); // unchanged
         EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), resize_bytes);                       // unchanged
 
         // shrink to fit
         vec.shrink_to_fit();                                                                  // capacity becomes 0
-        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), resize_bytes);                        // peak memory unchaged
+        EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), resize_bytes);                        // peak memory unchanged
         EXPECT_EQ(CUSTOM_MEMORY_MANAGER.TotalAllocatedBytes(), initial_bytes + resize_bytes); // unchanged
         EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), 0);                                  // memory is completely freed
 
@@ -65,7 +65,7 @@ TEST(Containers, Vector)
             size_t old_capacity = vec.capacity();
             vec.push_back(Point(i + 1, i + 2, i + 3));
             size_t new_capacity = vec.capacity();
-            net_heap_growth += (int)(new_capacity - old_capacity) * size_of_point;
+            net_heap_growth += static_cast<int>(new_capacity - old_capacity) * size_of_point;
             EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), net_heap_growth);
             max_used_bytes = new_capacity * size_of_point;
             EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), max_used_bytes);
@@ -82,7 +82,7 @@ TEST(Containers, Vector)
             size_t old_capacity = vec.capacity();
             vec.emplace_back(i - 1, i - 2, i - 3);
             size_t new_capacity = vec.capacity();
-            net_heap_growth += (int)(new_capacity - old_capacity) * size_of_point;
+            net_heap_growth += static_cast<int>(new_capacity - old_capacity) * size_of_point;
             EXPECT_EQ(CUSTOM_MEMORY_MANAGER.NetHeapGrowth(), net_heap_growth);
             max_used_bytes = new_capacity * size_of_point;
             EXPECT_EQ(CUSTOM_MEMORY_MANAGER.MaxBytesUsed(), max_used_bytes);

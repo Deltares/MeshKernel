@@ -3,8 +3,10 @@
 #include <atomic>
 #include <mutex>
 #include <ostream>
-#include <stdint.h>
+#include <shared_mutex>
 #include <string>
+
+#include <stdint.h>
 
 #include <benchmark/benchmark.h>
 
@@ -83,11 +85,13 @@ public:
     std::string Statistics(std::string const& caller = std::string()) const;
 
 private:
-    std::atomic<int64_t> m_num_allocations = 0;             ///< The number of allocations made in total between Start and Stop
-    std::atomic<int64_t> m_num_deallocations = 0;           ///< The number of deallocations made in total between Start and Stop (not written to ::benchmark::MemoryManager::Result)
-    std::atomic<int64_t> m_total_allocated_bytes = 0;       ///< The total memory allocated in bytes between Start and Stop
-    std::atomic<int64_t> m_max_bytes_used = TombstoneValue; ///< The peak memory use in bytes between Start and Stop
-    std::atomic<int64_t> m_net_heap_growth = 0;             ///< The net changes in memory in bytes between Start and Stop
+    mutable std::shared_mutex mutex;
+
+    int64_t m_num_allocations = 0;             ///< The number of allocations made in total between Start and Stop
+    int64_t m_num_deallocations = 0;           ///< The number of deallocations made in total between Start and Stop (not written to ::benchmark::MemoryManager::Result)
+    int64_t m_total_allocated_bytes = 0;       ///< The total memory allocated in bytes between Start and Stop
+    int64_t m_max_bytes_used = TombstoneValue; ///< The peak memory use in bytes between Start and Stop
+    int64_t m_net_heap_growth = 0;             ///< The net changes in memory in bytes between Start and Stop
 
     CustomMemoryManager() = default;
     ~CustomMemoryManager() = default;

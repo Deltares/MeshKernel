@@ -10,6 +10,7 @@ set(
   src/test_new_delete.cpp
   src/test_containers.cpp
   src/test_smart_pointers.cpp
+  src/test_multi_threading.cpp
 )
 
 # list of tagret headers
