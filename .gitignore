@@ -24,3 +24,6 @@ build_*
 post_build.bat
 /tests/utils/include/TestUtils/Definitions.hpp
 /include/Version/Version.hpp
+
+# Python cache
+__pycache__/
