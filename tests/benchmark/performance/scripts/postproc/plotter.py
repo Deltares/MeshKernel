@@ -1,6 +1,6 @@
+import os
 from enum import IntEnum, unique
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FormatStrFormatter
