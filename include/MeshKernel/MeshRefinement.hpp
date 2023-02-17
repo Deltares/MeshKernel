@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -76,29 +74,22 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
-        /// @brief Enumerator describing the different refinement types
-        enum class RefinementType
-        {
-            WaveCourant = 1,
-            RefinementLevels = 2
-        };
-
     public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
-        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                                std::shared_ptr<AveragingInterpolation> averaging,
-                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+                       std::shared_ptr<AveragingInterpolation> averaging,
+                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
         /// @param[in] meshRefinementParameters The mesh refinement parameters
-        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                                const Polygons& polygon,
-                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+                       const Polygons& polygon,
+                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Compute mesh refinement (refinecellsandfaces2).
         ///
@@ -119,7 +110,7 @@ namespace meshkernel
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
-        /// @brief Modifies m_mesh.m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
+        /// @brief Modifies m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
         ///        The mask value of the other nodes will not be modified.
         void ComputeNodeMaskAtPolygonPerimeter();
 
@@ -141,7 +132,7 @@ namespace meshkernel
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
         /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
-        [[nodiscard]] std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
+        std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
@@ -160,10 +151,20 @@ namespace meshkernel
         /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
+        /// @brief Enumerator describing the different refinement types
+        enum class RefinementType
+        {
+            WaveCourant = 1,
+            RefinementLevels = 2
+        };
+
+        inline static double const m_sqrt_gravity = std::sqrt(9.80665); ///< Square root of gravitational acceleration on earth (m/s^2)
+
         RTree m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split
+        std::vector<int> m_nodeMask;        ///< The node mask used in the refinement process
         std::vector<size_t> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches

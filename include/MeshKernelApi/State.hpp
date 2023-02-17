@@ -39,11 +39,9 @@
 namespace meshkernelapi
 {
     /// @brief The class holding the state of the C API library
-    class MeshKernelState
+    struct MeshKernelState
     {
-    public:
         /// @brief Default constructor
-        /// @returns
         MeshKernelState() = default;
 
         /// @brief Constructor initializing mesh and contacts classes

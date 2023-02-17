@@ -54,7 +54,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
 
     const double eps = 1e-5;
     auto previousCoordinate = m_lines[0].m_startCoordinate;
-    for (auto i = 1; i <= m_lines[0].m_endCoordinate; ++i)
+    for (size_t i = 1; i <= m_lines[0].m_endCoordinate; ++i)
     {
         auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
@@ -69,7 +69,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
         /// On the original algorithm currentDelta is distributed on the nodes above the current i,
         /// except for the last node m_endCoordinate, where currentDelta is distributed on the entire grid line
         const auto currentLastCoordinate = i == m_lines[0].m_endCoordinate ? i : i - 1;
-        for (auto j = previousCoordinate; j <= currentLastCoordinate; ++j)
+        for (size_t j = previousCoordinate; j <= currentLastCoordinate; ++j)
         {
 
             auto const nodeIndex = m_lines[0].GetNodeIndexFromCoordinate(j);
@@ -139,11 +139,11 @@ void CurvilinearGridLineShift::MoveNode(Point const& fromPoint, Point const& toP
     // Get the index in the grid of the line to be shifted
     auto const nodeIndex = m_grid.GetNodeIndices(fromPoint);
 
-    //Check the nodes are on the line to shift
+    // Check the nodes are on the line to shift
     if (!m_lines[0].IsNodeOnLine(nodeIndex))
     {
         throw std::invalid_argument("CurvilinearGridLineShift::MoveNode The selected node does not belong to the line to be shifted");
     }
 
-    m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+    m_grid.MoveNode(fromPoint, toPoint);
 }

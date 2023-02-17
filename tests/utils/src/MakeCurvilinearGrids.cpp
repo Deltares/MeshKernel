@@ -10,7 +10,7 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
     {
         for (auto n = 0; n < curvilinearGrid.num_n; ++n)
         {
-            if (!meshkernel::IsEqual(curvilinearGrid.node_x[index], meshkernel::doubleMissingValue))
+            if (!meshkernel::IsEqual(curvilinearGrid.node_x[index], meshkernel::constants::missing::doubleValue))
             {
                 validNodes++;
             }
@@ -20,13 +20,13 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
     return validNodes;
 }
 
-size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid)
+size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> const& curvilinearGrid)
 {
     size_t validNodes = 0;
     size_t index = 0;
-    for (auto m = 0; m < curvilinearGrid->m_numM; ++m)
+    for (size_t m = 0; m < curvilinearGrid->m_numM; ++m)
     {
-        for (auto n = 0; n < curvilinearGrid->m_numN; ++n)
+        for (size_t n = 0; n < curvilinearGrid->m_numN; ++n)
         {
             if (curvilinearGrid->m_gridNodes[m][n].IsValid())
             {
@@ -132,8 +132,8 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
         {{8.013393074394566065E+04, 3.666299991322114947E+05},
          {8.022657945494366868E+04, 3.666560012267631828E+05},
          {8.032039638097764691E+04, 3.666791259040951263E+05},
-         {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
-         {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
          {8.062315126642497489E+04, 3.667184374811393791E+05},
          {8.073580093592485355E+04, 3.667174321629589540E+05},
          {8.084895945629126800E+04, 3.667167463103650953E+05},

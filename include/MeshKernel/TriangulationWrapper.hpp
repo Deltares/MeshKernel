@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <vector>
-
 namespace meshkernel
 {
     extern "C"
@@ -79,7 +77,7 @@ namespace meshkernel
 
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
-            for (auto i = 0; i < inputNodes.size(); ++i)
+            for (size_t i = 0; i < inputNodes.size(); ++i)
             {
                 xLocalPolygon[i] = inputNodes[i].x;
                 yLocalPolygon[i] = inputNodes[i].y;
@@ -106,12 +104,12 @@ namespace meshkernel
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
             while (numFaces < 0)
             {
-                numFaces = estimatedNumberOfTriangles;
+                numFaces = static_cast<int>(estimatedNumberOfTriangles);
                 faceNodesFlat.resize(numFaces * 3);
                 edgeNodesFlat.resize(numFaces * 2);
                 faceEdgesFlat.resize(numFaces * 3);
-                xNodesFlat.resize(numFaces * 3, doubleMissingValue);
-                yNodesFlat.resize(numFaces * 3, doubleMissingValue);
+                xNodesFlat.resize(numFaces * 3, constants::missing::doubleValue);
+                yNodesFlat.resize(numFaces * 3, constants::missing::doubleValue);
                 Triangulation(&intTriangulationOption,
                               &xLocalPolygon[0],
                               &yLocalPolygon[0],
@@ -137,16 +135,16 @@ namespace meshkernel
 
             // Create nodes
             m_nodes.resize(m_numNodes);
-            for (auto i = 0; i < m_numNodes; ++i)
+            for (size_t i = 0; i < m_numNodes; ++i)
             {
                 m_nodes[i] = {xNodesFlat[i], yNodesFlat[i]};
             }
 
             // Create m_faceNodes
-            m_faceNodes.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
-            m_faceEdges.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
+            ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::sizetValue);
+            ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::sizetValue);
             size_t faceCounter = 0;
-            for (auto f = 0; f < m_numFaces; ++f)
+            for (size_t f = 0; f < m_numFaces; ++f)
             {
                 m_faceNodes[f][0] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
                 m_faceEdges[f][0] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
@@ -165,9 +163,9 @@ namespace meshkernel
                 return;
             }
 
-            m_edgeNodes.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
+            ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::sizetValue);
             size_t edgeCounter = 0;
-            for (auto e = 0; e < m_numEdges; ++e)
+            for (size_t e = 0; e < m_numEdges; ++e)
             {
                 m_edgeNodes[e][0] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
                 edgeCounter++;
@@ -175,17 +173,17 @@ namespace meshkernel
                 edgeCounter++;
             }
 
-            m_edgesFaces.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
+            ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::sizetValue);
             edgeCounter = 0;
-            for (auto f = 0; f < m_numFaces; ++f)
+            for (size_t f = 0; f < m_numFaces; ++f)
             {
 
-                for (auto n = 0; n < numNodesInTriangle; ++n)
+                for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
                 {
                     auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
                     edgeCounter++;
                     // For each edge, the shared face index
-                    if (m_edgesFaces[edge][0] == sizetMissingValue)
+                    if (m_edgesFaces[edge][0] == constants::missing::sizetValue)
                     {
                         m_edgesFaces[edge][0] = f;
                     }

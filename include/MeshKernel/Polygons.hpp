@@ -27,9 +27,8 @@
 
 #pragma once
 
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
+#include <unordered_map>
 
 namespace meshkernel
 {
@@ -48,43 +47,37 @@ namespace meshkernel
 
         /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
         /// @returns The generated points
-        std::vector<std::vector<Point>> ComputePointsInPolygons() const;
+        [[nodiscard]] std::vector<std::vector<Point>> ComputePointsInPolygons() const;
 
         /// @brief Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)
         /// @param[in] startIndex The start index
         /// @param[in] endIndex The end index
         /// @param[in] refinementDistance The chosen refinement distance
         /// @return refinedPolygon The computed polygon
-        std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
+        [[nodiscard]] std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] innerAndOuter Offset inwards or outward
         /// @return The new offset polygon
-        Polygons OffsetCopy(double distance, bool innerAndOuter) const;
+        [[nodiscard]] Polygons OffsetCopy(double distance, bool innerAndOuter) const;
 
         /// @brief Checks if a point is included in a given polygon.
         /// When the polygon is empty, the point is always included by default
         /// @param[in] point The point to check
         /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
-        bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
-
-        /// @brief Checks if a point is included in a any of the polygon.
-        /// When no polygon is present, the point is always included by default
-        /// @param[in] point The point to check
-        /// @return True if it is included, false otherwise
-        bool IsPointInPolygons(Point const& point) const;
+        [[nodiscard]] bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
-        /// @return The index of a polygon where the point is included or if none has been found, sizetMissingValue
-        size_t PolygonIndex(Point point) const;
+        /// @return The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue
+        [[nodiscard]] std::tuple<bool, size_t> IsPointInPolygons(Point point) const;
 
         /// @brief For each point, compute the index of the polygon including it
         /// @param[in] point The vector of points
-        /// @return The index of the polygon including it
-        std::vector<size_t> PolygonIndices(const std::vector<Point>& point) const;
+        /// @return A vector of booleans to indicate if the point is in polygon
+        [[nodiscard]] std::vector<bool> PointsInPolygons(const std::vector<Point>& point) const;
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
@@ -95,14 +88,36 @@ namespace meshkernel
         [[nodiscard]] size_t GetNumPolygons() const;
 
         /// @brief Gets the number of polygon nodes
-        /// @return the number of polygon nodes
+        /// @return The number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<Point> m_nodes;                 ///< The polygon nodes
-        Projection m_projection;                    ///< The current projection
-        std::vector<std::vector<size_t>> m_indices; ///< Start-end indices of each polygon in m_nodes
+        /// @brief Gets the projection
+        /// @return The projection
+        [[nodiscard]] Projection GetProjection() const { return m_projection; }
+
+        /// @brief Gets the start-end indices of each outer polygon
+        /// @param[in] i Outer polygon index
+        /// @return Pair of start and end indices
+        [[nodiscard]] std::pair<size_t, size_t> const& OuterIndices(size_t i) const
+        {
+            return m_outer_polygons_indices[i];
+        }
+
+        /// @brief Gets the nodes of the polygon
+        /// @return Vector of nodes of the polygon
+        [[nodiscard]] std::vector<Point> const& Nodes() const { return m_nodes; }
+
+        /// @brief Gets the coordinates of a node by index
+        /// @param[in] i Node index
+        /// @return Node coordinates
+        [[nodiscard]] Point const& Node(size_t i) const { return m_nodes[i]; }
 
     private:
+        std::vector<Point> m_nodes;                                                                  ///< The polygon nodes
+        Projection m_projection;                                                                     ///< The current projection
+        std::vector<std::pair<size_t, size_t>> m_outer_polygons_indices;                             ///< Start-end indices of each outer polygon in m_nodes
+        std::unordered_map<size_t, std::vector<std::pair<size_t, size_t>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
+
         /// @brief Computes the perimeter of a closed polygon
         /// @param[in] polygonNodes The polygon nodes to use in the computation
         /// @return perimeter The computed polygon perimeter

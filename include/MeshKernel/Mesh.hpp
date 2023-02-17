@@ -30,8 +30,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/RTree.hpp>
 
-#include <vector>
-
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
@@ -42,7 +40,7 @@ namespace meshkernel
     /// This class contains the shared functionality between 1d or 2d meshes.
     ///
     /// MeshKernel can handle 2d meshes and 1d meshes.
-    /// Algorithms require cartain mappings to be available for both Mesh1D and Mesh2D,
+    /// Algorithms require certain mappings to be available for both Mesh1D and Mesh2D,
     /// such as a mapping listing all edge indices connected to a particular node.
     /// The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
     /// The Mesh base class also contains other common data members,
@@ -51,7 +49,7 @@ namespace meshkernel
     ///
     /// -   Construct the mesh faces from the nodes and edges and other mesh
     ///     mappings required by all algorithms (Mesh::FindFaces).
-    ///     Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::maximumNumberOfEdgesPerFace).
+    ///     Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::Mesh::m_maximumNumberOfEdgesPerFace).
     ///
     /// -   Supporting mesh editing, namely:
     ///
@@ -84,18 +82,41 @@ namespace meshkernel
     class Mesh
     {
     public:
-        /// Enumerator describing the different options to administrate a mesh
-        enum class AdministrationOption
+        /// @brief Enumerator describing the different mesh types
+        enum class Type
         {
-            AdministrateMeshEdges,
-            AdministrateMeshEdgesAndFaces
+            Mesh1D, ///< Mesh1D
+            Mesh2D  ///< Mesh2D
         };
 
-        /// Enumerator describing the different mesh types
-        enum class MeshTypes
+        /// @enum Location
+        /// @brief Mesh locations enumeration
+        enum class Location
         {
-            Mesh1D,
-            Mesh2D
+            Faces = 0,  ///< Faces
+            Nodes = 1,  ///< Nodes
+            Edges = 2,  ///< Edges
+            Unknown = 3 ///< Unknown
+        };
+
+        /// edge-segment intersection
+        struct EdgeMeshPolylineIntersection
+        {
+            int polylineSegmentIndex{constants::missing::intValue};          ///< The intersected segment index (a polyline can formed by several segments)
+            double polylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+            size_t edgeIndex{constants::missing::sizetValue};                ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeFirstNode{constants::missing::sizetValue};            ///< The first node of the edge is on the left (the virtual node)
+            size_t edgeSecondNode{constants::missing::sizetValue};           ///< The second node of the edge is on the right (the inner node)
+            double edgeDistance{constants::missing::doubleValue};            ///< The location of the intersection expressed as an adimensional distance from the edge start
+        };
+
+        /// face-segment intersection
+        struct FaceMeshPolylineIntersection
+        {
+            double polylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the face intersection expressed as an adimensional distance from the segment start
+            size_t faceIndex{constants::missing::sizetValue};                ///< The face index
+            std::vector<size_t> edgeIndexses;                                ///< The indexes of crossed edges
+            std::vector<size_t> edgeNodes;                                   ///< The indexes of the nodes defining the crossed edges
         };
 
         /// @brief Default constructor
@@ -207,7 +228,7 @@ namespace meshkernel
         /// This method uses return parameters since the success is evaluated in a hot loop
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
-        /// @return The shared node (sizetMissingValue if no node is found)
+        /// @return The shared node (constants::missing::sizetValue if no node is found)
         [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
@@ -225,9 +246,10 @@ namespace meshkernel
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
 
-        /// @brief Sort mesh edges in conterclockwise orther (Sort_links_ccw)
-        /// @param[in] node The node index for which sorting should take place
-        void SortEdgesInCounterClockWiseOrder(size_t node);
+        /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
+        /// @param[in] startNode The first node index where to perform edge sorting.
+        /// @param[in] endNode   The last node index where to perform edge sorting.
+        void SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode);
 
         /// @brief Compute the max length of the edges connected to a node
         /// @param node The mesh node
@@ -236,46 +258,46 @@ namespace meshkernel
 
         /// @brief Build the rtree for the corresponding location
         /// @param[in] meshLocation The mesh location for which the RTree is build
-        void BuildTree(MeshLocations meshLocation);
+        void BuildTree(Location meshLocation);
 
         /// @brief Search all points sorted by proximity to another point.
         /// @param[in] point The reference point.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, MeshLocations meshLocation);
+        void SearchNearestLocation(Point point, Location meshLocation);
 
         /// @brief Search the nearest point within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, MeshLocations meshLocation);
+        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchLocations(Point point, double squaredRadius, MeshLocations meshLocation);
+        void SearchLocations(Point point, double squaredRadius, Location meshLocation);
 
         /// @brief Gets the search results.
         /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        size_t GetNumLocations(MeshLocations meshLocation) const;
+        size_t GetNumLocations(Location meshLocation) const;
 
         /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] size_t GetLocationsIndices(size_t index, MeshLocations meshLocation);
+        [[nodiscard]] size_t GetLocationsIndices(size_t index, Mesh::Location meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocations location) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(Mesh::Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
-        /// firstMesh += secondmesh results in the second mesh being added to the first
+        /// firstMesh += secondmesh results in the second mesh being added to firstMesh
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
@@ -284,8 +306,7 @@ namespace meshkernel
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodeMask;                   ///< The node mask (kc)
-        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbours
+        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 
         // edges
@@ -293,7 +314,6 @@ namespace meshkernel
         std::vector<std::vector<size_t>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<size_t> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<int> m_edgeMask;                   ///< The edge mask (lc)
         std::vector<Point> m_edgesCenters;             ///< The edges centers
 
         // faces
@@ -312,5 +332,16 @@ namespace meshkernel
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
+
+        // constants
+        static constexpr size_t m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
+        static constexpr size_t m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
+        static constexpr size_t m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
+        static constexpr size_t m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+        static constexpr size_t m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
+        static constexpr size_t m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
+
+    private:
+        static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
     };
 } // namespace meshkernel

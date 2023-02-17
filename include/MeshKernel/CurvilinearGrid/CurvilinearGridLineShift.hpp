@@ -45,7 +45,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        explicit CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid);
+        CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Computes a new curvilinear grid with the line shift
         /// @return The shifted curvilinear grid

@@ -25,19 +25,17 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Network1D.hpp>
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
-                                 Projection projection) : m_polyLines(polyLines), m_projection(projection)
+                                 Projection projection) : m_projection(projection), m_polyLines(polyLines)
 {
     m_chainages.resize(m_polyLines.size());
 
     // start and end polyline chainages should always be accounted for
-    for (auto i = 0; i < m_polyLines.size(); ++i)
+    for (size_t i = 0; i < m_polyLines.size(); ++i)
     {
         auto const nodalChainages = ComputePolyLineNodalChainages(m_polyLines[i], projection);
         m_chainages[i].push_back(nodalChainages.front());
@@ -55,7 +53,7 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
         throw std::invalid_argument("Network1D::ComputeFixedChainages: The polyline vector and the fixed chainages vector size must be the same");
     }
 
-    for (auto p = 0; p < m_polyLines.size(); ++p)
+    for (size_t p = 0; p < m_polyLines.size(); ++p)
     {
         if (fixedChainagesByPolyline[p].empty())
         {
@@ -82,7 +80,7 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
             }
             else if (previousChainageIsAFixedPoint)
             {
-                //center the gridpoint between two fixed points
+                // center the gridpoint between two fixed points
                 m_chainages[p].back() = (chainageBeforeFixedPoint + previousChainage) * 0.5;
                 previousChainage = m_chainages[p].back();
             }
@@ -100,12 +98,12 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
 void meshkernel::Network1D::ComputeOffsettedChainages(double offset)
 {
 
-    for (auto p = 0; p < m_polyLines.size(); ++p)
+    for (size_t p = 0; p < m_polyLines.size(); ++p)
     {
         // Sort whatever is there
         std::sort(m_chainages[p].begin(), m_chainages[p].end());
         std::vector<double> chainagesAtInterval;
-        for (auto i = 1; i < m_chainages[p].size(); ++i)
+        for (size_t i = 1; i < m_chainages[p].size(); ++i)
         {
             double const segmentLength = m_chainages[p][i] - m_chainages[p][i - 1];
             if (segmentLength < offset)
@@ -113,7 +111,7 @@ void meshkernel::Network1D::ComputeOffsettedChainages(double offset)
                 continue;
             }
             auto const numberOfNewSegments = static_cast<size_t>(std::ceil(segmentLength / offset));
-            for (auto j = 1; j < numberOfNewSegments; j++)
+            for (size_t j = 1; j < numberOfNewSegments; j++)
             {
                 chainagesAtInterval.push_back(m_chainages[p][i - 1] + j * (segmentLength / static_cast<double>(numberOfNewSegments)));
             }
@@ -127,7 +125,7 @@ void meshkernel::Network1D::ComputeOffsettedChainages(double offset)
 std::vector<std::vector<meshkernel::Point>> meshkernel::Network1D::ComputeDiscretizationsFromChainages()
 {
     std::vector<std::vector<Point>> result;
-    for (auto p = 0; p < m_polyLines.size(); ++p)
+    for (size_t p = 0; p < m_polyLines.size(); ++p)
     {
         result.emplace_back(ComputePolyLineDiscretization(m_polyLines[p], m_chainages[p], m_projection));
     }

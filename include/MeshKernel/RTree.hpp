@@ -37,9 +37,6 @@
 #include <boost/geometry/index/rtree.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
-#include <utility>
-#include <vector>
-
 // r-tree
 // https://gist.github.com/logc/10272165
 
@@ -80,9 +77,9 @@ namespace meshkernel
             m_points.clear();
             m_rtree2D.clear();
 
-            for (auto n = 0; n < nodes.size(); ++n)
+            for (size_t n = 0; n < nodes.size(); ++n)
             {
-                if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
+                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
                 {
                     m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                 }

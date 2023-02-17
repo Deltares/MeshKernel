@@ -29,13 +29,13 @@
 
 namespace meshkernel::averaging
 {
-    void MinAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
+    void MinAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
     {
         m_result = std::min(m_result, sampleValue);
     }
 
     double MinAveragingStrategy::Calculate() const
     {
-        return m_result != std::numeric_limits<double>::max() ? m_result : doubleMissingValue;
+        return m_result != std::numeric_limits<double>::max() ? m_result : constants::missing::doubleValue;
     }
 } // namespace meshkernel::averaging

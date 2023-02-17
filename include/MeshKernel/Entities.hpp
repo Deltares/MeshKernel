@@ -27,31 +27,44 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <cmath>
-#include <limits>
-#include <utility>
-#include <vector>
 
 #include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
 {
     // to re-enable when compiling with c++20 support
-    //template <typename T>
-    //concept IsCoordinate = requires(T t)
+    // template <typename T>
+    // concept IsCoordinate = requires(T t)
     //{
     //    t.x;
     //    t.y;
     //    t.IsValid
     //};
 
-    /// @brief Generic function determining if two values are equal
-    ///
-    /// This is especially useful for floating point values.
-    template <typename T>
-    static bool IsEqual(T value, T referenceValue)
+    /// @brief Generic function for determining if two floating point values are equal
+    /// @param[value] The value to compare
+    /// @param[ref_value] The reference value to compare to
+    /// @param[eps_mutilpier] Multiplier of machine precision
+    /// @return Boolean indicating whether the value and reference value are equal within machine precision multiplied by the multiplier
+    // template <std::floating_point T> // prefer this in this c++20
+    template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+    static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
     {
-        return std::abs(value - referenceValue) < std::numeric_limits<T>::epsilon();
+        if (value == ref_value)
+        {
+            return true;
+        }
+        else
+        {
+            const T abs_diff = std::abs(value - ref_value);
+            const T abs_value = std::abs(value);
+            const T abs_ref_value = std::abs(ref_value);
+            static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
+            return abs_diff < tol * std::min(abs_value, abs_ref_value);
+        }
     }
 
     /// @brief Enumerator describing the supported projections
@@ -69,7 +82,7 @@ namespace meshkernel
         double y; ///< Y-coordinate
 
         /// @brief Constructor initializing with missing values
-        Point() : x(doubleMissingValue), y(doubleMissingValue) {}
+        Point() : x(constants::missing::doubleValue), y(constants::missing::doubleValue) {}
 
         /// @brief Constructor initializing with given arguments
         /// @param[in] x
@@ -177,15 +190,17 @@ namespace meshkernel
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
-            x = x * degrad_hp * earth_radius * std::cos(degrad_hp * referenceLatitude);
-            y = y * degrad_hp * earth_radius;
+            x = x * constants::conversion::degToRad * constants::geometric::earth_radius * std::cos(constants::conversion::degToRad * referenceLatitude);
+            y = y * constants::conversion::degToRad * constants::geometric::earth_radius;
         }
 
         /// @brief Determines if one of the point coordinates equals to \p missingValue
-        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = constants::missing::doubleValue) const
         {
             const bool isInvalid = IsEqual(x, missingValue) ||
-                                   IsEqual(y, missingValue);
+                                   IsEqual(y, missingValue) ||
+                                   IsEqual(x, constants::missing::innerOuterSeparator) ||
+                                   IsEqual(y, constants::missing::innerOuterSeparator);
 
             return !isInvalid;
         }
@@ -194,7 +209,7 @@ namespace meshkernel
     /// @brief Describes an edge with two indices
     typedef std::pair<size_t, size_t> Edge;
 
-    /// @brief Get the index of the node on the other side of the edge
+    /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
     /// @returns Node index of other node of the edge
@@ -227,7 +242,7 @@ namespace meshkernel
         {
             // Build the samples
             std::vector<Sample> samples(numSamples);
-            for (auto i = 0; i < samples.size(); ++i)
+            for (size_t i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
                 samples[i].y = (*samplesYCoordinate)[i];
@@ -237,7 +252,7 @@ namespace meshkernel
         }
 
         /// @brief Determines if the sample instance has valid coordinates
-        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = constants::missing::doubleValue) const
         {
             bool isInvalid = IsEqual(x, missingValue) ||
                              IsEqual(y, missingValue);
@@ -284,6 +299,27 @@ namespace meshkernel
             faceCenters[n].y = facey[n];
         }
         return faceCenters;
-    };
+    }
+
+    /// @brief Converts array of face centers to corresponding vector
+    static std::vector<std::vector<size_t>> ConvertToFaceNodesVector(int num_faces, const int* face_nodes, const int* nodes_per_face)
+    {
+        std::vector<std::vector<size_t>> result;
+        result.reserve(num_faces);
+
+        std::vector<size_t> nodes;
+        size_t index = 0;
+        for (auto f = 0; f < num_faces; f++)
+        {
+            nodes.clear();
+            for (auto n = 0; n < nodes_per_face[f]; n++)
+            {
+                nodes.emplace_back(face_nodes[index]);
+                index++;
+            }
+            result.emplace_back(nodes);
+        }
+        return result;
+    }
 
 } // namespace meshkernel

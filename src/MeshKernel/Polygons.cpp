@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <stdexcept>
-#include <utility>
-#include <vector>
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -39,8 +35,38 @@ using meshkernel::Polygons;
 
 Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
 {
-    // find the polygons in the current list of points
-    m_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
+    // Find the polygons in the current list of points
+    m_outer_polygons_indices = FindIndices(polygon, 0, polygon.size(), constants::missing::doubleValue);
+    for (size_t i = 0; i < m_outer_polygons_indices.size(); ++i)
+    {
+        m_inner_polygons_indices[i] = std::vector<std::pair<size_t, size_t>>{};
+
+        const auto& [outer_start, outer_end] = m_outer_polygons_indices[i];
+
+        // The inner polygon indices, the first interval corresponds to the outer polygon
+        const auto inner_polygons_indices = FindIndices(polygon, outer_start, outer_end, constants::missing::innerOuterSeparator);
+
+        // No inner polygon found
+        if (inner_polygons_indices.size() <= 1)
+        {
+            continue;
+        }
+
+        // The first inner
+        const auto inner_start = inner_polygons_indices[1].first;
+
+        // store inner polygons for this outer polygon
+        auto inner_polygons = std::vector<std::pair<size_t, size_t>>{};
+        for (size_t j = 1; j < inner_polygons_indices.size(); ++j)
+        {
+            inner_polygons.emplace_back(inner_polygons_indices[j]);
+        }
+
+        m_inner_polygons_indices[i] = inner_polygons;
+
+        // shift the index of the outer polygon, the
+        m_outer_polygons_indices[i].second = inner_start - 2;
+    }
 }
 
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
@@ -50,10 +76,10 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
     generatedPoints.reserve(GetNumPolygons());
     std::vector<Point> localPolygon(GetNumNodes());
 
-    for (const auto& index : m_indices)
+    for (const auto& [outerStart, outerEnd] : m_outer_polygons_indices)
     {
         localPolygon.clear();
-        for (auto j = index[0]; j <= index[1]; ++j)
+        for (auto j = outerStart; j <= outerEnd; ++j)
         {
             localPolygon.emplace_back(m_nodes[j]);
         }
@@ -65,16 +91,13 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             continue;
         }
 
-        double localPolygonArea = 0.0;
-        Point centerOfMass;
-        bool isCounterClockWise;
-        FaceAreaAndCenterOfMass(localPolygon, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
+        const auto [localPolygonArea, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(localPolygon, m_projection);
 
         const auto perimeter = PerimeterClosedPolygon(localPolygon);
 
         // average triangle size
         const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
-        const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+        const double averageTriangleArea = 0.25 * constants::numeric::squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles
         const size_t SafetySize = 11;
@@ -100,15 +123,16 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
                                                             size_t endIndex,
                                                             double refinementDistance) const
 {
-    if (m_indices.empty())
+    if (m_outer_polygons_indices.empty())
     {
         throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
     }
 
     if (startIndex == 0 && endIndex == 0)
     {
-        startIndex = m_indices[0][0];
-        endIndex = m_indices[0][1];
+        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[0];
+        startIndex = outerStart;
+        endIndex = outerEnd;
     }
 
     if (endIndex <= startIndex)
@@ -118,9 +142,10 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     bool areIndicesValid = false;
     size_t polygonIndex;
-    for (auto i = 0; i < GetNumPolygons(); ++i)
+    for (size_t i = 0; i < GetNumPolygons(); ++i)
     {
-        if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
+        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[i];
+        if (startIndex >= outerStart && endIndex <= outerEnd)
         {
             areIndicesValid = true;
             polygonIndex = i;
@@ -136,19 +161,20 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
     const auto edgeLengths = PolygonEdgeLengths(m_nodes);
     std::vector<double> nodeLengthCoordinate(edgeLengths.size());
     nodeLengthCoordinate[0] = 0.0;
-    for (auto i = 1; i < edgeLengths.size(); ++i)
+    for (size_t i = 1; i < edgeLengths.size(); ++i)
     {
         nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
     }
 
     const auto numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
-    const auto numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
+    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
+    const auto numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
     const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
     std::vector<Point> refinedPolygon;
     refinedPolygon.reserve(totalNumNodes);
 
     // before refinement
-    for (auto i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
+    for (auto i = outerStart; i <= startIndex; ++i)
     {
         refinedPolygon.emplace_back(m_nodes[i]);
     }
@@ -210,7 +236,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
     }
 
     // after refinement
-    for (auto i = endIndex + 1; i <= m_indices[polygonIndex][1]; ++i)
+    for (auto i = endIndex + 1; i <= outerEnd; ++i)
     {
         refinedPolygon.emplace_back(m_nodes[i]);
     }
@@ -231,7 +257,7 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     double dyNormalPreviousEdge = 0.0;
     double dxNormal = 0.0;
     double dyNormal = 0.0;
-    for (auto n = 0; n < GetNumNodes(); n++)
+    for (size_t n = 0; n < GetNumNodes(); n++)
     {
         if (n < GetNumNodes() - 1)
         {
@@ -265,17 +291,17 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     distance = -distance;
     if (m_projection == Projection::spherical)
     {
-        distance = distance / (earth_radius * degrad_hp);
+        distance = distance / (constants::geometric::earth_radius * constants::conversion::degToRad);
     }
 
-    std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
-    for (auto i = 0; i < GetNumNodes(); ++i)
+    std::vector<Point> newPolygonPoints(sizenewPolygon, {constants::missing::doubleValue, constants::missing::doubleValue});
+    for (size_t i = 0; i < GetNumNodes(); ++i)
     {
         auto dx = normalVectors[i].x * distance;
         const auto dy = normalVectors[i].y * distance;
         if (m_projection == Projection::spherical)
         {
-            dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);
+            dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * constants::conversion::degToRad);
         }
         newPolygonPoints[i].x = m_nodes[i].x + dx;
         newPolygonPoints[i].y = m_nodes[i].y + dy;
@@ -303,47 +329,28 @@ bool Polygons::IsPointInPolygon(Point const& point, size_t polygonIndex) const
     {
         throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
     }
-
-    const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
+    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
+    const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), outerStart, outerEnd);
     return inPolygon;
-}
-
-bool Polygons::IsPointInPolygons(const Point& point) const
-{
-    if (IsEmpty())
-    {
-        return true;
-    }
-
-    for (auto p = 0; p < GetNumPolygons(); ++p)
-    {
-        auto const inPolygon = IsPointInPolygon(point, p);
-        if (inPolygon)
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 size_t Polygons::GetNumPolygons() const
 {
-    return m_indices.size();
+    return m_outer_polygons_indices.size();
 }
 
-size_t Polygons::PolygonIndex(Point point) const
+std::tuple<bool, size_t> Polygons::IsPointInPolygons(Point point) const
 {
     // empty polygon means everything is included
-    if (m_indices.empty())
+    if (m_outer_polygons_indices.empty())
     {
-        return true;
+        return {true, constants::missing::sizetValue};
     }
 
     bool inPolygon = false;
-    for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
+    for (size_t polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
     {
-        auto const polygonStartIndex = m_indices[polygonIndex][0];
-        auto const polygonEndIndex = m_indices[polygonIndex][1];
+        const auto& [polygonStartIndex, polygonEndIndex] = m_outer_polygons_indices[polygonIndex];
 
         // Calculate the bounding box
         double XMin = std::numeric_limits<double>::max();
@@ -359,33 +366,41 @@ size_t Polygons::PolygonIndex(Point point) const
             YMax = std::max(YMax, m_nodes[n].y);
         }
 
-        if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
+        if (point.x >= XMin && point.x <= XMax && (point.y >= YMin && point.y <= YMax))
         {
             inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), polygonStartIndex, polygonEndIndex);
         }
 
         if (inPolygon)
         {
-            return polygonIndex;
+            for (const auto& [startInner, endInner] : m_inner_polygons_indices.at(polygonIndex))
+            {
+                if (IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), startInner, endInner))
+                {
+                    return {false, constants::missing::sizetValue};
+                }
+            }
+            return {true, polygonIndex};
         }
     }
 
-    return sizetMissingValue;
+    return {false, constants::missing::sizetValue};
 }
 
-std::vector<size_t> Polygons::PolygonIndices(const std::vector<Point>& points) const
+std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const
 {
-    std::vector<size_t> result(points.size(), sizetMissingValue);
-    for (auto i = 0; i < points.size(); ++i)
+    std::vector<bool> result(points.size(), false);
+    for (size_t i = 0; i < points.size(); ++i)
     {
-        result[i] = PolygonIndex(points[i]);
+        const auto [isInPolygon, polygonIndex] = IsPointInPolygons(points[i]);
+        result[i] = isInPolygon;
     }
     return result;
 }
 
 bool Polygons::IsEmpty() const
 {
-    return m_indices.empty();
+    return m_outer_polygons_indices.empty();
 }
 
 double Polygons::PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const
@@ -404,7 +419,7 @@ std::vector<double> Polygons::PolygonEdgeLengths(const std::vector<Point>& polyg
     std::vector<double> edgeLengths;
     edgeLengths.reserve(polygonNodes.size());
 
-    for (auto p = 0; p < polygonNodes.size(); ++p)
+    for (size_t p = 0; p < polygonNodes.size(); ++p)
     {
         const auto firstNode = p;
         auto secondNode = p + 1;
@@ -426,7 +441,7 @@ double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
     }
 
     auto maximumEdgeLength = std::numeric_limits<double>::lowest();
-    for (auto p = 0; p < polygonNodes.size() - 1; ++p)
+    for (size_t p = 0; p < polygonNodes.size() - 1; ++p)
     {
         double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
         maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);

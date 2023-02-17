@@ -11,20 +11,26 @@ add_dependencies(MeshKernelApiTests MeshKernelApi)
 target_link_libraries(MeshKernelApiTests PRIVATE MeshKernelApi UtilsStatic
                                                  gtest_main gmock)
 
+if (UNIX)
+   target_link_libraries(MeshKernelApiTests PUBLIC ${CMAKE_DL_LIBS})
+endif (UNIX)
+
+# Add precompiled header to speed up compilation
+target_precompile_headers(MeshKernelApiTests PRIVATE <exception> <memory> <numeric>)
+
 # Make sure that coverage information is produced when using gcc
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set_target_properties(
-    MeshKernelApiTests
-    PROPERTIES COMPILE_FLAGS
-               "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++"
-  )
-  set_target_properties(MeshKernelApiTests PROPERTIES LINK_FLAGS
-                                                      "-ldl -lgcov --coverage")
+if(PRODUCE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set_target_properties( MeshKernelApiTests PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+  set_target_properties(MeshKernelApiTests PROPERTIES LINK_FLAGS "-ldl -lgcov --coverage")
 endif()
 
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
-add_test(NAME MeshKernelApiTests COMMAND MeshKernelApiTests)
+add_test(
+  NAME MeshKernelApiTests
+  COMMAND MeshKernelApiTests
+  #WORKING_DIRECTORY ${BIN_DIR}
+)
 
 # On Windows we bundle the netcdf dlls and then copy them to the target file
 # directory

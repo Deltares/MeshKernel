@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 namespace meshkernel
 {
     class Mesh2D;
@@ -41,9 +38,8 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Mesh2D ctor
+        /// @brief Mesh2D constructor
         /// @brief mesh
-        /// @returns
         explicit Smoother(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Computes the smoother weights
@@ -100,19 +96,11 @@ namespace meshkernel
 
         /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// @param[in] currentNode
-        /// @param[out] numSharedFaces
-        /// @param[out] numConnectedNodes
-        void NodeAdministration(size_t currentNode,
-                                size_t& numSharedFaces,
-                                size_t& numConnectedNodes);
+        void NodeAdministration(size_t currentNode);
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
-        /// @param[in] numSharedFaces
-        /// @param[in] numConnectedNodes
-        void ComputeNodeXiEta(size_t currentNode,
-                              size_t numSharedFaces,
-                              size_t numConnectedNodes);
+        void ComputeNodeXiEta(size_t currentNode);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -131,25 +119,12 @@ namespace meshkernel
 
         /// @brief If it is a new topology, save it
         /// @param[in] currentNode
-        /// @param[in] numSharedFaces
-        /// @param[in] numConnectedNodes
-        void SaveNodeTopologyIfNeeded(size_t currentNode,
-                                      size_t numSharedFaces,
-                                      size_t numConnectedNodes);
+        void SaveNodeTopologyIfNeeded(size_t currentNode);
 
         /// @brief Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
         /// @param[in] currentNode
         /// @param[out] J
         void ComputeJacobian(size_t currentNode, std::vector<double>& J) const;
-
-        /// @brief Compute the matrix norm
-        /// @brief x
-        /// @brief y
-        /// @brief matCoefficients
-        /// @returns
-        [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
-                                        const std::vector<double>& y,
-                                        const std::vector<double>& matCoefficients) const;
 
         // The mesh to smooth
         std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
@@ -182,10 +157,7 @@ namespace meshkernel
         std::vector<double> m_etasCache;                         ///< Cache for etas
 
         // Smoother topologies
-        size_t m_numTopologies = 0;                                              ///< Number of topologies
         std::vector<size_t> m_nodeTopologyMapping;                               ///< Node topology mapping
-        std::vector<size_t> m_numTopologyNodes;                                  ///< Number of topology nodes
-        std::vector<size_t> m_numTopologyFaces;                                  ///< Number of topology faces
         std::vector<std::vector<double>> m_topologyXi;                           ///< Topology xi
         std::vector<std::vector<double>> m_topologyEta;                          ///< Topology eta
         std::vector<std::vector<size_t>> m_topologySharedFaces;                  ///< Topology shared faces

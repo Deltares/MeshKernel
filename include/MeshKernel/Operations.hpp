@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cmath>
 #include <numeric>
 
 #include <MeshKernel/Constants.hpp>
@@ -37,6 +35,53 @@
 
 namespace meshkernel
 {
+    /// @brief Resizes and fills a two dimensional vector
+    /// @tparam T The type of the vector elements
+    /// @param[in] v The input two dimensional vector
+    /// @param[in] firstDimension The first new dimension
+    /// @param[in] secondDimension The second new dimension
+    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fillValue The fill value
+    template <typename T>
+    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, size_t const& firstDimension, size_t const& secondDimension, bool fill = false, const T& fillValue = {})
+    {
+        v.resize(firstDimension);
+        for (auto& e : v)
+        {
+            e.resize(secondDimension);
+            if (fill)
+            {
+                std::fill(e.begin(), e.end(), fillValue);
+            }
+        }
+    }
+
+    /// @brief Resizes and fills a three dimensional vector
+    /// @tparam T The type of the vector elements
+    /// @param[in] v The input three dimensional vector
+    /// @param[in] firstDimension The first new dimension
+    /// @param[in] secondDimension The second new dimension
+    /// @param[in] thirdDim The third new dimension
+    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fillValue The fill value
+    template <typename T>
+    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, size_t const& firstDimension, size_t const& secondDimension, size_t const& thirdDim, bool fill = false, const T& fillValue = {})
+    {
+        v.resize(firstDimension);
+        for (auto& e : v)
+        {
+            e.resize(secondDimension);
+            for (auto& ee : e)
+            {
+                ee.resize(thirdDim);
+                if (fill)
+                {
+                    std::fill(ee.begin(), ee.end(), fillValue);
+                }
+            }
+        }
+    }
+
     /// @brief Defines generic dot product for one dimension
     /// @tparam T Requires * operator
     /// @param[in] dx1 First component
@@ -80,7 +125,7 @@ namespace meshkernel
     template <typename T>
     [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
     {
-        for (auto n = 0; n < vec.size(); n++)
+        for (size_t n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
@@ -97,10 +142,7 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
-                                                 size_t start,
-                                                 size_t end,
-                                                 double separator);
+    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
@@ -110,7 +152,8 @@ namespace meshkernel
     {
         std::vector<size_t> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
-        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
+        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
+                         { return v[i1] < v[i2]; });
         return indices;
     }
 
@@ -138,7 +181,7 @@ namespace meshkernel
     template <typename F>
     [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
-        //golden distance factors
+        // golden distance factors
         const double c = 0.38196602;
         const double r = 0.61803399;
         const double tolerance = 1e-5;
@@ -213,15 +256,14 @@ namespace meshkernel
     /// @returns The spherical coordinate
     [[nodiscard]] Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude);
 
-    /// @brief Tests if a point is Left|On|Right of an infinite line.
-    /// @param[in] leftPoint
-    /// @param[in] rightPoint
-    /// @param[in] point
-    /// @returns
-    ///          - >0 for point left of the line through leftPoint and rightPoint
-    ///          - =0 for point  on the line
-    ///          - <0 for point  right of the line
-    [[nodiscard]] double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point);
+    /// @brief Computes the cross product between two segments (duitpl)
+    /// @param[in] firstSegmentFirstPoint   The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint  The second point of the first segment
+    /// @param[in] secondSegmentFistPoint   The second point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] projection               The coordinate system projection
+    /// @return The cross product value
+    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
     /// @param[in] point The point to check
@@ -234,9 +276,9 @@ namespace meshkernel
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
-                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue},
-                                             size_t startNode = sizetMissingValue,
-                                             size_t endNode = sizetMissingValue);
+                                             Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
+                                             size_t startNode = constants::missing::sizetValue,
+                                             size_t endNode = constants::missing::sizetValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -384,22 +426,11 @@ namespace meshkernel
                                            double& ratioFirstSegment,
                                            double& ratioSecondSegment);
 
-    /// @brief Computes the sign of the cross product between two segments (duitpl)
-    /// @param[in] firstSegmentFirstPoint   The first point of the first segment
-    /// @param[in] firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in] secondSegmentFistPoint   The first point of the second segment
-    /// @param[in] secondSegmentSecondPoint The second point of the second segment
-    /// @param[in] projection               The coordinate system projection
-    /// @return The cross product sign
-    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
-
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
     /// @param[in]  polygon            The input vector containing the nodes of the polygon (must be closed)
     /// @param[in]  projection         The projection to use.
-    /// @param[out] area               The resulting area.
-    /// @param[out] centerOfMass       The resulting center of mass.
-    /// @param[out] isCounterClockWise The orientation of the edges.
-    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
+    /// @return A tuple containing the resulting area, the resulting center of mass, and the orientation of the edges (counterclockwise/clockwise)
+    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates
@@ -419,13 +450,13 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = static_cast<double>(std::floor(pointAdimensionalCoordinate));
-        if (pointAdimensionalCoordinate - intCoordinate < eps)
+        const auto coordinate = std::floor(pointAdimensionalCoordinate);
+        if (pointAdimensionalCoordinate - coordinate < eps)
         {
-            return pointCoordinate = coordinates[intCoordinate];
+            return pointCoordinate = coordinates[static_cast<size_t>(coordinate)];
         }
 
-        const size_t low = intCoordinate;
+        const size_t low = static_cast<size_t>(coordinate);
         const size_t high = low + 1;
         const double a = high - pointAdimensionalCoordinate;
         const double b = pointAdimensionalCoordinate - low;
@@ -442,7 +473,7 @@ namespace meshkernel
     template <class T>
     void SwapVectorElements(std::vector<T>& v)
     {
-        for (auto i = 0; i < v.size() / 2; ++i)
+        for (size_t i = 0; i < v.size() / 2; ++i)
         {
             const auto a = v[i];
             v[i] = v[i + 1];
@@ -576,5 +607,12 @@ namespace meshkernel
     /// @param projection The projection to use
     /// @return A vector containing the lengths of each polyline segment
     [[nodiscard]] std::vector<double> ComputePolyLineEdgesLengths(std::vector<Point> const& polyline, Projection projection);
+
+    /// @brief Compute the matrix norm
+    /// @brief x [in] To be detailed
+    /// @brief y [in] To be detailed
+    /// @brief matCoefficients [in] To be detailed
+    /// @returns The computed matrix norm
+    [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
 
 } // namespace meshkernel

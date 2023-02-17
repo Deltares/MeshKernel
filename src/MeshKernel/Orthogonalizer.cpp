@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <numeric>
-#include <vector>
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -45,28 +41,27 @@ Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 void Orthogonalizer::Compute()
 {
     m_mesh->ComputeNodeNeighbours();
-    m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_mesh->m_maxNumNeighbours, 0.0));
-    m_rhs.resize(m_mesh->GetNumNodes(), std::vector<double>(2, 0.0));
-    std::fill(m_rhs.begin(), m_rhs.end(), std::vector<double>(2, 0.0));
+    ResizeAndFill2DVector(m_weights, m_mesh->GetNumNodes(), m_mesh->m_maxNumNeighbours, true, 0.0);
+    ResizeAndFill2DVector(m_rhs, m_mesh->GetNumNodes(), 2, true, 0.0);
 
     // Compute mesh aspect ratios
     m_mesh->ComputeAspectRatios(m_aspectRatios);
 
-    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         if (m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2)
         {
             continue;
         }
 
-        for (auto nn = 0; nn < m_mesh->m_nodesNumEdges[n]; nn++)
+        for (size_t nn = 0; nn < m_mesh->m_nodesNumEdges[n]; nn++)
         {
 
             const auto edgeIndex = m_mesh->m_nodesEdges[n][nn];
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (IsEqual(aspectRatio, doubleMissingValue))
+            if (IsEqual(aspectRatio, constants::missing::doubleValue))
             {
                 continue;
             }
@@ -93,7 +88,7 @@ void Orthogonalizer::Compute()
 
             if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
             {
-                normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
+                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
             }
 
             m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;

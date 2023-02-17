@@ -30,9 +30,6 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 
-#include <memory>
-#include <vector>
-
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
@@ -59,7 +56,6 @@ namespace meshkernel
         ///
         /// Each non-boundary 1d node is connected to single 2d face.
         /// The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red).
-        /// The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face.
         /// For the 1d nodes not overlapping a 2d mesh,
         /// a ray starting from the current node n is computed (dashed blue ray).
         /// This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1),
@@ -129,13 +125,18 @@ namespace meshkernel
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
+        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to constants::missing::doubleValue, the search radius will be calculated internally.
         void ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
                                      const Polygons& polygons,
                                      double searchRadius);
 
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        /// @brief Gets the 1d mesh indices
+        /// @return Vector of 1d mesh indices
+        std::vector<size_t> const& Mesh1dIndices() const { return m_mesh1dIndices; }
+
+        /// @brief Gets the 2d mesh indices
+        /// @return Vector of 2d mesh indices
+        std::vector<size_t> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
@@ -150,11 +151,9 @@ namespace meshkernel
         /// @return True if the contact is crossing an existing contact
         [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
 
-        std::shared_ptr<Mesh1D> m_mesh1d; ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d; ///< The 2-d mesh to connect
-        /// @brief Connect a 1d node with the face crossed by the projected normal originating from the node itself
-        /// @param[in] node The 1d node index
-        /// @param[in] distanceFactor The factor determining the length and the direction of the projected normal (positive right normal, negative left normal)
-        void Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor);
+        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
+        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
+        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
     };
 } // namespace meshkernel

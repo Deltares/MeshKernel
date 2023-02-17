@@ -29,23 +29,11 @@
 
 namespace meshkernelapi
 {
-    /// @brief This struct describes the necessary parameters to create a new mesh in a C-compatible manner
+    /// @brief This struct describes the necessary parameters to create a new curvilinear grid in a C-compatible manner
     ///
     /// @see mkernel_make_mesh
-    struct MakeMeshParameters
+    struct MakeGridParameters
     {
-        /// @brief The type of grid to create.
-        ///
-        /// The possible types are:
-        /// - square = 0
-        /// - wieber = 1
-        /// - hexagonal type 1 = 2
-        /// - hexagonal type 2 = 3
-        /// - triangular = 4
-        ///
-        /// Square is the suggested default.
-        int grid_type;
-
         /// @brief The number of columns in x direction
         int num_columns;
 

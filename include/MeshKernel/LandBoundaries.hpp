@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
@@ -176,17 +173,17 @@ namespace meshkernel
         /// @param[in] node              The node
         /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary,
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
-        std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(int landBoundaryIndex, const Point& node);
+        std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(size_t landBoundaryIndex, const Point& node);
 
-        std::shared_ptr<Mesh2D> m_mesh;                         ///< A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;                   ///< A pointer to polygons
-        std::vector<Point> m_nodes;                             ///< XLAN, YLAN
-        std::vector<Point> m_polygonNodesCache;                 ///< Array of points (e.g. points of a face)
-        std::vector<std::vector<size_t>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
-        std::vector<std::vector<double>> m_nodesLand;           ///< Node to land boundary segment mapping
-        std::vector<size_t> m_nodeFaceIndices;                  ///< For each node, the indices of the faces including them
+        std::shared_ptr<Mesh2D> m_mesh;                               ///< A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;                         ///< A pointer to polygons
+        std::vector<Point> m_nodes;                                   ///< XLAN, YLAN
+        std::vector<Point> m_polygonNodesCache;                       ///< Array of points (e.g. points of a face)
+        std::vector<std::pair<size_t, size_t>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
+        std::vector<std::vector<double>> m_nodesLand;                 ///< Node to land boundary segment mapping
+        std::vector<size_t> m_nodeFaceIndices;                        ///< For each node, the indices of the faces including them
 
-        std::vector<size_t> m_nodeMask; ///< Nodemask, masking the net nodes
+        std::vector<size_t> m_nodeMask; ///< Node mask
         std::vector<bool> m_faceMask;   ///< Face mask
         std::vector<size_t> m_edgeMask; ///< Edge mask
 
@@ -201,7 +198,7 @@ namespace meshkernel
         const double m_closeWholeMeshFactor = 1.0;      ///< Close-to-whole-mesh tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0; ///< Minimal distance from land factor
 
-        //findOnlyOuterMeshBoundary
+        // findOnlyOuterMeshBoundary
         bool m_findOnlyOuterMeshBoundary = false; ///< Whether to find only outer mesh boundary
     };
 

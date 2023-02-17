@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/RTree.hpp>
@@ -75,21 +73,33 @@ namespace meshkernel
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
-        /// @param[in] administration Type of administration to perform
-        explicit Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
+        Mesh2D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               Projection projection);
+
+        /// @brief Construct a mesh2d from face nodes and num face nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
+        /// @param[in] projection The mesh projection
+        Mesh2D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               const std::vector<std::vector<size_t>>& faceNodes,
+               const std::vector<size_t>& numFaceNodes,
+               Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
         /// @param[in] projection The projection to use
-        explicit Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
+        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Perform mesh administration
-        /// @param administrationOption Type of administration to perform
-        void Administrate(AdministrationOption administrationOption);
+        void Administrate();
 
         /// @brief Compute face circumcenters
-        void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
+        void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
@@ -98,15 +108,6 @@ namespace meshkernel
         /// @param[in] minx
         /// @param[in] miny
         void OffsetSphericalCoordinates(double minx, double miny);
-
-        /// @brief Masks the edges of all faces included in all polygons
-        /// @param polygons The selection polygon
-        /// @param invertSelection Invert selection
-        /// @param includeIntersected Included the edges intersected by the polygon
-        void MaskFaceEdgesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected);
-
-        /// @brief From the masked edges compute the masked nodes
-        void ComputeNodeMaskFromEdgeMask();
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -122,16 +123,6 @@ namespace meshkernel
         /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
         void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
-
-        /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
-        /// @param[in] faceIndex The face index
-        /// @returns   If the face is fully contained in the polygon or not
-        [[nodiscard]] bool IsFullFaceNotInPolygon(size_t faceIndex) const;
-
-        /// @brief Mask all nodes in a polygon
-        /// @param[in] polygons The input polygon
-        /// @param[in] inside   Inside/outside option
-        void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
@@ -267,20 +258,48 @@ namespace meshkernel
         void DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
-        /// @param firstPoint The first point of the segment
-        /// @param secondPoint The second point of the segment
+        /// @param[in] firstPoint The first point of the segment
+        /// @param[in] secondPoint The second point of the segment
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
+        /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
+        /// @param[in] polyLine An input polyline, defined as a series of points
+        /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
+        [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
+                                 std::vector<FaceMeshPolylineIntersection>>
+        GetPolylineIntersections(const std::vector<Point>& polyLine);
+
+        /// @brief Masks the edges of all faces entirely included in all polygons
+        /// @param[in] polygons The selection polygon
+        /// @param[in] invertSelection Invert selection
+        /// @param[in] includeIntersected Included the edges intersected by the polygon
+        /// @return The edge mask
+        [[nodiscard]] std::vector<int> EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+
+        /// @brief From the edge mask compute the node mask
+        /// @param[in] edgeMask The edge mask
+        /// @return The node mask
+        [[nodiscard]] std::vector<int> NodeMaskFromEdgeMask(std::vector<int> const& edgeMask) const;
+
+        /// @brief Mask all nodes included in all polygons
+        /// @param[in] polygons The input polygon
+        /// @param[in] inside   Inside or outside option
+        /// @return The node mask
+        [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
+
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
-        std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
-
     private:
+        // orthogonalization
+        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+
         /// @brief Find cells recursive, works with an arbitrary number of edges
-        /// @param[in] startingNode The starting node
+        /// @param[in] startNode The starting node
         /// @param[in] node The current node
-        /// @param[in] numEdges The number of edges visited so far
         /// @param[in] previousEdge The previously visited edge
         /// @param[in] numClosingEdges The number of edges closing a face (3 for triangles, 4 for quads, etc)
         /// @param[in,out] edges The vector storing the current edges forming a face
@@ -288,9 +307,8 @@ namespace meshkernel
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
         /// @param[in,out] nodalValues The nodal values building a closed polygon
-        void FindFacesRecursive(size_t startingNode,
+        void FindFacesRecursive(size_t startNode,
                                 size_t node,
-                                size_t numEdges,
                                 size_t previousEdge,
                                 size_t numClosingEdges,
                                 std::vector<size_t>& edges,
@@ -300,9 +318,34 @@ namespace meshkernel
                                 std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
-        /// @param[in] faceNodes
-        /// @param[in] nodes
-        /// @returns If triangle is okay
-        [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+        /// @param[in] faceNodes The face nodes composing the triangles
+        /// @param[in] nodes The node coordinates
+        /// @returns If triangle has an acute triangle
+        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+
+        /// @brief Resizes and initializes face vectors
+        void ResizeAndInitializeFaceVectors()
+        {
+            // face administration
+            m_edgesNumFaces.resize(m_edges.size());
+            std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
+
+            m_edgesFaces.resize(m_edges.size());
+            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, constants::missing::sizetValue));
+
+            m_facesMassCenters.clear();
+            m_faceArea.clear();
+            m_facesNodes.clear();
+            m_facesEdges.clear();
+            m_facesCircumcenters.clear();
+            m_numFacesNodes.clear();
+
+            m_facesMassCenters.reserve(GetNumNodes());
+            m_faceArea.reserve(GetNumNodes());
+            m_facesNodes.reserve(GetNumNodes());
+            m_facesEdges.reserve(GetNumNodes());
+            m_facesCircumcenters.reserve(GetNumNodes());
+            m_numFacesNodes.reserve(GetNumNodes());
+        }
     };
 } // namespace meshkernel

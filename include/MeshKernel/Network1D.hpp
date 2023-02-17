@@ -26,7 +26,6 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 
@@ -46,8 +45,8 @@ namespace meshkernel
         /// @brief Construct a mesh1d by discretizing polyLines
         /// @param[in] polyLines The polylines to be discretize
         /// @param[in] projection The projection to use
-        explicit Network1D(std::vector<std::vector<Point>> const& polyLines,
-                           Projection projection);
+        Network1D(std::vector<std::vector<Point>> const& polyLines,
+                  Projection projection);
 
         /// @brief Compute the chainages from fixed point locations
         /// @param[in] fixedChainagesByPolyline The fixed chainages. These are the locations where the discretization points before and after must be at a distance equal to fixedChainagesOffset

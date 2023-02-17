@@ -25,10 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
-#include <stdexcept>
-#include <vector>
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -37,15 +33,15 @@
 
 using meshkernel::Splines;
 
-Splines::Splines(Projection projection) : m_projection(projection){};
+Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
     std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
-    for (auto n = 0; n < grid.m_numN; ++n)
+    for (size_t n = 0; n < grid.m_numN; ++n)
     {
-        for (auto m = 0; m < grid.m_numM; ++m)
+        for (size_t m = 0; m < grid.m_numM; ++m)
         {
             mGridLines[n][m] = grid.m_gridNodes[m][n];
         }
@@ -54,7 +50,7 @@ Splines::Splines(CurvilinearGrid const& grid)
 
     // then the m_m m_n-gridlines
     std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
-    for (auto m = 0; m < grid.m_numM; ++m)
+    for (size_t m = 0; m < grid.m_numM; ++m)
     {
         AddSpline(grid.m_gridNodes[m], 0, grid.m_gridNodes[m].size());
     }
@@ -82,11 +78,10 @@ void Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t 
 
     // compute second order derivatives
     std::vector<Point> splineDerivatives(splinesNodes.size());
-    const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), doubleMissingValue);
+    const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), constants::missing::doubleValue);
     for (auto index : indices)
     {
-        const auto startIndex = index[0];
-        const auto endIndex = index[1];
+        const auto& [startIndex, endIndex] = index;
         const auto derivatives = SecondOrderDerivative(splinesNodes, startIndex, endIndex);
         for (auto j = startIndex; j <= endIndex; ++j)
         {
@@ -133,9 +128,9 @@ bool Splines::GetSplinesIntersection(size_t first,
     const auto numNodesSecondSpline = m_splineNodes[second].size();
 
     // First find a valid crossing, the closest to spline central point
-    for (auto n = 0; n < numNodesFirstSpline - 1; n++)
+    for (size_t n = 0; n < numNodesFirstSpline - 1; n++)
     {
-        for (auto nn = 0; nn < numNodesSecondSpline - 1; nn++)
+        for (size_t nn = 0; nn < numNodesSecondSpline - 1; nn++)
         {
             Point intersection;
             double crossProduct;
@@ -171,10 +166,10 @@ bool Splines::GetSplinesIntersection(size_t first,
                 {
                     minimumCrossingDistance = crossingDistance;
                     numCrossing = 1;
-                    firstCrossingIndex = n;            //TI0
-                    secondCrossingIndex = nn;          //TJ0
-                    firstCrossingRatio = firstRatio;   //SL
-                    secondCrossingRatio = secondRatio; //SM
+                    firstCrossingIndex = n;            // TI0
+                    secondCrossingIndex = nn;          // TJ0
+                    firstCrossingRatio = firstRatio;   // SL
+                    secondCrossingRatio = secondRatio; // SM
                 }
             }
             closestIntersection = intersection;
@@ -250,8 +245,8 @@ bool Splines::GetSplinesIntersection(size_t first,
         Point oldIntersection = closestIntersection;
 
         double crossProduct;
-        double firstRatio = doubleMissingValue;
-        double secondRatio = doubleMissingValue;
+        double firstRatio = constants::missing::doubleValue;
+        double secondRatio = constants::missing::doubleValue;
         const bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
                                                      firstRightSplinePoint,
                                                      secondLeftSplinePoint,
@@ -301,7 +296,7 @@ bool Splines::GetSplinesIntersection(size_t first,
         return true;
     }
 
-    //not crossing
+    // not crossing
     return false;
 }
 
@@ -333,7 +328,7 @@ double Splines::ComputeSplineLength(size_t index,
     double splineLength = 0.0;
 
     auto rightPointCoordinateOnSpline = startAdimensionalCoordinate;
-    for (auto p = 0; p < numPoints; ++p)
+    for (size_t p = 0; p < numPoints; ++p)
     {
         const double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;

@@ -32,7 +32,7 @@ TEST(Splines, CubicSplineInterpolation)
     auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes, 0, splineNodes.size() - 1);
     std::vector<meshkernel::Point> splineCoordinates;
 
-    for (auto n = 0; n < splineNodes.size() - 1; n++)
+    for (size_t n = 0; n < splineNodes.size() - 1; n++)
     {
         for (auto p = 0; p <= pointsBetweenNodes; p++)
         {

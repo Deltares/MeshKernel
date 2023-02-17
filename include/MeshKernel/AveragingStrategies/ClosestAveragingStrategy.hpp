@@ -30,7 +30,6 @@
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Entities.hpp>
 
-
 namespace meshkernel::averaging
 {
     /// @brief ClosestAveragingStrategy implements the AveragingStrategy which selects the value of the closest added point.
@@ -48,7 +47,7 @@ namespace meshkernel::averaging
 
     private:
         /// @brief The result used to calculate the final value in Calculate.
-        double m_result =doubleMissingValue;
+        double m_result = constants::missing::doubleValue;
 
         /// @brief The closest squared value currently found.
         double m_closestSquaredValue = std::numeric_limits<double>::max();

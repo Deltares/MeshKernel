@@ -4,7 +4,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
@@ -18,21 +18,20 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::cartesian);
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
-    makeMeshParameters.angle = 0.0;
-    makeMeshParameters.origin_x = 0.0;
-    makeMeshParameters.origin_y = 0.0;
-    makeMeshParameters.num_columns = 3;
-    makeMeshParameters.num_rows = 3;
-    makeMeshParameters.block_size_x = 1.0;
-    makeMeshParameters.block_size_y = 1.0;
+    meshkernelapi::MakeGridParameters makeGridParameters;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 1.0;
 
     // Execution
-    meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute());
+    meshkernel::CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, meshkernel::Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
 
-    // Assert, also invalid nodes and adges are included in the curvilinear grid
+    // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
     ASSERT_EQ(10, numValidNodes);
 }
@@ -49,19 +48,18 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 
     const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::spherical);
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
-    makeMeshParameters.angle = 0.0;
-    makeMeshParameters.origin_x = 0.0;
-    makeMeshParameters.origin_y = 0.0;
-    makeMeshParameters.num_columns = 3;
-    makeMeshParameters.num_rows = 3;
-    makeMeshParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeMeshParameters.block_size_y = 5000000.0;
+    meshkernelapi::MakeGridParameters makeGridParameters;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+    makeGridParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeGridParameters.block_size_y = 5000000.0;
 
     // Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
-    meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute());
+    meshkernel::CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, meshkernel::Projection::spherical);
+    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
 
     // Assert
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -71,21 +69,18 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 {
     //1 Setup
-    std::vector<meshkernel::Point> polygonNodes;
-    const auto polygons = std::make_shared<meshkernel::Polygons>(polygonNodes, meshkernel::Projection::spherical);
 
-    meshkernelapi::MakeMeshParameters makeMeshParameters;
-    makeMeshParameters.grid_type = 0;
-    makeMeshParameters.angle = 0.0;
-    makeMeshParameters.origin_x = 0.0;
-    makeMeshParameters.origin_y = 0.0;
-    makeMeshParameters.num_columns = 3;
-    makeMeshParameters.num_rows = 3;
-    makeMeshParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeMeshParameters.block_size_y = 5000000.0;
+    meshkernelapi::MakeGridParameters makeGridParameters;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+    makeGridParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeGridParameters.block_size_y = 5000000.0;
 
     // 2 Execution
-    meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
+    meshkernel::CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, meshkernel::Projection::spherical);
     const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::spherical);
@@ -96,19 +91,19 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 
     // x coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[1].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[2].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[3].x);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[1].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[2].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[3].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[4].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[5].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[6].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[7].x);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[5].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[6].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[7].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[8].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[9].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 2, mesh.m_nodes[10].x);
-    ASSERT_EQ(makeMeshParameters.block_size_x * 3, mesh.m_nodes[11].x);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[9].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[10].x);
+    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[11].x);
 
     // y coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].y);
@@ -116,10 +111,10 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(0.0, mesh.m_nodes[2].y);
     ASSERT_EQ(0.0, mesh.m_nodes[3].y);
 
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[4].y);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[5].y);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[6].y);
-    ASSERT_EQ(makeMeshParameters.block_size_x, mesh.m_nodes[7].y);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[4].y);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[5].y);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[6].y);
+    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[7].y);
 
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[8].y);
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[9].y);

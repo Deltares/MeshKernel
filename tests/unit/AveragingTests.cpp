@@ -7,10 +7,10 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
-//Simple averaging
+// Simple averaging
 TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
-    //Prepare
+    // Prepare
     auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
 
     std::vector<meshkernel::Sample> samples{
@@ -25,7 +25,14 @@ TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldint
         {3.5, 3.5, 2.0}};
 
     // Execute
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     // Asser
@@ -64,7 +71,14 @@ TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Edges, 1.01, false, false, 0);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 0);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -98,7 +112,14 @@ TEST(Averaging, InterpolateOnNodesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Nodes, 1.01, false, false, 0);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 0);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -132,7 +153,14 @@ TEST(Averaging, InterpolateOnFacesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Faces,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -160,7 +188,7 @@ TEST(Averaging, InterpolateOnFacesSimpleAveraging)
     ASSERT_NEAR(-5.51820730000000, interpolationResults[19], tolerance);
 }
 
-//Closest Point
+// Closest Point
 TEST(Averaging, InterpolateOnEdgesClosestPoint)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
@@ -168,7 +196,14 @@ TEST(Averaging, InterpolateOnEdgesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Closest, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Closest,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -202,7 +237,14 @@ TEST(Averaging, InterpolateOnNodesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Closest, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Closest,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -234,7 +276,14 @@ TEST(Averaging, InterpolateOnFacesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Closest, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Closest,
+                                                 meshkernel::Mesh::Location::Faces,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -259,7 +308,14 @@ TEST(Averaging, InterpolateOnEdgesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Max, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Max,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -293,7 +349,14 @@ TEST(Averaging, InterpolateOnNodesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Max, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Max,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -325,7 +388,14 @@ TEST(Averaging, InterpolateOnFacesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Max, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Max,
+                                                 meshkernel::Mesh::Location::Faces,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -350,7 +420,14 @@ TEST(Averaging, InterpolateOnEdgesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Min, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Min,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -384,7 +461,14 @@ TEST(Averaging, InterpolateOnNodesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Min, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Min,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -416,7 +500,14 @@ TEST(Averaging, InterpolateOnFacesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::Min, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::Min,
+                                                 meshkernel::Mesh::Location::Faces,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -441,7 +532,14 @@ TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::InverseWeightedDistance, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -475,7 +573,14 @@ TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::InverseWeightedDistance, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -507,7 +612,14 @@ TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::InverseWeightedDistance, meshkernel::MeshLocations::Faces, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
+                                                 meshkernel::Mesh::Location::Faces,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -532,7 +644,14 @@ TEST(Averaging, InterpolateOnEdgesMinAbsValue)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::MinAbsValue, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -566,7 +685,14 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::MinAbsValue, meshkernel::MeshLocations::Nodes, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                 meshkernel::Mesh::Location::Nodes,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     constexpr double tolerance = 1e-6;
@@ -593,7 +719,7 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
 
 TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Sample> samples{
@@ -613,13 +739,20 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     // Assert: only 12 edges gets a valid value, as the provided sample set
     auto interpolationResults = averaging.GetResults();
 
-    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::constants::missing::doubleValue);
     expectedInterpolationResults[11] = 1.0;
     expectedInterpolationResults[12] = 1.0;
     expectedInterpolationResults[13] = 1.0;
@@ -638,7 +771,7 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 
 TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
 {
-    //1 Setup
+    // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Sample> samples{
@@ -655,13 +788,20 @@ TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging, this time the minimum number of samples should at least be 2
-    meshkernel::AveragingInterpolation averaging(mesh, samples, meshkernel::AveragingInterpolation::Method::SimpleAveraging, meshkernel::MeshLocations::Edges, 1.01, false, false, 1);
+    meshkernel::AveragingInterpolation averaging(mesh,
+                                                 samples,
+                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                 meshkernel::Mesh::Location::Edges,
+                                                 1.01,
+                                                 false,
+                                                 false,
+                                                 1);
     averaging.Compute();
 
     // Assert: only 12 edges gets a valid value
     auto interpolationResults = averaging.GetResults();
 
-    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::doubleMissingValue);
+    std::vector<double> expectedInterpolationResults(interpolationResults.size(), meshkernel::constants::missing::doubleValue);
     expectedInterpolationResults[11] = 1.0;
     expectedInterpolationResults[12] = 1.0;
     expectedInterpolationResults[13] = 1.0;

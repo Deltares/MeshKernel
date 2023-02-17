@@ -18,7 +18,7 @@ TEST(LandBoundaries, OneLandBoundary)
         {316.206177, 461.190796},
         {350.811279, 465.102692},
         {510.295715, 438.923065},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     auto polygons = std::make_shared<meshkernel::Polygons>();
 
@@ -34,9 +34,9 @@ TEST(LandBoundaries, OneLandBoundary)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoLandBoundaries)
@@ -49,13 +49,13 @@ TEST(LandBoundaries, TwoLandBoundaries)
         {316.206177, 461.190796},
         {350.811279, 465.102692},
         {510.295715, 438.923065},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
         {215.980743, 363.986420},
         {250.253036, 235.233246},
         {423.158325, 200.652054},
         {559.938782, 312.732147},
         {518.873718, 421.415894},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     auto polygons = std::make_shared<meshkernel::Polygons>();
 
@@ -71,9 +71,9 @@ TEST(LandBoundaries, TwoLandBoundaries)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, OneCrossingLandBoundary)
@@ -87,7 +87,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
         {337.571045, 459.686218},
         {516.313965, 419.062683},
         {528.651428, 292.377380},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     auto polygons = std::make_shared<meshkernel::Polygons>();
 
@@ -103,9 +103,9 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoCrossingLandBoundary)
@@ -118,12 +118,12 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
         {265.953522, 436.515747},
         {429.349854, 450.959656},
         {535.271545, 386.262909},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
         {246.995941, 262.285858},
         {351.112183, 237.309906},
         {443.191895, 262.285858},
         {553.627319, 327.283539},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     auto polygons = std::make_shared<meshkernel::Polygons>();
 
@@ -139,7 +139,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::constants::missing::sizetValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }

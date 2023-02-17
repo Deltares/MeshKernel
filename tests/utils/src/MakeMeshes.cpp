@@ -78,14 +78,14 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     nc_get_var_int(ncidp, varid, edge_type.get());
 
     // Transform into 0 based indexing
-    for (auto i = 0; i < num_edges * 2; i++)
+    for (size_t i = 0; i < num_edges * 2; i++)
     {
         edge_nodes.get()[i] -= 1;
     }
 
     std::vector<int> node_type(num_nodes);
     size_t index = 0;
-    for (auto i = 0; i < num_edges; i++)
+    for (size_t i = 0; i < num_edges; i++)
     {
         const auto type = edge_type.get()[i];
         const auto firstNode = edge_nodes.get()[index];
@@ -99,7 +99,7 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     return {num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type};
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::MeshTypes meshType)
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::Type meshType)
 {
     const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(filePath);
     std::vector<meshkernel::Edge> edges;
@@ -110,27 +110,27 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
     nodeMapping.resize(num_nodes);
 
     int nodeType = 0;
-    if (meshType == meshkernel::Mesh::MeshTypes::Mesh1D)
+    if (meshType == meshkernel::Mesh::Type::Mesh1D)
     {
         nodeType = 1;
     }
-    if (meshType == meshkernel::Mesh::MeshTypes::Mesh2D)
+    if (meshType == meshkernel::Mesh::Type::Mesh2D)
     {
         nodeType = 2;
     }
 
-    for (auto i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; i++)
     {
         // If the node is not part of a 2 mesh, do not add it in nodes
         if (node_type[i] == nodeType || node_type[i] == 0)
         {
             nodes.emplace_back(node_x.get()[i], node_y.get()[i]);
-            nodeMapping[i] = nodes.size() - 1;
+            nodeMapping[i] = static_cast<int>(nodes.size()) - 1;
         }
     }
 
     auto index = 0;
-    for (auto i = 0; i < num_edges; i++)
+    for (size_t i = 0; i < num_edges; i++)
     {
 
         auto const firstNode = edge_nodes.get()[index];
@@ -147,13 +147,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
 
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string const& filePath, meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh2D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh2D);
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
 std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(std::string const& filePath, meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::MeshTypes::Mesh1D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh1D);
     return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
 }
 
@@ -221,9 +221,9 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     {
         for (auto j = 0; j < m; ++j)
         {
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = indicesValues[i + 1][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i + 1][j]);
             edgeIndex++;
         }
     }
@@ -232,9 +232,9 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     {
         for (auto j = 0; j < m - 1; ++j)
         {
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j + 1];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = indicesValues[i][j];
+            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
         }
     }
@@ -459,16 +459,188 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
 
     std::vector<meshkernel::Point> nodes(xCoordinates.size());
 
-    for (auto i = 0; i < nodes.size(); i++)
+    for (size_t i = 0; i < nodes.size(); i++)
     {
         nodes[i].x = xCoordinates[i];
         nodes[i].y = yCoordinates[i];
     }
 
-    for (auto i = 0; i < edges.size(); i++)
+    for (size_t i = 0; i < edges.size(); i++)
     {
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+}
+
+/// @brief Make face nodes
+std::tuple<std::vector<double>,
+           std::vector<double>,
+           std::vector<int>,
+           std::vector<int>,
+           std::vector<int>>
+MakeMeshWithFaceNodes()
+{
+    // Set-up new mesh
+    std::vector<double> nodes_x{
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+        0,
+        10,
+        20,
+        30,
+    };
+
+    std::vector<double> nodes_y{
+        0,
+        0,
+        0,
+        0,
+        10,
+        10,
+        10,
+        10,
+        20,
+        20,
+        20,
+        20,
+        30,
+        30,
+        30,
+        30};
+
+    std::vector<int> edges{
+        0,
+        1,
+
+        1,
+        5,
+
+        5,
+        4,
+
+        4,
+        0,
+
+        1,
+        2,
+
+        2,
+        6,
+
+        6,
+        5,
+
+        2,
+        3,
+
+        3,
+        7,
+
+        7,
+        6,
+
+        4,
+        8,
+
+        5,
+        9,
+
+        9,
+        8,
+
+        6,
+        10,
+
+        10,
+        9,
+
+        7,
+        11,
+
+        11,
+        10,
+
+        8,
+        12,
+
+        9,
+        13,
+
+        13,
+        12,
+
+        10,
+        14,
+
+        14,
+        13,
+
+        11,
+        15,
+
+        15,
+        14,
+    };
+
+    std::vector<int> faceNodes{
+        0,
+        1,
+        5,
+        4,
+
+        1,
+        2,
+        6,
+        5,
+
+        2,
+        3,
+        7,
+        6,
+
+        4,
+        5,
+        9,
+        8,
+
+        5,
+        6,
+        10,
+        9,
+
+        6,
+        7,
+        11,
+        10,
+
+        8,
+        9,
+        13,
+        12,
+
+        9,
+        10,
+        14,
+        13,
+
+        10,
+        11,
+        15,
+        14,
+    };
+
+    std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
+
+    return {nodes_x, nodes_y, edges, faceNodes, num_face_nodes};
 }
