@@ -90,7 +90,7 @@ cmake --build build --target docs
 ### Using Docker for building 
 
 For a reproducible linux build a docker image is provided, pulling centos7 from docker hub. This image can be used for building binaries working with most linux systems.
-First build the docker image:
+Building the docker image might require some time because gcc 9.3.0 is built from scratch. First build the docker image:
 
 ```powershell
 docker build --progress=plain . -t build_linux_so
@@ -99,9 +99,10 @@ docker build --progress=plain . -t build_linux_so
 Once the docker image is built, it can be used for building the dynamic library
 
 ```powershell
-docker run --rm -it build_linux_so bash -v %cd%:/usr
+docker run --rm -it build_linux_so bash -v %cd%:/root
 
 git clone https://github.com/Deltares/MeshKernel.git
+cd MeshKernel
 /opt/cmake/bin/cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 /opt/cmake/bin/cmake --build build -j4
 strip --strip-unneeded build/src/MeshKernelApi/libMeshKernelApi.so

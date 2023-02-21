@@ -3,7 +3,8 @@ yum -y install git make wget which bzip2 centos-release-scl
 yum -y install devtoolset-9
 scl enable devtoolset-9 bash
 export PATH="/opt/rh/devtoolset-9/root/usr/bin:$PATH"
-export CC=/opt/rh/devtoolset-9/root/usr/bin/gcc CXX=/opt/rh/devtoolset-9/root/usr/bin/g++
+export CC=/opt/rh/devtoolset-9/root/usr/bin/gcc 
+export CXX=/opt/rh/devtoolset-9/root/usr/bin/g++
 
 # add cmake
 cd /root
@@ -31,7 +32,5 @@ tar -xzf boost_1_81_0.tar.gz
 cd boost_1_81_0
 ./bootstrap.sh --with-libraries=filesystem,system
 ./b2 -j4 cxxflags="-fPIC" runtime-link=static variant=release link=static --prefix=/opt/boost-1.81.0 install
-export BOOST_INCLUDE_DIR=/opt/boost-1.81.0/include
-export BOOST_LIBRARYDIR=/opt/boost-1.81.0/lib
 cd ..
 rm -rf boost_1_81_0.tar.gz
