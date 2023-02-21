@@ -86,3 +86,24 @@ To build docs (requires Doxygen, output in `build/docs/html`):
 ```powershell
 cmake --build build --target docs
 ```
+
+### Using Docker for building 
+
+For a reproducible linux build a docker image is provided, pulling centos7 from docker hub. This image can be used for building binaries working with most linux systems.
+First build the docker image:
+
+```powershell
+docker build --progress=plain . -t build_linux_so
+```
+
+Once the docker image is built, it can be used for building the dynamic library
+
+```powershell
+docker run --rm -it build_linux_so bash -v %cd%:/usr
+
+git clone https://github.com/Deltares/MeshKernel.git
+/opt/cmake/bin/cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+/opt/cmake/bin/cmake --build build -j4
+strip --strip-unneeded build/src/MeshKernelApi/libMeshKernelApi.so
+
+```
