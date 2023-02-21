@@ -33,7 +33,8 @@ static void BM_RTree(benchmark::State& state)
         }
     }
 }
-BENCHMARK(BM_RTree)->RangeMultiplier(2) //
+BENCHMARK(BM_RTree)
+    ->ArgNames({"x-nodes", "y-nodes"})
     ->Args({500, 500})
     ->Args({1000, 1000})
     ->Args({2000, 2000})

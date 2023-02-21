@@ -15,18 +15,39 @@ if __name__ == "__main__":
         append_timestamp=False,
     )
     # to log in terminal
-    ##logger = log.setup()
+    # logger = log.setup()
 
     logger.info("main message")
 
-    result = JSONReader(arg_parser.file_names())
+    json_reader = JSONReader(arg_parser.file_names())
 
-    # n_files = len(arg_parser.file_names())
-    # for i in range(0, n_files):
-    #    result.display_node_contents(i, "benchmarks")
+    print("Has multiple contenders? ", json_reader.has_multiple_contenders())
 
-    dico = result.get_data(("real_time", "cpu_time"))
-    for key in dico:
-        print(key)
-        for y in dico[key]:
-            print(y)
+    # keys
+    print("keys: ", json_reader.keys())
+    attributes = json_reader.attributes()
+    print("Attributes: ", attributes)
+    print(
+        "BM_RTree/5000/5000: cpu_time = ",
+        list(json_reader.measuremenet("BM_RTree/5000/5000", "cpu_time")),
+    )
+
+    # benchmarks = json_reader.measurements()
+    # for benchmark in benchmarks:
+    #     print(benchmark)
+    #     for measurement in benchmarks[benchmark]:
+    #         print(measurement, ":", benchmarks[benchmark].get(measurement))
+    #         # print(measurement, ":", benchmarks[benchmark][measurement])
+    #         # print(measurement, ":", benchmarks[benchmark].items())
+
+    measurements = json_reader.measurements()
+    # print(measurements)
+    families = json_reader.families()
+    print("Families: ", families)
+    for family in families:
+        print(family)
+        for arg in families[family]:
+            member = json_reader.join_family(family, arg)
+            print(member)
+            for attribute in attributes:
+                print(attribute, measurements[member][attribute])

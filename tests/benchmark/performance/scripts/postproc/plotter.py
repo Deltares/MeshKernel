@@ -12,31 +12,28 @@ plots, saves and/or dsiplays json results
 
 class Plotter:
     def __init__(self, result, work_dir):
-        self.work_dir = work_dir
-        self.result = result
-        self.__figures = {}
-
-    """
-    check if fig exists in dict
-    """
+        self.__work_dir = work_dir
+        self.__result = result
+        self.__figures = dict()
 
     def __exists(self, fig_id):
+        """
+        checks if fig exists in dict
+        """
         return True if fig_id in self.__figures.keys() else False
 
-    """
-    registers a figure
-    """
-
     def __register(self, fig_id, fig, x, y_list):
+        """
+        registers a figure
+        """
         self.__figures[fig_id] = {"FIG": fig, "XMETA": x, "YMETA": y_list}
-
-    """
-    given a number of figures, returns the nearest integer
-    (dimension) required to fit the figures on a square grid
-    """
 
     @staticmethod
     def __grid_dim(n_figs):
+        """
+        given a number of figures, returns the nearest integer
+        (dimension) required to fit the figures on a square grid
+        """
         return int(np.ceil(np.sqrt(n_figs)))
 
     """
@@ -59,14 +56,13 @@ class Plotter:
         LEGEND = 1
         TICK = 2
 
-    """
-    plots a figure given an id, and x and y meta
-    optional parameter: fonst_size = (axes label, legend, ticks)
-    """
-
     __defaut_format = "png"
 
     def plot(self, fig_id, x, y_list, font_size=(10, 6, 8)):
+        """
+        plots a figure given an id, and x and y meta
+        optional parameter: fonst_size = (axes label, legend, ticks)
+        """
         assert self.__exists(fig_id) == False, "Figure ID must be unique"
         n_subplots = len(y_list)
         assert len(x) == 3 and n_subplots > 0
@@ -79,7 +75,7 @@ class Plotter:
             fig.delaxes(axis)
         axes = np.delete(axes, np.s_[n_subplots:])
         # x data
-        x_attrs, x_data = self.result.get_set_from_group(
+        x_attrs, x_data = self.__result.get_set_from_group(
             x[self.__CurveMeta.GROUP], x[self.__CurveMeta.SET]
         )
         for i_y, y in enumerate(y_list):
@@ -88,7 +84,7 @@ class Plotter:
             last_prop_unit = ()
             axis = axes[i_y]
             for i_set, y_set in enumerate(y[self.__CurveMeta.SET]):
-                y_attrs, y_data = self.result.get_set_from_group(
+                y_attrs, y_data = self.__result.get_set_from_group(
                     y[self.__CurveMeta.GROUP], y_set
                 )
                 axis.plot(
@@ -134,7 +130,7 @@ class Plotter:
 
     def save(self, fig_id, file_name, fmt=__defaut_format):
         if self.__exists(fig_id):
-            path = os.path.join(self.work_dir, file_name + "." + fmt)
+            path = os.path.join(self.__work_dir, file_name + "." + fmt)
             self.__figures[fig_id]["FIG"].savefig(path, format=fmt)
 
     """
@@ -147,44 +143,41 @@ class Plotter:
                 self.close(fig_id)
             self.__figures.pop(fig_id)
 
-    """
-    checks if the figure with a given id is open
-    """
-
     @staticmethod
     def __is_open(fig_id):
+        """
+        checks if the figure with a given id is open
+        """
         return plt.fignum_exists(fig_id)
 
-    """
-    displays a figure given an id
-    create a dummy figure and use its manager to display a figure with id fig_id: expensive!
-    """
-
     def display(self, fig_id):
+        """
+        displays a figure given an id
+        create a dummy figure and use its manager to display a figure with id fig_id: expensive!
+        """
         if self.__exists(fig_id) and not self.__is_open(fig_id):
             manager = plt.figure(fig_id).canvas.manager
             manager.canvas.figure = self.__figures[fig_id]["FIG"]
             self.__figures[fig_id]["FIG"].set_canvas(manager.canvas)
 
-    """
-    convenience mthod that displays a figure and saves it given an id, file name, and optionally a format
-    """
-
     def display_and_save(self, fig_id, file_name, fmt=__defaut_format):
+        """
+        convenience mthod that displays a figure and saves it given an id, file name, and optionally a format
+        """
         self.display(fig_id)
         self.save(fig_id, file_name, fmt)
 
     def close(self, fig_id):
+        """
+        closes a figure given an id
+        """
         if self.__exists(fig_id) and self.__is_open(fig_id):
             plt.close(self.__figures[fig_id]["FIG"])
 
-    def print_register(self):
+    def __print_register(self):
         for key, value in self.__figures.items():
             print(
                 "ID: {}\nHandle: {}\nx-meta: {}\ny-meta: {}\n".format(
                     key, value["FIG"], value["XMETA"], value["YMETA"], "\n"
                 )
             )
-
-    def get_size(self):
-        print("dict size =", len(self.__figures))

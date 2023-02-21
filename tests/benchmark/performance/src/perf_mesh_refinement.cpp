@@ -53,9 +53,11 @@ static void BM_MeshRefinement(benchmark::State& state)
         meshRefinement.Compute();
     }
 }
-BENCHMARK(BM_MeshRefinement)->RangeMultiplier(2) //
-    ->Args({500, 500})
-    ->Args({1000, 1000});
+BENCHMARK(BM_MeshRefinement)
+    ->ArgNames({"x-nodes", "y-nodes"})
+    ->Args({250, 250})
+    ->Args({500, 500});
+//->Args({1000, 1000});
 //->Args({2000, 2000})
 //->Args({4000, 4000})
 //->Args({5000, 5000});
