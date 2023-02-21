@@ -56,6 +56,10 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost
+if(WIN32)
+  # In windows use static libraries
+  set(Boost_USE_STATIC_LIBS ON)
+endif()
 set(Boost_USE_STATIC_RUNTIME ON)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
