@@ -56,21 +56,8 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost
-if(WIN32)
-  # In windows use static libraries
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-
-# NetCDF
-if(WIN32)
-  find_path(
-    NETCDF_BIN_PATH
-    NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}netcdf${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    HINTS "${CMAKE_CURRENT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin")
-  message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
-endif()
 
 # OpenMP
 find_package(OpenMP REQUIRED)
