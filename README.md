@@ -99,7 +99,7 @@ docker build --progress=plain . -t build_linux_so
 Once the docker image is built, it can be used for building the dynamic library
 
 ```powershell
-docker run --rm -it build_linux_so bash -v %cd%:/root
+docker run -v %cd%:/root --rm -ti build_linux_so bash 
 
 git clone https://github.com/Deltares/MeshKernel.git
 cd MeshKernel
