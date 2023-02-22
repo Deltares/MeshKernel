@@ -5,7 +5,9 @@ from collections import namedtuple
 
 log = logging.getLogger("Benchmark")
 
-NamedPair = namedtuple("NamedPair", ["path", "pretty_name"])
+FileMeta = namedtuple("FileMeta", ["path", "pretty_name"])
+
+AttributeMeta = namedtuple("AttributeMeta", ["name", "unit"])
 
 
 class JSONReader:
@@ -23,13 +25,15 @@ class JSONReader:
         # a dictionary of all measurements, maps the name of an experiment to the attributes of interest
         self.__measurements = dict()
         # attributes of interest in each measurement
-        self.__attributes = [
-            "name",
-            "real_time",
-            "cpu_time",
-            "max_bytes_used",
-            "total_allocated_bytes",
-        ]
+        self.__attributes = {
+            "real_time": {"pretty_name": "Real Time", "unit": "ms"},
+            "cpu_time": {"pretty_name": "CPU Time", "unit": "ms"},
+            "max_bytes_used": {"pretty_name": "Maximum Bytes Used", "unit": "byte"},
+            "total_allocated_bytes": {
+                "pretty_name": "Total Allocated Bytes",
+                "unit": "byte",
+            },
+        }
 
         self.__load_data(file_names)
         self.__lookup_matches()
@@ -45,7 +49,7 @@ class JSONReader:
             with open(file_name, "r") as f:
                 self.__data.append(json.load(f))
             f.close()
-            self.__ids.append(NamedPair(file_name, "benchmark_" + format(i + 1, "02d")))
+            self.__ids.append(FileMeta(file_name, "benchmark_" + format(i + 1, "02d")))
             log.info(
                 "Loaded %s, pretty name = %s",
                 self.__ids[-1].path,
