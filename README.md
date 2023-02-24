@@ -101,10 +101,25 @@ Once the docker image is built, it can be used for building the dynamic library
 ```powershell
 docker run -v %cd%:/root --rm -ti build_linux_so bash 
 
+
 git clone https://github.com/Deltares/MeshKernel.git
 cd MeshKernel
 /opt/cmake/bin/cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 /opt/cmake/bin/cmake --build build -j4
 strip --strip-unneeded build/src/MeshKernelApi/libMeshKernelApi.so
+```
+
+Copy the s0 file
+
+Build linux wheels
+
+```powershell
+docker run -v %cd%:/root --rm -ti build_linux_so bash 
+PYBIN=/opt/python/cp38-cp38/bin/
+${PYBIN}/python3 setup.py bdist_wheel
+cd dist/
+auditwheel show meshkernel-2.0.2-py3-none-linux_x86_64.whl
+auditwheel repair meshkernel-2.0.2-py3-none-linux_x86_64.whl
 
 ```
+
