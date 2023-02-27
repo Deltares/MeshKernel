@@ -61,7 +61,7 @@ if(WIN32)
   set(Boost_USE_STATIC_LIBS ON)
 else()
   # In linux use static runtime
-  set(Boost_USE_STATIC_RUNTIME ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
 endif()
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
