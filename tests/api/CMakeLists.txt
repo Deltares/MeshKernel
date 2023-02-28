@@ -8,8 +8,14 @@ add_executable(MeshKernelApiTests ${API_TEST_LIST})
 add_dependencies(MeshKernelApiTests MeshKernelApi)
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(MeshKernelApiTests PRIVATE MeshKernelApi UtilsStatic
-                                                 gtest_main gmock)
+target_link_libraries(
+  MeshKernelApiTests
+  PRIVATE
+  MeshKernelApi
+  UtilsStatic
+  gtest_main
+  gmock
+)
 
 if (UNIX)
    target_link_libraries(MeshKernelApiTests PUBLIC ${CMAKE_DL_LIBS})
@@ -29,23 +35,7 @@ endif()
 add_test(
   NAME MeshKernelApiTests
   COMMAND MeshKernelApiTests
-  #WORKING_DIRECTORY ${BIN_DIR}
 )
-
-# On Windows we bundle the netcdf dlls and then copy them to the target file
-# directory
-if(WIN32)
-  file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS
-       "${PROJECT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin/*.dll")
-  foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
-    add_custom_command(
-      TARGET MeshKernelApiTests
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
-              "$<TARGET_FILE_DIR:MeshKernelApiTests>"
-      COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
-  endforeach()
-endif()
 
 # Copy the MeshKernel shared library to the target directory
 add_custom_command(
