@@ -9,6 +9,7 @@ project(
   LANGUAGES CXX C)
   
 option(PRODUCE_CODE_COVERAGE "Produce code coverage files under GNU compilers" OFF)
+option(ADD_UNIT_TESTS_PROJECTS "Add unit test projects" ON)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -72,6 +73,6 @@ add_subdirectory(src/MeshKernel)
 add_subdirectory(src/MeshKernelApi)
 
 # Testing only available if this is the main app.
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(ADD_UNIT_TESTS_PROJECTS AND CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   add_subdirectory(tests)
 endif()
