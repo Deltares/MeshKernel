@@ -384,7 +384,7 @@ Function Invoke-Post-Build-Steps() {
     }
 
     # Back-up  $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake before modifying it.
-    # Fo reference, the back-up will not be deleted.
+    # For reference, the back-up will not be deleted.
     $NeCDFCMakeTargets = (Join-Paths $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake')
     Copy-Item $NeCDFCMakeTargets -Destination (Join-Paths $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake.original')
 
