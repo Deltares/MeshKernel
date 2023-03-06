@@ -72,18 +72,20 @@ To run the script in a PowerShell session, use
 .\install_netcdf_static.ps1 -WorkDir '/path/to/work/directory' -InstallDir '/path/to/install/directory' -BuildType 'Release' -ParallelJobs 10 -GitTags @{ zlib = 'v1.2.13'; curl = 'curl-7_88_1';  hdf5 = 'hdf5-1_14_0';  netcdf_c = 'v4.9.1'}
 ```
 
-For more information regarding the different options, use
+with `/path/to/work/directory` and `/path/to/install/directory` replaced with valid paths.
+
+For more information regarding the script's options above, use
 ```powershell
 Get-Help .\install_netcdf_static.ps1 -Detailed
 ```
 
 Upon successful installation, to build MeshKernel successfully, it is important to either
 - add the path to the install directory to the system path, or
-- configure the MeshKernel build with `-DCMAKE_PREFIX_PATH=/path/to/install/directory`
+- configure the MeshKernel build with `-DCMAKE_PREFIX_PATH=/path/to/install/directory`.
 
 **Note:** Additional dependencies may be required depending on the system configuration:
 - Windows: [Perl](https://strawberryperl.com/)
-- Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). Apart from the latter, all dependencies can be installed from the repository of the used linux distribution.
+- Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). Apart from the latter, all dependencies can be installed from the repository of the used Linux distribution.
   
 ### IDE
 To use an IDE, such as Visual Studio 2019:
