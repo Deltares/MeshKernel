@@ -83,7 +83,7 @@ Upon successful installation, to build MeshKernel successfully, it is important 
 
 **Note:** Additional dependencies may be required depending on the system configuration:
 - Windows: [Perl](https://strawberryperl.com/)
-- Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). Apart from the former, all dependencies can be installed from the repository of the used linux distribution.
+- Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). Apart from the latter, all dependencies can be installed from the repository of the used linux distribution.
   
 ### IDE
 To use an IDE, such as Visual Studio 2019:
