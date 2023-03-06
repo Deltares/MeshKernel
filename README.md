@@ -41,31 +41,52 @@ A mesh can be refined in areas based on samples or polygon selections.
 
 
 ## Shared library dependencies (Linux)
-- libboost_system
-- libboost_filesystem
 - libgomp
 
 ## Build
 
 The requirements are:
-- CMake 3.19 or higher
+- Git
+- CMake 3.23 or higher
 - A C++17 compatible compiler
 - The Boost libraries
-- Git
+- NetCDF
 - Doxygen (optional)
 
+## Dependencies
 
-On windows precompiled boost binaries (with MSVC compiler) can be downloaded here:
+### Boost
+- Under Windows, precompiled boost binaries (with MSVC compiler) can be downloaded [here](https://sourceforge.net/projects/boost/files/boost-binaries/). Alternatively, the source code is available [here](https://sourceforge.net/projects/boost/files/boost/) and the installation instructions can be found [here](https://www.boost.org/doc/libs/1_74_0/more/getting_started/windows.html).
+- Under Linux, Boost can be either obtained from the package repository of the used Linux distribution or built from [source](https://sourceforge.net/projects/boost/files/boost/) following these [instructions](https://www.boost.org/doc/libs/1_74_0/more/getting_started/unix-variants.html).
 
-https://sourceforge.net/projects/boost/files/boost-binaries/ 
+ Once installed, add the boost environmental variables accordingly. For example, if version 1.74.0 in installed in `C:\Apps`, set the environment variable:
+  ```
+  BOOST_INCLUDEDIR=C:\Apps\boost_1_74_0
+  ```
 
-Once installed, modify boost environmental variables accordingly. For example:
+### NetCDF
+The NetCDF static library is required for building MeshKernel. Optionally, a PowerShell [script](scripts/install_netcdf_static.ps1) is made available for cloning and building [NetCDF](https://github.com/Unidata/netcdf-c) and its dependencies ([HDF5](https://github.com/HDFGroup/hdf5), [ZLIB](https://github.com/madler/zlib), [Curl](https://github.com/curl/curl), and [m4](https://sourceforge.net/projects/gnuwin32/files/m4/)). It can be used under both Windows and Linux.
+
+To run the script in a PowerShell session, use
 ```powershell
-BOOST_INCLUDEDIR=C:\Apps\boost_1_74_0
-BOOST_LIBRARYDIR=C:\Apps\boost_1_74_0\lib64-msvc-14.2
+.\install_netcdf_static.ps1 -WorkDir '/path/to/work/directory' -InstallDir '/path/to/install/directory' -BuildType 'Release' -ParallelJobs 10 -GitTags @{ zlib = 'v1.2.13'; curl = 'curl-7_88_1';  hdf5 = 'hdf5-1_14_0';  netcdf_c = 'v4.9.1'}
 ```
+
+For more information regarding the different options, use
+```powershell
+Get-Help .\install_netcdf_static.ps1 -Detailed
+```
+
+Upon successful installation, to build MeshKernel successfully, it is important to either
+- add the path to the install directory to the system path, or
+- configure the MeshKernel build with `-DCMAKE_PREFIX_PATH=/path/to/install/directory`
+
+**Note:** Additional dependencies may be required depending on the system configuration:
+- Windows: [Perl](https://strawberryperl.com/)
+- Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). Apart from the former, all dependencies can be installed from the repository of the used linux distribution.
+  
 ### IDE
-To use an IDE, such as Visual Studio:
+To use an IDE, such as Visual Studio 2019:
 
 ```powershell
 cmake -S . -B xbuild -G"Visual Studio 16 2019"

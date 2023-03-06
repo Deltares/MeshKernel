@@ -85,7 +85,6 @@ if ($PSVersionTable.Platform -ne 'Unix') {
     $M4BaseURL = 'http://downloads.sourceforge.net/gnuwin32'
 
     $M4BinFileName = 'm4-1.4.14-1-bin.zip'
-    #$M4BinURL = $M4BaseURL + $M4BinFileName
     $M4BinURL = (@($M4BaseURL; $M4BinFileName) -Join '/')
     $M4BinDownloadPath = (Join-Path $DownloadDir $M4BinFileName)
     if (-not(Test-Path -Path $M4BinDownloadPath)) {
@@ -93,7 +92,6 @@ if ($PSVersionTable.Platform -ne 'Unix') {
     }
 
     $M4DepFileName = 'm4-1.4.14-1-dep.zip'
-    #$M4DepURL = $M4BaseURL + $M4DepFileName
     $M4DepURL = (@($M4BaseURL; $M4DepFileName) -Join '/')
     $M4DepDownloadPath = (Join-Path $DownloadDir $M4DepFileName)
     if (-not(Test-Path -Path $M4DepDownloadPath)) {
