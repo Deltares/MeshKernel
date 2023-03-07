@@ -5,8 +5,14 @@ set(target_name MeshKernelUnitTests )
 add_executable(${target_name} ${UNIT_TEST_LIST})
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(${target_name}  PRIVATE MeshKernel UtilsStatic
-                                                  gtest_main gmock)
+target_link_libraries(
+  ${target_name}
+  PRIVATE
+  MeshKernel
+  UtilsStatic
+  gtest_main
+  gmock
+)
 
 if (UNIX)
    target_link_libraries(${target_name} PUBLIC ${CMAKE_DL_LIBS})
@@ -24,21 +30,3 @@ add_test(
   NAME ${target_name}
   COMMAND ${target_name}
 )
-
-# On Windows we bundle the dlls and then copy them to the target file directory
-if(WIN32)
-  file(
-    GLOB
-    NETCDF_FILES_LIST
-    CONFIGURE_DEPENDS
-    "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}"
-  )
-  foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
-    add_custom_command(
-      TARGET ${target_name} 
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
-              "$<TARGET_FILE_DIR:${target_name}>"
-      COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
-  endforeach()
-endif()

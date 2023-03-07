@@ -1,28 +1,12 @@
 #include <memory>
 #include <stdexcept>
 
-#include <boost/dll.hpp>
-
-#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include <netcdf.h>
 
 #include <TestUtils/MakeMeshes.hpp>
 
 std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string const& filePath)
 {
-
-#if _WIN32
-    boost::dll::shared_library lib("netcdf.dll");
-#else
-    boost::dll::shared_library lib("libnetcdf.so", boost::dll::load_mode::search_system_folders);
-#endif
-
-    auto nc_open = lib.get<int(const char*, int, int*)>("nc_open");
-    auto nc_inq_dimid = lib.get<int(int, const char*, int*)>("nc_inq_dimid");
-    auto nc_inq_dim = lib.get<int(int, int, char*, std::size_t*)>("nc_inq_dim");
-    auto nc_inq_varid = lib.get<int(int, const char*, int*)>("nc_inq_varid");
-    auto nc_get_var_double = lib.get<int(int, int, double*)>("nc_get_var_double");
-    auto nc_get_var_int = lib.get<int(int, int, int*)>("nc_get_var_int");
-
     int ncidp = 0;
     int err = nc_open(filePath.c_str(), NC_NOWRITE, &ncidp);
     if (err != 0)
