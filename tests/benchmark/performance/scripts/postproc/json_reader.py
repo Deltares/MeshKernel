@@ -16,7 +16,7 @@ class JSONReader:
         self.__data = list()
         # unique id (NamedPair) assigned to each file (in the order it is parsed)
         self.__ids = list()
-        # signals if more than one fole has been parsed
+        # signals if more than one file has been parsed
         self.__has_multiple_contenders = False
         # list of the matching experiments in all of the input files, equiv to all the experiments if a single file is loaded
         self.__matches = list()
@@ -59,14 +59,14 @@ class JSONReader:
         if len(self.__data) > 1:
             self.__has_multiple_contenders = True
         else:
-            log.info("Only a baseline measurment is available")
+            log.info("Only a baseline measurement is available")
 
     def __lookup_matches(self):
         """
-        Finds benchmarks with matching names in all inpout files
+        Finds benchmarks with matching names in all input files
         """
         log.info("Looking up matching measurements")
-        # create a list of lists of benchamrk names
+        # create a list of lists of benchmark names
         names = list()
         for data in self.__data:
             node = data["benchmarks"]
@@ -143,7 +143,7 @@ class JSONReader:
     def measurements(self):
         return self.__measurements
 
-    def measuremenet(self, key, attribute):
+    def measurement(self, key, attribute):
         return self.__measurements[key][attribute]
 
     def display_contents(self, i):

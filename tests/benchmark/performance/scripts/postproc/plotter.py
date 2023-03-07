@@ -7,7 +7,7 @@ from json_reader import JSONReader
 from matplotlib.ticker import FormatStrFormatter
 
 """
-plots, saves and/or dsiplays json results
+plots, saves and/or displays json results
 """
 
 
@@ -45,7 +45,7 @@ class Plotter:
         return int(np.ceil(np.sqrt(n_figs)))
 
     """
-    private enumeration for accesssing label size
+    private enumeration for accessing label size
     """
 
     @unique
@@ -54,17 +54,22 @@ class Plotter:
         LEGEND = 1
         TICK = 2
 
-    __defaut_format = "png"
+    __default_format = "png"
 
     def plot(self, fig_id, family, attributes, scale="linear", font_size=(10, 6, 8)):
         """
-        plots a figure given an id, and x and y meta
-        optional parameter: fonst_size = (axes label, legend, ticks)
+        Plots a figure given an id, a family of benchmarks and set of benchmark attributes.
+        Optional:
+        - The scale of the y-axis can be specified (see matplotlib.axes.Axes.set_yscale).
+          For ex. scale="log".
+        - The font size of the axes labels, the legend and tick labels can be set using the parameter
+          font_size = (axes_label_font_size, legend_font_size, tick labels_font_size)
         """
         assert self.__exists(fig_id) == False, "Figure ID must be unique"
         n_subplots = len(attributes)
         assert n_subplots > 0
         fig = plt.figure(fig_id)
+        # fig.set_size_inches(12, 7)
         grid_dim = self.__grid_dim(n_subplots)
         grid = fig.add_gridspec(grid_dim, grid_dim)
         axes = np.ravel(grid.subplots())
@@ -83,7 +88,7 @@ class Plotter:
             for arg in self.__json_families[family]:
                 experiment = JSONReader.join_family(family, arg)
                 y = self.__json_measurements[experiment][attribute]
-                axis.plot(x, y, label=arg)
+                axis.plot(x, y, label=arg, marker="o")
 
             axis.set_xlabel("Benchmark", fontsize=label_font_size)
             y_label = (
@@ -93,25 +98,35 @@ class Plotter:
                 + "]"
             )
             axis.set_ylabel(y_label, fontsize=label_font_size)
-            axis.legend(fontsize=font_size[self.__LabelSize.LEGEND])
-
-            # axis.xaxis.set_major_formatter(FormatStrFormatter("%1.0e"))
             for label in axis.get_xticklabels() + axis.get_yticklabels():
                 label.set_fontsize(font_size[self.__LabelSize.TICK])
             axis.set_yscale(scale)
             axis.grid()
-        fig.tight_layout()
+        fig.suptitle(family)
+        # all figures have the same legends, get those of the axis
+        handles, labels = axis.get_legend_handles_labels()
+        # common legend
+        fig.legend(
+            handles,
+            labels,
+            loc="center left",
+            bbox_to_anchor=(1, 0.75),
+        )
+        # plt.subplots_adjust(right=0.85)
+        # fig.tight_layout()
         self.__register(fig_id, fig, family, attributes)
-        # plt.close(fig)
+        plt.close(fig)
 
     """
     saves a figure given an id, file name, and optionally a format (default is png)
     """
 
-    def save(self, fig_id, file_name, fmt=__defaut_format):
+    def save(self, fig_id, file_name, fmt=__default_format, res="figure"):
         if self.__exists(fig_id):
             path = os.path.join(self.__work_dir, file_name + "." + fmt)
-            self.__figures[fig_id]["FIGURE"].savefig(path, format=fmt)
+            self.__figures[fig_id]["FIGURE"].savefig(
+                path, format=fmt, dpi=res, bbox_inches="tight"
+            )
 
     """
     deletes a figure given its id
@@ -140,9 +155,9 @@ class Plotter:
             manager.canvas.figure = self.__figures[fig_id]["FIG"]
             self.__figures[fig_id]["FIG"].set_canvas(manager.canvas)
 
-    def display_and_save(self, fig_id, file_name, fmt=__defaut_format):
+    def display_and_save(self, fig_id, file_name, fmt=__default_format):
         """
-        convenience mthod that displays a figure and saves it given an id, file name, and optionally a format
+        convenience method that displays a figure and saves it given an id, file name, and optionally a format
         """
         self.display(fig_id)
         self.save(fig_id, file_name, fmt)
