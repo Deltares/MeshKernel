@@ -17,13 +17,15 @@ zlib     : 'vX.Y.Z'
 curl     : 'curl-X_Y_Z'
 hdf5     : 'hdf5-X_Y_Z'
 netcdf_c : 'vX.Y.Z'
-For valid tags check
+For valid tags check:
 zlib     : https://github.com/madler/zlib/tags
 curl     : https://github.com/curl/curl/tags
 hdf5     : https://github.com/HDFGroup/hdf5/tags
 netcdf_c : https://github.com/Unidata/netcdf-c/tags
 .PARAMETER ParallelJobs
 The maximum number of concurrent processes to use when building.
+.PARAMETER Clean
+Removes the work directory upon finishing the installation.
 .SYNOPSIS
 Used to build the HDF5 and NetCDF static libraries.
 #>
@@ -38,7 +40,8 @@ Param(
             hdf5     = 'hdf5-1_14_0'; `
             netcdf_c = 'v4.9.1'
     },
-    [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs = 10
+    [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs = 6,
+    [Parameter(Mandatory = $false)] [Switch] $Clean = $False
 )
 
 #$ErrorActionPreference = "Stop"
@@ -81,9 +84,10 @@ if ($PSVersionTable.Platform -ne 'Unix') {
 
     $WebClient = New-Object System.Net.WebClient
 
-    # M4
+    # M4 URL
     $M4BaseURL = 'http://downloads.sourceforge.net/gnuwin32'
 
+    # Binary URL
     $M4BinFileName = 'm4-1.4.14-1-bin.zip'
     $M4BinURL = (@($M4BaseURL; $M4BinFileName) -Join '/')
     $M4BinDownloadPath = (Join-Path $DownloadDir $M4BinFileName)
@@ -91,6 +95,7 @@ if ($PSVersionTable.Platform -ne 'Unix') {
         $WebClient.DownloadFile($M4BinURL, $M4BinDownloadPath)
     }
 
+    # Dependencies URL 
     $M4DepFileName = 'm4-1.4.14-1-dep.zip'
     $M4DepURL = (@($M4BaseURL; $M4DepFileName) -Join '/')
     $M4DepDownloadPath = (Join-Path $DownloadDir $M4DepFileName)
@@ -106,13 +111,20 @@ if ($PSVersionTable.Platform -ne 'Unix') {
     New-Item -Force $ExtractDir -Type Directory
 
     # M4
+    # $M4BinExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-bin')
+    # Expand-Archive -Force  $M4BinDownloadPath -DestinationPath $M4BinExtractPath
+    # $env:Path += (';' + $M4BinExtractPath)
+    # $M4DepExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-dep')
+    # Expand-Archive -Force  $M4DepDownloadPath -DestinationPath $M4DepExtractPath
+    # Copy-Item (Join-Paths $M4DepExtractPath 'bin' 'regex2.dll') -Destination (Join-Path $M4BinExtractPath 'bin')
+    # $env:Path += (';' + $M4DepExtractPath)
+
     $M4BinExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-bin')
     Expand-Archive -Force  $M4BinDownloadPath -DestinationPath $M4BinExtractPath
-    $env:Path += (';' + $M4BinExtractPath)
+    $env:Path += (';' + (Join-Path $M4BinExtractPath 'bin'))
     $M4DepExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-dep')
     Expand-Archive -Force  $M4DepDownloadPath -DestinationPath $M4DepExtractPath
-    Copy-Item (Join-Paths $M4DepExtractPath 'bin' 'regex2.dll') -Destination (Join-Path $M4BinExtractPath 'bin')
-    $env:Path += (';' + $M4DepExtractPath)
+    $env:Path += (';' + (Join-Path $M4DepExtractPath 'bin'))
 }
 
 # ----------------------------------------------------------------------------------------
@@ -150,13 +162,11 @@ Function Invoke-CloneRepoAndCheckoutTag {
             Exit
         }
         # enter the repo and fetch all tags
-        Set-Location $Destination
-        $FetchTags = ('git fetch --all --tags')
+        $FetchTags = ('git -C {0} fetch --all --tags' -f $Destination)
         Write-Host $FetchTags
         Invoke-Expression $FetchTags
         $ExitCode = $LASTEXITCODE
         if ( $ExitCode -gt 0 ) {
-            Set-Location $WorkDir
             Write-Error ('Failed to fetch all tags from {0}. Exit code = {1}.' `
                     -f $Repo, $ExitCode.ToString())
             Invoke-Terminate
@@ -164,20 +174,16 @@ Function Invoke-CloneRepoAndCheckoutTag {
         }
 
         # check out the brang with the specified tag
-        $CheckOutTaggedBranch = ('git checkout tags/{0} -b {0}' -f $Tag)
+        $CheckOutTaggedBranch = ('git -C {0} checkout tags/{1} -b {1}' -f $Destination, $Tag)
         Write-Host $CheckOutTaggedBranch
         Invoke-Expression $CheckOutTaggedBranch
         $ExitCode = $LASTEXITCODE
         if ( $ExitCode -gt 0 ) {
-            Set-Location $WorkDir
             Write-Error ('Failed to checkout tags/{0} from {1}. Exit code = {2}.' `
                     -f $Tag, $Repo, $ExitCode.ToString())
             Invoke-Terminate
             Exit
         }
-
-        # return to root directory
-        Set-Location $WorkDir
     }
 }
 
@@ -285,8 +291,6 @@ Invoke-BuildAndInstall `
     -ParallelJobs $ParallelJobs `
     -BuildType $BuildType
 $env:Path += (';' + $ZLIBInstallDir)
-#$env:Path += (';' + (Join-Path $ZLIBInstallDir 'lib'))
-#$env:ZLIB_ROOT = $ZLIBInstallDir
 
 # Curl
 $CurlBuildDir = (Join-Path $BuildDir $Curl)
@@ -298,7 +302,6 @@ Invoke-BuildAndInstall `
     -ParallelJobs $ParallelJobs `
     -BuildType $BuildType
 $env:Path += (';' + $CurlInstallDir)
-#$env:Path += (';' + (Join-Path $CurlInstallDir 'bin'))
 
 # HDF5
 $HDF5BuildDir = (Join-Path $BuildDir $HDF5)
@@ -347,9 +350,6 @@ $NetCDFCMakeBuildOptions = @(`
 if ($PSVersionTable.Platform -eq 'Unix') {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
 }
-else {
-    $NetCDFCMakeBuildOptions += ('-DCMAKE_PREFIX_PATH={0}' -f $M4BinExtractPath)
-}
 
 Invoke-BuildAndInstall `
     -SrcDir $NetCDFSrcDir `
@@ -359,12 +359,13 @@ Invoke-BuildAndInstall `
     -ParallelJobs $ParallelJobs `
     -Options $NetCDFCMakeBuildOptions
 
-# Some post-build magic... and arguably a terrible idea. This might break in future in NetCDF releases.
+# Some post-build manual installations... and arguably a terrible idea. This might break in future HDF5 or NetCDF releases.
 # 
 # Under WIN32, NetCDF links with -lhdf5-static -lhdf5_hl-static -lzlib. See:
 # $NetCDFInstallDir/lib/libnetcdf.settings and $NetCDFInstallDir/lib/pkgconfig/netxdf.pc
 # So we copy the static ZLIB and HDF5 lib dependnecies to $NetCDFInstallDir and rename them accordingly,
-# and finally edit the list of public interface libararies in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake 
+# and finally edit the list of public interface libararies in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake.
+# Under Linux, we simply copy static and shared libs without renaming.
 Function Invoke-Post-Build-Steps() {
     # Copy all necessary static libraries from the local instalaltion directory to the netcdf lib dir
     $NetCDFLibDir = (Join-Path $NetCDFInstallDir 'lib')
@@ -416,3 +417,7 @@ Write-Host ( `
 )
 
 Invoke-Terminate
+
+if ($Clean) {
+    Remove-Item -Recurse -Force $WorkDir
+}
