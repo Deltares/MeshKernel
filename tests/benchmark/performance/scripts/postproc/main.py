@@ -1,8 +1,9 @@
 import log
 from arg_parser import ArgParser
 from json_reader import JSONReader
-from matplotlib.pyplot import show as show_plots
 from plotter import Plotter
+
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     arg_parser = ArgParser()
@@ -24,13 +25,19 @@ if __name__ == "__main__":
 
     families = json_reader.families()
 
-    fig_id = 0
     plotter = Plotter(json_reader, arg_parser.work_dir())
 
     if json_reader.has_multiple_contenders():
         for family in families:
-            plotter.plot(fig_id, family, attributes)
+            fig_id = plotter.plot(family, attributes)
             plotter.save(fig_id, family)
-            fig_id += 1
 
-    show_plots()
+    # plt.close("all")
+
+    plotter.display(0)
+    plotter.close(0)
+    plotter.display(1)
+
+    # plotter.delete(0)
+
+    plt.show()
