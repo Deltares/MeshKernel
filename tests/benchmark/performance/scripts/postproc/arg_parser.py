@@ -7,17 +7,20 @@ Command line argument parser
 
 
 class ArgParser:
+    """
+    Command line argument parser
+    """
+
     def __init__(self):
         self.__args = self.__parse_args()
         self.__file_names = self.__process_file_names()
         self.__work_directory = self.__process_work_directory()
         self.__log_file_name_prefix = self.__process_log_file_name_prefix()
 
-    """
-    Creates the parser and adds the required and optional arguments
-    """
-
     def __parse_args(self):
+        """
+        Creates the parser and adds the required and optional arguments
+        """
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "--file_names",
@@ -42,11 +45,10 @@ class ArgParser:
         )
         return parser.parse_args()
 
-    """
-    Processes the required file names argument
-    """
-
     def __process_file_names(self):
+        """
+        Processes the required file names argument
+        """
         file_names = [
             file_name.strip() for file_name in self.__args.file_names.split(",")
         ]
@@ -55,44 +57,39 @@ class ArgParser:
                 raise FileNotFoundError(file_name + "does not exist")
         return file_names
 
-    """
-    Processes the required work directory argument
-    """
-
     def __process_work_directory(self):
+        """
+        Processes the required work directory argument
+        """
         work_directory = self.__args.work_directory
         if not os.path.isdir(work_directory):
             print("Creating the work directory: ", work_directory)
             os.mkdir(self.__args.work_directory)
         return work_directory
 
-    """
-    Processes the optional log file name prefix argument
-    """
-
     def __process_log_file_name_prefix(self):
+        """
+        Processes the optional log file name prefix argument
+        """
         if self.__args.log_file_name_prefix:
             return self.__args.log_file_name_prefix
         else:
             return "benchmark"
 
-    """
-    Gets the list of file names
-    """
-
     def file_names(self):
+        """
+        Gets the list of file names
+        """
         return self.__file_names
 
-    """
-    Gets the work directory
-    """
-
     def work_dir(self):
+        """
+        Gets the work directory
+        """
         return self.__work_directory
 
-    """
-    Gets the optional log file name prefix
-    """
-
     def log_file_name_prefix(self):
+        """
+        Gets the optional log file name prefix
+        """
         return self.__log_file_name_prefix

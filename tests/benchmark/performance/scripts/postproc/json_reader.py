@@ -11,10 +11,17 @@ AttributeMeta = namedtuple("AttributeMeta", ["name", "unit"])
 
 
 class JSONReader:
+    """
+    Reads Google benchmark JSON results
+    """
+
     def __init__(self, file_names):
+        """
+        Constructs the JSON reader
+        """
         # list  containing data read from input files
         self.__data = list()
-        # unique id (NamedPair) assigned to each file (in the order it is parsed)
+        # unique id assigned to each file (in the order it is parsed): consists of a path and a pretty name
         self.__ids = list()
         # signals if more than one file has been parsed
         self.__has_multiple_contenders = False
@@ -45,15 +52,15 @@ class JSONReader:
         Loads json objects into a list of py dictionaries
         """
         for i, file_name in enumerate(file_names):
-            log.info("Loading file %d : %s", i + 1, file_name)
+            log.info("Loading file {} : {}".format(i + 1, file_name))
             with open(file_name, "r") as f:
                 self.__data.append(json.load(f))
             f.close()
             self.__ids.append(FileMeta(file_name, "benchmark_" + format(i + 1, "02d")))
             log.info(
-                "Loaded %s, pretty name = %s",
-                self.__ids[-1].path,
-                self.__ids[-1].pretty_name,
+                "Loaded {}, pretty name = {}".format(
+                    self.__ids[-1].path, self.__ids[-1].pretty_name
+                )
             )
         log.info("All files loaded")
         if len(self.__data) > 1:
@@ -82,7 +89,7 @@ class JSONReader:
             for i in range(1, len(names)):
                 self.__matches = [item for item in names[i - 1] if item in names[i]]
             if self.__matches:
-                log.info("Found matches: %s", self.__matches)
+                log.info("Found matches: {}".format(self.__matches))
             else:
                 log.error("Failed to find matches in all parsed json files")
                 sys.exit()
@@ -90,6 +97,9 @@ class JSONReader:
     sep = "/"
 
     def __lookup_families(self):
+        """
+        Looks up families of measurements in matching measurements
+        """
         log.info("Looking up families of measurements")
         # get unique prefixes (must preserve ordering)
         match_prefixes = list()
@@ -104,9 +114,12 @@ class JSONReader:
                 if match.startswith(match_prefix):
                     match_args.append(match.split(self.sep, 1)[1])
             self.__families[match_prefix] = match_args
-        log.info("Found families: %s", self.__families)
+        log.info("Found families: {}".format(self.__families))
 
     def __store_measurements(self):
+        """
+        Stores matching measurements
+        """
         log.info("Storing matching measurements")
         for match in self.__matches:
             self.__measurements[match] = {}
@@ -123,46 +136,78 @@ class JSONReader:
 
     @staticmethod
     def join_family(prefix, args):
+        """
+        Joins a benchmark name with benchmark parameters
+        """
         return prefix + JSONReader.sep + args
 
     def ids(self):
+        """
+        Returns file ids (pair consisting of path and pretty name)
+        """
         return self.__ids
 
+    def num_experiments(self):
+        """
+        Returns the number of experiments (number of parsed JSON results)
+        """
+        return len(self.__data)
+
     def has_multiple_contenders(self):
+        """
+        Signals if more than one contender are available
+        """
         return self.__has_multiple_contenders
 
     def keys(self):
+        """
+        Returns keys of the experiments
+        """
         return list(self.__measurements)
 
     def attributes(self):
+        """
+        Returns the attributes
+        """
         return self.__attributes
 
     def families(self):
+        """
+        Returns the families
+        """
         return self.__families
 
     def measurements(self):
+        """
+        Returns the measurements
+        """
         return self.__measurements
 
-    def measurement(self, key, attribute):
-        return self.__measurements[key][attribute]
+    def measurement(self, i, key, attribute):
+        """
+        Returns a measurement
+        """
+        return self.__measurements[key][attribute][i]
 
-    def display_contents(self, i):
+    def log_file_content(self, file_index):
         """
         Displays the contents of a file given the index
         """
         log.info(
-            'Contents of "%s":\n%s',
-            self.__file_names[i],
-            json.dumps(self.__data[i], indent=2),
+            'Contents of file "{}":\n{}'.format(
+                self.__ids[file_index].pretty_name,
+                json.dumps(self.__data[file_index], indent=2),
+            )
         )
 
-    def display_node_contents(self, i, node):
+    def log_node_content(self, file_index, node):
         """
         Displays the contents of a node given the file index and node name
         """
         log.info(
-            'Contents of node "%s" in "%s":\n%s',
-            node,
-            self.__file_names[i],
-            json.dumps(self.__data[i][node], indent=2),
+            'Contents of node "{}" in file "{}":\n{}'.format(
+                node,
+                self.__ids[file_index].pretty_name,
+                json.dumps(self.__data[file_index][node], indent=2),
+            )
         )

@@ -10,12 +10,16 @@ def setup(
     path="",
     append_timestamp=False,
 ):
-    # format config
+    """
+    to log in a terminal simply use: logger = log.setup()
+    """
+
+    # format configuration
     formatter = logging.Formatter(
         fmt="[%(asctime)s] [%(levelname)s] (%(module)s) : %(message)s"
     )
 
-    # handler config
+    # handler configuration
     if path:
         file_name = file_name_prefix
         if append_timestamp:
@@ -27,7 +31,7 @@ def setup(
         handler = logging.StreamHandler()
     handler.setFormatter(formatter)
 
-    # logger config
+    # logger configuration
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.INFO)
     logger.addHandler(handler)
