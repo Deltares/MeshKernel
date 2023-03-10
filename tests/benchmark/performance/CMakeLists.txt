@@ -33,7 +33,7 @@ target_link_libraries(
   ${target_name}
   PRIVATE
   MeshKernel
-  UtilsStatic
+  MeshKernelTestUtils
   benchmark::benchmark
   MeshKernelBenchmarkMemoryManager
 )
@@ -61,8 +61,6 @@ file(
     FILES_MATCHING PATTERN \"*.py\"
   )"
 )
-
-message($<TARGET_FILE_DIR:${target_name}>/scripts)
 
 add_custom_command(
   TARGET ${target_name}
