@@ -54,24 +54,27 @@ add_test(
 
 file(
   WRITE ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
-  "file(
+  "message(STATUS \"Copying Python scripts from \$\{SOURCE_DIR\} to \$\{DESTINATION_DIR\}\")
+   file(
     COPY \$\{SOURCE_DIR\} 
     DESTINATION \$\{DESTINATION_DIR\}
     FILES_MATCHING PATTERN \"*.py\"
   )"
 )
 
+message($<TARGET_FILE_DIR:${target_name}>/scripts)
+
 add_custom_command(
   TARGET ${target_name}
   POST_BUILD
   COMMAND ${CMAKE_COMMAND}
     -DSOURCE_DIR=${googlebenchmark_SOURCE_DIR}/tools/
-    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/googlebenchmark/tools
+    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/googlebenchmark
     -DPATTERN_EXCLUDE=Inputs
     -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
   COMMAND ${CMAKE_COMMAND}
-    -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts/
-    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts
+    -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../scripts/
+    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/meshkernel
     -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
-  COMMENT "Copying Google Benchmark tools..."
+  COMMENT "Copying python scripts..."
 )
