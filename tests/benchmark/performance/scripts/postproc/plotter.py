@@ -1,4 +1,3 @@
-import logging
 import os
 import pickle as pkl
 from enum import IntEnum, unique
@@ -6,8 +5,9 @@ from enum import IntEnum, unique
 import matplotlib.pyplot as plt
 import numpy as np
 from json_reader import JSONReader
+from logger import Logger
 
-log = logging.getLogger("Benchmark")
+log = Logger.get()
 
 
 class Plotter:

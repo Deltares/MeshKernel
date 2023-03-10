@@ -1,25 +1,22 @@
-import logger
 from arg_parser import ArgParser
 from json_reader import JSONReader
+from logger import Logger
 from plotter import Plotter
-
-# import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     # parse command line arguments
     arg_parser = ArgParser()
 
-    # set up the logger now that the work dir is known
-    logger = logger.setup(
-        logger_name="Benchmark",
-        file_name_prefix=arg_parser.log_file_name_prefix(),
-        path=arg_parser.work_dir(),
-        append_timestamp=False,
+    # create logger instance
+    Logger(
+        path=arg_parser.work_dir(), file_name_prefix=arg_parser.log_file_name_prefix()
     )
 
-    logger.info("Arg - Files: {}".format(arg_parser.file_names()))
-    logger.info("Arg - Work directory: {}".format(arg_parser.work_dir()))
-    logger.info("Arg - Log file prefix : {}".format(arg_parser.log_file_name_prefix()))
+    log = Logger.get()
+
+    log.info("Arg - Files: {}".format(arg_parser.file_names()))
+    log.info("Arg - Work directory: {}".format(arg_parser.work_dir()))
+    log.info("Arg - Log file prefix : {}".format(arg_parser.log_file_name_prefix()))
 
     # read the JSON results
     json_reader = JSONReader(arg_parser.file_names())
@@ -40,12 +37,3 @@ if __name__ == "__main__":
             family, attributes, Plotter.XMode.Measurements, ordinate_scale="log"
         )
         plotter.save(fig_id, family + "_measurements")
-
-    # plotter.display(0)
-    # plotter.close(0)
-    # plotter.display(1)
-    # plotter.delete(0)
-    # plt.show()
-
-    # json_reader.log_file_content(0)
-    # json_reader.log_node_content(0, "benchmarks")

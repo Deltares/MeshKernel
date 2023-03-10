@@ -1,13 +1,12 @@
 import json
-import logging
 import sys
 from collections import namedtuple
 
-log = logging.getLogger("Benchmark")
+from logger import Logger
+
+log = Logger.get()
 
 FileMeta = namedtuple("FileMeta", ["path", "pretty_name"])
-
-AttributeMeta = namedtuple("AttributeMeta", ["name", "unit"])
 
 
 class JSONReader:
