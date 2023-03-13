@@ -105,7 +105,7 @@ class Plotter:
         attributes,
         mode: XMode,
         ordinate_scale="log",
-        font_size=(10, 8, 10, 16),
+        font_size=(9, 8, 8, 12),
     ) -> int:
         """
         Plots a figure given a family of benchmarks and set of benchmark attributes.
@@ -114,7 +114,7 @@ class Plotter:
         - The scale of the y-axis can be specified (see matplotlib.axes.Axes.set_yscale).
           For ex. ordinate_scale="log".
         - The font size of the axes labels, the legend and tick labels can be set using the parameter
-          font_size = (axes_label_font_size tick_labels_font_size, legend_font_size, title_font_size)
+          font_size = (axes_labels, tick_labels, legend, title)
         Returns a unique figure id.
         """
         self.__figure_id += 1
@@ -147,12 +147,15 @@ class Plotter:
             axis = axes[i_attribute]
 
             # plot
-            if mode == 0:
+            if mode == self.XMode.Experiments:
                 for arg in self.__json_families[family]:
                     measurement = JSONReader.join_family(family, arg)
                     y_data = self.__json_measurements[measurement][attribute]
                     axis.plot(x_data, y_data, label=arg, marker="o")
-            else:
+                    axis.set_xlabel(
+                        "Experiment", fontsize=font_size[self.__LabelSizeIndex.AXIS]
+                    )
+            elif mode == self.XMode.Measurements:
                 for experiment in range(self.__json_num_experiments):
                     y_data = list()
                     for arg in self.__json_families[family]:
@@ -165,6 +168,9 @@ class Plotter:
                         y_data,
                         label=self.__json_ids[experiment].pretty_name,
                         marker="o",
+                    )
+                    axis.set_xlabel(
+                        "Measurement", fontsize=font_size[self.__LabelSizeIndex.AXIS]
                     )
 
             # set y-axis label abd its font size
@@ -189,14 +195,33 @@ class Plotter:
         # set title and its font size
         figure_handle.suptitle(family, fontsize=font_size[self.__LabelSizeIndex.TITLE])
 
-        # set legend: all figures have the same legends, get those of the last axis
-        handles, labels = axis.get_legend_handles_labels()
+        # the x-axis labels are strings that can be quite long
+        # for clarity, the x-axis labels are replaced by M_i where i is the index of the measurement
+        # M_i is mapped to the to the actual parameters of the measurement
+        # the items of the resulting dict are placed in the title of the legend
+        legend_title = "Measurements"
+        if mode == self.XMode.Measurements:
+            x_labels = dict()
+            for i in range(len(x_data)):
+                x_labels["M_" + str(i + 1)] = x_data[i]
+            for axis in axes:
+                axis.xaxis.set_ticks(x_data)
+                axis.set_xticklabels(x_labels.keys())
+            legend_title += "\n"
+            legend_title += "\n".join(
+                key + ": " + value for key, value in x_labels.items()
+            )
+            legend_title += "\n\nExperiments"
+
+        # set legend: all figures have the same legends, get those of the first axis
+        legend_handles, legend_labels = axes[0].get_legend_handles_labels()
         figure_handle.legend(
-            handles,
-            labels,
+            legend_handles,
+            legend_labels,
             loc="center left",
             bbox_to_anchor=(1, 0.75),
             fontsize=font_size[self.__LabelSizeIndex.LEGEND],
+            title=legend_title,
         )
 
         # set the layout
