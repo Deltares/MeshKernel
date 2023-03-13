@@ -10,6 +10,7 @@ set(
   src/main.cpp
   src/perf_rtree.cpp
   src/perf_mesh_refinement.cpp
+  src/perf_orthogonalization.cpp
 )
 
 # list of tagret headers
@@ -37,10 +38,6 @@ target_link_libraries(
   benchmark::benchmark
   MeshKernelBenchmarkMemoryManager
 )
-
-if (UNIX)
-   target_link_libraries(${target_name} PUBLIC ${CMAKE_DL_LIBS})
-endif (UNIX)
 
 # group the sources and headers
 source_group("Source Files" FILES ${TARGET_SRC_LIST})

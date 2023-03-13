@@ -2,11 +2,9 @@
 
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Polygons.hpp>
 #include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include <TestUtils/SampleFileReader.hpp>
 
 #include <benchmark/benchmark.h>
 
@@ -17,11 +15,12 @@ static void BM_MeshRefinement(benchmark::State& state)
 {
     for (auto _ : state)
     {
-        // CUSTOM_MEMORY_MANAGER.ResetStatistics();
-        auto mesh = MakeRectangularMeshForTesting(static_cast<int>(state.range(0)),
-                                                  static_cast<int>(state.range(1)),
-                                                  10.0,
-                                                  Projection::cartesian);
+        CUSTOM_MEMORY_MANAGER.ResetStatistics();
+        std::shared_ptr<meshkernel::Mesh2D> mesh =
+            MakeRectangularMeshForTesting(static_cast<int>(state.range(0)),
+                                          static_cast<int>(state.range(1)),
+                                          10.0,
+                                          Projection::cartesian);
 
         // sample points
         std::vector<Sample> samples{
@@ -43,7 +42,7 @@ static void BM_MeshRefinement(benchmark::State& state)
         meshRefinementParameters.max_num_refinement_iterations = 1;
         meshRefinementParameters.refine_intersected = 0;
         meshRefinementParameters.use_mass_center_when_refining = 0;
-        meshRefinementParameters.min_face_size = 1.0;
+        meshRefinementParameters.min_face_size = 1.e-5;
         meshRefinementParameters.account_for_samples_outside = 0;
         meshRefinementParameters.connect_hanging_nodes = 1;
         meshRefinementParameters.refinement_type = 2;
@@ -55,9 +54,8 @@ static void BM_MeshRefinement(benchmark::State& state)
 }
 BENCHMARK(BM_MeshRefinement)
     ->ArgNames({"x-nodes", "y-nodes"})
-    ->Args({250, 250})
-    ->Args({500, 500});
-//->Args({1000, 1000});
-//->Args({2000, 2000})
-//->Args({4000, 4000})
-//->Args({5000, 5000});
+    ->Args({500, 500})
+    ->Args({1000, 1000})
+    ->Args({2000, 2000})
+    ->Args({4000, 4000})
+    ->Args({5000, 5000});

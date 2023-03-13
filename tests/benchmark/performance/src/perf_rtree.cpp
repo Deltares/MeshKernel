@@ -7,9 +7,10 @@
 
 static void BM_RTree(benchmark::State& state)
 {
-    CUSTOM_MEMORY_MANAGER.ResetStatistics();
     for (auto _ : state)
     {
+        CUSTOM_MEMORY_MANAGER.ResetStatistics();
+
         int64_t const n = state.range(0); // number of nodes in x-dir
         int64_t const m = state.range(1); // number of nodes in y-dir
         std::vector<meshkernel::Point> nodes(n * m);
