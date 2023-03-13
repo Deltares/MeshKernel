@@ -26,11 +26,12 @@ if __name__ == "__main__":
     # plot and save the results
     plotter = Plotter(arg_parser.work_dir(), json_reader)
     for family in families:
-        # plot experiments
-        fig_id = plotter.generate(
-            family, attributes, Plotter.XMode.Experiments, ordinate_scale="linear"
-        )
-        plotter.save(fig_id, family + "_experiments")
+        # plot experiments only when multiple contenders are available
+        if json_reader.has_multiple_contenders():
+            fig_id = plotter.generate(
+                family, attributes, Plotter.XMode.Experiments, ordinate_scale="linear"
+            )
+            plotter.save(fig_id, family + "_experiments")
 
         # plot measurements
         fig_id = plotter.generate(
