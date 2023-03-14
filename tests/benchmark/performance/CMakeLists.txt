@@ -11,6 +11,7 @@ set(
   src/perf_rtree.cpp
   src/perf_mesh_refinement.cpp
   src/perf_orthogonalization.cpp
+  src/perf_curvilinear_uniform.cpp
 )
 
 # list of tagret headers

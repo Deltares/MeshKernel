@@ -24,6 +24,8 @@ static void BM_Orthogonalization(benchmark::State& state)
     {
         CUSTOM_MEMORY_MANAGER.ResetStatistics();
 
+        state.PauseTiming();
+
         // create a rectangular grid
         size_t const n = state.range(0);
         size_t const m = state.range(1);
@@ -38,7 +40,7 @@ static void BM_Orthogonalization(benchmark::State& state)
 
         // move nodes to skew the mesh
         double const delta_x = dim_x / static_cast<double>(n - 1);
-        double const delta_y = dim_x / static_cast<double>(m - 1);
+        double const delta_y = dim_y / static_cast<double>(m - 1);
         for (size_t i = 0; i < mesh->m_nodes.size(); ++i)
         {
             // only move inetrnal nodes
@@ -77,6 +79,8 @@ static void BM_Orthogonalization(benchmark::State& state)
         std::vector<Point> land_boundary{};
         auto landboundaries = std::make_shared<LandBoundaries>(land_boundary, mesh, polygon);
 
+        state.ResumeTiming();
+
         auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
         auto smoother = std::make_shared<Smoother>(mesh);
         OrthogonalizationAndSmoothing orthogonalization(
@@ -96,7 +100,7 @@ static void BM_Orthogonalization(benchmark::State& state)
 BENCHMARK(BM_Orthogonalization)
     ->ArgNames({"x-nodes", "y-nodes"})
     ->Args({500, 500})
-    ->Args({1000, 1000})
-    ->Args({2000, 2000})
-    ->Args({4000, 4000})
-    ->Args({5000, 5000});
+    ->Args({1000, 1000});
+/*->Args({2000, 2000})
+->Args({4000, 4000})
+->Args({5000, 5000});*/

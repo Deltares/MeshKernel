@@ -11,6 +11,8 @@ static void BM_RTree(benchmark::State& state)
     {
         CUSTOM_MEMORY_MANAGER.ResetStatistics();
 
+        state.PauseTiming();
+
         int64_t const n = state.range(0); // number of nodes in x-dir
         int64_t const m = state.range(1); // number of nodes in y-dir
         std::vector<meshkernel::Point> nodes(n * m);
@@ -24,14 +26,13 @@ static void BM_RTree(benchmark::State& state)
             }
         }
 
+        state.ResumeTiming();
+
         meshkernel::RTree rtree;
 
         rtree.BuildTree(nodes);
 
-        for (size_t i = 0; i < nodes.size(); ++i)
-        {
-            rtree.SearchPoints(nodes[i], 1e-8);
-        }
+        rtree.SearchPoints(nodes[0], 1.0e-8);
     }
 }
 BENCHMARK(BM_RTree)
