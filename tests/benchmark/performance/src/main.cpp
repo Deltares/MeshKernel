@@ -1,12 +1,9 @@
-#include <iostream>
-
 #include <benchmark/benchmark.h>
 
 #include "custom_memory_manager.hpp"
 
 int main(int argc, char** argv)
 {
-
     if (!argv)
     {
         argc = 1;

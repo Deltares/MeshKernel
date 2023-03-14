@@ -17,37 +17,40 @@ static void BM_MeshRefinement(benchmark::State& state)
     {
         CUSTOM_MEMORY_MANAGER.ResetStatistics();
         std::shared_ptr<meshkernel::Mesh2D> mesh =
-            MakeRectangularMeshForTesting(static_cast<int>(state.range(0)),
-                                          static_cast<int>(state.range(1)),
+            MakeRectangularMeshForTesting(static_cast<size_t>(state.range(0)),
+                                          static_cast<size_t>(state.range(1)),
                                           10.0,
+                                          15.0,
                                           Projection::cartesian);
 
         // sample points
+        double const dummy_sample_value = 0.0;
         std::vector<Sample> samples{
-            {14.7153645, 14.5698833, 1.0},
-            {24.7033062, 14.4729137, 1.0},
-            {15.5396099, 24.2669525, 1.0},
-            {23.8305721, 23.9275551, 1.0}};
+            {14.7153645, 14.5698833, dummy_sample_value},
+            {24.7033062, 14.4729137, dummy_sample_value},
+            {15.5396099, 24.2669525, dummy_sample_value},
+            {23.8305721, 23.9275551, dummy_sample_value}};
 
-        const auto interpolator = std::make_shared<AveragingInterpolation>(mesh,
-                                                                           samples,
-                                                                           AveragingInterpolation::Method::MinAbsValue,
-                                                                           Mesh::Location::Faces,
-                                                                           1.0,
-                                                                           false,
-                                                                           false,
-                                                                           1);
+        auto const interpolator = std::make_shared<AveragingInterpolation>(
+            mesh,
+            samples,
+            AveragingInterpolation::Method::MinAbsValue,
+            Mesh::Location::Faces,
+            1.0,
+            false,
+            false,
+            1);
 
-        mkapi::MeshRefinementParameters meshRefinementParameters;
-        meshRefinementParameters.max_num_refinement_iterations = 1;
-        meshRefinementParameters.refine_intersected = 0;
-        meshRefinementParameters.use_mass_center_when_refining = 0;
-        meshRefinementParameters.min_face_size = 1.e-5;
-        meshRefinementParameters.account_for_samples_outside = 0;
-        meshRefinementParameters.connect_hanging_nodes = 1;
-        meshRefinementParameters.refinement_type = 2;
+        mkapi::MeshRefinementParameters mesh_refinement_parameters;
+        mesh_refinement_parameters.max_num_refinement_iterations = 1;
+        mesh_refinement_parameters.refine_intersected = 0;
+        mesh_refinement_parameters.use_mass_center_when_refining = 0;
+        mesh_refinement_parameters.min_face_size = 1.e-5;
+        mesh_refinement_parameters.account_for_samples_outside = 0;
+        mesh_refinement_parameters.connect_hanging_nodes = 1;
+        mesh_refinement_parameters.refinement_type = 2;
 
-        MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+        MeshRefinement meshRefinement(mesh, interpolator, mesh_refinement_parameters);
 
         meshRefinement.Compute();
     }

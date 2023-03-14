@@ -25,61 +25,68 @@ static void BM_Orthogonalization(benchmark::State& state)
         CUSTOM_MEMORY_MANAGER.ResetStatistics();
 
         // create a rectangular grid
-        double const delta = 10.0;
+        size_t const n = state.range(0);
+        size_t const m = state.range(1);
+        double const dim_x = 10.0;
+        double const dim_y = 12.0;
         std::shared_ptr<Mesh2D> mesh =
-            MakeRectangularMeshForTesting(static_cast<int>(state.range(0)),
-                                          static_cast<int>(state.range(1)),
-                                          delta,
+            MakeRectangularMeshForTesting(state.range(0),
+                                          state.range(1),
+                                          dim_x,
+                                          dim_y,
                                           Projection::cartesian);
 
         // move nodes to skew the mesh
+        double const delta_x = dim_x / static_cast<double>(n - 1);
+        double const delta_y = dim_x / static_cast<double>(m - 1);
         for (size_t i = 0; i < mesh->m_nodes.size(); ++i)
         {
             // only move inetrnal nodes
             if (!mesh->IsNodeOnBoundary(i))
             {
                 Point& node = mesh->m_nodes[i];
-                double delta_x;
-                double delta_y;
+                double trans_x;
+                double trans_y;
                 if (i % 2 == 0)
                 {
-                    delta_x = delta / 3.0;
-                    delta_y = -delta / 4.0;
+                    trans_x = delta_x / 3.0;
+                    trans_y = -delta_y / 4.0;
                 }
                 else
                 {
-                    delta_x = -delta / 2.0;
-                    delta_y = delta / 3.0;
+                    trans_x = -delta_x / 2.0;
+                    trans_y = delta_y / 3.0;
                 }
-                node.x += delta_x;
-                node.y += delta_y;
+                node.x += trans_x;
+                node.y += trans_y;
             }
         }
 
         mesh->AdministrateNodesEdges();
 
-        auto const projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-        mkapi::OrthogonalizationParameters orthogonalizationParameters;
-        orthogonalizationParameters.inner_iterations = 25;
-        orthogonalizationParameters.boundary_iterations = 25;
-        orthogonalizationParameters.outer_iterations = 1;
-        orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-        orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
-        orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+        auto const project_to_land_Boundary = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+        mkapi::OrthogonalizationParameters orthogonalization_parameters;
+        orthogonalization_parameters.inner_iterations = 25;
+        orthogonalization_parameters.boundary_iterations = 25;
+        orthogonalization_parameters.outer_iterations = 1;
+        orthogonalization_parameters.orthogonalization_to_smoothing_factor = 0.975;
+        orthogonalization_parameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+        orthogonalization_parameters.areal_to_angle_smoothing_factor = 1.0;
 
         auto polygon = std::make_shared<Polygons>();
-        std::vector<Point> landBoundary{};
-        auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
+        std::vector<Point> land_boundary{};
+        auto landboundaries = std::make_shared<LandBoundaries>(land_boundary, mesh, polygon);
 
         auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
         auto smoother = std::make_shared<Smoother>(mesh);
-        OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                        smoother,
-                                                        orthogonalizer,
-                                                        polygon,
-                                                        landboundaries,
-                                                        projectToLandBoundaryOption,
-                                                        orthogonalizationParameters);
+        OrthogonalizationAndSmoothing orthogonalization(
+            mesh,
+            smoother,
+            orthogonalizer,
+            polygon,
+            landboundaries,
+            project_to_land_Boundary,
+            orthogonalization_parameters);
 
         orthogonalization.Initialize();
 

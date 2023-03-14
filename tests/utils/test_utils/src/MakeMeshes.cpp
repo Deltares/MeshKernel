@@ -5,13 +5,28 @@
 
 #include <TestUtils/MakeMeshes.hpp>
 
-std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::vector<int>, std::shared_ptr<int>, std::shared_ptr<int>> ReadLegacyMeshFile(std::string const& filePath)
+std::tuple<size_t,
+           size_t,
+           std::shared_ptr<double>,
+           std::shared_ptr<double>,
+           std::vector<int>,
+           std::shared_ptr<int>,
+           std::shared_ptr<int>>
+ReadLegacyMeshFile(std::filesystem::path const& file_path)
 {
+    {
+        std::error_code error_code;
+        if (!std::filesystem::exists(file_path, error_code))
+        {
+            throw std::filesystem::filesystem_error("File does no exist", error_code);
+        }
+    }
+
     int ncidp = 0;
-    int err = nc_open(filePath.c_str(), NC_NOWRITE, &ncidp);
+    int err = nc_open(file_path.string().c_str(), NC_NOWRITE, &ncidp);
     if (err != 0)
     {
-        throw std::invalid_argument("ReadLegacyMesh2DFromFile: Could not load netcdf file.");
+        throw("ReadLegacyMesh2DFromFile: Could not load netcdf file.");
     }
 
     std::string meshNodesName{"nNetNode"};
@@ -19,7 +34,7 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     err = nc_inq_dimid(ncidp, meshNodesName.c_str(), &dimid);
     if (err != 0)
     {
-        throw std::invalid_argument("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetNode'.");
+        throw("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetNode'.");
     }
 
     std::size_t num_nodes;
@@ -27,14 +42,14 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     err = nc_inq_dim(ncidp, dimid, read_name.get(), &num_nodes);
     if (err != 0)
     {
-        throw std::invalid_argument("ReadLegacyMesh2DFromFile: Could not gind the length of dimension of 'nNetNode'.");
+        throw("ReadLegacyMesh2DFromFile: Could not find the length of dimension of 'nNetNode'.");
     }
 
     std::string meshEdgesName{"nNetLink"};
     err = nc_inq_dimid(ncidp, meshEdgesName.c_str(), &dimid);
     if (err != 0)
     {
-        throw std::invalid_argument("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetLink'.");
+        throw("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetLink'.");
     }
 
     std::size_t num_edges;
@@ -83,9 +98,14 @@ std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std
     return {num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type};
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> ComputeEdgesAndNodes(std::string const& filePath, meshkernel::Mesh::Type meshType)
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>>
+ComputeEdgesAndNodes(
+    std::filesystem::path const& file_path,
+    meshkernel::Mesh::Type meshType)
 {
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(filePath);
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
+        ReadLegacyMeshFile(file_path);
     std::vector<meshkernel::Edge> edges;
     std::vector<meshkernel::Point> nodes;
     std::vector<int> nodeMapping;
@@ -119,7 +139,8 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
 
         auto const firstNode = edge_nodes.get()[index];
         auto const secondNode = edge_nodes.get()[index + 1];
-        if ((node_type[firstNode] == nodeType || node_type[firstNode] == 0) && (node_type[secondNode] == nodeType || node_type[firstNode] == 0))
+        if ((node_type[firstNode] == nodeType || node_type[firstNode] == 0) &&
+            (node_type[secondNode] == nodeType || node_type[firstNode] == 0))
         {
             edges.emplace_back(nodeMapping[firstNode], nodeMapping[secondNode]);
         }
@@ -129,58 +150,101 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Comput
     return {nodes, edges};
 }
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(std::string const& filePath, meshkernel::Projection projection)
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
+    std::filesystem::path const& file_path,
+    meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh2D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh2D);
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
-std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(std::string const& filePath, meshkernel::Projection projection)
+std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
+    std::filesystem::path const& file_path,
+    meshkernel::Projection projection)
 {
-    const auto [nodes, edges] = ComputeEdgesAndNodes(filePath, meshkernel::Mesh::Type::Mesh1D);
+    const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh1D);
     return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
 }
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
+std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+    size_t n,
+    size_t m,
+    double dim_x,
+    double dim_y,
+    meshkernel::Projection projection,
+    meshkernel::Point const& origin)
 {
-    std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
+    std::vector<std::vector<size_t>> node_indices(n, std::vector<size_t>(m));
     std::vector<meshkernel::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (auto i = 0; i < n; ++i)
+
     {
-        for (auto j = 0; j < m; ++j)
+        std::size_t index = 0;
+        double const delta_x = dim_x / static_cast<double>(n - 1);
+        double const delta_y = dim_x / static_cast<double>(m - 1);
+        for (size_t i = 0; i < n; ++i)
         {
-            indicesValues[i][j] = i * m + j;
-            nodes[nodeIndex] = {origin.x + i * delta, origin.y + j * delta};
-            nodeIndex++;
+            for (size_t j = 0; j < m; ++j)
+            {
+                node_indices[i][j] = i * m + j;
+                nodes[index] = {origin.x + i * delta_x, origin.y + j * delta_y};
+                index++;
+            }
         }
     }
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
 
-    for (auto i = 0; i < n - 1; ++i)
     {
-        for (auto j = 0; j < m; ++j)
+        std::size_t index = 0;
+
+        for (int i = 0; i < n - 1; ++i)
         {
-            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
-            edgeIndex++;
+            for (auto j = 0; j < m; ++j)
+            {
+                edges[index] = {node_indices[i][j], node_indices[i + 1][j]};
+                index++;
+            }
         }
-    }
 
-    for (auto i = 0; i < n; ++i)
-    {
-        for (auto j = 0; j < m - 1; ++j)
+        for (size_t i = 0; i < n; ++i)
         {
-            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
-            edgeIndex++;
+            for (size_t j = 0; j < m - 1; ++j)
+            {
+                edges[index] = {node_indices[i][j + 1], node_indices[i][j]};
+                index++;
+            }
         }
     }
 
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
-std::tuple<size_t, size_t, std::shared_ptr<double>, std::shared_ptr<double>, std::shared_ptr<int>> MakeRectangularMeshForApiTesting(int n, int m, double delta)
+std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+    int n,
+    int m,
+    double delta,
+    meshkernel::Projection projection,
+    meshkernel::Point const& origin)
+{
+    double const dim_x = delta * static_cast<double>(n - 1);
+    double const dim_y = delta * static_cast<double>(m - 1);
+    return MakeRectangularMeshForTesting(
+        n,
+        m,
+        dim_x,
+        dim_y,
+        projection,
+        origin);
+}
+
+std::tuple<size_t, size_t,
+           std::shared_ptr<double>,
+           std::shared_ptr<double>,
+           std::shared_ptr<int>>
+MakeRectangularMeshForApiTesting(
+    int n,
+    int m,
+    double delta)
 {
     std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     std::shared_ptr<double> node_x(new double[n * m]);
@@ -482,8 +546,7 @@ MakeMeshWithFaceNodes()
         0,
         10,
         20,
-        30,
-    };
+        30};
 
     std::vector<double> nodes_y{
         0,
@@ -574,8 +637,7 @@ MakeMeshWithFaceNodes()
         15,
 
         15,
-        14,
-    };
+        14};
 
     std::vector<int> faceNodes{
         0,
@@ -621,8 +683,7 @@ MakeMeshWithFaceNodes()
         10,
         11,
         15,
-        14,
-    };
+        14};
 
     std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
 
