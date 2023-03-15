@@ -54,7 +54,6 @@ class JSONReader:
             log.info("Loading file {} : {}".format(i + 1, file_name))
             with open(file_name, "r") as f:
                 self.__data.append(json.load(f))
-            f.close()
             self.__ids.append(FileMeta(file_name, "benchmark_" + format(i + 1, "02d")))
             log.info(
                 "Loaded {}, pretty name = {}".format(
@@ -101,11 +100,9 @@ class JSONReader:
         """
         log.info("Looking up families of measurements")
         # get unique prefixes (must preserve ordering)
-        match_prefixes = list()
+        match_prefixes = set()
         for match in self.__matches:
-            prefix = match.split(self.sep, 1)[0]
-            if prefix not in match_prefixes:
-                match_prefixes.append(prefix)
+            match_prefixes.add(match.split(self.sep, 1)[0])
         # store applicable unique args per prefix
         for match_prefix in match_prefixes:
             match_args = list()

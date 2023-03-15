@@ -67,6 +67,8 @@ if(ENABLE_BENCHMARKS)
     COMMAND ${target_name}
   )
 
+  # Generate script copy_py_scripts.cmake which copies python scripts from a given
+  # source dir to a desired destination dir while preserving the structure of the source dir
   file(
     WRITE ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
     "message(STATUS \"Copying Python scripts from \$\{SOURCE_DIR\} to \$\{DESTINATION_DIR\}\")
@@ -76,7 +78,9 @@ if(ENABLE_BENCHMARKS)
       FILES_MATCHING PATTERN \"*.py\"
     )"
   )
-
+  
+  # custom commans that executes copy_py_scripts.cmake to copy python
+  # scripts from the project source dir to the current build dir
   add_custom_command(
     TARGET ${target_name}
     POST_BUILD

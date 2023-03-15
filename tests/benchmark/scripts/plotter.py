@@ -38,7 +38,7 @@ class Plotter:
         """
         Checks if fig exists in dict
         """
-        return True if figure_id in self.__figures.keys() else False
+        return figure_id in self.__figures
 
     @staticmethod
     def __is_open(figure_id):

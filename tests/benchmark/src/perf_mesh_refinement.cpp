@@ -49,7 +49,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         mesh_refinement_parameters.min_face_size = 1.e-5;
         mesh_refinement_parameters.account_for_samples_outside = 0;
         mesh_refinement_parameters.connect_hanging_nodes = 1;
-        mesh_refinement_parameters.refinement_type = 2;
+        mesh_refinement_parameters.refinement_type = static_cast<int>(state.range(2));
 
         state.ResumeTiming();
 
@@ -60,10 +60,13 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
 }
 
 BENCHMARK(BM_MeshRefinementBasedOnSamples)
-    ->ArgNames({"x-nodes", "y-nodes"})
-    ->Args({500, 500})
-    ->Args({1000, 1000})
-    ->Args({2000, 2000});
+    ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
+    ->Args({500, 500, 1})
+    ->Args({500, 500, 2})
+    ->Args({1000, 1000, 1})
+    ->Args({1000, 1000, 2})
+    ->Args({2000, 2000, 1})
+    ->Args({2000, 2000, 2});
 
 static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 {
@@ -107,7 +110,10 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
     }
 }
 BENCHMARK(BM_MeshRefinementBasedOnPolygons)
-    ->ArgNames({"x-nodes", "y-nodes"})
-    ->Args({500, 500})
-    ->Args({1000, 1000})
-    ->Args({2000, 2000});
+    ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
+    ->Args({500, 500, 1})
+    ->Args({500, 500, 2})
+    ->Args({1000, 1000, 1})
+    ->Args({1000, 1000, 2})
+    ->Args({2000, 2000, 1})
+    ->Args({2000, 2000, 2});
