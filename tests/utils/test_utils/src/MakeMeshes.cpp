@@ -180,7 +180,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     {
         std::size_t index = 0;
         double const delta_x = dim_x / static_cast<double>(n - 1);
-        double const delta_y = dim_x / static_cast<double>(m - 1);
+        double const delta_y = dim_y / static_cast<double>(m - 1);
         for (size_t i = 0; i < n; ++i)
         {
             for (size_t j = 0; j < m; ++j)
@@ -197,9 +197,9 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     {
         std::size_t index = 0;
 
-        for (int i = 0; i < n - 1; ++i)
+        for (size_t i = 0; i < n - 1; ++i)
         {
-            for (auto j = 0; j < m; ++j)
+            for (size_t j = 0; j < m; ++j)
             {
                 edges[index] = {node_indices[i][j], node_indices[i + 1][j]};
                 index++;
