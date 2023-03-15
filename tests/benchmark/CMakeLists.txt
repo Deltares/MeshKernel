@@ -1,40 +1,94 @@
-if(ENABLE_BENCHMARKING)
-  # upcase the build type to make the option case-insensitive
-  string(TOUPPER "${CMAKE_BUILD_TYPE}" UPCASED_CMAKE_BUILD_TYPE)
+# this target is built only if benchmarking is enabled
 
-  if(UPCASED_CMAKE_BUILD_TYPE STREQUAL "RELEASE" 
-    OR UPCASED_CMAKE_BUILD_TYPE STREQUAL "RELWITHDEBINFO"
+if(ENABLE_BENCHMARKS)
+  # target name
+  set(target_name MeshKernelBenchmarkTests)
+
+  # executable
+  add_executable(${target_name})
+
+  # list of target sources
+  set(
+    TARGET_SRC_LIST
+    src/main.cpp
+    src/perf_rtree.cpp
+    src/perf_mesh_refinement.cpp
+    src/perf_orthogonalization.cpp
+    src/perf_curvilinear_uniform.cpp
   )
-    # Fetch google benchmark dependency
-    FetchContent_Declare(
-      googlebenchmark
-      GIT_REPOSITORY https://github.com/google/benchmark.git
-      GIT_TAG v1.7.1
+
+  # list of tagret headers
+  set(
+    TARGET_HEADER_LIST
+  )
+
+  # add sources to target
+  target_sources(
+    ${target_name}
+    PRIVATE
+      ${TARGET_SRC_LIST}
+    PRIVATE
+      FILE_SET HEADERS
+        BASE_DIRS include
+        FILES ${TARGET_HEADER_LIST}
+  )
+
+  # specify libraries to be linked to the executable
+  target_link_libraries(
+    ${target_name}
+    PRIVATE
+    MeshKernel
+    MeshKernelTestUtils
+    benchmark::benchmark
+  )
+
+  if(ENABLE_MEM_REPORT)
+    # link memory manager
+    target_link_libraries(
+      ${target_name}
+      PRIVATE
+      MeshKernelBenchmarkMemoryManager
     )
-
-    FetchContent_GetProperties(benchmark)
-
-    # Prevent the google benchmark's own tests from running
-    set(BENCHMARK_ENABLE_TESTING OFF)
-
-    if(NOT googlebenchmark_POPULATED)
-      FetchContent_Populate(googlebenchmark)
-      add_subdirectory(
-        ${googlebenchmark_SOURCE_DIR}
-        ${googlebenchmark_BINARY_DIR}
-        EXCLUDE_FROM_ALL
-      )
-    endif()
-
-    # Add unit performance tests
-    add_subdirectory(performance)
-
-  else()
-    message(
-      AUTHOR_WARNING
-      "The benchmark unit and performance tests can be built only if the "
-      "build is configured with CMAKE_BUILD_TYPE set to Release or RelWithDebInfo. "
-      "The current build is configured with CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}."
+    # add compiler definition for reporting the memory statistics in src
+    target_compile_definitions(
+      ${target_name}
+      PRIVATE
+      ENABLE_MEM_REPORT
     )
   endif()
+
+  # group the sources and headers
+  source_group("Source Files" FILES ${TARGET_SRC_LIST})
+  source_group("Header Files" FILES ${TARGET_HEADER_LIST})
+
+  # add the test to ctest
+  add_test(
+    NAME ${target_name}
+    COMMAND ${target_name}
+  )
+
+  file(
+    WRITE ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+    "message(STATUS \"Copying Python scripts from \$\{SOURCE_DIR\} to \$\{DESTINATION_DIR\}\")
+    file(
+      COPY \$\{SOURCE_DIR\} 
+      DESTINATION \$\{DESTINATION_DIR\}
+      FILES_MATCHING PATTERN \"*.py\"
+    )"
+  )
+
+  add_custom_command(
+    TARGET ${target_name}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+      -DSOURCE_DIR=${googlebenchmark_SOURCE_DIR}/tools/
+      -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/googlebenchmark
+      -DPATTERN_EXCLUDE=Inputs
+      -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+    COMMAND ${CMAKE_COMMAND}
+      -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../scripts/
+      -DDESTINATION_DIR=$<TARGET_FILE_DIR:${target_name}>/scripts/meshkernel
+      -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
+    COMMENT "Copying python scripts..."
+  )
 endif()

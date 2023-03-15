@@ -1,4 +1,4 @@
-# Download google test
+# Fetch google test
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
@@ -16,34 +16,60 @@ configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/utils/test_utils/include/TestUtils/Definitions.hpp"
 )
 
-# NOTE: ENABLE_BENCHMARKING configuration option is set to ON for the time being.
-#       Therefore, the unit and performance executables will be always built using the 
-#       current build server configuration.
-# TODO:
-#       (1) Have a custom build configuration that sets the configuration option
-#           -DENABLE_BENCHMARKING=ON. This allows max automation, especially if
-#           the benchmark builds are to be scheduled, say on a weekly basis.
-#           Otherwise check if TC allows building with parameters to enable
-#           the build and execution of the benchamrking executables on demand.
-#       (2) Make the default value of ENABLE_BENCHMARKING OFF in this script.
-#       (3) Decide if this option should be move to the root CMakeLists.txt
-#       (4) Change the mode of the message in the else body of if(ENABLE_BENCHMARKING)
-#           from AUTHOR_WARNING (Warning (dev), continue processing)
-#           to FATAL_ERROR (stop processing and generation)
-#       (5) Document this in README.md (how to manually configure a build with benchmarking)
-#       (6) Remove this commnent.
+# handle benchmarking options
 option(
-  ENABLE_BENCHMARKING
+  ENABLE_BENCHMARKS
   "Enables building and running the performance benchmarking executable."
-  ON
+  OFF
 )
 
-if(ENABLE_BENCHMARKING)
-  option(
-    ENABLE_MEM_REPORT
-    "When performance benchmarking is enabled, enables reporting memory usage statistics."
-    ON
-  )
+include(CMakeDependentOption)
+cmake_dependent_option(
+  ENABLE_MEM_REPORT
+  "When performance benchmarking is enabled, enables reporting memory usage statistics."
+  ON 
+  "ENABLE_BENCHMARKS"
+  OFF
+)
+
+if(ENABLE_BENCHMARKS)
+  # check if it's a release or release with deug information build
+  set(VALID_BUILD_TYPES "RELEASE" "RELWITHDEBINFO")
+  # upcase the build type to make the option case-insensitive
+  string(TOUPPER "${CMAKE_BUILD_TYPE}" UPCASED_CMAKE_BUILD_TYPE)
+  if(UPCASED_CMAKE_BUILD_TYPE IN_LIST VALID_BUILD_TYPES)
+    # Fetch google benchmark    
+    FetchContent_Declare(
+      googlebenchmark
+      GIT_REPOSITORY https://github.com/google/benchmark.git
+      GIT_TAG v1.7.1
+    )
+
+    FetchContent_GetProperties(benchmark)
+
+    # Prevent the google benchmark's own tests from running
+    set(BENCHMARK_ENABLE_TESTING OFF)
+
+    if(NOT googlebenchmark_POPULATED)
+      FetchContent_Populate(googlebenchmark)
+      add_subdirectory(
+        ${googlebenchmark_SOURCE_DIR}
+        ${googlebenchmark_BINARY_DIR}
+        EXCLUDE_FROM_ALL
+      )
+    endif()
+  else()
+    # disable all benchmarking options
+    set(ENABLE_BENCHMARKS OFF)
+    set(ENABLE_MEM_REPORT OFF)
+    message(
+      WARNING
+      "The benchmarks and their depenedencies can be built only if the build is configured "
+      "with CMAKE_BUILD_TYPE set to Release or RelWithDebInfo. "
+      "The current build is configured with CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}."
+      "All benchmarking configuration options are ignored."
+    )
+  endif()
 endif()
 
 add_subdirectory(utils)

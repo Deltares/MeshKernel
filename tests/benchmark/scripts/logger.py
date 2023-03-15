@@ -24,7 +24,6 @@ class Logger(metaclass=Singleton):
         """
         Logger constructor.
         Sets up a logging instance with name "Benchmark".
-        To log in a terminal simply use: logger = log.setup().
         """
 
         # format configuration
