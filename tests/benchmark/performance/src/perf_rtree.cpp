@@ -1,5 +1,3 @@
-#include "custom_memory_manager.hpp"
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/RTree.hpp>
 
@@ -9,8 +7,6 @@ static void BM_RTree(benchmark::State& state)
 {
     for (auto _ : state)
     {
-        CUSTOM_MEMORY_MANAGER.ResetStatistics();
-
         state.PauseTiming();
 
         int64_t const n = state.range(0); // number of nodes in x-dir

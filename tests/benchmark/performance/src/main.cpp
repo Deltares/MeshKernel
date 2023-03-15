@@ -1,6 +1,8 @@
 #include <benchmark/benchmark.h>
 
+#ifdef ENABLE_MEM_REPORT
 #include "custom_memory_manager.hpp"
+#endif
 
 int main(int argc, char** argv)
 {
@@ -13,7 +15,9 @@ int main(int argc, char** argv)
     }
     ::benchmark::Initialize(&argc, argv);
     ::benchmark::SetDefaultTimeUnit(::benchmark::kMillisecond);
+#ifdef ENABLE_MEM_REPORT
     ::benchmark::RegisterMemoryManager(&CUSTOM_MEMORY_MANAGER);
+#endif
     if (::benchmark::ReportUnrecognizedArguments(argc, argv))
     {
         return EXIT_FAILURE;

@@ -1,5 +1,3 @@
-#include "custom_memory_manager.hpp"
-
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
@@ -22,8 +20,6 @@ static void BM_Orthogonalization(benchmark::State& state)
 {
     for (auto _ : state)
     {
-        CUSTOM_MEMORY_MANAGER.ResetStatistics();
-
         state.PauseTiming();
 
         // create a rectangular grid

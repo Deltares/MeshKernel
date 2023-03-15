@@ -1,5 +1,3 @@
-#include "custom_memory_manager.hpp"
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -16,8 +14,6 @@ static void BM_CurvilinearUniform(benchmark::State& state)
 {
     for (auto _ : state)
     {
-        CUSTOM_MEMORY_MANAGER.ResetStatistics();
-
         state.PauseTiming();
 
         std::vector<meshkernel::Point> polygon_points{

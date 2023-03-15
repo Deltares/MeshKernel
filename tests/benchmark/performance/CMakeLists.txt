@@ -37,7 +37,22 @@ target_link_libraries(
   MeshKernel
   MeshKernelTestUtils
   benchmark::benchmark
-  MeshKernelBenchmarkMemoryManager
+)
+
+if(ENABLE_MEM_REPORT)
+  # link memory manager
+  target_link_libraries(
+    ${target_name}
+    PRIVATE
+    MeshKernelBenchmarkMemoryManager
+  )
+endif()
+
+# add definition for usage in src
+target_compile_definitions(
+  ${target_name}
+  PRIVATE
+  ENABLE_MEM_REPORT
 )
 
 # group the sources and headers

@@ -34,9 +34,17 @@ configure_file(
 #       (6) Remove this commnent.
 option(
   ENABLE_BENCHMARKING
-  "Enable building and running the benchmark unit and performance executables."
+  "Enables building and running the performance benchmarking executable."
   ON
 )
+
+if(ENABLE_BENCHMARKING)
+  option(
+    ENABLE_MEM_REPORT
+    "When performance benchmarking is enabled, enables reporting memory usage statistics."
+    ON
+  )
+endif()
 
 add_subdirectory(utils)
 add_subdirectory(unit)
