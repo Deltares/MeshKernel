@@ -1,20 +1,5 @@
-/*****************************************************************************/
-/*                                                                           */
-/*  (tricall.c)                                                              */
-/*                                                                           */
-/*  Example program that demonstrates how to call Triangle.                  */
-/*                                                                           */
-/*  Accompanies Triangle Version 1.6                                         */
-/*  July 19, 1996                                                            */
-/*                                                                           */
-/*  This file is placed in the public domain (but the file that it calls     */
-/*  is still copyrighted!) by                                                */
-/*  Jonathan Richard Shewchuk                                                */
-/*  2360 Woolsey #H                                                          */
-/*  Berkeley, California  94705-1927                                         */
-/*  jrs@cs.berkeley.edu                                                      */
-/*                                                                           */
-/*****************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 
 /* If SINGLE is defined when triangle.o is compiled, it should also be       */
 /*   defined here.  If not, it should not be defined here.                   */
@@ -27,8 +12,8 @@
 #define REAL double
 #endif /* not SINGLE */
 
-#include <stdio.h>
-#include <stdlib.h>
+#define VOID int
+
 #include "triangle.h"
 
 /**

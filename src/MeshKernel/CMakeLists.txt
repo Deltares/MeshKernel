@@ -29,7 +29,7 @@ endif()
 target_include_directories(MeshKernel PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # Add target link dependencies
-target_link_libraries(MeshKernel LINK_PUBLIC ${Boost_LIBRARIES} triangle
+target_link_libraries(MeshKernel LINK_PUBLIC ${Boost_LIBRARIES} Triangle
                       OpenMP::OpenMP_CXX)
 
 # Add precompiled header to speed up compilation
