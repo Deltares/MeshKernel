@@ -32,6 +32,7 @@ target_sources(
 target_compile_definitions(
   ${target_name}
   PRIVATE
+    -DANSI_DECLARATORS
     -DTRILIBRARY
     -DNO_TIMER
 )
@@ -40,7 +41,6 @@ target_compile_definitions(
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(${target_name} PRIVATE "-w")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS)
   target_compile_options(${target_name} PRIVATE "/w")
 endif()
 
