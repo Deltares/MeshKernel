@@ -29,6 +29,8 @@
 
 #include <MeshKernel/Entities.hpp>
 
+#include <memory>
+
 namespace meshkernel
 {
     class Polygons;

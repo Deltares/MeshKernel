@@ -12,7 +12,7 @@ target_link_libraries(
   MeshKernelApiTests
   PRIVATE
   MeshKernelApi
-  UtilsStatic
+  MeshKernelTestUtils
   gtest_main
   gmock
 )
