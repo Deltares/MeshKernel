@@ -20,6 +20,8 @@ static void BM_Orthogonalization(benchmark::State& state)
 {
     for (auto _ : state)
     {
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
         // create a rectangular grid
@@ -75,6 +77,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         std::vector<Point> land_boundary{};
         auto landboundaries = std::make_shared<LandBoundaries>(land_boundary, mesh, polygon);
 
+        // resume the timers to begin benchamrking
         state.ResumeTiming();
 
         auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
@@ -97,6 +100,3 @@ BENCHMARK(BM_Orthogonalization)
     ->ArgNames({"x-nodes", "y-nodes"})
     ->Args({500, 500})
     ->Args({1000, 1000});
-/*->Args({2000, 2000})
-->Args({4000, 4000})
-->Args({5000, 5000});*/

@@ -14,6 +14,8 @@ static void BM_CurvilinearUniform(benchmark::State& state)
 {
     for (auto _ : state)
     {
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
         std::vector<meshkernel::Point> polygon_points{
@@ -42,6 +44,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         make_grid_arameters.block_size_x = delta_x;
         make_grid_arameters.block_size_y = delta_y;
 
+        // resume the timers to begin benchamrking
         state.ResumeTiming();
 
         CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(make_grid_arameters, Projection::cartesian);

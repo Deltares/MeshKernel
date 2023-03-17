@@ -7,6 +7,8 @@ static void BM_RTree(benchmark::State& state)
 {
     for (auto _ : state)
     {
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
         int64_t const n = state.range(0); // number of nodes in x-dir
@@ -22,6 +24,7 @@ static void BM_RTree(benchmark::State& state)
             }
         }
 
+        // resume the timers to begin benchamrking
         state.ResumeTiming();
 
         meshkernel::RTree rtree;

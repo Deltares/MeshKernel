@@ -13,6 +13,8 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
 {
     for (auto _ : state)
     {
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
         std::shared_ptr<meshkernel::Mesh2D> mesh =
@@ -51,6 +53,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = static_cast<int>(state.range(2));
 
+        // resume the timers to begin benchamrking
         state.ResumeTiming();
 
         MeshRefinement meshRefinement(mesh, interpolator, mesh_refinement_parameters);
@@ -72,6 +75,8 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 {
     for (auto _ : state)
     {
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
         std::shared_ptr<meshkernel::Mesh2D> mesh =
@@ -102,6 +107,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = 2;
 
+        // resume the timers to begin benchamrking
         state.ResumeTiming();
 
         MeshRefinement meshRefinement(mesh, polygon, mesh_refinement_parameters);
