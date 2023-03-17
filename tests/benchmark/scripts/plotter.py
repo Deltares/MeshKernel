@@ -25,6 +25,7 @@ class Plotter:
         self.__figures_dir = self.__create_directory(work_dir, "figures")
         self.__pickles_dir = self.__create_directory(work_dir, "bin")
         self.__figure_id = 0
+        self.__report = set()
 
     @staticmethod
     def __create_directory(path, dir_name):
@@ -244,7 +245,8 @@ class Plotter:
         """
         if self.__exists(figure_id):
             # set path of graphic file
-            path = os.path.join(self.__figures_dir, (file_name + "." + fmt))
+            file_name_ext = file_name + "." + fmt
+            path = os.path.join(self.__figures_dir, file_name_ext)
             # store the path
             self.__figures[figure_id]["graphic"] = path
             # load the associated binary file and save
@@ -252,6 +254,8 @@ class Plotter:
             figure_handle.savefig(path, format=fmt, dpi=res, bbox_inches="tight")
             plt.close(figure_handle)
             log.info("Saved {}".format(path))
+            # add to report
+            self.__report.add("figures/" + file_name_ext)
         else:
             log.warning("Request to save figure {} is ignored".format(figure_id))
 
@@ -267,7 +271,7 @@ class Plotter:
             os.remove(binary_path)
             message = binary_path
             # remove graphic file
-            if "graphic" in self.__figures[figure_id].keys():
+            if "graphic" in self.__figures[figure_id]:
                 graphic_path = self.__figures[figure_id]["graphic"]
                 os.remove(graphic_path)
                 message += " and " + graphic_path
@@ -297,3 +301,11 @@ class Plotter:
             plt.close(figure_id)
         else:
             log.warning("Request to close figure {} is ignored".format(figure_id))
+
+    def report(self):
+        return self.__report
+        # graphic_paths = set()
+        # for figure in self.__figures:
+        #     if "graphic" in self.__figures[figure]:
+        #         graphic_paths.add(self.__figures[figure]["graphic"])
+        # return graphic_paths

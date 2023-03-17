@@ -1,3 +1,4 @@
+import html_reporter
 from arg_parser import ArgParser
 from json_reader import JSONReader
 from logger import Logger
@@ -38,3 +39,6 @@ if __name__ == "__main__":
             family, attributes, Plotter.XMode.Measurements, ordinate_scale="log"
         )
         plotter.save(fig_id, family + "_measurements")
+
+    # generate html report
+    html_reporter.generate(arg_parser.work_dir(), plotter.report())
