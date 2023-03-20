@@ -16,7 +16,7 @@ class Plotter:
     """
 
     def __init__(self, work_dir, json_reader):
-        self.__json_ids = json_reader.ids()
+        self.__json_contexts = json_reader.contexts()
         self.__json_num_experiments = json_reader.num_experiments()
         self.__json_attributes = json_reader.attributes()
         self.__json_families = json_reader.families()
@@ -24,7 +24,7 @@ class Plotter:
         self.__figures = dict()
         self.__figures_dir = self.__create_directory(work_dir, "figures")
         self.__pickles_dir = self.__create_directory(work_dir, "bin")
-        self.__figure_id = 0
+        self.__figure_id = -1
         self.__report = set()
 
     @staticmethod
@@ -136,7 +136,7 @@ class Plotter:
 
         # x data
         if mode == self.XMode.Experiments:
-            x_data = [id.pretty_name for id in self.__json_ids]
+            x_data = [id.pretty_name for id in self.__json_contexts]
         elif mode == self.XMode.Measurements:
             x_data = self.__json_families[family]
         else:
@@ -167,7 +167,7 @@ class Plotter:
                     axis.plot(
                         x_data,
                         y_data,
-                        label=self.__json_ids[experiment].pretty_name,
+                        label=self.__json_contexts[experiment].pretty_name,
                         marker="o",
                     )
                     axis.set_xlabel(
@@ -228,6 +228,10 @@ class Plotter:
         # set the layout
         figure_handle.tight_layout()
 
+        # add box around the figure
+        figure_handle.patch.set_edgecolor("k")
+        figure_handle.patch.set_linewidth(3)
+
         # dump to binary file and close
         file_name = family + self.__file_name_suffix[mode]
         self.__dump(self.__figure_id, figure_handle, file_name)
@@ -251,7 +255,13 @@ class Plotter:
             self.__figures[figure_id]["graphic"] = path
             # load the associated binary file and save
             figure_handle = self.__load(figure_id)
-            figure_handle.savefig(path, format=fmt, dpi=res, bbox_inches="tight")
+            figure_handle.savefig(
+                path,
+                format=fmt,
+                dpi=res,
+                bbox_inches="tight",
+                edgecolor=figure_handle.get_edgecolor(),
+            )
             plt.close(figure_handle)
             log.info("Saved {}".format(path))
             # add to report
@@ -270,10 +280,13 @@ class Plotter:
             binary_path = self.__figures[figure_id]["binary"]
             os.remove(binary_path)
             message = binary_path
-            # remove graphic file
+            # remove graphic file and report
             if "graphic" in self.__figures[figure_id]:
+                # removed file
                 graphic_path = self.__figures[figure_id]["graphic"]
                 os.remove(graphic_path)
+                # remove from report
+                self.__report.remove("figures/" + os.path.split(graphic_path)[1])
                 message += " and " + graphic_path
             # remove from the dict
             self.__figures.pop(figure_id)
@@ -304,8 +317,3 @@ class Plotter:
 
     def report(self):
         return self.__report
-        # graphic_paths = set()
-        # for figure in self.__figures:
-        #     if "graphic" in self.__figures[figure]:
-        #         graphic_paths.add(self.__figures[figure]["graphic"])
-        # return graphic_paths
