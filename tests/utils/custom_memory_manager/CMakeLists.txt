@@ -44,5 +44,5 @@ if(ENABLE_BENCHMARKS AND ENABLE_MEM_REPORT)
   source_group("Header Files" FILES ${TARGET_HEADER_LIST})
 
   # add unit tests subdirectory
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()
