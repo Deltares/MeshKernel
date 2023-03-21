@@ -6,7 +6,19 @@ from logger import Logger
 
 log = Logger.get()
 
-FileMeta = namedtuple("FileMeta", ["path", "pretty_name"])
+FileContext = namedtuple(
+    "FileContext",
+    [
+        "pretty_name",
+        "path",
+        "executable",
+        "library_build_type",
+        "date",
+        "host_name",
+        "num_cpus",
+        "mhz_per_cpu",
+    ],
+)
 
 
 class JSONReader:
@@ -21,7 +33,7 @@ class JSONReader:
         # list  containing data read from input files
         self.__data = list()
         # unique id assigned to each file (in the order it is parsed): consists of a path and a pretty name
-        self.__ids = list()
+        self.__contexts = list()
         # signals if more than one file has been parsed
         self.__has_multiple_contenders = False
         # list of the matching experiments in all of the input files, equiv to all the experiments if a single file is loaded
@@ -32,9 +44,18 @@ class JSONReader:
         self.__measurements = dict()
         # attributes of interest in each measurement
         self.__attributes = {
-            "real_time": {"pretty_name": "Real Time", "unit": "ms"},
-            "cpu_time": {"pretty_name": "CPU Time", "unit": "ms"},
-            "max_bytes_used": {"pretty_name": "Maximum Bytes Used", "unit": "byte"},
+            "real_time": {
+                "pretty_name": "Real Time",
+                "unit": "ms",
+            },
+            "cpu_time": {
+                "pretty_name": "CPU Time",
+                "unit": "ms",
+            },
+            "max_bytes_used": {
+                "pretty_name": "Maximum Bytes Used",
+                "unit": "byte",
+            },
             "total_allocated_bytes": {
                 "pretty_name": "Total Allocated Bytes",
                 "unit": "byte",
@@ -54,10 +75,22 @@ class JSONReader:
             log.info("Loading file {} : {}".format(i + 1, file_name))
             with open(file_name, "r") as f:
                 self.__data.append(json.load(f))
-            self.__ids.append(FileMeta(file_name, "benchmark_" + format(i + 1, "02d")))
+            context = self.__data[-1]["context"]
+            self.__contexts.append(
+                FileContext(
+                    "benchmark_" + format(i + 1, "02d"),
+                    file_name,
+                    context["executable"],
+                    context["library_build_type"],
+                    context["date"],
+                    context["host_name"],
+                    context["num_cpus"],
+                    context["mhz_per_cpu"],
+                )
+            )
             log.info(
-                "Loaded {}, pretty name = {}".format(
-                    self.__ids[-1].path, self.__ids[-1].pretty_name
+                "Loaded file {}, pretty name = {}".format(
+                    self.__contexts[-1].path, self.__contexts[-1].pretty_name
                 )
             )
         log.info("All files loaded")
@@ -137,11 +170,11 @@ class JSONReader:
         """
         return prefix + JSONReader.sep + args
 
-    def ids(self):
+    def contexts(self):
         """
-        Returns file ids (pair consisting of path and pretty name)
+        Returns contexts of parsed file
         """
-        return self.__ids
+        return self.__contexts
 
     def num_experiments(self):
         """
@@ -191,7 +224,7 @@ class JSONReader:
         """
         log.info(
             'Contents of file "{}":\n{}'.format(
-                self.__ids[file_index].pretty_name,
+                self.__contexts[file_index].pretty_name,
                 json.dumps(self.__data[file_index], indent=2),
             )
         )
@@ -203,7 +236,10 @@ class JSONReader:
         log.info(
             'Contents of node "{}" in file "{}":\n{}'.format(
                 node,
-                self.__ids[file_index].pretty_name,
+                self.__contexts[file_index].pretty_name,
                 json.dumps(self.__data[file_index][node], indent=2),
             )
         )
+
+    def report(self):
+        return self.__contexts, self.__families

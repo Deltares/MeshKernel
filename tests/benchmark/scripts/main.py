@@ -1,4 +1,5 @@
 from arg_parser import ArgParser
+from html_reporter import HTMLReporter
 from json_reader import JSONReader
 from logger import Logger
 from plotter import Plotter
@@ -20,11 +21,11 @@ if __name__ == "__main__":
 
     # read the JSON results
     json_reader = JSONReader(arg_parser.file_names())
-    attributes = json_reader.attributes()
-    families = json_reader.families()
 
     # plot and save the results
     plotter = Plotter(arg_parser.work_dir(), json_reader)
+    families = json_reader.families()
+    attributes = json_reader.attributes()
     for family in families:
         # plot experiments only when multiple contenders are available
         if json_reader.has_multiple_contenders():
@@ -38,3 +39,7 @@ if __name__ == "__main__":
             family, attributes, Plotter.XMode.Measurements, ordinate_scale="log"
         )
         plotter.save(fig_id, family + "_measurements")
+
+    # write html report
+    html_reporter = HTMLReporter(json_reader.report(), plotter.report())
+    html_reporter.write(arg_parser.work_dir())
