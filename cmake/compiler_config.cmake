@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Add compiler-specific options and definitions per supported platform
-if (LINUX)
+if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
