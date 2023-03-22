@@ -95,11 +95,11 @@ std::string CustomMemoryManager::Statistics(std::string const& caller) const
         oss << "<Caller : " << caller << ">\n";
     }
     oss << "Current memory manager statistics:"
-        << "\nNumber of allocations  : " << m_num_allocations
-        << "\nNumber of deallocations: " << m_num_deallocations
-        << "\nTotal allocated bytes  : " << m_total_allocated_bytes
-        << "\nMax bytes used         : " << m_max_bytes_used
-        << "\nNet heap growth        : " << m_net_heap_growth
+        << "\n Number of allocations  : " << m_num_allocations
+        << "\n Number of deallocations: " << m_num_deallocations
+        << "\n Total allocated bytes  : " << m_total_allocated_bytes
+        << "\n Max bytes used         : " << m_max_bytes_used
+        << "\n Net heap growth        : " << m_net_heap_growth
         << '\n';
     return oss.str();
 }

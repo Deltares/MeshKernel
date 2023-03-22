@@ -53,7 +53,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = static_cast<int>(state.range(2));
 
-        // resume the timers to begin benchamrking
+        // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         MeshRefinement meshRefinement(mesh, interpolator, mesh_refinement_parameters);
@@ -107,7 +107,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = 2;
 
-        // resume the timers to begin benchamrking
+        // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         MeshRefinement meshRefinement(mesh, polygon, mesh_refinement_parameters);

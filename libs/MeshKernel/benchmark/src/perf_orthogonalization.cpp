@@ -77,7 +77,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         std::vector<Point> land_boundary{};
         auto landboundaries = std::make_shared<LandBoundaries>(land_boundary, mesh, polygon);
 
-        // resume the timers to begin benchamrking
+        // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);

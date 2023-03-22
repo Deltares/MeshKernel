@@ -24,7 +24,7 @@ static void BM_RTree(benchmark::State& state)
             }
         }
 
-        // resume the timers to begin benchamrking
+        // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         meshkernel::RTree rtree;

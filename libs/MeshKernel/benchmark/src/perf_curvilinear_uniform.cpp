@@ -44,7 +44,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         make_grid_arameters.block_size_x = delta_x;
         make_grid_arameters.block_size_y = delta_y;
 
-        // resume the timers to begin benchamrking
+        // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(make_grid_arameters, Projection::cartesian);

@@ -65,7 +65,7 @@ file(
   )"
 )
 
-# custom commans that executes copy_py_scripts.cmake to copy python
+# custom commands that executes copy_py_scripts.cmake to copy python
 # scripts from the project source dir to the current build dir
 add_custom_command(
   TARGET ${TARGET_NAME}
