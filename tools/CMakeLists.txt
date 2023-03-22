@@ -8,7 +8,7 @@ if(ENABLE_BENCHMARKING AND ENABLE_BENCHMARKING_MEM_REPORT)
 endif()
 
 # Add test utilities
-# This target is buil only if unit testing is enabled
+# This target is built only if unit testing is enabled
 if(ENABLE_UNIT_TESTING)
   add_subdirectory(test_utils)
 endif()

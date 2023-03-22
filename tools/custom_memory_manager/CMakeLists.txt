@@ -2,7 +2,7 @@
 project(
   MeshKernelBenchmarkMemoryManager
   VERSION 1.0.0
-  DESCRIPTION "MeshKernel benchamrk memory manager"
+  DESCRIPTION "MeshKernel benchmark memory manager"
   LANGUAGES CXX
 )
 
