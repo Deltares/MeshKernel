@@ -9,7 +9,7 @@
 
 TEST(TriangleInterpolation, TriangleInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
-    //Prepare
+    // Prepare
     auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
 
     std::vector<meshkernel::Sample> samples{

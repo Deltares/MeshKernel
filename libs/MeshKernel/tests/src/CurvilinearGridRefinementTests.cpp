@@ -93,7 +93,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes[3][2].y, tolerance);
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes[3][3].y, tolerance);
 
-    //vertical gridline 10
+    // vertical gridline 10
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes[10][0].x, tolerance);
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes[10][1].x, tolerance);
     ASSERT_NEAR(19.0, refinedGrid.m_gridNodes[10][2].x, tolerance);
@@ -104,7 +104,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes[10][2].y, tolerance);
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes[10][3].y, tolerance);
 
-    //vertical gridline 11
+    // vertical gridline 11
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes[11][0].x, tolerance);
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes[11][1].x, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes[11][2].x, tolerance);

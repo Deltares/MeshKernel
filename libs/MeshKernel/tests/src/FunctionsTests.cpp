@@ -7,7 +7,7 @@
 
 TEST(FunctionsTest, NormalVectorInsideTestCartesian)
 {
-    //1 Setup
+    // 1 Setup
     meshkernel::Point firstPoint{0.0, 0.0};
     meshkernel::Point secondPoint{1.0, 0.0};
     meshkernel::Point insidePoint{0.0, -1.0};

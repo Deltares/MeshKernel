@@ -54,7 +54,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 3;
-    makeGridParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeGridParameters.block_size_x = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
     makeGridParameters.block_size_y = 5000000.0;
 
     // Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
@@ -68,7 +68,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 
 TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 {
-    //1 Setup
+    // 1 Setup
 
     meshkernelapi::MakeGridParameters makeGridParameters;
     makeGridParameters.angle = 0.0;
@@ -76,7 +76,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 3;
-    makeGridParameters.block_size_x = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    makeGridParameters.block_size_x = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
     makeGridParameters.block_size_y = 5000000.0;
 
     // 2 Execution

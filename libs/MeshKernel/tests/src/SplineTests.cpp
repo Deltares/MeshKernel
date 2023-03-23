@@ -7,7 +7,7 @@
 
 TEST(Splines, SetSpline)
 {
-    //a valid spline
+    // a valid spline
     std::vector<meshkernel::Point> splineNodes({{212.001953125000, 155.627197265625},
                                                 {529.253906250000, 432.379974365234},
                                                 {930.506469726562, 453.380187988281},
@@ -22,7 +22,7 @@ TEST(Splines, SetSpline)
 
 TEST(Splines, CubicSplineInterpolation)
 {
-    //One gets the edges
+    // One gets the edges
     std::vector<meshkernel::Point> splineNodes;
     splineNodes.push_back(meshkernel::Point{212.001953125000, 155.627197265625});
     splineNodes.push_back(meshkernel::Point{529.253906250000, 432.379974365234});

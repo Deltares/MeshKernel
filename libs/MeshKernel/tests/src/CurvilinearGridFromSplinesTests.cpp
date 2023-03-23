@@ -643,7 +643,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
 
-    //meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
+    // meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -847,7 +847,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 }
 TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSplines_ShouldComputeMesh)
 {
-    //Setup
+    // Setup
     std::vector<meshkernel::Point> firstSpline{{7.7979524E+04, 3.7127829E+05},
                                                {7.7979524E+04, 3.7025723E+05},
                                                {7.8302860E+04, 3.6898090E+05},

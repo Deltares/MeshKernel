@@ -8,7 +8,7 @@
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlappingNodes)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<std::vector<meshkernel::Point>> polyLines{
         {{0.0, 0.0},
          {10.0, 0.0},
@@ -54,7 +54,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<std::vector<meshkernel::Point>> polyLines{
         {{0.0, 0.0},
          {10.0, 0.0},
@@ -98,7 +98,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<std::vector<meshkernel::Point>> polyLines{{{0.0, 0.0},
                                                            {10.0, 0.0},
                                                            {20.0, 0.0}}};
@@ -147,7 +147,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithChainagesWithinOffset_ShouldGenerateMesh)
 {
-    //1 Setup
+    // 1 Setup
     std::vector<std::vector<meshkernel::Point>> polyLines{{{0.0, 0.0},
                                                            {10.0, 0.0},
                                                            {20.0, 0.0}}};
