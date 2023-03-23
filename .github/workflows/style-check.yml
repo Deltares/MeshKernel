@@ -19,9 +19,16 @@ jobs:
           ./clang-format --version
       - name: Run clang-format and report result
         run: |
-          cd src      
           # Parse full lines
           export IFS=$'\n'
+          cd libs
+          # For each file in repository with name ending with ".hpp", ".h", ".cpp" ...
+          for file in $(git ls-files | egrep "\\.hpp$|\\.h$|\\.cpp$"$); do
+              echo Formatting "$file"
+              # format it in place, so git can pick it up.
+              ../clang-format -style=file -i "$file"
+          done
+          cd ../tools
           # For each file in repository with name ending with ".hpp", ".h", ".cpp" ...
           for file in $(git ls-files | egrep "\\.hpp$|\\.h$|\\.cpp$"$); do
               echo Formatting "$file"
