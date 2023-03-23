@@ -76,7 +76,7 @@ add_custom_command(
     -DPATTERN_EXCLUDE=Inputs
     -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
   COMMAND ${CMAKE_COMMAND}
-    -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../scripts/
+    -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts/
     -DDESTINATION_DIR=$<TARGET_FILE_DIR:${TARGET_NAME}>/scripts/meshkernel
     -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
   COMMENT "Copying python scripts..."

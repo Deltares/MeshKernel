@@ -62,8 +62,9 @@ message(STATUS "Found NetCDF: in ${netCDF_INSTALL_PREFIX} (found version \"${Net
 # Should be linked to the main (static) library
 target_link_libraries(
   ${TARGET_NAME}
-  PRIVATE
+  PUBLIC
     MeshKernel
+  PRIVATE
     netCDF::netcdf
 )
 

@@ -13,6 +13,8 @@
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+#include <numeric>
+
 class ApiTests : public testing::Test
 {
 public:

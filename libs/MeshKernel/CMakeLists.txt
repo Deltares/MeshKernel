@@ -186,6 +186,7 @@ target_include_directories(
 )
 
 # Add target link dependencies
+
 # Boost
 find_package(Boost REQUIRED)
 target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
@@ -193,6 +194,7 @@ target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
 # OpenMP
 find_package(OpenMP REQUIRED)
 
+# link required libraries
 target_link_libraries(
   ${TARGET_NAME}
   LINK_PUBLIC

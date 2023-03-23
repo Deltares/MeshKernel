@@ -17,6 +17,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 # include directory
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
 set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernelApi)
+set(VERSION_INC_DIR ${CMAKE_SOURCE_DIR}/tools)
 
 # list of target sources
 set(SRC_LIST ${SRC_DIR}/MeshKernel.cpp)
@@ -37,7 +38,7 @@ set(
   ${DOMAIN_INC_DIR}/SplinesToCurvilinearParameters.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
-  ${CMAKE_SOURCE_DIR}/tools/Version/Version.hpp
+  ${VERSION_INC_DIR}/Version/Version.hpp
 )
 
 # add sources to target
@@ -48,18 +49,10 @@ target_sources(
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
-        ${INC_DIR} ${CMAKE_SOURCE_DIR}/tools #/Version
+        ${INC_DIR} ${VERSION_INC_DIR}
       FILES
-        ${INC_LIST}
+        ${INC_LIST} 
 )
-
-# set(VERSION_RESOURCE_FILE ${CMAKE_BINARY_DIR}/version.rc)
-
-# set_target_properties(
-#   ${TARGET_NAME} 
-#   PROPERTIES 
-#   RESOURCE "${VERSION_RESOURCE_FILE}"
-# )
 
 # define the public header
 set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${INC_LIST}")
