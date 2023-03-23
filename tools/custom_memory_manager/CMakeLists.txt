@@ -1,7 +1,7 @@
 # project name
 project(
   MeshKernelBenchmarkMemoryManager
-  VERSION 1.0.0
+  VERSION ${CMAKE_PROJECT_VERSION}
   DESCRIPTION "MeshKernel benchmark memory manager"
   LANGUAGES CXX
 )

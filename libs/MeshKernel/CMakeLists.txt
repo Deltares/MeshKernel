@@ -1,7 +1,7 @@
 # project name
 project(
   MeshKernel
-  VERSION 1.0.0
+  VERSION ${CMAKE_PROJECT_VERSION}
   DESCRIPTION "MeshKernel static library"
   LANGUAGES CXX C
 )

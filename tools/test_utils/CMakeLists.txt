@@ -1,7 +1,7 @@
 # project name
 project(
   MeshKernelTestUtils
-  VERSION 1.0.0
+  VERSION ${CMAKE_PROJECT_VERSION}
   DESCRIPTION "MeshKernel unit testing utilities"
   LANGUAGES CXX C
 )

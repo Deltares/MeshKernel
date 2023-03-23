@@ -1,6 +1,6 @@
 project(
   MeshKernelApi
-  VERSION 1.0.0
+  VERSION ${CMAKE_PROJECT_VERSION}
   DESCRIPTION "MeshKernel API"
   LANGUAGES CXX C
 )
