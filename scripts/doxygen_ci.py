@@ -25,8 +25,12 @@ def configure_doxyfile(
         doxyfile_data = file.read()
 
     doxyfile_data = doxyfile_data.replace("@DOXYGEN_INPUT_LIST@", doxygen_input_list)
-    doxyfile_data = doxyfile_data.replace("@DOXYGEN_OUTPUT_DIR@", str(output_dir.resolve()))
-    doxyfile_data = doxyfile_data.replace("@CMAKE_CURRENT_SOURCE_DIR@", str(docs_dir.resolve()))
+    doxyfile_data = doxyfile_data.replace(
+        "@DOXYGEN_OUTPUT_DIR@", str(output_dir.resolve())
+    )
+    doxyfile_data = doxyfile_data.replace(
+        "@CMAKE_CURRENT_SOURCE_DIR@", str(docs_dir.resolve())
+    )
     doxyfile_data = doxyfile_data.replace(
         "@DOXYGEN_IMAGE_DIR@", str(docs_dir / "images")
     )
@@ -55,8 +59,10 @@ def print_file(file: Path):
 
 # Set dirs
 root_dir = Path(__file__).parent.parent
-meshkernel_include_dir = root_dir / "include" / "MeshKernel"
-meshkernelapi_include_dir = root_dir / "include" / "MeshKernelApi"
+meshkernel_include_dir = root_dir / "libs" / "MeshKernel" / "include" / "MeshKernel"
+meshkernelapi_include_dir = (
+    root_dir / "libs" / "MeshKernelApi" / "include" / "MeshKernelApi"
+)
 output_dir = root_dir / "build" / "docs"
 docs_dir = root_dir / "docs"
 

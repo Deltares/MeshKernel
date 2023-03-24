@@ -1,79 +1,30 @@
 cmake_minimum_required(VERSION 3.23)
 
-# Project name and a few useful settings. Other commands can pick up the results
 project(
   MeshKernel
   VERSION 1.0.0
   DESCRIPTION "Library for creating and editing meshes."
-  LANGUAGES CXX C)
-  
-option(PRODUCE_CODE_COVERAGE "Produce code coverage files under GNU compilers" OFF)
-option(ADD_UNIT_TESTS_PROJECTS "Add unit test projects" ON)
+  LANGUAGES CXX C
+)
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-std=c++17;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
-    add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
-    add_compile_options("$<$<CONFIG:DEBUG>:-g>")
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options("/EHsc;/MP;/std:c++17;/W3;/WX")
-    add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
-    add_compile_options("$<$<CONFIG:DEBUG>:/Od;/DEBUG>")
-    add_compile_definitions("_USE_MATH_DEFINES")
-  else()
-    message(FATAL_ERROR "Unsupported compiler. Only GNU and MSVC are supported.")
-  endif()
+include(cmake/options.cmake)
+include(cmake/compiler_config.cmake)
+include(cmake/fetch_content.cmake)
 
-  # Create position independent binaries
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# organize targets into folders, can be remove in version > 3.26 (ON by default)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-  # Disable compiler specific extensions
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
-  # Let's nicely support folders in IDEs
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-  # Note this needs to be done in the main CMakeLists since it calls
-  # enable_testing, which must be in the main CMakeLists.
-  include(CTest)
-
-  # Docs only available if this is the main app
-  add_subdirectory(docs)
-endif()
-
-# Determine version suffix from environment variable
-if(DEFINED ENV{VERSION_SUFFIX})
-  set(VERSION_SUFFIX $ENV{VERSION_SUFFIX})
-else()
-  set(VERSION_SUFFIX .0)
-endif()
+# Docs only available if this is the main app
+add_subdirectory(docs)
 
 # Run packaging scripts
 add_subdirectory(package)
 
+# Tools
+add_subdirectory(tools)
+
 # Add third party directory
 add_subdirectory(extern)
 
-# FetchContent added in CMake 3.11, downloads during the configure step
-include(FetchContent)
-
-# Boost
-find_package(Boost REQUIRED)
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-
-# OpenMP
-find_package(OpenMP REQUIRED)
-
-# The version file
-add_subdirectory(include/Version)
-
-# The static library
-add_subdirectory(src/MeshKernel)
-
-# The dynamic library
-add_subdirectory(src/MeshKernelApi)
-
-# Testing only available if this is the main app.
-if(ADD_UNIT_TESTS_PROJECTS AND CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  add_subdirectory(tests)
-endif()
+# Libraries
+add_subdirectory(libs)
