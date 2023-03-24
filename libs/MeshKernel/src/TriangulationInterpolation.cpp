@@ -59,22 +59,22 @@ void TriangulationInterpolation::Compute()
                                  0);
 
     // no triangles formed, return
-    if (triangulationWrapper.m_numFaces < 1)
+    if (triangulationWrapper.GetNumFaces() < 1)
     {
         throw AlgorithmError("TriangulationInterpolation::Compute: Triangulation of samples produced no triangles.");
     }
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
-    std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {constants::missing::doubleValue, constants::missing::doubleValue});
-    std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4));
-    std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, constants::missing::doubleValue));
+    std::vector<Point> trianglesCircumcenters(triangulationWrapper.GetNumFaces(), {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<std::vector<Point>> triangles(triangulationWrapper.GetNumFaces(), std::vector<Point>(4));
+    std::vector<std::vector<double>> values(triangulationWrapper.GetNumFaces(), std::vector<double>(4, constants::missing::doubleValue));
 
-    for (size_t f = 0; f < triangulationWrapper.m_numFaces; ++f)
+    for (size_t f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
         for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
         {
-            auto const node = triangulationWrapper.m_faceNodes[f][n];
+            auto const node = triangulationWrapper.GetFaceNode(f, n);
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
             values[f][n] = m_samples[node].value;
         }
@@ -110,7 +110,7 @@ void TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         size_t numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.m_numFaces)
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.GetNumFaces())
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -125,16 +125,16 @@ void TriangulationInterpolation::Compute()
             numFacesSearched++;
             for (size_t i = 0; i < Mesh::m_numNodesInTriangle; ++i)
             {
-                const auto edge = triangulationWrapper.m_faceEdges[triangle][i];
-                if (triangulationWrapper.m_edgesFaces[edge][1] == 0)
+                const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
+                if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)
                 {
                     continue;
                 }
 
                 // there is no valid other triangle
-                const auto otherTriangle = triangle == triangulationWrapper.m_edgesFaces[edge][0] ? triangulationWrapper.m_edgesFaces[edge][1] : triangulationWrapper.m_edgesFaces[edge][0];
-                const auto k1 = triangulationWrapper.m_edgeNodes[edge][0];
-                const auto k2 = triangulationWrapper.m_edgeNodes[edge][1];
+                const auto otherTriangle = triangle == triangulationWrapper.GetEdgeFace(edge, 0) ? triangulationWrapper.GetEdgeFace(edge, 1) : triangulationWrapper.GetEdgeFace(edge, 0);
+                const auto k1 = triangulationWrapper.GetEdgeNode(edge, 0);
+                const auto k2 = triangulationWrapper.GetEdgeNode(edge, 1);
                 Point intersection;
                 double crossProduct;
                 double firstRatio;
@@ -158,7 +158,7 @@ void TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.m_numFaces)
+        if (isInTriangle && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.GetNumFaces())
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

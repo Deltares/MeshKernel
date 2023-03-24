@@ -152,20 +152,22 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
                                  0.0,
                                  numberOfTriangles);
 
+    triangulationWrapper.BuildTriangulation();
+
     // For each triangle check
     // 1. Validity of its internal angles
     // 2. Is inside the polygon
     // If so we mark the edges and we add them m_edges
-    std::vector<bool> edgeNodesFlag(triangulationWrapper.m_numEdges, false);
-    for (size_t i = 0; i < triangulationWrapper.m_numFaces; ++i)
+    std::vector<bool> edgeNodesFlag(triangulationWrapper.GetNumEdges(), false);
+    for (size_t i = 0; i < triangulationWrapper.GetNumFaces(); ++i)
     {
-        const auto goodTriangle = HasTriangleNoAcuteAngles(triangulationWrapper.m_faceNodes[i], inputNodes);
+        const auto goodTriangle = HasTriangleNoAcuteAngles(triangulationWrapper.GetFaceNodes(i), inputNodes);
 
         if (!goodTriangle)
         {
             continue;
         }
-        const Point approximateCenter = (inputNodes[triangulationWrapper.m_faceNodes[i][0]] + inputNodes[triangulationWrapper.m_faceNodes[i][1]] + inputNodes[triangulationWrapper.m_faceNodes[i][2]]) * constants::numeric::oneThird;
+        const Point approximateCenter = (inputNodes[triangulationWrapper.GetFaceNode(i, 0)] + inputNodes[triangulationWrapper.GetFaceNode(i, 1)] + inputNodes[triangulationWrapper.GetFaceNode(i, 2)]) * constants::numeric::oneThird;
 
         const auto isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter, 0);
         if (!isTriangleInPolygon)
@@ -176,14 +178,14 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         // mark all edges of this triangle as good ones
         for (size_t j = 0; j < Mesh::m_numNodesInTriangle; ++j)
         {
-            edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
+            edgeNodesFlag[triangulationWrapper.GetFaceEdge(i,j)] = true;
         }
     }
 
     // now add all points and all valid edges
     m_nodes = inputNodes;
     size_t validEdgesCount = 0;
-    for (size_t i = 0; i < triangulationWrapper.m_numEdges; ++i)
+    for (size_t i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
@@ -192,13 +194,13 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
 
     std::vector<Edge> edges(validEdgesCount);
     validEdgesCount = 0;
-    for (size_t i = 0; i < triangulationWrapper.m_numEdges; ++i)
+    for (size_t i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = triangulationWrapper.m_edgeNodes[i][0];
-        edges[validEdgesCount].second = triangulationWrapper.m_edgeNodes[i][1];
+        edges[validEdgesCount].first = triangulationWrapper.GetEdgeNode(i,0);
+        edges[validEdgesCount].second = triangulationWrapper.GetEdgeNode(i,1);
         validEdgesCount++;
     }
 

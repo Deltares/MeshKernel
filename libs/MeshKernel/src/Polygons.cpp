@@ -72,12 +72,14 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
 
-    std::vector<std::vector<Point>> generatedPoints;
-    generatedPoints.reserve(GetNumPolygons());
+    std::vector generatedPoints(GetNumPolygons(),std::vector<Point>());
     std::vector<Point> localPolygon(GetNumNodes());
+    TriangulationWrapper triangulationWrapper;
 
-    for (const auto& [outerStart, outerEnd] : m_outer_polygons_indices)
+    for (auto polygonIndex = 0; polygonIndex < m_outer_polygons_indices.size(); ++polygonIndex)
     {
+        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
+
         localPolygon.clear();
         for (auto j = outerStart; j <= outerEnd; ++j)
         {
@@ -96,24 +98,30 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         const auto perimeter = PerimeterClosedPolygon(localPolygon);
 
         // average triangle size
-        const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
+        const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints);
         const double averageTriangleArea = 0.25 * constants::numeric::squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles
-        const size_t SafetySize = 11;
+        constexpr size_t SafetySize = 11;
         const auto numberOfTriangles = static_cast<size_t>(SafetySize * localPolygonArea / averageTriangleArea);
         if (numberOfTriangles == 0)
         {
             throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
         }
 
-        TriangulationWrapper triangulationWrapper;
         triangulationWrapper.Compute(localPolygon,
                                      TriangulationWrapper::TriangulationOptions::GeneratePoints,
                                      averageTriangleArea,
                                      numberOfTriangles);
 
-        generatedPoints.emplace_back(triangulationWrapper.m_nodes);
+        for (auto i = 0; i < triangulationWrapper.GetNumNodes(); ++i)
+        {
+            Point p(triangulationWrapper.GetXCoord(i), triangulationWrapper.GetYCoord(i));
+            if (IsPointInPolygon(p, polygonIndex))
+            {
+                generatedPoints[polygonIndex].emplace_back(p);
+            }
+        }
     }
 
     return generatedPoints;
