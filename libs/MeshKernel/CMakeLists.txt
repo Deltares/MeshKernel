@@ -43,6 +43,7 @@ set(
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
+  ${SRC_DIR}/TriangulationWrapper.cpp
 )
 
 set(

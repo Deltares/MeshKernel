@@ -75,7 +75,7 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[3][1]);
 }
 
-TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
+TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
@@ -95,25 +95,26 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 
     // Assert
+    ASSERT_EQ(5, mesh.GetNumNodes());
     ASSERT_EQ(6, mesh.GetNumEdges());
 
-    ASSERT_EQ(4, mesh.m_edges[0].first);
-    ASSERT_EQ(1, mesh.m_edges[0].second);
+    ASSERT_EQ(3, mesh.m_edges[0].first);
+    ASSERT_EQ(0, mesh.m_edges[0].second);
 
-    ASSERT_EQ(1, mesh.m_edges[1].first);
-    ASSERT_EQ(2, mesh.m_edges[1].second);
+    ASSERT_EQ(0, mesh.m_edges[1].first);
+    ASSERT_EQ(1, mesh.m_edges[1].second);
 
-    ASSERT_EQ(2, mesh.m_edges[2].first);
-    ASSERT_EQ(4, mesh.m_edges[2].second);
+    ASSERT_EQ(1, mesh.m_edges[2].first);
+    ASSERT_EQ(3, mesh.m_edges[2].second);
 
-    ASSERT_EQ(0, mesh.m_edges[3].first);
-    ASSERT_EQ(2, mesh.m_edges[3].second);
+    ASSERT_EQ(4, mesh.m_edges[3].first);
+    ASSERT_EQ(1, mesh.m_edges[3].second);
 
-    ASSERT_EQ(2, mesh.m_edges[4].first);
-    ASSERT_EQ(3, mesh.m_edges[4].second);
+    ASSERT_EQ(1, mesh.m_edges[4].first);
+    ASSERT_EQ(2, mesh.m_edges[4].second);
 
-    ASSERT_EQ(3, mesh.m_edges[5].first);
-    ASSERT_EQ(0, mesh.m_edges[5].second);
+    ASSERT_EQ(2, mesh.m_edges[5].first);
+    ASSERT_EQ(4, mesh.m_edges[5].second);
 }
 
 TEST(Mesh, TriangulateSamples)

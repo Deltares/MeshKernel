@@ -429,8 +429,8 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(38, mesh2d.num_nodes);
-    ASSERT_EQ(95, mesh2d.num_edges);
+    ASSERT_EQ(42, mesh2d.num_nodes);
+    ASSERT_EQ(107, mesh2d.num_edges);
 }
 
 TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)

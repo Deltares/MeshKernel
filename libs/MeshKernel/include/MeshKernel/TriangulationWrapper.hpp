@@ -73,9 +73,9 @@ namespace meshkernel
                 yLocalPolygon[i] = inputNodes[i].y;
             }
 
-            numFaces = -1;
-            numEdges = 0;
-            numNodes = 0;
+            m_numFaces = -1;
+            m_numEdges = 0;
+            m_numNodes = 0;
 
             int numInputNodes = static_cast<int>(inputNodes.size());
             auto intTriangulationOption = static_cast<int>(triangulationOption);
@@ -86,132 +86,67 @@ namespace meshkernel
             }
 
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
-            while (numFaces < 0)
+            while (m_numFaces < 0)
             {
-                numFaces = static_cast<int>(estimatedNumberOfTriangles);
+                m_numFaces = static_cast<int>(estimatedNumberOfTriangles);
 
-                faceNodesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(faceNodesFlat.begin(), faceNodesFlat.end(), 0);
+                m_faceNodesFlat.resize(estimatedNumberOfTriangles * 3);
+                std::fill(m_faceNodesFlat.begin(), m_faceNodesFlat.end(), 0);
 
-                edgeNodesFlat.resize(estimatedNumberOfTriangles * 2);
-                std::fill(edgeNodesFlat.begin(), edgeNodesFlat.end(), 0);
+                m_edgeNodesFlat.resize(estimatedNumberOfTriangles * 2);
+                std::fill(m_edgeNodesFlat.begin(), m_edgeNodesFlat.end(), 0);
 
-                faceEdgesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(faceEdgesFlat.begin(), faceEdgesFlat.end(), 0);
+                m_faceEdgesFlat.resize(estimatedNumberOfTriangles * 3);
+                std::fill(m_faceEdgesFlat.begin(), m_faceEdgesFlat.end(), 0);
 
-                xCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(xCoordFlat.begin(), xCoordFlat.end(), 0.0);
+                m_xCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
+                std::fill(m_xCoordFlat.begin(), m_xCoordFlat.end(), 0.0);
 
-                yCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(yCoordFlat.begin(), yCoordFlat.end(), 0.0);
+                m_yCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
+                std::fill(m_yCoordFlat.begin(), m_yCoordFlat.end(), 0.0);
 
                 Triangulation(&intTriangulationOption,
-                              &xLocalPolygon[0],
-                              &yLocalPolygon[0],
+                              xLocalPolygon.data(),
+                              yLocalPolygon.data(),
                               &numInputNodes,
-                              &faceNodesFlat[0], // INDX
-                              &numFaces,
-                              &edgeNodesFlat[0], // EDGEINDX
-                              &numEdges,
-                              &faceEdgesFlat[0], // TRIEDGE
-                              &xCoordFlat[0],
-                              &yCoordFlat[0],
-                              &numNodes,
+                              m_faceNodesFlat.data(), // INDX
+                              &m_numFaces,
+                              m_edgeNodesFlat.data(), // EDGEINDX
+                              &m_numEdges,
+                              m_faceEdgesFlat.data(), // TRIEDGE
+                              m_xCoordFlat.data(),
+                              m_yCoordFlat.data(),
+                              &m_numNodes,
                               &averageTriangleArea);
                 if (estimatedNumberOfTriangles > 0)
                 {
-                    estimatedNumberOfTriangles = -numFaces;
+                    estimatedNumberOfTriangles = -m_numFaces;
                 }
             }
         }
 
-        /// @brief Build internal mapping after the flat triangulation structures are filled
-        void BuildTriangulation()
-        {
-
-            numFaces = numFaces <= 0 ? 0 : numFaces;
-
-            // Create nodes
-            m_nodes.resize(numNodes);
-            for (auto i = 0; i < numNodes; ++i)
-            {
-                m_nodes[i] = {xCoordFlat[i], yCoordFlat[i]};
-            }
-
-            // Create m_faceNodes
-            ResizeAndFill2DVector(m_faceNodes, numFaces, 3, true, constants::missing::sizetValue);
-            ResizeAndFill2DVector(m_faceEdges, numFaces, 3, true, constants::missing::sizetValue);
-            size_t faceCounter = 0;
-            for (size_t f = 0; f < numFaces; ++f)
-            {
-                m_faceNodes[f][0] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
-                m_faceEdges[f][0] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
-                faceCounter++;
-                m_faceNodes[f][1] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
-                m_faceEdges[f][1] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
-                faceCounter++;
-                m_faceNodes[f][2] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
-                m_faceEdges[f][2] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
-                faceCounter++;
-            }
-
-            // Create edges
-            if (numEdges == 0)
-            {
-                return;
-            }
-
-            ResizeAndFill2DVector(m_edgeNodes, numEdges, 2, true, constants::missing::sizetValue);
-            size_t edgeCounter = 0;
-            for (size_t e = 0; e < numEdges; ++e)
-            {
-                m_edgeNodes[e][0] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
-                edgeCounter++;
-                m_edgeNodes[e][1] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
-                edgeCounter++;
-            }
-
-            ResizeAndFill2DVector(m_edgesFaces, numEdges, 2, true, constants::missing::sizetValue);
-            edgeCounter = 0;
-            for (size_t f = 0; f < numFaces; ++f)
-            {
-
-                for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
-                {
-                    auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
-                    edgeCounter++;
-                    // For each edge, the shared face index
-                    if (m_edgesFaces[edge][0] == constants::missing::sizetValue)
-                    {
-                        m_edgesFaces[edge][0] = f;
-                    }
-                    else
-                    {
-                        m_edgesFaces[edge][1] = f;
-                    }
-                }
-            }
-        }
+        /// @brief Build the internal triangulation from the flat triangulation
+        void BuildTriangulation();
 
         /// @brief Gets the number of triangulated edges
         /// @return The number of triangulated edges
         [[nodiscard]] const auto& GetNumEdges() const
         {
-            return numEdges;
+            return m_numEdges;
         }
 
         /// @brief Gets the number of triangulated nodes
         /// @return The number of triangulated nodes
         [[nodiscard]] const auto& GetNumNodes() const
         {
-            return numNodes;
+            return m_numNodes;
         }
 
         /// @brief Gets the number of triangulated faces
         /// @return The number of triangulated faces
         [[nodiscard]] const auto& GetNumFaces() const
         {
-            return numFaces;
+            return m_numFaces;
         }
 
         /// @brief Gets the triangulated nodes
@@ -270,7 +205,7 @@ namespace meshkernel
         /// @return const reference to the x coordinate
         [[nodiscard]] const auto& GetXCoord(const size_t& nodeIndex) const
         {
-            return xCoordFlat[nodeIndex];
+            return m_xCoordFlat[nodeIndex];
         }
 
         /// @brief Retrieves the y coordinate of a triangulated node
@@ -278,18 +213,19 @@ namespace meshkernel
         /// @return const reference to the y coordinate
         [[nodiscard]] const auto& GetYCoord(const size_t& nodeIndex) const
         {
-            return yCoordFlat[nodeIndex];
+            return m_yCoordFlat[nodeIndex];
         }
 
     private:
-        std::vector<int> faceNodesFlat; ///< Face nodes flat array passed to the triangulation library
-        std::vector<int> edgeNodesFlat; ///< Edge nodes flat array passed to the triangulation library
-        std::vector<int> faceEdgesFlat; ///< Face edges flat array passed to the triangulation library
-        std::vector<double> xCoordFlat; ///< x coordinates flat array passed to the triangulation library
-        std::vector<double> yCoordFlat; ///< y coordinates flat array passed to the triangulation library
-        int numNodes{0};                ///< Initial number of triangulated nodes
-        int numEdges{0};                ///< Initial number of triangulated edges
-        int numFaces{0};                ///< Initial number of triangulated faces
+
+        std::vector<int> m_faceNodesFlat; ///< Face nodes flat array passed to the triangulation library
+        std::vector<int> m_edgeNodesFlat; ///< Edge nodes flat array passed to the triangulation library
+        std::vector<int> m_faceEdgesFlat; ///< Face edges flat array passed to the triangulation library
+        std::vector<double> m_xCoordFlat; ///< x coordinates flat array passed to the triangulation library
+        std::vector<double> m_yCoordFlat; ///< y coordinates flat array passed to the triangulation library
+        int m_numNodes{0};                ///< Initial number of triangulated nodes
+        int m_numEdges{0};                ///< Initial number of triangulated edges
+        int m_numFaces{0};                ///< Initial number of triangulated faces
 
         std::vector<Point> m_nodes;                    ///< Reconstructed vector of nodes
         std::vector<std::vector<size_t>> m_faceNodes;  ///< Reconstructed vector of face nodes

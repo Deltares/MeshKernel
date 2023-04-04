@@ -114,10 +114,10 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
                                      averageTriangleArea,
                                      numberOfTriangles);
 
+        generatedPoints[polygonIndex].reserve(triangulationWrapper.GetNumNodes());
         for (auto i = 0; i < triangulationWrapper.GetNumNodes(); ++i)
         {
-            Point p(triangulationWrapper.GetXCoord(i), triangulationWrapper.GetYCoord(i));
-            if (IsPointInPolygon(p, polygonIndex))
+            if (Point p(triangulationWrapper.GetXCoord(i), triangulationWrapper.GetYCoord(i)); IsPointInPolygon(p, polygonIndex))
             {
                 generatedPoints[polygonIndex].emplace_back(p);
             }

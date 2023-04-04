@@ -58,6 +58,8 @@ void TriangulationInterpolation::Compute()
                                  0.0,
                                  0);
 
+    triangulationWrapper.BuildTriangulation();
+
     // no triangles formed, return
     if (triangulationWrapper.GetNumFaces() < 1)
     {
