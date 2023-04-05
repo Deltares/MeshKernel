@@ -68,6 +68,9 @@ namespace meshkernel
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
+        /// @brief Constructor taking only a projection
+        CurvilinearGrid(Projection projection);
+
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons
         /// @param[in] polygonIndex The index of the polygon to use for deletion

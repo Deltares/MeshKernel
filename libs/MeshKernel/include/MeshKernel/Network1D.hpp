@@ -42,6 +42,10 @@ namespace meshkernel
         /// @brief Default constructor
         Network1D() = default;
 
+        // @brief Construct a Network1D only from the projection
+        /// @param[in] projection The projection to use
+        Network1D(Projection projection);
+
         /// @brief Construct a mesh1d by discretizing polyLines
         /// @param[in] polyLines The polylines to be discretize
         /// @param[in] projection The projection to use

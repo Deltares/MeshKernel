@@ -29,8 +29,12 @@
 #include <MeshKernel/Network1D.hpp>
 #include <MeshKernel/Operations.hpp>
 
-meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
-                                 Projection projection) : m_projection(projection), m_polyLines(polyLines)
+using namespace meshkernel;
+
+Network1D::Network1D(Projection projection) : m_projection(projection){};
+
+Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
+                     Projection projection) : m_projection(projection), m_polyLines(polyLines)
 {
     m_chainages.resize(m_polyLines.size());
 
@@ -43,9 +47,9 @@ meshkernel::Network1D::Network1D(std::vector<std::vector<Point>> const& polyLine
     }
 }
 
-void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double>> const& fixedChainagesByPolyline,
-                                                  double minFaceSize,
-                                                  double fixedChainagesOffset)
+void Network1D::ComputeFixedChainages(std::vector<std::vector<double>> const& fixedChainagesByPolyline,
+                                      double minFaceSize,
+                                      double fixedChainagesOffset)
 {
 
     if (m_polyLines.size() != fixedChainagesByPolyline.size())
@@ -95,7 +99,7 @@ void meshkernel::Network1D::ComputeFixedChainages(std::vector<std::vector<double
     }
 }
 
-void meshkernel::Network1D::ComputeOffsettedChainages(double offset)
+void Network1D::ComputeOffsettedChainages(double offset)
 {
 
     for (size_t p = 0; p < m_polyLines.size(); ++p)
@@ -122,7 +126,7 @@ void meshkernel::Network1D::ComputeOffsettedChainages(double offset)
     }
 }
 
-std::vector<std::vector<meshkernel::Point>> meshkernel::Network1D::ComputeDiscretizationsFromChainages()
+std::vector<std::vector<Point>> Network1D::ComputeDiscretizationsFromChainages()
 {
     std::vector<std::vector<Point>> result;
     for (size_t p = 0; p < m_polyLines.size(); ++p)

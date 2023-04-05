@@ -122,6 +122,10 @@ namespace meshkernel
         /// @brief Default constructor
         Mesh() = default;
 
+        /// @brief  Constructs an empty mesh, sets only the projection
+        /// @param[in] projection  The projection to use
+        Mesh(Projection projection) : m_projection(projection){}
+
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes

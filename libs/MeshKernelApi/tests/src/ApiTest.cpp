@@ -2937,7 +2937,7 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
 
 TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMeshEdges)
 {
-    /// Setup
+    // Setup
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
 
@@ -3022,4 +3022,50 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
     ASSERT_EQ(faceIndexes[4], meshkernel::constants::missing::intValue);
+}
+
+TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
+{
+    // Setup
+    const double lonMin = -6;
+    const double lonMax = 2;
+    const double latMin = 48.5;
+    const double latMax = 51.2;
+    const double lonResolution = 0.2;
+    const double latResolution = 0.2;
+    const int num_x = static_cast<int>(std::ceil((lonMax - lonMin) / lonResolution));
+    const int num_y = static_cast<int>(std::ceil((latMax - latMin) / latResolution));
+
+    auto make_grid_parameters = meshkernelapi::MakeGridParameters();
+    make_grid_parameters.num_columns = num_x;
+    make_grid_parameters.num_rows = num_y;
+    make_grid_parameters.angle = 0.0;
+    make_grid_parameters.block_size = 0.0;
+    make_grid_parameters.origin_x = lonMin;
+    make_grid_parameters.origin_y = latMin;
+    make_grid_parameters.block_size_x = lonResolution;
+    make_grid_parameters.block_size_y = latResolution;
+
+    // Execute
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(true, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList geometryList;
+    geometryList.num_coordinates = 0;
+
+    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, make_grid_parameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d;
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(mesh2d.num_nodes, 615);
+    ASSERT_EQ(mesh2d.num_edges, 1174);
+    ASSERT_EQ(mesh2d.num_faces, 80);
+
 }
