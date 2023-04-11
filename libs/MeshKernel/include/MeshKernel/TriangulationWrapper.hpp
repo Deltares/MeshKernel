@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "MeshKernel/Constants.hpp"
+
 namespace meshkernel
 {
     extern "C"

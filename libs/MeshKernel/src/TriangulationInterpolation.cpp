@@ -111,8 +111,8 @@ void TriangulationInterpolation::Compute()
 
         // search for the triangle where the location is included
         bool isInTriangle = false;
-        size_t numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.GetNumFaces())
+        int numFacesSearched = 0;
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -160,7 +160,7 @@ void TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle != constants::missing::sizetValue && triangle < triangulationWrapper.GetNumFaces())
+        if (isInTriangle && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

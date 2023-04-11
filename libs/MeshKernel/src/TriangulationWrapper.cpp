@@ -47,7 +47,7 @@ void TriangulationWrapper::BuildTriangulation()
     ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::sizetValue);
     ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::sizetValue);
     size_t faceCounter = 0;
-    for (size_t f = 0; f < m_numFaces; ++f)
+    for (int f = 0; f < m_numFaces; ++f)
     {
         m_faceNodes[f][0] = static_cast<size_t>(m_faceNodesFlat[faceCounter] - 1);
         m_faceEdges[f][0] = static_cast<size_t>(m_faceEdgesFlat[faceCounter] - 1);
@@ -68,7 +68,7 @@ void TriangulationWrapper::BuildTriangulation()
 
     ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::sizetValue);
     size_t edgeCounter = 0;
-    for (size_t e = 0; e < m_numEdges; ++e)
+    for (int e = 0; e < m_numEdges; ++e)
     {
         m_edgeNodes[e][0] = static_cast<size_t>(m_edgeNodesFlat[edgeCounter] - 1);
         edgeCounter++;
@@ -78,7 +78,7 @@ void TriangulationWrapper::BuildTriangulation()
 
     ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::sizetValue);
     edgeCounter = 0;
-    for (size_t f = 0; f < m_numFaces; ++f)
+    for (int f = 0; f < m_numFaces; ++f)
     {
 
         for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)

@@ -76,7 +76,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
     std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
 
-    for (auto polygonIndex = 0; polygonIndex < m_outer_polygons_indices.size(); ++polygonIndex)
+    for (size_t polygonIndex = 0; polygonIndex < m_outer_polygons_indices.size(); ++polygonIndex)
     {
         const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
 
