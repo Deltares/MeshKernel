@@ -34,7 +34,10 @@ using namespace meshkernel;
 void TriangulationWrapper::BuildTriangulation()
 {
 
-    m_numFaces = m_numFaces <= 0 ? 0 : m_numFaces;
+    if (m_numFaces < 0)
+    {
+        m_numFaces = 0;
+    }
 
     // Create nodes
     m_nodes.resize(m_numNodes);
@@ -49,15 +52,12 @@ void TriangulationWrapper::BuildTriangulation()
     size_t faceCounter = 0;
     for (int f = 0; f < m_numFaces; ++f)
     {
-        m_faceNodes[f][0] = static_cast<size_t>(m_faceNodesFlat[faceCounter] - 1);
-        m_faceEdges[f][0] = static_cast<size_t>(m_faceEdgesFlat[faceCounter] - 1);
-        faceCounter++;
-        m_faceNodes[f][1] = static_cast<size_t>(m_faceNodesFlat[faceCounter] - 1);
-        m_faceEdges[f][1] = static_cast<size_t>(m_faceEdgesFlat[faceCounter] - 1);
-        faceCounter++;
-        m_faceNodes[f][2] = static_cast<size_t>(m_faceNodesFlat[faceCounter] - 1);
-        m_faceEdges[f][2] = static_cast<size_t>(m_faceEdgesFlat[faceCounter] - 1);
-        faceCounter++;
+        for (int e = 0; e < 3; ++e)
+        {
+            m_faceNodes[f][e] = static_cast<size_t>(m_faceNodesFlat[faceCounter] - 1);
+            m_faceEdges[f][e] = static_cast<size_t>(m_faceEdgesFlat[faceCounter] - 1);
+            faceCounter++;
+        }
     }
 
     // Create edges
@@ -70,10 +70,11 @@ void TriangulationWrapper::BuildTriangulation()
     size_t edgeCounter = 0;
     for (int e = 0; e < m_numEdges; ++e)
     {
-        m_edgeNodes[e][0] = static_cast<size_t>(m_edgeNodesFlat[edgeCounter] - 1);
-        edgeCounter++;
-        m_edgeNodes[e][1] = static_cast<size_t>(m_edgeNodesFlat[edgeCounter] - 1);
-        edgeCounter++;
+        for (int n = 0; n < 2; ++n)
+        {
+            m_edgeNodes[e][n] = static_cast<size_t>(m_edgeNodesFlat[edgeCounter] - 1);
+            edgeCounter++;
+        }
     }
 
     ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::sizetValue);
