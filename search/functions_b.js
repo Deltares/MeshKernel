@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['network1d_775',['Network1D',['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
+  ['network1d_775',['Network1D',['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
   ['nextcircularbackwardindex_776',['NextCircularBackwardIndex',['../namespacemeshkernel.html#af9e63a9340283b6689bfbd3c1d6e47b0',1,'meshkernel']]],
   ['nextcircularforwardindex_777',['NextCircularForwardIndex',['../namespacemeshkernel.html#a1ab16fb9b1292e8a70f954256d2d6f1d',1,'meshkernel']]],
   ['node_778',['Node',['../classmeshkernel_1_1_polygons.html#ac8e23511289fe8cddb60ca69ee5565e3',1,'meshkernel::Polygons']]],
