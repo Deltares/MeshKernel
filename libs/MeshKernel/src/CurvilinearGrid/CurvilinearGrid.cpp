@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
-CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection){};
+CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
 
 CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection) : m_gridNodes(grid)
 {
