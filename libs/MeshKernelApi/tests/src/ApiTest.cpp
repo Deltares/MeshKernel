@@ -3067,5 +3067,4 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     ASSERT_EQ(mesh2d.num_nodes, 615);
     ASSERT_EQ(mesh2d.num_edges, 1174);
     ASSERT_EQ(mesh2d.num_faces, 80);
-
 }
