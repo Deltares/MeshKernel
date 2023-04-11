@@ -76,7 +76,6 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structmeshkernel_1_1_triangulation_wrapper-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::TriangulationWrapper Struct Reference</div>  </div>
@@ -101,42 +100,45 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9ede2c31a0853b50de19d211d90c58d8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a9ede2c31a0853b50de19d211d90c58d8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a9ede2c31a0853b50de19d211d90c58d8">Compute</a> (const std::vector&lt; T &gt; &amp;inputNodes, <a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf">TriangulationOptions</a> triangulationOption, double averageTriangleArea, size_t estimatedNumberOfTriangles)</td></tr>
+<tr class="memdesc:a9ede2c31a0853b50de19d211d90c58d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the triangulation.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a9ede2c31a0853b50de19d211d90c58d8">More...</a><br /></td></tr>
 <tr class="separator:a9ede2c31a0853b50de19d211d90c58d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a2763afaeb06109f752865f2a5fb97648"><td class="memItemLeft" align="right" valign="top"><a id="a2763afaeb06109f752865f2a5fb97648"></a>
-std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a2763afaeb06109f752865f2a5fb97648">m_nodes</a></td></tr>
-<tr class="memdesc:a2763afaeb06109f752865f2a5fb97648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nodes. <br /></td></tr>
-<tr class="separator:a2763afaeb06109f752865f2a5fb97648"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1668e8d894145992cb4f2367b805b9e"><td class="memItemLeft" align="right" valign="top"><a id="ab1668e8d894145992cb4f2367b805b9e"></a>
-std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ab1668e8d894145992cb4f2367b805b9e">m_faceNodes</a></td></tr>
-<tr class="memdesc:ab1668e8d894145992cb4f2367b805b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Face nodes. <br /></td></tr>
-<tr class="separator:ab1668e8d894145992cb4f2367b805b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4244f096808b925441d487084973734"><td class="memItemLeft" align="right" valign="top"><a id="af4244f096808b925441d487084973734"></a>
-std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#af4244f096808b925441d487084973734">m_faceEdges</a></td></tr>
-<tr class="memdesc:af4244f096808b925441d487084973734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Face edges. <br /></td></tr>
-<tr class="separator:af4244f096808b925441d487084973734"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5c67d341ac778a924663807337922ed"><td class="memItemLeft" align="right" valign="top"><a id="aa5c67d341ac778a924663807337922ed"></a>
-std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aa5c67d341ac778a924663807337922ed">m_edgeNodes</a></td></tr>
-<tr class="memdesc:aa5c67d341ac778a924663807337922ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edge nodes. <br /></td></tr>
-<tr class="separator:aa5c67d341ac778a924663807337922ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad862a2a46adc41f42a92854c09be1315"><td class="memItemLeft" align="right" valign="top"><a id="ad862a2a46adc41f42a92854c09be1315"></a>
-std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ad862a2a46adc41f42a92854c09be1315">m_edgesFaces</a></td></tr>
-<tr class="memdesc:ad862a2a46adc41f42a92854c09be1315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edge faces. <br /></td></tr>
-<tr class="separator:ad862a2a46adc41f42a92854c09be1315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff8c3662131b1a5d78855f79bc99f365"><td class="memItemLeft" align="right" valign="top"><a id="aff8c3662131b1a5d78855f79bc99f365"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aff8c3662131b1a5d78855f79bc99f365">m_numEdges</a></td></tr>
-<tr class="memdesc:aff8c3662131b1a5d78855f79bc99f365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of edges. <br /></td></tr>
-<tr class="separator:aff8c3662131b1a5d78855f79bc99f365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3cb06c3dc1b5652e813fa48914f6605"><td class="memItemLeft" align="right" valign="top"><a id="aa3cb06c3dc1b5652e813fa48914f6605"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aa3cb06c3dc1b5652e813fa48914f6605">m_numNodes</a></td></tr>
-<tr class="memdesc:aa3cb06c3dc1b5652e813fa48914f6605"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes. <br /></td></tr>
-<tr class="separator:aa3cb06c3dc1b5652e813fa48914f6605"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9dacab983925ca3908564a574e466d15"><td class="memItemLeft" align="right" valign="top"><a id="a9dacab983925ca3908564a574e466d15"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a9dacab983925ca3908564a574e466d15">m_numFaces</a></td></tr>
-<tr class="memdesc:a9dacab983925ca3908564a574e466d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of faces. <br /></td></tr>
-<tr class="separator:a9dacab983925ca3908564a574e466d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73d40dd5ec3a76b49391895a293f0e4b"><td class="memItemLeft" align="right" valign="top"><a id="a73d40dd5ec3a76b49391895a293f0e4b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b">BuildTriangulation</a> ()</td></tr>
+<tr class="memdesc:a73d40dd5ec3a76b49391895a293f0e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the internal triangulation from the flat triangulation. <br /></td></tr>
+<tr class="separator:a73d40dd5ec3a76b49391895a293f0e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4366363e8d809578c07e2f2bd590f2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ac4366363e8d809578c07e2f2bd590f2b">GetNumEdges</a> () const</td></tr>
+<tr class="memdesc:ac4366363e8d809578c07e2f2bd590f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of triangulated edges.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#ac4366363e8d809578c07e2f2bd590f2b">More...</a><br /></td></tr>
+<tr class="separator:ac4366363e8d809578c07e2f2bd590f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb4fe26f544907f0fa8c1d7ee3f251f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a1eb4fe26f544907f0fa8c1d7ee3f251f">GetNumNodes</a> () const</td></tr>
+<tr class="memdesc:a1eb4fe26f544907f0fa8c1d7ee3f251f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of triangulated nodes.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a1eb4fe26f544907f0fa8c1d7ee3f251f">More...</a><br /></td></tr>
+<tr class="separator:a1eb4fe26f544907f0fa8c1d7ee3f251f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a2a258324fbe36dc544c6a7be1ab9b2dc">GetNumFaces</a> () const</td></tr>
+<tr class="memdesc:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of triangulated faces.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a2a258324fbe36dc544c6a7be1ab9b2dc">More...</a><br /></td></tr>
+<tr class="separator:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02eeb1536584923b278ecbe0f51efc5e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a02eeb1536584923b278ecbe0f51efc5e">GetNodes</a> () const</td></tr>
+<tr class="memdesc:a02eeb1536584923b278ecbe0f51efc5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the triangulated nodes.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a02eeb1536584923b278ecbe0f51efc5e">More...</a><br /></td></tr>
+<tr class="separator:a02eeb1536584923b278ecbe0f51efc5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac426246655f93085bb345de016a80d1f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; size_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ac426246655f93085bb345de016a80d1f">GetFaceNodes</a> (const size_t faceIndex) const</td></tr>
+<tr class="memdesc:ac426246655f93085bb345de016a80d1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the nodes of a triangulated face.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#ac426246655f93085bb345de016a80d1f">More...</a><br /></td></tr>
+<tr class="separator:ac426246655f93085bb345de016a80d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0f9ba10b83616a17c59816368a1069a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ad0f9ba10b83616a17c59816368a1069a">GetFaceNode</a> (const size_t faceIndex, const size_t nodeIndex) const</td></tr>
+<tr class="memdesc:ad0f9ba10b83616a17c59816368a1069a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the face node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#ad0f9ba10b83616a17c59816368a1069a">More...</a><br /></td></tr>
+<tr class="separator:ad0f9ba10b83616a17c59816368a1069a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08adaf24f8473f374cd0b9a39c0f65b5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a08adaf24f8473f374cd0b9a39c0f65b5">GetFaceEdge</a> (const size_t faceIndex, const size_t edgeIndex) const</td></tr>
+<tr class="memdesc:a08adaf24f8473f374cd0b9a39c0f65b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the face edge.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a08adaf24f8473f374cd0b9a39c0f65b5">More...</a><br /></td></tr>
+<tr class="separator:a08adaf24f8473f374cd0b9a39c0f65b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22429bf7200ed63ee9c7c82e87f9a25b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a22429bf7200ed63ee9c7c82e87f9a25b">GetEdgeNode</a> (const size_t edgeIndex, const size_t nodeIndex) const</td></tr>
+<tr class="memdesc:a22429bf7200ed63ee9c7c82e87f9a25b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the edge node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a22429bf7200ed63ee9c7c82e87f9a25b">More...</a><br /></td></tr>
+<tr class="separator:a22429bf7200ed63ee9c7c82e87f9a25b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f8484e6bc1f197679ca3943b36b2928"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a9f8484e6bc1f197679ca3943b36b2928">GetEdgeFace</a> (const size_t edgeIndex, const size_t faceIndex) const</td></tr>
+<tr class="memdesc:a9f8484e6bc1f197679ca3943b36b2928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the edge face.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a9f8484e6bc1f197679ca3943b36b2928">More...</a><br /></td></tr>
+<tr class="separator:a9f8484e6bc1f197679ca3943b36b2928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cc43c92ab20ad97f325627933d6cd9e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a4cc43c92ab20ad97f325627933d6cd9e">GetXCoord</a> (const size_t nodeIndex) const</td></tr>
+<tr class="memdesc:a4cc43c92ab20ad97f325627933d6cd9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the x coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a4cc43c92ab20ad97f325627933d6cd9e">More...</a><br /></td></tr>
+<tr class="separator:a4cc43c92ab20ad97f325627933d6cd9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24baf38c547bc42f94beb4ae6d78978f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a24baf38c547bc42f94beb4ae6d78978f">GetYCoord</a> (const size_t nodeIndex) const</td></tr>
+<tr class="memdesc:a24baf38c547bc42f94beb4ae6d78978f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the y coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a24baf38c547bc42f94beb4ae6d78978f">More...</a><br /></td></tr>
+<tr class="separator:a24baf38c547bc42f94beb4ae6d78978f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper around the Triangle library. </p>
@@ -222,6 +224,8 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Compute the triangulation. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>A type that contains x and y fields </td></tr>
@@ -237,6 +241,407 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a9f8484e6bc1f197679ca3943b36b2928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f8484e6bc1f197679ca3943b36b2928">&#9670;&nbsp;</a></span>GetEdgeFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::TriangulationWrapper::GetEdgeFace </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>edgeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>faceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the edge face. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">edgeIndex</td><td>The index of the edge to retrieve the node from </td></tr>
+    <tr><td class="paramname">faceIndex</td><td>The index of the face to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the edge with the specified index for the specified face </dd></dl>
+
+</div>
+</div>
+<a id="a22429bf7200ed63ee9c7c82e87f9a25b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22429bf7200ed63ee9c7c82e87f9a25b">&#9670;&nbsp;</a></span>GetEdgeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::TriangulationWrapper::GetEdgeNode </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>edgeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the edge node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">edgeIndex</td><td>The index of the edge to retrieve the node from </td></tr>
+    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the node with the specified index for the specified face </dd></dl>
+
+</div>
+</div>
+<a id="a08adaf24f8473f374cd0b9a39c0f65b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08adaf24f8473f374cd0b9a39c0f65b5">&#9670;&nbsp;</a></span>GetFaceEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::TriangulationWrapper::GetFaceEdge </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>faceIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>edgeIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the face edge. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">faceIndex</td><td>The index of the face to retrieve the edge from </td></tr>
+    <tr><td class="paramname">edgeIndex</td><td>The index of the edge to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the edge with the specified index for the specified face </dd></dl>
+
+</div>
+</div>
+<a id="ad0f9ba10b83616a17c59816368a1069a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0f9ba10b83616a17c59816368a1069a">&#9670;&nbsp;</a></span>GetFaceNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::TriangulationWrapper::GetFaceNode </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>faceIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the face node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">faceIndex</td><td>The index of the face to retrieve the node from </td></tr>
+    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the node with the specified index for the specified face </dd></dl>
+
+</div>
+</div>
+<a id="ac426246655f93085bb345de016a80d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac426246655f93085bb345de016a80d1f">&#9670;&nbsp;</a></span>GetFaceNodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;size_t&gt;&amp; meshkernel::TriangulationWrapper::GetFaceNodes </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>faceIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the nodes of a triangulated face. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">faceIndex</td><td>The face index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The triangulated nodes </dd></dl>
+
+</div>
+</div>
+<a id="a02eeb1536584923b278ecbe0f51efc5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02eeb1536584923b278ecbe0f51efc5e">&#9670;&nbsp;</a></span>GetNodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt;&amp; meshkernel::TriangulationWrapper::GetNodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the triangulated nodes. </p>
+<dl class="section return"><dt>Returns</dt><dd>The triangulated nodes </dd></dl>
+
+</div>
+</div>
+<a id="ac4366363e8d809578c07e2f2bd590f2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4366363e8d809578c07e2f2bd590f2b">&#9670;&nbsp;</a></span>GetNumEdges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::TriangulationWrapper::GetNumEdges </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of triangulated edges. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of triangulated edges </dd></dl>
+
+</div>
+</div>
+<a id="a2a258324fbe36dc544c6a7be1ab9b2dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a258324fbe36dc544c6a7be1ab9b2dc">&#9670;&nbsp;</a></span>GetNumFaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::TriangulationWrapper::GetNumFaces </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of triangulated faces. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of triangulated faces </dd></dl>
+
+</div>
+</div>
+<a id="a1eb4fe26f544907f0fa8c1d7ee3f251f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb4fe26f544907f0fa8c1d7ee3f251f">&#9670;&nbsp;</a></span>GetNumNodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::TriangulationWrapper::GetNumNodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of triangulated nodes. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of triangulated nodes </dd></dl>
+
+</div>
+</div>
+<a id="a4cc43c92ab20ad97f325627933d6cd9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cc43c92ab20ad97f325627933d6cd9e">&#9670;&nbsp;</a></span>GetXCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::TriangulationWrapper::GetXCoord </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>nodeIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the x coordinate of a triangulated node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the x coordinate </dd></dl>
+
+</div>
+</div>
+<a id="a24baf38c547bc42f94beb4ae6d78978f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24baf38c547bc42f94beb4ae6d78978f">&#9670;&nbsp;</a></span>GetYCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::TriangulationWrapper::GetYCoord </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>nodeIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the y coordinate of a triangulated node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const reference to the y coordinate </dd></dl>
 
 </div>
 </div>
