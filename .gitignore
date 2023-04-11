@@ -22,8 +22,8 @@ build_*
 
 # User specific
 post_build.bat
-./tools/test_utils/include/TestUtils/Definitions.hpp
-./tools/Version/Version.hpp
+tools/test_utils/include/TestUtils/Definitions.hpp
+tools/Version/Version.hpp
 
 # Python cache
 __pycache__/

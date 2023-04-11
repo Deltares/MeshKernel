@@ -33,7 +33,7 @@
 
 using namespace meshkernel;
 
-Mesh1D::Mesh1D(Projection projection) : Mesh(projection){};
+Mesh1D::Mesh1D(Projection projection) : Mesh(projection) {}
 
 Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
