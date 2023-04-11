@@ -159,7 +159,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     // 2. Is inside the polygon
     // If so we mark the edges and we add them m_edges
     std::vector<bool> edgeNodesFlag(triangulationWrapper.GetNumEdges(), false);
-    for (size_t i = 0; i < triangulationWrapper.GetNumFaces(); ++i)
+    for (auto i = 0; i < triangulationWrapper.GetNumFaces(); ++i)
     {
         const auto goodTriangle = HasTriangleNoAcuteAngles(triangulationWrapper.GetFaceNodes(i), inputNodes);
 
@@ -185,7 +185,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     // now add all points and all valid edges
     m_nodes = inputNodes;
     size_t validEdgesCount = 0;
-    for (size_t i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
+    for (auto i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
@@ -194,7 +194,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
 
     std::vector<Edge> edges(validEdgesCount);
     validEdgesCount = 0;
-    for (size_t i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
+    for (auto i = 0; i < triangulationWrapper.GetNumEdges(); ++i)
     {
         if (!edgeNodesFlag[i])
             continue;

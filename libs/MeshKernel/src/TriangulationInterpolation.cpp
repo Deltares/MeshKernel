@@ -71,7 +71,7 @@ void TriangulationInterpolation::Compute()
     std::vector<std::vector<Point>> triangles(triangulationWrapper.GetNumFaces(), std::vector<Point>(4));
     std::vector<std::vector<double>> values(triangulationWrapper.GetNumFaces(), std::vector<double>(4, constants::missing::doubleValue));
 
-    for (size_t f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
+    for (auto f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
         for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
