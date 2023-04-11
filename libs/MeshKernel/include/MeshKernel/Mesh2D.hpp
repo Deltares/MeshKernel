@@ -29,7 +29,6 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/RTree.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -68,6 +67,10 @@ namespace meshkernel
 
         /// @brief Default constructor
         Mesh2D() = default;
+
+        /// @brief Construct a mesh2d using only the projection
+        /// @param[in] projection The projection to use
+        Mesh2D(Projection projection);
 
         /// @brief Construct a mesh2d starting from the edges and nodes
         /// @param[in] edges The input edges

@@ -48,11 +48,11 @@ namespace meshkernelapi
         /// @param[in] projection The projection to use
         MeshKernelState(meshkernel::Projection projection) : m_projection(projection)
         {
-            m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
-            m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
-            m_network1d = std::make_shared<meshkernel::Network1D>();
+            m_mesh1d = std::make_shared<meshkernel::Mesh1D>(projection);
+            m_mesh2d = std::make_shared<meshkernel::Mesh2D>(projection);
+            m_network1d = std::make_shared<meshkernel::Network1D>(projection);
             m_contacts = std::make_shared<meshkernel::Contacts>(m_mesh1d, m_mesh2d);
-            m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>();
+            m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(projection);
         }
 
         // Geometrical entities instances

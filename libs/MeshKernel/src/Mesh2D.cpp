@@ -37,6 +37,8 @@
 
 using meshkernel::Mesh2D;
 
+Mesh2D::Mesh2D(Projection projection) : Mesh(projection){};
+
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                Projection projection) : Mesh(edges, nodes, projection)
@@ -174,7 +176,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         }
 
         // mark all edges of this triangle as good ones
-        for (size_t j = 0; j < Mesh::m_numNodesInTriangle; ++j)
+        for (size_t j = 0; j < m_numNodesInTriangle; ++j)
         {
             edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
         }
@@ -247,7 +249,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
     for (size_t f = 0; f < GetNumFaces(); ++f)
     {
         const auto numFaceNodes = m_numFacesNodes[f];
-        if (numFaceNodes != Mesh::m_numNodesInTriangle)
+        if (numFaceNodes != m_numNodesInTriangle)
         {
             continue;
         }
@@ -275,7 +277,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
         if (IsEqual(den, 0.0))
         {
             // Flag edges to remove
-            for (size_t e = 0; e < Mesh::m_numNodesInTriangle; ++e)
+            for (size_t e = 0; e < m_numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
                 m_edges[edge] = {constants::missing::sizetValue, constants::missing::sizetValue};
@@ -432,12 +434,12 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
 
 void Mesh2D::FindFaces()
 {
-    std::vector<size_t> sortedEdgesFaces(Mesh::m_maximumNumberOfEdgesPerFace);
-    std::vector<size_t> sortedNodes(Mesh::m_maximumNumberOfEdgesPerFace);
-    std::vector<Point> nodalValues(Mesh::m_maximumNumberOfEdgesPerFace);
-    std::vector<size_t> edges(Mesh::m_maximumNumberOfEdgesPerFace);
-    std::vector<size_t> nodes(Mesh::m_maximumNumberOfEdgesPerFace);
-    for (size_t numEdgesPerFace = 3; numEdgesPerFace <= Mesh::m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    std::vector<size_t> sortedEdgesFaces(m_maximumNumberOfEdgesPerFace);
+    std::vector<size_t> sortedNodes(m_maximumNumberOfEdgesPerFace);
+    std::vector<Point> nodalValues(m_maximumNumberOfEdgesPerFace);
+    std::vector<size_t> edges(m_maximumNumberOfEdgesPerFace);
+    std::vector<size_t> nodes(m_maximumNumberOfEdgesPerFace);
+    for (size_t numEdgesPerFace = 3; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
         for (size_t n = 0; n < GetNumNodes(); n++)
         {
@@ -465,7 +467,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     m_facesMassCenters.resize(numFaces);
 
     std::vector<size_t> numEdgeFacesCache;
-    numEdgeFacesCache.reserve(Mesh::m_maximumNumberOfEdgesPerFace);
+    numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
 #pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
@@ -662,9 +664,9 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
     const size_t maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
     std::vector<Point> middlePoints;
-    middlePoints.reserve(Mesh::m_maximumNumberOfNodesPerFace);
+    middlePoints.reserve(m_maximumNumberOfNodesPerFace);
     std::vector<Point> normals;
-    normals.reserve(Mesh::m_maximumNumberOfNodesPerFace);
+    normals.reserve(m_maximumNumberOfNodesPerFace);
     const auto numNodes = polygon.size() - 1;
 
     Point centerOfMass{0.0, 0.0};
@@ -676,7 +678,7 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
     centerOfMass = centerOfMass / static_cast<double>(numNodes);
 
     auto result = centerOfMass;
-    if (numNodes == Mesh::m_numNodesInTriangle)
+    if (numNodes == m_numNodesInTriangle)
     {
         result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
     }
@@ -847,7 +849,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
     std::vector<std::vector<size_t>> smallTrianglesNodes;
     for (size_t face = 0; face < GetNumFaces(); ++face)
     {
-        if (m_numFacesNodes[face] != Mesh::m_numNodesInTriangle || m_faceArea[face] <= 0.0 || !IsFaceOnBoundary(face))
+        if (m_numFacesNodes[face] != m_numNodesInTriangle || m_faceArea[face] <= 0.0 || !IsFaceOnBoundary(face))
         {
             continue;
         }
@@ -855,7 +857,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
         // compute the average area of neighboring faces
         double averageOtherFacesArea = 0.0;
         size_t numNonBoundaryFaces = 0;
-        for (size_t e = 0; e < Mesh::m_numNodesInTriangle; ++e)
+        for (size_t e = 0; e < m_numNodesInTriangle; ++e)
         {
             // the edge must not be at the boundary, otherwise there is no "other" face
             const auto edge = m_facesEdges[face][e];
@@ -864,7 +866,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
                 continue;
             }
             const auto otherFace = face == m_edgesFaces[edge][0] ? m_edgesFaces[edge][1] : m_edgesFaces[edge][0];
-            if (m_numFacesNodes[otherFace] > Mesh::m_numNodesInTriangle)
+            if (m_numFacesNodes[otherFace] > m_numNodesInTriangle)
             {
                 averageOtherFacesArea += m_faceArea[otherFace];
                 numNonBoundaryFaces++;
@@ -882,10 +884,10 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
         size_t firstNodeToMerge = constants::missing::sizetValue;
         size_t secondNodeToMerge = constants::missing::sizetValue;
         size_t thirdEdgeSmallTriangle = constants::missing::sizetValue;
-        for (size_t e = 0; e < Mesh::m_numNodesInTriangle; ++e)
+        for (size_t e = 0; e < m_numNodesInTriangle; ++e)
         {
-            const auto previousEdge = NextCircularBackwardIndex(e, Mesh::m_numNodesInTriangle);
-            const auto nextEdge = NextCircularForwardIndex(e, Mesh::m_numNodesInTriangle);
+            const auto previousEdge = NextCircularBackwardIndex(e, m_numNodesInTriangle);
+            const auto nextEdge = NextCircularForwardIndex(e, m_numNodesInTriangle);
 
             const auto k0 = m_facesNodes[face][previousEdge];
             const auto k1 = m_facesNodes[face][e];
@@ -1084,12 +1086,12 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
     for (size_t f = 0; f < GetNumFaces(); f++)
     {
         const auto numberOfFaceNodes = GetNumFaceEdges(f);
-        if (numberOfFaceNodes < Mesh::m_numNodesInTriangle)
+        if (numberOfFaceNodes < m_numNodesInTriangle)
             continue;
 
         for (size_t n = 0; n < numberOfFaceNodes; n++)
         {
-            if (numberOfFaceNodes != Mesh::m_numNodesQuads)
+            if (numberOfFaceNodes != m_numNodesQuads)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
             const auto edgeIndex = m_facesEdges[f][n];
 
@@ -1105,7 +1107,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
             }
 
             // quads
-            if (numberOfFaceNodes == Mesh::m_numNodesQuads)
+            if (numberOfFaceNodes == m_numNodesQuads)
             {
                 size_t kkp2 = n + 2;
                 if (kkp2 >= numberOfFaceNodes)
@@ -1192,7 +1194,7 @@ void Mesh2D::MakeDualFace(size_t node, double enlargementFactor, std::vector<Poi
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
-    dualFace.reserve(Mesh::m_maximumNumberOfEdgesPerNode);
+    dualFace.reserve(m_maximumNumberOfEdgesPerNode);
     dualFace.clear();
 
     for (size_t e = 0; e < numEdges; ++e)

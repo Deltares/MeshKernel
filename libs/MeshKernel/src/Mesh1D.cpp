@@ -31,11 +31,15 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
-                           const std::vector<Point>& nodes,
-                           Projection projection) : Mesh(edges, nodes, projection) {}
+using namespace meshkernel;
 
-meshkernel::Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
+Mesh1D::Mesh1D(Projection projection) : Mesh(projection){};
+
+Mesh1D::Mesh1D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               Projection projection) : Mesh(edges, nodes, projection) {}
+
+Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
 {
     std::vector<Edge> edges;
     std::vector<Point> nodes;
@@ -74,7 +78,7 @@ meshkernel::Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
     MergeNodesInPolygon(polygon, minFaceSize);
 }
 
-meshkernel::Point meshkernel::Mesh1D::ComputeProjectedNode(size_t node, double distanceFactor) const
+Point Mesh1D::ComputeProjectedNode(size_t node, double distanceFactor) const
 {
 
     if (m_nodesNumEdges[node] <= 0)

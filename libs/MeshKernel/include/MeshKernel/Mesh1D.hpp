@@ -46,6 +46,10 @@ namespace meshkernel
         /// @brief Default constructor
         Mesh1D() = default;
 
+        /// @brief Construct a mesh1d using only the projection
+        /// @param[in] projection The projection to use
+        Mesh1D(Projection projection);
+
         /// @brief Construct a mesh1d starting from the edges and nodes
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
