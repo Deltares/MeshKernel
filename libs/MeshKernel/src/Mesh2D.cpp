@@ -37,7 +37,7 @@
 
 using meshkernel::Mesh2D;
 
-Mesh2D::Mesh2D(Projection projection) : Mesh(projection){};
+Mesh2D::Mesh2D(Projection projection) : Mesh(projection) {}
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
