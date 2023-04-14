@@ -12,6 +12,7 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 
 #include <numeric>
 
@@ -3068,3 +3069,48 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     ASSERT_EQ(mesh2d.num_edges, 1174);
     ASSERT_EQ(mesh2d.num_faces, 80);
 }
+
+/*
+TEST(Mesh2D, RefineAMeshBasedOnAsciShouldRefine)
+{
+    // Prepare
+    int meshKernelId;
+    constexpr int isGeographic = 1;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco_net.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_nodes = edge_nodes.get();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+
+
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/GEBCO_2021_cutout.asc");
+    meshkernelapi::GeometryList samples;
+
+    //samples.coordinates_x = coordinates_x.data();
+    //samples.coordinates_y = coordinates_y.data();
+    //samples.values = values.data();
+    //samples.num_coordinates = static_cast<int>(coordinates_x.size());
+
+    const double relative_search_radius = 0.5;
+    const int minimum_num_samples = 3;
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_face_size = 0.01;
+    meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.account_for_samples_outside = 0;
+
+
+    errorCode = meshkernelapi::mkernel_mesh2d_refine_based_on_samples(meshKernelId, samples, relative_search_radius, minimum_num_samples, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+}
+*/

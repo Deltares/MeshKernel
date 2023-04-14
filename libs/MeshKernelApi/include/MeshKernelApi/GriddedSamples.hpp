@@ -27,8 +27,30 @@
 
 #pragma once
 
-#include <vector>
+namespace meshkernelapi
+{
+    /// @brief A struct describing gridded data
+    struct GriddedSamples
+    {
+        int n_cols;
 
-std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);
+        int n_rows;
 
-std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(std::string const& filePath);
+        double x_origin;
+
+        double y_origin;
+
+		int origin_location_type;
+
+        double cell_size;
+		
+		double nodata_value;
+		
+		double* values= nullptr;
+
+        double* x_coordinates = nullptr;
+
+        double* y_coordinates = nullptr;
+
+    };
+} // namespace meshkernelapi

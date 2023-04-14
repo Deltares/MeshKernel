@@ -25,6 +25,7 @@ set(SRC_LIST ${SRC_DIR}/MeshKernel.cpp)
 # list of target headers
 set(
   INC_LIST
+  ${DOMAIN_INC_DIR}/GriddedSamples.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
   ${DOMAIN_INC_DIR}/CurvilinearParameters.hpp

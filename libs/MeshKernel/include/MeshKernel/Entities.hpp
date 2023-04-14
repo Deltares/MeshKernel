@@ -229,6 +229,17 @@ namespace meshkernel
     /// @brief A struct describing a sample with two coordinates and a value
     struct Sample
     {
+        /// @brief Default constructor
+        Sample() = default;
+
+        /// @brief Constructor taking coordinates and values
+        Sample(double x, double y, double value)
+            : x(x),
+              y(y),
+              value(value)
+        {
+        }
+
         double x;     ///< X-coordinate
         double y;     ///< Y-coordinate
         double value; ///< Value

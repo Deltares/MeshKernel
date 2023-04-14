@@ -27,8 +27,18 @@
 
 #pragma once
 
-#include <vector>
+#include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/RTree.hpp>
 
-std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);
+namespace meshkernel
+{
 
-std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(std::string const& filePath);
+    class MeshInterpolationInterface
+    {
+    public:
+        virtual void Compute() = 0;
+        /// @brief Get the result values
+        /// @return the results
+        virtual const std::vector<double>& GetResults() const = 0;
+    };
+} // namespace meshkernel

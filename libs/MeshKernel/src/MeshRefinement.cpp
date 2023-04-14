@@ -36,10 +36,10 @@ using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                               std::shared_ptr<AveragingInterpolation> averaging,
+                               std::shared_ptr<MeshInterpolationInterface> interpolant,
                                const meshkernelapi::MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
-      m_averaging(averaging),
+      m_interpolant(interpolant),
       m_meshRefinementParameters(meshRefinementParameters)
 {
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
@@ -72,7 +72,7 @@ void MeshRefinement::Compute()
     }
 
     // select the nodes to refine
-    auto const isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
+    auto const isRefinementBasedOnSamples = m_interpolant == nullptr ? false : true;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
         const auto edgeMask = m_mesh->EdgesMaskOfFacesInPolygons(m_polygons, false, true);
@@ -724,7 +724,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     std::vector<size_t> refineEdgeCache(Mesh::m_maximumNumberOfEdgesPerFace);
 
     // Compute all interpolated values
-    m_averaging->Compute();
+    m_interpolant->Compute();
 
     for (size_t f = 0; f < m_mesh->GetNumFaces(); f++)
     {
@@ -835,7 +835,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
 {
     numEdgesToBeRefined = 0;
 
-    const auto refinementValue = m_averaging->GetResults()[face];
+    const auto refinementValue = m_interpolant->GetResults()[face];
 
     if (m_refinementType == RefinementType::RefinementLevels && refinementValue <= 0)
     {
@@ -849,11 +849,10 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
 
     // compute all lengths
     auto const numEdges = m_mesh->GetNumFaceEdges(face);
-    double const mergingDistance = 0.001;
-    m_mesh->ComputeFaceClosedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
+    double constexpr mergingDistance = 0.001;
     for (size_t i = 0; i < numEdges; i++)
     {
-        const auto edgeIndex = m_globalEdgeIndicesCache[i];
+        const auto edgeIndex = m_mesh->m_facesEdges[face][i];
         if (m_mesh->m_edgeLengths[edgeIndex] < mergingDistance)
         {
             numEdgesToBeRefined++;

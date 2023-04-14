@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "MeshInterpolationInterface.hpp"
+
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -71,7 +73,7 @@ namespace meshkernel
     ///
     /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
     ///     averaged.
-    class AveragingInterpolation
+    class AveragingInterpolation : public MeshInterpolationInterface
     {
     public:
         /// @brief Averaging methods
@@ -104,34 +106,19 @@ namespace meshkernel
                                size_t minNumSamples);
 
         /// @brief Compute interpolation
-        void Compute();
+        void Compute() override;
 
-        /// @brief Get the result values
-        /// @return the results
-        [[nodiscard]] const auto& GetResults() const
-        {
-            return m_results;
-        }
+        const std::vector<double>& GetResults() const override { return m_results; }
 
     private:
+
+
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
         /// @returns The resulting value
         double ComputeOnPolygon(const std::vector<Point>& polygon,
                                 Point interpolationPoint);
-
-        /// @brief Compute the interpolated results on designed location
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnLocations();
-
-        /// @brief Compute the interpolated results on faces
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnFaces();
-
-        /// @brief Compute the interpolated results on nodes or edges
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnNodesOrEdges();
 
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
@@ -169,8 +156,10 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
-        RTree m_samplesRtree;               ///< The samples tree
-        std::vector<double> m_results;      ///< The results
+        std::vector<double> m_results; ///< The interpolation results
+
         std::vector<bool> m_visitedSamples; ///< The visited samples
+
+        RTree m_samplesRtree; ///< The samples tree
     };
 } // namespace meshkernel
