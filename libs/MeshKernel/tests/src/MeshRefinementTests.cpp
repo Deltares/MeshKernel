@@ -792,13 +792,12 @@ TEST(MeshRefinement, RefineElongatedFaces)
     ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[10].y, tolerance);
 }
 
-TEST(MeshRefinement, BilinearInterpolationOnGriddedSamples)
+TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefine)
 {
+    // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
-    // sample points
     std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    
 
     const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
 
@@ -806,19 +805,43 @@ TEST(MeshRefinement, BilinearInterpolationOnGriddedSamples)
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 1.0;
-    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.min_face_size = 5.0;
+    meshRefinementParameters.account_for_samples_outside = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.refinement_type = 1; 
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
+    // Execute
     meshRefinement.Compute();
 
-    // 3 Validation edges connecting hanging nodes
+    // Assert: all bathy values are positive and we are in land, so nothing gets refined
+    ASSERT_EQ(4, mesh->GetNumEdges());
+}
 
-    // bottom side
+TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandSeaInterfaceShouldRefine)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
-    // total number of edges
-    ASSERT_EQ(50, mesh->GetNumEdges());
+    std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
+
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
+
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_face_size = 5.0;
+    meshRefinementParameters.account_for_samples_outside = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 1;
+
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+
+    // Execute
+    meshRefinement.Compute();
+
+    // Assert: all bathy values are positive and we are in land, so nothing gets refined
+    ASSERT_EQ(12, mesh->GetNumEdges());
 }

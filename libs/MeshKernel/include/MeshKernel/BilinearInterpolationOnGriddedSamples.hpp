@@ -110,7 +110,7 @@ namespace meshkernel
             const int columnIndex = static_cast<int>(fractionalColumnIndex);
             const int rowIndex = static_cast<int>(fractionalRowIndex);
 
-            fractionalColumnIndex = fractionalRowIndex - columnIndex;
+            fractionalColumnIndex = fractionalColumnIndex - columnIndex;
             fractionalRowIndex = fractionalRowIndex - rowIndex;
 
             if (columnIndex < 0 || columnIndex >= m_numColumns || rowIndex < 0 && rowIndex >= m_numRows)
@@ -135,10 +135,10 @@ namespace meshkernel
             return (p.y - m_yOrigin) / m_cellSize;
         }
 
-        [[nodiscard]] double getGriddedValue(size_t rowIndex, size_t columnIndex) const
+        [[nodiscard]] double getGriddedValue(size_t columnIndex, size_t rowIndex) const
         {
-            const auto index = rowIndex * m_numColumns + columnIndex;
-            return m_values[rowIndex];
+            const auto index = rowIndex * (m_numColumns + 1) + columnIndex;
+            return m_values[index];
         }
 
         const std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to the mesh
