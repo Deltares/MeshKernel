@@ -834,82 +834,124 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                            size_t& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
+    const auto faceDepthValue = m_interpolant->GetFaceResult(face);
 
-    const auto refinementValue = m_interpolant->GetResults(face);
-
-    if (m_refinementType == RefinementType::RefinementLevels && refinementValue <= 0)
+    if (IsEqual(faceDepthValue, constants::missing::doubleValue))
     {
         return;
     }
 
-    if (IsEqual(refinementValue, constants::missing::doubleValue))
+    if (m_refinementType == RefinementType::RefinementLevels)
     {
-        return;
-    }
-
-    // compute all lengths
-    auto const numEdges = m_mesh->GetNumFaceEdges(face);
-    double constexpr mergingDistance = 0.001;
-    for (size_t i = 0; i < numEdges; i++)
-    {
-        const auto edgeIndex = m_mesh->m_facesEdges[face][i];
-        if (m_mesh->m_edgeLengths[edgeIndex] < mergingDistance)
+        if (faceDepthValue <= 0)
         {
-            numEdgesToBeRefined++;
-            continue;
+            return;
         }
-
-        bool doRefinement = false;
-
-        // based on wave courant
-        if (m_refinementType == RefinementType::WaveCourant)
-        {
-            const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
-            const double c = m_sqrt_gravity * std::sqrt(std::abs(refinementValue));
-            const double waveCourant = c * (m_meshRefinementParameters.min_face_size / m_sqrt_gravity) / m_mesh->m_edgeLengths[edgeIndex];
-            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_meshRefinementParameters.min_face_size) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_meshRefinementParameters.min_face_size);
-        }
-
-        // based on refinement levels
-        if (m_refinementType == RefinementType::RefinementLevels && refinementValue > 0.0)
-        {
-            doRefinement = true;
-        }
-
-        if (doRefinement)
+        for (size_t i = 0; i < m_mesh->GetNumFaceEdges(face); i++)
         {
             numEdgesToBeRefined++;
             refineEdgeCache[i] = 1;
         }
     }
-
-    if (numEdgesToBeRefined > 0)
+    else if (m_refinementType == RefinementType::WaveCourant)
     {
-        numEdgesToBeRefined = 0;
-        for (size_t i = 0; i < numEdges; i++)
+        double maxVal = -std::numeric_limits<double>::max();
+        double minVal = std::numeric_limits<double>::max();
+        for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
-            if (refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
+            const auto node = m_mesh->m_facesNodes[face][e];
+            const auto val = m_interpolant->GetNodeResult(node);
+            maxVal = std::max(maxVal, val);
+            minVal = std::min(minVal, val);
+        }
+
+        bool isOnLand = false;
+        bool isOnLandSea = false;
+        if (minVal > 0.0)
+        {
+            isOnLand = true;
+        }
+        else if (maxVal >= 0.0 && minVal <= 0.0)
+        {
+            isOnLandSea = true;
+        }
+  
+
+        double constexpr mergingDistance = 0.001;
+        for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
+        {
+            const auto edgeIndex = m_mesh->m_facesEdges[face][e];
+            if (m_mesh->m_edgeLengths[edgeIndex] < mergingDistance)
             {
                 numEdgesToBeRefined++;
+                continue;
+            }
+
+            bool doRefinement;
+            if (isOnLandSea)
+            {
+                doRefinement = true;
+            }
+            else if (isOnLand)
+            {
+                doRefinement = false;
+            }
+            else
+            {
+                const auto& [first, second] = m_mesh->m_edges[edgeIndex];
+                const auto firstDepth = m_interpolant->GetNodeResult(first);
+                const auto secondDepth = m_interpolant->GetNodeResult(first);
+
+                if (firstDepth < 0.0 && secondDepth >= 0.0 || firstDepth >= 0.0 && secondDepth < 0.0)
+                {
+                    doRefinement = true;
+                }
+                else
+                {
+                    const auto edgeDepthValue = std::abs(0.5 * (firstDepth + secondDepth));
+                    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
+                    const double c = m_sqrt_gravity * std::sqrt(edgeDepthValue);
+                    const double waveCourant = c * (m_meshRefinementParameters.min_face_size / m_sqrt_gravity) / m_mesh->m_edgeLengths[edgeIndex];
+                    doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_meshRefinementParameters.min_face_size) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_meshRefinementParameters.min_face_size);
+                }
+            }
+
+            if (doRefinement)
+            {
+
+                numEdgesToBeRefined++;
+                refineEdgeCache[e] = 1;
             }
         }
-    }
 
-    if (!m_directionalRefinement)
-    {
-        if (numEdgesToBeRefined == numEdges)
+        if (numEdgesToBeRefined > 0)
         {
-            for (size_t i = 0; i < numEdges; i++)
+            numEdgesToBeRefined = 0;
+            for (size_t i = 0; i < m_mesh->GetNumFaceEdges(face); i++)
             {
-                if (!m_isHangingNodeCache[i])
+                if (refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
                 {
-                    refineEdgeCache[i] = 1;
+                    numEdgesToBeRefined++;
                 }
             }
         }
-        else
+
+        if (!m_directionalRefinement)
         {
-            numEdgesToBeRefined = 0;
+            if (numEdgesToBeRefined == m_mesh->GetNumFaceEdges(face))
+            {
+                for (size_t i = 0; i < m_mesh->GetNumFaceEdges(face); i++)
+                {
+                    if (!m_isHangingNodeCache[i])
+                    {
+                        refineEdgeCache[i] = 1;
+                    }
+                }
+            }
+            else
+            {
+                numEdgesToBeRefined = 0;
+            }
         }
     }
 }

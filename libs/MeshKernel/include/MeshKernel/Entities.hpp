@@ -57,14 +57,11 @@ namespace meshkernel
         {
             return true;
         }
-        else
-        {
-            const T abs_diff = std::abs(value - ref_value);
-            const T abs_value = std::abs(value);
-            const T abs_ref_value = std::abs(ref_value);
-            static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
-            return abs_diff < tol * std::min(abs_value, abs_ref_value);
-        }
+        const T abs_diff = std::abs(value - ref_value);
+        const T abs_value = std::abs(value);
+        const T abs_ref_value = std::abs(ref_value);
+        static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
+        return abs_diff < tol * std::min(abs_value, abs_ref_value);
     }
 
     /// @brief Enumerator describing the supported projections

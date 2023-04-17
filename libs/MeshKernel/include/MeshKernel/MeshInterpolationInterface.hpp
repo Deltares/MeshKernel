@@ -37,11 +37,30 @@ namespace meshkernel
 
         /// @brief Get the result values
         /// @return the results
-        virtual double GetResults(size_t index) const = 0;
+        virtual double GetNodeResult(size_t index) const = 0;
 
                 /// @brief Get the result values
         /// @return the results
-        virtual size_t GetResultsSize() const = 0;
+        virtual double GetEdgeResult(size_t index) const = 0;
+
+                /// @brief Get the result values
+        /// @return the results
+        virtual double GetFaceResult(size_t index) const = 0;
+
+
+
+                /// @brief Get the result values
+        /// @return the results
+        virtual const std::vector<double>& GetNodeResults() const = 0;
+
+        /// @brief Get the result values
+        /// @return the results
+        virtual const std::vector<double>& GetEdgeResults() const = 0;
+
+        /// @brief Get the result values
+        /// @return the results
+        virtual const std::vector<double>& GetFaceResults() const = 0;
+
 
     };
 } // namespace meshkernel

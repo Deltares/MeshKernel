@@ -2872,12 +2872,21 @@ namespace meshkernelapi
 
             averaging.Compute();
 
-            // Get the results and copy them to the result vector
-            std::vector<double> interpolationResults(averaging.GetResultsSize());
-            for (size_t i = 0; i < averaging.GetResultsSize(); ++i)
+            // Get the results
+            std::vector<double> interpolationResults;
+            if (meshLocation == meshkernel::Mesh::Location::Nodes)
             {
-                interpolationResults[i] = averaging.GetResults(i);
+                interpolationResults = averaging.GetNodeResults();
             }
+            else if (meshLocation == meshkernel::Mesh::Location::Edges)
+            {
+                interpolationResults = averaging.GetEdgeResults();
+            }
+            else if (meshLocation == meshkernel::Mesh::Location::Faces)
+            {
+                interpolationResults = averaging.GetFaceResults();
+            }
+
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
             ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }

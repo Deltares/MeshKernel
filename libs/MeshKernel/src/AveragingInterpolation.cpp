@@ -65,62 +65,53 @@ void AveragingInterpolation::Compute()
     // build sample r-tree for searches
     m_samplesRtree.BuildTree(m_samples);
 
-    if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
+    std::vector<Point> dualFacePolygon;
+    m_nodeResults.resize(m_mesh->GetNumNodes(), constants::missing::doubleValue);
+    std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
+
+    // make sure edge centers are computed
+    m_mesh->ComputeEdgesCenters();
+    for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
     {
-        std::vector<Point> dualFacePolygon;
-        m_results.resize(m_mesh->GetNumNodes(), constants::missing::doubleValue);
-        std::fill(m_results.begin(), m_results.end(), constants::missing::doubleValue);
+        m_mesh->MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
 
-        // make sure edge centers are computed
-        m_mesh->ComputeEdgesCenters();
-        for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
+        const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n]);
+
+        // flag the visited samples
+        for (size_t i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
         {
-            m_mesh->MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
-
-            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n]);
-
-            // flag the visited samples
-            for (size_t i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
-            {
-                const auto sample = m_samplesRtree.GetQueryResult(i);
-                m_visitedSamples[sample] = true;
-            }
-
-            m_results[n] = result;
+            const auto sample = m_samplesRtree.GetQueryResult(i);
+            m_visitedSamples[sample] = true;
         }
+
+        m_nodeResults[n] = result;
     }
 
     // for edges, an average of the nodal interpolated value is made
     if (m_interpolationLocation == Mesh::Location::Edges)
     {
-        if (m_results.size() != m_mesh->GetNumNodes())
-        {
-            throw std::runtime_error("Number of nodes not matching!");
-        }
-
-        const auto nodeResults = m_results;
-        m_results.resize(m_mesh->GetNumEdges(), constants::missing::doubleValue);
-        std::fill(m_results.begin(), m_results.end(), constants::missing::doubleValue);
+        m_edgeResults.resize(m_mesh->GetNumEdges(), constants::missing::doubleValue);
+        std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
 
         for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             const auto first = m_mesh->m_edges[e].first;
             const auto second = m_mesh->m_edges[e].second;
 
-            const auto firstValue = nodeResults[first];
-            const auto secondValue = nodeResults[second];
+            const auto firstValue = m_nodeResults[first];
+            const auto secondValue = m_nodeResults[second];
 
             if (!IsEqual(firstValue, constants::missing::doubleValue) && !IsEqual(secondValue, constants::missing::doubleValue))
             {
-                m_results[e] = (firstValue + secondValue) * 0.5;
+                m_edgeResults[e] = 0.5 * (firstValue + secondValue);
             }
         }
     }
 
     if (m_interpolationLocation == Mesh::Location::Faces)
     {
-        m_results.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
-        std::fill(m_results.begin(), m_results.end(), constants::missing::doubleValue);
+        m_faceResults.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
+        std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
 
         std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
         std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
@@ -135,9 +126,9 @@ void AveragingInterpolation::Compute()
             }
             polygonNodesCache.emplace_back(polygonNodesCache[0]);
 
-            m_results[f] = ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f]);
+            m_faceResults[f] = ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f]);
 
-            if (m_transformSamples && m_results[f] > 0)
+            if (m_transformSamples && m_faceResults[f] > 0)
             {
                 // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
                 // it is difficult to do it otherwise without sharing or caching the query result

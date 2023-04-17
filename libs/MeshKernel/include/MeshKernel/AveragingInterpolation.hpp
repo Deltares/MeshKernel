@@ -108,13 +108,15 @@ namespace meshkernel
         /// @brief Compute interpolation
         void Compute() override;
 
-        [[nodiscard]] double GetResults(size_t index) const override { return m_results[index]; }
+        [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
+        [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
+        [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
 
-        [[nodiscard]] size_t GetResultsSize() const override { return m_results.size(); }
+        [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
+        [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
+        [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:
-
-
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
@@ -158,7 +160,9 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
-        std::vector<double> m_results; ///< The interpolation results
+        std::vector<double> m_nodeResults; ///< The interpolation results at nodes
+        std::vector<double> m_edgeResults; ///< The interpolation results at edges
+        std::vector<double> m_faceResults; ///< The interpolation results at faces
 
         std::vector<bool> m_visitedSamples; ///< The visited samples
 

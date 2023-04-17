@@ -54,53 +54,39 @@ namespace meshkernel
         /// @brief Compute interpolation
         void Compute()
         {
-            std::vector nodalInterpolation(m_mesh->GetNumNodes(), constants::missing::doubleValue);
-            std::fill(nodalInterpolation.begin(), nodalInterpolation.end(), constants::missing::doubleValue);
+            m_nodeResults.resize(m_mesh->GetNumNodes());
+            std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
             for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
             {
                 const auto node = m_mesh->m_nodes[n];
-                nodalInterpolation[n] = bilinearInterpolation(node);
+                m_nodeResults[n] = bilinearInterpolation(node);
             }
 
-            m_results.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
-            std::fill(m_results.begin(), m_results.end(), constants::missing::doubleValue);
+            m_edgeResults.resize(m_mesh->GetNumEdges());
+            std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
+            for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
+            {
+                const auto& [first, second] = m_mesh->m_edges[e];
+                m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
+            }
 
+            m_faceResults.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
+            std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
             for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
             {
-                double maxVal = -std::numeric_limits<double>::max();
-                double minVal = std::numeric_limits<double>::max();
-                for (size_t n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
-                {
-                    const auto node = m_mesh->m_facesNodes[f][n];
-                    const auto val = nodalInterpolation[node];
-                    maxVal = std::max(maxVal, val);
-                    minVal = std::min(minVal, val);
-                }
-                m_results[f] = MaskValue(f, minVal, maxVal);
+                m_faceResults[f] = bilinearInterpolation(m_mesh->m_facesMassCenters[f]);
             }
         }
 
-        [[nodiscard]] double GetResults(size_t index) const override
-        {
-            return m_results[index];
-        }
+        [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
+        [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
+        [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
 
-        [[nodiscard]] size_t GetResultsSize() const override { return m_results.size(); }
-
+        [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
+        [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
+        [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:
-        double MaskValue(size_t f, double minVal, double maxVal)
-        {
-            if (minVal > 0.0)
-            {
-                return std::numeric_limits<double>::max();
-            }
-            if (maxVal >= 0.0 && minVal <= 0.0)
-            {
-                return 0.0;
-            }
-            return bilinearInterpolation(m_mesh->m_facesMassCenters[f]);
-        }
 
         double bilinearInterpolation(const Point& node) const
         {
@@ -150,6 +136,8 @@ namespace meshkernel
         double m_cellSize;
         std::vector<double> m_values;
 
-        std::vector<double> m_results; ///< The interpolation results
+        std::vector<double> m_nodeResults; ///< The interpolation results
+        std::vector<double> m_edgeResults; ///< The interpolation results
+        std::vector<double> m_faceResults; ///< The interpolation results
     };
 } // namespace meshkernel
