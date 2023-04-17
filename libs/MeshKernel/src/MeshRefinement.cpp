@@ -835,7 +835,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
 {
     numEdgesToBeRefined = 0;
 
-    const auto refinementValue = m_interpolant->GetResults()[face];
+    const auto refinementValue = m_interpolant->GetResults(face);
 
     if (m_refinementType == RefinementType::RefinementLevels && refinementValue <= 0)
     {

@@ -108,7 +108,9 @@ namespace meshkernel
         /// @brief Compute interpolation
         void Compute() override;
 
-        const std::vector<double>& GetResults() const override { return m_results; }
+        [[nodiscard]] double GetResults(size_t index) const override { return m_results[index]; }
+
+        [[nodiscard]] size_t GetResultsSize() const override { return m_results.size(); }
 
     private:
 

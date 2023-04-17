@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/RTree.hpp>
-
 namespace meshkernel
 {
 
@@ -37,8 +34,14 @@ namespace meshkernel
     {
     public:
         virtual void Compute() = 0;
+
         /// @brief Get the result values
         /// @return the results
-        virtual const std::vector<double>& GetResults() const = 0;
+        virtual double GetResults(size_t index) const = 0;
+
+                /// @brief Get the result values
+        /// @return the results
+        virtual size_t GetResultsSize() const = 0;
+
     };
 } // namespace meshkernel

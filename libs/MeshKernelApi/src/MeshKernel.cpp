@@ -2873,7 +2873,11 @@ namespace meshkernelapi
             averaging.Compute();
 
             // Get the results and copy them to the result vector
-            auto const& interpolationResults = averaging.GetResults();
+            std::vector<double> interpolationResults(averaging.GetResultsSize());
+            for (size_t i = 0; i < averaging.GetResultsSize(); ++i)
+            {
+                interpolationResults[i] = averaging.GetResults(i);
+            }
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
             ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
