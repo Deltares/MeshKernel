@@ -1,14 +1,25 @@
 cmake_minimum_required(VERSION 3.23)
 
+include(cmake/get_version_from_git.cmake)
+
+# get version from latest tag
+get_version_from_git(
+  LOG OFF
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
 project(
   MeshKernel
-  VERSION 1.0.0
+  VERSION ${VERSION_STRING_BASE}
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX C
 )
 
+# get options
 include(cmake/options.cmake)
+# configure the compiler
 include(cmake/compiler_config.cmake)
+# fetch dependencies, must appear after options.cmake
 include(cmake/fetch_content.cmake)
 
 # organize targets into folders, can be remove in version > 3.26 (ON by default)
