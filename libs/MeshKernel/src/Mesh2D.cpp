@@ -180,7 +180,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         // mark all edges of this triangle as good ones
         for (size_t j = 0; j < m_numNodesInTriangle; ++j)
         {
-            edgeNodesFlag[triangulationWrapper.GetFaceEdge(i,j)] = true;
+            edgeNodesFlag[triangulationWrapper.GetFaceEdge(i, j)] = true;
         }
     }
 
@@ -201,8 +201,8 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = triangulationWrapper.GetEdgeNode(i,0);
-        edges[validEdgesCount].second = triangulationWrapper.GetEdgeNode(i,1);
+        edges[validEdgesCount].first = triangulationWrapper.GetEdgeNode(i, 0);
+        edges[validEdgesCount].second = triangulationWrapper.GetEdgeNode(i, 1);
         validEdgesCount++;
     }
 
