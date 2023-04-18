@@ -115,7 +115,7 @@ function( get_version_from_git )
   endif()
 
   # Metadata
-  # TODO Split and join (add Git hash inbetween)
+  # TODO Split and join (add Git hash in between)
   if( metadata MATCHES ".+" )
     string( SUBSTRING "${metadata}" 1 -1 metadata )
     # Split
