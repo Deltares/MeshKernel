@@ -74,6 +74,21 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
+        /// @brief Enumerator describing the face location types
+        enum class FaceLocation
+        {
+            Land = 1,
+            Water = 2,
+            LandWater = 3
+        };
+
+        /// @brief Enumerator describing the different refinement types
+        enum class RefinementType
+        {
+            WaveCourant = 1,
+            RefinementLevels = 2
+        };
+
     public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
@@ -82,6 +97,16 @@ namespace meshkernel
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<MeshInterpolationInterface> interpolant,
                        const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+
+        /// @brief The constructor for refining based on samples
+        /// @param[in] mesh The mesh to be refined
+        /// @param[in] interpolant The averaging interpolation to use
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
+        /// @param[in] useNodalRefinement Use nodal refinement
+        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+                       std::shared_ptr<MeshInterpolationInterface> interpolant,
+                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters,
+                       bool useNodalRefinement);
 
         /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
@@ -151,12 +176,22 @@ namespace meshkernel
         /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
-        /// @brief Enumerator describing the different refinement types
-        enum class RefinementType
-        {
-            WaveCourant = 1,
-            RefinementLevels = 2
-        };
+        /// @brief Compute if an edge must be refined based on the face location type and the Courant criteria
+        /// @param edge The index of the edge to be refined
+        /// @param faceLocationType The face location type
+        /// @returns If the edge should be refined
+        bool IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(size_t edge, FaceLocation faceLocationType) const;
+
+        /// @brief Compute if an edge must be refined based on the face location type
+        /// @param edge The index of the edge to be refined
+        /// @param depthValues The depth value
+        /// @returns If the edge should be refined based on Courant criteria
+        bool IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const;
+
+        /// @brief Compute the face location type based on the depths values on the node
+        /// @param face The face index
+        /// @returns The face location type
+        FaceLocation ComputeFaceLocationType(size_t face) const;
 
         inline static double const m_sqrt_gravity = std::sqrt(9.80665); ///< Square root of gravitational acceleration on earth (m/s^2)
 
@@ -177,10 +212,11 @@ namespace meshkernel
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
+        bool m_useNodalRefinement = false;                             ///< Use refinement based on interpolated values at nodes
 
-        std::shared_ptr<Mesh2D> m_mesh;                                     ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolationInterface> m_interpolant = nullptr;  ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                                ///< Polygons
-        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
+        std::shared_ptr<Mesh2D> m_mesh;                                      ///< Pointer to the mesh
+        std::shared_ptr<MeshInterpolationInterface> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                                 ///< Polygons
+        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters;  ///< The mesh refinement parameters
     };
 } // namespace meshkernel

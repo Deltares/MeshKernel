@@ -810,7 +810,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1; 
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
@@ -837,7 +837,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandSeaInterfaceSh
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
@@ -864,7 +864,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnSeaShouldRefine)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
