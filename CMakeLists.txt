@@ -16,8 +16,10 @@ project(
 
 # get options
 include(cmake/options.cmake)
+
 # configure the compiler
 include(cmake/compiler_config.cmake)
+
 # fetch dependencies, must appear after options.cmake
 include(cmake/fetch_content.cmake)
 
@@ -27,13 +29,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Docs only available if this is the main app
 add_subdirectory(docs)
 
-# Run packaging scripts
-add_subdirectory(package)
-
 # Tools
+# Note: tools/Version sets the semantic version
 add_subdirectory(tools)
 
-# Add third party directory
+# Run packaging scripts: requires semantic version
+add_subdirectory(package)
+
+# Add third party dependencies
 add_subdirectory(extern)
 
 # Libraries
