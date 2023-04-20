@@ -29,6 +29,8 @@
 
 #include <MeshKernel/Mesh2D.hpp>
 
+#include <cmath>
+
 using namespace meshkernel;
 
 BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
@@ -76,16 +78,25 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
     double fractionalColumnIndex = GetFractionalColumnIndex(point);
     double fractionalRowIndex = GetFractionalRowIndex(point);
 
-    const int columnIndex = static_cast<int>(fractionalColumnIndex);
-    const int rowIndex = static_cast<int>(fractionalRowIndex);
+    double columnIndexTmp;
+    fractionalColumnIndex = std::modf(fractionalColumnIndex, &columnIndexTmp);
 
-    fractionalColumnIndex = fractionalColumnIndex - columnIndex;
-    fractionalRowIndex = fractionalRowIndex - rowIndex;
+    double rowIndexTmp;
+    fractionalRowIndex = std::modf(fractionalRowIndex, &rowIndexTmp);
 
-    if (columnIndex < 0 || columnIndex >= m_numColumns || rowIndex < 0 && rowIndex >= m_numRows)
+    if (columnIndexTmp < 0 || rowIndexTmp < 0)
     {
         return constants::missing::doubleValue;
     }
+
+    size_t const columnIndex = static_cast<size_t>(columnIndexTmp);
+    size_t const rowIndex = static_cast<size_t>(rowIndexTmp);
+
+    if (columnIndex >= m_numColumns || rowIndex >= m_numRows)
+    {
+        return constants::missing::doubleValue;
+    }
+
     double result = fractionalColumnIndex * fractionalRowIndex * getGriddedValue(columnIndex + 1, rowIndex + 1) +
                     (1.0 - fractionalColumnIndex) * fractionalRowIndex * getGriddedValue(columnIndex, rowIndex + 1) +
                     (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex, rowIndex) +

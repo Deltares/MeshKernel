@@ -32,24 +32,34 @@ namespace meshkernelapi
     /// @brief A struct describing gridded data
     struct GriddedSamples
     {
+        /// @brief bla
         int n_cols;
 
+        /// @brief bla
         int n_rows;
 
+        /// @brief bla
         double x_origin;
 
+        /// @brief bla
         double y_origin;
 
+        /// @brief bla
         int origin_location_type;
 
+        /// @brief bla
         double cell_size;
 
+        /// @brief bla
         double nodata_value;
 
+        /// @brief bla
         double* values = nullptr;
 
+        /// @brief bla
         double* x_coordinates = nullptr;
 
+        /// @brief bla
         double* y_coordinates = nullptr;
     };
 } // namespace meshkernelapi
