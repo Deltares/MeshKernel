@@ -8,7 +8,7 @@ option(
 # benchmarking option
 option(
   ENABLE_BENCHMARKING
-  "Enables building and the benchmark executable."
+  "Enables building the benchmark executable."
   OFF
 )
 
@@ -26,7 +26,7 @@ cmake_dependent_option(
 if(LINUX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   option(
     ENABLE_CODE_COVERAGE
-    "Produce code coverage files under GNU compilers"
+    "Generates code coverage files under GNU compilers"
     OFF
   )
 endif()

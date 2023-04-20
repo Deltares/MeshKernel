@@ -48,7 +48,7 @@ A mesh can be refined in areas based on samples or polygon selections.
 The requirements are:
 - Git
 - CMake 3.23 or higher
-- A C++17 compatible compiler
+- A C++20 compatible compiler
 - The Boost libraries
 - NetCDF
 - Doxygen (optional)
@@ -87,25 +87,59 @@ Upon successful installation, to build MeshKernel successfully, it is important 
 - Windows: [Perl](https://strawberryperl.com/)
 - Linux: m4, OpenSSL, Curl, and [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.3). All dependencies can be installed from the repository of the used Linux distribution.
   
-### IDE
-To use an IDE, such as Visual Studio 2019:
+## Configuring and Building MeshKernel
+Follow the steps below to configure, build and install MeshKernel.
+### Steps
+1.  To configure under Windows with Visual Studio, a solution is generated using
 
-```powershell
-cmake -S . -B xbuild -G"Visual Studio 16 2019"
-cmake --open xbuild
-```
-### Command line
-To configure:
-```powershell
-cmake -S . -B build
-```
+    ```powershell
+    cmake -S <path-to-source-dir> -B <path-to-build-dir> -G "Visual Studio 16 2019" --install-prefix <path-to-install-dir>
+    ```
+    This example uses Visual Studio 16 2019. A different version can be specified. In the above
+    - `<path-to-source-dir>` is the path to the MeshKernel source tree (the top-level directory containing source files provided by the project).
+    - `<path-to-build-dir>` is the path to the directory where MeshKernel is to be built.
+    - `<path-to-install-dir>` is the path top the directory where MeshKernel is to be installed.
 
-To build:
-```powershell
-cmake --build build
-```
+    Under Linux, the generator option is omitted:
+     ```powershell
+    cmake -S <path-to-source-dir> -B <path-to-build-dir> --install-prefix <path-to-install-dir>
+    ```
 
-To build docs (requires Doxygen, output in `build/docs/html`):
-```powershell
-cmake --build build --target docs
-```
+2.  To build the project's targets, use:
+    ```powershell
+    cmake --build <path-to-build-dir> --config <cfg> --parallel <jobs>
+    ```
+    where
+    - `<cfg>` is the build type (`Debug`, `Release`, `RelWithDebInfo` and `MinSizeRel`), see `CMAKE_BUILD_TYPE`.
+    - `<jobs>` is the maximum number of concurrent processes to use when building.
+
+    Note: this builds the documentation by default in `<path-to-build-dir>/docs/html`.
+
+3.  To install, use:
+    ```powershell
+    cmake --install <path-to-build-dir>
+    ```
+    or 
+    ```powershell
+    cmake --install <path-to-build-dir> --prefix [<path-to-install-dir>]
+    ```
+    to override the installation path specified during configuration (step 1).
+
+
+### Additional configuration options
+MeshKernel can be configured with a set of options, which are summarized in the table below.
+
+| Option | Description | Type | Default value | Notes |
+|------- |-------------|------|---------------|-------|
+| ENABLE_UNIT_TESTING | Enables building the unit test executables | Bool | ON  | |
+| ENABLE_BENCHMARKING | Enables building the benchmark executable | Bool | OFF | |
+| ENABLE_BENCHMARKING_MEM_REPORT | Enables reporting memory usage statistics | Bool | OFF | Applicable only when ENABLE_BENCHMARKING is ON, ignored otherwise |
+| ENABLE_CODE_COVERAGE | Generates code coverage report | Bool | OFF | Valid only under Linux when a GNU compiler is used (requires gcov), ignored otherwise |
+
+
+
+
+
+
+
+
