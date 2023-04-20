@@ -68,9 +68,9 @@ namespace meshkernel
 
         namespace physics
         {
-            constexpr double gravity = 9.80665; ///< Gravitational acceleration on earth (m/s^2)
-            static double const sqrt_gravity = std::sqrt(gravity); ///< Square root of gravitational acceleration on earth 
-        }
+            constexpr double gravity = 9.80665;                    ///< Gravitational acceleration on earth (m/s^2)
+            static double const sqrt_gravity = std::sqrt(gravity); ///< Square root of gravitational acceleration on earth
+        }                                                          // namespace physics
 
     } // namespace constants
 } // namespace meshkernel

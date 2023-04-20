@@ -39,14 +39,13 @@ namespace meshkernelapi
         double x_origin;
 
         double y_origin;
-		
-		int origin_location;
+
+        int origin_location;
 
         double cell_size;
-		
-		double nodata_value;
-		
-		double* values= nullptr;
 
+        double nodata_value;
+
+        double* values = nullptr;
     };
 } // namespace meshkernelapi

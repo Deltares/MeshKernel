@@ -82,7 +82,6 @@ namespace meshkernel
         [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:
-
         /// @brief Performs bilinear interpolation
         /// @param[in] point The input point
         /// @return The result of bilinear interpolation at the point

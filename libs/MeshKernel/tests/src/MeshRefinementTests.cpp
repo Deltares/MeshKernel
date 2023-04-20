@@ -440,7 +440,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     ASSERT_EQ(70, mesh->m_edges[908].first);
     ASSERT_EQ(233, mesh->m_edges[908].second);
-    
+
     ASSERT_EQ(179, mesh->m_edges[909].first);
     ASSERT_EQ(235, mesh->m_edges[909].second);
 
@@ -807,7 +807,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshRefinementParameters.min_edge_size = 5.0;
     meshRefinementParameters.account_for_samples_outside = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 1; 
+    meshRefinementParameters.refinement_type = 1;
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
 
@@ -850,7 +850,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
-    std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0,-6.0, -7.0, -8.0, -9.0};
+    std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
 
     const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
 

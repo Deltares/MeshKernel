@@ -1468,42 +1468,37 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
- 
-
-            //meshkernel::AveragingInterpolation::Method averagingMethod;
-            //if (meshRefinementParameters.refinement_type == 1)
+            // meshkernel::AveragingInterpolation::Method averagingMethod;
+            // if (meshRefinementParameters.refinement_type == 1)
             //{
-            //    averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
-            //}
-            //if (meshRefinementParameters.refinement_type == 2)
+            //     averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
+            // }
+            // if (meshRefinementParameters.refinement_type == 2)
             //{
-            //    averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
-            //}
+            //     averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
+            // }
 
-            //const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
-            //const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
+            // const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
+            // const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
 
-            //const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
-            //                                                                            samplesVector,
-            //                                                                            averagingMethod,
-            //                                                                            meshkernel::Mesh::Location::Faces,
-            //                                                                            relativeSearchRadius,
-            //                                                                            refineOutsideFace,
-            //                                                                            transformSamples,
-            //                                                                            static_cast<size_t>(minimumNumSamples));
+            // const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
+            //                                                                             samplesVector,
+            //                                                                             averagingMethod,
+            //                                                                             meshkernel::Mesh::Location::Faces,
+            //                                                                             relativeSearchRadius,
+            //                                                                             refineOutsideFace,
+            //                                                                             transformSamples,
+            //                                                                             static_cast<size_t>(minimumNumSamples));
 
-            //meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
-            //meshRefinement.Compute();
+            // meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
+            // meshRefinement.Compute();
         }
         catch (...)
         {
             exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
-        
     }
-
-
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
     {

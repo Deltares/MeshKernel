@@ -29,15 +29,14 @@
 
 namespace meshkernel
 {
-    /// @brief Interface for interpolation methods 
+    /// @brief Interface for interpolation methods
     class MeshInterpolationInterface
     {
     public:
-
         /// @brief Virtual destructor
         virtual ~MeshInterpolationInterface() = default;
 
-        /// @brief Compute 
+        /// @brief Compute
         virtual void Compute() = 0;
 
         /// @brief Gets the interpolation value at a specific node
@@ -66,6 +65,5 @@ namespace meshkernel
         /// @brief Gets all interpolated values at faces
         /// @return The interpolated values
         [[nodiscard]] virtual const std::vector<double>& GetFaceResults() const = 0;
-
     };
 } // namespace meshkernel

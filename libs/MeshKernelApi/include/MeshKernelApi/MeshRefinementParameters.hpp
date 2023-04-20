@@ -43,7 +43,7 @@ namespace meshkernelapi
 
         /// @brief Minimum edge size
         double min_edge_size;
-        
+
         /// @brief Refinement criterion type
         int refinement_type;
 

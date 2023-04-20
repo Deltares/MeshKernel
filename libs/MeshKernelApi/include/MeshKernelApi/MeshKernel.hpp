@@ -528,7 +528,6 @@ namespace meshkernelapi
                                                                int minimumNumSamples,
                                                                const MeshRefinementParameters& meshRefinementParameters);
 
-
         /// @brief Refine based on ascii
         ///
         /// The number of successive splits is indicated on the sample value.
@@ -541,9 +540,8 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_asc_samples(int meshKernelId,
-                                                               const GriddedSamples& samples,
-                                                               const MeshRefinementParameters& meshRefinementParameters);
-
+                                                                   const GriddedSamples& samples,
+                                                                   const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId             The id of the mesh state
