@@ -35,27 +35,27 @@ namespace meshkernelapi
     struct MakeGridParameters
     {
         /// @brief The number of columns in x direction
-        int num_columns;
+        int num_columns = 3;
 
         /// @brief The number of columns in y direction
-        int num_rows;
+        int num_rows = 3;
 
         /// @brief The grid angle
-        double angle;
+        double angle = 0.0;
 
         /// @brief The grid block size, used in x and y direction
-        double block_size;
+        double block_size = 10.0;
 
         /// @brief The x coordinate of the origin, located at the bottom left corner
-        double origin_x;
+        double origin_x = 0.0;
 
         /// @brief The y coordinate of the origin, located at the bottom left corner
-        double origin_y;
+        double origin_y = 0.0;
 
         /// @brief The grid block size in x dimension, used only for squared grids
-        double block_size_x;
+        double block_size_x = 10.0;
 
         /// @brief The grid block size in y dimension, used only for squared grids
-        double block_size_y;
+        double block_size_y = 10.0;
     };
 } // namespace meshkernelapi
