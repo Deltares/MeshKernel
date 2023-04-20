@@ -129,8 +129,8 @@ Follow the steps below to configure, build and install MeshKernel.
 ### Additional configuration options
 MeshKernel can be configured with a set of options, which are summarized in the table below.
 
-| Option | Description | Type | Default value | Notes |
-|------- |-------------|------|---------------|-------|
+| Option | Description | Type | Default | Notes |
+|:------ |:------------|:-----|:--------|:------|
 | ENABLE_UNIT_TESTING | Enables building the unit test executables | Bool | ON  | |
 | ENABLE_BENCHMARKING | Enables building the benchmark executable | Bool | OFF | |
 | ENABLE_BENCHMARKING_MEM_REPORT | Enables reporting memory usage statistics | Bool | OFF | Applicable only when ENABLE_BENCHMARKING is ON, ignored otherwise |
