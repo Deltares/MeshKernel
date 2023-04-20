@@ -193,8 +193,6 @@ namespace meshkernel
         /// @returns The face location type
         FaceLocation ComputeFaceLocationType(size_t face) const;
 
-        inline static double const m_sqrt_gravity = std::sqrt(9.80665); ///< Square root of gravitational acceleration on earth (m/s^2)
-
         RTree m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)

@@ -676,7 +676,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_face_size = 0.5;
+    meshRefinementParameters.min_edge_size = 0.5;
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;

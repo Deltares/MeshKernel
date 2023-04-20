@@ -108,12 +108,31 @@ namespace meshkernel
         /// @brief Compute interpolation
         void Compute() override;
 
+        /// @brief Gets the interpolation value at a specific node
+        /// @param[in] node The node index
+        /// @return The interpolated value
         [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
+
+        /// @brief Gets the interpolation value at a specific edge
+        /// @param[in] edge The edge index
+        /// @return The interpolated value
         [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
+
+        /// @brief Gets the interpolation value at a specific face
+        /// @param[in] face The face index
+        /// @return  The interpolated value
         [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
 
+        /// @brief Gets all interpolated values at nodes
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
+
+        /// @brief Gets all interpolated values at edges
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
+
+        /// @brief Gets all interpolated values at faces
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:

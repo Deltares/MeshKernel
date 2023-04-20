@@ -866,9 +866,6 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
     }
     if (m_refinementType == RefinementType::WaveCourant)
     {
-
-        const auto faceLocationType = ComputeFaceLocationType(face);
-
         double constexpr mergingDistance = 0.001;
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
@@ -882,6 +879,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
             bool doRefinement;
             if (m_useNodalRefinement)
             {
+                const auto faceLocationType = ComputeFaceLocationType(face);
                 doRefinement = IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(edge, faceLocationType);
             }
             else
@@ -966,7 +964,7 @@ bool MeshRefinement::IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(si
 
     const auto& [first, second] = m_mesh->m_edges[edge];
     const auto firstDepth = m_interpolant->GetNodeResult(first);
-    const auto secondDepth = m_interpolant->GetNodeResult(first);
+    const auto secondDepth = m_interpolant->GetNodeResult(second);
     const auto refinementValue = std::abs(0.5 * (firstDepth + secondDepth));
 
     return IsRefineNeededBasedOnCourantCriteria(edge, refinementValue);
@@ -974,11 +972,11 @@ bool MeshRefinement::IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(si
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const
 {
+    const double maxDtCourant = 120.0; // should this be tunable passed at the api level?
     const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
-    const double c = m_sqrt_gravity * std::sqrt(std::abs(depthValues));
-    const double waveCourant = c * (m_meshRefinementParameters.min_face_size / m_sqrt_gravity) / m_mesh->m_edgeLengths[edge];
-    bool doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_meshRefinementParameters.min_face_size) < std::abs(m_mesh->m_edgeLengths[edge] - m_meshRefinementParameters.min_face_size);
-
+    const double celerity = constants::physics::sqrt_gravity * std::sqrt(std::abs(depthValues));
+    const double waveCourant = celerity * maxDtCourant / m_mesh->m_edgeLengths[edge];
+    bool doRefinement = waveCourant < 1.0 && newEdgeLength >= m_meshRefinementParameters.min_edge_size;
     return doRefinement;
 }
 

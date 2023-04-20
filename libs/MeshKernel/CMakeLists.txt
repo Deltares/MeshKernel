@@ -27,6 +27,7 @@ set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp

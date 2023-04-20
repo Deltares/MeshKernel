@@ -35,92 +35,77 @@ namespace meshkernel
     class BilinearInterpolationOnGriddedSamples : public MeshInterpolationInterface
     {
     public:
-        /// @brief Interpolation based on averaging
-        /// @param[in] mesh                            The input mesh
+        /// @brief Bilinear interpolation
+        /// @param[in] mesh The input mesh
+        /// @param[in] numColumns The number of grid columns
+        /// @param[in] numRows The number of grid rows
+        /// @param[in] xOrigin The x coordinate of the grid origin
+        /// @param[in] yOrigin The y coordinate of the grid origin
+        /// @param[in] cellSize The grid cell size
+        /// @param[in] values The grid cell size
         BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
                                               size_t numColumns,
                                               size_t numRows,
                                               double xOrigin,
                                               double yOrigin,
                                               double cellSize,
-                                              std::vector<double>& values) : m_mesh(mesh),
-                                                                             m_numColumns(numColumns),
-                                                                             m_numRows(numRows),
-                                                                             m_xOrigin(xOrigin),
-                                                                             m_yOrigin(yOrigin),
-                                                                             m_cellSize(cellSize),
-                                                                             m_values(values) {}
+                                              std::vector<double>& values);
 
         /// @brief Compute interpolation
-        void Compute()
-        {
-            m_nodeResults.resize(m_mesh->GetNumNodes());
-            std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
-            for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
-            {
-                const auto node = m_mesh->m_nodes[n];
-                m_nodeResults[n] = bilinearInterpolation(node);
-            }
+        void Compute() override;
 
-            m_edgeResults.resize(m_mesh->GetNumEdges());
-            std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
-            for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
-            {
-                const auto& [first, second] = m_mesh->m_edges[e];
-                m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
-            }
-
-            m_faceResults.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
-            std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
-            for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
-            {
-                m_faceResults[f] = bilinearInterpolation(m_mesh->m_facesMassCenters[f]);
-            }
-        }
-
+        /// @brief Gets the interpolation value at a specific node
+        /// @param[in] node The node index
+        /// @return The interpolated value
         [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
+
+        /// @brief Gets the interpolation value at a specific edge
+        /// @param[in] edge The edge index
+        /// @return The interpolated value
         [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
+
+        /// @brief Gets the interpolation value at a specific face
+        /// @param[in] face The face index
+        /// @return  The interpolated value
         [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
 
+        /// @brief Gets all interpolated values at nodes
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
+
+        /// @brief Gets all interpolated values at edges
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
+
+        /// @brief Gets all interpolated values at faces
+        /// @return The interpolated values
         [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:
 
-        double bilinearInterpolation(const Point& node) const
+        /// @brief Performs bilinear interpolation
+        /// @param[in] point The input point
+        /// @return The result of bilinear interpolation at the point
+        double bilinearInterpolation(const Point& point) const;
+
+        /// @brief For a specific point, gets the fractional number of columns
+        /// @param[in] point The input point
+        /// @return The fractional column index
+        [[nodiscard]] double GetFractionalColumnIndex(const Point& point) const
         {
-            double fractionalColumnIndex = GetFractionalColumnIndex(node);
-            double fractionalRowIndex = GetFractionalRowIndex(node);
-
-            const int columnIndex = static_cast<int>(fractionalColumnIndex);
-            const int rowIndex = static_cast<int>(fractionalRowIndex);
-
-            fractionalColumnIndex = fractionalColumnIndex - columnIndex;
-            fractionalRowIndex = fractionalRowIndex - rowIndex;
-
-            if (columnIndex < 0 || columnIndex >= m_numColumns || rowIndex < 0 && rowIndex >= m_numRows)
-            {
-                return constants::missing::doubleValue;
-            }
-            double result = fractionalColumnIndex * fractionalRowIndex * getGriddedValue(columnIndex + 1, rowIndex + 1) +
-                            (1.0 - fractionalColumnIndex) * fractionalRowIndex * getGriddedValue(columnIndex, rowIndex + 1) +
-                            (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex, rowIndex) +
-                            fractionalColumnIndex * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex + 1, rowIndex);
-
-            return result;
+            return (point.x - m_xOrigin) / m_cellSize;
         }
 
-        [[nodiscard]] double GetFractionalColumnIndex(const Point& p) const
-        {
-            return (p.x - m_xOrigin) / m_cellSize;
-        }
-
+        /// @brief For a specific point, gets the fractional number of columns
+        /// @param[in] point The input point
+        /// @return The fractional row index
         [[nodiscard]] double GetFractionalRowIndex(const Point& p) const
         {
             return (p.y - m_yOrigin) / m_cellSize;
         }
 
+        /// @brief Gets the sample value at specific row and column
+        /// @return The sample value
         [[nodiscard]] double getGriddedValue(size_t columnIndex, size_t rowIndex) const
         {
             const auto index = rowIndex * (m_numColumns + 1) + columnIndex;
@@ -129,15 +114,15 @@ namespace meshkernel
 
         const std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to the mesh
 
-        size_t m_numColumns;
-        size_t m_numRows;
-        double m_xOrigin;
-        double m_yOrigin;
-        double m_cellSize;
-        std::vector<double> m_values;
+        size_t m_numColumns;          ///< The number of grid columns
+        size_t m_numRows;             ///< The number of grid rows
+        double m_xOrigin;             ///< The x coordinate of the grid origin
+        double m_yOrigin;             ///< The y coordinate of the grid origin
+        double m_cellSize;            ///< The grid cell size
+        std::vector<double> m_values; ///< The gridded sample values
 
-        std::vector<double> m_nodeResults; ///< The interpolation results
-        std::vector<double> m_edgeResults; ///< The interpolation results
-        std::vector<double> m_faceResults; ///< The interpolation results
+        std::vector<double> m_nodeResults; ///< The interpolation results at nodes
+        std::vector<double> m_edgeResults; ///< The interpolation results at edges
+        std::vector<double> m_faceResults; ///< The interpolation results at faces
     };
 } // namespace meshkernel
