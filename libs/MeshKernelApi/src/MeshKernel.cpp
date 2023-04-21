@@ -26,8 +26,8 @@
 //------------------------------------------------------------------------------
 
 #include <cstring>
-#include <map>
 #include <stdexcept>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -72,7 +72,7 @@
 namespace meshkernelapi
 {
     // The state held by MeshKernel
-    static std::map<int, MeshKernelState> meshKernelState;
+    static std::unordered_map<int, MeshKernelState> meshKernelState;
     static int meshKernelStateCounter = 0;
 
     // Error state
