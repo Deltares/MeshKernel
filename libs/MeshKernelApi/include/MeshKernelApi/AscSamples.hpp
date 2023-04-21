@@ -1,3 +1,4 @@
+
 //---- GPL ---------------------------------------------------------------------
 //
 // Copyright (C)  Stichting Deltares, 2011-2021.
@@ -32,21 +33,28 @@ namespace meshkernelapi
     /// @brief A struct used to describe an ascii file
     struct AscSamples
     {
+        /// @brief bla
         int n_cols;
 
+        /// @brief bla
         int n_rows;
 
+        /// @brief bla
         double x_origin;
 
+        /// @brief bla
         double y_origin;
-		
-		int origin_location;
 
+        /// @brief bla
+        int origin_location;
+
+        /// @brief bla
         double cell_size;
-		
-		double nodata_value;
-		
-		double* values= nullptr;
 
+        /// @brief bla
+        double nodata_value;
+
+        /// @brief bla
+        double* values = nullptr;
     };
 } // namespace meshkernelapi

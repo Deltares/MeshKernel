@@ -847,12 +847,6 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
 {
     numEdgesToBeRefined = 0;
 
-    if (face == 17)
-    {
-        std::cout << "error" << std::endl;
-    }
-
-
     if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
     {
         return;
@@ -900,12 +894,6 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
             {
 
                 numEdgesToBeRefined++;
-                if (edge == 36)
-                {
-                    std::cout << "error" << std::endl;
-                }
-
-
                 refineEdgeCache[e] = 1;
             }
         }

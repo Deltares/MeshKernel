@@ -1472,7 +1472,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector values((samples.n_cols) * (samples.n_rows), 0.0);
+            std::vector values(samples.n_cols * samples.n_rows, 0.0);
             for (size_t i = 0; i < values.size(); ++i)
             {
                 values[i] = samples.values[i];
