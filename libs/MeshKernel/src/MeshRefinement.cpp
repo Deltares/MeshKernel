@@ -846,6 +846,13 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                            size_t& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
+
+    if (face == 17)
+    {
+        std::cout << "error" << std::endl;
+    }
+
+
     if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
     {
         return;
@@ -867,6 +874,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
     if (m_refinementType == RefinementType::WaveCourant)
     {
         double constexpr mergingDistance = 0.001;
+        
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
             const auto edge = m_mesh->m_facesEdges[face][e];
@@ -892,6 +900,12 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
             {
 
                 numEdgesToBeRefined++;
+                if (edge == 36)
+                {
+                    std::cout << "error" << std::endl;
+                }
+
+
                 refineEdgeCache[e] = 1;
             }
         }

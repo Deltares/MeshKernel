@@ -73,8 +73,8 @@ void BilinearInterpolationOnGriddedSamples::Compute()
 
 double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point& point) const
 {
-    double fractionalColumnIndex = GetFractionalColumnIndex(point);
-    double fractionalRowIndex = GetFractionalRowIndex(point);
+    double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
+    double fractionalRowIndex = GetFractionalNumberOfRows(point);
 
     const int columnIndex = static_cast<int>(fractionalColumnIndex);
     const int rowIndex = static_cast<int>(fractionalRowIndex);
@@ -82,7 +82,7 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
     fractionalColumnIndex = fractionalColumnIndex - columnIndex;
     fractionalRowIndex = fractionalRowIndex - rowIndex;
 
-    if (columnIndex < 0 || columnIndex >= m_numColumns || rowIndex < 0 && rowIndex >= m_numRows)
+    if (columnIndex < 0 || columnIndex >= m_numColumns || rowIndex < 0 || rowIndex >= m_numRows)
     {
         return constants::missing::doubleValue;
     }

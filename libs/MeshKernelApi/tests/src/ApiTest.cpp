@@ -3070,15 +3070,14 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     ASSERT_EQ(mesh2d.num_faces, 80);
 }
 
-/*
 TEST(Mesh2D, RefineAMeshBasedOnAsciShouldRefine)
 {
     // Prepare
     int meshKernelId;
-    constexpr int isGeographic = 1;
+    constexpr int isGeographic = 0;
     meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco_net.nc");
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
     meshkernelapi::Mesh2D mesh2d;
     mesh2d.num_edges = static_cast<int>(num_edges);
     mesh2d.num_nodes = static_cast<int>(num_nodes);
@@ -3088,29 +3087,33 @@ TEST(Mesh2D, RefineAMeshBasedOnAsciShouldRefine)
 
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    meshkernelapi::GriddedSamples griddedSamples;
+    griddedSamples.n_cols = ncols;
+    griddedSamples.n_rows = nrows;
+    griddedSamples.x_origin = xllcenter;
+    griddedSamples.y_origin = yllcenter;
+    griddedSamples.cell_size = cellsize;
+    griddedSamples.nodata_value = nodata_value;
+    griddedSamples.values = values.data();
 
-
-
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/GEBCO_2021_cutout.asc");
-    meshkernelapi::GeometryList samples;
-
-    //samples.coordinates_x = coordinates_x.data();
-    //samples.coordinates_y = coordinates_y.data();
-    //samples.values = values.data();
-    //samples.num_coordinates = static_cast<int>(coordinates_x.size());
-
-    const double relative_search_radius = 0.5;
-    const int minimum_num_samples = 3;
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
     meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_face_size = 0.01;
+    meshRefinementParameters.min_edge_size = 0.01;
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
 
-
-    errorCode = meshkernelapi::mkernel_mesh2d_refine_based_on_samples(meshKernelId, samples, relative_search_radius, minimum_num_samples, meshRefinementParameters);
+    errorCode = mkernel_mesh2d_refine_based_on_asc_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    
+    meshkernelapi::Mesh2D mesh2dResults;
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    
+    ASSERT_EQ(7679, mesh2dResults.num_nodes);
+    ASSERT_EQ(18815, mesh2dResults.num_edges);
+    ASSERT_EQ(11137, mesh2dResults.num_faces);
+    ASSERT_EQ(37566, mesh2dResults.num_face_nodes);
 }
-*/

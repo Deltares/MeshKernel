@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+
+
 #include <cstring>
 #include <map>
 #include <stdexcept>
@@ -45,6 +47,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
+#include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -1454,7 +1457,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_asc_samples(int meshKernelId,
                                                                const GriddedSamples& samples,
-                                                               const MeshRefinementParameters& meshRefinementParameters)
+                                                               const MeshRefinementParameters& meshRefinementParameters,
+                                                               bool useNodalRefinement)
     {
         int exitCode = Success;
         try
@@ -1468,44 +1472,33 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
- 
+            std::vector values((samples.n_cols) * (samples.n_rows), 0.0);
+            for (size_t i = 0; i < values.size(); ++i)
+            {
+                values[i] = samples.values[i];
+            }
 
-            //meshkernel::AveragingInterpolation::Method averagingMethod;
-            //if (meshRefinementParameters.refinement_type == 1)
-            //{
-            //    averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
-            //}
-            //if (meshRefinementParameters.refinement_type == 2)
-            //{
-            //    averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
-            //}
+            auto interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                   samples.n_cols,
+                                                                                                   samples.n_rows,
+                                                                                                   samples.x_origin,
+                                                                                                   samples.y_origin,
+                                                                                                   samples.cell_size,
+                                                                                                   values);
 
-            //const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
-            //const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
-
-            //const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
-            //                                                                            samplesVector,
-            //                                                                            averagingMethod,
-            //                                                                            meshkernel::Mesh::Location::Faces,
-            //                                                                            relativeSearchRadius,
-            //                                                                            refineOutsideFace,
-            //                                                                            transformSamples,
-            //                                                                            static_cast<size_t>(minimumNumSamples));
-
-            //meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
-            //meshRefinement.Compute();
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, interpolant, meshRefinementParameters, useNodalRefinement);
+            meshRefinement.Compute();
         }
         catch (...)
         {
             exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
-        
     }
 
-
-
-    MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
+                                                           const GeometryList& geometryList,
+                                                           const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try

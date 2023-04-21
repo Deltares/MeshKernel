@@ -1,3 +1,5 @@
+#include "MeshKernelApi/GriddedSamples.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -33,7 +35,6 @@ std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath)
 
 std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(std::string const& filePath)
 {
-
     // read sample file
     std::string line;
     std::ifstream infile(filePath.c_str());
@@ -46,9 +47,7 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
     double nodata_value;
 
     int numlines = 0;
-    // std::vector<double> x_coordinate;
-    // std::vector<double> y_coordinate;
-    std::vector<double> values;
+    std::vector<std::vector<double>> rows;
     while (std::getline(infile, line))
     {
         std::istringstream iss(line);
@@ -95,15 +94,24 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
             continue;
         }
 
-        for (int i = 0; i < ncols; ++i)
+        rows.push_back(std::vector<double>());
+        for (auto i = 0; i < ncols + 1; ++i)
         {
             double value;
             iss >> value;
-            // x_coordinate.push_back(xllcenter + i * cellsize);
-            // y_coordinate.push_back(yllcenter + cellsize * nrows - (numlines - 6) * cellsize);
-            values.push_back(value);
+            rows.back().push_back(value);
         }
         numlines++;
+    }
+
+    std::reverse(rows.begin(), rows.end());
+    std::vector<double> values;
+    for (auto i = 0; i < rows.size(); ++i)
+    {
+        for (auto j = 0; j < rows[i].size(); ++j)
+        {
+            values.push_back(rows[i][j]);
+        }
     }
 
     return {ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values};

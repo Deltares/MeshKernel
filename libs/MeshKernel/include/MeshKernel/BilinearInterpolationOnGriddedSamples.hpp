@@ -91,7 +91,7 @@ namespace meshkernel
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional column index
-        [[nodiscard]] double GetFractionalColumnIndex(const Point& point) const
+        [[nodiscard]] double GetFractionalNumberOfColumns(const Point& point) const
         {
             return (point.x - m_xOrigin) / m_cellSize;
         }
@@ -99,7 +99,7 @@ namespace meshkernel
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional row index
-        [[nodiscard]] double GetFractionalRowIndex(const Point& p) const
+        [[nodiscard]] double GetFractionalNumberOfRows(const Point& p) const
         {
             return (p.y - m_yOrigin) / m_cellSize;
         }
