@@ -72,7 +72,7 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
 
-    std::vector generatedPoints(GetNumPolygons(),std::vector<Point>());
+    std::vector generatedPoints(GetNumPolygons(), std::vector<Point>());
     std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
 

@@ -26,4 +26,4 @@
 //------------------------------------------------------------------------------
 
 // Only modify `Version.hpp.in`, never `Version.hpp`
-static char versionString[64] = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@@VERSION_SUFFIX@";
+static const char versionString[64] = "@VERSION_STRING@";
