@@ -20,10 +20,10 @@ import json
 
 def determine_to_sign_dll_names(repo_root: Path) -> Generator[str, None, None]:
     """
-    Gather all the dll names which need to be signed. 
+    Gather all the dll names which need to be signed.
 
     We assume that the only dll's produced by the D-HYDRO solution are the
-    ones created by their corresponding .csproj. Any other dll is the result of
+    ones created by their corresponding .vcxproj. Any other dll is the result of
     a NuGet package, which should already be signed to begin with.
 
     Args:
@@ -32,8 +32,8 @@ def determine_to_sign_dll_names(repo_root: Path) -> Generator[str, None, None]:
     Returns:
         Generator[str, None, None]: Generator containing the dll names to sign.
     """
-    src_csprojs = ((repo_root / Path("src")).glob("**/*.csproj"))
-    return (x.with_suffix(".dll").name for x in src_csprojs)
+    libs_vcxprojs = (repo_root / Path("libs")).glob("**/*.vcxproj")
+    return (x.with_suffix(".dll").name for x in libs_vcxprojs)
 
 
 def get_corresponding_path(repo_root: Path, dll_name: str) -> Path:
@@ -45,7 +45,9 @@ def get_corresponding_path(repo_root: Path, dll_name: str) -> Path:
         dll_name (str): Name of the dll
     """
     # this hack is required to keep the capitalisation
-    return next((repo_root / Path("bin/Release")).glob("**/{}".format(dll_name))).parent / Path(dll_name)
+    return next(
+        (repo_root / Path("libs")).glob("**/Release/{}".format(dll_name))
+    ).parent / Path(dll_name)
 
 
 def has_corresponding_path(repo_root: Path, dll_name: str) -> bool:
@@ -53,15 +55,17 @@ def has_corresponding_path(repo_root: Path, dll_name: str) -> bool:
     Verify whether the provided dll has a corresponding path.
     Args:
         repo_root (Path): Path to the repo root
-        dll_names (Generator[str, None, None]): Generator containing the dll names to sign.
+        dll_name (Generator[str, None, None]): Generator containing the dll names to sign.
 
     Returns:
         bool: True if a corresponding path can be found; False otherwise.
     """
-    return any((repo_root / "bin" / "Release").glob(f"**/{dll_name}"))
+    return any((repo_root / Path("libs")).glob(f"**/Release/{dll_name}"))
 
 
-def find_all_dll_paths(repo_root: Path, dll_names: Generator[str, None, None]) -> Generator[Path, None, None]:
+def find_all_dll_paths(
+    repo_root: Path, dll_names: Generator[str, None, None]
+) -> Generator[Path, None, None]:
     """
     Find the dll paths of the dll names provided in dll_names.
 
@@ -72,10 +76,16 @@ def find_all_dll_paths(repo_root: Path, dll_names: Generator[str, None, None]) -
     Returns:
         Generator[Path, None, None]: Generator containing the dll paths to sign.
     """
-    return (get_corresponding_path(repo_root, x) for x in dll_names if has_corresponding_path(repo_root, x))
+    return (
+        get_corresponding_path(repo_root, x)
+        for x in dll_names
+        if has_corresponding_path(repo_root, x)
+    )
 
 
-def generate_json_mapping_content(repo_root: Path, dll_paths: Generator[Path, None, None]) -> dict:
+def generate_json_mapping_content(
+    repo_root: Path, dll_paths: Generator[Path, None, None]
+) -> dict:
     """
     Generate the json mapping file, with which the signed dlls can be restored to their original paths.
 
@@ -86,13 +96,15 @@ def generate_json_mapping_content(repo_root: Path, dll_paths: Generator[Path, No
     Returns:
         dict: Dict describing the mapping
     """
-    return { "mapping": list(( { "dll": p.name
-                               , "path": str(p.relative_to(repo_root)) 
-                               } for p in dll_paths )) 
-           }
+    return {
+        "mapping": list(
+            ({"dll": p.name, "path": str(p.relative_to(repo_root))} for p in dll_paths)
+        )
+    }
 
 
 DLL_MAPPING_FILE_NAME = "dll_mapping.json"
+
 
 def write_json_mapping_file(sign_dir: Path, content: dict) -> None:
     """
@@ -110,10 +122,8 @@ def write_json_mapping_file(sign_dir: Path, content: dict) -> None:
 def read_json_mapping_file(sign_dir: Path) -> dict:
     """
     Load the dll mapping file from the sign_dir.
-
-    Args: 
+    Args:
         sign_dir (Path): Path to the directory containing the signed dlls.
-
     Returns:
         dict: A dictionary containing the mapping of the dlls.
     """
@@ -122,7 +132,9 @@ def read_json_mapping_file(sign_dir: Path) -> dict:
         return json.load(f)
 
 
-def harvest_to_sign_dlls(dll_paths: Generator[Path, None, None], sign_dir: Path) -> None:
+def harvest_to_sign_dlls(
+    dll_paths: Generator[Path, None, None], sign_dir: Path
+) -> None:
     """
     Move the dlls specified by dll_paths to the sign_dir.
 
@@ -137,18 +149,19 @@ def harvest_to_sign_dlls(dll_paths: Generator[Path, None, None], sign_dir: Path)
 def restore_signed_dlls(repo_root: Path, dll_mapping: dict, sign_dir) -> None:
     """
     Restore the signed dlls to their original locations.
-
     Args:
         repo_root (Path): The path to the repo root.
         dll_mapping (dict): Dictionary describing the mapping of dlls
         sign_dir (Path): Path to the directory containing the signed dlls.
     """
     for dll_info in dll_mapping["mapping"]:
-        shutil.move(str(sign_dir / dll_info["dll"]), 
-                    str(repo_root / Path(dll_info["path"])))
+        shutil.move(
+            str(sign_dir / dll_info["dll"]), str(repo_root / Path(dll_info["path"]))
+        )
 
 
 TO_SIGN_DIR_NAME = "to_sign"
+
 
 def harvest(repo_root: Path) -> None:
     """
@@ -161,7 +174,7 @@ def harvest(repo_root: Path) -> None:
     dll_paths = list(find_all_dll_paths(repo_root, dll_names))
 
     sign_dir = repo_root / Path(TO_SIGN_DIR_NAME)
-    if (not (sign_dir.exists() and sign_dir.is_dir())):
+    if not (sign_dir.exists() and sign_dir.is_dir()):
         sign_dir.mkdir(parents=True)
 
     dll_mapping = generate_json_mapping_content(repo_root, dll_paths)
@@ -173,7 +186,6 @@ def harvest(repo_root: Path) -> None:
 def restore(repo_root: Path) -> None:
     """
     Restore the signed dlls to their original locations.
-
     Args:
         repo_root: Path to the repo root.
     """
