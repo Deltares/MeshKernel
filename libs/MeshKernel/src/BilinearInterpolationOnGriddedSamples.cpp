@@ -26,11 +26,9 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
-
-#include <MeshKernel/Mesh2D.hpp>
+#include "MeshKernel/Mesh2D.hpp"
 
 #include <cmath>
-#include <iostream>
 
 using namespace meshkernel;
 
@@ -60,7 +58,6 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std
                                                                                                                   m_values(values),
                                                                                                                   m_isCellSizeConstant(false)
 {
-    std::cout << "Debug" << std::endl;
 }
 
 void BilinearInterpolationOnGriddedSamples::Compute()
@@ -133,7 +130,7 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
     {
         return result;
     }
-    for (auto i = 0; i < m_xCoordinates.size() - 1; ++i)
+    for (auto i = 0u; i < m_xCoordinates.size() - 1; ++i)
     {
 
         if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
@@ -159,7 +156,7 @@ double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Po
         return result;
     }
 
-    for (auto i = 0; i < m_yCoordinates.size() - 1; ++i)
+    for (auto i = 0u; i < m_yCoordinates.size() - 1; ++i)
     {
 
         if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])
