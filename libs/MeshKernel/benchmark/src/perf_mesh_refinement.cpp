@@ -62,14 +62,14 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
     }
 }
 
-BENCHMARK(BM_MeshRefinementBasedOnSamples)
-    ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
-    ->Args({500, 500, 1})
-    ->Args({500, 500, 2})
-    ->Args({1000, 1000, 1})
-    ->Args({1000, 1000, 2})
-    ->Args({2000, 2000, 1})
-    ->Args({2000, 2000, 2});
+// BENCHMARK(BM_MeshRefinementBasedOnSamples)
+//     ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
+//     ->Args({500, 500, 1})
+//     ->Args({500, 500, 2})
+//     ->Args({1000, 1000, 1})
+//     ->Args({1000, 1000, 2})
+//     ->Args({2000, 2000, 1})
+//     ->Args({2000, 2000, 2});
 
 static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 {
@@ -115,11 +115,11 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
         meshRefinement.Compute();
     }
 }
-BENCHMARK(BM_MeshRefinementBasedOnPolygons)
-    ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
-    ->Args({500, 500, 1})
-    ->Args({500, 500, 2})
-    ->Args({1000, 1000, 1})
-    ->Args({1000, 1000, 2})
-    ->Args({2000, 2000, 1})
-    ->Args({2000, 2000, 2});
+// BENCHMARK(BM_MeshRefinementBasedOnPolygons)
+//     ->ArgNames({"x-nodes", "y-nodes", "refinement type"})
+//     ->Args({500, 500, 1})
+//     ->Args({500, 500, 2})
+//     ->Args({1000, 1000, 1})
+//     ->Args({1000, 1000, 2})
+//     ->Args({2000, 2000, 1})
+//     ->Args({2000, 2000, 2});

@@ -51,10 +51,10 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(polygons, 0));
     }
 }
-BENCHMARK(BM_CurvilinearUniform)
-    ->ArgNames({"x-nodes", "y-nodes"})
-    ->Args({500, 500})
-    ->Args({1000, 1000})
-    ->Args({2000, 2000})
-    ->Args({4000, 4000})
-    ->Args({5000, 5000});
+// BENCHMARK(BM_CurvilinearUniform)
+//     ->ArgNames({"x-nodes", "y-nodes"})
+//     ->Args({500, 500})
+//     ->Args({1000, 1000});
+//     ->Args({2000, 2000})
+//     ->Args({4000, 4000})
+//     ->Args({5000, 5000});

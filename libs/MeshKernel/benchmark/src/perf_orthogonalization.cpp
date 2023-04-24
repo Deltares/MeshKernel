@@ -96,7 +96,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         orthogonalization.Compute();
     }
 }
-BENCHMARK(BM_Orthogonalization)
-    ->ArgNames({"x-nodes", "y-nodes"})
-    ->Args({500, 500})
-    ->Args({1000, 1000});
+// BENCHMARK(BM_Orthogonalization)
+//     ->ArgNames({"x-nodes", "y-nodes"})
+//     ->Args({500, 500})
+//     ->Args({1000, 1000});
