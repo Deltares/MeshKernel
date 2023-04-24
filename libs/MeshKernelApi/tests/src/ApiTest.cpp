@@ -3113,11 +3113,12 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
 
     meshkernelapi::Mesh2D mesh2dResults;
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(1793, mesh2dResults.num_nodes);
-    ASSERT_EQ(4361, mesh2dResults.num_edges);
-    ASSERT_EQ(2569, mesh2dResults.num_faces);
-    ASSERT_EQ(8670, mesh2dResults.num_face_nodes);
+    ASSERT_EQ(2179, mesh2dResults.num_nodes);
+    ASSERT_EQ(5252, mesh2dResults.num_edges);
+    ASSERT_EQ(3074, mesh2dResults.num_faces);
+    ASSERT_EQ(10454, mesh2dResults.num_face_nodes);
 }
 
 TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
@@ -3125,7 +3126,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     // Prepare
     size_t nRows{5};
     size_t nCols{4};
-    MakeMesh(nRows, nCols, 10.0);
+    MakeMesh(nRows, nCols, 100.0);
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GriddedSamples griddedSamples;
@@ -3135,13 +3136,13 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     std::vector<double> y_coordinates(griddedSamples.n_rows);
 
     double coordinate = -5.0;
-    const double dx = 10.1;
+    const double dx = 100.1;
     for (auto i = 0; i < x_coordinates.size(); ++i)
     {
         x_coordinates[i] = coordinate + i * dx;
     }
     coordinate = -5.0;
-    const double dy = 10.2;
+    const double dy = 100.2;
     for (auto i = 0; i < y_coordinates.size(); ++i)
     {
         y_coordinates[i] = coordinate + i * dy;
@@ -3150,7 +3151,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     std::vector<double> values((griddedSamples.n_rows + 1) * (griddedSamples.n_cols + 1));
     for (auto i = 0; i < values.size(); ++i)
     {
-        values[i] = -0.1;
+        values[i] = -0.05;
     }
 
     griddedSamples.x_coordinates = x_coordinates.data();
@@ -3170,8 +3171,9 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
 
     meshkernelapi::Mesh2D mesh2dResults;
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(20, mesh2dResults.num_nodes);
-    ASSERT_EQ(31, mesh2dResults.num_edges);
-    ASSERT_EQ(12, mesh2dResults.num_faces);
+    ASSERT_EQ(63, mesh2dResults.num_nodes);
+    ASSERT_EQ(110, mesh2dResults.num_edges);
+    ASSERT_EQ(48, mesh2dResults.num_faces);
 }

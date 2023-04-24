@@ -30,6 +30,7 @@
 #include <MeshKernel/Mesh2D.hpp>
 
 #include <cmath>
+#include <iostream>
 
 using namespace meshkernel;
 
@@ -59,6 +60,7 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std
                                                                                                                   m_values(values),
                                                                                                                   m_isCellSizeConstant(false)
 {
+    std::cout << "Debug" << std::endl;
 }
 
 void BilinearInterpolationOnGriddedSamples::Compute()
