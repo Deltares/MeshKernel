@@ -1,14 +1,26 @@
 cmake_minimum_required(VERSION 3.23)
 
+# get version from latest git tag (stored in VERSION_STRING_BASE)
+include(cmake/get_version_from_git.cmake)
+get_version_from_git(
+  LOG OFF
+  TIMESTAMP "%Y%m%d%H%M%S"
+)
+
 project(
   MeshKernel
-  VERSION 1.0.0
+  VERSION ${VERSION_STRING_BASE}
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX C
 )
 
+# get options
 include(cmake/options.cmake)
+
+# configure the compiler
 include(cmake/compiler_config.cmake)
+
+# fetch dependencies, must appear after options.cmake
 include(cmake/fetch_content.cmake)
 
 # organize targets into folders, can be remove in version > 3.26 (ON by default)
@@ -17,13 +29,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Docs only available if this is the main app
 add_subdirectory(docs)
 
-# Run packaging scripts
-add_subdirectory(package)
-
 # Tools
+# Note: tools/Version sets the semantic version
 add_subdirectory(tools)
 
-# Add third party directory
+# Run packaging scripts: requires semantic version
+add_subdirectory(package)
+
+# Add third party dependencies
 add_subdirectory(extern)
 
 # Libraries
