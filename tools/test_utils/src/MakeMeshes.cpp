@@ -292,7 +292,7 @@ MakeRectangularMeshForApiTesting(
     }
 
     auto const num_nodes = nodeIndex;
-    auto const num_edges = edgeIndex /2;
+    auto const num_edges = edgeIndex / 2;
 
     return {num_nodes, num_edges, node_x, node_y, edge_nodes};
 }

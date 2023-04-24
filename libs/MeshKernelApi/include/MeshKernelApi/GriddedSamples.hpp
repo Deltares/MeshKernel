@@ -44,7 +44,7 @@ namespace meshkernelapi
         /// @brief Y coordinate of the grid origin
         double y_origin = 0.0;
 
-        /// @brief Type of the origin (centre=0 / corner=1) 
+        /// @brief Type of the origin (centre=0 / corner=1)
         int origin_location_type = 0;
 
         /// @brief Constant grid cell size
@@ -61,6 +61,5 @@ namespace meshkernelapi
 
         /// @brief Sample values
         double* values = nullptr;
-
     };
 } // namespace meshkernelapi

@@ -118,7 +118,6 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
     return result;
 }
 
-
 [[nodiscard]] double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfColumns(const Point& point) const
 {
     if (m_isCellSizeConstant)
