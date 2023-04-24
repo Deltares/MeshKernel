@@ -10,7 +10,7 @@ import platform
 
 from pathlib import Path
 
-SONAR_SCANNER_VERSION = "4.4.0.2170"
+SONAR_SCANNER_VERSION = "4.7.0.2747"
 
 
 def download_file(url: str, save_path: Path, chunk_size=128) -> None:
