@@ -25,14 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-
-
 #include <cstring>
 #include <map>
 #include <stdexcept>
 #include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -47,7 +46,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
-#include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -1455,10 +1453,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_refine_based_on_asc_samples(int meshKernelId,
-                                                               const GriddedSamples& samples,
-                                                               const MeshRefinementParameters& meshRefinementParameters,
-                                                               bool useNodalRefinement)
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                   const GriddedSamples& griddedSamples,
+                                                                   const MeshRefinementParameters& meshRefinementParameters,
+                                                                   bool useNodalRefinement)
     {
         int exitCode = Success;
         try
@@ -1472,19 +1470,41 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector values(samples.n_cols * samples.n_rows, 0.0);
+            std::vector values((griddedSamples.n_cols + 1) * (griddedSamples.n_rows + 1), 0.0);
             for (size_t i = 0; i < values.size(); ++i)
             {
-                values[i] = samples.values[i];
+                values[i] = griddedSamples.values[i];
             }
 
-            auto interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                   samples.n_cols,
-                                                                                                   samples.n_rows,
-                                                                                                   samples.x_origin,
-                                                                                                   samples.y_origin,
-                                                                                                   samples.cell_size,
-                                                                                                   values);
+            std::shared_ptr<meshkernel::MeshInterpolationInterface> interpolant;
+            if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
+            {
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                  griddedSamples.n_cols,
+                                                                                                  griddedSamples.n_rows,
+                                                                                                  griddedSamples.x_origin,
+                                                                                                  griddedSamples.y_origin,
+                                                                                                  griddedSamples.cell_size,
+                                                                                                  values);
+            }
+            else
+            {
+                std::vector<double> xCoordinates(griddedSamples.n_cols);
+                for (size_t i = 0; i < xCoordinates.size(); ++i)
+                {
+                    xCoordinates[i] = griddedSamples.x_coordinates[i];
+                }
+                std::vector<double> yCoordinates(griddedSamples.n_rows);
+                for (size_t i = 0; i < yCoordinates.size(); ++i)
+                {
+                    yCoordinates[i] = griddedSamples.y_coordinates[i];
+                }
+
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                  xCoordinates,
+                                                                                                  yCoordinates,
+                                                                                                  values);
+            }
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, interpolant, meshRefinementParameters, useNodalRefinement);
             meshRefinement.Compute();

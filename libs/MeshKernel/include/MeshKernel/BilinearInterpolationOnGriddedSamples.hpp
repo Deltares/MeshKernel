@@ -35,21 +35,31 @@ namespace meshkernel
     class BilinearInterpolationOnGriddedSamples : public MeshInterpolationInterface
     {
     public:
-        /// @brief Bilinear interpolation
+        /// @brief Bilinear interpolation with constant cell size
         /// @param[in] mesh The input mesh
         /// @param[in] numColumns The number of grid columns
         /// @param[in] numRows The number of grid rows
         /// @param[in] xOrigin The x coordinate of the grid origin
         /// @param[in] yOrigin The y coordinate of the grid origin
         /// @param[in] cellSize The grid cell size
-        /// @param[in] values The grid cell size
+        /// @param[in] values The values of the gridded samples
         BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
                                               size_t numColumns,
                                               size_t numRows,
                                               double xOrigin,
                                               double yOrigin,
                                               double cellSize,
-                                              std::vector<double>& values);
+                                              const std::vector<double>& values);
+
+        /// @brief Bilinear interpolation with non constant cell size
+        /// @param[in] mesh The input mesh
+        /// @param[in] xCoordinates The x coordinates of the grid
+        /// @param[in] yCoordinates The y coordinates of the grid
+        /// @param[in] values The values of the gridded samples
+        BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+                                              const std::vector<double>& xCoordinates,
+                                              const std::vector<double>& yCoordinates,
+                                              const std::vector<double>& values);
 
         /// @brief Compute interpolation
         void Compute() override;
@@ -90,18 +100,12 @@ namespace meshkernel
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional column index
-        [[nodiscard]] double GetFractionalNumberOfColumns(const Point& point) const
-        {
-            return (point.x - m_xOrigin) / m_cellSize;
-        }
+        [[nodiscard]] inline double GetFractionalNumberOfColumns(const Point& point) const;
 
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional row index
-        [[nodiscard]] double GetFractionalNumberOfRows(const Point& p) const
-        {
-            return (p.y - m_yOrigin) / m_cellSize;
-        }
+        [[nodiscard]] inline double GetFractionalNumberOfRows(const Point& point) const;
 
         /// @brief Gets the sample value at specific row and column
         /// @return The sample value
@@ -113,12 +117,16 @@ namespace meshkernel
 
         const std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to the mesh
 
-        size_t m_numColumns;          ///< The number of grid columns
-        size_t m_numRows;             ///< The number of grid rows
-        double m_xOrigin;             ///< The x coordinate of the grid origin
-        double m_yOrigin;             ///< The y coordinate of the grid origin
-        double m_cellSize;            ///< The grid cell size
-        std::vector<double> m_values; ///< The gridded sample values
+        size_t m_numColumns; ///< The number of grid columns
+        size_t m_numRows;    ///< The number of grid rows
+        double m_xOrigin;    ///< The x coordinate of the grid origin
+        double m_yOrigin;    ///< The y coordinate of the grid origin
+        double m_cellSize;   ///< The grid cell size
+
+        std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
+        std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
+        std::vector<double> m_values;       ///< The gridded sample values
+        bool m_isCellSizeConstant;          ///< If the grid coordinates are specified using vectors of coordinates
 
         std::vector<double> m_nodeResults; ///< The interpolation results at nodes
         std::vector<double> m_edgeResults; ///< The interpolation results at edges

@@ -29,37 +29,38 @@
 
 namespace meshkernelapi
 {
-    /// @brief A struct describing gridded data
+    /// @brief A struct describing gridded samples
     struct GriddedSamples
     {
-        /// @brief bla
-        int n_cols;
+        /// @brief Number of grid columns
+        int n_cols = 0;
 
-        /// @brief bla
-        int n_rows;
+        /// @brief Number of grid rows
+        int n_rows = 0;
 
-        /// @brief bla
-        double x_origin;
+        /// @brief X coordinate of the grid origin
+        double x_origin = 0.0;
 
-        /// @brief bla
-        double y_origin;
+        /// @brief Y coordinate of the grid origin
+        double y_origin = 0.0;
 
-        /// @brief bla
-        int origin_location_type;
+        /// @brief Type of the origin (centre=0 / corner=1) 
+        int origin_location_type = 0;
 
-        /// @brief bla
-        double cell_size;
+        /// @brief Constant grid cell size
+        double cell_size = 0.0;
 
-        /// @brief bla
-        double nodata_value;
-
-        /// @brief bla
-        double* values = nullptr;
-
-        /// @brief bla
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in x direction
         double* x_coordinates = nullptr;
 
-        /// @brief bla
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in y direction
         double* y_coordinates = nullptr;
+
+        /// @brief Value for missing data
+        double missing_value = 1e10;
+
+        /// @brief Sample values
+        double* values = nullptr;
+
     };
 } // namespace meshkernelapi

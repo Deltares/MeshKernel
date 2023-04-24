@@ -242,8 +242,8 @@ std::tuple<size_t, size_t,
            std::shared_ptr<double>,
            std::shared_ptr<int>>
 MakeRectangularMeshForApiTesting(
-    int n,
-    int m,
+    size_t m,
+    size_t n,
     double delta)
 {
     std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
@@ -287,8 +287,8 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    auto const num_nodes = static_cast<size_t>(nodeIndex);
-    auto const num_edges = static_cast<size_t>(edgeIndex * 0.5);
+    auto const num_nodes = nodeIndex;
+    auto const num_edges = edgeIndex /2;
 
     return {num_nodes, num_edges, node_x, node_y, edge_nodes};
 }

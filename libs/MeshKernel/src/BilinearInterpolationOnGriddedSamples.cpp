@@ -39,13 +39,27 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std
                                                                              double xOrigin,
                                                                              double yOrigin,
                                                                              double cellSize,
-                                                                             std::vector<double>& values) : m_mesh(mesh),
-                                                                                                            m_numColumns(numColumns),
-                                                                                                            m_numRows(numRows),
-                                                                                                            m_xOrigin(xOrigin),
-                                                                                                            m_yOrigin(yOrigin),
-                                                                                                            m_cellSize(cellSize),
-                                                                                                            m_values(values) {}
+                                                                             const std::vector<double>& values) : m_mesh(mesh),
+                                                                                                                  m_numColumns(numColumns),
+                                                                                                                  m_numRows(numRows),
+                                                                                                                  m_xOrigin(xOrigin),
+                                                                                                                  m_yOrigin(yOrigin),
+                                                                                                                  m_cellSize(cellSize),
+                                                                                                                  m_values(values),
+                                                                                                                  m_isCellSizeConstant(true) {}
+
+BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+                                                                             const std::vector<double>& xCoordinates,
+                                                                             const std::vector<double>& yCoordinates,
+                                                                             const std::vector<double>& values) : m_mesh(mesh),
+                                                                                                                  m_numColumns(xCoordinates.size()),
+                                                                                                                  m_numRows(yCoordinates.size()),
+                                                                                                                  m_xCoordinates(xCoordinates),
+                                                                                                                  m_yCoordinates(yCoordinates),
+                                                                                                                  m_values(values),
+                                                                                                                  m_isCellSizeConstant(false)
+{
+}
 
 void BilinearInterpolationOnGriddedSamples::Compute()
 {
@@ -75,6 +89,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
 
 double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point& point) const
 {
+
     double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
     double fractionalRowIndex = GetFractionalNumberOfRows(point);
 
@@ -97,10 +112,60 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
         return constants::missing::doubleValue;
     }
 
-    double result = fractionalColumnIndex * fractionalRowIndex * getGriddedValue(columnIndex + 1, rowIndex + 1) +
-                    (1.0 - fractionalColumnIndex) * fractionalRowIndex * getGriddedValue(columnIndex, rowIndex + 1) +
-                    (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex, rowIndex) +
-                    fractionalColumnIndex * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex + 1, rowIndex);
+    auto result = fractionalColumnIndex * fractionalRowIndex * getGriddedValue(columnIndex + 1, rowIndex + 1) +
+                  (1.0 - fractionalColumnIndex) * fractionalRowIndex * getGriddedValue(columnIndex, rowIndex + 1) +
+                  (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex, rowIndex) +
+                  fractionalColumnIndex * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex + 1, rowIndex);
+    return result;
+}
 
+
+[[nodiscard]] double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfColumns(const Point& point) const
+{
+    if (m_isCellSizeConstant)
+    {
+        return (point.x - m_xOrigin) / m_cellSize;
+    }
+    double result = constants::missing::doubleValue;
+    if (m_xCoordinates.size() < 2)
+    {
+        return result;
+    }
+    for (auto i = 0; i < m_xCoordinates.size() - 1; ++i)
+    {
+
+        if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
+        {
+            const double dx = m_xCoordinates[i + 1] - m_xCoordinates[i];
+            result = (point.x - m_xCoordinates[i]) / dx;
+            break;
+        }
+    }
+    return result;
+}
+
+double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Point& point) const
+{
+    if (m_isCellSizeConstant)
+    {
+        return (point.y - m_yOrigin) / m_cellSize;
+    }
+
+    double result = constants::missing::doubleValue;
+    if (m_yCoordinates.size() < 2)
+    {
+        return result;
+    }
+
+    for (auto i = 0; i < m_yCoordinates.size() - 1; ++i)
+    {
+
+        if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])
+        {
+            const double dy = m_yCoordinates[i + 1] - m_yCoordinates[i];
+            result = (point.y - m_xCoordinates[i]) / dy;
+            break;
+        }
+    }
     return result;
 }
