@@ -868,7 +868,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
     if (m_refinementType == RefinementType::WaveCourant)
     {
         double constexpr mergingDistance = 0.001;
-        
+
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
             const auto edge = m_mesh->m_facesEdges[face][e];

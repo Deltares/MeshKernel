@@ -33,7 +33,7 @@ std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath)
     return samples;
 }
 
-std::tuple<int, int, double, double, double, double, std::vector<double> > ReadAscFile(const std::string& filePath)
+std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(const std::string& filePath)
 {
     // read sample file
     std::string line;
