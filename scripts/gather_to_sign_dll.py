@@ -172,8 +172,6 @@ def harvest(build_dir: Path) -> None:
     """
     dll_names = determine_to_sign_dll_names(build_dir)
     dll_paths = list(find_all_dll_paths(build_dir, dll_names))
-    for x in dll_paths:
-        print("path: ", x)
 
     sign_dir = build_dir / Path(TO_SIGN_DIR_NAME)
     if not (sign_dir.exists() and sign_dir.is_dir()):
