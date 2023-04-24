@@ -32,10 +32,11 @@
 
 namespace meshkernel
 {
+    /// @brief A class for performing bilinear interpolation on gridded samples
     class BilinearInterpolationOnGriddedSamples : public MeshInterpolationInterface
     {
     public:
-        /// @brief Bilinear interpolation with constant cell size
+        /// @brief Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
         /// @param[in] numColumns The number of grid columns
         /// @param[in] numRows The number of grid rows
@@ -51,7 +52,7 @@ namespace meshkernel
                                               double cellSize,
                                               const std::vector<double>& values);
 
-        /// @brief Bilinear interpolation with non constant cell size
+        /// @brief Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
         /// @param[in] xCoordinates The x coordinates of the grid
         /// @param[in] yCoordinates The y coordinates of the grid
