@@ -82,9 +82,9 @@ target_precompile_headers(
   ${TARGET_NAME}
   PRIVATE
     <cstring>
-    <map>
     <memory> 
     <stdexcept>
+    <unordered_map>
     <unordered_set>
     <vector> 
 )
