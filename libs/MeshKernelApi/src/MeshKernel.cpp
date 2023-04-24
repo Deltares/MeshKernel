@@ -1489,12 +1489,12 @@ namespace meshkernelapi
             }
             else
             {
-                std::vector<double> xCoordinates(griddedSamples.n_cols);
+                std::vector<double> xCoordinates(griddedSamples.n_cols + 1);
                 for (size_t i = 0; i < xCoordinates.size(); ++i)
                 {
                     xCoordinates[i] = griddedSamples.x_coordinates[i];
                 }
-                std::vector<double> yCoordinates(griddedSamples.n_rows);
+                std::vector<double> yCoordinates(griddedSamples.n_rows + 1);
                 for (size_t i = 0; i < yCoordinates.size(); ++i)
                 {
                     yCoordinates[i] = griddedSamples.y_coordinates[i];

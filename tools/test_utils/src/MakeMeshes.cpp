@@ -242,32 +242,36 @@ std::tuple<size_t, size_t,
            std::shared_ptr<double>,
            std::shared_ptr<int>>
 MakeRectangularMeshForApiTesting(
-    size_t m,
-    size_t n,
+    size_t num_rows,
+    size_t num_columns,
     double delta)
 {
-    std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
-    std::shared_ptr<double> node_x(new double[n * m]);
-    std::shared_ptr<double> node_y(new double[n * m]);
+
+    auto num_y = num_rows + static_cast<size_t>(1);
+    auto num_x = num_columns + static_cast<size_t>(1);
+
+    std::vector<std::vector<size_t>> indicesValues(num_x, std::vector<size_t>(num_y));
+    std::shared_ptr<double> node_x(new double[num_x * num_y]);
+    std::shared_ptr<double> node_y(new double[num_x * num_y]);
 
     size_t nodeIndex = 0;
-    for (auto i = 0; i < n; ++i)
+    for (auto i = 0; i < num_x; ++i)
     {
-        for (auto j = 0; j < m; ++j)
+        for (auto j = 0; j < num_y; ++j)
         {
 
             node_x.get()[nodeIndex] = i * delta;
             node_y.get()[nodeIndex] = j * delta;
-            indicesValues[i][j] = static_cast<size_t>(i) * m + j;
+            indicesValues[i][j] = static_cast<size_t>(i) * num_y + j;
             nodeIndex++;
         }
     }
 
-    std::shared_ptr<int> edge_nodes(new int[((n - 1) * m + (m - 1) * n) * 2]);
+    std::shared_ptr<int> edge_nodes(new int[((num_x - 1) * num_y + (num_y - 1) * num_x) * 2]);
     size_t edgeIndex = 0;
-    for (auto i = 0; i < n - 1; ++i)
+    for (auto i = 0; i < num_x - 1; ++i)
     {
-        for (auto j = 0; j < m; ++j)
+        for (auto j = 0; j < num_y; ++j)
         {
             edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
@@ -276,9 +280,9 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    for (auto i = 0; i < n; ++i)
+    for (auto i = 0; i < num_x; ++i)
     {
-        for (auto j = 0; j < m - 1; ++j)
+        for (auto j = 0; j < num_y - 1; ++j)
         {
             edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;

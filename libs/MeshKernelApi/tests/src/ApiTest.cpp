@@ -37,13 +37,13 @@ public:
     }
 
     /// @brief Make a mesh
-    /// @param[in]  m            Number of rows
-    /// @param[in]  n            Number of columns
+    /// @param[in]  num_rows            Number of rows
+    /// @param[in]  num_columns            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(size_t m = 3, size_t n = 4, double delta = 1.0)
+    void MakeMesh(size_t num_rows = 2, size_t num_columns = 3, double delta = 1.0)
     {
         // Set-up new mesh
-        const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(m, n, delta);
+        const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(num_rows, num_columns, delta);
         meshkernelapi::Mesh2D mesh2d{};
         mesh2d.num_edges = static_cast<int>(num_edges);
         mesh2d.num_nodes = static_cast<int>(num_nodes);
@@ -765,7 +765,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -850,7 +850,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -924,7 +924,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -999,7 +999,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -1090,7 +1090,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -3132,17 +3132,17 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     meshkernelapi::GriddedSamples griddedSamples;
     griddedSamples.n_rows = static_cast<int>(nRows + static_cast<size_t>(1));
     griddedSamples.n_cols = static_cast<int>(nCols + static_cast<size_t>(1));
-    std::vector<double> x_coordinates(griddedSamples.n_cols);
-    std::vector<double> y_coordinates(griddedSamples.n_rows);
+    std::vector<double> x_coordinates(griddedSamples.n_cols + 1);
+    std::vector<double> y_coordinates(griddedSamples.n_rows + 1);
 
     double coordinate = -50.0;
-    const double dx = 100;
+    const double dx = 100.0;
     for (auto i = 0; i < x_coordinates.size(); ++i)
     {
         x_coordinates[i] = coordinate + i * dx;
     }
     coordinate = -50.0;
-    const double dy = 100;
+    const double dy = 100.0;
     for (auto i = 0; i < y_coordinates.size(); ++i)
     {
         y_coordinates[i] = coordinate + i * dy;
@@ -3173,7 +3173,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(63, mesh2dResults.num_nodes);
-    ASSERT_EQ(110, mesh2dResults.num_edges);
-    ASSERT_EQ(48, mesh2dResults.num_faces);
+    ASSERT_EQ(99, mesh2dResults.num_nodes);
+    ASSERT_EQ(178, mesh2dResults.num_edges);
+    ASSERT_EQ(80, mesh2dResults.num_faces);
 }
