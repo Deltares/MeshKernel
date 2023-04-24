@@ -210,11 +210,11 @@ namespace meshkernel
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
-        bool m_useNodalRefinement = false;                             ///< Use refinement based on interpolated values at nodes
 
         std::shared_ptr<Mesh2D> m_mesh;                                      ///< Pointer to the mesh
         std::shared_ptr<MeshInterpolationInterface> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
         Polygons m_polygons;                                                 ///< Polygons
         meshkernelapi::MeshRefinementParameters m_meshRefinementParameters;  ///< The mesh refinement parameters
+        bool m_useNodalRefinement = false;                                   ///< Use refinement based on interpolated values at nodes
     };
 } // namespace meshkernel
