@@ -255,9 +255,9 @@ MakeRectangularMeshForApiTesting(
     std::shared_ptr<double> node_y(new double[num_x * num_y]);
 
     size_t nodeIndex = 0;
-    for (auto i = 0; i < num_x; ++i)
+    for (auto i = 0u; i < num_x; ++i)
     {
-        for (auto j = 0; j < num_y; ++j)
+        for (auto j = 0u; j < num_y; ++j)
         {
 
             node_x.get()[nodeIndex] = i * delta;
@@ -269,9 +269,9 @@ MakeRectangularMeshForApiTesting(
 
     std::shared_ptr<int> edge_nodes(new int[((num_x - 1) * num_y + (num_y - 1) * num_x) * 2]);
     size_t edgeIndex = 0;
-    for (auto i = 0; i < num_x - 1; ++i)
+    for (auto i = 0u; i < num_x - 1; ++i)
     {
-        for (auto j = 0; j < num_y; ++j)
+        for (auto j = 0u; j < num_y; ++j)
         {
             edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
@@ -280,9 +280,9 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    for (auto i = 0; i < num_x; ++i)
+    for (auto i = 0u; i < num_x; ++i)
     {
-        for (auto j = 0; j < num_y - 1; ++j)
+        for (auto j = 0u; j < num_y - 1; ++j)
         {
             edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;

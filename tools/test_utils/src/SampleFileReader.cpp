@@ -33,7 +33,7 @@ std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath)
     return samples;
 }
 
-std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(std::string const& filePath)
+std::tuple<int, int, double, double, double, double, std::vector<double> > ReadAscFile(const std::string& filePath)
 {
     // read sample file
     std::string line;
@@ -106,9 +106,9 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
 
     std::reverse(rows.begin(), rows.end());
     std::vector<double> values;
-    for (auto i = 0; i < rows.size(); ++i)
+    for (auto i = 0u; i < rows.size(); ++i)
     {
-        for (auto j = 0; j < rows[i].size(); ++j)
+        for (auto j = 0u; j < rows[i].size(); ++j)
         {
             values.push_back(rows[i][j]);
         }

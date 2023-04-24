@@ -3137,19 +3137,19 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
 
     double coordinate = -50.0;
     const double dx = 100.0;
-    for (auto i = 0; i < x_coordinates.size(); ++i)
+    for (auto i = 0u; i < x_coordinates.size(); ++i)
     {
         x_coordinates[i] = coordinate + i * dx;
     }
     coordinate = -50.0;
     const double dy = 100.0;
-    for (auto i = 0; i < y_coordinates.size(); ++i)
+    for (auto i = 0u; i < y_coordinates.size(); ++i)
     {
         y_coordinates[i] = coordinate + i * dy;
     }
 
     std::vector<double> values((griddedSamples.n_rows + 1) * (griddedSamples.n_cols + 1));
-    for (auto i = 0; i < values.size(); ++i)
+    for (auto i = 0u; i < values.size(); ++i)
     {
         values[i] = -0.05;
     }
