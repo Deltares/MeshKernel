@@ -1490,6 +1490,16 @@ namespace meshkernelapi
             }
             else
             {
+                if (griddedSamples.x_coordinates == nullptr)
+                {
+                    throw std::invalid_argument("MeshKernel: griddedSamples.x_coordinates is nullptr");
+                }
+
+                if (griddedSamples.y_coordinates == nullptr)
+                {
+                    throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
+                }
+
                 std::vector<double> xCoordinates(griddedSamples.n_cols + 1);
                 for (size_t i = 0; i < xCoordinates.size(); ++i)
                 {
