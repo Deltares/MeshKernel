@@ -43,7 +43,7 @@ namespace meshkernel
         /// @param[in] origin The coordinate of the grid origin
         /// @param[in] cellSize The grid cell size
         /// @param[in] values The values of the gridded samples
-        BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+        BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                               size_t numColumns,
                                               size_t numRows,
                                               const Point& origin,
@@ -55,7 +55,7 @@ namespace meshkernel
         /// @param[in] xCoordinates The x coordinates of the grid
         /// @param[in] yCoordinates The y coordinates of the grid
         /// @param[in] values The values of the gridded samples
-        BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+        BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                               const std::vector<double>& xCoordinates,
                                               const std::vector<double>& yCoordinates,
                                               const std::vector<double>& values);
@@ -67,7 +67,7 @@ namespace meshkernel
         /// @brief Performs bilinear interpolation
         /// @param[in] point The input point
         /// @return The result of bilinear interpolation at the point
-        double bilinearInterpolation(const Point& point) const;
+        double Interpolation(const Point& point) const;
 
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
@@ -87,11 +87,11 @@ namespace meshkernel
             return m_values[index];
         }
 
-        const std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to the mesh
+        const Mesh2D& m_mesh; ///< Pointer to the mesh
 
         size_t m_numColumns; ///< The number of grid columns
         size_t m_numRows;    ///< The number of grid rows
-        Point m_origin;        ///< The coordinate of the origin
+        Point m_origin;      ///< The coordinate of the origin
         double m_cellSize;   ///< The grid cell size
 
         std::vector<double> m_xCoordinates; ///< The x coordinates of the grid

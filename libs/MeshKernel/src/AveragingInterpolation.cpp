@@ -34,7 +34,7 @@
 
 using meshkernel::AveragingInterpolation;
 
-AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
+AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                std::vector<Sample>& samples,
                                                Method method,
                                                Mesh::Location locationType,
@@ -66,16 +66,16 @@ void AveragingInterpolation::Compute()
     m_samplesRtree.BuildTree(m_samples);
 
     std::vector<Point> dualFacePolygon;
-    m_nodeResults.resize(m_mesh->GetNumNodes(), constants::missing::doubleValue);
+    m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
     std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
 
     // make sure edge centers are computed
-    m_mesh->ComputeEdgesCenters();
-    for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
+    m_mesh.ComputeEdgesCenters();
+    for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
     {
-        m_mesh->MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
+        m_mesh.MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
 
-        const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n]);
+        const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.m_nodes[n]);
 
         // flag the visited samples
         for (size_t i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
@@ -90,13 +90,12 @@ void AveragingInterpolation::Compute()
     // for edges, an average of the nodal interpolated value is made
     if (m_interpolationLocation == Mesh::Location::Edges)
     {
-        m_edgeResults.resize(m_mesh->GetNumEdges(), constants::missing::doubleValue);
+        m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
         std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
 
-        for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
+        for (size_t e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
-            const auto first = m_mesh->m_edges[e].first;
-            const auto second = m_mesh->m_edges[e].second;
+            const auto& [first, second] = m_mesh.m_edges[e];
 
             const auto firstValue = m_nodeResults[first];
             const auto secondValue = m_nodeResults[second];
@@ -110,23 +109,22 @@ void AveragingInterpolation::Compute()
 
     if (m_interpolationLocation == Mesh::Location::Faces)
     {
-        m_faceResults.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
+        m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
 
         std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
         std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
-        for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
+        for (size_t f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
             polygonNodesCache.clear();
-            const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
-            for (size_t n = 0; n < numFaceNodes; ++n)
+            for (size_t n = 0; n < m_mesh.GetNumFaceEdges(f); ++n)
             {
-                polygonNodesCache.emplace_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
+                polygonNodesCache.emplace_back(m_mesh.m_facesMassCenters[f] + (m_mesh.m_nodes[m_mesh.m_facesNodes[f][n]] - m_mesh.m_facesMassCenters[f]) * m_relativeSearchRadius);
             }
             polygonNodesCache.emplace_back(polygonNodesCache[0]);
 
-            m_faceResults[f] = ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f]);
+            m_faceResults[f] = ComputeOnPolygon(polygonNodesCache, m_mesh.m_facesMassCenters[f]);
 
             if (m_transformSamples && m_faceResults[f] > 0)
             {
@@ -154,7 +152,7 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
                    [&](Point const& p)
                    { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
-    if (m_mesh->m_projection == Projection::spherical)
+    if (m_mesh.m_projection == Projection::spherical)
     {
         auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon);
 
@@ -182,7 +180,7 @@ double AveragingInterpolation::GetSearchRadiusSquared(std::vector<Point> const& 
 
     for (const auto& value : searchPolygon)
     {
-        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh->m_projection);
+        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh.m_projection);
         result = std::max(result, squaredDistance);
     }
 
@@ -210,7 +208,7 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::uniq
         }
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
-        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh->m_projection))
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
         {
             strategy->Add(samplePoint, sampleValue);
         }
@@ -246,7 +244,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh->m_projection);
+        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
         return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
     }
 

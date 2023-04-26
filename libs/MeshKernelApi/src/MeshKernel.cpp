@@ -1435,7 +1435,7 @@ namespace meshkernelapi
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
             const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
 
-            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
+            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                         samplesVector,
                                                                                         averagingMethod,
                                                                                         meshkernel::Mesh::Location::Faces,
@@ -1481,7 +1481,7 @@ namespace meshkernelapi
             if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
             {
                 meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                   griddedSamples.n_cols,
                                                                                                   griddedSamples.n_rows, 
                                                                                                   origin,
@@ -1511,7 +1511,7 @@ namespace meshkernelapi
                     yCoordinates[i] = griddedSamples.y_coordinates[i];
                 }
 
-                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(meshKernelState[meshKernelId].m_mesh2d,
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                   xCoordinates,
                                                                                                   yCoordinates,
                                                                                                   values);
@@ -2884,7 +2884,7 @@ namespace meshkernelapi
             auto const meshLocation = static_cast<meshkernel::Mesh::Location>(locationType);
             auto const averagingMethod = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethodType);
 
-            meshkernel::AveragingInterpolation averaging(meshKernelState[meshKernelId].m_mesh2d,
+            meshkernel::AveragingInterpolation averaging(*meshKernelState[meshKernelId].m_mesh2d,
                                                          sampleValues,
                                                          averagingMethod,
                                                          meshLocation,

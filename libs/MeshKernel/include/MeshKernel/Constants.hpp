@@ -66,11 +66,11 @@ namespace meshkernel
             constexpr double absLatitudeAtPoles = 0.0001;               ///< Pole tolerance in degrees
         }                                                               // namespace geometric
 
-        namespace physics
+        namespace physical
         {
             constexpr double gravity = 9.80665;                    ///< Gravitational acceleration on earth (m/s^2)
             static double const sqrt_gravity = std::sqrt(gravity); ///< Square root of gravitational acceleration on earth
-        }                                                          // namespace physics
+        }                                                          // namespace physical
 
     } // namespace constants
 } // namespace meshkernel

@@ -21,7 +21,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
         {15.5396099, 24.2669525, 1.0},
         {23.8305721, 23.9275551, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -112,7 +112,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
         {15.5396099, 24.2669525, 0.1},
         {23.8305721, 23.9275551, 0.1}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -212,7 +212,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
         {359.8657532, 350.3144836, 1.0},
         {387.5152588, 299.2614746, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -337,7 +337,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
         {13.5837603, 12.1783361, 3.0000000},
         {17.2156067, 16.9106121, 3.0000000}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -406,7 +406,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -471,7 +471,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::Max,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -629,7 +629,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
         {41.1085625, 41.1083946, 1.0},
         {41.1052971, 41.1083336, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                    meshkernel::Mesh::Location::Faces,
@@ -798,7 +798,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
 
     std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     meshkernel::Point origin{-5.0, -5.0};
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -825,7 +825,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
 
     std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     meshkernel::Point origin{-5.0, -5.0};
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -852,7 +852,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
 
     std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
     meshkernel::Point origin{-5.0, -5.0};
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;

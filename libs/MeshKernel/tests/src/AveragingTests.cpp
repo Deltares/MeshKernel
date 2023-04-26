@@ -25,7 +25,7 @@ TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldint
         {3.5, 3.5, 2.0}};
 
     // Execute
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -71,7 +71,7 @@ TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Edges,
@@ -112,7 +112,7 @@ TEST(Averaging, InterpolateOnNodesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -153,7 +153,7 @@ TEST(Averaging, InterpolateOnFacesSimpleAveraging)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Faces,
@@ -195,7 +195,7 @@ TEST(Averaging, InterpolateOnEdgesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Closest,
                                                  meshkernel::Mesh::Location::Edges,
@@ -236,7 +236,7 @@ TEST(Averaging, InterpolateOnNodesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Closest,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -275,7 +275,7 @@ TEST(Averaging, InterpolateOnFacesClosestPoint)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Closest,
                                                  meshkernel::Mesh::Location::Faces,
@@ -307,7 +307,7 @@ TEST(Averaging, InterpolateOnEdgesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Max,
                                                  meshkernel::Mesh::Location::Edges,
@@ -348,7 +348,7 @@ TEST(Averaging, InterpolateOnNodesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Max,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -387,7 +387,7 @@ TEST(Averaging, InterpolateOnFacesMax)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Max,
                                                  meshkernel::Mesh::Location::Faces,
@@ -419,7 +419,7 @@ TEST(Averaging, InterpolateOnEdgesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Min,
                                                  meshkernel::Mesh::Location::Edges,
@@ -460,7 +460,7 @@ TEST(Averaging, InterpolateOnNodesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Min,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -499,7 +499,7 @@ TEST(Averaging, InterpolateOnFacesMin)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::Min,
                                                  meshkernel::Mesh::Location::Faces,
@@ -531,7 +531,7 @@ TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
                                                  meshkernel::Mesh::Location::Edges,
@@ -572,7 +572,7 @@ TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -611,7 +611,7 @@ TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
                                                  meshkernel::Mesh::Location::Faces,
@@ -643,7 +643,7 @@ TEST(Averaging, InterpolateOnEdgesMinAbsValue)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                  meshkernel::Mesh::Location::Edges,
@@ -684,7 +684,7 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                  meshkernel::Mesh::Location::Nodes,
@@ -738,7 +738,7 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Edges,
@@ -786,7 +786,7 @@ TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging, this time the minimum number of samples should at least be 2
-    meshkernel::AveragingInterpolation averaging(mesh,
+    meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
                                                  meshkernel::AveragingInterpolation::Method::SimpleAveraging,
                                                  meshkernel::Mesh::Location::Edges,

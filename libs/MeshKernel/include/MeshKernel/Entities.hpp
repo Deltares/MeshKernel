@@ -50,7 +50,7 @@ namespace meshkernel
     /// @param[eps_mutilpier] Multiplier of machine precision
     /// @return Boolean indicating whether the value and reference value are equal within machine precision multiplied by the multiplier
     // template <std::floating_point T> // prefer this in c++20
-    template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+    template <std::floating_point T>
     static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
     {
         if (value == ref_value)

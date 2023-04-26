@@ -95,7 +95,7 @@ namespace meshkernel
         /// @param[in] useClosestSampleIfNoneAvailable If no samples are found, use the closest one.
         /// @param[in] subtractSampleValues            For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
         /// @param[in] minNumSamples                   The minimum a of samples used for certain interpolation algorithms
-        AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
+        AveragingInterpolation(Mesh2D& mesh,
                                std::vector<Sample>& samples,
                                Method method,
                                Mesh::Location locationType,
@@ -142,7 +142,7 @@ namespace meshkernel
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
                                                     Point const& interpolationPoint) const;
 
-        const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
+        Mesh2D& m_mesh;                                 ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
         Method m_method;                                ///< The method to use for the interpolation
         Mesh::Location m_interpolationLocation;         ///< Interpolation location

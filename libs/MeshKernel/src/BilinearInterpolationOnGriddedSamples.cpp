@@ -32,7 +32,7 @@
 
 using namespace meshkernel;
 
-BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                                                              size_t numColumns,
                                                                              size_t numRows,
                                                                              const Point& origin,
@@ -45,7 +45,7 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std
                                                                                                                   m_values(values),
                                                                                                                   m_isCellSizeConstant(true) {}
 
-BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
+BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                                                              const std::vector<double>& xCoordinates,
                                                                              const std::vector<double>& yCoordinates,
                                                                              const std::vector<double>& values) : m_mesh(mesh),
@@ -60,31 +60,31 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std
 
 void BilinearInterpolationOnGriddedSamples::Compute()
 {
-    m_nodeResults.resize(m_mesh->GetNumNodes());
+    m_nodeResults.resize(m_mesh.GetNumNodes());
     std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
-    for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
+    for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
     {
-        const auto node = m_mesh->m_nodes[n];
-        m_nodeResults[n] = bilinearInterpolation(node);
+        const auto node = m_mesh.m_nodes[n];
+        m_nodeResults[n] = Interpolation(node);
     }
 
-    m_edgeResults.resize(m_mesh->GetNumEdges());
+    m_edgeResults.resize(m_mesh.GetNumEdges());
     std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
-    for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
+    for (size_t e = 0; e < m_mesh.GetNumEdges(); ++e)
     {
-        const auto& [first, second] = m_mesh->m_edges[e];
+        const auto& [first, second] = m_mesh.m_edges[e];
         m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
     }
 
-    m_faceResults.resize(m_mesh->GetNumFaces(), constants::missing::doubleValue);
+    m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
     std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
-    for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
+    for (size_t f = 0; f < m_mesh.GetNumFaces(); ++f)
     {
-        m_faceResults[f] = bilinearInterpolation(m_mesh->m_facesMassCenters[f]);
+        m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);
     }
 }
 
-double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point& point) const
+double BilinearInterpolationOnGriddedSamples::Interpolation(const Point& point) const
 {
 
     double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
@@ -127,7 +127,7 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
     {
         return result;
     }
-    for (auto i = 0u; i < m_xCoordinates.size() - 1; ++i)
+    for (size_t i = 0; i < m_xCoordinates.size() - 1; ++i)
     {
 
         if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
@@ -153,7 +153,7 @@ double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Po
         return result;
     }
 
-    for (auto i = 0u; i < m_yCoordinates.size() - 1; ++i)
+    for (size_t i = 0; i < m_yCoordinates.size() - 1; ++i)
     {
 
         if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])
