@@ -44,9 +44,6 @@ namespace meshkernelapi
         /// @brief Y coordinate of the grid origin
         double y_origin = 0.0;
 
-        /// @brief Type of the origin (centre=0 / corner=1)
-        int origin_location_type = 0;
-
         /// @brief Constant grid cell size
         double cell_size = 0.0;
 
@@ -55,9 +52,6 @@ namespace meshkernelapi
 
         /// @brief If not nullptr, coordinates for non-uniform grid spacing in y direction
         double* y_coordinates = nullptr;
-
-        /// @brief Value for missing data
-        double missing_value = 1e10;
 
         /// @brief Sample values
         double* values = nullptr;

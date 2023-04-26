@@ -3095,7 +3095,6 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     griddedSamples.x_origin = xllcenter;
     griddedSamples.y_origin = yllcenter;
     griddedSamples.cell_size = cellsize;
-    griddedSamples.missing_value = nodata_value;
     griddedSamples.values = values.data();
     griddedSamples.x_coordinates = nullptr;
     griddedSamples.y_coordinates = nullptr;
