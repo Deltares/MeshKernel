@@ -1483,7 +1483,7 @@ namespace meshkernelapi
                 meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
                 interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                   griddedSamples.n_cols,
-                                                                                                  griddedSamples.n_rows, 
+                                                                                                  griddedSamples.n_rows,
                                                                                                   origin,
                                                                                                   griddedSamples.cell_size,
                                                                                                   values);
