@@ -35,14 +35,12 @@ using namespace meshkernel;
 BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
                                                                              size_t numColumns,
                                                                              size_t numRows,
-                                                                             double xOrigin,
-                                                                             double yOrigin,
+                                                                             const Point& origin,
                                                                              double cellSize,
                                                                              const std::vector<double>& values) : m_mesh(mesh),
                                                                                                                   m_numColumns(numColumns),
                                                                                                                   m_numRows(numRows),
-                                                                                                                  m_xOrigin(xOrigin),
-                                                                                                                  m_yOrigin(yOrigin),
+                                                                                                                  m_origin(origin),
                                                                                                                   m_cellSize(cellSize),
                                                                                                                   m_values(values),
                                                                                                                   m_isCellSizeConstant(true) {}
@@ -122,7 +120,7 @@ double BilinearInterpolationOnGriddedSamples::bilinearInterpolation(const Point&
 {
     if (m_isCellSizeConstant)
     {
-        return (point.x - m_xOrigin) / m_cellSize;
+        return (point.x - m_origin.x) / m_cellSize;
     }
     double result = constants::missing::doubleValue;
     if (m_xCoordinates.size() < 2)
@@ -146,7 +144,7 @@ double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Po
 {
     if (m_isCellSizeConstant)
     {
-        return (point.y - m_yOrigin) / m_cellSize;
+        return (point.y - m_origin.y) / m_cellSize;
     }
 
     double result = constants::missing::doubleValue;

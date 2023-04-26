@@ -220,7 +220,7 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::uniq
 }
 
 double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
-                                                Point const interpolationPoint)
+                                                const Point& interpolationPoint)
 {
 
     if (!interpolationPoint.IsValid())

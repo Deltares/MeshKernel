@@ -37,11 +37,11 @@ namespace meshkernel
     };
 
     /// @brief Interface for interpolation methods
-    class MeshInterpolationInterface
+    class MeshInterpolation
     {
     public:
         /// @brief Virtual destructor
-        virtual ~MeshInterpolationInterface() = default;
+        virtual ~MeshInterpolation() = default;
 
         /// @brief Compute
         virtual void Compute() = 0;
@@ -49,28 +49,33 @@ namespace meshkernel
         /// @brief Gets the interpolation value at a specific node
         /// @param[in] node The node index
         /// @return The interpolated value
-        [[nodiscard]] virtual double GetNodeResult(size_t node) const = 0;
+        [[nodiscard]] double GetNodeResult(size_t node) const { return m_nodeResults[node]; }
 
         /// @brief Gets the interpolation value at a specific edge
         /// @param[in] edge The edge index
         /// @return The interpolated value
-        [[nodiscard]] virtual double GetEdgeResult(size_t edge) const = 0;
+        [[nodiscard]] double GetEdgeResult(size_t edge) const { return m_edgeResults[edge]; }
 
         /// @brief Gets the interpolation value at a specific face
         /// @param[in] face The face index
         /// @return  The interpolated value
-        [[nodiscard]] virtual double GetFaceResult(size_t face) const = 0;
+        [[nodiscard]] double GetFaceResult(size_t face) const { return m_faceResults[face]; }
 
         /// @brief Gets all interpolated values at nodes
         /// @return The interpolated values
-        [[nodiscard]] virtual const std::vector<double>& GetNodeResults() const = 0;
+        [[nodiscard]] const std::vector<double>& GetNodeResults() const { return m_nodeResults; }
 
         /// @brief Gets all interpolated values at edges
         /// @return The interpolated values
-        [[nodiscard]] virtual const std::vector<double>& GetEdgeResults() const = 0;
+        [[nodiscard]] const std::vector<double>& GetEdgeResults() const { return m_edgeResults; }
 
         /// @brief Gets all interpolated values at faces
         /// @return The interpolated values
-        [[nodiscard]] virtual const std::vector<double>& GetFaceResults() const = 0;
+        [[nodiscard]] const std::vector<double>& GetFaceResults() const { return m_faceResults; }
+
+    protected:
+        std::vector<double> m_nodeResults; ///< The interpolation results at nodes
+        std::vector<double> m_edgeResults; ///< The interpolation results at edges
+        std::vector<double> m_faceResults; ///< The interpolation results at faces
     };
 } // namespace meshkernel

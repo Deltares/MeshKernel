@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "MeshInterpolationInterface.hpp"
+#include "MeshInterpolation.hpp"
 
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -72,7 +72,7 @@ namespace meshkernel
     ///
     /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
     ///     averaged.
-    class AveragingInterpolation : public MeshInterpolationInterface
+    class AveragingInterpolation : public MeshInterpolation
     {
     public:
         /// @brief Averaging methods
@@ -107,40 +107,13 @@ namespace meshkernel
         /// @brief Compute interpolation
         void Compute() override;
 
-        /// @brief Gets the interpolation value at a specific node
-        /// @param[in] node The node index
-        /// @return The interpolated value
-        [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
-
-        /// @brief Gets the interpolation value at a specific edge
-        /// @param[in] edge The edge index
-        /// @return The interpolated value
-        [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
-
-        /// @brief Gets the interpolation value at a specific face
-        /// @param[in] face The face index
-        /// @return  The interpolated value
-        [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
-
-        /// @brief Gets all interpolated values at nodes
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
-
-        /// @brief Gets all interpolated values at edges
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
-
-        /// @brief Gets all interpolated values at faces
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
-
     private:
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
         /// @returns The resulting value
         double ComputeOnPolygon(const std::vector<Point>& polygon,
-                                Point interpolationPoint);
+                                const Point& interpolationPoint);
 
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
@@ -177,10 +150,6 @@ namespace meshkernel
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
         size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
-
-        std::vector<double> m_nodeResults; ///< The interpolation results at nodes
-        std::vector<double> m_edgeResults; ///< The interpolation results at edges
-        std::vector<double> m_faceResults; ///< The interpolation results at faces
 
         std::vector<bool> m_visitedSamples; ///< The visited samples
 

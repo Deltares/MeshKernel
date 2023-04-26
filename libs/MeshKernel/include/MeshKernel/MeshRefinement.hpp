@@ -95,7 +95,7 @@ namespace meshkernel
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                       std::shared_ptr<MeshInterpolationInterface> interpolant,
+                       std::shared_ptr<MeshInterpolation> interpolant,
                        const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on samples
@@ -104,7 +104,7 @@ namespace meshkernel
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement Use nodal refinement
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                       std::shared_ptr<MeshInterpolationInterface> interpolant,
+                       std::shared_ptr<MeshInterpolation> interpolant,
                        const meshkernelapi::MeshRefinementParameters& meshRefinementParameters,
                        bool useNodalRefinement);
 
@@ -212,7 +212,7 @@ namespace meshkernel
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
         std::shared_ptr<Mesh2D> m_mesh;                                      ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolationInterface> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
+        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
         Polygons m_polygons;                                                 ///< Polygons
         meshkernelapi::MeshRefinementParameters m_meshRefinementParameters;  ///< The mesh refinement parameters
         bool m_useNodalRefinement = false;                                   ///< Use refinement based on interpolated values at nodes

@@ -28,27 +28,25 @@
 #pragma once
 
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshInterpolationInterface.hpp>
+#include <MeshKernel/MeshInterpolation.hpp>
 
 namespace meshkernel
 {
     /// @brief A class for performing bilinear interpolation on gridded samples
-    class BilinearInterpolationOnGriddedSamples : public MeshInterpolationInterface
+    class BilinearInterpolationOnGriddedSamples : public MeshInterpolation
     {
     public:
         /// @brief Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
         /// @param[in] numColumns The number of grid columns
         /// @param[in] numRows The number of grid rows
-        /// @param[in] xOrigin The x coordinate of the grid origin
-        /// @param[in] yOrigin The y coordinate of the grid origin
+        /// @param[in] origin The coordinate of the grid origin
         /// @param[in] cellSize The grid cell size
         /// @param[in] values The values of the gridded samples
         BilinearInterpolationOnGriddedSamples(std::shared_ptr<Mesh2D> mesh,
                                               size_t numColumns,
                                               size_t numRows,
-                                              double xOrigin,
-                                              double yOrigin,
+                                              const Point& origin,
                                               double cellSize,
                                               const std::vector<double>& values);
 
@@ -64,33 +62,6 @@ namespace meshkernel
 
         /// @brief Compute interpolation
         void Compute() override;
-
-        /// @brief Gets the interpolation value at a specific node
-        /// @param[in] node The node index
-        /// @return The interpolated value
-        [[nodiscard]] double GetNodeResult(size_t node) const override { return m_nodeResults[node]; }
-
-        /// @brief Gets the interpolation value at a specific edge
-        /// @param[in] edge The edge index
-        /// @return The interpolated value
-        [[nodiscard]] double GetEdgeResult(size_t edge) const override { return m_edgeResults[edge]; }
-
-        /// @brief Gets the interpolation value at a specific face
-        /// @param[in] face The face index
-        /// @return  The interpolated value
-        [[nodiscard]] double GetFaceResult(size_t face) const override { return m_faceResults[face]; }
-
-        /// @brief Gets all interpolated values at nodes
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetNodeResults() const override { return m_nodeResults; }
-
-        /// @brief Gets all interpolated values at edges
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetEdgeResults() const override { return m_edgeResults; }
-
-        /// @brief Gets all interpolated values at faces
-        /// @return The interpolated values
-        [[nodiscard]] const std::vector<double>& GetFaceResults() const override { return m_faceResults; }
 
     private:
         /// @brief Performs bilinear interpolation
@@ -120,17 +91,12 @@ namespace meshkernel
 
         size_t m_numColumns; ///< The number of grid columns
         size_t m_numRows;    ///< The number of grid rows
-        double m_xOrigin;    ///< The x coordinate of the grid origin
-        double m_yOrigin;    ///< The y coordinate of the grid origin
+        Point m_origin;        ///< The coordinate of the origin
         double m_cellSize;   ///< The grid cell size
 
         std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
         std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
         std::vector<double> m_values;       ///< The gridded sample values
         bool m_isCellSizeConstant;          ///< If the grid coordinates are specified using vectors of coordinates
-
-        std::vector<double> m_nodeResults; ///< The interpolation results at nodes
-        std::vector<double> m_edgeResults; ///< The interpolation results at edges
-        std::vector<double> m_faceResults; ///< The interpolation results at faces
     };
 } // namespace meshkernel

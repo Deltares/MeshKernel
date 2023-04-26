@@ -797,8 +797,8 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
     std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
+    meshkernel::Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -824,8 +824,8 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
     std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
-
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
+    meshkernel::Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -851,8 +851,8 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, meshkernel::Projection::cartesian);
 
     std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
-
-    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, -5.0, -5.0, 10.0, values);
+    meshkernel::Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(mesh, 2, 2, origin, 10.0, values);
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
