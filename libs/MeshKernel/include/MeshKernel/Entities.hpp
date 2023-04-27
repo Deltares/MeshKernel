@@ -176,14 +176,6 @@ namespace meshkernel
             return isEqual;
         }
 
-        /// @brief Overloads inequality with another Point
-        bool operator!=(const Point& rhs) const
-        {
-            const bool isEqual = IsEqual(x, rhs.x) &&
-                                 IsEqual(y, rhs.y);
-            return !isEqual;
-        }
-
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {

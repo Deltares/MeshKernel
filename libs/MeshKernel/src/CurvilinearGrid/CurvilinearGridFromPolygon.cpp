@@ -325,8 +325,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
                                  (polygonNodes[thirdNode] * (1.0 - xic) + polygonNodes[firstNode] * xic) * xib + polygonNodes[secondNode] * (1.0 - xib)) *
                                 constants::numeric::oneThird;
 
-    const auto maxM = *std::max_element(numM.begin(), numM.end());
-    const auto maxN = *std::max_element(numN.begin(), numN.end());
+    const auto maxM = *std::ranges::max_element(numM);
+    const auto maxN = *std::ranges::max_element(numN);
     const auto maximumNumberOfNodes = std::max(maxM, maxN) + 1;
     std::vector<Point> sideOne(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<Point> sideTwo(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
@@ -339,10 +339,10 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
 
     for (size_t t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
-        std::fill(sideOne.begin(), sideOne.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideTwo.begin(), sideTwo.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideThree.begin(), sideThree.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideFour.begin(), sideFour.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(sideOne, Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(sideTwo, Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(sideThree, Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(sideFour, Point{constants::missing::doubleValue, constants::missing::doubleValue});
 
         // backward
         auto cornerIndex = cornerPoints[t];

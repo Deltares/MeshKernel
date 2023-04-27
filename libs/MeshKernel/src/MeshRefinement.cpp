@@ -129,8 +129,8 @@ void MeshRefinement::Compute()
         }
         else
         {
-            std::fill(m_faceMask.begin(), m_faceMask.end(), 1);
-            std::fill(m_edgeMask.begin(), m_edgeMask.end(), -1);
+            std::ranges::fill(m_faceMask, 1);
+            std::ranges::fill(m_edgeMask, -1);
         }
 
         if (level == 0)
@@ -302,13 +302,13 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
 
 void MeshRefinement::ConnectHangingNodes()
 {
-    std::vector<size_t> edgeEndNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::sizetValue);
-    std::vector<size_t> hangingNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::sizetValue);
+    std::vector edgeEndNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::sizetValue);
+    std::vector hangingNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::sizetValue);
 
     for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
     {
-        std::fill(edgeEndNodeCache.begin(), edgeEndNodeCache.end(), constants::missing::sizetValue);
-        std::fill(hangingNodeCache.begin(), hangingNodeCache.end(), constants::missing::sizetValue);
+        std::ranges::fill(edgeEndNodeCache, constants::missing::sizetValue);
+        std::ranges::fill(hangingNodeCache, constants::missing::sizetValue);
         const auto numEdges = m_mesh->GetNumFaceEdges(f);
         if (numEdges > Mesh::m_maximumNumberOfNodesPerFace)
         {
@@ -728,8 +728,9 @@ void MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
 
 void MeshRefinement::ComputeRefinementMasksFromSamples()
 {
-    std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
-    std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
+    std::ranges::fill(m_edgeMask, 0);
+    std::ranges::fill(m_faceMask, 0);
+
     m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1);
     m_localNodeIndicesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1, constants::missing::sizetValue);
     m_globalEdgeIndicesCache.resize(Mesh::m_maximumNumberOfEdgesPerFace + 1, constants::missing::sizetValue);
@@ -742,7 +743,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     {
         FindHangingNodes(f);
 
-        std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
+        std::ranges::fill(refineEdgeCache, 0);
+
         size_t numEdgesToBeRefined = 0;
         ComputeEdgesRefinementMaskFromSamples(f, refineEdgeCache, numEdgesToBeRefined);
 
@@ -1214,7 +1216,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
 void MeshRefinement::FindBrotherEdges()
 {
     m_brotherEdges.resize(m_mesh->GetNumEdges());
-    std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), constants::missing::sizetValue);
+    std::ranges::fill(m_brotherEdges, constants::missing::sizetValue);
 
     for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
     {

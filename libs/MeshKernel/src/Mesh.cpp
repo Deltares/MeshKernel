@@ -140,7 +140,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
     // Flag invalid nodes
     std::vector<size_t> validNodesIndices(m_nodes.size());
-    std::fill(validNodesIndices.begin(), validNodesIndices.end(), constants::missing::sizetValue);
+    std::ranges::fill(validNodesIndices, constants::missing::sizetValue);
     size_t validIndex = 0;
     for (size_t n = 0; n < m_nodes.size(); ++n)
     {
@@ -563,7 +563,7 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 
         double phi0 = 0.0;
         double phi;
-        std::fill(edgeAngles.begin(), edgeAngles.end(), 0.0);
+        std::ranges::fill(edgeAngles, 0.0);
         for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[n]; edgeIndex++)
         {
 
@@ -762,10 +762,10 @@ void Mesh::AdministrateNodesEdges()
     }
 
     m_nodesEdges.resize(m_nodes.size());
-    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<size_t>(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue));
+    std::ranges::fill(m_nodesEdges, std::vector(m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue));
 
     m_nodesNumEdges.resize(m_nodes.size());
-    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
+    std::ranges::fill(m_nodesNumEdges, 0);
 
     NodeAdministration();
 

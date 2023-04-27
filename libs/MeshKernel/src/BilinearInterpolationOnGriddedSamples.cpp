@@ -61,7 +61,7 @@ BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(con
 void BilinearInterpolationOnGriddedSamples::Compute()
 {
     m_nodeResults.resize(m_mesh.GetNumNodes());
-    std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
+    std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
     for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
     {
         const auto node = m_mesh.m_nodes[n];
@@ -69,7 +69,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
     }
 
     m_edgeResults.resize(m_mesh.GetNumEdges());
-    std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
+    std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
     for (size_t e = 0; e < m_mesh.GetNumEdges(); ++e)
     {
         const auto& [first, second] = m_mesh.m_edges[e];
@@ -77,7 +77,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
     }
 
     m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
-    std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
+    std::ranges::fill(m_faceResults, constants::missing::doubleValue);
     for (size_t f = 0; f < m_mesh.GetNumFaces(); ++f)
     {
         m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);

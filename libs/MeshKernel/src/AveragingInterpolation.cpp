@@ -67,7 +67,7 @@ void AveragingInterpolation::Compute()
 
     std::vector<Point> dualFacePolygon;
     m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
-    std::fill(m_nodeResults.begin(), m_nodeResults.end(), constants::missing::doubleValue);
+    std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
     // make sure edge centers are computed
     m_mesh.ComputeEdgesCenters();
@@ -91,7 +91,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Mesh::Location::Edges)
     {
         m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
-        std::fill(m_edgeResults.begin(), m_edgeResults.end(), constants::missing::doubleValue);
+        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
 
         for (size_t e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
@@ -110,7 +110,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Mesh::Location::Faces)
     {
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
-        std::fill(m_faceResults.begin(), m_faceResults.end(), constants::missing::doubleValue);
+        std::ranges::fill(m_faceResults, constants::missing::doubleValue);
 
         std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
         std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
@@ -146,11 +146,11 @@ void AveragingInterpolation::Compute()
 std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint) const
 {
     std::vector<Point> searchPolygon(polygon.size());
-    std::transform(std::begin(polygon),
-                   std::end(polygon),
-                   begin(searchPolygon),
-                   [&](Point const& p)
-                   { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
+    std::ranges::transform(std::begin(polygon),
+                           std::end(polygon),
+                           begin(searchPolygon),
+                           [&](Point const& p)
+                           { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
     if (m_mesh.m_projection == Projection::spherical)
     {
