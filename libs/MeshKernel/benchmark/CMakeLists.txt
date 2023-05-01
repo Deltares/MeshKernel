@@ -53,31 +53,3 @@ add_test(
   COMMAND ${TARGET_NAME}
 )
 
-# Generate script copy_py_scripts.cmake which copies python scripts from a given
-# source dir to a desired destination dir while preserving the structure of the source dir
-file(
-  WRITE ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
-  "message(STATUS \"Copying Python scripts from \$\{SOURCE_DIR\} to \$\{DESTINATION_DIR\}\")
-  file(
-    COPY \$\{SOURCE_DIR\} 
-    DESTINATION \$\{DESTINATION_DIR\}
-    FILES_MATCHING PATTERN \"*.py\"
-  )"
-)
-
-# custom commands that executes copy_py_scripts.cmake to copy python
-# scripts from the project source dir to the current build dir
-add_custom_command(
-  TARGET ${TARGET_NAME}
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND}
-    -DSOURCE_DIR=${googlebenchmark_SOURCE_DIR}/tools/
-    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${TARGET_NAME}>/scripts/googlebenchmark
-    -DPATTERN_EXCLUDE=Inputs
-    -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
-  COMMAND ${CMAKE_COMMAND}
-    -DSOURCE_DIR=${CMAKE_SOURCE_DIR}/scripts/benchmark_post_processing
-    -DDESTINATION_DIR=$<TARGET_FILE_DIR:${TARGET_NAME}>/scripts/
-    -P ${CMAKE_CURRENT_BINARY_DIR}/copy_py_scripts.cmake
-  COMMENT "Copying python scripts..."
-)

@@ -350,10 +350,10 @@ void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, size_t
     }
 
     // Update nodes
-    m_nodes.emplace_back(Point{constants::missing::doubleValue, constants::missing::doubleValue});
+    m_nodes.emplace_back(Point());
     m_nodes.emplace_back(newNodeLeft);
     m_nodes.emplace_back(newNodeRight);
-    m_nodes.emplace_back(Point{constants::missing::doubleValue, constants::missing::doubleValue});
+    m_nodes.emplace_back(Point());
 
     // Update segment indices
     m_validLandBoundaries.emplace_back(std::make_pair<size_t, size_t>(m_nodes.size() - 3, m_nodes.size() - 2));

@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <ranges>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -331,10 +332,10 @@ namespace meshkernel
         {
             // face administration
             m_edgesNumFaces.resize(m_edges.size());
-            std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
+            std::ranges::fill(m_edgesNumFaces, 0);
 
             m_edgesFaces.resize(m_edges.size());
-            std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, constants::missing::sizetValue));
+            std::ranges::fill(m_edgesFaces, std::vector(2, constants::missing::sizetValue));
 
             m_facesMassCenters.clear();
             m_faceArea.clear();

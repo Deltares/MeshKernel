@@ -27,8 +27,9 @@
 
 #pragma once
 
+#include "MeshInterpolation.hpp"
+
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
-#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/RTree.hpp>
 
@@ -71,7 +72,7 @@ namespace meshkernel
     ///
     /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
     ///     averaged.
-    class AveragingInterpolation
+    class AveragingInterpolation : public MeshInterpolation
     {
     public:
         /// @brief Averaging methods
@@ -94,7 +95,7 @@ namespace meshkernel
         /// @param[in] useClosestSampleIfNoneAvailable If no samples are found, use the closest one.
         /// @param[in] subtractSampleValues            For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
         /// @param[in] minNumSamples                   The minimum a of samples used for certain interpolation algorithms
-        AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
+        AveragingInterpolation(Mesh2D& mesh,
                                std::vector<Sample>& samples,
                                Method method,
                                Mesh::Location locationType,
@@ -104,14 +105,7 @@ namespace meshkernel
                                size_t minNumSamples);
 
         /// @brief Compute interpolation
-        void Compute();
-
-        /// @brief Get the result values
-        /// @return the results
-        [[nodiscard]] const auto& GetResults() const
-        {
-            return m_results;
-        }
+        void Compute() override;
 
     private:
         /// @brief Compute the averaging results in polygon
@@ -119,19 +113,7 @@ namespace meshkernel
         /// @param[in]  interpolationPoint The interpolation point
         /// @returns The resulting value
         double ComputeOnPolygon(const std::vector<Point>& polygon,
-                                Point interpolationPoint);
-
-        /// @brief Compute the interpolated results on designed location
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnLocations();
-
-        /// @brief Compute the interpolated results on faces
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnFaces();
-
-        /// @brief Compute the interpolated results on nodes or edges
-        /// @return The interpolated results
-        [[nodiscard]] std::vector<double> ComputeOnNodesOrEdges();
+                                const Point& interpolationPoint);
 
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
@@ -160,7 +142,7 @@ namespace meshkernel
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
                                                     Point const& interpolationPoint) const;
 
-        const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
+        Mesh2D& m_mesh;                                 ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
         Method m_method;                                ///< The method to use for the interpolation
         Mesh::Location m_interpolationLocation;         ///< Interpolation location
@@ -169,8 +151,8 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         size_t m_minNumSamples = 1;                     ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
-        RTree m_samplesRtree;               ///< The samples tree
-        std::vector<double> m_results;      ///< The results
         std::vector<bool> m_visitedSamples; ///< The visited samples
+
+        RTree m_samplesRtree; ///< The samples tree
     };
 } // namespace meshkernel

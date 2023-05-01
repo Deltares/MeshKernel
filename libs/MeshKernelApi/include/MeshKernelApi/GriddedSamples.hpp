@@ -25,5 +25,35 @@
 //
 //------------------------------------------------------------------------------
 
-// Only modify `Version.hpp.in`, never `Version.hpp`
-static char versionString[64] = "1.0.0.0";
+#pragma once
+
+namespace meshkernelapi
+{
+    /// @brief A struct describing gridded samples
+    struct GriddedSamples
+    {
+        /// @brief Number of grid columns
+        int n_cols = 0;
+
+        /// @brief Number of grid rows
+        int n_rows = 0;
+
+        /// @brief X coordinate of the grid origin
+        double x_origin = 0.0;
+
+        /// @brief Y coordinate of the grid origin
+        double y_origin = 0.0;
+
+        /// @brief Constant grid cell size
+        double cell_size = 0.0;
+
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in x direction
+        double* x_coordinates = nullptr;
+
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in y direction
+        double* y_coordinates = nullptr;
+
+        /// @brief Sample values
+        double* values = nullptr;
+    };
+} // namespace meshkernelapi

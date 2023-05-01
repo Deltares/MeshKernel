@@ -26,12 +26,13 @@
 //------------------------------------------------------------------------------
 
 #include <cstring>
-#include <map>
 #include <stdexcept>
-#include <unordered_set>
+#include <unordered_map>
+
 #include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -72,7 +73,7 @@
 namespace meshkernelapi
 {
     // The state held by MeshKernel
-    static std::map<int, MeshKernelState> meshKernelState;
+    static std::unordered_map<int, MeshKernelState> meshKernelState;
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -1434,7 +1435,7 @@ namespace meshkernelapi
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
             const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
 
-            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshKernelState[meshKernelId].m_mesh2d,
+            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                         samplesVector,
                                                                                         averagingMethod,
                                                                                         meshkernel::Mesh::Location::Faces,
@@ -1453,7 +1454,82 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const MeshRefinementParameters& meshRefinementParameters)
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                   const GriddedSamples& griddedSamples,
+                                                                   const MeshRefinementParameters& meshRefinementParameters,
+                                                                   bool useNodalRefinement)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+            }
+
+            std::vector values((griddedSamples.n_cols + 1) * (griddedSamples.n_rows + 1), 0.0);
+            for (size_t i = 0; i < values.size(); ++i)
+            {
+                values[i] = griddedSamples.values[i];
+            }
+
+            std::shared_ptr<meshkernel::MeshInterpolation> interpolant;
+            if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
+            {
+                meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                  griddedSamples.n_cols,
+                                                                                                  griddedSamples.n_rows,
+                                                                                                  origin,
+                                                                                                  griddedSamples.cell_size,
+                                                                                                  values);
+            }
+            else
+            {
+                if (griddedSamples.x_coordinates == nullptr)
+                {
+                    throw std::invalid_argument("MeshKernel: griddedSamples.x_coordinates is nullptr");
+                }
+
+                if (griddedSamples.y_coordinates == nullptr)
+                {
+                    throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
+                }
+
+                std::vector<double> xCoordinates(griddedSamples.n_cols + 1);
+                for (size_t i = 0; i < xCoordinates.size(); ++i)
+                {
+                    xCoordinates[i] = griddedSamples.x_coordinates[i];
+                }
+                std::vector<double> yCoordinates(griddedSamples.n_rows + 1);
+                for (size_t i = 0; i < yCoordinates.size(); ++i)
+                {
+                    yCoordinates[i] = griddedSamples.y_coordinates[i];
+                }
+
+                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                  xCoordinates,
+                                                                                                  yCoordinates,
+                                                                                                  values);
+            }
+
+            meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, interpolant, meshRefinementParameters, useNodalRefinement);
+            meshRefinement.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
+                                                           const GeometryList& geometryList,
+                                                           const MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -2808,7 +2884,7 @@ namespace meshkernelapi
             auto const meshLocation = static_cast<meshkernel::Mesh::Location>(locationType);
             auto const averagingMethod = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethodType);
 
-            meshkernel::AveragingInterpolation averaging(meshKernelState[meshKernelId].m_mesh2d,
+            meshkernel::AveragingInterpolation averaging(*meshKernelState[meshKernelId].m_mesh2d,
                                                          sampleValues,
                                                          averagingMethod,
                                                          meshLocation,
@@ -2816,13 +2892,25 @@ namespace meshkernelapi
                                                          false,
                                                          false,
                                                          minNumSamples);
-            // Execute averaging
+
             averaging.Compute();
 
-            // Get the results and copy them to the result vector
-            auto const& interpolationResults = averaging.GetResults();
-            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
+            // Get the results
+            std::vector<double> interpolationResults;
+            if (meshLocation == meshkernel::Mesh::Location::Nodes)
+            {
+                interpolationResults = averaging.GetNodeResults();
+            }
+            else if (meshLocation == meshkernel::Mesh::Location::Edges)
+            {
+                interpolationResults = averaging.GetEdgeResults();
+            }
+            else if (meshLocation == meshkernel::Mesh::Location::Faces)
+            {
+                interpolationResults = averaging.GetFaceResults();
+            }
 
+            auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
             ConvertSampleVectorToGeometryList(locations, interpolationResults, results);
         }
         catch (...)

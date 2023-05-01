@@ -180,7 +180,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         // mark all edges of this triangle as good ones
         for (size_t j = 0; j < m_numNodesInTriangle; ++j)
         {
-            edgeNodesFlag[triangulationWrapper.GetFaceEdge(i,j)] = true;
+            edgeNodesFlag[triangulationWrapper.GetFaceEdge(i, j)] = true;
         }
     }
 
@@ -201,8 +201,8 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = triangulationWrapper.GetEdgeNode(i,0);
-        edges[validEdgesCount].second = triangulationWrapper.GetEdgeNode(i,1);
+        edges[validEdgesCount].first = triangulationWrapper.GetEdgeNode(i, 0);
+        edges[validEdgesCount].second = triangulationWrapper.GetEdgeNode(i, 1);
         validEdgesCount++;
     }
 
@@ -511,7 +511,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 void Mesh2D::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
-    std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
+    std::ranges::fill(m_nodesTypes, 0);
 
     for (size_t e = 0; e < GetNumEdges(); e++)
     {
@@ -1629,8 +1629,8 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
 
     for (size_t segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
     {
-        std::fill(edgesIntersections.begin(), edgesIntersections.end(), EdgeMeshPolylineIntersection());
-        std::fill(facesIntersections.begin(), facesIntersections.end(), FaceMeshPolylineIntersection());
+        std::ranges::fill(edgesIntersections, EdgeMeshPolylineIntersection());
+        std::ranges::fill(facesIntersections, FaceMeshPolylineIntersection());
         for (size_t faceIndex = 0; faceIndex < GetNumFaces(); ++faceIndex)
         {
             for (size_t e = 0; e < m_numFacesNodes[faceIndex]; ++e)
