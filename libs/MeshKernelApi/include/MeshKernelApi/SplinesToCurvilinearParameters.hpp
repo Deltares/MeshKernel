@@ -32,34 +32,34 @@ namespace meshkernelapi
     /// @brief A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner
     struct SplinesToCurvilinearParameters
     {
-        /// @brief Aspect ratio (mfacmax, 0.1)
-        double aspect_ratio;
+        /// @brief Aspect ratio (mfacmax)
+        double aspect_ratio = 0.1;
 
-        /// @brief Grow factor of aspect ratio (1.1)
-        double aspect_ratio_grow_factor;
+        /// @brief Grow factor of aspect ratio
+        double aspect_ratio_grow_factor = 1.1;
 
-        /// @brief Average mesh width on center spline (0.005)
-        double average_width;
+        /// @brief Average mesh width on center spline
+        double average_width = 0.005;
 
-        /// @brief Curvature adapted grid spacing, 1 or not 0 (1)
-        int curvature_adapted_grid_spacing;
+        /// @brief Curvature adapted grid spacing, 1 or not 0
+        int curvature_adapted_grid_spacing = 1;
 
-        /// @brief Grow the grid outside the prescribed grid height (1)
+        /// @brief Grow the grid outside the prescribed grid height
         int grow_grid_outside = 0;
 
-        /// @brief Maximum number of layers in the uniform part (5)
-        int maximum_num_faces_in_uniform_part;
+        /// @brief Maximum number of layers in the uniform part
+        int maximum_num_faces_in_uniform_part = 5;
 
-        /// @brief On-top-of-each-other tolerance (0.0001)
-        double nodes_on_top_of_each_other_tolerance;
+        /// @brief On-top-of-each-other tolerance
+        double nodes_on_top_of_each_other_tolerance = 0.0001;
 
-        /// @brief Minimum allowed absolute value of crossing-angle cosine (0.95)
-        double min_cosine_crossing_angles;
+        /// @brief Minimum allowed absolute value of crossing-angle cosine
+        double min_cosine_crossing_angles = 0.95;
 
-        /// @brief Check for collisions with other parts of the front, 1 or not 0 (0)
-        int check_front_collisions;
+        /// @brief Check for collisions with other parts of the front, 1 or not 0
+        int check_front_collisions = 0;
 
-        /// @brief Check for collisions with other parts of the front (1)
-        int remove_skinny_triangles;
+        /// @brief Check for collisions with other parts of the front
+        int remove_skinny_triangles = 1;
     };
 } // namespace meshkernelapi

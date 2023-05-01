@@ -32,22 +32,22 @@ namespace meshkernelapi
     /// @brief A struct used to describe the orthogonalization parameters in a C-compatible manner
     struct OrthogonalizationParameters
     {
-        /// @brief Number of outer iterations in orthogonalization. Increase this parameter for complex grids (2)
-        int outer_iterations;
+        /// @brief Number of outer iterations in orthogonalization. Increase this parameter for complex grids
+        int outer_iterations = 2;
 
-        /// @brief Number of boundary iterations in grid/net orthogonalization within itatp (25)
-        int boundary_iterations;
+        /// @brief Number of boundary iterations in grid/net orthogonalization within itatp
+        int boundary_iterations = 25;
 
-        /// @brief Number of inner iterations in grid/net orthogonalization within itbnd (25)
-        int inner_iterations;
+        /// @brief Number of inner iterations in grid/net orthogonalization within itbnd
+        int inner_iterations = 25;
 
-        /// @brief Factor from 0 to 1. between grid smoothing and grid orthogonality (0.975)
-        double orthogonalization_to_smoothing_factor;
+        /// @brief Factor from 0 to 1. between grid smoothing and grid orthogonality
+        double orthogonalization_to_smoothing_factor = 0.975;
 
-        /// @brief Minimum ATPF on the boundary (1.0)
-        double orthogonalization_to_smoothing_factor_at_boundary;
+        /// @brief Minimum ATPF on the boundary
+        double orthogonalization_to_smoothing_factor_at_boundary = 1.0;
 
-        /// @brief Factor between smoother 1d0 and area-homogenizer 0d0 (1.0)
-        double areal_to_angle_smoothing_factor;
+        /// @brief Factor between smoother 1d0 and area-homogenizer 0d0
+        double areal_to_angle_smoothing_factor = 1.0;
     };
 } // namespace meshkernelapi

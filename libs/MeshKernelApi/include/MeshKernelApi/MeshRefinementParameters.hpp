@@ -32,25 +32,25 @@ namespace meshkernelapi
     /// @brief A struct used to describe the mesh refinement parameters in a C-compatible manner
     struct MeshRefinementParameters
     {
-        /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10)
-        int max_num_refinement_iterations;
+        /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted
+        int max_num_refinement_iterations = 10;
 
         /// @brief Whether to compute faces intersected by polygon (yes=1/no=0)
-        int refine_intersected;
+        int refine_intersected = 0;
 
         /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
-        int use_mass_center_when_refining;
+        int use_mass_center_when_refining = 1;
 
         /// @brief Minimum edge size
-        double min_edge_size;
+        double min_edge_size = 0.5;
 
         /// @brief Refinement criterion type
-        int refinement_type;
+        int refinement_type = 2;
 
         /// @brief Connect hanging nodes at the end of the iteration, 1 yes or 0 no
         int connect_hanging_nodes = 1;
 
         /// @brief Take samples outside face into account , 1 yes 0 no
-        int account_for_samples_outside;
+        int account_for_samples_outside = 0;
     };
 } // namespace meshkernelapi
