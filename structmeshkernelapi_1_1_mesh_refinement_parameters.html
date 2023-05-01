@@ -89,23 +89,23 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af6a3d1b7c4669f371ba5eb7864df9477"><td class="memItemLeft" align="right" valign="top"><a id="af6a3d1b7c4669f371ba5eb7864df9477"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#af6a3d1b7c4669f371ba5eb7864df9477">max_num_refinement_iterations</a></td></tr>
-<tr class="memdesc:af6a3d1b7c4669f371ba5eb7864df9477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10) <br /></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#af6a3d1b7c4669f371ba5eb7864df9477">max_num_refinement_iterations</a> = 10</td></tr>
+<tr class="memdesc:af6a3d1b7c4669f371ba5eb7864df9477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of refinement iterations, set to 1 if only one refinement is wanted. <br /></td></tr>
 <tr class="separator:af6a3d1b7c4669f371ba5eb7864df9477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc537138d30d99535cd5f4214497a8ae"><td class="memItemLeft" align="right" valign="top"><a id="afc537138d30d99535cd5f4214497a8ae"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#afc537138d30d99535cd5f4214497a8ae">refine_intersected</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#afc537138d30d99535cd5f4214497a8ae">refine_intersected</a> = 0</td></tr>
 <tr class="memdesc:afc537138d30d99535cd5f4214497a8ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to compute faces intersected by polygon (yes=1/no=0) <br /></td></tr>
 <tr class="separator:afc537138d30d99535cd5f4214497a8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8adc1b44903661e737c875be38b8dee"><td class="memItemLeft" align="right" valign="top"><a id="aa8adc1b44903661e737c875be38b8dee"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa8adc1b44903661e737c875be38b8dee">use_mass_center_when_refining</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa8adc1b44903661e737c875be38b8dee">use_mass_center_when_refining</a> = 1</td></tr>
 <tr class="memdesc:aa8adc1b44903661e737c875be38b8dee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0) <br /></td></tr>
 <tr class="separator:aa8adc1b44903661e737c875be38b8dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6dba186eaeab0b0ad389b81271d475b5"><td class="memItemLeft" align="right" valign="top"><a id="a6dba186eaeab0b0ad389b81271d475b5"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#a6dba186eaeab0b0ad389b81271d475b5">min_edge_size</a></td></tr>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#a6dba186eaeab0b0ad389b81271d475b5">min_edge_size</a> = 0.5</td></tr>
 <tr class="memdesc:a6dba186eaeab0b0ad389b81271d475b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum edge size. <br /></td></tr>
 <tr class="separator:a6dba186eaeab0b0ad389b81271d475b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a457d7d501763e9e86659d67a5c6429dc"><td class="memItemLeft" align="right" valign="top"><a id="a457d7d501763e9e86659d67a5c6429dc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#a457d7d501763e9e86659d67a5c6429dc">refinement_type</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#a457d7d501763e9e86659d67a5c6429dc">refinement_type</a> = 2</td></tr>
 <tr class="memdesc:a457d7d501763e9e86659d67a5c6429dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refinement criterion type. <br /></td></tr>
 <tr class="separator:a457d7d501763e9e86659d67a5c6429dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f4c33339fc11a9f2a91c5fb0ae6f4ba"><td class="memItemLeft" align="right" valign="top"><a id="a8f4c33339fc11a9f2a91c5fb0ae6f4ba"></a>
@@ -113,7 +113,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <tr class="memdesc:a8f4c33339fc11a9f2a91c5fb0ae6f4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect hanging nodes at the end of the iteration, 1 yes or 0 no. <br /></td></tr>
 <tr class="separator:a8f4c33339fc11a9f2a91c5fb0ae6f4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7e34540242748008a85b230e5f2fc8a"><td class="memItemLeft" align="right" valign="top"><a id="aa7e34540242748008a85b230e5f2fc8a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa7e34540242748008a85b230e5f2fc8a">account_for_samples_outside</a></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html#aa7e34540242748008a85b230e5f2fc8a">account_for_samples_outside</a> = 0</td></tr>
 <tr class="memdesc:aa7e34540242748008a85b230e5f2fc8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take samples outside face into account , 1 yes 0 no. <br /></td></tr>
 <tr class="separator:aa7e34540242748008a85b230e5f2fc8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
