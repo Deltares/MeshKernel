@@ -88,9 +88,12 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a46a4197064d1f1416a6d1b373a8ab052"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html#a46a4197064d1f1416a6d1b373a8ab052">MeshRefinement</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html">AveragingInterpolation</a> &gt; averaging, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
-<tr class="memdesc:a46a4197064d1f1416a6d1b373a8ab052"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for refining based on samples.  <a href="classmeshkernel_1_1_mesh_refinement.html#a46a4197064d1f1416a6d1b373a8ab052">More...</a><br /></td></tr>
-<tr class="separator:a46a4197064d1f1416a6d1b373a8ab052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f4831243930765a5aaef72cc3f93b37"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">MeshRefinement</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a> &gt; interpolant, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
+<tr class="memdesc:a9f4831243930765a5aaef72cc3f93b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for refining based on samples.  <a href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">More...</a><br /></td></tr>
+<tr class="separator:a9f4831243930765a5aaef72cc3f93b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35f9891d3d946ff66cc62286eb64639f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html#a35f9891d3d946ff66cc62286eb64639f">MeshRefinement</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a> &gt; interpolant, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> &amp;meshRefinementParameters, bool useNodalRefinement)</td></tr>
+<tr class="memdesc:a35f9891d3d946ff66cc62286eb64639f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for refining based on samples.  <a href="classmeshkernel_1_1_mesh_refinement.html#a35f9891d3d946ff66cc62286eb64639f">More...</a><br /></td></tr>
+<tr class="separator:a35f9891d3d946ff66cc62286eb64639f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2069e04a9b5183e2f6b94229dd5a5e8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html#af2069e04a9b5183e2f6b94229dd5a5e8">MeshRefinement</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:af2069e04a9b5183e2f6b94229dd5a5e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor for refining based on polygons.  <a href="classmeshkernel_1_1_mesh_refinement.html#af2069e04a9b5183e2f6b94229dd5a5e8">More...</a><br /></td></tr>
 <tr class="separator:af2069e04a9b5183e2f6b94229dd5a5e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,8 +118,8 @@ Public Member Functions</h2></td></tr>
 </ul>
 <p>As with <a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html" title="Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or are...">OrthogonalizationAndSmoothing</a>, <a class="el" href="classmeshkernel_1_1_mesh_refinement.html" title="A class used to refine a Mesh2D instance.">MeshRefinement</a> modifies an existing <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> instance. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a46a4197064d1f1416a6d1b373a8ab052"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a46a4197064d1f1416a6d1b373a8ab052">&#9670;&nbsp;</a></span>MeshRefinement() <span class="overload">[1/2]</span></h2>
+<a id="a9f4831243930765a5aaef72cc3f93b37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f4831243930765a5aaef72cc3f93b37">&#9670;&nbsp;</a></span>MeshRefinement() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -130,8 +133,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html">AveragingInterpolation</a> &gt;&#160;</td>
-          <td class="paramname"><em>averaging</em>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a> &gt;&#160;</td>
+          <td class="paramname"><em>interpolant</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -151,7 +154,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The mesh to be refined </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">averaging</td><td>The averaging interpolation to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">interpolant</td><td>The averaging interpolation to use </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
   </table>
   </dd>
@@ -159,8 +162,59 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a35f9891d3d946ff66cc62286eb64639f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35f9891d3d946ff66cc62286eb64639f">&#9670;&nbsp;</a></span>MeshRefinement() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">meshkernel::MeshRefinement::MeshRefinement </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a> &gt;&#160;</td>
+          <td class="paramname"><em>interpolant</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshRefinementParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useNodalRefinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The constructor for refining based on samples. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The mesh to be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">interpolant</td><td>The averaging interpolation to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">useNodalRefinement</td><td>Use nodal refinement </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="af2069e04a9b5183e2f6b94229dd5a5e8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2069e04a9b5183e2f6b94229dd5a5e8">&#9670;&nbsp;</a></span>MeshRefinement() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af2069e04a9b5183e2f6b94229dd5a5e8">&#9670;&nbsp;</a></span>MeshRefinement() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

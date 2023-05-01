@@ -95,6 +95,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe a list of geometries in a C-compatible manner.  <a href="structmeshkernelapi_1_1_geometry_list.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing gridded samples.  <a href="structmeshkernelapi_1_1_gridded_samples.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_make_grid_parameters.html">MakeGridParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct describes the necessary parameters to create a new curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_make_grid_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -281,6 +284,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab1efbffef1098619ec3f9cd1ae7298e9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab1efbffef1098619ec3f9cd1ae7298e9">mkernel_mesh2d_refine_based_on_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, double relativeSearchRadius, int minimumNumSamples, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:ab1efbffef1098619ec3f9cd1ae7298e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <a href="namespacemeshkernelapi.html#ab1efbffef1098619ec3f9cd1ae7298e9">More...</a><br /></td></tr>
 <tr class="separator:ab1efbffef1098619ec3f9cd1ae7298e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14f092fd4872f6f4d35274e1e3322c21"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a14f092fd4872f6f4d35274e1e3322c21">mkernel_mesh2d_refine_based_on_gridded_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;griddedSamples, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;meshRefinementParameters, bool useNodalRefinement)</td></tr>
+<tr class="memdesc:a14f092fd4872f6f4d35274e1e3322c21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine based on gridded samples.  <a href="namespacemeshkernelapi.html#a14f092fd4872f6f4d35274e1e3322c21">More...</a><br /></td></tr>
+<tr class="separator:a14f092fd4872f6f4d35274e1e3322c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68c799bd1abc5102b907c2d279297369"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a68c799bd1abc5102b907c2d279297369">mkernel_mesh2d_refine_based_on_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:a68c799bd1abc5102b907c2d279297369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.  <a href="namespacemeshkernelapi.html#a68c799bd1abc5102b907c2d279297369">More...</a><br /></td></tr>
 <tr class="separator:a68c799bd1abc5102b907c2d279297369"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -4767,6 +4773,58 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <p><code>mkernel_mesh2d_initialize_orthogonalization</code> function must be called before. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a14f092fd4872f6f4d35274e1e3322c21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14f092fd4872f6f4d35274e1e3322c21">&#9670;&nbsp;</a></span>mkernel_mesh2d_refine_based_on_gridded_samples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_refine_based_on_gridded_samples </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;&#160;</td>
+          <td class="paramname"><em>griddedSamples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshRefinementParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useNodalRefinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine based on gridded samples. </p>
+<p>The number of successive splits is indicated on the sample value. For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces), a value of 2 two splits (a quadrilateral face generates 16 faces). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">griddedSamples</td><td>The gridded samples </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">useNodalRefinement</td><td>Use nodal refinement </td></tr>
   </table>
   </dd>
 </dl>

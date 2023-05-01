@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['block_5fsize_15',['block_size',['../structmeshkernelapi_1_1_make_grid_parameters.html#a25c10abb7bec264d56f2dd9efeb5cd3d',1,'meshkernelapi::MakeGridParameters']]],
-  ['block_5fsize_5fx_16',['block_size_x',['../structmeshkernelapi_1_1_make_grid_parameters.html#a945894db066f92704b12532f15b32cfb',1,'meshkernelapi::MakeGridParameters']]],
-  ['block_5fsize_5fy_17',['block_size_y',['../structmeshkernelapi_1_1_make_grid_parameters.html#a425d3e56fbb912b6e866edaac36c58f5',1,'meshkernelapi::MakeGridParameters']]],
-  ['boundary_5fiterations_18',['boundary_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ac241fcf4682dc3d0ee19b028d57a066c',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['buildtree_19',['BuildTree',['../classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2',1,'meshkernel::Mesh::BuildTree()'],['../classmeshkernel_1_1_r_tree.html#a4772363a9a5973495b4cff786438cfcf',1,'meshkernel::RTree::BuildTree()']]],
-  ['buildtriangulation_20',['BuildTriangulation',['../structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b',1,'meshkernel::TriangulationWrapper']]]
+  ['bilinearinterpolationongriddedsamples_15',['BilinearInterpolationOnGriddedSamples',['../classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html',1,'meshkernel::BilinearInterpolationOnGriddedSamples'],['../classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#afd9893ab00f0778f6359fdff4132646a',1,'meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(const Mesh2D &amp;mesh, size_t numColumns, size_t numRows, const Point &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)'],['../classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9',1,'meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(const Mesh2D &amp;mesh, const std::vector&lt; double &gt; &amp;xCoordinates, const std::vector&lt; double &gt; &amp;yCoordinates, const std::vector&lt; double &gt; &amp;values)']]],
+  ['block_5fsize_16',['block_size',['../structmeshkernelapi_1_1_make_grid_parameters.html#a25c10abb7bec264d56f2dd9efeb5cd3d',1,'meshkernelapi::MakeGridParameters']]],
+  ['block_5fsize_5fx_17',['block_size_x',['../structmeshkernelapi_1_1_make_grid_parameters.html#a945894db066f92704b12532f15b32cfb',1,'meshkernelapi::MakeGridParameters']]],
+  ['block_5fsize_5fy_18',['block_size_y',['../structmeshkernelapi_1_1_make_grid_parameters.html#a425d3e56fbb912b6e866edaac36c58f5',1,'meshkernelapi::MakeGridParameters']]],
+  ['boundary_5fiterations_19',['boundary_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ac241fcf4682dc3d0ee19b028d57a066c',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['buildtree_20',['BuildTree',['../classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2',1,'meshkernel::Mesh::BuildTree()'],['../classmeshkernel_1_1_r_tree.html#a4772363a9a5973495b4cff786438cfcf',1,'meshkernel::RTree::BuildTree()']]],
+  ['buildtriangulation_21',['BuildTriangulation',['../structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b',1,'meshkernel::TriangulationWrapper']]]
 ];

@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['facemeshpolylineintersection_495',['FaceMeshPolylineIntersection',['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html',1,'meshkernel::Mesh']]],
-  ['flipedges_496',['FlipEdges',['../classmeshkernel_1_1_flip_edges.html',1,'meshkernel']]],
-  ['funcadimensionaltodimensionaldistanceonspline_497',['FuncAdimensionalToDimensionalDistanceOnSpline',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html',1,'meshkernel']]],
-  ['funcdistancefromapoint_498',['FuncDistanceFromAPoint',['../structmeshkernel_1_1_func_distance_from_a_point.html',1,'meshkernel']]]
+  ['edgemeshpolylineintersection_516',['EdgeMeshPolylineIntersection',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html',1,'meshkernel::Mesh']]]
 ];

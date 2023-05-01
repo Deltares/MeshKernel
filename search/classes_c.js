@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['triangulationinterpolation_520',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html',1,'meshkernel']]],
-  ['triangulationwrapper_521',['TriangulationWrapper',['../structmeshkernel_1_1_triangulation_wrapper.html',1,'meshkernel']]]
+  ['sample_540',['Sample',['../structmeshkernel_1_1_sample.html',1,'meshkernel']]],
+  ['smoother_541',['Smoother',['../classmeshkernel_1_1_smoother.html',1,'meshkernel']]],
+  ['splines_542',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel']]],
+  ['splinestocurvilinearparameters_543',['SplinesToCurvilinearParameters',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html',1,'meshkernelapi']]]
 ];

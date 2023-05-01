@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['edgemeshpolylineintersection_494',['EdgeMeshPolylineIntersection',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html',1,'meshkernel::Mesh']]]
+  ['cartesian3dpoint_512',['Cartesian3DPoint',['../structmeshkernel_1_1_cartesian3_d_point.html',1,'meshkernel']]],
+  ['contacts_513',['Contacts',['../classmeshkernel_1_1_contacts.html',1,'meshkernel::Contacts'],['../structmeshkernelapi_1_1_contacts.html',1,'meshkernelapi::Contacts']]],
+  ['curvilineargrid_514',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_515',['CurvilinearParameters',['../structmeshkernelapi_1_1_curvilinear_parameters.html',1,'meshkernelapi']]]
 ];
