@@ -35,7 +35,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         }
 
         auto const interpolator = std::make_shared<AveragingInterpolation>(
-            mesh,
+            *mesh,
             samples,
             AveragingInterpolation::Method::MinAbsValue,
             Mesh::Location::Faces,

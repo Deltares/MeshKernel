@@ -841,7 +841,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     // Execute
     meshRefinement.Compute();
 
-    // Assert: all bathy values are positive and we are in land, so nothing gets refined
+    // Assert: all depth values are positive and we are in land, so nothing gets refined
     ASSERT_EQ(12, mesh->GetNumEdges());
 }
 
