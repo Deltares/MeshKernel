@@ -41,8 +41,8 @@ namespace meshkernelapi
         /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
         int use_mass_center_when_refining;
 
-        /// @brief Minimum cell size
-        double min_face_size;
+        /// @brief Minimum edge size
+        double min_edge_size;
 
         /// @brief Refinement criterion type
         int refinement_type;

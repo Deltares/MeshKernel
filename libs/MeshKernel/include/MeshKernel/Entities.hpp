@@ -50,21 +50,18 @@ namespace meshkernel
     /// @param[eps_mutilpier] Multiplier of machine precision
     /// @return Boolean indicating whether the value and reference value are equal within machine precision multiplied by the multiplier
     // template <std::floating_point T> // prefer this in c++20
-    template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+    template <std::floating_point T>
     static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
     {
         if (value == ref_value)
         {
             return true;
         }
-        else
-        {
-            const T abs_diff = std::abs(value - ref_value);
-            const T abs_value = std::abs(value);
-            const T abs_ref_value = std::abs(ref_value);
-            static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
-            return abs_diff < tol * std::min(abs_value, abs_ref_value);
-        }
+        const T abs_diff = std::abs(value - ref_value);
+        const T abs_value = std::abs(value);
+        const T abs_ref_value = std::abs(ref_value);
+        static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
+        return abs_diff < tol * std::min(abs_value, abs_ref_value);
     }
 
     /// @brief Enumerator describing the supported projections
@@ -179,14 +176,6 @@ namespace meshkernel
             return isEqual;
         }
 
-        /// @brief Overloads inequality with another Point
-        bool operator!=(const Point& rhs) const
-        {
-            const bool isEqual = IsEqual(x, rhs.x) &&
-                                 IsEqual(y, rhs.y);
-            return !isEqual;
-        }
-
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
@@ -229,6 +218,17 @@ namespace meshkernel
     /// @brief A struct describing a sample with two coordinates and a value
     struct Sample
     {
+        /// @brief Default constructor
+        Sample() = default;
+
+        /// @brief Constructor taking coordinates and values
+        Sample(double x, double y, double value)
+            : x(x),
+              y(y),
+              value(value)
+        {
+        }
+
         double x;     ///< X-coordinate
         double y;     ///< Y-coordinate
         double value; ///< Value

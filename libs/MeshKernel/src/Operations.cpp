@@ -822,7 +822,7 @@ namespace meshkernel
     std::tuple<double, Point, double> DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, const Projection& projection)
     {
         double distance = constants::missing::doubleValue;
-        Point normalPoint{constants::missing::doubleValue, constants::missing::doubleValue};
+        Point normalPoint;
         double ratio = constants::missing::doubleValue;
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {

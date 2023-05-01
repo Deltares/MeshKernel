@@ -31,6 +31,7 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
+#include <MeshKernelApi/GriddedSamples.hpp>
 #include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
@@ -526,6 +527,21 @@ namespace meshkernelapi
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
                                                                const MeshRefinementParameters& meshRefinementParameters);
+
+        /// @brief Refine based on gridded samples
+        ///
+        /// The number of successive splits is indicated on the sample value.
+        /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
+        /// a value of 2 two splits (a quadrilateral face generates 16 faces).
+        /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] griddedSamples                  The gridded samples
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
+        /// @param[in] useNodalRefinement       Use nodal refinement
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                       const GriddedSamples& griddedSamples,
+                                                                       const MeshRefinementParameters& meshRefinementParameters,
+                                                                       bool useNodalRefinement);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId             The id of the mesh state

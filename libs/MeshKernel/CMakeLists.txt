@@ -27,6 +27,7 @@ set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
@@ -79,6 +80,7 @@ set(
 set(
   INC_LIST
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
+  ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
@@ -88,6 +90,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp

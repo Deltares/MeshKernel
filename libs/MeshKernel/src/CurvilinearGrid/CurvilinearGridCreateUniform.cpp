@@ -81,7 +81,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
         return {};
     }
 
-    Point referencePoint{constants::missing::doubleValue, constants::missing::doubleValue};
+    Point referencePoint;
     auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {

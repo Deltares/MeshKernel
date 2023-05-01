@@ -29,6 +29,7 @@ set(
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
   ${DOMAIN_INC_DIR}/CurvilinearParameters.hpp
   ${DOMAIN_INC_DIR}/GeometryList.hpp
+  ${DOMAIN_INC_DIR}/GriddedSamples.hpp
   ${DOMAIN_INC_DIR}/MakeGridParameters.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp

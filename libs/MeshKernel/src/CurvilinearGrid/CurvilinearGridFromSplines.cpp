@@ -944,7 +944,7 @@ std::vector<meshkernel::Point>
 CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(size_t layerIndex)
 {
     std::vector<Point> velocityVector(m_numM);
-    std::fill(velocityVector.begin(), velocityVector.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+    std::fill(velocityVector.begin(), velocityVector.end(), Point());
     Point normalVectorLeft;
     Point normalVectorRight;
     const double cosTolerance = 1e-8;
@@ -1612,7 +1612,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
         const auto numM = MakeGridLine(s, gridLineIndex);
 
         gridLineIndex = gridLineIndex + numM + 1;
-        m_gridLine[gridLineIndex] = Point{constants::missing::doubleValue, constants::missing::doubleValue};
+        m_gridLine[gridLineIndex] = Point();
         m_gridLineDimensionalCoordinates[gridLineIndex] = constants::missing::doubleValue;
         gridLineIndex++;
 

@@ -511,7 +511,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 void Mesh2D::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
-    std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
+    std::ranges::fill(m_nodesTypes, 0);
 
     for (size_t e = 0; e < GetNumEdges(); e++)
     {
@@ -1629,8 +1629,8 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
 
     for (size_t segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
     {
-        std::fill(edgesIntersections.begin(), edgesIntersections.end(), EdgeMeshPolylineIntersection());
-        std::fill(facesIntersections.begin(), facesIntersections.end(), FaceMeshPolylineIntersection());
+        std::ranges::fill(edgesIntersections, EdgeMeshPolylineIntersection());
+        std::ranges::fill(facesIntersections, FaceMeshPolylineIntersection());
         for (size_t faceIndex = 0; faceIndex < GetNumFaces(); ++faceIndex)
         {
             for (size_t e = 0; e < m_numFacesNodes[faceIndex]; ++e)

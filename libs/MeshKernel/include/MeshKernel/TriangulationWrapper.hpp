@@ -93,19 +93,19 @@ namespace meshkernel
                 m_numFaces = static_cast<int>(estimatedNumberOfTriangles);
 
                 m_faceNodesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(m_faceNodesFlat.begin(), m_faceNodesFlat.end(), 0);
+                std::ranges::fill(m_faceNodesFlat, 0);
 
                 m_edgeNodesFlat.resize(estimatedNumberOfTriangles * 2);
-                std::fill(m_edgeNodesFlat.begin(), m_edgeNodesFlat.end(), 0);
+                std::ranges::fill(m_edgeNodesFlat, 0);
 
                 m_faceEdgesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(m_faceEdgesFlat.begin(), m_faceEdgesFlat.end(), 0);
+                std::ranges::fill(m_faceEdgesFlat, 0);
 
                 m_xCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(m_xCoordFlat.begin(), m_xCoordFlat.end(), 0.0);
+                std::ranges::fill(m_xCoordFlat, 0.0);
 
                 m_yCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(m_yCoordFlat.begin(), m_yCoordFlat.end(), 0.0);
+                std::ranges::fill(m_yCoordFlat, 0.0);
 
                 Triangulation(&intTriangulationOption,
                               xLocalPolygon.data(),

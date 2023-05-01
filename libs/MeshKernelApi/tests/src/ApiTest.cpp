@@ -12,6 +12,7 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 
 #include <numeric>
 
@@ -36,13 +37,13 @@ public:
     }
 
     /// @brief Make a mesh
-    /// @param[in]  n            Number of rows
-    /// @param[in]  m            Number of columns
+    /// @param[in]  num_rows            Number of rows
+    /// @param[in]  num_columns            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(int n = 4, int m = 3, double delta = 1.0)
+    void MakeMesh(size_t num_rows = 2, size_t num_columns = 3, double delta = 1.0)
     {
         // Set-up new mesh
-        const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(n, m, delta);
+        const auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(num_rows, num_columns, delta);
         meshkernelapi::Mesh2D mesh2d{};
         mesh2d.num_edges = static_cast<int>(num_edges);
         mesh2d.num_nodes = static_cast<int>(num_nodes);
@@ -675,7 +676,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_face_size = 0.5;
+    meshRefinementParameters.min_edge_size = 0.5;
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
@@ -764,7 +765,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -849,7 +850,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -923,7 +924,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -998,7 +999,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -1089,7 +1090,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
 {
     // Prepare
-    MakeMesh(4, 4, 10);
+    MakeMesh(3, 3, 10);
     auto const meshKernelId = GetMeshKernelId();
 
     // Init 1d mesh
@@ -3067,4 +3068,111 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     ASSERT_EQ(mesh2d.num_nodes, 615);
     ASSERT_EQ(mesh2d.num_edges, 1174);
     ASSERT_EQ(mesh2d.num_faces, 80);
+}
+
+TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
+{
+    // Prepare
+    int meshKernelId;
+    constexpr int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_nodes = edge_nodes.get();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    meshkernelapi::GriddedSamples griddedSamples;
+    griddedSamples.n_cols = ncols - 1;
+    griddedSamples.n_rows = nrows - 1;
+    griddedSamples.x_origin = xllcenter;
+    griddedSamples.y_origin = yllcenter;
+    griddedSamples.cell_size = cellsize;
+    griddedSamples.values = values.data();
+    griddedSamples.x_coordinates = nullptr;
+    griddedSamples.y_coordinates = nullptr;
+
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_edge_size = 0.01;
+    meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.account_for_samples_outside = 0;
+
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dResults;
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(2179, mesh2dResults.num_nodes);
+    ASSERT_EQ(5252, mesh2dResults.num_edges);
+    ASSERT_EQ(3074, mesh2dResults.num_faces);
+    ASSERT_EQ(10454, mesh2dResults.num_face_nodes);
+}
+
+TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
+{
+    // Prepare
+    size_t nRows{5};
+    size_t nCols{4};
+    MakeMesh(nRows, nCols, 100.0);
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GriddedSamples griddedSamples;
+    griddedSamples.n_rows = static_cast<int>(nRows + static_cast<size_t>(1));
+    griddedSamples.n_cols = static_cast<int>(nCols + static_cast<size_t>(1));
+    std::vector<double> x_coordinates(griddedSamples.n_cols + 1);
+    std::vector<double> y_coordinates(griddedSamples.n_rows + 1);
+
+    double coordinate = -50.0;
+    const double dx = 100.0;
+    for (size_t i = 0; i < x_coordinates.size(); ++i)
+    {
+        x_coordinates[i] = coordinate + i * dx;
+    }
+    coordinate = -50.0;
+    const double dy = 100.0;
+    for (size_t i = 0; i < y_coordinates.size(); ++i)
+    {
+        y_coordinates[i] = coordinate + i * dy;
+    }
+
+    std::vector<double> values((griddedSamples.n_rows + 1) * (griddedSamples.n_cols + 1));
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+        values[i] = -0.05;
+    }
+
+    griddedSamples.x_coordinates = x_coordinates.data();
+    griddedSamples.y_coordinates = y_coordinates.data();
+    griddedSamples.values = values.data();
+
+    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_edge_size = 2.0;
+    meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.account_for_samples_outside = 0;
+
+    auto errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dResults;
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(99, mesh2dResults.num_nodes);
+    ASSERT_EQ(178, mesh2dResults.num_edges);
+    ASSERT_EQ(80, mesh2dResults.num_faces);
 }
