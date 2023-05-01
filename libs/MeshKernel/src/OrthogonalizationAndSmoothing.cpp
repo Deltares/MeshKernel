@@ -247,9 +247,6 @@ void OrthogonalizationAndSmoothing::Solve()
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
-    Point normalSecondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-    Point normalThirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-
     // in this case the nearest point is the point itself
     std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
