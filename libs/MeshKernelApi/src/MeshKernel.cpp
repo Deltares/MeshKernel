@@ -1034,7 +1034,7 @@ namespace meshkernelapi
                 // the edge count
                 edgeDistances[edgeCount] = edgeIntersection.edgeDistance;
                 polylineSegmentIndexes[edgeCount] = edgeIntersection.polylineSegmentIndex;
-                polylineSegmentDistances[edgeCount] = edgeIntersection.polylineSegmentDistance;
+                polylineSegmentDistances[edgeCount] = edgeIntersection.adimensionalPolylineSegmentDistance;
                 edgeCount++;
             }
 
