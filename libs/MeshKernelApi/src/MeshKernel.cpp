@@ -1557,7 +1557,11 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId,
+                                                  double xCoordinate,
+                                                  double yCoordinate,
+                                                  double searchRadius,
+                                                  int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1589,21 +1593,15 @@ namespace meshkernelapi
                                                     double& xCoordinateOut,
                                                     double& yCoordinateOut)
     {
-        int exitCode = Success;
+        int exitCode;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
-            {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
-            }
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
-            {
-                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
-            }
-
-            meshkernel::Point const point{xCoordinateIn, yCoordinateIn};
-
-            const auto nodeIndex = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius);
+            int nodeIndex;
+            exitCode = mkernel_mesh2d_get_node_index(meshKernelId,
+                                                     xCoordinateIn,
+                                                     yCoordinateIn,
+                                                     searchRadius,
+                                                     nodeIndex);
 
             // Set the node coordinate
             auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
