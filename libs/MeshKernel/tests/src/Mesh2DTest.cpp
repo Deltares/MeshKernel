@@ -822,7 +822,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
 
     // face intersections
     ASSERT_EQ(faceIntersections[0].faceIndex, 15);
-    ASSERT_NEAR(faceIntersections[0].polylineDistance, 0.11538461538461538, 1e-8);
+    ASSERT_NEAR(faceIntersections[0].polylineDistance, 0.63639610306789274, 1e-8);
     ASSERT_EQ(faceIntersections[0].edgeNodes[0], 24);
     ASSERT_EQ(faceIntersections[0].edgeNodes[1], 18);
     ASSERT_EQ(faceIntersections[0].edgeNodes[2], 19);
@@ -830,7 +830,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[0].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[1].faceIndex, 10);
-    ASSERT_NEAR(faceIntersections[1].polylineDistance, 0.24358974358974361, 1e-8);
+    ASSERT_NEAR(faceIntersections[1].polylineDistance, 1.3435028842544403, 1e-8);
     ASSERT_EQ(faceIntersections[1].edgeNodes[0], 19);
     ASSERT_EQ(faceIntersections[1].edgeNodes[1], 18);
     ASSERT_EQ(faceIntersections[1].edgeNodes[2], 19);
@@ -838,7 +838,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[1].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[2].faceIndex, 11);
-    ASSERT_NEAR(faceIntersections[2].polylineDistance, 0.37179487179487181, 1e-8);
+    ASSERT_NEAR(faceIntersections[2].polylineDistance, 2.0506096654409878, 1e-8);
     ASSERT_EQ(faceIntersections[2].edgeNodes[0], 19);
     ASSERT_EQ(faceIntersections[2].edgeNodes[1], 13);
     ASSERT_EQ(faceIntersections[2].edgeNodes[2], 14);
@@ -846,7 +846,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[2].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[3].faceIndex, 6);
-    ASSERT_NEAR(faceIntersections[3].polylineDistance, 0.5, 1e-8);
+    ASSERT_NEAR(faceIntersections[3].polylineDistance, 2.7577164466275352, 1e-8);
     ASSERT_EQ(faceIntersections[3].edgeNodes[0], 14);
     ASSERT_EQ(faceIntersections[3].edgeNodes[1], 13);
     ASSERT_EQ(faceIntersections[3].edgeNodes[2], 14);
@@ -854,7 +854,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[3].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[4].faceIndex, 7);
-    ASSERT_NEAR(faceIntersections[4].polylineDistance, 0.62820512820512819, 1e-8);
+    ASSERT_NEAR(faceIntersections[4].polylineDistance, 3.4648232278140831, 1e-8);
     ASSERT_EQ(faceIntersections[4].edgeNodes[0], 14);
     ASSERT_EQ(faceIntersections[4].edgeNodes[1], 8);
     ASSERT_EQ(faceIntersections[4].edgeNodes[2], 9);
@@ -862,7 +862,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[4].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[5].faceIndex, 2);
-    ASSERT_NEAR(faceIntersections[5].polylineDistance, 0.75641025641025639, 1e-8);
+    ASSERT_NEAR(faceIntersections[5].polylineDistance, 4.1719300090006302, 1e-8);
     ASSERT_EQ(faceIntersections[5].edgeNodes[0], 9);
     ASSERT_EQ(faceIntersections[5].edgeNodes[1], 8);
     ASSERT_EQ(faceIntersections[5].edgeNodes[2], 9);
@@ -870,7 +870,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[5].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[6].faceIndex, 3);
-    ASSERT_NEAR(faceIntersections[6].polylineDistance, 0.88461538461538458, 1e-8);
+    ASSERT_NEAR(faceIntersections[6].polylineDistance, 4.8790367901871772, 1e-8);
     ASSERT_EQ(faceIntersections[6].edgeNodes[0], 9);
     ASSERT_EQ(faceIntersections[6].edgeNodes[1], 3);
     ASSERT_EQ(faceIntersections[6].edgeNodes[2], 4);
@@ -878,7 +878,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     ASSERT_EQ(faceIntersections[6].edgeIndexses.size(), 2);
 }
 
-TEST(Mesh2D, GetPolylineIntersectionsFromPolylinesShouldReturnCorrectIntersections)
+TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectIntersections)
 {
     // 1. Setup
     const meshkernel::Point origin{78.0, 45.0};
