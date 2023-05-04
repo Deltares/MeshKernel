@@ -2942,7 +2942,7 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
 
-    // Create a curvilinear grid in the back-end and convert it into an unstructured grid
+    // Create a curvilinear grid in the back-end and convert to an unstructured grid
     meshkernelapi::MakeGridParameters makeMeshParameters;
     makeMeshParameters.num_columns = 3;
     makeMeshParameters.num_rows = 3;
