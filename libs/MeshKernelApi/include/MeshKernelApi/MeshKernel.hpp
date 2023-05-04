@@ -347,21 +347,24 @@ namespace meshkernelapi
         /// @brief Gets the edges intersected by a polyline, with additional information on the intersections
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] boundaryPolyLine An input polyline, defined as a series of points
-        /// @param[out] polylineSegmentIndexes For each intersection, the intersected segment index (a polyline can formed by several segments)
-        /// @param[out] polylineSegmentDistances For each intersection, the location of the intersection expressed as an adimensional distance from the segment start
-        /// @param[out] edgeNodesIntersections The node indices of the intersected edges (the first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node))
+        /// @param[out] edgeNodes The indices of the intersected edge nodes. The first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node)
+        /// @param[out] edgeIndex For each intersected edge, the edge index
         /// @param[out] edgeDistances For each intersection, the location of the intersection expressed as adimensional distance from the edge starting node
-        /// @param[out] faceIndexes For each intersection, the index of the intersected face
-        /// @param[out] faceNodesIntersections For each intersection, the node indices of the intersected edge
+        /// @param[out] segmentDistances For each intersection, the location of the intersection expressed as adimensional distance from the polyline segment start
+        /// @param[out] faceIndexes For each intersection, the face index
+        /// @param[out] faceNumEdges For each intersection, the number of intersections
+        /// @param[out] faceEdgeIndex For each intersection, the index of the intersected edge
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
                                                                    const GeometryList& boundaryPolyLine,
-                                                                   int* polylineSegmentIndexes,
-                                                                   double* polylineSegmentDistances,
-                                                                   int* edgeNodesIntersections,
+                                                                   int* edgeNodes,
+                                                                   int* edgeIndex,
                                                                    double* edgeDistances,
+                                                                   double* segmentDistances,
+                                                                   int* segmentIndexes,
                                                                    int* faceIndexes,
-                                                                   int* faceNodesIntersections);
+                                                                   int* faceNumEdges,
+                                                                   int* faceEdgeIndex);
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///

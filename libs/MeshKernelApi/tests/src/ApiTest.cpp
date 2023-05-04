@@ -2975,54 +2975,61 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     boundaryPolyLine.num_coordinates = 2;
 
     std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector<double> polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
-    std::vector<int> edgeNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
-    std::vector<int> faceIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector<int> faceNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
 
-    /// Execute
+    std::vector<int> edgeNodes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    std::vector<int> edgeIndex(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<double> segmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<int> segmentIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+
+    std::vector<int> faceEdgeIndex(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<int> faceNumEdges(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<int> faceIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
                                                            boundaryPolyLine,
-                                                           polylineSegmentIndexes.data(),
-                                                           polylineSegmentDistances.data(),
-                                                           edgeNodesIntersections.data(),
+                                                           edgeNodes.data(),
+                                                           edgeIndex.data(),
                                                            edgeDistances.data(),
+                                                           segmentDistances.data(),
+                                                           segmentIndexes.data(),
                                                            faceIndexes.data(),
-                                                           faceNodesIntersections.data());
+                                                           faceNumEdges.data(),
+                                                           faceEdgeIndex.data());
 
     /// Assert
     const double tolerance = 1e-6;
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(polylineSegmentIndexes[0], 0);
-    ASSERT_EQ(polylineSegmentIndexes[1], 0);
-    ASSERT_EQ(polylineSegmentIndexes[2], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(segmentIndexes[0], 0);
+    ASSERT_EQ(segmentIndexes[1], 0);
+    ASSERT_EQ(segmentIndexes[2], meshkernel::constants::missing::intValue);
 
-    ASSERT_NEAR(polylineSegmentDistances[0], 0.25, tolerance);
-    ASSERT_NEAR(polylineSegmentDistances[1], 0.75, tolerance);
-    ASSERT_NEAR(polylineSegmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
+    ASSERT_NEAR(segmentDistances[0], 0.25, tolerance);
+    ASSERT_NEAR(segmentDistances[1], 0.75, tolerance);
+    ASSERT_NEAR(segmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
 
     ASSERT_NEAR(edgeDistances[0], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[1], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
-
-    ASSERT_EQ(faceNodesIntersections[0], 8);
-    ASSERT_EQ(faceNodesIntersections[1], 9);
-    ASSERT_EQ(faceNodesIntersections[2], 8);
-    ASSERT_EQ(faceNodesIntersections[3], 9);
-    ASSERT_EQ(faceNodesIntersections[4], 4);
-    ASSERT_EQ(faceNodesIntersections[5], 5);
-    ASSERT_EQ(faceNodesIntersections[6], 4);
-    ASSERT_EQ(faceNodesIntersections[7], 5);
-    ASSERT_EQ(faceNodesIntersections[8], meshkernel::constants::missing::intValue);
 
     ASSERT_EQ(faceIndexes[0], 6);
     ASSERT_EQ(faceIndexes[1], 3);
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
     ASSERT_EQ(faceIndexes[4], meshkernel::constants::missing::intValue);
+
+    ASSERT_EQ(faceNumEdges[0], 1);
+    ASSERT_EQ(faceNumEdges[1], 2);
+    ASSERT_EQ(faceNumEdges[2], 1);
+    ASSERT_EQ(faceNumEdges[3], meshkernel::constants::missing::intValue);
+
+    ASSERT_EQ(faceEdgeIndex[0], 18);
+    ASSERT_EQ(faceEdgeIndex[1], 18);
+    ASSERT_EQ(faceEdgeIndex[2], 15);
+    ASSERT_EQ(faceEdgeIndex[3], 15);
+    ASSERT_EQ(faceEdgeIndex[4], meshkernel::constants::missing::intValue);
 }
 
 TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)

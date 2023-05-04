@@ -1627,11 +1627,10 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
     std::vector<EdgeMeshPolylineIntersection> edgesIntersections(GetNumEdges());
     std::vector<FaceMeshPolylineIntersection> facesIntersections(GetNumFaces());
 
-    double distanceFromFirstPolylineNode = 0.0;
-    std::vector<double> segmentLengths(polyLine.size() - 1);
-    for (size_t i = 0; i < polyLine.size() - 1; ++i)
+    std::vector<double> cumulativeLength(polyLine.size());
+    for (size_t i = 1; i < polyLine.size(); ++i)
     {
-        segmentLengths[i] = ComputeDistance(polyLine[i], polyLine[i + 1], m_projection);
+        cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_projection);
     }
 
     for (size_t segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
@@ -1679,7 +1678,8 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
                     }
 
                     edgesIntersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
-                    edgesIntersections[edgeIndex].polylineDistance = distanceFromFirstPolylineNode + adimensionalPolylineSegmentDistance * segmentLengths[segmentIndex];
+                    edgesIntersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
+                                                                     adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
                     edgesIntersections[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
                     edgesIntersections[edgeIndex].edgeFirstNode = edgeFirstNode;
                     edgesIntersections[edgeIndex].edgeSecondNode = edgeSecondNode;
@@ -1758,8 +1758,6 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
                 faceIntersectionsResult[f] = facesIntersections[f];
             }
         }
-
-        distanceFromFirstPolylineNode += segmentLengths[segmentIndex];
     }
 
     std::ranges::sort(edgesIntersectionsResult,
