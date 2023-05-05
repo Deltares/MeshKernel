@@ -512,23 +512,9 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
-    std::vector xCoordinatesIn{
-        0.0,
-        1.0,
-        1.0,
-        0.0};
-
-    std::vector yCoordinatesIn{
-        0.0,
-        0.0,
-        1.0,
-        1.0};
-
-    std::vector valuesIn{
-        0.0,
-        0.0,
-        0.0,
-        0.0};
+    std::vector xCoordinatesIn{0.0, 1.0, 1.0, 0.0};
+    std::vector yCoordinatesIn{0.0, 0.0, 1.0, 1.0};
+    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinatesIn.data();
     geometryListIn.coordinates_y = yCoordinatesIn.data();
