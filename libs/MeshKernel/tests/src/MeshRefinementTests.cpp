@@ -265,7 +265,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
         {410.981399284167, 505.55492288947},
         {399.638169557229, 504.294564030922}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->GetProjection());
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -543,7 +543,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
         {45.0, -10.0},
         {25.0, -10.0}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->GetProjection());
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -601,7 +601,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
         {9.90983606557378, 34.3852459016394},
         {9.09836065573771, 34.016393442623}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->GetProjection());
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
@@ -752,7 +752,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
         {2038.27896800643, 1165.26385465465},
         {2018.73356016594, 1165.26385465465}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->GetProjection());
 
     meshkernelapi::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;

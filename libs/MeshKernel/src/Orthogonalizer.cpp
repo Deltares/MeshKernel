@@ -79,14 +79,20 @@ void Orthogonalizer::Compute()
 
             // compute the edge length
             Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
-            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
+            Projection const projection = m_mesh->GetProjection();
+            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], projection);
 
             const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
             bool flippedNormal;
             Point normal;
-            NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
+            NormalVectorInside(m_mesh->m_nodes[n],
+                               neighbouringNode,
+                               m_mesh->m_facesMassCenters[leftFace],
+                               normal,
+                               flippedNormal,
+                               projection);
 
-            if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
+            if (projection == Projection::spherical && projection != Projection::sphericalAccurate)
             {
                 normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
             }

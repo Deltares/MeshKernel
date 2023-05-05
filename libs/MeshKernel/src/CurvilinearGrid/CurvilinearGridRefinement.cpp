@@ -122,7 +122,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                                                              rightRefinement,
                                                              bottomRefinement,
                                                              topRefinement,
-                                                             m_grid.m_projection,
+                                                             m_grid.GetProjection(),
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
@@ -140,5 +140,5 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     }
 
     // Substitute original grid with the refined one
-    return CurvilinearGrid(std::move(refinedGrid), m_grid.m_projection);
+    return CurvilinearGrid(std::move(refinedGrid), m_grid.GetProjection());
 }

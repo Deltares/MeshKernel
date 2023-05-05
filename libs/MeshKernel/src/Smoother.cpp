@@ -1072,7 +1072,8 @@ void Smoother::ComputeJacobian(size_t currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_topologyConnectedNodes[currentTopology].size();
-    if (m_mesh->m_projection == Projection::cartesian)
+    Projection const projection = m_mesh->GetProjection();
+    if (projection == Projection::cartesian)
     {
         J[0] = 0.0;
         J[1] = 0.0;
@@ -1086,7 +1087,7 @@ void Smoother::ComputeJacobian(size_t currentNode, std::vector<double>& J) const
             J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
-    if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
+    if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
     {
         const auto cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * constants::conversion::degToRad);
         J[0] = 0.0;

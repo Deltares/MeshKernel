@@ -11,7 +11,7 @@ Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
     : m_mesh1d(mesh1d), m_mesh2d(mesh2d), m_mesh1dIndices(), m_mesh2dIndices()
 {
     // assert mesh1d and mesh have the same projection
-    if (m_mesh1d->m_projection != m_mesh2d->m_projection)
+    if (m_mesh1d->GetProjection() != m_mesh2d->GetProjection())
     {
         throw AlgorithmError("meshkernel::Contacts::Contacts: m_mesh1d and m_mesh2d projections are different");
     }
@@ -72,7 +72,7 @@ bool Contacts::IsContactIntersectingMesh1d(size_t node,
                                 m_mesh1d->m_nodes[m_mesh1d->m_edges[e].first],
                                 m_mesh1d->m_nodes[m_mesh1d->m_edges[e].second],
                                 false,
-                                m_mesh1d->m_projection,
+                                m_mesh1d->GetProjection(),
                                 intersectionPoint,
                                 crossProduct,
                                 ratioFirstSegment,
@@ -100,7 +100,7 @@ bool Contacts::IsContactIntersectingContact(size_t node, size_t face) const
                                 m_mesh1d->m_nodes[m_mesh1dIndices[i]],
                                 m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
                                 false,
-                                m_mesh1d->m_projection,
+                                m_mesh1d->GetProjection(),
                                 intersectionPoint,
                                 crossProduct,
                                 ratioFirstSegment,
@@ -175,7 +175,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
                                          m_mesh2d->m_nodes[firstNode2dMeshEdge],
                                          m_mesh2d->m_nodes[secondNode2dMeshEdge],
                                          false,
-                                         m_mesh1d->m_projection,
+                                         m_mesh1d->GetProjection(),
                                          intersectionPoint,
                                          crossProduct,
                                          ratioFirstSegment,
@@ -185,8 +185,12 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
                 }
 
                 // compute the distance between the face circumcenter and the crossed 1d edge nodes.
-                const auto leftDistance = ComputeDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
-                const auto rightDistance = ComputeDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
+                const auto leftDistance = ComputeDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge],
+                                                          m_mesh2d->m_facesCircumcenters[face],
+                                                          m_mesh1d->GetProjection());
+                const auto rightDistance = ComputeDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge],
+                                                           m_mesh2d->m_facesCircumcenters[face],
+                                                           m_mesh1d->GetProjection());
                 const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
 
                 // if oneDNodeMask is not empty, connect only if the mask value for the current node is true
@@ -255,7 +259,7 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         const auto close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
 
         const auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
-        const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
+        const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->GetProjection());
         // if it is the first found node of this polygon or
         // there is already a distance stored, but ours is smaller
         // -> store
@@ -394,10 +398,10 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
             const auto currentSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[n],
                                                                        m_mesh2d->m_facesCircumcenters[face],
-                                                                       m_mesh2d->m_projection);
+                                                                       m_mesh2d->GetProjection());
             const auto previousSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[faceTo1DNode[face]],
                                                                         m_mesh2d->m_facesCircumcenters[face],
-                                                                        m_mesh2d->m_projection);
+                                                                        m_mesh2d->GetProjection());
 
             if (currentSquaredDistance < previousSquaredDistance)
             {

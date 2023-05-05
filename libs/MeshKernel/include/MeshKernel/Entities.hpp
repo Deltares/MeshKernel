@@ -67,6 +67,7 @@ namespace meshkernel
     /// @brief Enumerator describing the supported projections
     enum class Projection
     {
+        unknown = -1,         // unknown
         cartesian = 0,        // jsferic  = 0
         spherical = 1,        // jsferic  = 1
         sphericalAccurate = 2 // jasfer3D = 1

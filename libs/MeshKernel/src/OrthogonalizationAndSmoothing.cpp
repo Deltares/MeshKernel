@@ -81,7 +81,7 @@ void OrthogonalizationAndSmoothing::Initialize()
     m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh->GetProjection() == Projection::sphericalAccurate)
     {
         if (m_orthogonalizationParameters.orthogonalization_to_smoothing_factor < 1.0)
         {
@@ -302,9 +302,13 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             // Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
 
-            const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection);
+            Projection const projection = m_mesh->GetProjection();
 
-            const auto [distanceThirdPoint, normalThirdPoint, ratioThirdPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, m_mesh->m_projection);
+            const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] =
+                DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, projection);
+
+            const auto [distanceThirdPoint, normalThirdPoint, ratioThirdPoint] =
+                DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, projection);
 
             if (distanceSecondPoint < distanceThirdPoint)
             {
@@ -330,7 +334,7 @@ void OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     // TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
 
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh->GetProjection() == Projection::sphericalAccurate)
     {
     }
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
@@ -353,7 +357,9 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
-    if (m_mesh->m_projection == Projection::cartesian || m_mesh->m_projection == Projection::spherical)
+    Projection const projection = m_mesh->GetProjection();
+
+    if (projection == Projection::cartesian || projection == Projection::spherical)
     {
         const double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
         const double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
@@ -362,7 +368,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].x;
         m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].y;
     }
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (projection == Projection::sphericalAccurate)
     {
         const Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
@@ -395,8 +401,9 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
         const auto wwy = m_compressedWeightY[cacheIndex];
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
         cacheIndex++;
+        Projection const projection = m_mesh->GetProjection();
 
-        if (m_mesh->m_projection == Projection::cartesian)
+        if (projection == Projection::cartesian)
         {
             const double wwxTransformed = wwx;
             const double wwyTransformed = wwy;
@@ -406,7 +413,7 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
             weightsSum[1] += wwyTransformed;
         }
 
-        if (m_mesh->m_projection == Projection::spherical)
+        if (projection == Projection::spherical)
         {
             const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad *
                                           std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * constants::conversion::degToRad);
@@ -417,7 +424,8 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, dou
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
-        if (m_mesh->m_projection == Projection::sphericalAccurate)
+
+        if (projection == Projection::sphericalAccurate)
         {
             const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad;
             const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;

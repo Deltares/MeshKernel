@@ -76,7 +76,7 @@ void MeshRefinement::Compute()
     // get bounding box
     Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
-    if (m_mesh->m_projection == Projection::spherical)
+    if (m_mesh->GetProjection() == Projection::spherical)
     {
         const auto boundingBox = GetBoundingBox(m_mesh->m_nodes);
         lowerLeft = std::get<0>(boundingBox);
@@ -485,7 +485,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
         const auto secondNode = m_mesh->m_nodes[secondNodeIndex];
 
         Point middle{(firstNode.x + secondNode.x) * 0.5, (firstNode.y + secondNode.y) * 0.5};
-        if (m_mesh->m_projection == Projection::spherical)
+        if (m_mesh->GetProjection() == Projection::spherical)
         {
 
             middle.y = (firstNode.y + secondNode.y) / 2.0;
@@ -629,7 +629,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
             splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                                                            localEdgesNumFaces);
 
-            if (m_mesh->m_projection == Projection::spherical)
+            if (m_mesh->GetProjection() == Projection::spherical)
             {
                 auto miny = std::numeric_limits<double>::max();
                 auto maxy = std::numeric_limits<double>::lowest();
@@ -1256,13 +1256,22 @@ void MeshRefinement::FindBrotherEdges()
             const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
 
             // compute tolerance
-            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            Projection const projection = m_mesh->GetProjection();
+            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode],
+                                                                       m_mesh->m_nodes[n],
+                                                                       projection);
+            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[secondEdgeOtherNode],
+                                                                        m_mesh->m_nodes[n],
+                                                                        projection);
             const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
 
             // The center of the two edges coincides with the shared node
-            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
-            const auto squaredDistanceFromCentre = ComputeSquaredDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode],
+                                                                     m_mesh->m_nodes[secondEdgeOtherNode],
+                                                                     projection);
+            const auto squaredDistanceFromCentre = ComputeSquaredDistance(center,
+                                                                          m_mesh->m_nodes[n],
+                                                                          projection);
             if (squaredDistanceFromCentre < squaredTolerance)
             {
                 m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;

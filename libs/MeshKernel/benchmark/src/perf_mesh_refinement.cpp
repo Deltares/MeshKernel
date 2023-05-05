@@ -96,7 +96,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
             {2.04861111111111, 4.5397633744856},
             {2.21527777777778, 5.08143004115226}};
 
-        meshkernel::Polygons polygon(polygon_points, mesh->m_projection);
+        meshkernel::Polygons polygon(polygon_points, mesh->GetProjection());
 
         mkapi::MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;

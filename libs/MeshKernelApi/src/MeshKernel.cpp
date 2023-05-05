@@ -142,7 +142,7 @@ namespace meshkernelapi
             const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const bool invertDeletionBool = invertDeletion == 1 ? true : false;
-            const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletionBool);
         }
         catch (...)
@@ -565,7 +565,7 @@ namespace meshkernelapi
             // Construct all dependencies
             auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
             auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
-            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshKernelState[meshKernelId].m_mesh2d,
@@ -613,16 +613,17 @@ namespace meshkernelapi
             // Construct all dependencies
             auto const smoother = std::make_shared<meshkernel::Smoother>(meshKernelState[meshKernelId].m_mesh2d);
             auto const orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshKernelState[meshKernelId].m_mesh2d);
-            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
-            meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                                                smoother,
-                                                                                                                                orthogonalizer,
-                                                                                                                                polygon,
-                                                                                                                                landBoundary,
-                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
-                                                                                                                                orthogonalizationParameters);
+            meshKernelState[meshKernelId].m_meshOrthogonalization =
+                std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
+                                                                            smoother,
+                                                                            orthogonalizer,
+                                                                            polygon,
+                                                                            landBoundary,
+                                                                            static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                            orthogonalizationParameters);
             meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
         catch (...)
@@ -876,12 +877,12 @@ namespace meshkernelapi
 
             auto const polygonPointsVector = ConvertGeometryListToPointVector(polygonPoints);
 
-            const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             // generate samples in all polygons
             auto const generatedPoints = polygon.ComputePointsInPolygons();
 
-            const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             *meshKernelState[meshKernelId].m_mesh2d += mesh;
         }
         catch (...)
@@ -903,7 +904,7 @@ namespace meshkernelapi
             auto sampleVector = ConvertGeometryListToPointVector(samples);
 
             meshkernel::Polygons polygon;
-            const meshkernel::Mesh2D mesh(sampleVector, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Mesh2D mesh(sampleVector, polygon, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             *meshKernelState[meshKernelId].m_mesh2d += mesh;
         }
         catch (...)
@@ -935,7 +936,8 @@ namespace meshkernelapi
             {
                 auto const curvilinearGrid = curvilinearGridCreateUniform.Compute();
                 auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                *meshKernelState[meshKernelId].m_mesh2d +=
+                    meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->GetProjection());
             }
             else
             {
@@ -944,7 +946,8 @@ namespace meshkernelapi
                 {
                     auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, p);
                     auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                    *meshKernelState[meshKernelId].m_mesh2d +=
+                        meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->GetProjection());
                 }
             }
         }
@@ -1073,7 +1076,7 @@ namespace meshkernelapi
             }
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
@@ -1102,7 +1105,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
@@ -1127,7 +1130,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance);
         }
@@ -1171,7 +1174,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             const bool selectInside = inside == 1 ? true : false;
             const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
@@ -1207,7 +1210,7 @@ namespace meshkernelapi
             }
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             const bool selectInside = inside == 1 ? true : false;
             const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
@@ -1364,7 +1367,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             const bool inWardBool = inWard == 1 ? true : false;
             const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
@@ -1390,7 +1393,7 @@ namespace meshkernelapi
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const bool innerPolygonBool = innerPolygon == 1 ? true : false;
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygonBool);
 
             numberOfPolygonNodes = static_cast<int>(newPolygon.GetNumNodes());
@@ -1545,7 +1548,7 @@ namespace meshkernelapi
 
             auto points = ConvertGeometryListToPointVector(geometryList);
 
-            const meshkernel::Polygons polygon(points, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(points, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
             meshRefinement.Compute();
@@ -1630,7 +1633,7 @@ namespace meshkernelapi
 
             auto const points = ConvertGeometryListToPointVector(polygonToSelect);
 
-            const meshkernel::Polygons localPolygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons localPolygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             for (size_t i = 0; i < points.size(); ++i)
             {
@@ -1665,7 +1668,7 @@ namespace meshkernelapi
             auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
             // construct all dependencies
-            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const polygon = std::make_shared<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             auto const landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesNodeVector, meshKernelState[meshKernelId].m_mesh2d, polygon);
             bool const triangulateFaces = isTriangulationRequired == 0 ? false : true;
             bool const projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
@@ -1825,7 +1828,7 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Polygons
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
-                                                          meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                                                          meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             // Execute
             meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons);
@@ -1883,7 +1886,7 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Polygons
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
-                                                          meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                                                          meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             // Execute
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPolygons(meshKernel1DNodeMask,
@@ -1943,7 +1946,7 @@ namespace meshkernelapi
 
             // Convert polygon date from GeometryList to Polygons
             auto const polygonPoints = ConvertGeometryListToPointVector(polygons);
-            const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->GetProjection());
 
             // Execute
             meshKernelState[meshKernelId].m_contacts->ComputeBoundaryContacts(meshKernel1DNodeMask, meshKernelPolygons, searchRadius);
@@ -2692,17 +2695,19 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 && meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 &&
+                meshKernelState[meshKernelId].m_curvilinearGrid->GetProjection() != meshKernelState[meshKernelId].m_mesh2d->GetProjection())
             {
                 throw std::invalid_argument("MeshKernel: The existing mesh2d projection is not equal to the curvilinear grid projection");
             }
 
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->GetProjection());
 
-            // curvilinear grid must be re-setted
-            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
+            // curvilinear grid must be reset
+            //*meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
+            meshKernelState[meshKernelId].m_curvilinearGrid.reset(new meshkernel::CurvilinearGrid());
         }
         catch (...)
         {
@@ -2944,7 +2949,9 @@ namespace meshkernelapi
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
             // Execute triangulation
-            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, sampleValues, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            meshkernel::TriangulationInterpolation triangulationInterpolation(locations,
+                                                                              sampleValues,
+                                                                              meshKernelState[meshKernelId].m_mesh2d->GetProjection());
             triangulationInterpolation.Compute();
 
             // Get the results and copy them back to the results vector

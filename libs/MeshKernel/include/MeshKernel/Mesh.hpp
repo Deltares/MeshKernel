@@ -93,10 +93,10 @@ namespace meshkernel
         /// @brief Mesh locations enumeration
         enum class Location
         {
-            Faces = 0,  ///< Faces
-            Nodes = 1,  ///< Nodes
-            Edges = 2,  ///< Edges
-            Unknown = 3 ///< Unknown
+            Unknown = -1, ///< Unknown
+            Faces = 0,    ///< Faces
+            Nodes = 1,    ///< Nodes
+            Edges = 2     ///< Edges
         };
 
         /// edge-segment intersection
@@ -134,6 +134,9 @@ namespace meshkernel
              const std::vector<Point>& nodes,
              Projection projection);
 
+        /// @brief Default virtual destructor
+        virtual ~Mesh() = default;
+
         /// @brief Inquire if a node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
@@ -141,25 +144,25 @@ namespace meshkernel
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid node
-        [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
+        [[nodiscard]] size_t GetNumNodes() const { return m_nodes.size(); }
 
         /// @brief Get the number of valid edges
         /// @return The number of valid edges
-        [[nodiscard]] auto GetNumEdges() const { return m_edges.size(); }
+        [[nodiscard]] size_t GetNumEdges() const { return m_edges.size(); }
 
         /// @brief Get the number of valid faces
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaces() const { return m_facesNodes.size(); }
+        [[nodiscard]] size_t GetNumFaces() const { return m_facesNodes.size(); }
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaceEdges(size_t faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] size_t GetNumFaceEdges(size_t faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] auto GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] size_t GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index
@@ -190,7 +193,7 @@ namespace meshkernel
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node
-        size_t InsertNode(const Point& newPoint);
+        [[nodiscard]] size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
         /// @param[in] node The index of the node to delete
@@ -258,7 +261,7 @@ namespace meshkernel
         /// @brief Compute the max length of the edges connected to a node
         /// @param node The mesh node
         /// @return The max edge length
-        double ComputeMaxLengthSurroundingEdges(size_t node);
+        [[nodiscard]] double ComputeMaxLengthSurroundingEdges(size_t node);
 
         /// @brief Build the rtree for the corresponding location
         /// @param[in] meshLocation The mesh location for which the RTree is build
@@ -286,19 +289,27 @@ namespace meshkernel
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        size_t GetNumLocations(Location meshLocation) const;
+        [[nodiscard]] size_t GetNumLocations(Location meshLocation) const;
 
         /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] size_t GetLocationsIndices(size_t index, Mesh::Location meshLocation);
+        [[nodiscard]] size_t GetLocationsIndices(size_t index, Location meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
-        ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(Mesh::Location location) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
+
+        /// @brief Gets the tree by mesh location (nodes, edges or faces coordinates).
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return The Rtree corresponding to the specified mesh location.
+        [[nodiscard]] RTree const& GetTree(Location location) const;
+
+        /// @brief Gets the mesh projection.
+        /// @return The mesh projection.
+        [[nodiscard]] Projection GetProjection() const { return m_projection; };
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
@@ -328,15 +339,6 @@ namespace meshkernel
         std::vector<Point> m_facesMassCenters;         ///< The faces centers of mass (xzw, yzw)
         std::vector<double> m_faceArea;                ///< The face area
 
-        Projection m_projection; ///< The projection used
-
-        // counters
-        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
-        RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
-        RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
-        RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
-
         // constants
         static constexpr size_t m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
         static constexpr size_t m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
@@ -347,5 +349,14 @@ namespace meshkernel
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
+        RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
+        RTree m_facesRTree; ///< Spatial R-Tree used to inquire face circumcenters
+
+    protected:
+        bool m_nodesRTreeRequiresUpdate = true;        ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true;        ///< m_edgesRTree requires an update
+        Projection m_projection = Projection::unknown; ///< The projection used
     };
 } // namespace meshkernel

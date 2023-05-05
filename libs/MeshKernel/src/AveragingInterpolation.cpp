@@ -152,7 +152,7 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
                            [&](Point const& p)
                            { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
-    if (m_mesh.m_projection == Projection::spherical)
+    if (m_mesh.GetProjection() == Projection::spherical)
     {
         auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon);
 
@@ -180,7 +180,7 @@ double AveragingInterpolation::GetSearchRadiusSquared(std::vector<Point> const& 
 
     for (const auto& value : searchPolygon)
     {
-        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh.m_projection);
+        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh.GetProjection());
         result = std::max(result, squaredDistance);
     }
 
@@ -208,7 +208,7 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::uniq
         }
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
-        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.GetProjection()))
         {
             strategy->Add(samplePoint, sampleValue);
         }
@@ -244,7 +244,10 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
+        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method,
+                                                                                  m_minNumSamples,
+                                                                                  interpolationPoint,
+                                                                                  m_mesh.GetProjection());
         return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
     }
 

@@ -116,7 +116,7 @@ void FlipEdges::Compute() const
                                                               m_mesh->m_nodes[nodeLeft],
                                                               m_mesh->m_nodes[nodeRight],
                                                               false,
-                                                              m_mesh->m_projection,
+                                                              m_mesh->GetProjection(),
                                                               intersection,
                                                               crossProduct,
                                                               firstRatio,
@@ -391,7 +391,11 @@ int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t 
     }
 
     // Connected edges needs to be counterclockwise
-    const auto sign = sgn(crossProduct(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection));
+    const auto sign = sgn(crossProduct(m_mesh->m_nodes[nodeIndex],
+                                       m_mesh->m_nodes[firstNode],
+                                       m_mesh->m_nodes[firstNode],
+                                       m_mesh->m_nodes[secondNode],
+                                       m_mesh->GetProjection()));
     const auto isClockWise = sign < 0 ? true : false;
     if (isClockWise)
     {

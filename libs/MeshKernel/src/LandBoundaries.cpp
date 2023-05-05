@@ -320,7 +320,12 @@ void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, size_t
     const auto& [startNodeLeftBoundary, endNodeLeftBoundary] = m_validLandBoundaries[startSegmentIndex];
 
     Point newNodeLeft;
-    if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNodeLeftBoundary], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNodeLeftBoundary], m_mesh->m_projection))
+    if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex],
+                               m_nodes[startNodeLeftBoundary],
+                               m_mesh->GetProjection()) <=
+        ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex],
+                               m_nodes[endNodeLeftBoundary],
+                               m_mesh->GetProjection()))
     {
         newNodeLeft = m_nodes[startNodeLeftBoundary];
     }
@@ -339,7 +344,12 @@ void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, size_t
         // find start/end
         const auto& [startNodeRightBoundary, endNodeRightBoundary] = m_validLandBoundaries[endSegmentIndex];
 
-        if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNodeRightBoundary], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNodeRightBoundary], m_mesh->m_projection))
+        if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex],
+                                   m_nodes[startNodeRightBoundary],
+                                   m_mesh->GetProjection()) <=
+            ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex],
+                                   m_nodes[endNodeRightBoundary],
+                                   m_mesh->GetProjection()))
         {
             newNodeRight = m_nodes[startNodeRightBoundary];
         }
@@ -689,7 +699,7 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
     const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].first];
     const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].second];
 
-    const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh->m_projection);
+    const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh->GetProjection());
     const double distanceFactor = m_findOnlyOuterMeshBoundary ? m_closeToLandBoundaryFactor : m_closeWholeMeshFactor;
 
     const double closeDistance = meshEdgeLength * distanceFactor;
@@ -701,15 +711,19 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
     const size_t maximumNumberOfIterations = 3;
     while (searchIterations < maximumNumberOfIterations)
     {
-        const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], m_mesh->m_projection);
+        const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode],
+                                                                 m_nodes[currentNode + 1],
+                                                                 m_mesh->GetProjection());
 
         if (landBoundaryLength > 0.0)
         {
 
-            const auto [distanceFromLandBoundaryFirstMeshNode, normalPoint, ratioFirstMeshNode] = DistanceFromLine(firstMeshNode,
-                                                                                                                   m_nodes[currentNode],
-                                                                                                                   m_nodes[currentNode + 1],
-                                                                                                                   m_mesh->m_projection);
+            const auto [distanceFromLandBoundaryFirstMeshNode,
+                        normalPoint,
+                        ratioFirstMeshNode] = DistanceFromLine(firstMeshNode,
+                                                               m_nodes[currentNode],
+                                                               m_nodes[currentNode + 1],
+                                                               m_mesh->GetProjection());
 
             if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
             {
@@ -723,10 +737,12 @@ size_t LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t landBoundaryIndex,
             else
             {
                 // Check the second point
-                const auto [distanceFromLandBoundarySecondMeshNode, normalPoint, ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
-                                                                                                                         m_nodes[currentNode],
-                                                                                                                         m_nodes[currentNode + 1],
-                                                                                                                         m_mesh->m_projection);
+                const auto [distanceFromLandBoundarySecondMeshNode,
+                            normalPoint,
+                            ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
+                                                                    m_nodes[currentNode],
+                                                                    m_nodes[currentNode + 1],
+                                                                    m_mesh->GetProjection());
 
                 if (distanceFromLandBoundarySecondMeshNode < closeDistance)
                 {
@@ -797,15 +813,21 @@ std::tuple<size_t, size_t> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorith
             continue;
         }
 
-        const auto [distanceFromFirstMeshNode, normalFirstMeshNode, ratioFirstMeshNode] = DistanceFromLine(startPoint,
-                                                                                                           m_mesh->m_nodes[m_mesh->m_edges[e].first],
-                                                                                                           m_mesh->m_nodes[m_mesh->m_edges[e].second],
-                                                                                                           m_mesh->m_projection);
+        Projection const projection = m_mesh->GetProjection();
 
-        const auto [distanceFromSecondMeshNode, normalSecondMeshNode, ratioSecondMeshNode] = DistanceFromLine(endPoint,
-                                                                                                              m_mesh->m_nodes[m_mesh->m_edges[e].first],
-                                                                                                              m_mesh->m_nodes[m_mesh->m_edges[e].second],
-                                                                                                              m_mesh->m_projection);
+        const auto [distanceFromFirstMeshNode,
+                    normalFirstMeshNode,
+                    ratioFirstMeshNode] = DistanceFromLine(startPoint,
+                                                           m_mesh->m_nodes[m_mesh->m_edges[e].first],
+                                                           m_mesh->m_nodes[m_mesh->m_edges[e].second],
+                                                           projection);
+
+        const auto [distanceFromSecondMeshNode,
+                    normalSecondMeshNode,
+                    ratioSecondMeshNode] = DistanceFromLine(endPoint,
+                                                            m_mesh->m_nodes[m_mesh->m_edges[e].first],
+                                                            m_mesh->m_nodes[m_mesh->m_edges[e].second],
+                                                            projection);
 
         if (distanceFromFirstMeshNode < minDistStart)
         {
@@ -839,8 +861,9 @@ size_t LandBoundaries::FindStartEndMeshNodesFromEdges(size_t edge, Point point) 
 
     const auto firstMeshNodeIndex = m_mesh->m_edges[edge].first;
     const auto secondMeshNodeIndex = m_mesh->m_edges[edge].second;
-    const auto firstDistance = ComputeSquaredDistance(m_mesh->m_nodes[firstMeshNodeIndex], point, m_mesh->m_projection);
-    const auto secondDistance = ComputeSquaredDistance(m_mesh->m_nodes[secondMeshNodeIndex], point, m_mesh->m_projection);
+    Projection const projection = m_mesh->GetProjection();
+    const auto firstDistance = ComputeSquaredDistance(m_mesh->m_nodes[firstMeshNodeIndex], point, projection);
+    const auto secondDistance = ComputeSquaredDistance(m_mesh->m_nodes[secondMeshNodeIndex], point, projection);
 
     if (firstDistance <= secondDistance)
     {
@@ -872,10 +895,8 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
         isVisited[currentNodeIndex] = true;
         const Point currentNode = m_mesh->m_nodes[currentNodeIndex];
 
-        const auto [currentNodeDistance,
-                    currentNodeOnLandBoundary,
-                    currentNodeLandBoundaryNodeIndex,
-                    currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, currentNode);
+        const auto [currentNodeDistance, currentNodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio] =
+            NearestLandBoundarySegment(landBoundaryIndex, currentNode);
 
         if (currentNodeLandBoundaryNodeIndex == constants::missing::sizetValue)
         {
@@ -898,10 +919,8 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
 
             const auto neighboringNode = m_mesh->m_nodes[neighbouringNodeIndex];
 
-            const auto [neighboringNodeDistance,
-                        neighboringNodeOnLandBoundary,
-                        neighboringNodeLandBoundaryNodeIndex,
-                        neighboringNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, neighboringNode);
+            const auto [neighboringNodeDistance, neighboringNodeOnLandBoundary, neighboringNodeLandBoundaryNodeIndex, neighboringNodeEdgeRatio] =
+                NearestLandBoundarySegment(landBoundaryIndex, neighboringNode);
 
             double maximumDistance = std::max(currentNodeDistance, neighboringNodeDistance);
 
@@ -909,7 +928,8 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
             {
                 for (auto n = currentNodeLandBoundaryNodeIndex + 1; n < neighboringNodeLandBoundaryNodeIndex; ++n)
                 {
-                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->m_projection);
+                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] =
+                        DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->GetProjection());
                     if (middlePointDistance > maximumDistance)
                     {
                         maximumDistance = middlePointDistance;
@@ -920,7 +940,8 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
             {
                 for (auto n = neighboringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
                 {
-                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->m_projection);
+                    const auto [middlePointDistance, middlePointOnLandBoundary, ratio] =
+                        DistanceFromLine(m_nodes[n], currentNode, neighboringNode, m_mesh->GetProjection());
                     if (middlePointDistance > maximumDistance)
                     {
                         maximumDistance = middlePointDistance;
@@ -934,7 +955,7 @@ std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
                 maximumDistance = 1e6 * maximumDistance;
             }
 
-            const double edgeLength = ComputeDistance(currentNode, neighboringNode, m_mesh->m_projection);
+            const double edgeLength = ComputeDistance(currentNode, neighboringNode, m_mesh->GetProjection());
             const double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
 
             if (correctedDistance < nodeDistances[neighbouringNodeIndex])
@@ -989,7 +1010,8 @@ std::tuple<double, meshkernel::Point, size_t, double> LandBoundaries::NearestLan
             continue;
         }
 
-        const auto [distanceFromLandBoundary, normalPoint, ratio] = DistanceFromLine(node, m_nodes[n], m_nodes[n + 1], m_mesh->m_projection);
+        const auto [distanceFromLandBoundary, normalPoint, ratio] =
+            DistanceFromLine(node, m_nodes[n], m_nodes[n + 1], m_mesh->GetProjection());
 
         if (distanceFromLandBoundary > 0.0 && distanceFromLandBoundary < minimumDistance)
         {
@@ -1021,10 +1043,8 @@ void LandBoundaries::SnapMeshToLandBoundaries()
                 continue;
             }
 
-            const auto [minimumDistance,
-                        pointOnLandBoundary,
-                        nearestLandBoundaryNodeIndex,
-                        edgeRatio] = NearestLandBoundarySegment(meshNodeToLandBoundarySegment, m_mesh->m_nodes[n]);
+            const auto [minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio] =
+                NearestLandBoundarySegment(meshNodeToLandBoundarySegment, m_mesh->m_nodes[n]);
 
             m_mesh->m_nodes[n] = pointOnLandBoundary;
         }
