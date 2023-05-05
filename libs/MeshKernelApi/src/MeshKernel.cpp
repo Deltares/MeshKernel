@@ -1019,7 +1019,7 @@ namespace meshkernelapi
 
             auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
+            const auto& [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;
