@@ -1,5 +1,6 @@
 #include "MeshKernelApi/GriddedSamples.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
