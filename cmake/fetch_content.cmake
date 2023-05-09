@@ -70,7 +70,7 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
     "libfmt v.${LIBFMT_VERSION} will be used instead."
   )
 
-  set(USE_LIBFMT true)
+  set(USE_LIBFMT TRUE CACHE BOOL "Use libfmt instead of std::format")
 
   FetchContent_Declare(
     fmt

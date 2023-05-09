@@ -221,7 +221,7 @@ endif()
 target_compile_definitions(${TARGET_NAME} PRIVATE -DCMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
 
 if(USE_LIBFMT)
-  # add compiler definition to activate libfmt this in the source code
+  # add compiler definition to activate libfmt in the source code
   target_compile_definitions(${TARGET_NAME} PRIVATE USE_LIBFMT)
   # link libfmt
   target_link_libraries(${TARGET_NAME} PRIVATE fmt::fmt)

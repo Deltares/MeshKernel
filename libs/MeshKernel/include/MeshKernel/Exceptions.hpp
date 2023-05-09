@@ -150,6 +150,7 @@ namespace meshkernel
         std::string StrippedFilePath() const
         {
             std::string path = m_source_location.file_name();
+#ifdef CMAKE_SRC_DIR
             std::string path_to_erase(TO_STR_LITERAL(CMAKE_SRC_DIR));
 #ifdef _WIN32
             std::replace(path_to_erase.begin(), path_to_erase.end(), '/', '\\');
@@ -163,6 +164,7 @@ namespace meshkernel
                 std::replace(path.begin(), path.end(), '\\', '/');
 #endif
             }
+#endif
             return path;
         }
     };
