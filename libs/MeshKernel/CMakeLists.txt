@@ -218,6 +218,15 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
 
+target_compile_definitions(${TARGET_NAME} PRIVATE -DSOURCE_DIR=${CMAKE_SOURCE_DIR})
+
+if(USE_LIBFMT)
+  # add compiler definition to activate libfmt this in the source code
+  target_compile_definitions(${TARGET_NAME} PRIVATE USE_LIBFMT)
+  # link libfmt
+  target_link_libraries(${TARGET_NAME} PRIVATE fmt::fmt)
+endif()
+
 # Add precompiled headers to speed up compilation
 target_precompile_headers(
   ${TARGET_NAME}
@@ -231,8 +240,11 @@ target_precompile_headers(
     <map>
     <memory> 
     <numeric>
+    <source_location>
     <stdexcept>
+    <sstream>
     <string>
+    <string_view>
     <tuple>
     <type_traits>
     <unordered_map>
