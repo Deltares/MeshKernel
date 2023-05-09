@@ -206,6 +206,10 @@ target_link_libraries(
     OpenMP::OpenMP_CXX
 )
 
+if(${USE_LIBFMT})
+  target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
+endif()
+
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(
@@ -216,15 +220,6 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
       -static-libstdc++
   )
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
-endif()
-
-target_compile_definitions(${TARGET_NAME} PRIVATE -DCMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
-
-if(USE_LIBFMT)
-  # add compiler definition to activate libfmt in the source code
-  target_compile_definitions(${TARGET_NAME} PRIVATE USE_LIBFMT)
-  # link libfmt
-  target_link_libraries(${TARGET_NAME} PRIVATE fmt::fmt)
 endif()
 
 # Add precompiled headers to speed up compilation

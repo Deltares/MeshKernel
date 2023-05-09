@@ -58,10 +58,8 @@ if(ENABLE_BENCHMARKING)
   endif()
 endif()
 
-# When supported, std::format is preferred. Otherwise, fmtlib should be used.
-if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.1)
-  OR (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14))
 
+if(${USE_LIBFMT})
   set(LIBFMT_VERSION 9.1.0)
 
   message(
@@ -70,8 +68,7 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
     "libfmt v.${LIBFMT_VERSION} will be used instead."
   )
 
-  set(USE_LIBFMT TRUE CACHE BOOL "Use libfmt instead of std::format")
-
+  
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -85,4 +82,5 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_
     add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
   endif()
 
-endif()
+  endif()
+  
