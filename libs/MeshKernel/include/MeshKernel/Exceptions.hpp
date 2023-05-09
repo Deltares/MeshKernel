@@ -87,7 +87,7 @@ namespace meshkernel
     class MeshKernelError : public std::exception
     {
     public:
-        /// @brief Class default constructor. It is deleted to prevent constructing errors wihtout messages.
+        /// @brief Class default constructor. It is deleted to prevent constructing errors without messages.
         MeshKernelError() = delete;
 
         /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
@@ -122,7 +122,7 @@ namespace meshkernel
             oss << "Exception of type '"
                 << Category()
                 << "' in "
-                << StrippedFileName()
+                << StrippedFilePath()
                 << " ("
                 << m_source_location.line()
                 << ':'
@@ -138,30 +138,32 @@ namespace meshkernel
 
     protected:
         /// @brief Returns the error category.
-        /// @return The  error category.
+        /// @return The error category.
         virtual std::string Category() const { return "MeshKernelError"; }
 
     private:
         mutable std::string m_fmt_message;      ///< The formatted message
         std::source_location m_source_location; ///< The source location
 
-        std::string StrippedFileName() const
+        /// @brief Strips CMAKE_SRC_DIR from the path of the file name obtained from the source location.
+        /// @return The stripped file name.
+        std::string StrippedFilePath() const
         {
-            std::string str = m_source_location.file_name();
-            std::string str_to_erase(TO_STR_LITERAL(SOURCE_DIR));
+            std::string path = m_source_location.file_name();
+            std::string path_to_erase(TO_STR_LITERAL(CMAKE_SRC_DIR));
 #ifdef _WIN32
-            std::replace(str_to_erase.begin(), str_to_erase.end(), '/', '\\');
+            std::replace(path_to_erase.begin(), path_to_erase.end(), '/', '\\');
 #endif
-            size_t pos = str.find(str_to_erase);
+            size_t pos = path.find(path_to_erase);
             if (pos != std::string::npos)
             {
                 // erase including the trailing slash
-                str.erase(pos, str_to_erase.length() + 1);
+                path.erase(pos, path_to_erase.length() + 1);
 #ifdef _WIN32
-                std::replace(str.begin(), str.end(), '\\', '/');
+                std::replace(path.begin(), path.end(), '\\', '/');
 #endif
             }
-            return str;
+            return path;
         }
     };
 

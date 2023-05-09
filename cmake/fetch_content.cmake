@@ -58,7 +58,7 @@ if(ENABLE_BENCHMARKING)
   endif()
 endif()
 
-# When supported, std::format is preferrred. Otherwise, fmtlib should be used.
+# When supported, std::format is preferred. Otherwise, fmtlib should be used.
 if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.1)
   OR (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14))
 

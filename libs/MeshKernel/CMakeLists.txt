@@ -218,7 +218,7 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
 
-target_compile_definitions(${TARGET_NAME} PRIVATE -DSOURCE_DIR=${CMAKE_SOURCE_DIR})
+target_compile_definitions(${TARGET_NAME} PRIVATE -DCMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
 
 if(USE_LIBFMT)
   # add compiler definition to activate libfmt this in the source code
