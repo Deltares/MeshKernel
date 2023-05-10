@@ -51,7 +51,7 @@ namespace meshkernel
 {
 
     /// @brief A class for generating a variadic error message.
-    class VariadicErrorMessage
+    class VariadicErrorMessage final
     {
     public:
         /// @brief Class constructor
@@ -116,7 +116,7 @@ namespace meshkernel
 
         /// @brief Returns the explanatory string of the error.
         /// @return the explanatory string of the error.
-        const char* what() const noexcept
+        const char* what() const noexcept override
         {
             std::ostringstream oss;
             oss << "Exception of type '"
@@ -155,8 +155,7 @@ namespace meshkernel
 #ifdef _WIN32
             std::replace(path_to_erase.begin(), path_to_erase.end(), '/', '\\');
 #endif
-            size_t pos = path.find(path_to_erase);
-            if (pos != std::string::npos)
+            if (size_t pos = path.find(path_to_erase); pos != std::string::npos)
             {
                 // erase including the trailing slash
                 path.erase(pos, path_to_erase.length() + 1);
@@ -170,7 +169,7 @@ namespace meshkernel
     };
 
     /// @brief A class for throwing "not implemented" exceptions.
-    class NotImplemented : public MeshKernelError
+    class NotImplemented final : public MeshKernelError
     {
     public:
         // @brief Class constructor parametrized by a variadic error message and optionally the source location.
@@ -198,7 +197,7 @@ namespace meshkernel
     };
 
     /// @brief A class for throwing algorithm exceptions
-    class AlgorithmError : public MeshKernelError
+    class AlgorithmError final : public MeshKernelError
     {
     public:
         // @brief Class constructor parametrized by a variadic error message and optionally the source location.
@@ -226,12 +225,12 @@ namespace meshkernel
     };
 
     /// @brief A class for throwing mesh geometry errors.
-    class MeshGeometryError : public MeshKernelError
+    class MeshGeometryError final : public MeshKernelError
     {
     public:
         // @brief Class constructor parametrized optionally by the source location.
         /// @param[in] source_location The source location.
-        MeshGeometryError(std::source_location const& source_location = std::source_location::current())
+        explicit MeshGeometryError(std::source_location const& source_location = std::source_location::current())
             : MeshKernelError("", source_location),
               m_invalid_index{constants::missing::sizetValue},
               m_mesh_location(Mesh::Location::Unknown)
