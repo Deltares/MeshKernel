@@ -142,7 +142,6 @@ set(
   API_INC_LIST
   ${API_DOMAIN_INC_DIR}/CurvilinearParameters.hpp
   ${API_DOMAIN_INC_DIR}/MakeGridParameters.hpp
-  ${API_DOMAIN_INC_DIR}/MeshRefinementParameters.hpp
   ${API_DOMAIN_INC_DIR}/OrthogonalizationParameters.hpp
   ${API_DOMAIN_INC_DIR}/SplinesToCurvilinearParameters.hpp
 )

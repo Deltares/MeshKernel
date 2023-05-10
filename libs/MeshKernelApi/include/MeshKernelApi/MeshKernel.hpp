@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernelApi/Contacts.hpp>
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
@@ -35,7 +36,6 @@
 #include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
@@ -526,7 +526,7 @@ namespace meshkernelapi
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
-                                                               const MeshRefinementParameters& meshRefinementParameters);
+                                                               const meshkernel::MeshRefinement::Parameters& meshRefinementParameters);
 
         /// @brief Refine based on gridded samples
         ///
@@ -540,7 +540,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
                                                                        const GriddedSamples& griddedSamples,
-                                                                       const MeshRefinementParameters& meshRefinementParameters,
+                                                                       const meshkernel::MeshRefinement::Parameters& meshRefinementParameters,
                                                                        bool useNodalRefinement);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
@@ -550,7 +550,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                                const GeometryList& geometryList,
-                                                               const MeshRefinementParameters& meshRefinementParameters);
+                                                               const meshkernel::MeshRefinement::Parameters& meshRefinementParameters);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in]  meshKernelId  The id of the mesh state

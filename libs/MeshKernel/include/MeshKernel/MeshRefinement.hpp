@@ -31,7 +31,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RTree.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 
 namespace meshkernel
 {
@@ -74,29 +73,39 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
-        /// @brief Enumerator describing the face location types
-        enum class FaceLocation
-        {
-            Land = 1,
-            Water = 2,
-            LandWater = 3
-        };
-
-        /// @brief Enumerator describing the different refinement types
-        enum class RefinementType
-        {
-            WaveCourant = 1,
-            RefinementLevels = 2
-        };
-
     public:
+        /// @brief A struct used to describe the mesh refinement parameters in a C-compatible manner
+        struct Parameters
+        {
+            /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted
+            int max_num_refinement_iterations = 10;
+
+            /// @brief Whether to compute faces intersected by polygon (yes=1/no=0)
+            int refine_intersected = 0;
+
+            /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
+            int use_mass_center_when_refining = 1;
+
+            /// @brief Minimum edge size
+            double min_edge_size = 0.5;
+
+            /// @brief Refinement criterion type
+            int refinement_type = 2;
+
+            /// @brief Connect hanging nodes at the end of the iteration, 1 yes or 0 no
+            int connect_hanging_nodes = 1;
+
+            /// @brief Take samples outside face into account , 1 yes 0 no
+            int account_for_samples_outside = 0;
+        };
+
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<MeshInterpolation> interpolant,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+                       const Parameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
@@ -105,7 +114,7 @@ namespace meshkernel
         /// @param[in] useNodalRefinement Use nodal refinement
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<MeshInterpolation> interpolant,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters,
+                       const Parameters& meshRefinementParameters,
                        bool useNodalRefinement);
 
         /// @brief The constructor for refining based on polygons
@@ -114,7 +123,7 @@ namespace meshkernel
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        const Polygons& polygon,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+                       const Parameters& meshRefinementParameters);
 
         /// @brief Compute mesh refinement (refinecellsandfaces2).
         ///
@@ -132,6 +141,21 @@ namespace meshkernel
         void Compute();
 
     private:
+        /// @brief Enumerator describing the face location types
+        enum class FaceLocation
+        {
+            Land = 1,
+            Water = 2,
+            LandWater = 3
+        };
+
+        /// @brief Enumerator describing the different refinement types
+        enum class RefinementType
+        {
+            WaveCourant = 1,
+            RefinementLevels = 2
+        };
+
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
@@ -211,11 +235,11 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh2D> m_mesh;                                     ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr;         ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                                ///< Polygons
-        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
-        bool m_useNodalRefinement = false;                                  ///< Use refinement based on interpolated values at nodes
-        const double m_mergingDistance = 0.001;                             ///< The distance for merging two edges
+        std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
+        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                        ///< Polygons
+        Parameters m_meshRefinementParameters;                      ///< The mesh refinement parameters
+        bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
     };
 } // namespace meshkernel

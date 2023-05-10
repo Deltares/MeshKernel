@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/MakeGridParameters.hpp>
@@ -673,7 +674,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     geometryListIn.values = valuesIn.get();
     geometryListIn.num_coordinates = 9;
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
@@ -743,7 +744,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 
     geometryListIn.num_coordinates = 9;
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
 
@@ -3099,7 +3100,7 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     griddedSamples.x_coordinates = nullptr;
     griddedSamples.y_coordinates = nullptr;
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 5;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.01;
@@ -3157,7 +3158,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     griddedSamples.y_coordinates = y_coordinates.data();
     griddedSamples.values = values.data();
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 5;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 2.0;

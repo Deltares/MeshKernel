@@ -5,7 +5,6 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 

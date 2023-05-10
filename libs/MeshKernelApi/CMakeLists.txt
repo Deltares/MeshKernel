@@ -34,7 +34,6 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
-  ${DOMAIN_INC_DIR}/MeshRefinementParameters.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationParameters.hpp
   ${DOMAIN_INC_DIR}/SplinesToCurvilinearParameters.hpp
   ${DOMAIN_INC_DIR}/State.hpp

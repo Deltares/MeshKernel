@@ -5,10 +5,11 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
+
+using namespace meshkernel;
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
@@ -30,7 +31,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -121,7 +122,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -221,7 +222,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -267,7 +268,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -346,7 +347,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -415,7 +416,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -480,7 +481,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
                                                                                    true,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 10;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -545,7 +546,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -603,7 +604,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -638,7 +639,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
                                                                                    false,
                                                                                    1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -684,7 +685,7 @@ TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -719,7 +720,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 {
     auto mesh = MakeCurvilinearGridForTesting();
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -754,7 +755,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -800,7 +801,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshkernel::Point origin{-5.0, -5.0};
     const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -827,7 +828,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     meshkernel::Point origin{-5.0, -5.0};
     const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -854,7 +855,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     meshkernel::Point origin{-5.0, -5.0};
     const auto interpolator = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinement::Parameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;

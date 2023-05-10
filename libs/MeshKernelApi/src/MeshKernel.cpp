@@ -1406,7 +1406,7 @@ namespace meshkernelapi
                                                            const GeometryList& samples,
                                                            double relativeSearchRadius,
                                                            int minimumNumSamples,
-                                                           const MeshRefinementParameters& meshRefinementParameters)
+                                                           const meshkernel::MeshRefinement::Parameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1456,7 +1456,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
                                                                    const GriddedSamples& griddedSamples,
-                                                                   const MeshRefinementParameters& meshRefinementParameters,
+                                                                   const meshkernel::MeshRefinement::Parameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
     {
         int exitCode = Success;
@@ -1529,7 +1529,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                            const GeometryList& geometryList,
-                                                           const MeshRefinementParameters& meshRefinementParameters)
+                                                           const meshkernel::MeshRefinement::Parameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
