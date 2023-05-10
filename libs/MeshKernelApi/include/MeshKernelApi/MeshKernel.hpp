@@ -294,21 +294,6 @@ namespace meshkernelapi
                                             GeometryList& geometryListOut,
                                             int numberOfPointsBetweenNodes);
 
-        /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
-        /// @param[in]  meshKernelId    Id of the grid state
-        /// @param[in]  xCoordinateIn   The x coordinate of the node to insert
-        /// @param[in]  yCoordinateIn   The y coordinate of the node to insert
-        /// @param[in]  searchRadius    The radii where to search for mesh nodes
-        /// @param[out] xCoordinateOut  The x coordinate of the found Mesh2D node
-        /// @param[out] yCoordinateOut  The y coordinate of the found Mesh2D node
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_closest_node(int meshKernelId,
-                                                        double xCoordinateIn,
-                                                        double yCoordinateIn,
-                                                        double searchRadius,
-                                                        double& xCoordinateOut,
-                                                        double& yCoordinateOut);
-
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
@@ -564,6 +549,21 @@ namespace meshkernelapi
                                                       double yCoordinate,
                                                       double searchRadius,
                                                       int& nodeIndex);
+
+        /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
+        /// @param[in]  meshKernelId    Id of the grid state
+        /// @param[in]  xCoordinateIn   The x coordinate of the node to insert
+        /// @param[in]  yCoordinateIn   The y coordinate of the node to insert
+        /// @param[in]  searchRadius    The radii where to search for mesh nodes
+        /// @param[out] xCoordinateOut  The x coordinate of the found Mesh2D node
+        /// @param[out] yCoordinateOut  The y coordinate of the found Mesh2D node
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_closest_node(int meshKernelId,
+                                                        double xCoordinateIn,
+                                                        double yCoordinateIn,
+                                                        double searchRadius,
+                                                        double& xCoordinateOut,
+                                                        double& yCoordinateOut);
 
         /// @brief Selects the polygon nodes within another polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
