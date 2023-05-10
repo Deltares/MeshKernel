@@ -1627,7 +1627,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
     std::vector<EdgeMeshPolylineIntersection> edgesIntersections(GetNumEdges());
     std::vector<FaceMeshPolylineIntersection> facesIntersections(GetNumFaces());
 
-    std::vector<double> cumulativeLength(polyLine.size());
+    std::vector<double> cumulativeLength(polyLine.size(), 0.0);
     for (size_t i = 1; i < polyLine.size(); ++i)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_projection);
@@ -1752,6 +1752,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
             {
                 faceIntersectionsResult[f].edgeIndexses.insert(faceIntersectionsResult[f].edgeIndexses.end(), facesIntersections[f].edgeIndexses.begin(), facesIntersections[f].edgeIndexses.end());
                 faceIntersectionsResult[f].edgeNodes.insert(faceIntersectionsResult[f].edgeNodes.end(), facesIntersections[f].edgeNodes.begin(), facesIntersections[f].edgeNodes.end());
+                faceIntersectionsResult[f].polylineDistance = 0.5 * (faceIntersectionsResult[f].polylineDistance + facesIntersections[f].polylineDistance);
             }
             else if (!facesIntersections[f].edgeNodes.empty())
             {
