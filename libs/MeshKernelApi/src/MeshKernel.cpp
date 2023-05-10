@@ -1767,7 +1767,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
     {
         invalidIndex = static_cast<int>(meshGeometryError.InavlidIndex());
-        type = static_cast<int>(meshGeometryError.MeshLoation());
+        type = static_cast<int>(meshGeometryError.MeshLocation());
         return Success;
     }
 

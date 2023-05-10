@@ -274,7 +274,7 @@ namespace meshkernel
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
-        Mesh::Location MeshLoation() const { return m_mesh_location; }
+        Mesh::Location MeshLocation() const { return m_mesh_location; }
 
     private:
         /// @brief Returns the error category.
