@@ -37,7 +37,7 @@ using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
-                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters)
+                               const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
       m_interpolant(interpolant),
       m_meshRefinementParameters(meshRefinementParameters)
@@ -47,7 +47,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
-                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters,
+                               const MeshRefinementParameters& meshRefinementParameters,
                                bool useNodalRefinement)
     : m_mesh(mesh),
       m_interpolant(interpolant),
@@ -59,7 +59,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
-                               const meshkernelapi::MeshRefinementParameters& meshRefinementParameters)
+                               const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
       m_polygons(polygon),
       m_meshRefinementParameters(meshRefinementParameters) {}

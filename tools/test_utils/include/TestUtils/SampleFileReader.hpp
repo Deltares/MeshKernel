@@ -27,6 +27,9 @@
 
 #pragma once
 
+#include "MeshKernel/Entities.hpp"
+
+#include <string>
 #include <tuple>
 #include <vector>
 

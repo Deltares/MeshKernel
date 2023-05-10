@@ -29,9 +29,9 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RTree.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 
 namespace meshkernel
 {
@@ -96,7 +96,7 @@ namespace meshkernel
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<MeshInterpolation> interpolant,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+                       const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
@@ -105,7 +105,7 @@ namespace meshkernel
         /// @param[in] useNodalRefinement Use nodal refinement
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<MeshInterpolation> interpolant,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters,
+                       const MeshRefinementParameters& meshRefinementParameters,
                        bool useNodalRefinement);
 
         /// @brief The constructor for refining based on polygons
@@ -114,7 +114,7 @@ namespace meshkernel
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                        const Polygons& polygon,
-                       const meshkernelapi::MeshRefinementParameters& meshRefinementParameters);
+                       const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Compute mesh refinement (refinecellsandfaces2).
         ///
@@ -211,11 +211,11 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh2D> m_mesh;                                     ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr;         ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                                ///< Polygons
-        meshkernelapi::MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
-        bool m_useNodalRefinement = false;                                  ///< Use refinement based on interpolated values at nodes
-        const double m_mergingDistance = 0.001;                             ///< The distance for merging two edges
+        std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
+        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                        ///< Polygons
+        MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
+        bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
     };
 } // namespace meshkernel

@@ -3,9 +3,9 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -14,7 +14,6 @@
 #include <cmath>
 
 using namespace meshkernel;
-namespace mkapi = meshkernelapi;
 
 static void BM_Orthogonalization(benchmark::State& state)
 {
@@ -65,7 +64,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         mesh->AdministrateNodesEdges();
 
         auto const project_to_land_Boundary = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-        mkapi::OrthogonalizationParameters orthogonalization_parameters;
+        OrthogonalizationParameters orthogonalization_parameters;
         orthogonalization_parameters.inner_iterations = 25;
         orthogonalization_parameters.boundary_iterations = 25;
         orthogonalization_parameters.outer_iterations = 1;

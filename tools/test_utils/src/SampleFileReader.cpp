@@ -1,13 +1,12 @@
-#include "MeshKernelApi/GriddedSamples.hpp"
+#include <TestUtils/SampleFileReader.hpp>
+
+#include <MeshKernel/Entities.hpp>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include <MeshKernel/Entities.hpp>
-#include <TestUtils/SampleFileReader.hpp>
 
 std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath)
 {

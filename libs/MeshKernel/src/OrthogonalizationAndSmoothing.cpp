@@ -44,7 +44,7 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
                                                              std::shared_ptr<Polygons> polygon,
                                                              std::shared_ptr<LandBoundaries> landBoundaries,
                                                              LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
-                                                             const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
+                                                             const OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
                                                                                                                                               m_smoother(smoother),
                                                                                                                                               m_orthogonalizer(orthogonalizer),
                                                                                                                                               m_polygons(polygon),
