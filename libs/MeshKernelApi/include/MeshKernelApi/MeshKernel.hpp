@@ -55,8 +55,12 @@ namespace meshkernelapi
     enum MeshKernelApiErrors
     {
         Success = 0,
-        Exception = 1,
-        InvalidGeometry = 2
+        NotImplemented = 1,
+        MeshGeometryError = 2,
+        AlgorithmError = 3,
+        MeshKernelError = 4,
+        StadardLibraryException = 5,
+        UnknownException = 6
     };
 
 #ifdef __cplusplus

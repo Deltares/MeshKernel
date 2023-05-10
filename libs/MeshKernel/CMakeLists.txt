@@ -206,6 +206,10 @@ target_link_libraries(
     OpenMP::OpenMP_CXX
 )
 
+if(${USE_LIBFMT})
+  target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
+endif()
+
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(
@@ -231,8 +235,11 @@ target_precompile_headers(
     <map>
     <memory> 
     <numeric>
+    <source_location>
     <stdexcept>
+    <sstream>
     <string>
+    <string_view>
     <tuple>
     <type_traits>
     <unordered_map>

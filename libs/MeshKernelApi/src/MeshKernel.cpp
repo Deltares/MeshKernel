@@ -25,12 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <cstring>
-#include <stdexcept>
-#include <unordered_map>
-
-#include <vector>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -70,6 +64,15 @@
 #include <MeshKernelApi/Utils.hpp>
 #include <Version/Version.hpp>
 
+#include <cstring>
+#include <stdexcept>
+#include <unordered_map>
+#include <vector>
+
+#if defined(__linux__) && defined(__GNUC__)
+#define strncpy_s strncpy
+#endif
+
 namespace meshkernelapi
 {
     // The state held by MeshKernel
@@ -78,24 +81,49 @@ namespace meshkernelapi
 
     // Error state
     static char exceptionMessage[512] = "";
-    static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError();
+    static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError("", 0, meshkernel::Mesh::Location::Unknown);
 
-    int HandleExceptions(const std::exception_ptr exceptionPtr)
+    int HandleExceptions(std::exception_ptr const exception_ptr)
     {
+        if (!exception_ptr)
+        {
+            throw std::bad_exception();
+        }
+
         try
         {
-            std::rethrow_exception(exceptionPtr);
+            std::rethrow_exception(exception_ptr);
+        }
+        catch (const meshkernel::NotImplemented& e)
+        {
+            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            return MeshKernelApiErrors::NotImplemented;
         }
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return InvalidGeometry;
+            return MeshKernelApiErrors::MeshGeometryError;
+        }
+        catch (meshkernel::AlgorithmError const& e)
+        {
+            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            return MeshKernelApiErrors::AlgorithmError;
+        }
+        catch (meshkernel::MeshKernelError const& e)
+        {
+            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            return MeshKernelApiErrors::MeshKernelError;
         }
         catch (const std::exception& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return Exception;
+            return MeshKernelApiErrors::StadardLibraryException;
+        }
+        catch (...)
+        {
+            strncpy_s(exceptionMessage, "Unknown exception", sizeof exceptionMessage);
+            return MeshKernelApiErrors::UnknownException;
         }
     }
 
@@ -1736,8 +1764,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
     {
-        invalidIndex = static_cast<int>(meshGeometryError.m_invalidIndex);
-        type = static_cast<int>(meshGeometryError.m_location);
+        invalidIndex = static_cast<int>(meshGeometryError.InavlidIndex());
+        type = static_cast<int>(meshGeometryError.MeshLocation());
         return Success;
     }
 
