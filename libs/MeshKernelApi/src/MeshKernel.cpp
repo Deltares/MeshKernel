@@ -1027,12 +1027,14 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
                                                                const GeometryList& boundaryPolyLine,
-                                                               int* polylineSegmentIndexes,
-                                                               double* polylineSegmentDistances,
-                                                               int* edgeNodesIntersections,
+                                                               int* edgeNodes,
+                                                               int* edgeIndex,
                                                                double* edgeDistances,
+                                                               double* segmentDistances,
+                                                               int* segmentIndexes,
                                                                int* faceIndexes,
-                                                               int* faceNodesIntersections)
+                                                               int* faceNumEdges,
+                                                               int* faceEdgeIndex)
     {
         int exitCode = Success;
         try
@@ -1044,7 +1046,7 @@ namespace meshkernelapi
 
             auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
+            const auto& [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;
@@ -1053,32 +1055,30 @@ namespace meshkernelapi
                 const auto& edgeIntersection = edgeIntersections[i];
 
                 // edge information must be stored only once
-                edgeNodesIntersections[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeFirstNode);
+                edgeNodes[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeFirstNode);
                 edgeNodesCount++;
-                edgeNodesIntersections[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeSecondNode);
+                edgeNodes[edgeNodesCount] = static_cast<int>(edgeIntersection.edgeSecondNode);
                 edgeNodesCount++;
 
                 // the edge count
                 edgeDistances[edgeCount] = edgeIntersection.edgeDistance;
-                polylineSegmentIndexes[edgeCount] = edgeIntersection.polylineSegmentIndex;
-                polylineSegmentDistances[edgeCount] = edgeIntersection.polylineSegmentDistance;
+                segmentIndexes[edgeCount] = edgeIntersection.polylineSegmentIndex;
+                segmentDistances[edgeCount] = edgeIntersection.adimensionalPolylineSegmentDistance;
+                edgeIndex[edgeCount] = static_cast<int>(edgeIntersection.edgeIndex);
                 edgeCount++;
             }
 
             int faceEdgesCount = 0;
-            int faceNodesCount = 0;
+            int faceCount = 0;
             for (const auto& intersection : faceIntersections)
             {
+                faceNumEdges[faceCount] = static_cast<int>(intersection.edgeIndexses.size());
+                faceCount++;
                 for (size_t i = 0; i < intersection.edgeIndexses.size(); ++i)
                 {
                     faceIndexes[faceEdgesCount] = static_cast<int>(intersection.faceIndex);
+                    faceEdgeIndex[faceEdgesCount] = static_cast<int>(intersection.edgeIndexses[i]);
                     faceEdgesCount++;
-                }
-
-                for (const auto& edgeNode : intersection.edgeNodes)
-                {
-                    faceNodesIntersections[faceNodesCount] = static_cast<int>(edgeNode);
-                    faceNodesCount++;
                 }
             }
         }
