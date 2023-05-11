@@ -9,7 +9,7 @@ var searchData=
   ['operator_2d_854',['operator-',['../structmeshkernel_1_1_point.html#a4821eb516b6ca631ad63228a27573c8c',1,'meshkernel::Point::operator-(Point const &amp;rhs) const'],['../structmeshkernel_1_1_point.html#acc3f832468b7300c61f80ca2e6fc6e2e',1,'meshkernel::Point::operator-(double const &amp;rhs) const']]],
   ['operator_2f_855',['operator/',['../structmeshkernel_1_1_point.html#afbd9599b74c4e9829e903e69a4d10bab',1,'meshkernel::Point::operator/(Point const &amp;rhs) const'],['../structmeshkernel_1_1_point.html#a958a65c922febb232d139ae9df7d71a7',1,'meshkernel::Point::operator/(double const &amp;rhs) const']]],
   ['operator_3d_3d_856',['operator==',['../structmeshkernel_1_1_point.html#ac702fdf239b107e02f4cdf0927f96f47',1,'meshkernel::Point']]],
-  ['orthogonalizationandsmoothing_857',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a7cc6dbf3572f893c936e80f6d57eff98',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['orthogonalizationandsmoothing_857',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a15523500465dc8015118b6c761df4d0a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
   ['orthogonalizer_858',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb',1,'meshkernel::Orthogonalizer']]],
   ['orthogonalprojectiononsegment_859',['OrthogonalProjectionOnSegment',['../namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450',1,'meshkernel']]],
   ['outerindices_860',['OuterIndices',['../classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c',1,'meshkernel::Polygons']]],

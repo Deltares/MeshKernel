@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['block_5fsize_909',['block_size',['../structmeshkernelapi_1_1_make_grid_parameters.html#a25c10abb7bec264d56f2dd9efeb5cd3d',1,'meshkernelapi::MakeGridParameters']]],
-  ['block_5fsize_5fx_910',['block_size_x',['../structmeshkernelapi_1_1_make_grid_parameters.html#a945894db066f92704b12532f15b32cfb',1,'meshkernelapi::MakeGridParameters']]],
-  ['block_5fsize_5fy_911',['block_size_y',['../structmeshkernelapi_1_1_make_grid_parameters.html#a425d3e56fbb912b6e866edaac36c58f5',1,'meshkernelapi::MakeGridParameters']]],
-  ['boundary_5fiterations_912',['boundary_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#ac241fcf4682dc3d0ee19b028d57a066c',1,'meshkernelapi::OrthogonalizationParameters']]]
+  ['block_5fsize_909',['block_size',['../structmeshkernel_1_1_make_grid_parameters.html#a7ea1be3d325dc94eaf237404cbccb529',1,'meshkernel::MakeGridParameters']]],
+  ['block_5fsize_5fx_910',['block_size_x',['../structmeshkernel_1_1_make_grid_parameters.html#a7fe6b82bad2505e05e8ef94ddbd0efce',1,'meshkernel::MakeGridParameters']]],
+  ['block_5fsize_5fy_911',['block_size_y',['../structmeshkernel_1_1_make_grid_parameters.html#ab956caf359f4ed225be733caf90b7373',1,'meshkernel::MakeGridParameters']]],
+  ['boundary_5fiterations_912',['boundary_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#a0dd2f5e05b0e8b65e7a77d342d7ba7bd',1,'meshkernel::OrthogonalizationParameters']]]
 ];

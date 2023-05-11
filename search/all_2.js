@@ -4,7 +4,7 @@ var searchData=
   ['cartesian3dtospherical_24',['Cartesian3DToSpherical',['../namespacemeshkernel.html#a9d9dfaffd2c818177c3f9f02debb460e',1,'meshkernel']]],
   ['category_25',['Category',['../classmeshkernel_1_1_mesh_kernel_error.html#ab01f553af7ce69feebc5b99b7ebb4a1c',1,'meshkernel::MeshKernelError']]],
   ['cell_5fsize_26',['cell_size',['../structmeshkernelapi_1_1_gridded_samples.html#a3a8c8b312a02772f65344ac3b07b31ab',1,'meshkernelapi::GriddedSamples']]],
-  ['check_5ffront_5fcollisions_27',['check_front_collisions',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a742744f258b5a57de623f8b3ef4d1074',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['check_5ffront_5fcollisions_27',['check_front_collisions',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#acc49162ae21e459aa1f4221a7bfdd6d2',1,'meshkernel::SplinesToCurvilinearParameters']]],
   ['circumcenteroftriangle_28',['CircumcenterOfTriangle',['../namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1',1,'meshkernel']]],
   ['classifynodes_29',['ClassifyNodes',['../classmeshkernel_1_1_mesh2_d.html#ae70f0bfaf5a55b9b0a76bd6a3d98041f',1,'meshkernel::Mesh2D']]],
   ['closest_30',['Closest',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a0c89b66f6bdfb128781e2c68d43364d8',1,'meshkernel::AveragingInterpolation']]],
@@ -45,14 +45,14 @@ var searchData=
   ['computesquareddistance_65',['ComputeSquaredDistance',['../namespacemeshkernel.html#a358b556c559ed3109e2e5688794655d5',1,'meshkernel']]],
   ['computethreebasecomponents_66',['ComputeThreeBaseComponents',['../namespacemeshkernel.html#a351c3fd8e9cb0d3e60a79dbdfc43af9a',1,'meshkernel']]],
   ['computetwobasecomponents_67',['ComputeTwoBaseComponents',['../namespacemeshkernel.html#ad08b467bb0943757f7db680c09a98977',1,'meshkernel']]],
-  ['connect_5fhanging_5fnodes_68',['connect_hanging_nodes',['../structmeshkernelapi_1_1_mesh_refinement_parameters.html#a8f4c33339fc11a9f2a91c5fb0ae6f4ba',1,'meshkernelapi::MeshRefinementParameters']]],
+  ['connect_5fhanging_5fnodes_68',['connect_hanging_nodes',['../structmeshkernel_1_1_mesh_refinement_parameters.html#abdb41599cc4fc2d9c39e949c7c37e9e5',1,'meshkernel::MeshRefinementParameters']]],
   ['connectnodes_69',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#a9baba75ddd46f4af5465d947f40fba3c',1,'meshkernel::Mesh']]],
   ['contacts_70',['Contacts',['../classmeshkernel_1_1_contacts.html',1,'meshkernel::Contacts'],['../structmeshkernelapi_1_1_contacts.html',1,'meshkernelapi::Contacts'],['../classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc',1,'meshkernel::Contacts::Contacts()=default'],['../classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492',1,'meshkernel::Contacts::Contacts(std::shared_ptr&lt; Mesh1D &gt; mesh1d, std::shared_ptr&lt; Mesh2D &gt; mesh2d)']]],
   ['converttosamples_71',['ConvertToSamples',['../structmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['coordinates_5fx_72',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
   ['coordinates_5fy_73',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
   ['crossproduct_74',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]],
-  ['curvature_5fadapted_5fgrid_5fspacing_75',['curvature_adapted_grid_spacing',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a4a9a0c5aba6ef19596c119f7999cad7c',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['curvature_5fadapted_5fgrid_5fspacing_75',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
   ['curvilineargrid_76',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_77',['CurvilinearParameters',['../structmeshkernelapi_1_1_curvilinear_parameters.html',1,'meshkernelapi']]]
+  ['curvilinearparameters_77',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];

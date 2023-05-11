@@ -47,5 +47,5 @@ var searchData=
   ['getxcoord_169',['GetXCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a4cc43c92ab20ad97f325627933d6cd9e',1,'meshkernel::TriangulationWrapper']]],
   ['getycoord_170',['GetYCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a24baf38c547bc42f94beb4ae6d78978f',1,'meshkernel::TriangulationWrapper']]],
   ['griddedsamples_171',['GriddedSamples',['../structmeshkernelapi_1_1_gridded_samples.html',1,'meshkernelapi']]],
-  ['grow_5fgrid_5foutside_172',['grow_grid_outside',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aae19f194cd5cd79a1bd19e43bce54e84',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
+  ['grow_5fgrid_5foutside_172',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
 ];

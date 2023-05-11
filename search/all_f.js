@@ -11,8 +11,8 @@ var searchData=
   ['simpleaveraging_476',['SimpleAveraging',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08',1,'meshkernel::AveragingInterpolation']]],
   ['size_477',['Size',['../classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3',1,'meshkernel::RTree']]],
   ['smoother_478',['Smoother',['../classmeshkernel_1_1_smoother.html',1,'meshkernel::Smoother'],['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother::Smoother()']]],
-  ['smoothing_5fiterations_479',['smoothing_iterations',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a7cfdcab393a24f272c652b05a8d50762',1,'meshkernelapi::CurvilinearParameters']]],
-  ['smoothing_5fparameter_480',['smoothing_parameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a02a10471872db9f911c3d5061452a546',1,'meshkernelapi::CurvilinearParameters']]],
+  ['smoothing_5fiterations_479',['smoothing_iterations',['../structmeshkernel_1_1_curvilinear_parameters.html#a8188a3e37a5bfc26ee7cb716d869eb0a',1,'meshkernel::CurvilinearParameters']]],
+  ['smoothing_5fparameter_480',['smoothing_parameter',['../structmeshkernel_1_1_curvilinear_parameters.html#ad198e0967eef861f150ab8dbb8214add',1,'meshkernel::CurvilinearParameters']]],
   ['snapmeshtolandboundaries_481',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
   ['solve_482',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
   ['sortedfacesaroundnode_483',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#a4d5245c9e158f76dfbbd1cf12366cc98',1,'meshkernel::Mesh2D']]],
@@ -20,6 +20,6 @@ var searchData=
   ['sortedindices_485',['SortedIndices',['../namespacemeshkernel.html#addc034baff4660617d88a46aae221a99',1,'meshkernel']]],
   ['sphericaltocartesian3d_486',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
   ['splines_487',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['splinestocurvilinearparameters_488',['SplinesToCurvilinearParameters',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html',1,'meshkernelapi']]],
+  ['splinestocurvilinearparameters_488',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]],
   ['swapvectorelements_489',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['n_5fcols_399',['n_cols',['../structmeshkernelapi_1_1_gridded_samples.html#a8e29d1db3487b9d2469b37c4d0dd3759',1,'meshkernelapi::GriddedSamples']]],
-  ['n_5frefinement_400',['n_refinement',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ac7b3f3478c5b473b2936c5547f24a58d',1,'meshkernelapi::CurvilinearParameters']]],
+  ['n_5frefinement_400',['n_refinement',['../structmeshkernel_1_1_curvilinear_parameters.html#a45aec3c24de32bd32bb17b1a52791358',1,'meshkernel::CurvilinearParameters']]],
   ['n_5frows_401',['n_rows',['../structmeshkernelapi_1_1_gridded_samples.html#a14a8733b746d2262e58002c75e96e7cf',1,'meshkernelapi::GriddedSamples']]],
   ['network1d_402',['Network1D',['../classmeshkernel_1_1_network1_d.html',1,'meshkernel::Network1D'],['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
   ['nextcircularbackwardindex_403',['NextCircularBackwardIndex',['../namespacemeshkernel.html#af9e63a9340283b6689bfbd3c1d6e47b0',1,'meshkernel']]],
@@ -13,7 +13,7 @@ var searchData=
   ['nodemaskfromedgemask_409',['NodeMaskFromEdgeMask',['../classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216',1,'meshkernel::Mesh2D']]],
   ['nodemaskfrompolygon_410',['NodeMaskFromPolygon',['../classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91',1,'meshkernel::Mesh2D']]],
   ['nodes_411',['Nodes',['../classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439',1,'meshkernel::Polygons::Nodes()'],['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e',1,'meshkernel::Mesh::Nodes()']]],
-  ['nodes_5fon_5ftop_5fof_5feach_5fother_5ftolerance_412',['nodes_on_top_of_each_other_tolerance',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a21e47ea96722a2683317d4a4ba2bdde0',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
+  ['nodes_5fon_5ftop_5fof_5feach_5fother_5ftolerance_412',['nodes_on_top_of_each_other_tolerance',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#aac12ca00b38644d122995b1092852c6d',1,'meshkernel::SplinesToCurvilinearParameters']]],
   ['nodes_5fper_5fface_413',['nodes_per_face',['../structmeshkernelapi_1_1_mesh2_d.html#a8e057108b3d686304472e14bda5bb2d7',1,'meshkernelapi::Mesh2D']]],
   ['nodetypes_414',['NodeTypes',['../classmeshkernel_1_1_mesh2_d.html#a17db40a7b9ea9151e51231c4af416d47',1,'meshkernel::Mesh2D']]],
   ['normalizedinnerproducttwosegments_415',['NormalizedInnerProductTwoSegments',['../namespacemeshkernel.html#a753af36980a58942bff49dfd40f5edff',1,'meshkernel']]],
@@ -21,7 +21,7 @@ var searchData=
   ['normalvectorinside_417',['NormalVectorInside',['../namespacemeshkernel.html#ae04b6bc704df7891f149706c2bbd84e8',1,'meshkernel']]],
   ['normalvectoroutside_418',['NormalVectorOutside',['../namespacemeshkernel.html#ae335ccbbc8c7587705691d226055a2d1',1,'meshkernel']]],
   ['notimplemented_419',['NotImplemented',['../classmeshkernel_1_1_not_implemented.html',1,'meshkernel::NotImplemented'],['../classmeshkernel_1_1_not_implemented.html#abda130873f7e128624bee765ea6aadaf',1,'meshkernel::NotImplemented::NotImplemented(VariadicErrorMessage const &amp;message, std::source_location const &amp;source_location=std::source_location::current())'],['../classmeshkernel_1_1_not_implemented.html#afa26c855fa6a84b5ebcc84aefa4909d1',1,'meshkernel::NotImplemented::NotImplemented(std::string_view message, std::source_location const &amp;source_location=std::source_location::current())']]],
-  ['num_5fcolumns_420',['num_columns',['../structmeshkernelapi_1_1_make_grid_parameters.html#a778ab7202850159df970bfa0ad8ce8f2',1,'meshkernelapi::MakeGridParameters']]],
+  ['num_5fcolumns_420',['num_columns',['../structmeshkernel_1_1_make_grid_parameters.html#a7eb4b28d2bb67b7f08309194e022c2f7',1,'meshkernel::MakeGridParameters']]],
   ['num_5fcontacts_421',['num_contacts',['../structmeshkernelapi_1_1_contacts.html#a8f675941c758f968dd337e0a5bcb6b8d',1,'meshkernelapi::Contacts']]],
   ['num_5fcoordinates_422',['num_coordinates',['../structmeshkernelapi_1_1_geometry_list.html#a97c41744104bdc2f5d40dff6ba1703b1',1,'meshkernelapi::GeometryList']]],
   ['num_5fedges_423',['num_edges',['../structmeshkernelapi_1_1_mesh1_d.html#af1a1e2f5f2b2761803b5b42b4e54bc3f',1,'meshkernelapi::Mesh1D::num_edges()'],['../structmeshkernelapi_1_1_mesh2_d.html#af4e654b2178f910de786faafff0a5fd3',1,'meshkernelapi::Mesh2D::num_edges()']]],
@@ -30,5 +30,5 @@ var searchData=
   ['num_5fm_426',['num_m',['../structmeshkernelapi_1_1_curvilinear_grid.html#a03cdb31ee9fe4f3be9abc88809eeeb9d',1,'meshkernelapi::CurvilinearGrid']]],
   ['num_5fn_427',['num_n',['../structmeshkernelapi_1_1_curvilinear_grid.html#aa60984f08943678809d13161fb855c11',1,'meshkernelapi::CurvilinearGrid']]],
   ['num_5fnodes_428',['num_nodes',['../structmeshkernelapi_1_1_mesh1_d.html#a062befa1256e3080889ffe68fda0488e',1,'meshkernelapi::Mesh1D::num_nodes()'],['../structmeshkernelapi_1_1_mesh2_d.html#aa70e4ad83dc142ed75fd96ffe01a0b0c',1,'meshkernelapi::Mesh2D::num_nodes()']]],
-  ['num_5frows_429',['num_rows',['../structmeshkernelapi_1_1_make_grid_parameters.html#a43ecaa3e5396f1cbbb982d457690b991',1,'meshkernelapi::MakeGridParameters']]]
+  ['num_5frows_429',['num_rows',['../structmeshkernel_1_1_make_grid_parameters.html#a4df886df204bba390afad207e29d6103',1,'meshkernel::MakeGridParameters']]]
 ];

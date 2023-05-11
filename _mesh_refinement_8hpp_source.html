@@ -108,9 +108,9 @@ $(function() {
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/AveragingInterpolation.hpp&gt;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Polygons.hpp&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/RTree.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/MeshRefinementParameters.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Parameters.hpp&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Polygons.hpp&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/RTree.hpp&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
@@ -133,18 +133,18 @@ $(function() {
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        };</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4884771b97ed80d267bca700b2dd9e41">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                       std::shared_ptr&lt;MeshInterpolation&gt; interpolant,</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a>&amp; meshRefinementParameters);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a>&amp; meshRefinementParameters);</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4884771b97ed80d267bca700b2dd9e41">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                       std::shared_ptr&lt;MeshInterpolation&gt; interpolant,</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a>&amp; meshRefinementParameters,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a>&amp; meshRefinementParameters,</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                       <span class="keywordtype">bool</span> useNodalRefinement);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4884771b97ed80d267bca700b2dd9e41">MeshRefinement</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                       <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a>&amp; polygon,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a>&amp; meshRefinementParameters);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a>&amp; meshRefinementParameters);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be">Compute</a>();</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
@@ -196,22 +196,22 @@ $(function() {
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordtype">bool</span> m_directionalRefinement = <span class="keyword">false</span>;                          </div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        <span class="keywordtype">bool</span> m_useMassCenters = <span class="keyword">false</span>;                                 </div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;                                     </div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        std::shared_ptr&lt;MeshInterpolation&gt; m_interpolant = <span class="keyword">nullptr</span>;         </div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                                </div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <a class="code" href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a> m_meshRefinementParameters; </div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                                  </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;                             </div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;                             </div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        std::shared_ptr&lt;MeshInterpolation&gt; m_interpolant = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                        </div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> m_meshRefinementParameters;        </div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                          </div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;                     </div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    };</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html">meshkernel::MeshRefinement</a></div><div class="ttdoc">A class used to refine a Mesh2D instance.</div><div class="ttdef"><b>Definition:</b> MeshRefinement.hpp:75</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh_refinement_parameters_html"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh_refinement_parameters.html">meshkernelapi::MeshRefinementParameters</a></div><div class="ttdoc">A struct used to describe the mesh refinement parameters in a C-compatible manner.</div><div class="ttdef"><b>Definition:</b> MeshRefinementParameters.hpp:33</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a3a40b0e1f0feb0b6c052ebfa740009be"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be">meshkernel::MeshRefinement::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Compute mesh refinement (refinecellsandfaces2).</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_r_tree_html"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html">meshkernel::RTree</a></div><div class="ttdoc">Class used for inquiring adjacent nodes.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:58</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
+<div class="ttc" id="astructmeshkernel_1_1_mesh_refinement_parameters_html"><div class="ttname"><a href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a></div><div class="ttdoc">A struct used to describe the mesh refinement parameters in a C-compatible manner.</div><div class="ttdef"><b>Definition:</b> Parameters.hpp:116</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_polygons_html"><div class="ttname"><a href="classmeshkernel_1_1_polygons.html">meshkernel::Polygons</a></div><div class="ttdoc">A class describing polygons.</div><div class="ttdef"><b>Definition:</b> Polygons.hpp:36</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a9f4831243930765a5aaef72cc3f93b37"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a9f4831243930765a5aaef72cc3f93b37">meshkernel::MeshRefinement::MeshRefinement</a></div><div class="ttdeci">MeshRefinement(std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; MeshInterpolation &gt; interpolant, const meshkernelapi::MeshRefinementParameters &amp;meshRefinementParameters)</div><div class="ttdoc">The constructor for refining based on samples.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a4884771b97ed80d267bca700b2dd9e41"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a4884771b97ed80d267bca700b2dd9e41">meshkernel::MeshRefinement::MeshRefinement</a></div><div class="ttdeci">MeshRefinement(std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; MeshInterpolation &gt; interpolant, const MeshRefinementParameters &amp;meshRefinementParameters)</div><div class="ttdoc">The constructor for refining based on samples.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

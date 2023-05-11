@@ -2,7 +2,7 @@ var searchData=
 [
   ['inavlidindex_174',['InavlidIndex',['../classmeshkernel_1_1_mesh_geometry_error.html#ae91b6c16d05fc1525701028bf78e81c4',1,'meshkernel::MeshGeometryError']]],
   ['initialize_175',['Initialize',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#ac40b0272b753b40dd24a2d270b138991',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['inner_5fiterations_176',['inner_iterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a7b1cadce5efb9fea404d459276cc34fa',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['inner_5fiterations_176',['inner_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#a0157ecc1cdf621644d68bb0833d0b8f7',1,'meshkernel::OrthogonalizationParameters']]],
   ['inner_5fouter_5fseparator_177',['inner_outer_separator',['../structmeshkernelapi_1_1_geometry_list.html#a71b4d4559df3af088ccb16150af8cb39',1,'meshkernelapi::GeometryList']]],
   ['innerproduct_178',['InnerProduct',['../namespacemeshkernel.html#af6338c4df9b1a0680f013b9624776d91',1,'meshkernel']]],
   ['innerproducttwosegments_179',['InnerProductTwoSegments',['../namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591',1,'meshkernel']]],
