@@ -28,8 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernelApi/CurvilinearParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
+#include <MeshKernel/Parameters.hpp>
 
 namespace meshkernel
 {
@@ -88,8 +87,8 @@ namespace meshkernel
         /// @param[in] curvilinearParameters          The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         /// @param[in] splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
-                                   const meshkernelapi::CurvilinearParameters& curvilinearParameters,
-                                   const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
+                                   const CurvilinearParameters& curvilinearParameters,
+                                   const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief Computes the spline properties, such as cross splines (get_splineprops)
         /// @param[in] restoreOriginalProperties Whether to restore original properties
@@ -273,8 +272,8 @@ namespace meshkernel
         };
 
         // algorithm parameters
-        meshkernelapi::CurvilinearParameters m_curvilinearParameters;                   ///< Curvilinear parameters
-        meshkernelapi::SplinesToCurvilinearParameters m_splinesToCurvilinearParameters; ///< Splines to curvilinear parameters
+        CurvilinearParameters m_curvilinearParameters;                   ///< Curvilinear parameters
+        SplinesToCurvilinearParameters m_splinesToCurvilinearParameters; ///< Splines to curvilinear parameters
 
         const size_t m_maxNumCenterSplineHeights = 10; ///< Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
         const size_t m_maxNUniformPart = 5;            ///< Maximum number of layers in the uniform part

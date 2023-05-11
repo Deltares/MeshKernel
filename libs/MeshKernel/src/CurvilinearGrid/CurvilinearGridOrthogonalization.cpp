@@ -37,8 +37,9 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridOrthogonalization;
 
 CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                                                   const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : CurvilinearGridAlgorithm(grid),
-                                                                                                                                                    m_orthogonalizationParameters(orthogonalizationParameters)
+                                                                   const OrthogonalizationParameters& orthogonalizationParameters)
+    : CurvilinearGridAlgorithm(grid),
+      m_orthogonalizationParameters(orthogonalizationParameters)
 
 {
     /// Store the grid lines of the grid as splines

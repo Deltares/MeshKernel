@@ -30,8 +30,8 @@
 #include <memory>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
-#include <MeshKernelApi/OrthogonalizationParameters.hpp>
 
 namespace meshkernel
 {
@@ -45,7 +45,7 @@ namespace meshkernel
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
         CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters);
+                                         const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
         CurvilinearGrid Compute() override;
@@ -80,7 +80,7 @@ namespace meshkernel
         /// @return A vector with true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes() const;
 
-        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
+        OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
         std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
         std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation

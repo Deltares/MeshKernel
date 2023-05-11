@@ -57,11 +57,10 @@
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 
-#include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernelApi/State.hpp>
 #include <MeshKernelApi/Utils.hpp>
+
 #include <Version/Version.hpp>
 
 #include <cstring>
@@ -568,7 +567,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
                                                              int projectToLandBoundaryOption,
-                                                             const OrthogonalizationParameters& orthogonalizationParameters,
+                                                             const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
                                                              const GeometryList& selectingPolygon,
                                                              const GeometryList& landBoundaries)
     {
@@ -615,7 +614,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_initialize_orthogonalization(int meshKernelId,
                                                                 int projectToLandBoundaryOption,
-                                                                OrthogonalizationParameters& orthogonalizationParameters,
+                                                                meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
                                                                 const GeometryList& selectingPolygon,
                                                                 const GeometryList& landBoundaries)
     {
@@ -942,7 +941,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                const MakeGridParameters& makeGridParameters,
+                                                const meshkernel::MakeGridParameters& makeGridParameters,
                                                 const GeometryList& geometryList)
     {
         int exitCode = Success;
@@ -1434,7 +1433,7 @@ namespace meshkernelapi
                                                            const GeometryList& samples,
                                                            double relativeSearchRadius,
                                                            int minimumNumSamples,
-                                                           const MeshRefinementParameters& meshRefinementParameters)
+                                                           const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -1484,7 +1483,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
                                                                    const GriddedSamples& griddedSamples,
-                                                                   const MeshRefinementParameters& meshRefinementParameters,
+                                                                   const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
     {
         int exitCode = Success;
@@ -1557,7 +1556,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                            const GeometryList& geometryList,
-                                                           const MeshRefinementParameters& meshRefinementParameters)
+                                                           const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
         int exitCode = Success;
         try
@@ -2042,7 +2041,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
                                                                          const GeometryList& splines,
-                                                                         const CurvilinearParameters& curvilinearParameters)
+                                                                         const meshkernel::CurvilinearParameters& curvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -2140,8 +2139,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_compute_orthogonal_grid_from_splines(int meshKernelId,
                                                                              const GeometryList& geometryListIn,
-                                                                             const CurvilinearParameters& curvilinearParameters,
-                                                                             const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
+                                                                             const meshkernel::CurvilinearParameters& curvilinearParameters,
+                                                                             const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -2169,8 +2168,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
                                                                                 const GeometryList& geometryList,
-                                                                                const CurvilinearParameters& curvilinearParameters,
-                                                                                const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
+                                                                                const meshkernel::CurvilinearParameters& curvilinearParameters,
+                                                                                const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -2268,7 +2267,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                     const MakeGridParameters& makeGridParameters,
+                                                     const meshkernel::MakeGridParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
         int exitCode = Success;
@@ -2302,7 +2301,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
-                                                                 const OrthogonalizationParameters& orthogonalizationParameters)
+                                                                 const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
     {
         int exitCode = Success;
         try

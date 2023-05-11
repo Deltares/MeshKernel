@@ -1,13 +1,13 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
+#include <MeshKernel/Parameters.hpp>
+
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 #include <benchmark/benchmark.h>
 
 using namespace meshkernel;
-namespace mkapi = meshkernelapi;
 
 static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
 {
@@ -44,7 +44,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
             false,
             1);
 
-        mkapi::MeshRefinementParameters mesh_refinement_parameters;
+        MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;
         mesh_refinement_parameters.refine_intersected = 0;
         mesh_refinement_parameters.use_mass_center_when_refining = 0;
@@ -98,7 +98,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 
         meshkernel::Polygons polygon(polygon_points, mesh->m_projection);
 
-        mkapi::MeshRefinementParameters mesh_refinement_parameters;
+        MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;
         mesh_refinement_parameters.refine_intersected = 0;
         mesh_refinement_parameters.use_mass_center_when_refining = 0;

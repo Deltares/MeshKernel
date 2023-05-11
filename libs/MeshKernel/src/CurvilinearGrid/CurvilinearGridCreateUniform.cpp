@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridCreateUniform;
 
-CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& makeGridParameters, Projection projection)
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const MakeGridParameters& makeGridParameters, Projection projection)
     : m_makeGridParameters(makeGridParameters), m_projection(projection)
 {
 }

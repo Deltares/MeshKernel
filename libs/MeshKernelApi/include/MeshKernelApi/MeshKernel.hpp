@@ -27,17 +27,14 @@
 
 #pragma once
 
+#include <MeshKernel/Parameters.hpp>
+
 #include <MeshKernelApi/Contacts.hpp>
 #include <MeshKernelApi/CurvilinearGrid.hpp>
-#include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/GriddedSamples.hpp>
-#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
-#include <MeshKernelApi/OrthogonalizationParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #if defined(_WIN32)
 #if !defined(MKERNEL_API)
@@ -224,16 +221,16 @@ namespace meshkernelapi
         ///
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
-        /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernelapi::OrthogonalizationParameters::orthogonalization_to_smoothing_factor
+        /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernel::OrthogonalizationParameters::orthogonalization_to_smoothing_factor
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
-        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters \ref meshkernelapi::OrthogonalizationParameters
+        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters \ref meshkernel::OrthogonalizationParameters
         /// @param[in] selectingPolygon            The polygon where to perform the orthogonalization  (num_coordinates = 0 for an empty polygon)
         /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process (num_coordinates = 0 for no land boundaries)
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
                                                                  int projectToLandBoundaryOption,
-                                                                 const OrthogonalizationParameters& orthogonalizationParameters,
+                                                                 const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
                                                                  const GeometryList& selectingPolygon,
                                                                  const GeometryList& landBoundaries);
 
@@ -249,7 +246,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_initialize_orthogonalization(int meshKernelId,
                                                                     int projectToLandBoundaryOption,
-                                                                    OrthogonalizationParameters& orthogonalizationParameters,
+                                                                    meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
                                                                     const GeometryList& selectingPolygon,
                                                                     const GeometryList& landBoundaries);
 
@@ -316,7 +313,7 @@ namespace meshkernelapi
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                    const MakeGridParameters& makeGridParameters,
+                                                    const meshkernel::MakeGridParameters& makeGridParameters,
                                                     const GeometryList& geometryList);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
@@ -519,7 +516,7 @@ namespace meshkernelapi
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
-                                                               const MeshRefinementParameters& meshRefinementParameters);
+                                                               const meshkernel::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Refine based on gridded samples
         ///
@@ -533,7 +530,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
                                                                        const GriddedSamples& griddedSamples,
-                                                                       const MeshRefinementParameters& meshRefinementParameters,
+                                                                       const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                        bool useNodalRefinement);
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
@@ -543,7 +540,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                                const GeometryList& geometryList,
-                                                               const MeshRefinementParameters& meshRefinementParameters);
+                                                               const meshkernel::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in]  meshKernelId  The id of the mesh state
@@ -734,7 +731,7 @@ namespace meshkernelapi
         /// @returns                         Error code
         MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
                                                                              const GeometryList& splines,
-                                                                             const CurvilinearParameters& curvilinearParameters);
+                                                                             const meshkernel::CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
@@ -772,8 +769,8 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_compute_orthogonal_grid_from_splines(int meshKernelId,
                                                                                  const GeometryList& geometryList,
-                                                                                 const CurvilinearParameters& curvilinearParameters,
-                                                                                 const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
+                                                                                 const meshkernel::CurvilinearParameters& curvilinearParameters,
+                                                                                 const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
         /// @param[in] meshKernelId                    The id of the mesh state
@@ -783,8 +780,8 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
                                                                                     const GeometryList& geometryList,
-                                                                                    const CurvilinearParameters& curvilinearParameters,
-                                                                                    const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
+                                                                                    const meshkernel::CurvilinearParameters& curvilinearParameters,
+                                                                                    const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief One advancement of the front in curvilinear grid from splines (interactive)
         /// @param[in] meshKernelId The id of the mesh state
@@ -808,7 +805,7 @@ namespace meshkernelapi
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                         const MakeGridParameters& makeGridParameters,
+                                                         const meshkernel::MakeGridParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
         /// @brief Initializes the orthogonal curvilinear algorithm
@@ -816,7 +813,7 @@ namespace meshkernelapi
         /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
-                                                                     const OrthogonalizationParameters& orthogonalizationParameters);
+                                                                     const meshkernel::OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Freezes a line in the curvilinear orthogonalization process
         /// @param[in] meshKernelId        The id of the mesh state

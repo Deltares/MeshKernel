@@ -30,18 +30,17 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
-#include <MeshKernelApi/CurvilinearParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridFromSplines;
 
 CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
-                                                       const meshkernelapi::CurvilinearParameters& curvilinearParameters,
-                                                       const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters) : m_splines(splines),
-                                                                                                                                              m_curvilinearParameters(curvilinearParameters),
-                                                                                                                                              m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
+                                                       const CurvilinearParameters& curvilinearParameters,
+                                                       const SplinesToCurvilinearParameters& splinesToCurvilinearParameters) : m_splines(splines),
+                                                                                                                               m_curvilinearParameters(curvilinearParameters),
+                                                                                                                               m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
 {
     m_onTopOfEachOtherSquaredTolerance = m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance *
                                          m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance;
