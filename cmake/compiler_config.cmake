@@ -30,6 +30,19 @@ else()
     message(FATAL_ERROR "Unsupported platform. Only Linux and Windows are supported.")
 endif()
 
+# CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur
+add_compile_definitions(CMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
 
-
-
+# format library: from the standard lib or third-party?
+# When supported, std::format is preferred. Otherwise, fmtlib should be used.
+set(USE_LIBFMT 0)
+if(
+  (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.1)
+  OR 
+  (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14)
+)
+  set(USE_LIBFMT 1)
+endif()
+add_compile_definitions(USE_LIBFMT=${USE_LIBFMT})
