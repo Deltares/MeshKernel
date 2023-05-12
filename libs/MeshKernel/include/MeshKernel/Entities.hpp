@@ -143,7 +143,9 @@ namespace meshkernel
         }
 
     private:
-        static double constexpr m_trans_factor = constants::conversion::degToRad * constants::geometric::earth_radius;
+        static double constexpr m_trans_factor =
+            constants::conversion::degToRad *
+            constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
 
     /// @brief Describes an edge with two indices
