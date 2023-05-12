@@ -29,6 +29,8 @@
 
 #include "MeshKernel/Constants.hpp"
 
+#include <concepts>
+
 namespace meshkernel
 {
     extern "C"
@@ -53,6 +55,7 @@ namespace meshkernel
 
     class Point;
     class Sample;
+
     /// @brief Wrapper around the Triangle library
     ///
     /// \see https://www.cs.cmu.edu/~quake/triangle.html
@@ -72,13 +75,12 @@ namespace meshkernel
         /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
         /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
         /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)
-        template <typename T, std::enable_if_t<std::is_base_of_v<Point, T>, bool> = true>
+        template <std::derived_from<Point> T>
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
                      size_t estimatedNumberOfTriangles)
         {
-
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
             for (size_t i = 0; i < inputNodes.size(); ++i)
