@@ -164,12 +164,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
-
-    // compute new faces circumcenters
-    if (!m_keepCircumcentersAndMassCenters)
-    {
-        m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
-    }
+    m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
 }
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
@@ -179,10 +174,6 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
     for (int n = 0; n < static_cast<int>(m_mesh->GetNumNodes()); n++)
     {
         if ((m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2) || m_mesh->m_nodesNumEdges[n] < 2)
-        {
-            continue;
-        }
-        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != Mesh::m_numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
         {
             continue;
         }
