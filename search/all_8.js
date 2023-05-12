@@ -19,6 +19,6 @@ var searchData=
   ['ispointinpolygons_190',['IsPointInPolygons',['../classmeshkernel_1_1_polygons.html#aeb297b1193664381a8106b12284337a3',1,'meshkernel::Polygons']]],
   ['ispointonpole_191',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
   ['issegmentcrossingaboundaryedge_192',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
-  ['isvalid_193',['IsValid',['../structmeshkernel_1_1_point.html#a5861eebe8cc2aaedca2eac8b8572d619',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a98d86145f853c36a470c3818b5a0fda7',1,'meshkernel::Sample::IsValid()']]],
+  ['isvalid_193',['IsValid',['../classmeshkernel_1_1_point.html#a5861eebe8cc2aaedca2eac8b8572d619',1,'meshkernel::Point::IsValid()'],['../classmeshkernel_1_1_sample.html#a98d86145f853c36a470c3818b5a0fda7',1,'meshkernel::Sample::IsValid()']]],
   ['isvalueinboundingbox_194',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]]
 ];

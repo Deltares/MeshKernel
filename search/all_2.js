@@ -48,7 +48,7 @@ var searchData=
   ['connect_5fhanging_5fnodes_68',['connect_hanging_nodes',['../structmeshkernel_1_1_mesh_refinement_parameters.html#abdb41599cc4fc2d9c39e949c7c37e9e5',1,'meshkernel::MeshRefinementParameters']]],
   ['connectnodes_69',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#a9baba75ddd46f4af5465d947f40fba3c',1,'meshkernel::Mesh']]],
   ['contacts_70',['Contacts',['../classmeshkernel_1_1_contacts.html',1,'meshkernel::Contacts'],['../structmeshkernelapi_1_1_contacts.html',1,'meshkernelapi::Contacts'],['../classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc',1,'meshkernel::Contacts::Contacts()=default'],['../classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492',1,'meshkernel::Contacts::Contacts(std::shared_ptr&lt; Mesh1D &gt; mesh1d, std::shared_ptr&lt; Mesh2D &gt; mesh2d)']]],
-  ['converttosamples_71',['ConvertToSamples',['../structmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
+  ['converttosamples_71',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['coordinates_5fx_72',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
   ['coordinates_5fy_73',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
   ['crossproduct_74',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]],

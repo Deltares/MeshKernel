@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['sample_872',['Sample',['../structmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../structmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
+  ['sample_872',['Sample',['../classmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../classmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
   ['searchlocations_873',['SearchLocations',['../classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923',1,'meshkernel::Mesh']]],
   ['searchnearestlocation_874',['SearchNearestLocation',['../classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70',1,'meshkernel::Mesh::SearchNearestLocation(Point point, Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b',1,'meshkernel::Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)']]],
   ['searchnearestpoint_875',['SearchNearestPoint',['../classmeshkernel_1_1_r_tree.html#a88983e69503b090734d4e9b65964f996',1,'meshkernel::RTree::SearchNearestPoint(Point node, double searchRadiusSquared)'],['../classmeshkernel_1_1_r_tree.html#a70cd2a0d5b2fbf310be448c74d125b67',1,'meshkernel::RTree::SearchNearestPoint(Point node)']]],

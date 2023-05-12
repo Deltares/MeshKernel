@@ -100,19 +100,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeac9a8bfda09d60c3c768491814a4338"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338">Splines</a> (CurvilinearGrid const &amp;grid)</td></tr>
 <tr class="memdesc:aeac9a8bfda09d60c3c768491814a4338"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines.  <a href="classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338">More...</a><br /></td></tr>
 <tr class="separator:aeac9a8bfda09d60c3c768491814a4338"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a318cf3fb67eb9743982542926d7760de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">AddSpline</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, size_t start, size_t size)</td></tr>
+<tr class="memitem:a318cf3fb67eb9743982542926d7760de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">AddSpline</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, size_t start, size_t size)</td></tr>
 <tr class="memdesc:a318cf3fb67eb9743982542926d7760de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new spline to m_splineCornerPoints.  <a href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">More...</a><br /></td></tr>
 <tr class="separator:a318cf3fb67eb9743982542926d7760de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7975e35eb6662e5d7961ea03e510a8eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb">GetSplinesIntersection</a> (size_t first, size_t second, double &amp;crossProductIntersection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;firstSplineRatio, double &amp;secondSplineRatio)</td></tr>
+<tr class="memitem:a7975e35eb6662e5d7961ea03e510a8eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb">GetSplinesIntersection</a> (size_t first, size_t second, double &amp;crossProductIntersection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;firstSplineRatio, double &amp;secondSplineRatio)</td></tr>
 <tr class="memdesc:a7975e35eb6662e5d7961ea03e510a8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the intersection of two splines (sect3r)  <a href="classmeshkernel_1_1_splines.html#a7975e35eb6662e5d7961ea03e510a8eb">More...</a><br /></td></tr>
 <tr class="separator:a7975e35eb6662e5d7961ea03e510a8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6631ff914d308a7fbe4ff0fadff17354"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a6631ff914d308a7fbe4ff0fadff17354">ComputeSplineLength</a> (size_t index, double startAdimensionalCoordinate, double endAdimensionalCoordinate, size_t numSamples=100, bool accountForCurvature=false, double height=1.0, double assignedDelta=-1.0) const</td></tr>
 <tr class="memdesc:a6631ff914d308a7fbe4ff0fadff17354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the spline length in s coordinates (GETDIS)  <a href="classmeshkernel_1_1_splines.html#a6631ff914d308a7fbe4ff0fadff17354">More...</a><br /></td></tr>
 <tr class="separator:a6631ff914d308a7fbe4ff0fadff17354"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1adeeaf832790c53923b5d50cae3993f"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;, std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a1adeeaf832790c53923b5d50cae3993f">ComputePointOnSplineFromAdimensionalDistance</a> (size_t index, double maximumGridHeight, bool isSpacingCurvatureAdapted, const std::vector&lt; double &gt; &amp;distances)</td></tr>
+<tr class="memitem:a1adeeaf832790c53923b5d50cae3993f"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;, std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a1adeeaf832790c53923b5d50cae3993f">ComputePointOnSplineFromAdimensionalDistance</a> (size_t index, double maximumGridHeight, bool isSpacingCurvatureAdapted, const std::vector&lt; double &gt; &amp;distances)</td></tr>
 <tr class="memdesc:a1adeeaf832790c53923b5d50cae3993f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the points on a spline lying at certain distance.  <a href="classmeshkernel_1_1_splines.html#a1adeeaf832790c53923b5d50cae3993f">More...</a><br /></td></tr>
 <tr class="separator:a1adeeaf832790c53923b5d50cae3993f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e58a38ae15447d16971015d219c9767"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a2e58a38ae15447d16971015d219c9767">ComputeClosestPointOnSplineSegment</a> (size_t index, double startSplineSegment, double endSplineSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> point)</td></tr>
+<tr class="memitem:a2e58a38ae15447d16971015d219c9767"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a2e58a38ae15447d16971015d219c9767">ComputeClosestPointOnSplineSegment</a> (size_t index, double startSplineSegment, double endSplineSegment, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> point)</td></tr>
 <tr class="memdesc:a2e58a38ae15447d16971015d219c9767"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the point on a spline segment which is the closest to another point.  <a href="classmeshkernel_1_1_splines.html#a2e58a38ae15447d16971015d219c9767">More...</a><br /></td></tr>
 <tr class="separator:a2e58a38ae15447d16971015d219c9767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59b3a266adea9414d491c1313d07749b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a59b3a266adea9414d491c1313d07749b">GetNumSplines</a> () const</td></tr>
@@ -121,7 +121,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aab7d41efa05019f403ed2f5ce22b2b01"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aab7d41efa05019f403ed2f5ce22b2b01">SecondOrderDerivative</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, size_t startIndex, size_t endIndex)</td></tr>
+<tr class="memitem:aab7d41efa05019f403ed2f5ce22b2b01"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aab7d41efa05019f403ed2f5ce22b2b01">SecondOrderDerivative</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, size_t startIndex, size_t endIndex)</td></tr>
 <tr class="memdesc:aab7d41efa05019f403ed2f5ce22b2b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second order derivative at spline corner points, from the start node to the end node of the spline (splint)  <a href="classmeshkernel_1_1_splines.html#aab7d41efa05019f403ed2f5ce22b2b01">More...</a><br /></td></tr>
 <tr class="separator:aab7d41efa05019f403ed2f5ce22b2b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa774a586c219bf3d9423266ea883e4c4"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aa774a586c219bf3d9423266ea883e4c4">SecondOrderDerivative</a> (const std::vector&lt; double &gt; &amp;coordinates, size_t startIndex, size_t endIndex)</td></tr>
@@ -131,11 +131,11 @@ Static Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aaf6756bd92508ae7e39235192e0dc47a"><td class="memItemLeft" align="right" valign="top"><a id="aaf6756bd92508ae7e39235192e0dc47a"></a>
-std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aaf6756bd92508ae7e39235192e0dc47a">m_splineNodes</a></td></tr>
+std::vector&lt; std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#aaf6756bd92508ae7e39235192e0dc47a">m_splineNodes</a></td></tr>
 <tr class="memdesc:aaf6756bd92508ae7e39235192e0dc47a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The spline corner points. <br /></td></tr>
 <tr class="separator:aaf6756bd92508ae7e39235192e0dc47a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d4e3eb890843d338c0555ca92d1e594"><td class="memItemLeft" align="right" valign="top"><a id="a0d4e3eb890843d338c0555ca92d1e594"></a>
-std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a0d4e3eb890843d338c0555ca92d1e594">m_splineDerivatives</a></td></tr>
+std::vector&lt; std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a0d4e3eb890843d338c0555ca92d1e594">m_splineDerivatives</a></td></tr>
 <tr class="memdesc:a0d4e3eb890843d338c0555ca92d1e594"><td class="mdescLeft">&#160;</td><td class="mdescRight">The spline derivatives at the corner points. <br /></td></tr>
 <tr class="separator:a0d4e3eb890843d338c0555ca92d1e594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6e2d76ce4d601c1e44b438f39163265"><td class="memItemLeft" align="right" valign="top"><a id="aa6e2d76ce4d601c1e44b438f39163265"></a>
@@ -219,7 +219,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="memname">void meshkernel::Splines::AddSpline </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>splines</em>, </td>
         </tr>
         <tr>
@@ -261,7 +261,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> meshkernel::Splines::ComputeClosestPointOnSplineSegment </td>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::Splines::ComputeClosestPointOnSplineSegment </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>index</em>, </td>
@@ -281,7 +281,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td>
           <td class="paramname"><em>point</em>&#160;</td>
         </tr>
         <tr>
@@ -313,7 +313,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt;std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt;, std::vector&lt;double&gt; &gt; meshkernel::Splines::ComputePointOnSplineFromAdimensionalDistance </td>
+          <td class="memname">std::tuple&lt;std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt;, std::vector&lt;double&gt; &gt; meshkernel::Splines::ComputePointOnSplineFromAdimensionalDistance </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>index</em>, </td>
@@ -486,7 +486,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
           <td class="paramname"><em>intersectionPoint</em>, </td>
         </tr>
         <tr>
@@ -588,9 +588,9 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Splines::SecondOrderDerivative </td>
+          <td class="memname">static std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Splines::SecondOrderDerivative </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>splines</em>, </td>
         </tr>
         <tr>

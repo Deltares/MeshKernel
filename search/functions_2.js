@@ -43,6 +43,6 @@ var searchData=
   ['computetwobasecomponents_610',['ComputeTwoBaseComponents',['../namespacemeshkernel.html#ad08b467bb0943757f7db680c09a98977',1,'meshkernel']]],
   ['connectnodes_611',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#a9baba75ddd46f4af5465d947f40fba3c',1,'meshkernel::Mesh']]],
   ['contacts_612',['Contacts',['../classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc',1,'meshkernel::Contacts::Contacts()=default'],['../classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492',1,'meshkernel::Contacts::Contacts(std::shared_ptr&lt; Mesh1D &gt; mesh1d, std::shared_ptr&lt; Mesh2D &gt; mesh2d)']]],
-  ['converttosamples_613',['ConvertToSamples',['../structmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
+  ['converttosamples_613',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['crossproduct_614',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]]
 ];

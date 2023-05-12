@@ -98,7 +98,7 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9ede2c31a0853b50de19d211d90c58d8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9ede2c31a0853b50de19d211d90c58d8"><td class="memTemplParams" colspan="2">template&lt;std::derived_from&lt; Point &gt; T&gt; </td></tr>
 <tr class="memitem:a9ede2c31a0853b50de19d211d90c58d8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a9ede2c31a0853b50de19d211d90c58d8">Compute</a> (const std::vector&lt; T &gt; &amp;inputNodes, <a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf">TriangulationOptions</a> triangulationOption, double averageTriangleArea, size_t estimatedNumberOfTriangles)</td></tr>
 <tr class="memdesc:a9ede2c31a0853b50de19d211d90c58d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the triangulation.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a9ede2c31a0853b50de19d211d90c58d8">More...</a><br /></td></tr>
 <tr class="separator:a9ede2c31a0853b50de19d211d90c58d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,7 +115,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a2a258324fbe36dc544c6a7be1ab9b2dc">GetNumFaces</a> () const</td></tr>
 <tr class="memdesc:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of triangulated faces.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a2a258324fbe36dc544c6a7be1ab9b2dc">More...</a><br /></td></tr>
 <tr class="separator:a2a258324fbe36dc544c6a7be1ab9b2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02eeb1536584923b278ecbe0f51efc5e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a02eeb1536584923b278ecbe0f51efc5e">GetNodes</a> () const</td></tr>
+<tr class="memitem:a02eeb1536584923b278ecbe0f51efc5e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a02eeb1536584923b278ecbe0f51efc5e">GetNodes</a> () const</td></tr>
 <tr class="memdesc:a02eeb1536584923b278ecbe0f51efc5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the triangulated nodes.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a02eeb1536584923b278ecbe0f51efc5e">More...</a><br /></td></tr>
 <tr class="separator:a02eeb1536584923b278ecbe0f51efc5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac426246655f93085bb345de016a80d1f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; size_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#ac426246655f93085bb345de016a80d1f">GetFaceNodes</a> (const size_t faceIndex) const</td></tr>
@@ -183,7 +183,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;std::derived_from&lt; Point &gt; T&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -473,7 +473,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt;&amp; meshkernel::TriangulationWrapper::GetNodes </td>
+          <td class="memname">const std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt;&amp; meshkernel::TriangulationWrapper::GetNodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
