@@ -36,11 +36,23 @@ namespace meshkernel
         /// @brief Function of the Triangle library
         ///
         /// \see https://www.cs.cmu.edu/~quake/triangle.html
-        void Triangulation(int* jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
+        void Triangulation(int jatri,
+                           double const* const xs,
+                           double const* const ys,
+                           int ns,
+                           int* const indx,
+                           int* const numtri,
+                           int* const edgeidx,
+                           int* const numedge,
+                           int* const triedge,
+                           double* const xs3,
+                           double* const ys3,
+                           int* const ns3,
+                           double trisize);
     }
 
-    struct Point;
-    struct Sample;
+    class Point;
+    class Sample;
     /// @brief Wrapper around the Triangle library
     ///
     /// \see https://www.cs.cmu.edu/~quake/triangle.html
@@ -60,7 +72,7 @@ namespace meshkernel
         /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
         /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
         /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)
-        template <typename T>
+        template <typename T, std::enable_if_t<std::is_base_of_v<Point, T>, bool> = true>
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
@@ -107,10 +119,10 @@ namespace meshkernel
                 m_yCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
                 std::ranges::fill(m_yCoordFlat, 0.0);
 
-                Triangulation(&intTriangulationOption,
+                Triangulation(intTriangulationOption,
                               xLocalPolygon.data(),
                               yLocalPolygon.data(),
-                              &numInputNodes,
+                              numInputNodes,
                               m_faceNodesFlat.data(), // INDX
                               &m_numFaces,
                               m_edgeNodesFlat.data(), // EDGEINDX
@@ -119,7 +131,7 @@ namespace meshkernel
                               m_xCoordFlat.data(),
                               m_yCoordFlat.data(),
                               &m_numNodes,
-                              &averageTriangleArea);
+                              averageTriangleArea);
                 if (estimatedNumberOfTriangles > 0)
                 {
                     estimatedNumberOfTriangles = -m_numFaces;

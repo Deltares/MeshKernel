@@ -33,7 +33,7 @@
 namespace meshkernel
 {
     // Forward declare everything to reduce compile time dependency
-    struct Point;
+    class Point;
     class Mesh2D;
     class Smoother;
     class Orthogonalizer;
