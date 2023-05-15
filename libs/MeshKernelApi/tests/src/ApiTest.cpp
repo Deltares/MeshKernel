@@ -1450,7 +1450,7 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     geometryListIn.values = zCoordinates.data();
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernel::CurvilinearParameters curvilinearParameters;
 
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 10;
