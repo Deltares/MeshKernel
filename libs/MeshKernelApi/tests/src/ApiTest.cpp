@@ -2295,7 +2295,6 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
     meshkernelapi::GeometryList splines{};
     double geometrySeparator = meshkernelapi::mkernel_get_separator();
 
-    int const numNodes = 32;
     std::vector<double> coordinatesX{
         7.7979524E+04,
         7.7979524E+04,
@@ -2547,7 +2546,6 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList samples{};
-    int const numCoordinates = 4;
     std::vector<double> firstGridNodeCoordinateX{1.0, 2.0, 3.0, 1.0};
     std::vector<double> firstGridNodeCoordinateY{1.0, 3.0, 2.0, 4.0};
     std::vector<double> values{3.0, 10, 4.0, 5.0};
