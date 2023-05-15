@@ -57,3 +57,30 @@ if(ENABLE_BENCHMARKING)
     )
   endif()
 endif()
+
+
+if(${USE_LIBFMT})
+  set(LIBFMT_VERSION 9.1.0)
+
+  message(
+    STATUS 
+    "${CMAKE_CXX_COMPILER_ID} v.${CMAKE_CXX_COMPILER_VERSION} does not support std::format, "
+    "libfmt v.${LIBFMT_VERSION} will be used instead."
+  )
+
+  
+  FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG ${LIBFMT_VERSION}
+  )
+
+  FetchContent_GetProperties(fmt)
+
+  if(NOT fmt_POPULATED)
+    FetchContent_Populate(fmt)
+    add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
+
+  endif()
+  

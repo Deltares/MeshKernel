@@ -1,9 +1,10 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <MeshKernel/Parameters.hpp>
+
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/MakeGridParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
@@ -60,7 +61,7 @@ public:
     void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
     {
 
-        meshkernelapi::MakeGridParameters makeGridParameters{};
+        meshkernel::MakeGridParameters makeGridParameters{};
         meshkernelapi::GeometryList geometryList{};
 
         makeGridParameters.num_columns = numberOfColumns;
@@ -298,7 +299,7 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     // Prepare
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -636,7 +637,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     geometryListIn.values = valuesIn.data();
     geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
@@ -705,7 +706,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     geometryListIn.values = valuesIn.data();
     geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
 
@@ -1186,7 +1187,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -1207,7 +1208,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
 
     // Assert there is a geometry error
     errorCode = meshkernelapi::mkernel_mesh2d_prepare_outer_iteration_orthogonalization(meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::InvalidGeometry, errorCode);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::MeshGeometryError, errorCode);
 
     // Delete orthogonalization instance
     errorCode = meshkernelapi::mkernel_mesh2d_delete_orthogonalization(meshKernelId);
@@ -1373,7 +1374,7 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::MakeGridParameters makeGridParameters{};
+    meshkernel::MakeGridParameters makeGridParameters{};
     meshkernelapi::GeometryList geometryList{};
 
     makeGridParameters.num_columns = 3;
@@ -1450,6 +1451,7 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
+
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 10;
     curvilinearParameters.smoothing_iterations = 10;
@@ -1493,10 +1495,10 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     geometryListIn.values = zCoordinates.data();
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernel::CurvilinearParameters curvilinearParameters;
     curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 10;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    meshkernel::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
     splinesToCurvilinearParameters.average_width = 500.0;
@@ -1588,14 +1590,14 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, 10.0, 20.0, 18.0, 12.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
-    errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -1905,7 +1907,7 @@ TEST_F(ApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrtho
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -2366,8 +2368,8 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
     splines.coordinates_y = coordinatesY.data();
     splines.num_coordinates = static_cast<int>(coordinatesX.size());
 
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    meshkernelapi::CurvilinearParameters curvilinearParameters{};
+    meshkernel::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    meshkernel::CurvilinearParameters curvilinearParameters{};
 
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
@@ -2406,9 +2408,9 @@ TEST_F(ApiTests, SetFrozenLines_OnCurvilinearGrid_ShouldSetFrozenLines)
     // Setup
     MakeUniformCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
-    meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
-    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
@@ -2423,9 +2425,9 @@ TEST_F(ApiTests, FinalizeOrthogonalizeCurvilinear_OnCurvilinearGrid_ShouldFinali
     // Setup
     MakeUniformCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
-    meshkernelapi::OrthogonalizationParameters const orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
-    auto errorCode = mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Execute
@@ -2735,7 +2737,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeRealMeshWithHexagon_ShouldOrtho
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -2869,8 +2871,8 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
 
-    // Create a curvilinear grid in the back-end and convert it into an unstructured grid
-    meshkernelapi::MakeGridParameters makeMeshParameters;
+    // Create a curvilinear grid in the back-end and convert to an unstructured grid
+    meshkernel::MakeGridParameters makeMeshParameters;
     makeMeshParameters.num_columns = 3;
     makeMeshParameters.num_rows = 3;
     makeMeshParameters.block_size_x = 1.0;
@@ -2899,57 +2901,65 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     boundaryPolyLine.coordinates_x = xCoordinates.data();
     boundaryPolyLine.coordinates_y = yCoordinates.data();
     boundaryPolyLine.values = nullptr;
-    boundaryPolyLine.num_coordinates = static_cast<int>(xCoordinates.size());
 
-    std::vector polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
-    std::vector edgeNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
-    std::vector faceIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
-    std::vector faceNodesIntersections(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    boundaryPolyLine.num_coordinates = 2;
 
-    /// Execute
+    std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+
+    std::vector<int> edgeNodes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
+    std::vector<int> edgeIndex(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<double> edgeDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<double> segmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
+    std::vector<int> segmentIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+
+    std::vector<int> faceEdgeIndex(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<int> faceNumEdges(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+    std::vector<int> faceIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
+
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
                                                            boundaryPolyLine,
-                                                           polylineSegmentIndexes.data(),
-                                                           polylineSegmentDistances.data(),
-                                                           edgeNodesIntersections.data(),
+                                                           edgeNodes.data(),
+                                                           edgeIndex.data(),
                                                            edgeDistances.data(),
+                                                           segmentDistances.data(),
+                                                           segmentIndexes.data(),
                                                            faceIndexes.data(),
-                                                           faceNodesIntersections.data());
+                                                           faceNumEdges.data(),
+                                                           faceEdgeIndex.data());
 
     /// Assert
     const double tolerance = 1e-6;
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(polylineSegmentIndexes[0], 0);
-    ASSERT_EQ(polylineSegmentIndexes[1], 0);
-    ASSERT_EQ(polylineSegmentIndexes[2], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(segmentIndexes[0], 0);
+    ASSERT_EQ(segmentIndexes[1], 0);
+    ASSERT_EQ(segmentIndexes[2], meshkernel::constants::missing::intValue);
 
-    ASSERT_NEAR(polylineSegmentDistances[0], 0.25, tolerance);
-    ASSERT_NEAR(polylineSegmentDistances[1], 0.75, tolerance);
-    ASSERT_NEAR(polylineSegmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
+    ASSERT_NEAR(segmentDistances[0], 0.25, tolerance);
+    ASSERT_NEAR(segmentDistances[1], 0.75, tolerance);
+    ASSERT_NEAR(segmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
 
     ASSERT_NEAR(edgeDistances[0], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[1], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
-
-    ASSERT_EQ(faceNodesIntersections[0], 8);
-    ASSERT_EQ(faceNodesIntersections[1], 9);
-    ASSERT_EQ(faceNodesIntersections[2], 8);
-    ASSERT_EQ(faceNodesIntersections[3], 9);
-    ASSERT_EQ(faceNodesIntersections[4], 4);
-    ASSERT_EQ(faceNodesIntersections[5], 5);
-    ASSERT_EQ(faceNodesIntersections[6], 4);
-    ASSERT_EQ(faceNodesIntersections[7], 5);
-    ASSERT_EQ(faceNodesIntersections[8], meshkernel::constants::missing::intValue);
 
     ASSERT_EQ(faceIndexes[0], 6);
     ASSERT_EQ(faceIndexes[1], 3);
     ASSERT_EQ(faceIndexes[2], 3);
     ASSERT_EQ(faceIndexes[3], 0);
     ASSERT_EQ(faceIndexes[4], meshkernel::constants::missing::intValue);
+
+    ASSERT_EQ(faceNumEdges[0], 1);
+    ASSERT_EQ(faceNumEdges[1], 2);
+    ASSERT_EQ(faceNumEdges[2], 1);
+    ASSERT_EQ(faceNumEdges[3], meshkernel::constants::missing::intValue);
+
+    ASSERT_EQ(faceEdgeIndex[0], 18);
+    ASSERT_EQ(faceEdgeIndex[1], 18);
+    ASSERT_EQ(faceEdgeIndex[2], 15);
+    ASSERT_EQ(faceEdgeIndex[3], 15);
+    ASSERT_EQ(faceEdgeIndex[4], meshkernel::constants::missing::intValue);
 }
 
 TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
@@ -2964,7 +2974,7 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     const int num_x = static_cast<int>(std::ceil((lonMax - lonMin) / lonResolution));
     const int num_y = static_cast<int>(std::ceil((latMax - latMin) / latResolution));
 
-    auto make_grid_parameters = meshkernelapi::MakeGridParameters();
+    auto make_grid_parameters = meshkernel::MakeGridParameters();
     make_grid_parameters.num_columns = num_x;
     make_grid_parameters.num_rows = num_y;
     make_grid_parameters.angle = 0.0;
@@ -3026,7 +3036,7 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     griddedSamples.x_coordinates = nullptr;
     griddedSamples.y_coordinates = nullptr;
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 5;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.01;
@@ -3084,7 +3094,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     griddedSamples.y_coordinates = y_coordinates.data();
     griddedSamples.values = values.data();
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 5;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 2.0;

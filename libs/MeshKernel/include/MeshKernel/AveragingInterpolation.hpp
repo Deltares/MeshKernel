@@ -37,7 +37,7 @@ namespace meshkernel
 {
     // Forward declarations
     class Mesh;
-    struct Sample;
+    class Sample;
 
     /// @brief The class used to interpolate based on averaging
     ///

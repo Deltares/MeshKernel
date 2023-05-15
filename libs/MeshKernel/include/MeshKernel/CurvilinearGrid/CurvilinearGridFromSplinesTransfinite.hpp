@@ -30,7 +30,7 @@
 #include <memory>
 #include <vector>
 
-#include <MeshKernelApi/CurvilinearParameters.hpp>
+#include <MeshKernel/Parameters.hpp>
 
 namespace meshkernel
 {
@@ -45,7 +45,7 @@ namespace meshkernel
     public:
         /// @brief Ctor with splines and parameters
         /// @returns
-        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParameters& curvilinearParameters);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes the adimensional intersections between splines.
         ///

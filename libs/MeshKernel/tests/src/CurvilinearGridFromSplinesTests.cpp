@@ -4,25 +4,28 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
+
+using namespace meshkernel;
 
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 {
-    std::vector<meshkernel::Point> firstSpline{{152.001571655273, 86.6264953613281},
-                                               {374.752960205078, 336.378997802734},
-                                               {850.255920410156, 499.130676269531}};
+    std::vector<Point> firstSpline{{152.001571655273, 86.6264953613281},
+                                   {374.752960205078, 336.378997802734},
+                                   {850.255920410156, 499.130676269531}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{72.5010681152344, 391.129577636719},
-                                                {462.503479003906, 90.3765411376953}};
+    std::vector<Point> secondSpline{{72.5010681152344, 391.129577636719},
+                                    {462.503479003906, 90.3765411376953}};
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -35,7 +38,7 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     curvilinearGridFromSplines.ComputeSplineProperties(false);
     curvilinearGridFromSplines.MakeAllGridLines();
@@ -72,32 +75,32 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 
 TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 {
-    std::vector<meshkernel::Point> firstSpline{{91.2511901855469, 299.628631591797},
-                                               {354.502838134766, 518.630859375000},
-                                               {770.755432128906, 607.881774902344}};
+    std::vector<Point> firstSpline{{91.2511901855469, 299.628631591797},
+                                   {354.502838134766, 518.630859375000},
+                                   {770.755432128906, 607.881774902344}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline;
-    secondSpline.emplace_back(meshkernel::Point{273.502319335938, 86.6264953613281});
-    secondSpline.emplace_back(meshkernel::Point{557.004089355469, 316.128814697266});
-    secondSpline.emplace_back(meshkernel::Point{847.255920410156, 409.129730224609});
+    std::vector<Point> secondSpline;
+    secondSpline.emplace_back(Point{273.502319335938, 86.6264953613281});
+    secondSpline.emplace_back(Point{557.004089355469, 316.128814697266});
+    secondSpline.emplace_back(Point{847.255920410156, 409.129730224609});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    std::vector<meshkernel::Point> thirdSpline;
-    thirdSpline.emplace_back(meshkernel::Point{62.7510070800781, 396.379608154297});
-    thirdSpline.emplace_back(meshkernel::Point{350.752807617188, 73.8763732910156});
+    std::vector<Point> thirdSpline;
+    thirdSpline.emplace_back(Point{62.7510070800781, 396.379608154297});
+    thirdSpline.emplace_back(Point{350.752807617188, 73.8763732910156});
     splines->AddSpline(thirdSpline, 0, thirdSpline.size());
 
-    std::vector<meshkernel::Point> fourthSpline;
-    fourthSpline.emplace_back(meshkernel::Point{704.755004882812, 636.382019042969});
-    fourthSpline.emplace_back(meshkernel::Point{845.005859375000, 285.378509521484});
+    std::vector<Point> fourthSpline;
+    fourthSpline.emplace_back(Point{704.755004882812, 636.382019042969});
+    fourthSpline.emplace_back(Point{845.005859375000, 285.378509521484});
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -110,7 +113,7 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
     curvilinearGridFromSplines.ComputeSplineProperties(false);
 
     const double tolerance = 1e-6;
@@ -122,21 +125,21 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdapted)
 {
-    std::vector<meshkernel::Point> firstSpline{{26.9847544156713, 327.556992634968},
-                                               {340.139086327869, 819.656657068422},
-                                               {2048.50780774173, 1644.48279915859}};
+    std::vector<Point> firstSpline{{26.9847544156713, 327.556992634968},
+                                   {340.139086327869, 819.656657068422},
+                                   {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline;
-    secondSpline.emplace_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
-    secondSpline.emplace_back(meshkernel::Point{600.169022647819, 321.964950993679});
+    std::vector<Point> secondSpline;
+    secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
+    secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -149,7 +152,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
     auto curviGrid = curvilinearGridFromSplines.Compute();
 
     const double tolerance = 1e-6;
@@ -188,20 +191,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted)
 {
-    std::vector<meshkernel::Point> firstSpline{{26.9847544156713, 327.556992634968},
-                                               {340.139086327869, 819.656657068422},
-                                               {2048.50780774173, 1644.48279915859}};
+    std::vector<Point> firstSpline{{26.9847544156713, 327.556992634968},
+                                   {340.139086327869, 819.656657068422},
+                                   {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline;
-    secondSpline.emplace_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
-    secondSpline.emplace_back(meshkernel::Point{600.169022647819, 321.964950993679});
+    std::vector<Point> secondSpline;
+    secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
+    secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -214,7 +217,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     const auto curviGrid = curvilinearGridFromSplines.Compute();
 
@@ -254,20 +257,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefinement)
 {
-    std::vector<meshkernel::Point> firstSpline{{26.9847544156713, 327.556992634968},
-                                               {340.139086327869, 819.656657068422},
-                                               {2048.50780774173, 1644.48279915859}};
+    std::vector<Point> firstSpline{{26.9847544156713, 327.556992634968},
+                                   {340.139086327869, 819.656657068422},
+                                   {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline;
-    secondSpline.emplace_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
-    secondSpline.emplace_back(meshkernel::Point{600.169022647819, 321.964950993679});
+    std::vector<Point> secondSpline;
+    secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
+    secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -281,7 +284,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
@@ -354,31 +357,31 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
 {
-    std::vector<meshkernel::Point> firstSpline{{-93.379753864775, 231.718492951018},
-                                               {72.8139687226708, 724.468302026077},
-                                               {746.335897103372, 234.634172294657},
-                                               {1498.58116776234, 776.950530211586}};
+    std::vector<Point> firstSpline{{-93.379753864775, 231.718492951018},
+                                   {72.8139687226708, 724.468302026077},
+                                   {746.335897103372, 234.634172294657},
+                                   {1498.58116776234, 776.950530211586}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{-250.826438421303, 394.996536194825},
-                                                {101.970762159065, 292.947759167446}};
+    std::vector<Point> secondSpline{{-250.826438421303, 394.996536194825},
+                                    {101.970762159065, 292.947759167446}};
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    std::vector<meshkernel::Point> thirdSpline{{647.202799419633, 482.466916504007},
-                                               {486.840435519465, 144.248112641836}};
+    std::vector<Point> thirdSpline{{647.202799419633, 482.466916504007},
+                                   {486.840435519465, 144.248112641836}};
 
     splines->AddSpline(thirdSpline, 0, thirdSpline.size());
 
-    std::vector<meshkernel::Point> fourthSpline{{1224.50730946023, 747.793736775192},
-                                                {1568.55747200968, 464.97284044217}};
+    std::vector<Point> fourthSpline{{1224.50730946023, 747.793736775192},
+                                    {1568.55747200968, 464.97284044217}};
 
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -392,7 +395,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
@@ -454,47 +457,47 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
 }
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
 {
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
 
-    std::vector<meshkernel::Point> firstCentralSpline{{1.542516E+02, 7.687640E+01},
-                                                      {3.192526E+02, 2.733784E+02},
-                                                      {6.350046E+02, 5.231309E+02}};
+    std::vector<Point> firstCentralSpline{{1.542516E+02, 7.687640E+01},
+                                          {3.192526E+02, 2.733784E+02},
+                                          {6.350046E+02, 5.231309E+02}};
     splines->AddSpline(firstCentralSpline, 0, firstCentralSpline.size());
 
-    std::vector<meshkernel::Point> secondCentralSpline{{1.310014E+02, 9.637659E+01},
-                                                       {2.960025E+02, 2.891285E+02},
-                                                       {6.222545E+02, 5.418811E+02}};
+    std::vector<Point> secondCentralSpline{{1.310014E+02, 9.637659E+01},
+                                           {2.960025E+02, 2.891285E+02},
+                                           {6.222545E+02, 5.418811E+02}};
     splines->AddSpline(secondCentralSpline, 0, secondCentralSpline.size());
 
-    std::vector<meshkernel::Point> thirdCentralSpline{{1.782517E+02, 5.662619E+01},
-                                                      {3.335027E+02, 2.448781E+02},
-                                                      {6.455046E+02, 4.983806E+02}};
+    std::vector<Point> thirdCentralSpline{{1.782517E+02, 5.662619E+01},
+                                          {3.335027E+02, 2.448781E+02},
+                                          {6.455046E+02, 4.983806E+02}};
 
     splines->AddSpline(thirdCentralSpline, 0, thirdCentralSpline.size());
 
-    std::vector<meshkernel::Point> fourthBankSpline{{3.500084E+01, 1.901275E+02},
-                                                    {2.195020E+02, 3.813795E+02},
-                                                    {5.727542E+02, 6.221319E+02}};
+    std::vector<Point> fourthBankSpline{{3.500084E+01, 1.901275E+02},
+                                        {2.195020E+02, 3.813795E+02},
+                                        {5.727542E+02, 6.221319E+02}};
 
     splines->AddSpline(fourthBankSpline, 0, fourthBankSpline.size());
 
-    std::vector<meshkernel::Point> fifthBankSpline{{3.177526E+02, -3.712475E+01},
-                                                   {4.377534E+02, 1.218768E+02},
-                                                   {7.445052E+02, 4.136298E+02}};
+    std::vector<Point> fifthBankSpline{{3.177526E+02, -3.712475E+01},
+                                       {4.377534E+02, 1.218768E+02},
+                                       {7.445052E+02, 4.136298E+02}};
 
     splines->AddSpline(fifthBankSpline, 0, fifthBankSpline.size());
 
-    std::vector<meshkernel::Point> sixthBankSpline{{1.250633E+00, 2.748784E+02},
-                                                   {3.620029E+02, -3.337471E+01}};
+    std::vector<Point> sixthBankSpline{{1.250633E+00, 2.748784E+02},
+                                       {3.620029E+02, -3.337471E+01}};
     splines->AddSpline(sixthBankSpline, 0, sixthBankSpline.size());
 
-    std::vector<meshkernel::Point> seventhBankSpline{{5.030038E+02, 6.476321E+02},
-                                                     {7.542553E+02, 3.378790E+02}};
+    std::vector<Point> seventhBankSpline{{5.030038E+02, 6.476321E+02},
+                                         {7.542553E+02, 3.378790E+02}};
 
     splines->AddSpline(seventhBankSpline, 0, seventhBankSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -509,7 +512,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     curvilinearParameters.n_refinement = 40;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
@@ -612,19 +615,19 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
 {
-    std::vector<meshkernel::Point> firstSpline{{4.109727E+01, 4.110174E+01},
-                                               {4.109865E+01, 4.110418E+01},
-                                               {4.110644E+01, 4.110904E+01}};
+    std::vector<Point> firstSpline{{4.109727E+01, 4.110174E+01},
+                                   {4.109865E+01, 4.110418E+01},
+                                   {4.110644E+01, 4.110904E+01}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::spherical);
+    auto splines = std::make_shared<Splines>(Projection::spherical);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{4.109612E+01, 4.110473E+01},
-                                                {4.109923E+01, 4.110212E+01}};
+    std::vector<Point> secondSpline{{4.109612E+01, 4.110473E+01},
+                                    {4.109923E+01, 4.110212E+01}};
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -638,12 +641,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParameters.n_refinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
 
-    // meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
+    // Mesh2D mesh(edges, nodes, Projection::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -696,20 +699,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvature)
 {
-    std::vector<meshkernel::Point> firstSpline{{-103.468336664918, 420.606335102062},
-                                               {111.984583950396, 845.689124424167},
-                                               {1465.84415268176, 1608.50892444055}};
+    std::vector<Point> firstSpline{{-103.468336664918, 420.606335102062},
+                                   {111.984583950396, 845.689124424167},
+                                   {1465.84415268176, 1608.50892444055}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{-333.478887051536, 921.388799234953},
-                                                {167.303577081355, 490.482958004326}};
+    std::vector<Point> secondSpline{{-333.478887051536, 921.388799234953},
+                                    {167.303577081355, 490.482958004326}};
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.5;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -723,7 +726,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParameters.n_refinement = 3;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
@@ -764,20 +767,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatureRemoveSkinnyTriangles)
 {
-    std::vector<meshkernel::Point> firstSpline{{-103.468336664918, 420.606335102062},
-                                               {111.984583950396, 845.689124424167},
-                                               {1465.84415268176, 1608.50892444055}};
+    std::vector<Point> firstSpline{{-103.468336664918, 420.606335102062},
+                                   {111.984583950396, 845.689124424167},
+                                   {1465.84415268176, 1608.50892444055}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{-333.478887051536, 921.388799234953},
-                                                {167.303577081355, 490.482958004326}};
+    std::vector<Point> secondSpline{{-333.478887051536, 921.388799234953},
+                                    {167.303577081355, 490.482958004326}};
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
     splinesToCurvilinearParameters.aspect_ratio = 0.5;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
@@ -791,7 +794,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParameters.n_refinement = 3;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();
@@ -848,52 +851,52 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSplines_ShouldComputeMesh)
 {
     // Setup
-    std::vector<meshkernel::Point> firstSpline{{7.7979524E+04, 3.7127829E+05},
-                                               {7.7979524E+04, 3.7025723E+05},
-                                               {7.8302860E+04, 3.6898090E+05},
-                                               {7.9732343E+04, 3.6809598E+05},
-                                               {8.0889543E+04, 3.6698984E+05},
-                                               {8.0668314E+04, 3.6578158E+05},
-                                               {7.9579184E+04, 3.6419894E+05}};
+    std::vector<Point> firstSpline{{7.7979524E+04, 3.7127829E+05},
+                                   {7.7979524E+04, 3.7025723E+05},
+                                   {7.8302860E+04, 3.6898090E+05},
+                                   {7.9732343E+04, 3.6809598E+05},
+                                   {8.0889543E+04, 3.6698984E+05},
+                                   {8.0668314E+04, 3.6578158E+05},
+                                   {7.9579184E+04, 3.6419894E+05}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
-    std::vector<meshkernel::Point> secondSpline{{7.6618112E+04, 3.7136337E+05},
-                                                {7.6754253E+04, 3.7005301E+05},
-                                                {7.7179694E+04, 3.6874265E+05},
-                                                {7.8404966E+04, 3.6780668E+05},
-                                                {7.9681290E+04, 3.6721107E+05},
-                                                {8.0140766E+04, 3.6636018E+05},
-                                                {7.9477078E+04, 3.6544123E+05},
-                                                {7.8779354E+04, 3.6452228E+05}};
+    std::vector<Point> secondSpline{{7.6618112E+04, 3.7136337E+05},
+                                    {7.6754253E+04, 3.7005301E+05},
+                                    {7.7179694E+04, 3.6874265E+05},
+                                    {7.8404966E+04, 3.6780668E+05},
+                                    {7.9681290E+04, 3.6721107E+05},
+                                    {8.0140766E+04, 3.6636018E+05},
+                                    {7.9477078E+04, 3.6544123E+05},
+                                    {7.8779354E+04, 3.6452228E+05}};
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    std::vector<meshkernel::Point> thirdSpline{{7.7281800E+04, 3.7144846E+05},
-                                               {7.7366889E+04, 3.6984880E+05},
-                                               {7.7928471E+04, 3.6874265E+05},
-                                               {7.9153742E+04, 3.6792581E+05},
-                                               {8.0242872E+04, 3.6722808E+05},
-                                               {8.0481119E+04, 3.6641124E+05},
-                                               {7.9970590E+04, 3.6542421E+05},
-                                               {7.9579184E+04, 3.6484561E+05},
-                                               {7.9170760E+04, 3.6431806E+05}};
+    std::vector<Point> thirdSpline{{7.7281800E+04, 3.7144846E+05},
+                                   {7.7366889E+04, 3.6984880E+05},
+                                   {7.7928471E+04, 3.6874265E+05},
+                                   {7.9153742E+04, 3.6792581E+05},
+                                   {8.0242872E+04, 3.6722808E+05},
+                                   {8.0481119E+04, 3.6641124E+05},
+                                   {7.9970590E+04, 3.6542421E+05},
+                                   {7.9579184E+04, 3.6484561E+05},
+                                   {7.9170760E+04, 3.6431806E+05}};
 
     splines->AddSpline(thirdSpline, 0, thirdSpline.size());
 
-    std::vector<meshkernel::Point> fourthSpline{{7.613792E+04, 3.712157E+05},
-                                                {7.831719E+04, 3.710751E+05}};
+    std::vector<Point> fourthSpline{{7.613792E+04, 3.712157E+05},
+                                    {7.831719E+04, 3.710751E+05}};
 
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
-    std::vector<meshkernel::Point> fifthSpline{{7.857202E+04, 3.649151E+05},
-                                               {8.003072E+04, 3.641506E+05}};
+    std::vector<Point> fifthSpline{{7.857202E+04, 3.649151E+05},
+                                   {8.003072E+04, 3.641506E+05}};
 
     splines->AddSpline(fifthSpline, 0, fifthSpline.size());
 
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
 
     curvilinearParameters.m_refinement = 200;
     curvilinearParameters.n_refinement = 40;
@@ -909,7 +912,7 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     splinesToCurvilinearParameters.check_front_collisions = false;
     splinesToCurvilinearParameters.remove_skinny_triangles = true;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+    CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // Compute
     const auto curviGrid = curvilinearGridFromSplines.Compute();

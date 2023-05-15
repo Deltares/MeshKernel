@@ -1,14 +1,13 @@
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/MakeGridParameters.hpp>
-#include <TestUtils/MakeCurvilinearGrids.hpp>
 
 #include <benchmark/benchmark.h>
 
 using namespace meshkernel;
-namespace mkapi = meshkernelapi;
 
 static void BM_CurvilinearUniform(benchmark::State& state)
 {
@@ -35,7 +34,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         double const delta_x = dim_x / static_cast<double>(state.range(0) - 1);
         double const delta_y = dim_y / static_cast<double>(state.range(1) - 1);
 
-        mkapi::MakeGridParameters make_grid_arameters;
+        MakeGridParameters make_grid_arameters;
         make_grid_arameters.angle = 0.0;
         make_grid_arameters.origin_x = 0.0;
         make_grid_arameters.origin_y = 0.0;

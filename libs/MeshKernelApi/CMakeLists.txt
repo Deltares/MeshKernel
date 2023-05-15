@@ -27,16 +27,11 @@ set(
   INC_LIST
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
-  ${DOMAIN_INC_DIR}/CurvilinearParameters.hpp
   ${DOMAIN_INC_DIR}/GeometryList.hpp
   ${DOMAIN_INC_DIR}/GriddedSamples.hpp
-  ${DOMAIN_INC_DIR}/MakeGridParameters.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
-  ${DOMAIN_INC_DIR}/MeshRefinementParameters.hpp
-  ${DOMAIN_INC_DIR}/OrthogonalizationParameters.hpp
-  ${DOMAIN_INC_DIR}/SplinesToCurvilinearParameters.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
   ${VERSION_INC_DIR}/Version/Version.hpp

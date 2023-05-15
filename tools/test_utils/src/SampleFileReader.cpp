@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <MeshKernel/Entities.hpp>
-#include <TestUtils/SampleFileReader.hpp>
-
 std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath)
 {
     std::vector<meshkernel::Sample> samples;

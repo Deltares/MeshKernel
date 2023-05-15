@@ -11,24 +11,26 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+using namespace meshkernel;
+
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
-    std::vector<meshkernel::Point> nodes{{0.0, 0.0},
-                                         {0.0, 10.0},
-                                         {10.0, 0.0},
-                                         {10.0, 10.0},
-                                         {20.0, 0.0}};
+    std::vector<Point> nodes{{0.0, 0.0},
+                             {0.0, 10.0},
+                             {10.0, 0.0},
+                             {10.0, 10.0},
+                             {20.0, 0.0}};
 
-    std::vector<meshkernel::Edge> edges{{1, 0},
-                                        {0, 2},
-                                        {2, 4},
-                                        {4, 3},
-                                        {3, 2},
-                                        {3, 1}};
+    std::vector<Edge> edges{{1, 0},
+                            {0, 2},
+                            {2, 4},
+                            {4, 3},
+                            {3, 2},
+                            {3, 1}};
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.outer_iterations = 25;
@@ -37,21 +39,21 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
     // Execute
-    auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    auto polygon = std::make_shared<meshkernel::Polygons>();
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::cartesian);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    auto polygon = std::make_shared<Polygons>();
 
-    std::vector<meshkernel::Point> landBoundary{};
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
 
@@ -77,8 +79,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -86,20 +88,20 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    auto polygon = std::make_shared<meshkernel::Polygons>();
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    auto polygon = std::make_shared<Polygons>();
 
-    std::vector<meshkernel::Point> landBoundary;
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    std::vector<Point> landBoundary;
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
 
@@ -136,8 +138,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -145,20 +147,20 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    auto polygon = std::make_shared<meshkernel::Polygons>();
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    auto polygon = std::make_shared<Polygons>();
 
-    std::vector<meshkernel::Point> landBoundary;
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    std::vector<Point> landBoundary;
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
     orthogonalization.Compute();
@@ -193,8 +195,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -202,29 +204,29 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    std::vector<meshkernel::Point> nodes{{342.987518, 471.121002},
-                                         {327.640900, 380.846436},
-                                         {396.851135, 201.200073},
-                                         {514.207581, 203.607407},
-                                         {569.274841, 294.483765},
-                                         {568.673035, 379.943695},
-                                         {515.712158, 458.783478},
-                                         {343.288422, 471.722809}};
+    std::vector<Point> nodes{{342.987518, 471.121002},
+                             {327.640900, 380.846436},
+                             {396.851135, 201.200073},
+                             {514.207581, 203.607407},
+                             {569.274841, 294.483765},
+                             {568.673035, 379.943695},
+                             {515.712158, 458.783478},
+                             {343.288422, 471.722809}};
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
 
-    std::vector<meshkernel::Point> landBoundary;
-    auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshkernel::Projection::cartesian);
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    std::vector<Point> landBoundary;
+    auto polygon = std::make_shared<Polygons>(nodes, Projection::cartesian);
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
 
@@ -261,8 +263,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -270,19 +272,19 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.5;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary;
-    auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    auto polygon = std::make_shared<Polygons>();
+    std::vector<Point> landBoundary;
+    auto landBoundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landBoundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landBoundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
     orthogonalization.Compute();
@@ -315,10 +317,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::cartesian);
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.outer_iterations = 25;
@@ -326,19 +328,19 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary{};
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto polygon = std::make_shared<Polygons>();
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
 
@@ -347,26 +349,26 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 {
-    using namespace meshkernel::constants;
+    using namespace constants;
 
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // the land boundary to use
-    std::vector<meshkernel::Point> landBoundary{{235.561218, 290.571899},
-                                                {265.953522, 436.515747},
-                                                {429.349854, 450.959656},
-                                                {535.271545, 386.262909},
-                                                {missing::doubleValue, missing::doubleValue},
-                                                {246.995941, 262.285858},
-                                                {351.112183, 237.309906},
-                                                {443.191895, 262.285858},
-                                                {553.627319, 327.283539},
-                                                {missing::doubleValue, missing::doubleValue}};
+    std::vector<Point> landBoundary{{235.561218, 290.571899},
+                                    {265.953522, 436.515747},
+                                    {429.349854, 450.959656},
+                                    {535.271545, 386.262909},
+                                    {missing::doubleValue, missing::doubleValue},
+                                    {246.995941, 262.285858},
+                                    {351.112183, 237.309906},
+                                    {443.191895, 262.285858},
+                                    {553.627319, 327.283539},
+                                    {missing::doubleValue, missing::doubleValue}};
 
     // snap to land boundaries
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -375,18 +377,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
     // no enclosing polygon
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto polygon = std::make_shared<Polygons>();
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
 
@@ -420,10 +422,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::spherical, {41.1, 41.1});
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -431,20 +433,20 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
 
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary{};
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto polygon = std::make_shared<Polygons>();
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
     orthogonalization.Compute();
@@ -494,24 +496,24 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherical)
 {
-    std::vector<meshkernel::Point> nodes{{41.1019592, 41.1072273},
-                                         {41.1044655, 41.1043587},
-                                         {41.1051979, 41.1073151},
-                                         {41.1080132, 41.1046638},
-                                         {41.1014137, 41.1039963}};
+    std::vector<Point> nodes{{41.1019592, 41.1072273},
+                             {41.1044655, 41.1043587},
+                             {41.1051979, 41.1073151},
+                             {41.1080132, 41.1046638},
+                             {41.1014137, 41.1039963}};
 
-    std::vector<meshkernel::Edge> edges{{4, 0},
-                                        {4, 1},
-                                        {1, 0},
-                                        {1, 3},
-                                        {3, 2},
-                                        {2, 1},
-                                        {0, 2}};
+    std::vector<Edge> edges{{4, 0},
+                            {4, 1},
+                            {1, 0},
+                            {1, 3},
+                            {3, 2},
+                            {2, 1},
+                            {0, 2}};
 
-    auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::spherical);
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
 
-    const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -520,20 +522,20 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
     // no enclosing polygon
-    auto polygon = std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary{};
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto polygon = std::make_shared<Polygons>();
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
-    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
-    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
+    auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<Smoother>(mesh);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                                smoother,
-                                                                orthogonalizer,
-                                                                polygon,
-                                                                landboundaries,
-                                                                projectToLandBoundaryOption,
-                                                                orthogonalizationParameters);
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    smoother,
+                                                    orthogonalizer,
+                                                    polygon,
+                                                    landboundaries,
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
 
     orthogonalization.Initialize();
     orthogonalization.Compute();
