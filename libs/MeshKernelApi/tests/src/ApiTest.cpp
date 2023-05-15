@@ -1131,24 +1131,24 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     // Prepare
     meshkernelapi::GeometryList geometryListIn;
 
-    std::unique_ptr<double> const splineCoordinatesX(new double[3]{10.0, 20.0, 30.0});
-    std::unique_ptr<double> const splineCoordinatesY(new double[3]{-5.0, 5.0, -5.0});
-    std::unique_ptr<double> const values(new double[3]{0.0, 0.0, 0.0});
-    geometryListIn.coordinates_x = splineCoordinatesX.get();
-    geometryListIn.coordinates_y = splineCoordinatesY.get();
-    geometryListIn.values = values.get();
-    geometryListIn.num_coordinates = 3;
+    std::vector<double> splineCoordinatesX{10.0, 20.0, 30.0};
+    std::vector<double> splineCoordinatesY{-5.0, 5.0, -5.0};
+    std::vector<double> values{0.0, 0.0, 0.0};
+    geometryListIn.coordinates_x = splineCoordinatesX.data();
+    geometryListIn.coordinates_y = splineCoordinatesY.data();
+    geometryListIn.values = values.data();
+    geometryListIn.num_coordinates = static_cast<int>(splineCoordinatesX.size());
     geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
     meshkernelapi::GeometryList geometryListOut;
     int const numberOfPointsBetweenNodes = 3;
     size_t totalNumPoints = (numberOfPointsBetweenNodes + 1) * 2 + 1;
-    std::unique_ptr<double> const CoordinatesOutX(new double[totalNumPoints]);
-    std::unique_ptr<double> const CoordinatesOutY(new double[totalNumPoints]);
-    std::unique_ptr<double> const valuesOut(new double[totalNumPoints]);
-    geometryListOut.coordinates_x = CoordinatesOutX.get();
-    geometryListOut.coordinates_y = CoordinatesOutY.get();
-    geometryListOut.values = valuesOut.get();
+    std::vector<double> CoordinatesOutX(totalNumPoints);
+    std::vector<double> CoordinatesOutY(totalNumPoints);
+    std::vector<double> valuesOut(totalNumPoints);
+    geometryListOut.coordinates_x = CoordinatesOutX.data();
+    geometryListOut.coordinates_y = CoordinatesOutY.data();
+    geometryListOut.values = valuesOut.data();
     geometryListOut.num_coordinates = static_cast<int>(totalNumPoints);
     geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
 
@@ -1159,11 +1159,11 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     // Assert. The last value is a geometry separator  to handle the case of multiple splines
     ASSERT_EQ(totalNumPoints, geometryListOut.num_coordinates);
 
-    std::vector computedCoordinatesX(CoordinatesOutX.get(), CoordinatesOutX.get() + totalNumPoints);
+    std::vector computedCoordinatesX(CoordinatesOutX.data(), CoordinatesOutX.data() + totalNumPoints);
     std::vector ValidCoordinatesX{10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0};
     ASSERT_THAT(computedCoordinatesX, ::testing::ContainerEq(ValidCoordinatesX));
 
-    std::vector computedCoordinatesY(CoordinatesOutY.get(), CoordinatesOutY.get() + totalNumPoints);
+    std::vector computedCoordinatesY(CoordinatesOutY.data(), CoordinatesOutY.data() + totalNumPoints);
     std::vector ValidCoordinatesY{-5.000000, -1.328125, 1.8750000, 4.1406250, 5.0000000, 4.1406250, 1.8750000, -1.328125, -5.000000};
     ASSERT_THAT(computedCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 }
@@ -2294,7 +2294,7 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
     double geometrySeparator = meshkernelapi::mkernel_get_separator();
 
     int const numNodes = 32;
-    std::unique_ptr<double> const coordinatesX(new double[numNodes]{
+    std::vector<double> coordinatesX{
         7.7979524E+04,
         7.7979524E+04,
         7.8302860E+04,
@@ -2326,9 +2326,9 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
         7.831719E+04,
         geometrySeparator,
         7.857202E+04,
-        8.003072E+04});
+        8.003072E+04};
 
-    std::unique_ptr<double> const coordinatesY(new double[numNodes]{
+    std::vector<double> coordinatesY{
         3.7127829E+05,
         3.7025723E+05,
         3.6898090E+05,
@@ -2360,11 +2360,11 @@ TEST_F(ApiTests, ComputeCurvilinearGridFromSplines_ShouldComputeANewCurvilinearG
         3.710751E+05,
         geometrySeparator,
         3.649151E+05,
-        3.641506E+05});
+        3.641506E+05};
 
-    splines.coordinates_x = coordinatesX.get();
-    splines.coordinates_y = coordinatesY.get();
-    splines.num_coordinates = numNodes;
+    splines.coordinates_x = coordinatesX.data();
+    splines.coordinates_y = coordinatesY.data();
+    splines.num_coordinates = static_cast<int>(coordinatesX.size());
 
     meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     meshkernelapi::CurvilinearParameters curvilinearParameters{};
@@ -2451,10 +2451,10 @@ TEST_F(ApiTests, InsertFace_OnCurvilinearGrid_ShouldInsertAFace)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    std::unique_ptr<double> const node_x(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    std::unique_ptr<double> const node_y(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    curvilinearGrid.node_x = node_x.get();
-    curvilinearGrid.node_y = node_y.get();
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
     errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -2495,15 +2495,14 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList samples{};
-    int const numCoordinates = 4;
-    std::unique_ptr<double> const firstGridNodeCoordinateX(new double[numCoordinates]{1.0, 2.0, 3.0, 1.0});
-    std::unique_ptr<double> const firstGridNodeCoordinateY(new double[numCoordinates]{1.0, 3.0, 2.0, 4.0});
-    std::unique_ptr<double> const values(new double[numCoordinates]{3.0, 10, 4.0, 5.0});
+    std::vector<double> firstGridNodeCoordinateX{1.0, 2.0, 3.0, 1.0};
+    std::vector<double> firstGridNodeCoordinateY{1.0, 3.0, 2.0, 4.0};
+    std::vector<double> values{3.0, 10, 4.0, 5.0};
 
-    samples.coordinates_x = firstGridNodeCoordinateX.get();
-    samples.coordinates_y = firstGridNodeCoordinateY.get();
-    samples.values = values.get();
-    samples.num_coordinates = numCoordinates;
+    samples.coordinates_x = firstGridNodeCoordinateX.data();
+    samples.coordinates_y = firstGridNodeCoordinateY.data();
+    samples.values = values.data();
+    samples.num_coordinates = static_cast<int>(firstGridNodeCoordinateX.size());
 
     int const locationType = 1;             // Nodes
     int const averagingMethodType = 1;      // Simple averaging
@@ -2514,14 +2513,14 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList results{};
-    std::unique_ptr<double> const resultsCoordinateX(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> const resultsCoordinateY(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> const resultsValues(new double[mesh2d.num_nodes]);
+    std::vector<double> resultsCoordinateX(mesh2d.num_nodes);
+    std::vector<double> resultsCoordinateY(mesh2d.num_nodes);
+    std::vector<double> resultsValues(mesh2d.num_nodes);
 
-    results.coordinates_x = resultsCoordinateX.get();
-    results.coordinates_y = resultsCoordinateY.get();
-    results.values = resultsValues.get();
-    results.num_coordinates = mesh2d.num_nodes;
+    results.coordinates_x = resultsCoordinateX.data();
+    results.coordinates_y = resultsCoordinateY.data();
+    results.values = resultsValues.data();
+    results.num_coordinates = static_cast<int>(resultsCoordinateX.size());
 
     // Execute
     errorCode = mkernel_mesh2d_averaging_interpolation(meshKernelId,
@@ -2535,7 +2534,7 @@ TEST_F(ApiTests, AveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
     // Assert the value has been interpolated
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     const double tolerance = 1e-6;
-    std::vector computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
+    std::vector computedResultsValues(resultsValues.data(), resultsValues.data() + mesh2d.num_nodes);
     ASSERT_NEAR(computedResultsValues[4], 3.0, tolerance);
 }
 
@@ -2547,14 +2546,14 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
 
     meshkernelapi::GeometryList samples{};
     int const numCoordinates = 4;
-    std::unique_ptr<double> const firstGridNodeCoordinateX(new double[numCoordinates]{1.0, 2.0, 3.0, 1.0});
-    std::unique_ptr<double> const firstGridNodeCoordinateY(new double[numCoordinates]{1.0, 3.0, 2.0, 4.0});
-    std::unique_ptr<double> const values(new double[numCoordinates]{3.0, 10, 4.0, 5.0});
+    std::vector<double> firstGridNodeCoordinateX{1.0, 2.0, 3.0, 1.0};
+    std::vector<double> firstGridNodeCoordinateY{1.0, 3.0, 2.0, 4.0};
+    std::vector<double> values{3.0, 10, 4.0, 5.0};
 
-    samples.coordinates_x = firstGridNodeCoordinateX.get();
-    samples.coordinates_y = firstGridNodeCoordinateY.get();
-    samples.values = values.get();
-    samples.num_coordinates = numCoordinates;
+    samples.coordinates_x = firstGridNodeCoordinateX.data();
+    samples.coordinates_y = firstGridNodeCoordinateY.data();
+    samples.values = values.data();
+    samples.num_coordinates = static_cast<int>(firstGridNodeCoordinateX.size());
 
     int const locationType = 1; // Nodes
 
@@ -2563,14 +2562,14 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList results{};
-    std::unique_ptr<double> const resultsCoordinateX(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> const resultsCoordinateY(new double[mesh2d.num_nodes]);
-    std::unique_ptr<double> const resultsValues(new double[mesh2d.num_nodes]);
+    std::vector<double> resultsCoordinateX(mesh2d.num_nodes);
+    std::vector<double> resultsCoordinateY(mesh2d.num_nodes);
+    std::vector<double> resultsValues(mesh2d.num_nodes);
 
-    results.coordinates_x = resultsCoordinateX.get();
-    results.coordinates_y = resultsCoordinateY.get();
-    results.values = resultsValues.get();
-    results.num_coordinates = mesh2d.num_nodes;
+    results.coordinates_x = resultsCoordinateX.data();
+    results.coordinates_y = resultsCoordinateY.data();
+    results.values = resultsValues.data();
+    results.num_coordinates = static_cast<int>(resultsCoordinateX.size());
 
     // Execute
     errorCode = mkernel_mesh2d_triangulation_interpolation(meshKernelId,
@@ -2581,7 +2580,7 @@ TEST_F(ApiTests, TriangleInterpolation_OnMesh2D_ShouldInterpolateValues)
     // Assert the value has been interpolated
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     const double tolerance = 1e-6;
-    std::vector computedResultsValues(resultsValues.get(), resultsValues.get() + mesh2d.num_nodes);
+    std::vector computedResultsValues(resultsValues.data(), resultsValues.data() + mesh2d.num_nodes);
     ASSERT_NEAR(computedResultsValues[8], 5.6666666666666670, tolerance);
 }
 
@@ -2602,10 +2601,10 @@ TEST_F(ApiTests, LineAttraction_OnCurvilinearGrid_ShouldAttractGridlines)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    std::unique_ptr<double> const node_x(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    std::unique_ptr<double> const node_y(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    curvilinearGrid.node_x = node_x.get();
-    curvilinearGrid.node_y = node_y.get();
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
     errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -2627,10 +2626,10 @@ TEST_F(ApiTests, DeleteNode_OnCurvilinearGrid_ShouldDeleteNode)
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     auto errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    std::unique_ptr<double> const node_x(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    std::unique_ptr<double> const node_y(new double[curvilinearGrid.num_m * curvilinearGrid.num_n]);
-    curvilinearGrid.node_x = node_x.get();
-    curvilinearGrid.node_y = node_y.get();
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
     errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     auto const numValidNodesBefore = CurvilinearGridCountValidNodes(curvilinearGrid);
 
@@ -2656,14 +2655,13 @@ TEST_F(ApiTests, ComputeFixedChainagesAndConvertNetworkToMesh_ShouldGenerateMesh
     auto const meshKernelId = GetMeshKernelId();
 
     double separator = meshkernelapi::mkernel_get_separator();
-    int const numCoordinates = 7;
-    std::unique_ptr<double> const polyLineXCoordinate(new double[numCoordinates]{0.0, 10.0, 20.0, separator, 10.0, 10.0, 10.0});
-    std::unique_ptr<double> const polyLineYCoordinate(new double[numCoordinates]{0.0, 0.0, 0.0, separator, -10.0, 0.0, 10.0});
+    std::vector<double> polyLineXCoordinate{0.0, 10.0, 20.0, separator, 10.0, 10.0, 10.0};
+    std::vector<double> polyLineYCoordinate{0.0, 0.0, 0.0, separator, -10.0, 0.0, 10.0};
 
     meshkernelapi::GeometryList polylines{};
-    polylines.coordinates_x = polyLineXCoordinate.get();
-    polylines.coordinates_y = polyLineYCoordinate.get();
-    polylines.num_coordinates = numCoordinates;
+    polylines.coordinates_x = polyLineXCoordinate.data();
+    polylines.coordinates_y = polyLineYCoordinate.data();
+    polylines.num_coordinates = static_cast<int>(polyLineXCoordinate.size());
     polylines.geometry_separator = separator;
 
     // Set the network
@@ -2674,8 +2672,8 @@ TEST_F(ApiTests, ComputeFixedChainagesAndConvertNetworkToMesh_ShouldGenerateMesh
     int const fixedChainagesSize = 3;
     double const minFaceSize = 0.01;
     double const fixedChainagesOffset = 10.0;
-    std::unique_ptr<double> fixedChainages(new double[3]{5.0, separator, 5.0});
-    errorCode = meshkernelapi::mkernel_network1d_compute_fixed_chainages(meshKernelId, fixedChainages.get(), fixedChainagesSize, minFaceSize, fixedChainagesOffset);
+    std::vector<double> fixedChainages{5.0, separator, 5.0};
+    errorCode = meshkernelapi::mkernel_network1d_compute_fixed_chainages(meshKernelId, fixedChainages.data(), fixedChainagesSize, minFaceSize, fixedChainagesOffset);
     // Convert network 1d to mesh1d
     errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, minFaceSize);
 
@@ -2692,14 +2690,12 @@ TEST_F(ApiTests, ComputeOffsettedAndConvertNetworkToMesh_ShouldGenerateMesh1D)
     auto const meshKernelId = GetMeshKernelId();
 
     double separator = meshkernelapi::mkernel_get_separator();
-    int const numCoordinates = 7;
-    std::unique_ptr<double> const polyLineXCoordinate(new double[numCoordinates]{0.0, 10.0, 20.0, separator, 10.0, 10.0, 10.0});
-    std::unique_ptr<double> const polyLineYCoordinate(new double[numCoordinates]{0.0, 0.0, 0.0, separator, -10.0, 0.0, 10.0});
-
+    std::vector<double> polyLineXCoordinate{0.0, 10.0, 20.0, separator, 10.0, 10.0, 10.0};
+    std::vector<double> polyLineYCoordinate{0.0, 0.0, 0.0, separator, -10.0, 0.0, 10.0};
     meshkernelapi::GeometryList polylines{};
-    polylines.coordinates_x = polyLineXCoordinate.get();
-    polylines.coordinates_y = polyLineYCoordinate.get();
-    polylines.num_coordinates = numCoordinates;
+    polylines.coordinates_x = polyLineXCoordinate.data();
+    polylines.coordinates_y = polyLineYCoordinate.data();
+    polylines.num_coordinates = static_cast<int>(polyLineXCoordinate.size());
     polylines.geometry_separator = separator;
 
     // Set the network
@@ -2708,7 +2704,7 @@ TEST_F(ApiTests, ComputeOffsettedAndConvertNetworkToMesh_ShouldGenerateMesh1D)
 
     // Execute, compute offsetted chainages
     double const offset = 1.0;
-    std::unique_ptr<double> fixedChainages(new double[3]{5.0, separator, 5.0});
+    std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_offsetted_chainages(meshKernelId, offset);
 
     // Convert network 1d to mesh1d
@@ -2792,36 +2788,35 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> const node_x(new double[7]{
+    std::vector<double> node_x{
         1.73493900000000,
         2.35659313023165,
         5.38347452702839,
         14.2980910429074,
         22.9324017677239,
         25.3723169493137,
-        25.8072280000000});
-    std::unique_ptr<double> const node_y(new double[7]{
+        25.8072280000000};
+    std::vector<double> node_y{
         -7.6626510000000,
         1.67281447902331,
         10.3513746546384,
         12.4797224193970,
         15.3007317677239,
         24.1623588554512,
-        33.5111870000000});
-    mesh1d.node_x = node_x.get();
-    mesh1d.node_y = node_y.get();
+        33.5111870000000};
+    mesh1d.node_x = node_x.data();
+    mesh1d.node_y = node_y.data();
     mesh1d.num_nodes = 7;
 
-    std::unique_ptr<int> edge_nodes(new int[12]{
-        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
-    mesh1d.edge_nodes = edge_nodes.get();
+    std::vector<int> edge_nodes{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6};
+    mesh1d.edge_nodes = edge_nodes.data();
     mesh1d.num_edges = 6;
 
     errorCode = mkernel_mesh1d_set(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[7]{1, 1, 1, 1, 1, 1, 1});
+    std::vector<int> onedNodeMask{1, 1, 1, 1, 1, 1, 1};
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
@@ -2836,7 +2831,7 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
     polygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.get(), polygon);
+    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.data(), polygon);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -2844,10 +2839,10 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
     errorCode = mkernel_contacts_get_dimensions(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
-    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
-    contacts.mesh1d_indices = mesh1d_indices.get();
-    contacts.mesh2d_indices = mesh2d_indices.get();
+    std::vector<int> mesh1d_indices(contacts.num_contacts);
+    std::vector<int> mesh2d_indices(contacts.num_contacts);
+    contacts.mesh1d_indices = mesh1d_indices.data();
+    contacts.mesh2d_indices = mesh2d_indices.data();
 
     errorCode = mkernel_contacts_get_data(meshKernelId, contacts);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -2904,7 +2899,7 @@ TEST(CostumizedApiTests, IntersectMeshWithPolylineThroughApi_ShouldIntersectMesh
     boundaryPolyLine.coordinates_x = xCoordinates.data();
     boundaryPolyLine.coordinates_y = yCoordinates.data();
     boundaryPolyLine.values = nullptr;
-    boundaryPolyLine.num_coordinates = 2;
+    boundaryPolyLine.num_coordinates = static_cast<int>(xCoordinates.size());
 
     std::vector polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
     std::vector polylineSegmentDistances(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::doubleValue);
