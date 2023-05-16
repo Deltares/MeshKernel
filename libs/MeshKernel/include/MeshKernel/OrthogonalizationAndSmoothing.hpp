@@ -162,8 +162,7 @@ namespace meshkernel
         std::vector<size_t> m_compressedNodesNodes;     ///< The indices of the neighbouring nodes
 
         // run-time parameters
-        double m_mumax;                                 ///< Mumax stored for runtime
-        double m_mu;                                    ///< Mu stored for runtime
-        bool m_keepCircumcentersAndMassCenters = false; ///< Whether to keep circumcenters and mass centers
+        double m_mumax = 0.0; ///< Mumax stored for runtime
+        double m_mu = 0.0;    ///< Mu stored for runtime
     };
 } // namespace meshkernel
