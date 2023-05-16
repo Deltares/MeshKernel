@@ -72,8 +72,8 @@ namespace meshkernel
 
         /// @brief Builds the tree
         /// @tparam T Requires IsCoordinate<T>
-        template <std::derived_from<Point> T>
-        void BuildTree(std::vector<T> const& nodes)
+        template <std::derived_from<Point> U>
+        void BuildTree(std::vector<U> const& nodes)
         {
             m_points.reserve(m_points.size());
             m_points.clear();
