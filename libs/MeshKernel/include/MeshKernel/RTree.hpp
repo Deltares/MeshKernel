@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+// #include "MeshKernel/Exceptions.hpp"
 
 // include boost
 #include <boost/geometry.hpp>
@@ -55,12 +56,16 @@ namespace meshkernel
     /// or a vector of the nearest neighbors (`meshkernel::RTree::SearchNearestPoint`).
     /// RTee has a `m_queryCache`, a vector used for collecting all query results
     /// and avoid frequent re-allocations when the number of results changes.
+    template <typename T = bgi::linear<16>>
     class RTree
     {
     public:
+        /// @brief Default constructor
+        RTree() = default;
+
         /// @brief Class constructor
         /// @param queryVectorCapacity Optional capacity of the query vector, the default is 100
-        RTree(size_t queryVectorCapacity = 100)
+        RTree(size_t queryVectorCapacity)
             : m_queryVectorCapacity(queryVectorCapacity)
         {
         }
@@ -87,20 +92,87 @@ namespace meshkernel
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
-        void SearchPoints(Point const& node, double searchRadiusSquared);
+        void SearchPoints(Point const& node, double searchRadiusSquared)
+        {
+            Point2D const nodeSought(node.x, node.y);
+            double const searchRadius = std::sqrt(searchRadiusSquared);
+            Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
+                            Point2D(node.x + searchRadius, node.y + searchRadius));
+
+            m_queryCache.reserve(m_queryVectorCapacity);
+            m_queryCache.clear();
+            m_rtree.query(bgi::within(box) &&
+                              bgi::satisfies([&nodeSought, searchRadiusSquared](Value2D const& v)
+                                             { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
+                          std::back_inserter(m_queryCache));
+
+            if (!m_queryCache.empty())
+            {
+                m_queryIndices.reserve(m_queryCache.size());
+                m_queryIndices.clear();
+                for (const auto& [first, second] : m_queryCache)
+                {
+                    m_queryIndices.emplace_back(second);
+                }
+            }
+        }
+
+        /// @brief Gets the nearest of all nodes
+        /// @param[in] node The node
+        void SearchNearestPoint(Point const& node)
+        {
+            const Point2D nodeSought(node.x, node.y);
+
+            m_queryCache.reserve(m_queryVectorCapacity);
+            m_queryCache.clear();
+            m_rtree.query(bgi::nearest(nodeSought, 1),
+                          std::back_inserter(m_queryCache));
+
+            if (!m_queryCache.empty())
+            {
+                m_queryIndices.clear();
+                m_queryIndices.emplace_back(m_queryCache.front().second);
+            }
+        }
 
         /// @brief Finds the nearest node in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
-        void SearchNearestPoint(Point const& node, double searchRadiusSquared);
+        void SearchNearestPoint(Point const& node, double searchRadiusSquared)
+        {
+            Point2D const nodeSought(node.x, node.y);
+            double const searchRadius = std::sqrt(searchRadiusSquared);
+            Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
+                            Point2D(node.x + searchRadius, node.y + searchRadius));
 
-        /// @brief Gets the nearest of all nodes
-        /// @param[in] node The node
-        void SearchNearestPoint(Point const& node);
+            m_queryCache.reserve(m_queryVectorCapacity);
+            m_queryCache.clear();
+            m_rtree.query(bgi::within(box) &&
+                              bgi::satisfies([&nodeSought, searchRadiusSquared](Value2D const& v)
+                                             { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }) &&
+                              bgi::nearest(nodeSought, 1),
+                          std::back_inserter(m_queryCache));
+
+            if (!m_queryCache.empty())
+            {
+                m_queryIndices.clear();
+                m_queryIndices.emplace_back(m_queryCache.front().second);
+            }
+        }
 
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
-        void DeleteNode(size_t position);
+        void DeleteNode(size_t position)
+        {
+            if (m_rtree.remove(m_points[position]) != 1)
+            {
+                throw std::invalid_argument("Could not remove node at given position.");
+                // MeshKernelError("Could not remove node at given position.");
+            }
+            m_points[position] = {Point2D(constants::missing::doubleValue,
+                                          constants::missing::doubleValue),
+                                  constants::missing::sizetValue};
+        }
 
         /// @brief Determines size of the RTree
         [[nodiscard]] size_t Size() const { return m_rtree.size(); };
@@ -121,13 +193,13 @@ namespace meshkernel
         using Point2D = bg::model::point<double, 2, bg::cs::cartesian>; ///< Typedef for Point2D
         using Box2D = bg::model::box<Point2D>;                          ///< Typedef for box of Point2D
         using Value2D = std::pair<Point2D, size_t>;                     ///< Typedef of pair of Point2D and size_t
-        using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;           ///< Typedef for a 2D RTree
+        using RTree2D = bgi::rtree<Value2D, T>;                         ///< Typedef for a 2D RTree
 
         RTree2D m_rtree;                                  ///< The 2D RTree
         std::vector<std::pair<Point2D, size_t>> m_points; ///< The points
         std::vector<Value2D> m_queryCache;                ///< The query cache
         std::vector<size_t> m_queryIndices;               ///< The query indices
-        size_t m_queryVectorCapacity;                     ///< Capacity of the query vector
+        size_t m_queryVectorCapacity = 100;               ///< Capacity of the query vector
     };
 
 } // namespace meshkernel

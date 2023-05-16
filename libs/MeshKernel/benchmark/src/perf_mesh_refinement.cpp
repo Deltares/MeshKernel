@@ -2,7 +2,6 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Parameters.hpp>
 
-#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 #include <benchmark/benchmark.h>

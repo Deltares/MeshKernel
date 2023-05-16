@@ -334,9 +334,9 @@ namespace meshkernel
         // counters
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
-        RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
-        RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
-        RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
+        RTree<> m_nodesRTree;                   ///< Spatial R-Tree used to inquire node nodes
+        RTree<> m_edgesRTree;                   ///< Spatial R-Tree used to inquire edges centers
+        RTree<> m_facesRTree;                   ///< Spatial R-Tree used to inquire face circumcenters
 
         // constants
         static constexpr size_t m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node

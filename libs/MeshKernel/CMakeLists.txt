@@ -40,7 +40,6 @@ set(
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygons.cpp
-  ${SRC_DIR}/RTree.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp

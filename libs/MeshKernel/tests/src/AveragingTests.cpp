@@ -11,7 +11,7 @@
 TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
+    auto mesh = MakeRectangularMeshForTesting(5u, 5u, 1.0, meshkernel::Projection::spherical);
 
     std::vector<meshkernel::Sample> samples{
         {1.5, 1.5, 2.0},

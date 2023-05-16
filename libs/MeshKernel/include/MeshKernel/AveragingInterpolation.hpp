@@ -153,6 +153,6 @@ namespace meshkernel
 
         std::vector<bool> m_visitedSamples; ///< The visited samples
 
-        RTree m_samplesRtree; ///< The samples tree
+        RTree<> m_samplesRtree; ///< The samples tree
     };
 } // namespace meshkernel
