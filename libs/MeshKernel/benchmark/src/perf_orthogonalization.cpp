@@ -6,7 +6,7 @@
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
-
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 #include <benchmark/benchmark.h>

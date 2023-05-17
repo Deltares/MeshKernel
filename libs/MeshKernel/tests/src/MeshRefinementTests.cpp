@@ -14,7 +14,7 @@ using namespace meshkernel;
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
-    auto mesh = MakeRectangularMeshForTesting(5u, 5u, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
 
     // sample points
     std::vector<Sample> samples{

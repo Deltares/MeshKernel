@@ -57,8 +57,8 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Point const& origin = {0.0, 0.0});
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    size_t n,
-    size_t m,
+    int n,
+    int m,
     double delta,
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0});
