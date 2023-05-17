@@ -87,8 +87,13 @@ namespace meshkernel
     class MeshKernelError : public std::exception
     {
     public:
-        /// @brief Class default constructor. It is deleted to prevent constructing errors without messages.
-        MeshKernelError() = delete;
+        /// @brief Class constructor parametrized optionally by the source location.
+        /// @param[in] source_location The source location.
+        MeshKernelError(std::source_location const& source_location = std::source_location::current())
+            : m_fmt_message(),
+              m_source_location(source_location)
+        {
+        }
 
         /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
         /// @param[in] message         The variadic error message.
@@ -172,7 +177,14 @@ namespace meshkernel
     class NotImplemented final : public MeshKernelError
     {
     public:
-        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
+        /// @brief Class constructor parametrized optionally by the source location.
+        /// @param[in] source_location The source location.
+        NotImplemented(std::source_location const& source_location = std::source_location::current())
+            : MeshKernelError(source_location)
+        {
+        }
+
+        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
         /// @param[in] message         The variadic error message.
         /// @param[in] source_location The source location.
         NotImplemented(VariadicErrorMessage const& message,
@@ -200,7 +212,14 @@ namespace meshkernel
     class AlgorithmError final : public MeshKernelError
     {
     public:
-        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
+        /// @brief Class constructor parametrized optionally by the source location.
+        /// @param[in] source_location The source location.
+        AlgorithmError(std::source_location const& source_location = std::source_location::current())
+            : MeshKernelError(source_location)
+        {
+        }
+
+        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
         /// @param[in] message         The variadic error message.
         /// @param[in] source_location The source location.
         AlgorithmError(VariadicErrorMessage const& message,
@@ -228,16 +247,16 @@ namespace meshkernel
     class MeshGeometryError final : public MeshKernelError
     {
     public:
-        // @brief Class constructor parametrized optionally by the source location.
+        /// @brief Class constructor parametrized optionally by the source location.
         /// @param[in] source_location The source location.
         explicit MeshGeometryError(std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError("", source_location),
+            : MeshKernelError(source_location),
               m_invalid_index{constants::missing::sizetValue},
               m_mesh_location(Mesh::Location::Unknown)
         {
         }
 
-        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
+        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
         /// @param[in] message         The variadic error message.
         /// @param[in] invalid_index   The invalid mesh location index.
         /// @param[in] mesh_location   The location type.
@@ -252,7 +271,7 @@ namespace meshkernel
         {
         }
 
-        // @brief Class constructor parametrized by a string error message and optionally the source location.
+        /// @brief Class constructor parametrized by a string error message and optionally the source location.
         /// @param[in] message         The string error message.
         /// @param[in] invalid_index   The invalid mesh location index.
         /// @param[in] mesh_location   The location type.

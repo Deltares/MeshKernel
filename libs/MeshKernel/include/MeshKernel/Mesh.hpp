@@ -99,6 +99,12 @@ namespace meshkernel
             Unknown = 3 ///< Unknown
         };
 
+        inline static std::map<Location, std::string> const LocationToString = {
+            {Location::Faces, "Faces"},
+            {Location::Nodes, "Nodes"},
+            {Location::Edges, "Edges"},
+            {Location::Unknown, "Unknown"}};
+
         /// edge-segment intersection
         struct EdgeMeshPolylineIntersection
         {

@@ -220,8 +220,8 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    int n,
-    int m,
+    size_t n,
+    size_t m,
     double delta,
     meshkernel::Projection projection,
     meshkernel::Point const& origin)

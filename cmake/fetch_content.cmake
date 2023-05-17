@@ -58,7 +58,6 @@ if(ENABLE_BENCHMARKING)
   endif()
 endif()
 
-
 if(${USE_LIBFMT})
   set(LIBFMT_VERSION 9.1.0)
 
@@ -82,5 +81,5 @@ if(${USE_LIBFMT})
     add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
   endif()
 
-  endif()
+endif()
   
