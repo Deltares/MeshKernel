@@ -104,4 +104,12 @@ namespace meshkernel
                               constants::missing::sizetValue};
     }
 
+    RTree::Box2D RTree::MakeBox(RTree::Point2D const& point, double searchRadius)
+    {
+        double const x = bg::get<0>(point);
+        double const y = bg::get<1>(point);
+        return RTree::Box2D(RTree::Point2D(x - searchRadius, y - searchRadius),
+                            RTree::Point2D(x + searchRadius, y + searchRadius));
+    }
+
 } // namespace meshkernel

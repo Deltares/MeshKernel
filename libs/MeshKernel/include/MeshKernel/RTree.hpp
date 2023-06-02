@@ -129,13 +129,7 @@ namespace meshkernel
         std::vector<size_t> m_queryIndices;               ///< The query indices
         size_t m_queryVectorCapacity;                     ///< Capacity of the query vector
 
-        [[nodiscard]] static Box2D MakeBox(Point2D const& point, double searchRadius)
-        {
-            double const x = bg::get<0>(point);
-            double const y = bg::get<1>(point);
-            return Box2D(Point2D(x - searchRadius, y - searchRadius),
-                         Point2D(x + searchRadius, y + searchRadius));
-        }
+        [[nodiscard]] static Box2D MakeBox(Point2D const& point, double searchRadius);
     };
 
 } // namespace meshkernel
