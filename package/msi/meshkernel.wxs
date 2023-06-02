@@ -1,0 +1,363 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <Product Name='meshkernel' Id='c96503ef-bd13-4c4c-863a-2daa93d48aab' UpgradeCode='bb3bb63a-1887-4094-ab68-046240b888c8'
+    Language='1033' Codepage='1252' Version='3.16.5' Manufacturer='Deltares'>
+
+    <Package Id='*' Keywords='Installer'
+      Description="meshkernel, Windows installer created by Deltares"
+      Comments='Deltares copyright?' Manufacturer='Deltares'
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+
+    <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+    <Property Id='DiskPrompt' Value="meshkernel Installation [1]" />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='INSTALLDIR' Name='MeshKernel'>
+
+
+                                <Component Id='cId_readme.txt1158be' Guid='1158be48-ddf7-4b11-9215-234b04485da9'>
+                                    <File Id='fId_readme.txt1158be' Name='readme.txt' DiskId='1' Source='meshkernel\readme.txt' KeyPath='yes' />
+                                </Component>
+                                <Directory Id='meshkernel_bin' Name='bin'>
+                                    <Component Id='cId_MeshKernelApi.dll8efc85' Guid='8efc852c-db96-48ba-b692-101c907cffd4'>
+                                        <File Id='fId_MeshKernelApi.dll8efc85' Name='MeshKernelApi.dll' DiskId='1' Source='meshkernel\bin\MeshKernelApi.dll' KeyPath='yes' />
+                                    </Component>
+                                    <Component Id='cId_MeshKernelApid.dll08365f' Guid='08365fc0-faf0-4588-a2d0-207923452836'>
+                                        <File Id='fId_MeshKernelApid.dll08365f' Name='MeshKernelApid.dll' DiskId='1' Source='meshkernel\bin\MeshKernelApid.dll' KeyPath='yes' />
+                                    </Component>
+                                </Directory>
+                                <Directory Id='meshkernel_include' Name='include'>
+                                    <Directory Id='meshkernel_include_MeshKernel' Name='MeshKernel'>
+                                        <Component Id='cId_AveragingInterpolation.hppaaa21b' Guid='aaa21b1b-b77c-46f4-b846-e7d5e54983fa'>
+                                            <File Id='fId_AveragingInterpolation.hppaaa21b' Name='AveragingInterpolation.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingInterpolation.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Constants.hpp99e80c' Guid='99e80cac-a5a5-4da1-a3ad-0348ebfb5c20'>
+                                            <File Id='fId_Constants.hpp99e80c' Name='Constants.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Constants.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Contacts.hpp827ef1' Guid='827ef17d-931e-486e-9958-9f8eb43c5f8c'>
+                                            <File Id='fId_Contacts.hpp827ef1' Name='Contacts.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Contacts.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Entities.hpp11efce' Guid='11efce15-f0e0-4b38-bbd5-be44c52dd934'>
+                                            <File Id='fId_Entities.hpp11efce' Name='Entities.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Entities.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Exceptions.hpp7c7f44' Guid='7c7f443e-933d-4f18-bfd6-b30d6a265208'>
+                                            <File Id='fId_Exceptions.hpp7c7f44' Name='Exceptions.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Exceptions.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_FlipEdges.hpp8384cf' Guid='8384cf99-af51-4f11-a275-63bacd5a159d'>
+                                            <File Id='fId_FlipEdges.hpp8384cf' Name='FlipEdges.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\FlipEdges.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_LandBoundaries.hpp4c51c5' Guid='4c51c580-eae7-4541-a9ae-2f136e7b681c'>
+                                            <File Id='fId_LandBoundaries.hpp4c51c5' Name='LandBoundaries.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\LandBoundaries.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Mesh.hppd3cbda' Guid='d3cbda1e-fd6e-4988-b35b-84ed317973be'>
+                                            <File Id='fId_Mesh.hppd3cbda' Name='Mesh.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Mesh.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Mesh1D.hpp681144' Guid='6811446b-590c-4cad-bb6d-10ed79b13dff'>
+                                            <File Id='fId_Mesh1D.hpp681144' Name='Mesh1D.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Mesh1D.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Mesh2D.hpp1843dd' Guid='1843dd52-8577-43a0-bfad-eb3b4e9672e5'>
+                                            <File Id='fId_Mesh2D.hpp1843dd' Name='Mesh2D.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Mesh2D.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_MeshRefinement.hppe29402' Guid='e29402cd-df18-4979-ab44-7e6cd3b2c911'>
+                                            <File Id='fId_MeshRefinement.hppe29402' Name='MeshRefinement.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\MeshRefinement.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Network1D.hpp9ebd7d' Guid='9ebd7d7a-e24c-4800-bdce-4e131fffbe39'>
+                                            <File Id='fId_Network1D.hpp9ebd7d' Name='Network1D.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Network1D.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Operations.hpp08b623' Guid='08b623d9-5ca4-4dde-be96-441b9c3dc488'>
+                                            <File Id='fId_Operations.hpp08b623' Name='Operations.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Operations.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_OrthogonalizationAndSmoothing.hpp74542e' Guid='74542ee7-ce2f-44cf-8b20-74d1c4a6cfa6'>
+                                            <File Id='fId_OrthogonalizationAndSmoothing.hpp74542e' Name='OrthogonalizationAndSmoothing.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\OrthogonalizationAndSmoothing.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Orthogonalizer.hppec4c3d' Guid='ec4c3dd0-fc4e-465d-9433-1230320c7f13'>
+                                            <File Id='fId_Orthogonalizer.hppec4c3d' Name='Orthogonalizer.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Orthogonalizer.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Polygons.hpp7d9ea7' Guid='7d9ea7aa-0746-4a3c-a78c-a040da88619e'>
+                                            <File Id='fId_Polygons.hpp7d9ea7' Name='Polygons.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Polygons.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_RTree.hpp70bf35' Guid='70bf35d6-42e0-4368-80b4-751e026bb4a4'>
+                                            <File Id='fId_RTree.hpp70bf35' Name='RTree.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\RTree.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Smoother.hpp86f29e' Guid='86f29e17-0bb9-4e06-9ce9-7e44f9872ba0'>
+                                            <File Id='fId_Smoother.hpp86f29e' Name='Smoother.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Smoother.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Splines.hpp576d52' Guid='576d5250-0097-4c67-bd32-ecb4b24bc570'>
+                                            <File Id='fId_Splines.hpp576d52' Name='Splines.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\Splines.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_TriangulationInterpolation.hpp0cfbd6' Guid='0cfbd614-6943-471f-b0f7-f09c935eeab1'>
+                                            <File Id='fId_TriangulationInterpolation.hpp0cfbd6' Name='TriangulationInterpolation.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\TriangulationInterpolation.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_TriangulationWrapper.hpp223bc2' Guid='223bc226-f6c0-4035-8beb-1a858fbee3da'>
+                                            <File Id='fId_TriangulationWrapper.hpp223bc2' Name='TriangulationWrapper.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\TriangulationWrapper.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Directory Id='meshkernel_include_MeshKernel_AveragingStrategies' Name='AveragingStrategies'>
+                                            <Component Id='cId_AveragingStrategy.hpp70bc33' Guid='70bc334a-0a20-4c63-9f2f-ebcf95b0e5a3'>
+                                                <File Id='fId_AveragingStrategy.hpp70bc33' Name='AveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_AveragingStrategyFactory.hpp71d6e3' Guid='71d6e3ae-3d86-4782-a21a-d82eecb8cc14'>
+                                                <File Id='fId_AveragingStrategyFactory.hpp71d6e3' Name='AveragingStrategyFactory.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategyFactory.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_ClosestAveragingStrategy.hppc9a73d' Guid='c9a73d52-2554-4ec1-b1cd-791ff8ae98ef'>
+                                                <File Id='fId_ClosestAveragingStrategy.hppc9a73d' Name='ClosestAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\ClosestAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_InverseWeightedAveragingStrategy.hpp6a0ba2' Guid='6a0ba298-8c5e-4095-8a07-ca476465a6f4'>
+                                                <File Id='fId_InverseWeightedAveragingStrategy.hpp6a0ba2' Name='InverseWeightedAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\InverseWeightedAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_MaxAveragingStrategy.hppcadaa4' Guid='cadaa491-5703-483c-8e28-a8b05bbbed66'>
+                                                <File Id='fId_MaxAveragingStrategy.hppcadaa4' Name='MaxAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\MaxAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_MinAbsAveragingStrategy.hpp13b25d' Guid='13b25dcb-8539-42e7-bffc-7d54d44f70b9'>
+                                                <File Id='fId_MinAbsAveragingStrategy.hpp13b25d' Name='MinAbsAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\MinAbsAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_MinAveragingStrategy.hpp52cdf8' Guid='52cdf889-ec6a-4e06-bace-b5102a338687'>
+                                                <File Id='fId_MinAveragingStrategy.hpp52cdf8' Name='MinAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\MinAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_SimpleAveragingStrategy.hpp6b1294' Guid='6b129451-8e7e-4a97-b6dc-6c716ba496de'>
+                                                <File Id='fId_SimpleAveragingStrategy.hpp6b1294' Name='SimpleAveragingStrategy.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\AveragingStrategies\SimpleAveragingStrategy.hpp' KeyPath='yes' />
+                                            </Component>
+                                        </Directory>
+                                        <Directory Id='meshkernel_include_MeshKernel_CurvilinearGrid' Name='CurvilinearGrid'>
+                                            <Component Id='cId_CurvilinearGrid.hpp587edc' Guid='587edc75-5b21-4d56-9cdb-bf84f1989887'>
+                                                <File Id='fId_CurvilinearGrid.hpp587edc' Name='CurvilinearGrid.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGrid.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridAlgorithm.hppd7462b' Guid='d7462b68-df8b-4f61-afc7-3449d22cbae3'>
+                                                <File Id='fId_CurvilinearGridAlgorithm.hppd7462b' Name='CurvilinearGridAlgorithm.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridAlgorithm.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridCreateUniform.hpp179011' Guid='17901121-c3e3-4043-a3c8-d08b2c14081a'>
+                                                <File Id='fId_CurvilinearGridCreateUniform.hpp179011' Name='CurvilinearGridCreateUniform.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridCreateUniform.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridDeRefinement.hpp44a306' Guid='44a30685-b4a2-4b17-bc0c-4a76507ce65f'>
+                                                <File Id='fId_CurvilinearGridDeRefinement.hpp44a306' Name='CurvilinearGridDeRefinement.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridDeRefinement.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridFromPolygon.hpp098005' Guid='098005cf-0da3-40bd-b3f9-24103bce1c7a'>
+                                                <File Id='fId_CurvilinearGridFromPolygon.hpp098005' Name='CurvilinearGridFromPolygon.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromPolygon.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridFromSplines.hppe88c23' Guid='e88c23fe-0b39-4030-809b-692e8132238c'>
+                                                <File Id='fId_CurvilinearGridFromSplines.hppe88c23' Name='CurvilinearGridFromSplines.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplines.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridFromSplinesTransfinite.hppc97a70' Guid='c97a70f2-9b48-4b02-be66-85c6fa3a078b'>
+                                                <File Id='fId_CurvilinearGridFromSplinesTransfinite.hppc97a70' Name='CurvilinearGridFromSplinesTransfinite.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplinesTransfinite.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridLine.hppaddc90' Guid='addc903a-85b8-458e-be5c-488cd64e71c2'>
+                                                <File Id='fId_CurvilinearGridLine.hppaddc90' Name='CurvilinearGridLine.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLine.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridLineAttractionRepulsion.hpp81b8b4' Guid='81b8b44b-1cb9-4c82-b5d6-0912e133a2d5'>
+                                                <File Id='fId_CurvilinearGridLineAttractionRepulsion.hpp81b8b4' Name='CurvilinearGridLineAttractionRepulsion.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineAttractionRepulsion.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridLineMirror.hpp5da7e2' Guid='5da7e27a-721c-4ee2-8ab6-254066748d4b'>
+                                                <File Id='fId_CurvilinearGridLineMirror.hpp5da7e2' Name='CurvilinearGridLineMirror.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineMirror.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridLineShift.hppd9f616' Guid='d9f6160f-5255-48ca-8b60-d1afdbe8fb0d'>
+                                                <File Id='fId_CurvilinearGridLineShift.hppd9f616' Name='CurvilinearGridLineShift.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineShift.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridNodeIndices.hppf68977' Guid='f68977c3-d574-4f42-a7ca-f8283e5cb6b6'>
+                                                <File Id='fId_CurvilinearGridNodeIndices.hppf68977' Name='CurvilinearGridNodeIndices.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridNodeIndices.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridOrthogonalization.hpp9fd913' Guid='9fd913b0-18e2-41c8-ab2d-7cb5e482fcee'>
+                                                <File Id='fId_CurvilinearGridOrthogonalization.hpp9fd913' Name='CurvilinearGridOrthogonalization.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridOrthogonalization.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridRefinement.hpp0d5882' Guid='0d5882d3-0103-4eaf-a097-dba1ab817e0b'>
+                                                <File Id='fId_CurvilinearGridRefinement.hpp0d5882' Name='CurvilinearGridRefinement.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridRefinement.hpp' KeyPath='yes' />
+                                            </Component>
+                                            <Component Id='cId_CurvilinearGridSmoothing.hpp13880e' Guid='13880ed0-6245-4773-9364-88b1c2698ae2'>
+                                                <File Id='fId_CurvilinearGridSmoothing.hpp13880e' Name='CurvilinearGridSmoothing.hpp' DiskId='1' Source='meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridSmoothing.hpp' KeyPath='yes' />
+                                            </Component>
+                                        </Directory>
+                                    </Directory>
+                                    <Directory Id='meshkernel_include_MeshKernelApi' Name='MeshKernelApi'>
+                                        <Component Id='cId_Contacts.hpp19e34e' Guid='19e34e29-f6a3-4635-b226-a4b41a2ebe63'>
+                                            <File Id='fId_Contacts.hpp19e34e' Name='Contacts.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\Contacts.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_CurvilinearGrid.hpp593415' Guid='593415ef-b746-4d0d-8a7f-7afab8dbbbda'>
+                                            <File Id='fId_CurvilinearGrid.hpp593415' Name='CurvilinearGrid.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\CurvilinearGrid.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_CurvilinearParameters.hppe1e023' Guid='e1e023d4-3d8c-4b36-ad67-835d4bbc5e24'>
+                                            <File Id='fId_CurvilinearParameters.hppe1e023' Name='CurvilinearParameters.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\CurvilinearParameters.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_GeometryList.hppe1fd02' Guid='e1fd025c-db12-4463-8901-d3aa10e901dc'>
+                                            <File Id='fId_GeometryList.hppe1fd02' Name='GeometryList.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\GeometryList.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_MakeGridParameters.hpp1fd558' Guid='1fd558e4-d23a-464c-a6c7-fffe66b60c8e'>
+                                            <File Id='fId_MakeGridParameters.hpp1fd558' Name='MakeGridParameters.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\MakeGridParameters.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Mesh1D.hpp66e89b' Guid='66e89b89-a2d5-4acc-a18c-c0bd9d1f0ccc'>
+                                            <File Id='fId_Mesh1D.hpp66e89b' Name='Mesh1D.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\Mesh1D.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Mesh2D.hpp3211f6' Guid='3211f6bc-90b1-4bcf-a4d4-64b1e4b3f70a'>
+                                            <File Id='fId_Mesh2D.hpp3211f6' Name='Mesh2D.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\Mesh2D.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_MeshKernel.hpp8fe350' Guid='8fe35093-fc8b-4b59-9a3a-3e2008aa3453'>
+                                            <File Id='fId_MeshKernel.hpp8fe350' Name='MeshKernel.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\MeshKernel.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_MeshRefinementParameters.hpp886be6' Guid='886be6f5-9bba-4f9f-8b9d-29d40cb71399'>
+                                            <File Id='fId_MeshRefinementParameters.hpp886be6' Name='MeshRefinementParameters.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\MeshRefinementParameters.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_OrthogonalizationParameters.hpp8b60e0' Guid='8b60e07b-1d65-4885-976f-67837be91a64'>
+                                            <File Id='fId_OrthogonalizationParameters.hpp8b60e0' Name='OrthogonalizationParameters.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\OrthogonalizationParameters.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_SplinesToCurvilinearParameters.hpp9f5614' Guid='9f56145d-efc5-4d84-aa0e-afab3ec82345'>
+                                            <File Id='fId_SplinesToCurvilinearParameters.hpp9f5614' Name='SplinesToCurvilinearParameters.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\SplinesToCurvilinearParameters.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_State.hpp616a30' Guid='616a30ed-2cf3-4651-9287-36b000832126'>
+                                            <File Id='fId_State.hpp616a30' Name='State.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\State.hpp' KeyPath='yes' />
+                                        </Component>
+                                        <Component Id='cId_Utils.hpp8de103' Guid='8de1035b-2852-4f3d-a05f-d06f1475800b'>
+                                            <File Id='fId_Utils.hpp8de103' Name='Utils.hpp' DiskId='1' Source='meshkernel\include\MeshKernelApi\Utils.hpp' KeyPath='yes' />
+                                        </Component>
+                                    </Directory>
+                                </Directory>
+                                <Directory Id='meshkernel_lib' Name='lib'>
+                                    <Component Id='cId_MeshKernel.lib926501' Guid='92650146-0689-4c5f-a268-f16b1ed02d74'>
+                                        <File Id='fId_MeshKernel.lib926501' Name='MeshKernel.lib' DiskId='1' Source='meshkernel\lib\MeshKernel.lib' KeyPath='yes' />
+                                    </Component>
+                                    <Component Id='cId_MeshKernelApi.lib1a7bc6' Guid='1a7bc693-9ec0-4dfd-a177-6d20266661f9'>
+                                        <File Id='fId_MeshKernelApi.lib1a7bc6' Name='MeshKernelApi.lib' DiskId='1' Source='meshkernel\lib\MeshKernelApi.lib' KeyPath='yes' />
+                                    </Component>
+                                    <Component Id='cId_MeshKernelApid.lib60ff28' Guid='60ff2822-7d9c-4cdd-a491-21b896b52add'>
+                                        <File Id='fId_MeshKernelApid.lib60ff28' Name='MeshKernelApid.lib' DiskId='1' Source='meshkernel\lib\MeshKernelApid.lib' KeyPath='yes' />
+                                    </Component>
+                                    <Component Id='cId_MeshKerneld.libe5388d' Guid='e5388d82-1256-4701-9e3e-275f4b804597'>
+                                        <File Id='fId_MeshKerneld.libe5388d' Name='MeshKerneld.lib' DiskId='1' Source='meshkernel\lib\MeshKerneld.lib' KeyPath='yes' />
+                                    </Component>
+                                </Directory>
+
+
+
+
+
+        </Directory>
+      </Directory>
+
+
+      <!-- uninstall -->
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="meshkernel">
+          <Component Id="ProgramMenuDir" Guid="89c51884-3f7b-4b4f-a8c6-0426aa31f512">
+            <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+
+      <!-- ENV PATH -->
+      <Component Id="meshkernel_to_path" Guid="4d5ebfc4-dab1-448a-8c9a-1cd558da924c">
+        <Environment Id="meshkernel_to_path" Name="PATH" Value="[meshkernel_bin]" Permanent="no" Part="last" Action="set" System="no" />
+      </Component>
+
+
+      <!-- ENV MESHKERNEL_DIR -->
+      <Component Id="ENV_MESHKERNEL_DIR" Guid="3f557e6a-5e97-40f4-92ba-3aa392c2d79d">
+        <Environment Id="MESHKERNEL_DIR" Name="MESHKERNEL_DIR" Value="[INSTALLDIR]" Permanent="no" Part="all" Action="set" System="no" />
+      </Component>
+
+    </Directory>
+
+
+    <Feature Id='Complete' Title='meshkernel' Description='The complete package.'
+      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+
+
+        <ComponentRef Id='cId_readme.txt1158be' />
+        <ComponentRef Id='cId_MeshKernelApi.dll8efc85' />
+        <ComponentRef Id='cId_MeshKernelApid.dll08365f' />
+        <ComponentRef Id='cId_AveragingInterpolation.hppaaa21b' />
+        <ComponentRef Id='cId_Constants.hpp99e80c' />
+        <ComponentRef Id='cId_Contacts.hpp827ef1' />
+        <ComponentRef Id='cId_Entities.hpp11efce' />
+        <ComponentRef Id='cId_Exceptions.hpp7c7f44' />
+        <ComponentRef Id='cId_FlipEdges.hpp8384cf' />
+        <ComponentRef Id='cId_LandBoundaries.hpp4c51c5' />
+        <ComponentRef Id='cId_Mesh.hppd3cbda' />
+        <ComponentRef Id='cId_Mesh1D.hpp681144' />
+        <ComponentRef Id='cId_Mesh2D.hpp1843dd' />
+        <ComponentRef Id='cId_MeshRefinement.hppe29402' />
+        <ComponentRef Id='cId_Network1D.hpp9ebd7d' />
+        <ComponentRef Id='cId_Operations.hpp08b623' />
+        <ComponentRef Id='cId_OrthogonalizationAndSmoothing.hpp74542e' />
+        <ComponentRef Id='cId_Orthogonalizer.hppec4c3d' />
+        <ComponentRef Id='cId_Polygons.hpp7d9ea7' />
+        <ComponentRef Id='cId_RTree.hpp70bf35' />
+        <ComponentRef Id='cId_Smoother.hpp86f29e' />
+        <ComponentRef Id='cId_Splines.hpp576d52' />
+        <ComponentRef Id='cId_TriangulationInterpolation.hpp0cfbd6' />
+        <ComponentRef Id='cId_TriangulationWrapper.hpp223bc2' />
+        <ComponentRef Id='cId_AveragingStrategy.hpp70bc33' />
+        <ComponentRef Id='cId_AveragingStrategyFactory.hpp71d6e3' />
+        <ComponentRef Id='cId_ClosestAveragingStrategy.hppc9a73d' />
+        <ComponentRef Id='cId_InverseWeightedAveragingStrategy.hpp6a0ba2' />
+        <ComponentRef Id='cId_MaxAveragingStrategy.hppcadaa4' />
+        <ComponentRef Id='cId_MinAbsAveragingStrategy.hpp13b25d' />
+        <ComponentRef Id='cId_MinAveragingStrategy.hpp52cdf8' />
+        <ComponentRef Id='cId_SimpleAveragingStrategy.hpp6b1294' />
+        <ComponentRef Id='cId_CurvilinearGrid.hpp587edc' />
+        <ComponentRef Id='cId_CurvilinearGridAlgorithm.hppd7462b' />
+        <ComponentRef Id='cId_CurvilinearGridCreateUniform.hpp179011' />
+        <ComponentRef Id='cId_CurvilinearGridDeRefinement.hpp44a306' />
+        <ComponentRef Id='cId_CurvilinearGridFromPolygon.hpp098005' />
+        <ComponentRef Id='cId_CurvilinearGridFromSplines.hppe88c23' />
+        <ComponentRef Id='cId_CurvilinearGridFromSplinesTransfinite.hppc97a70' />
+        <ComponentRef Id='cId_CurvilinearGridLine.hppaddc90' />
+        <ComponentRef Id='cId_CurvilinearGridLineAttractionRepulsion.hpp81b8b4' />
+        <ComponentRef Id='cId_CurvilinearGridLineMirror.hpp5da7e2' />
+        <ComponentRef Id='cId_CurvilinearGridLineShift.hppd9f616' />
+        <ComponentRef Id='cId_CurvilinearGridNodeIndices.hppf68977' />
+        <ComponentRef Id='cId_CurvilinearGridOrthogonalization.hpp9fd913' />
+        <ComponentRef Id='cId_CurvilinearGridRefinement.hpp0d5882' />
+        <ComponentRef Id='cId_CurvilinearGridSmoothing.hpp13880e' />
+        <ComponentRef Id='cId_Contacts.hpp19e34e' />
+        <ComponentRef Id='cId_CurvilinearGrid.hpp593415' />
+        <ComponentRef Id='cId_CurvilinearParameters.hppe1e023' />
+        <ComponentRef Id='cId_GeometryList.hppe1fd02' />
+        <ComponentRef Id='cId_MakeGridParameters.hpp1fd558' />
+        <ComponentRef Id='cId_Mesh1D.hpp66e89b' />
+        <ComponentRef Id='cId_Mesh2D.hpp3211f6' />
+        <ComponentRef Id='cId_MeshKernel.hpp8fe350' />
+        <ComponentRef Id='cId_MeshRefinementParameters.hpp886be6' />
+        <ComponentRef Id='cId_OrthogonalizationParameters.hpp8b60e0' />
+        <ComponentRef Id='cId_SplinesToCurvilinearParameters.hpp9f5614' />
+        <ComponentRef Id='cId_State.hpp616a30' />
+        <ComponentRef Id='cId_Utils.hpp8de103' />
+        <ComponentRef Id='cId_MeshKernel.lib926501' />
+        <ComponentRef Id='cId_MeshKernelApi.lib1a7bc6' />
+        <ComponentRef Id='cId_MeshKernelApid.lib60ff28' />
+        <ComponentRef Id='cId_MeshKerneld.libe5388d' />
+
+
+
+        <!-- Menu plus ENV -->
+        <ComponentRef Id='ProgramMenuDir' />
+        <ComponentRef Id='ENV_MESHKERNEL_DIR' />
+        <ComponentRef Id='meshkernel_to_path' />
+      </Feature>
+    </Feature>
+
+    <!-- UI -->
+    <UI Id="UserInterface">
+      <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
+      <Property Id="WixUI_Mode" Value="Custom" />
+
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="9" Bold="yes" />
+      <TextStyle Id="WixUI_Font_Title"  FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="EndDialog" Value="Return" Order="2"></Publish>
+
+    </UI>
+    <UIRef Id="WixUI_Common" />
+
+  </Product>
+</Wix>
