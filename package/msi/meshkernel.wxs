@@ -248,7 +248,6 @@
       Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
       <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
 
-        <ComponentRef Id="cmp8E52602C0BFC9683B456D714C18476A5" />
             <ComponentRef Id="cmp58C871DEE4AEF057030A13A1E1A4EC10" />
             <ComponentRef Id="cmp1FD651EA15D1310C42E06833E42F6959" />
             <ComponentRef Id="cmp3B954A79A7C1C49F3F3A3F537C96A004" />
