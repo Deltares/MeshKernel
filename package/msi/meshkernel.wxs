@@ -15,6 +15,11 @@
 
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
         <Directory Id='INSTALLDIR' Name='MeshKernel'>
+
+            <Component Id='cId_readme.txt1158be' Guid='1158be48-ddf7-4b11-9215-234b04485da9'>
+                <File Id='fId_readme.txt1158be' Name='readme.txt' DiskId='1' Source='package\msi\meshkernel\readme.txt' KeyPath='yes' />               
+            </Component>
+
             <Directory Id="dir6C5F07B659DD5E2B75D23C16FA4C787C" Name="bin">
                     <Component Id="cmp58C871DEE4AEF057030A13A1E1A4EC10" Guid="8F83D26B-45AD-4822-894E-64874D601B17">
                         <File Id="fil2D8A060891130D3F24F45B132CE49317" KeyPath="yes" Source="meshkernel\bin\MeshKernelApi.dll" />
@@ -247,6 +252,8 @@
     <Feature Id='Complete' Title='meshkernel' Description='The complete package.'
       Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
       <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+
+            <ComponentRef Id='cId_readme.txt1158be' />
 
             <ComponentRef Id="cmp58C871DEE4AEF057030A13A1E1A4EC10" />
             <ComponentRef Id="cmp1FD651EA15D1310C42E06833E42F6959" />
