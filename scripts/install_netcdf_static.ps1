@@ -322,9 +322,9 @@ $HDF5CMakeBuildOptions = @( `
         '-DBUILD_TESTING:BOOL=OFF', `
         '-DZLIB_USE_EXTERNAL:BOOL=OFF', `
         '-DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON', `
-    ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir), `
-    ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir), `
-    ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary)`
+        ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir), `
+        ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir), `
+        ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary) `
 )
 
 Invoke-BuildAndInstall `
@@ -345,7 +345,8 @@ $NetCDFCMakeBuildOptions = @(`
         '-DBUILD_SHARED_LIBS=OFF', `
         '-DENABLE_NETCDF_4=ON', `
         '-DENABLE_DAP=OFF', `
-        '-DENABLE_BYTERANGE=OFF' `
+        '-DENABLE_BYTERANGE=OFF', `
+        ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
 )
 if ($PSVersionTable.Platform -eq 'Unix') {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
