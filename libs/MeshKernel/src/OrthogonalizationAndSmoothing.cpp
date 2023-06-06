@@ -44,13 +44,14 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
                                                              std::shared_ptr<Polygons> polygon,
                                                              std::shared_ptr<LandBoundaries> landBoundaries,
                                                              LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
-                                                             const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
-                                                                                                                                              m_smoother(smoother),
-                                                                                                                                              m_orthogonalizer(orthogonalizer),
-                                                                                                                                              m_polygons(polygon),
-                                                                                                                                              m_landBoundaries(landBoundaries),
-                                                                                                                                              m_projectToLandBoundaryOption(projectToLandBoundaryOption),
-                                                                                                                                              m_orthogonalizationParameters(orthogonalizationParameters)
+                                                             const OrthogonalizationParameters& orthogonalizationParameters)
+    : m_mesh(mesh),
+      m_smoother(smoother),
+      m_orthogonalizer(orthogonalizer),
+      m_polygons(polygon),
+      m_landBoundaries(landBoundaries),
+      m_projectToLandBoundaryOption(projectToLandBoundaryOption),
+      m_orthogonalizationParameters(orthogonalizationParameters)
 {
 }
 
@@ -163,12 +164,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
-
-    // compute new faces circumcenters
-    if (!m_keepCircumcentersAndMassCenters)
-    {
-        m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
-    }
+    m_mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
 }
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
@@ -178,10 +174,6 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
     for (int n = 0; n < static_cast<int>(m_mesh->GetNumNodes()); n++)
     {
         if ((m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2) || m_mesh->m_nodesNumEdges[n] < 2)
-        {
-            continue;
-        }
-        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != Mesh::m_numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
         {
             continue;
         }
@@ -247,9 +239,6 @@ void OrthogonalizationAndSmoothing::Solve()
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
-    Point normalSecondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-    Point normalThirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-
     // in this case the nearest point is the point itself
     std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);

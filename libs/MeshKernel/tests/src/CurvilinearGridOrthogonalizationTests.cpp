@@ -3,7 +3,10 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
+
+using namespace meshkernel;
 
 TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinearGrid_ShouldOrthogonalizeGrid)
 {
@@ -19,7 +22,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
     // Move a node, to make the grid strongly non orthogonal
     curvilinearGrid->MoveNode({10.0, 20.0}, {18.0, 12.0});
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -47,7 +50,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -107,7 +110,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -166,7 +169,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -246,7 +249,7 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCr
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -264,7 +267,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;

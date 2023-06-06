@@ -325,24 +325,24 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
                                  (polygonNodes[thirdNode] * (1.0 - xic) + polygonNodes[firstNode] * xic) * xib + polygonNodes[secondNode] * (1.0 - xib)) *
                                 constants::numeric::oneThird;
 
-    const auto maxM = *std::max_element(numM.begin(), numM.end());
-    const auto maxN = *std::max_element(numN.begin(), numN.end());
+    const auto maxM = *std::ranges::max_element(numM);
+    const auto maxN = *std::ranges::max_element(numN);
     const auto maximumNumberOfNodes = std::max(maxM, maxN) + 1;
-    std::vector<Point> sideOne(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
-    std::vector<Point> sideTwo(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
-    std::vector<Point> sideThree(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
-    std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<Point> sideOne(maximumNumberOfNodes);
+    std::vector<Point> sideTwo(maximumNumberOfNodes);
+    std::vector<Point> sideThree(maximumNumberOfNodes);
+    std::vector<Point> sideFour(maximumNumberOfNodes);
 
-    std::vector<std::vector<Point>> gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
+    std::vector gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
 
     Projection const polygonProjection = m_polygon->GetProjection();
 
     for (size_t t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
-        std::fill(sideOne.begin(), sideOne.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideTwo.begin(), sideTwo.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideThree.begin(), sideThree.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
-        std::fill(sideFour.begin(), sideFour.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(sideOne, Point());
+        std::ranges::fill(sideTwo, Point());
+        std::ranges::fill(sideThree, Point());
+        std::ranges::fill(sideFour, Point());
 
         // backward
         auto cornerIndex = cornerPoints[t];

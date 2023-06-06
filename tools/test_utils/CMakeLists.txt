@@ -69,7 +69,11 @@ target_link_libraries(
 )
 
 # Expose the interface of the utils library
-target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
+target_include_directories(${TARGET_NAME}
+  PUBLIC
+    ${INC_DIR}
+    ${CMAKE_SOURCE_DIR}/libs/MeshKernelApi/include
+)
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})

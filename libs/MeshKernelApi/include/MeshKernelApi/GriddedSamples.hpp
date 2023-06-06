@@ -29,22 +29,31 @@
 
 namespace meshkernelapi
 {
-    /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
-    struct CurvilinearParameters
+    /// @brief A struct describing gridded samples
+    struct GriddedSamples
     {
-        /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)
-        int m_refinement;
+        /// @brief Number of grid columns
+        int n_cols = 0;
 
-        /// @brief N-refinement factor for regular grid generation (nfacmax, 40)
-        int n_refinement;
+        /// @brief Number of grid rows
+        int n_rows = 0;
 
-        /// @brief Nr. of inner iterations in regular grid smoothing (10).
-        int smoothing_iterations;
+        /// @brief X coordinate of the grid origin
+        double x_origin = 0.0;
 
-        /// @brief Smoothing parameter (0.5).
-        double smoothing_parameter;
+        /// @brief Y coordinate of the grid origin
+        double y_origin = 0.0;
 
-        /// @brief Attraction/repulsion parameter (0).
-        double attraction_parameter;
+        /// @brief Constant grid cell size
+        double cell_size = 0.0;
+
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in x direction
+        double* x_coordinates = nullptr;
+
+        /// @brief If not nullptr, coordinates for non-uniform grid spacing in y direction
+        double* y_coordinates = nullptr;
+
+        /// @brief Sample values
+        double* values = nullptr;
     };
 } // namespace meshkernelapi

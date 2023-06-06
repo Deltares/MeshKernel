@@ -27,6 +27,12 @@
 
 #pragma once
 
+#include "MeshKernel/Entities.hpp"
+
+#include <string>
+#include <tuple>
 #include <vector>
 
 std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);
+
+std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(const std::string& filePath);

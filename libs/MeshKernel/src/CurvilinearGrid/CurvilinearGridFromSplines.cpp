@@ -30,18 +30,17 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
-#include <MeshKernelApi/CurvilinearParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridFromSplines;
 
 CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
-                                                       const meshkernelapi::CurvilinearParameters& curvilinearParameters,
-                                                       const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters) : m_splines(splines),
-                                                                                                                                              m_curvilinearParameters(curvilinearParameters),
-                                                                                                                                              m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
+                                                       const CurvilinearParameters& curvilinearParameters,
+                                                       const SplinesToCurvilinearParameters& splinesToCurvilinearParameters) : m_splines(splines),
+                                                                                                                               m_curvilinearParameters(curvilinearParameters),
+                                                                                                                               m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
 {
     m_onTopOfEachOtherSquaredTolerance = m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance *
                                          m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance;
@@ -944,7 +943,7 @@ std::vector<meshkernel::Point>
 CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(size_t layerIndex)
 {
     std::vector<Point> velocityVector(m_numM);
-    std::fill(velocityVector.begin(), velocityVector.end(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
+    std::fill(velocityVector.begin(), velocityVector.end(), Point());
     Point normalVectorLeft;
     Point normalVectorRight;
     const double cosTolerance = 1e-8;
@@ -1612,7 +1611,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
         const auto numM = MakeGridLine(s, gridLineIndex);
 
         gridLineIndex = gridLineIndex + numM + 1;
-        m_gridLine[gridLineIndex] = Point{constants::missing::doubleValue, constants::missing::doubleValue};
+        m_gridLine[gridLineIndex] = Point();
         m_gridLineDimensionalCoordinates[gridLineIndex] = constants::missing::doubleValue;
         gridLineIndex++;
 

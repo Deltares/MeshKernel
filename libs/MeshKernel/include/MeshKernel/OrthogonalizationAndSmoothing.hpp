@@ -28,12 +28,12 @@
 #pragma once
 
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernelApi/OrthogonalizationParameters.hpp>
+#include <MeshKernel/Parameters.hpp>
 
 namespace meshkernel
 {
     // Forward declare everything to reduce compile time dependency
-    struct Point;
+    class Point;
     class Mesh2D;
     class Smoother;
     class Orthogonalizer;
@@ -95,7 +95,7 @@ namespace meshkernel
                                       std::shared_ptr<Polygons> polygon,
                                       std::shared_ptr<LandBoundaries> landBoundaries,
                                       LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
-                                      const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters);
+                                      const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
         void Initialize();
@@ -145,7 +145,7 @@ namespace meshkernel
         std::shared_ptr<Polygons> m_polygons;                                      ///< The polygon where to perform the orthogonalization
         std::shared_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries
         LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
-        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  ///< The orthogonalization parameters
+        OrthogonalizationParameters m_orthogonalizationParameters;                 ///< The orthogonalization parameters
 
         std::vector<size_t> m_localCoordinatesIndices; ///< Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;         ///< Used in sphericalAccurate projection (xloc,yloc)
@@ -162,8 +162,7 @@ namespace meshkernel
         std::vector<size_t> m_compressedNodesNodes;     ///< The indices of the neighbouring nodes
 
         // run-time parameters
-        double m_mumax;                                 ///< Mumax stored for runtime
-        double m_mu;                                    ///< Mu stored for runtime
-        bool m_keepCircumcentersAndMassCenters = false; ///< Whether to keep circumcenters and mass centers
+        double m_mumax = 0.0; ///< Mumax stored for runtime
+        double m_mu = 0.0;    ///< Mu stored for runtime
     };
 } // namespace meshkernel

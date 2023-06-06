@@ -29,6 +29,8 @@
 
 #include "MeshKernel/Constants.hpp"
 
+#include <concepts>
+
 namespace meshkernel
 {
     extern "C"
@@ -36,11 +38,24 @@ namespace meshkernel
         /// @brief Function of the Triangle library
         ///
         /// \see https://www.cs.cmu.edu/~quake/triangle.html
-        void Triangulation(int* jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
+        void Triangulation(int jatri,
+                           double const* const xs,
+                           double const* const ys,
+                           int ns,
+                           int* const indx,
+                           int* const numtri,
+                           int* const edgeidx,
+                           int* const numedge,
+                           int* const triedge,
+                           double* const xs3,
+                           double* const ys3,
+                           int* const ns3,
+                           double trisize);
     }
 
-    struct Point;
-    struct Sample;
+    class Point;
+    class Sample;
+
     /// @brief Wrapper around the Triangle library
     ///
     /// \see https://www.cs.cmu.edu/~quake/triangle.html
@@ -60,13 +75,12 @@ namespace meshkernel
         /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
         /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
         /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)
-        template <typename T>
+        template <std::derived_from<Point> T>
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
                      size_t estimatedNumberOfTriangles)
         {
-
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
             for (size_t i = 0; i < inputNodes.size(); ++i)
@@ -93,24 +107,24 @@ namespace meshkernel
                 m_numFaces = static_cast<int>(estimatedNumberOfTriangles);
 
                 m_faceNodesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(m_faceNodesFlat.begin(), m_faceNodesFlat.end(), 0);
+                std::ranges::fill(m_faceNodesFlat, 0);
 
                 m_edgeNodesFlat.resize(estimatedNumberOfTriangles * 2);
-                std::fill(m_edgeNodesFlat.begin(), m_edgeNodesFlat.end(), 0);
+                std::ranges::fill(m_edgeNodesFlat, 0);
 
                 m_faceEdgesFlat.resize(estimatedNumberOfTriangles * 3);
-                std::fill(m_faceEdgesFlat.begin(), m_faceEdgesFlat.end(), 0);
+                std::ranges::fill(m_faceEdgesFlat, 0);
 
                 m_xCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(m_xCoordFlat.begin(), m_xCoordFlat.end(), 0.0);
+                std::ranges::fill(m_xCoordFlat, 0.0);
 
                 m_yCoordFlat.resize(estimatedNumberOfTriangles * 3, constants::missing::doubleValue);
-                std::fill(m_yCoordFlat.begin(), m_yCoordFlat.end(), 0.0);
+                std::ranges::fill(m_yCoordFlat, 0.0);
 
-                Triangulation(&intTriangulationOption,
+                Triangulation(intTriangulationOption,
                               xLocalPolygon.data(),
                               yLocalPolygon.data(),
-                              &numInputNodes,
+                              numInputNodes,
                               m_faceNodesFlat.data(), // INDX
                               &m_numFaces,
                               m_edgeNodesFlat.data(), // EDGEINDX
@@ -119,7 +133,7 @@ namespace meshkernel
                               m_xCoordFlat.data(),
                               m_yCoordFlat.data(),
                               &m_numNodes,
-                              &averageTriangleArea);
+                              averageTriangleArea);
                 if (estimatedNumberOfTriangles > 0)
                 {
                     estimatedNumberOfTriangles = -m_numFaces;

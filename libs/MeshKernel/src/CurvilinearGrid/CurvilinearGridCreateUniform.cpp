@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridCreateUniform;
 
-CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const meshkernelapi::MakeGridParameters& makeGridParameters, Projection projection)
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const MakeGridParameters& makeGridParameters, Projection projection)
     : m_makeGridParameters(makeGridParameters), m_projection(projection)
 {
 }
@@ -81,7 +81,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
         return {};
     }
 
-    Point referencePoint{constants::missing::doubleValue, constants::missing::doubleValue};
+    Point referencePoint;
     auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
     {

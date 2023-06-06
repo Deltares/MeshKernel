@@ -47,7 +47,19 @@
 *             Maximum area for generated triangles.
 */
 
-void Triangulation(int *jatri, REAL *xs, REAL *ys, int *ns, int *indx, int *numtri, int *edgeidx, int *numedge, int *triedge, REAL *xs3, REAL *ys3, int *ns3, REAL *trisize)
+void Triangulation(int jatri,
+                   double const * const xs,
+                   double const * const ys,
+                   int ns,
+                   int* const indx,
+                   int* const numtri,
+                   int* const edgeidx,
+                   int* const numedge,
+                   int* const triedge,
+                   double* const xs3,
+                   double* const ys3,
+                   int* const ns3,
+                   double trisize)
 {
 
     struct triangulateio in, mid, out, vorout;
@@ -59,10 +71,10 @@ void Triangulation(int *jatri, REAL *xs, REAL *ys, int *ns, int *indx, int *numt
     maxnumtri = *numtri; // input numtri indicates (max) array size.
 
                          /* Define input points. */
-    in.numberofpoints = *ns;
+    in.numberofpoints = ns;
     number = in.numberofpoints * 2 * sizeof(REAL);
     in.pointlist = (REAL *)malloc(number);
-    for (i = 0; i< *ns; i++) {
+    for (i = 0; i< ns; i++) {
         in.pointlist[2 * i] = xs[i];
         in.pointlist[2 * i + 1] = ys[i];
     }
@@ -72,19 +84,19 @@ void Triangulation(int *jatri, REAL *xs, REAL *ys, int *ns, int *indx, int *numt
     in.pointattributelist = (REAL *)NULL; 
     in.pointmarkerlist = (int *)NULL;
 
-    if (*jatri == 1 || *jatri == 3) {
+    if (jatri == 1 || jatri == 3) {
         in.numberofsegments = 0;
     }
 
     else {
-        in.numberofsegments = *ns;
+        in.numberofsegments = ns;
         in.segmentlist = (int *)malloc(in.numberofsegments * 2 * sizeof(int));
         in.segmentmarkerlist = (int *)NULL;
-        for (i = 0; i< *ns; i++) {
+        for (i = 0; i< ns; i++) {
             in.segmentlist[2 * i] = i;
             in.segmentlist[2 * i + 1] = i + 1;
         }
-        in.segmentlist[2 * (*ns - 1) + 1] = 0;
+        in.segmentlist[2 * (ns - 1) + 1] = 0;
     }
 
     in.numberofholes = 0;
@@ -118,14 +130,14 @@ void Triangulation(int *jatri, REAL *xs, REAL *ys, int *ns, int *indx, int *numt
                                             /*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
                                             /*   neighbor list (n).                                              */
 
-    if (*jatri == 1) 
+    if (jatri == 1) 
     {
         /* triangulate("pcAevnQP", &in, &mid, &vorout); */
 
         triangulate("-Qpc", &in, &mid, &vorout);
 
     }
-    else if (*jatri == 3) 
+    else if (jatri == 3) 
     {
         /* Also produce edge-to-node mapping and tri-to-edge mapping
         (uses quite a bit more memory!) */
@@ -155,7 +167,7 @@ void Triangulation(int *jatri, REAL *xs, REAL *ys, int *ns, int *indx, int *numt
     }
     else 
     {
-        i = sprintf(opties, "-Q-Y-q30.0-D-a%f", *trisize);
+        i = sprintf(opties, "-Q-Y-q30.0-D-a%f", trisize);
 
         triangulate(opties, &in, &mid, &vorout);
 

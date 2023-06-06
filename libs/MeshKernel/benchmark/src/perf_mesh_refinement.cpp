@@ -1,13 +1,13 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
+#include <MeshKernel/Parameters.hpp>
+
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 #include <benchmark/benchmark.h>
 
 using namespace meshkernel;
-namespace mkapi = meshkernelapi;
 
 static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
 {
@@ -35,7 +35,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         }
 
         auto const interpolator = std::make_shared<AveragingInterpolation>(
-            mesh,
+            *mesh,
             samples,
             AveragingInterpolation::Method::MinAbsValue,
             Mesh::Location::Faces,
@@ -44,11 +44,11 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
             false,
             1);
 
-        mkapi::MeshRefinementParameters mesh_refinement_parameters;
+        MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;
         mesh_refinement_parameters.refine_intersected = 0;
         mesh_refinement_parameters.use_mass_center_when_refining = 0;
-        mesh_refinement_parameters.min_face_size = 1.e-5;
+        mesh_refinement_parameters.min_edge_size = 1.e-5;
         mesh_refinement_parameters.account_for_samples_outside = 0;
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = static_cast<int>(state.range(2));
@@ -98,11 +98,11 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 
         meshkernel::Polygons polygon(polygon_points, mesh->m_projection);
 
-        mkapi::MeshRefinementParameters mesh_refinement_parameters;
+        MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;
         mesh_refinement_parameters.refine_intersected = 0;
         mesh_refinement_parameters.use_mass_center_when_refining = 0;
-        mesh_refinement_parameters.min_face_size = 1.e-5;
+        mesh_refinement_parameters.min_edge_size = 1.e-5;
         mesh_refinement_parameters.account_for_samples_outside = 0;
         mesh_refinement_parameters.connect_hanging_nodes = 1;
         mesh_refinement_parameters.refinement_type = 2;

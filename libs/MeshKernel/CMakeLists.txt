@@ -27,6 +27,7 @@ set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
@@ -79,6 +80,7 @@ set(
 set(
   INC_LIST
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
+  ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
@@ -88,11 +90,13 @@ set(
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
   ${DOMAIN_INC_DIR}/Orthogonalizer.hpp
+  ${DOMAIN_INC_DIR}/Parameters.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
   ${DOMAIN_INC_DIR}/RTree.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
@@ -132,19 +136,6 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
 )
 
-############ TEMPORARY:BEGINS, see GRIDEDIT-508
-set(API_INC_DIR ${PROJECT_SOURCE_DIR}/../MeshKernelApi/include)
-set(API_DOMAIN_INC_DIR ${API_INC_DIR}/MeshKernelApi)
-set(
-  API_INC_LIST
-  ${API_DOMAIN_INC_DIR}/CurvilinearParameters.hpp
-  ${API_DOMAIN_INC_DIR}/MakeGridParameters.hpp
-  ${API_DOMAIN_INC_DIR}/MeshRefinementParameters.hpp
-  ${API_DOMAIN_INC_DIR}/OrthogonalizationParameters.hpp
-  ${API_DOMAIN_INC_DIR}/SplinesToCurvilinearParameters.hpp
-)
-############ TEMPORARY:ENDS, see GRIDEDIT-508
-
 # add sources to target
 target_sources(
   ${TARGET_NAME}
@@ -160,13 +151,6 @@ target_sources(
         ${INC_LIST}
         ${AVERAGING_STRATEGIES_INC_LIST}
         ${CURVILINEAR_GRID_INC_LIST}
-    ############ TEMPORARY:BEGINS, see GRIDEDIT-508
-    FILE_SET HEADERS
-      BASE_DIRS
-        ${API_INC_DIR}
-      FILES
-        ${API_INC_LIST}
-    ############ TEMPORARY:ENDS, see GRIDEDIT-508
 )
 
 # define the public header
@@ -203,6 +187,10 @@ target_link_libraries(
     OpenMP::OpenMP_CXX
 )
 
+if(${USE_LIBFMT})
+  target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
+endif()
+
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(
@@ -228,8 +216,11 @@ target_precompile_headers(
     <map>
     <memory> 
     <numeric>
+    <source_location>
     <stdexcept>
+    <sstream>
     <string>
+    <string_view>
     <tuple>
     <type_traits>
     <unordered_map>

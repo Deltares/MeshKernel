@@ -1,43 +1,47 @@
+#include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernelApi/MeshRefinementParameters.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
+using namespace meshkernel;
+
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
 
     // sample points
-    std::vector<meshkernel::Sample> samples{
+    std::vector<Sample> samples{
         {14.7153645, 14.5698833, 1.0},
         {24.7033062, 14.4729137, 1.0},
         {15.5396099, 24.2669525, 1.0},
         {23.8305721, 23.9275551, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 1.0;
+    meshRefinementParameters.min_edge_size = 1.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -99,105 +103,105 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(84, mesh->GetNumEdges());
 }
 
-TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
+TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
 {
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 500.0, Projection::cartesian);
 
     // sample points
-    std::vector<meshkernel::Sample> samples{
-        {14.7153645, 14.5698833, 1.0},
-        {24.7033062, 14.4729137, 1.0},
-        {15.5396099, 24.2669525, 1.0},
-        {23.8305721, 23.9275551, 1.0}};
+    std::vector<Sample> samples{
+        {14.7153645, 14.5698833, 0.1},
+        {24.7033062, 14.4729137, 0.1},
+        {15.5396099, 24.2669525, 0.1},
+        {23.8305721, 23.9275551, 0.1}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 2.0;
+    meshRefinementParameters.min_edge_size = 2.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     // Assert number of edges and nodes
-    ASSERT_EQ(131, mesh->GetNumEdges());
-    ASSERT_EQ(62, mesh->GetNumNodes());
+    ASSERT_EQ(60, mesh->GetNumEdges());
+    ASSERT_EQ(31, mesh->GetNumNodes());
 
     // Assert edges
     ASSERT_EQ(0, mesh->m_edges[0].first);
-    ASSERT_EQ(4, mesh->m_edges[0].second);
+    ASSERT_EQ(26, mesh->m_edges[0].second);
 
     ASSERT_EQ(1, mesh->m_edges[1].first);
-    ASSERT_EQ(32, mesh->m_edges[1].second);
+    ASSERT_EQ(17, mesh->m_edges[1].second);
 
     ASSERT_EQ(2, mesh->m_edges[2].first);
-    ASSERT_EQ(33, mesh->m_edges[2].second);
+    ASSERT_EQ(6, mesh->m_edges[2].second);
 
     ASSERT_EQ(3, mesh->m_edges[3].first);
     ASSERT_EQ(7, mesh->m_edges[3].second);
 
     ASSERT_EQ(4, mesh->m_edges[4].first);
-    ASSERT_EQ(34, mesh->m_edges[4].second);
+    ASSERT_EQ(8, mesh->m_edges[4].second);
 
     ASSERT_EQ(5, mesh->m_edges[5].first);
-    ASSERT_EQ(35, mesh->m_edges[5].second);
+    ASSERT_EQ(9, mesh->m_edges[5].second);
 
     ASSERT_EQ(6, mesh->m_edges[6].first);
-    ASSERT_EQ(17, mesh->m_edges[6].second);
+    ASSERT_EQ(10, mesh->m_edges[6].second);
 
     ASSERT_EQ(7, mesh->m_edges[7].first);
-    ASSERT_EQ(18, mesh->m_edges[7].second);
+    ASSERT_EQ(11, mesh->m_edges[7].second);
 
     ASSERT_EQ(8, mesh->m_edges[8].first);
-    ASSERT_EQ(36, mesh->m_edges[8].second);
+    ASSERT_EQ(12, mesh->m_edges[8].second);
 
     ASSERT_EQ(9, mesh->m_edges[9].first);
-    ASSERT_EQ(37, mesh->m_edges[9].second);
+    ASSERT_EQ(13, mesh->m_edges[9].second);
 
     ASSERT_EQ(10, mesh->m_edges[10].first);
-    ASSERT_EQ(38, mesh->m_edges[10].second);
+    ASSERT_EQ(14, mesh->m_edges[10].second);
 
     ASSERT_EQ(11, mesh->m_edges[11].first);
-    ASSERT_EQ(21, mesh->m_edges[11].second);
+    ASSERT_EQ(15, mesh->m_edges[11].second);
 
     ASSERT_EQ(1, mesh->m_edges[12].first);
-    ASSERT_EQ(0, mesh->m_edges[12].second);
+    ASSERT_EQ(18, mesh->m_edges[12].second);
 
     ASSERT_EQ(2, mesh->m_edges[13].first);
-    ASSERT_EQ(39, mesh->m_edges[13].second);
+    ASSERT_EQ(1, mesh->m_edges[13].second);
 
     ASSERT_EQ(3, mesh->m_edges[14].first);
     ASSERT_EQ(2, mesh->m_edges[14].second);
 
     ASSERT_EQ(5, mesh->m_edges[15].first);
-    ASSERT_EQ(40, mesh->m_edges[15].second);
+    ASSERT_EQ(19, mesh->m_edges[15].second);
 
     ASSERT_EQ(6, mesh->m_edges[16].first);
-    ASSERT_EQ(22, mesh->m_edges[16].second);
+    ASSERT_EQ(5, mesh->m_edges[16].second);
 
     ASSERT_EQ(7, mesh->m_edges[17].first);
-    ASSERT_EQ(23, mesh->m_edges[17].second);
+    ASSERT_EQ(6, mesh->m_edges[17].second);
 
     ASSERT_EQ(9, mesh->m_edges[18].first);
-    ASSERT_EQ(41, mesh->m_edges[18].second);
+    ASSERT_EQ(8, mesh->m_edges[18].second);
 
     ASSERT_EQ(10, mesh->m_edges[19].first);
-    ASSERT_EQ(24, mesh->m_edges[19].second);
+    ASSERT_EQ(9, mesh->m_edges[19].second);
 
     ASSERT_EQ(11, mesh->m_edges[20].first);
-    ASSERT_EQ(25, mesh->m_edges[20].second);
+    ASSERT_EQ(10, mesh->m_edges[20].second);
 }
 
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
@@ -206,29 +210,29 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // sample points
-    std::vector<meshkernel::Sample> samples{
+    std::vector<Sample> samples{
         {359.8657532, 350.3144836, 1.0},
         {387.5152588, 299.2614746, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 50.0;
+    meshRefinementParameters.min_edge_size = 50.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -255,7 +259,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // Polygon sample
-    std::vector<meshkernel::Point> point{
+    std::vector<Point> point{
         {399.638169557229, 504.294564030922},
         {361.827403800769, 129.967983041964},
         {651.709941266965, 113.583317880831},
@@ -263,14 +267,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
         {410.981399284167, 505.55492288947},
         {399.638169557229, 504.294564030922}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // total number of edges
@@ -300,14 +304,13 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     ASSERT_EQ(4, mesh->m_edges[26].second);
 }
 
-TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
+TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 {
     // Prepare
-
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
 
     // sample points
-    std::vector<meshkernel::Sample> samples{
+    std::vector<Sample> samples{
         {2.7091951, 5.4000854, 0.0000000},
         {6.4910383, 2.4182367, 0.0000000},
         {8.0910482, 6.7091894, 0.0000000},
@@ -336,159 +339,159 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
         {13.5837603, 12.1783361, 3.0000000},
         {17.2156067, 16.9106121, 3.0000000}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 3.0;
+    meshRefinementParameters.min_edge_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
     // assert on number of nodes and edges
-    ASSERT_EQ(150, mesh->GetNumNodes());
-    ASSERT_EQ(293, mesh->GetNumEdges());
+    ASSERT_EQ(49, mesh->GetNumNodes());
+    ASSERT_EQ(84, mesh->GetNumEdges());
 
     // assert on newly generated edges
-    ASSERT_EQ(109, mesh->m_edges[282].first);
-    ASSERT_EQ(44, mesh->m_edges[282].second);
+    ASSERT_EQ(26, mesh->m_edges[70].first);
+    ASSERT_EQ(14, mesh->m_edges[70].second);
 
-    ASSERT_EQ(44, mesh->m_edges[283].first);
-    ASSERT_EQ(67, mesh->m_edges[283].second);
+    ASSERT_EQ(27, mesh->m_edges[71].first);
+    ASSERT_EQ(15, mesh->m_edges[71].second);
 
-    ASSERT_EQ(92, mesh->m_edges[284].first);
-    ASSERT_EQ(91, mesh->m_edges[284].second);
+    ASSERT_EQ(28, mesh->m_edges[72].first);
+    ASSERT_EQ(0, mesh->m_edges[72].second);
 
-    ASSERT_EQ(91, mesh->m_edges[285].first);
-    ASSERT_EQ(12, mesh->m_edges[285].second);
+    ASSERT_EQ(29, mesh->m_edges[73].first);
+    ASSERT_EQ(1, mesh->m_edges[73].second);
 
-    ASSERT_EQ(12, mesh->m_edges[286].first);
-    ASSERT_EQ(92, mesh->m_edges[286].second);
+    ASSERT_EQ(30, mesh->m_edges[74].first);
+    ASSERT_EQ(2, mesh->m_edges[74].second);
 
-    ASSERT_EQ(100, mesh->m_edges[287].first);
-    ASSERT_EQ(99, mesh->m_edges[287].second);
+    ASSERT_EQ(31, mesh->m_edges[75].first);
+    ASSERT_EQ(4, mesh->m_edges[75].second);
 
-    ASSERT_EQ(99, mesh->m_edges[288].first);
-    ASSERT_EQ(14, mesh->m_edges[288].second);
+    ASSERT_EQ(32, mesh->m_edges[76].first);
+    ASSERT_EQ(5, mesh->m_edges[76].second);
 
-    ASSERT_EQ(14, mesh->m_edges[289].first);
-    ASSERT_EQ(100, mesh->m_edges[289].second);
+    ASSERT_EQ(33, mesh->m_edges[77].first);
+    ASSERT_EQ(6, mesh->m_edges[77].second);
 
-    ASSERT_EQ(97, mesh->m_edges[290].first);
-    ASSERT_EQ(96, mesh->m_edges[290].second);
+    ASSERT_EQ(34, mesh->m_edges[78].first);
+    ASSERT_EQ(8, mesh->m_edges[78].second);
 
-    ASSERT_EQ(96, mesh->m_edges[291].first);
-    ASSERT_EQ(14, mesh->m_edges[291].second);
+    ASSERT_EQ(35, mesh->m_edges[79].first);
+    ASSERT_EQ(9, mesh->m_edges[79].second);
 
-    ASSERT_EQ(14, mesh->m_edges[292].first);
-    ASSERT_EQ(97, mesh->m_edges[292].second);
+    ASSERT_EQ(36, mesh->m_edges[80].first);
+    ASSERT_EQ(10, mesh->m_edges[80].second);
 }
 
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
+    std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 4;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 3.0;
+    meshRefinementParameters.min_edge_size = 3.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
     // total number of edges
-    ASSERT_EQ(1614, mesh->GetNumNodes());
-    ASSERT_EQ(3216, mesh->GetNumEdges());
+    ASSERT_EQ(461, mesh->GetNumNodes());
+    ASSERT_EQ(918, mesh->GetNumEdges());
 
-    ASSERT_EQ(170, mesh->m_edges[3113].first);
-    ASSERT_EQ(804, mesh->m_edges[3113].second);
+    ASSERT_EQ(233, mesh->m_edges[906].first);
+    ASSERT_EQ(206, mesh->m_edges[906].second);
 
-    ASSERT_EQ(1, mesh->m_edges[3114].first);
-    ASSERT_EQ(804, mesh->m_edges[3114].second);
+    ASSERT_EQ(206, mesh->m_edges[907].first);
+    ASSERT_EQ(70, mesh->m_edges[907].second);
 
-    ASSERT_EQ(462, mesh->m_edges[3115].first);
-    ASSERT_EQ(856, mesh->m_edges[3115].second);
+    ASSERT_EQ(70, mesh->m_edges[908].first);
+    ASSERT_EQ(233, mesh->m_edges[908].second);
 
-    ASSERT_EQ(9, mesh->m_edges[3116].first);
-    ASSERT_EQ(856, mesh->m_edges[3116].second);
+    ASSERT_EQ(179, mesh->m_edges[909].first);
+    ASSERT_EQ(235, mesh->m_edges[909].second);
 
-    ASSERT_EQ(211, mesh->m_edges[3117].first);
-    ASSERT_EQ(1256, mesh->m_edges[3117].second);
+    ASSERT_EQ(235, mesh->m_edges[910].first);
+    ASSERT_EQ(62, mesh->m_edges[910].second);
 
-    ASSERT_EQ(538, mesh->m_edges[3118].first);
-    ASSERT_EQ(1256, mesh->m_edges[3118].second);
+    ASSERT_EQ(62, mesh->m_edges[911].first);
+    ASSERT_EQ(179, mesh->m_edges[911].second);
 
-    ASSERT_EQ(77, mesh->m_edges[3119].first);
-    ASSERT_EQ(1052, mesh->m_edges[3119].second);
+    ASSERT_EQ(249, mesh->m_edges[912].first);
+    ASSERT_EQ(320, mesh->m_edges[912].second);
 
-    ASSERT_EQ(258, mesh->m_edges[3120].first);
-    ASSERT_EQ(1052, mesh->m_edges[3120].second);
+    ASSERT_EQ(320, mesh->m_edges[913].first);
+    ASSERT_EQ(84, mesh->m_edges[913].second);
 
-    ASSERT_EQ(290, mesh->m_edges[3121].first);
-    ASSERT_EQ(769, mesh->m_edges[3121].second);
+    ASSERT_EQ(84, mesh->m_edges[914].first);
+    ASSERT_EQ(249, mesh->m_edges[914].second);
 
-    ASSERT_EQ(593, mesh->m_edges[3122].first);
-    ASSERT_EQ(769, mesh->m_edges[3122].second);
+    ASSERT_EQ(327, mesh->m_edges[915].first);
+    ASSERT_EQ(326, mesh->m_edges[915].second);
 }
 
 TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
+    std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::Max,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.01,
-                                                                                   false,
-                                                                                   true,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::Max,
+                                                                       Mesh::Location::Faces,
+                                                                       1.01,
+                                                                       false,
+                                                                       true,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 10;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 0.5;
+    meshRefinementParameters.min_edge_size = 0.5;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -533,23 +536,23 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
 
-    std::vector<meshkernel::Point> point{
+    std::vector<Point> point{
         {25.0, -10.0},
         {25.0, 15.0},
         {45.0, 15.0},
         {45.0, -10.0},
         {25.0, -10.0}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -588,9 +591,9 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
 
-    std::vector<meshkernel::Point> point{
+    std::vector<Point> point{
         {9.09836065573771, 34.016393442623},
         {7.18032786885247, 7.75409836065574},
         {34.6229508196721, 6.5},
@@ -600,14 +603,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
         {9.90983606557378, 34.3852459016394},
         {9.09836065573771, 34.016393442623}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // assert on number of nodes and edges
@@ -619,34 +622,34 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, Projection::spherical, {41.1, 41.1});
 
     // sample points
-    std::vector<meshkernel::Sample> samples{
+    std::vector<Sample> samples{
         {41.1050110, 41.1049728, 1.0},
         {41.1084785, 41.1048775, 1.0},
         {41.1085625, 41.1083946, 1.0},
         {41.1052971, 41.1083336, 1.0}};
 
-    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
-                                                                                   samples,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   meshkernel::Mesh::Location::Faces,
-                                                                                   1.0,
-                                                                                   false,
-                                                                                   false,
-                                                                                   1);
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::MinAbsValue,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 0.00165;
+    meshRefinementParameters.min_edge_size = 0.00165;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());
@@ -681,20 +684,20 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, Projection::spherical, {41.1, 41.1});
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_face_size = 0.00165;
+    meshRefinementParameters.min_edge_size = 0.00165;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
 
     // Execute
-    meshkernel::Polygons polygon;
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    Polygons polygon;
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // Assert, we passed from 36 to 49 nodes
@@ -718,13 +721,13 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 {
     auto mesh = MakeCurvilinearGridForTesting();
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::Polygons polygon;
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    Polygons polygon;
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     mesh->ComputeEdgesLengths();
@@ -741,7 +744,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/CurvilinearEnlonged.nc");
 
-    std::vector<meshkernel::Point> point{
+    std::vector<Point> point{
         {2018.73356016594, 1165.26385465465},
         {1694.83823023783, 1131.75744121381},
         {1708.79923583818, 640.330044081495},
@@ -751,14 +754,14 @@ TEST(MeshRefinement, RefineElongatedFaces)
         {2038.27896800643, 1165.26385465465},
         {2018.73356016594, 1165.26385465465}};
 
-    meshkernel::Polygons polygon(point, mesh->m_projection);
+    Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::MeshRefinementParameters meshRefinementParameters;
+    MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    meshkernel::MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
 
     // Execute
     meshRefinement.Compute();
@@ -788,4 +791,85 @@ TEST(MeshRefinement, RefineElongatedFaces)
     ASSERT_NEAR(690.31918193748425, mesh->m_facesCircumcenters[8].y, tolerance);
     ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[9].y, tolerance);
     ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[10].y, tolerance);
+}
+
+TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefine)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 5.0;
+    meshRefinementParameters.account_for_samples_outside = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 1;
+
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+
+    // Execute
+    meshRefinement.Compute();
+
+    // Assert: all bathy values are positive and we are in land, so nothing gets refined
+    ASSERT_EQ(4, mesh->GetNumEdges());
+}
+
+TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRefine)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
+    Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 5.0;
+    meshRefinementParameters.account_for_samples_outside = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 1;
+
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+
+    // Execute
+    meshRefinement.Compute();
+
+    // Assert: all depth values are positive and we are in land, so nothing gets refined
+    ASSERT_EQ(12, mesh->GetNumEdges());
+}
+
+TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
+    Point origin{-5.0, -5.0};
+    const auto interpolator = std::make_shared<BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 5.0;
+    meshRefinementParameters.account_for_samples_outside = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 1;
+
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+
+    // Execute
+    meshRefinement.Compute();
+
+    // Assert: nothing gets refined
+    ASSERT_EQ(4, mesh->GetNumEdges());
 }

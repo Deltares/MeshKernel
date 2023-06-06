@@ -152,8 +152,8 @@ namespace meshkernel
     {
         std::vector<size_t> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
-        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
-                         { return v[i1] < v[i2]; });
+        std::ranges::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
+                                 { return v[i1] < v[i2]; });
         return indices;
     }
 
