@@ -768,12 +768,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     }
 }
 
-std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
+void MeshRefinement::FindHangingNodes(size_t face)
 {
-
-    size_t numEdgesToRefine = 0;
-    size_t numHangingEdges = 0;
-    size_t numHangingNodes = 0;
     const auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
 
     if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
@@ -790,10 +786,6 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
     for (size_t n = 0; n < numFaceNodes; n++)
     {
         const auto edgeIndex = m_mesh->m_facesEdges[face][n];
-        if (m_edgeMask[edgeIndex] != 0)
-        {
-            numEdgesToRefine += 1;
-        }
 
         // check if the parent edge is in the cell
         if (m_brotherEdges[edgeIndex] != constants::missing::sizetValue)
@@ -824,14 +816,12 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
             if (commonNode != constants::missing::sizetValue)
             {
                 m_isHangingEdgeCache[n] = true;
-                numHangingEdges++;
                 for (size_t nn = 0; nn < numFaceNodes; nn++)
                 {
                     kknod = NextCircularForwardIndex(kknod, numFaceNodes);
 
                     if (m_mesh->m_facesNodes[face][kknod] == commonNode && !m_isHangingNodeCache[kknod])
                     {
-                        numHangingNodes++;
                         m_isHangingNodeCache[kknod] = true;
                         break;
                     }
@@ -839,8 +829,49 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
             }
         }
     }
+}
 
-    return {numHangingEdges, numHangingNodes, numEdgesToRefine};
+size_t MeshRefinement::countHangingNodes() const
+{
+    size_t result = 0;
+    for (const auto& v : m_isHangingNodeCache)
+    {
+        if (v)
+        {
+            result++;
+        }
+    }
+    return result;
+}
+
+size_t MeshRefinement::countHangingEdges() const
+{
+    size_t result = 0;
+    for (const auto& v : m_isHangingEdgeCache)
+    {
+        if (v)
+        {
+            result++;
+        }
+    }
+    return result;
+}
+
+size_t MeshRefinement::countEdgesToRefine(size_t face) const
+{
+    const auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
+
+    size_t result = 0;
+
+    for (size_t n = 0; n < numFaceNodes; n++)
+    {
+        const auto edgeIndex = m_mesh->m_facesEdges[face][n];
+        if (m_edgeMask[edgeIndex] != 0)
+        {
+            result += 1;
+        }
+    }
+    return result;
 }
 
 void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
@@ -1002,7 +1033,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                 continue;
             }
 
-            auto [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
+            const auto numHangingNodes = countHangingEdges();
 
             const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
@@ -1060,7 +1091,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: The number the links in the cell is not equals 3.");
                 }
 
-                numEdgesToRefine = 0;
+                size_t numEdgesToRefine = 0;
                 size_t firstEdgeIndex = 0;
                 size_t secondEdgeIndex = 0;
                 for (size_t i = 0; i < Mesh::m_numNodesQuads; i++)
@@ -1148,7 +1179,11 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 continue;
             }
 
-            auto const [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
+            const auto numEdgesToRefine = countEdgesToRefine(f);
+
+            FindHangingNodes(f);
+            const auto numHangingEdges = countHangingEdges();
+            const auto numHangingNodes = countHangingNodes();
 
             bool isSplittingRequired = false;
 
