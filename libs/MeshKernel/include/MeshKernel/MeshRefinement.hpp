@@ -142,14 +142,10 @@ namespace meshkernel
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         void ComputeRefinementMasksFromSamples();
 
-        /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
+        /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
-        /// @param face The number of face nodes
-        /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
-        /// @param numEdgesToBeRefined The computed number of edges to refined
-        void ComputeEdgesRefinementMaskFromSamples(size_t face,
-                                                   std::vector<size_t>& refineEdgeCache,
-                                                   size_t& numEdgesToBeRefined);
+        /// @param face The face index
+        void ComputeRefinementMasksFromSamples(size_t face);
 
         /// Computes the edge refinement mask (comp_jalink)
         void ComputeEdgesRefinementMask();
@@ -179,8 +175,8 @@ namespace meshkernel
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
 
-        /// @brief Smooth the face refinement mask (smooth_jarefine)
-        void SmoothEdgeRefinementMask() const;
+        /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
+        void SmoothRefinementMasks();
 
         /// @brief Computes m_faceMask, if a face must be split later on (split_cells)
         void ComputeIfFaceShouldBeSplit();
@@ -219,6 +215,7 @@ namespace meshkernel
         std::vector<Point> m_polygonNodesCache;       ///< Cache for maintaining polygon nodes
         std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
         std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
+        std::vector<size_t> m_refineEdgeCache;        ///< Cache for the edges to be refined
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
@@ -230,5 +227,6 @@ namespace meshkernel
         MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
         bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
         const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
+        size_t m_numSmoothingIterations = 0;                        ///< The number of smoothing iterations
     };
 } // namespace meshkernel
