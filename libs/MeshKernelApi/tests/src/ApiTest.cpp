@@ -3092,6 +3092,7 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesAndSphericalProjection_Shou
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.smoothing_iterations = 5;
 
     errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);

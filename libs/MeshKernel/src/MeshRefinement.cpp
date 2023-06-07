@@ -875,9 +875,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
             numEdgesToBeRefined++;
             m_refineEdgeCache[i] = 1;
         }
-        return;
     }
-    if (m_refinementType == RefinementType::WaveCourant)
+    else if (m_refinementType == RefinementType::WaveCourant)
     {
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
@@ -920,7 +919,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
             }
         }
 
-        if (!m_directionalRefinement)
+        if (m_meshRefinementParameters.directional_refinement == 0)
         {
             if (numEdgesToBeRefined == m_mesh->GetNumFaceEdges(face))
             {
@@ -1306,18 +1305,18 @@ void MeshRefinement::FindBrotherEdges()
 
 void MeshRefinement::SmoothRefinementMasks()
 {
-    if (m_directionalRefinement)
+    if (m_meshRefinementParameters.directional_refinement == 1)
     {
         throw AlgorithmError("MeshRefinement::SmoothRefinementMasks: directional refinement cannot be used in combination with smoothing. Please set directional refinement to off!");
     }
-    if (m_numSmoothingIterations == 0)
+    if (m_meshRefinementParameters.smoothing_iterations == 0)
     {
         return;
     }
 
     std::vector splitEdge(m_edgeMask.size(), false);
 
-    for (auto iter = 0; iter < m_numSmoothingIterations; ++iter)
+    for (auto iter = 0; iter < m_meshRefinementParameters.smoothing_iterations; ++iter)
     {
         std::fill(splitEdge.begin(), splitEdge.end(), false);
 

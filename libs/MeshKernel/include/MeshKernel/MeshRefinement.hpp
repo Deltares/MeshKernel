@@ -219,7 +219,6 @@ namespace meshkernel
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
-        bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
         std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
         std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
@@ -227,6 +226,5 @@ namespace meshkernel
         MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
         bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
         const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
-        size_t m_numSmoothingIterations = 0;                        ///< The number of smoothing iterations
     };
 } // namespace meshkernel
