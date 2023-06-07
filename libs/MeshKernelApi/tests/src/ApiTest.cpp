@@ -3004,7 +3004,7 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     ASSERT_EQ(mesh2d.num_edges, 1174);
     ASSERT_EQ(mesh2d.num_faces, 80);
 }
-/*
+
 TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
 {
     // Prepare
@@ -3041,6 +3041,7 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -3049,65 +3050,12 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(2179, mesh2dResults.num_nodes);
-    ASSERT_EQ(5252, mesh2dResults.num_edges);
-    ASSERT_EQ(3074, mesh2dResults.num_faces);
-    ASSERT_EQ(10454, mesh2dResults.num_face_nodes);
-}
-*/
-
-TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesAndSphericalProjection_ShouldRefine)
-{
-    // Prepare
-    int meshKernelId;
-    constexpr int isSpherical = 1;
-    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
-
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco_spherical.nc");
-    meshkernelapi::Mesh2D mesh2d;
-    mesh2d.num_edges = static_cast<int>(num_edges);
-    mesh2d.num_nodes = static_cast<int>(num_nodes);
-    mesh2d.node_x = node_x.get();
-    mesh2d.node_y = node_y.get();
-    mesh2d.edge_nodes = edge_nodes.get();
-
-    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
-    meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.n_cols = ncols - 1;
-    griddedSamples.n_rows = nrows - 1;
-    griddedSamples.x_origin = xllcenter;
-    griddedSamples.y_origin = yllcenter;
-    griddedSamples.cell_size = cellsize;
-    griddedSamples.values = values.data();
-    griddedSamples.x_coordinates = nullptr;
-    griddedSamples.y_coordinates = nullptr;
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.01;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.smoothing_iterations = 5;
-
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2dResults;
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-    ASSERT_EQ(9777, mesh2dResults.num_nodes);
-    ASSERT_EQ(19789, mesh2dResults.num_edges);
-    ASSERT_EQ(10013, mesh2dResults.num_faces);
-    ASSERT_EQ(39344, mesh2dResults.num_face_nodes);
+    ASSERT_EQ(1793, mesh2dResults.num_nodes);
+    ASSERT_EQ(4361, mesh2dResults.num_edges);
+    ASSERT_EQ(2569, mesh2dResults.num_faces);
+    ASSERT_EQ(8670, mesh2dResults.num_face_nodes);
 }
 
-/*
 TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
 {
     // Prepare
@@ -3164,4 +3112,54 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     ASSERT_EQ(178, mesh2dResults.num_edges);
     ASSERT_EQ(80, mesh2dResults.num_faces);
 }
-*/
+
+TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesAndSphericalProjection_ShouldRefine)
+{
+    // Prepare
+    int meshKernelId;
+    constexpr int isSpherical = 1;
+    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
+
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco_spherical.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.get();
+    mesh2d.node_y = node_y.get();
+    mesh2d.edge_nodes = edge_nodes.get();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    meshkernelapi::GriddedSamples griddedSamples;
+    griddedSamples.n_cols = ncols - 1;
+    griddedSamples.n_rows = nrows - 1;
+    griddedSamples.x_origin = xllcenter;
+    griddedSamples.y_origin = yllcenter;
+    griddedSamples.cell_size = cellsize;
+    griddedSamples.values = values.data();
+    griddedSamples.x_coordinates = nullptr;
+    griddedSamples.y_coordinates = nullptr;
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_edge_size = 0.01;
+    meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.smoothing_iterations = 5;
+
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dResults;
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(9777, mesh2dResults.num_nodes);
+    ASSERT_EQ(19789, mesh2dResults.num_edges);
+    ASSERT_EQ(10013, mesh2dResults.num_faces);
+    ASSERT_EQ(39344, mesh2dResults.num_face_nodes);
+}
