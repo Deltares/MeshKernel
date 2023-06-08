@@ -38,7 +38,7 @@ target_compile_definitions(
 )
 
 # platform-specific compiler options and definitions for disabling warnings
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(${target_name} PRIVATE "-w")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(${target_name} PRIVATE "/w")
