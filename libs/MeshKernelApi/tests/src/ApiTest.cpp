@@ -1374,7 +1374,7 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernel::MakeGridParameters makeGridParameters{};
+    meshkernel::MakeGridParameters makeGridParameters;
     meshkernelapi::GeometryList geometryList{};
 
     makeGridParameters.num_columns = 3;
@@ -3002,7 +3002,7 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     // Assert
     ASSERT_EQ(mesh2d.num_nodes, 615);
     ASSERT_EQ(mesh2d.num_edges, 1174);
-    ASSERT_EQ(mesh2d.num_faces, 80);
+    ASSERT_EQ(mesh2d.num_faces, 560);
 }
 
 TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
@@ -3162,4 +3162,34 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesAndSphericalProjection_Shou
     ASSERT_EQ(19789, mesh2dResults.num_edges);
     ASSERT_EQ(10013, mesh2dResults.num_faces);
     ASSERT_EQ(39344, mesh2dResults.num_face_nodes);
+}
+
+TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeMesh)
+{
+    meshkernel::MakeGridParameters makeGridParameters;
+    meshkernelapi::GeometryList geometryList;
+
+    makeGridParameters.num_columns = 8;
+    makeGridParameters.num_rows = 5;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.block_size = 0.0;
+    makeGridParameters.origin_x = -1.0;
+    makeGridParameters.origin_y = 19.1;
+    makeGridParameters.block_size_x = 0.01;
+    makeGridParameters.block_size_y = 0.01;
+
+    int meshKernelId = 0;
+    int projectionType = 1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(6, curvilinearGridResults.num_m);
+    ASSERT_EQ(9, curvilinearGridResults.num_n);
 }

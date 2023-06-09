@@ -56,7 +56,33 @@ namespace meshkernel
         CurvilinearGrid Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const;
 
     private:
-        MakeGridParameters m_makeGridParameters; ///< A copy of the structure containing the parameters used for making the grid
-        Projection m_projection;                 ///< The projection to use
+        static std::vector<std::vector<Point>> computeSpherical(double OriginXCoordinate,
+                                                                double OriginYCoordinate,
+                                                                size_t numM,
+                                                                size_t numN,
+                                                                double XGridBlockSize,
+                                                                double YGridBlockSize,
+                                                                double angle);
+
+        static std::vector<std::vector<Point>> computeCartesian(double OriginXCoordinate,
+                                                                double OriginYCoordinate,
+                                                                size_t numM,
+                                                                size_t numN,
+                                                                double XGridBlockSize,
+                                                                double YGridBlockSize,
+                                                                double angle);
+
+        Projection m_projection; ///< The projection to use
+
+        // regular grid
+        size_t m_numM;
+        size_t m_numN;
+        double m_angle;
+        double m_XGridBlockSize;
+        double m_YGridBlockSize;
+        double m_OriginXCoordinate;
+        double m_OriginYCoordinate;
+        double m_block_size_x;
+        double m_block_size_y;
     };
 } // namespace meshkernel

@@ -139,10 +139,10 @@ namespace meshkernel
         /// @brief The number of smoothing iterations
         int smoothing_iterations = 5;
 
-        /// @brief maximum courant time in seconds
+        /// @brief Maximum courant time in seconds
         double max_courant_time = 120.0;
 
-        /// @brief If directional refinement needs to be performed, cannot be use when the number of smoothing iterations is larger than 0
+        /// @brief Directional refinement, cannot be used when the number of smoothing iterations is larger than 0
         int directional_refinement = 0;
     };
 
