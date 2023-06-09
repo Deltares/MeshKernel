@@ -956,11 +956,11 @@ namespace meshkernelapi
 
             const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
 
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
 
             if (polygon->IsEmpty())
             {
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute();
+                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters);
                 auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
                 *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
             }
@@ -969,7 +969,7 @@ namespace meshkernelapi
                 // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
                 for (size_t p = 0; p < polygon->GetNumPolygons(); ++p)
                 {
-                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, p);
+                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters, polygon, p);
                     auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
                     *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
                 }
@@ -2282,15 +2282,15 @@ namespace meshkernelapi
 
             const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
 
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
 
             if (polygon->IsEmpty())
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute();
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters);
             }
             else
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, 0);
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters, polygon, 0);
             }
         }
         catch (...)

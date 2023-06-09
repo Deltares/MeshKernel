@@ -30,8 +30,8 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
     makeGridParameters.block_size_y = 1.0;
 
     // Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::cartesian);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(makeGridParameters, polygons, 0));
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -60,8 +60,8 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
     makeGridParameters.block_size_y = 5000000.0;
 
     // Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::spherical);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(makeGridParameters, polygons, 0));
 
     // Assert
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -82,8 +82,8 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     makeGridParameters.block_size_y = 0.1;
 
     // 2 Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::spherical);
-    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute(makeGridParameters).ConvertCurvilinearToNodesAndEdges();
 
     Mesh2D mesh(edges, nodes, Projection::spherical);
 
