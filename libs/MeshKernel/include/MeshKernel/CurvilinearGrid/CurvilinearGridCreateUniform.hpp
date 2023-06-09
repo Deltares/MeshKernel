@@ -60,8 +60,8 @@ namespace meshkernel
 
     private:
         /// @brief Compute an uniform curvilinear grid on spherical coordinates.
-        /// A correction is applied to the longitudinal discretization to preserve an aspect ratio ds/dy = 1 on real distances
-        /// For preventing small edges, the correction stops when the distance is less than 2000 meters and the grid is generated around the poles
+        /// A correction to the longitudinal discretization is applied to preserve an aspect ratio ds/dy = 1 on real distances.
+        /// For preventing the creation of small edges, the correction stops when the distance is less than 2000 meters and the grid is generated around the poles.
         /// This is a customized fix for GTSM models.
         /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
         static std::vector<std::vector<Point>> computeSpherical(const MakeGridParameters& makeGridParameters);
