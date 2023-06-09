@@ -74,16 +74,19 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::comput
 std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::computeSpherical(const MakeGridParameters& makeGridParameters)
 {
     std::vector result = computeCartesian(makeGridParameters);
-    const auto numM = makeGridParameters.num_columns + 1;
-    const auto numN = makeGridParameters.num_rows + 1;
-
+    if (result.empty())
+    {
+        return result;
+    }
+    const auto numM = result[0].size();
+    const auto numN = result.size();
     constexpr double latitudeCloseToPoles = 88.0;
     constexpr double minimumDistance = 2000;
     bool onPoles = false;
-    size_t lastRowOnPole;
 
     for (size_t n = 1; n < numN; ++n)
     {
+        size_t lastRowOnPole = numM;
         for (size_t m = 0; m < numM; ++m)
         {
             // adjust the latitude to preserve an aspect ratio of 1
@@ -94,11 +97,11 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::comput
             const auto newPointYCoordinate = result[n - 1][m].y + dy;
             result[n][m].y = newPointYCoordinate;
 
-            // prevent too small increments for dy
+            // prevent too small dy increments in case we are on the poles
             const double distance = dy * constants::conversion::degToRad * constants::geometric::earth_radius;
             if (abs(result[n][m].y) > latitudeCloseToPoles && distance < minimumDistance)
             {
-                double sign = result[n][m].y < 0 ? -1.0 : 1.0;
+                const double sign = result[n][m].y < 0 ? -1.0 : 1.0;
                 result[n][m].y = 90.0 * sign;
                 onPoles = true;
                 lastRowOnPole = n;
@@ -106,13 +109,9 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::comput
         }
         if (onPoles)
         {
+            result.erase(result.begin() + lastRowOnPole + 1, result.end());
             break;
         }
-    }
-
-    if (onPoles)
-    {
-        result.erase(result.begin() + lastRowOnPole + 1, result.end());
     }
     return result;
 }
