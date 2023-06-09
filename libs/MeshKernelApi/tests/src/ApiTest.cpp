@@ -3113,14 +3113,14 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     ASSERT_EQ(80, mesh2dResults.num_faces);
 }
 
-TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesAndSphericalProjection_ShouldRefine)
+TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalProjection_ShouldRefine)
 {
     // Prepare
     int meshKernelId;
     constexpr int isSpherical = 1;
     meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
 
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco_spherical.nc");
+    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
     meshkernelapi::Mesh2D mesh2d;
     mesh2d.num_edges = static_cast<int>(num_edges);
     mesh2d.num_nodes = static_cast<int>(num_nodes);
