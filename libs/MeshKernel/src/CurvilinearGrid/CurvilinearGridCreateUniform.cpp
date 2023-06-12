@@ -59,9 +59,9 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::comput
     const auto numN = makeGridParameters.num_rows + 1;
 
     std::vector result(numN, std::vector<Point>(numM));
-    for (size_t n = 0; n < numN; ++n)
+    for (int n = 0; n < numN; ++n)
     {
-        for (size_t m = 0; m < numM; ++m)
+        for (int m = 0; m < numM; ++m)
         {
             const double newPointXCoordinate = makeGridParameters.origin_x + m * makeGridParameters.block_size_x * cosineAngle - n * makeGridParameters.block_size_y * sinAngle;
             const double newPointYCoordinate = makeGridParameters.origin_y + m * makeGridParameters.block_size_x * sinAngle + n * makeGridParameters.block_size_y * cosineAngle;
