@@ -3166,7 +3166,7 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.smoothing_iterations = 2;
+    meshRefinementParameters.smoothing_iterations = 5;
     meshRefinementParameters.max_courant_time = 120;
     meshRefinementParameters.directional_refinement = 0;
 
@@ -3177,10 +3177,10 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(2415, mesh2dResults.num_nodes);
-    ASSERT_EQ(5104, mesh2dResults.num_edges);
-    ASSERT_EQ(2690, mesh2dResults.num_faces);
-    ASSERT_EQ(10042, mesh2dResults.num_face_nodes);
+    ASSERT_EQ(5223, mesh2dResults.num_nodes);
+    ASSERT_EQ(10745, mesh2dResults.num_edges);
+    ASSERT_EQ(5523, mesh2dResults.num_faces);
+    ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
 TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeMesh)
