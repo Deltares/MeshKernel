@@ -3120,15 +3120,31 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     constexpr int isSpherical = 1;
     meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
 
-    const auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
-    meshkernelapi::Mesh2D mesh2d;
-    mesh2d.num_edges = static_cast<int>(num_edges);
-    mesh2d.num_nodes = static_cast<int>(num_nodes);
-    mesh2d.node_x = node_x.get();
-    mesh2d.node_y = node_y.get();
-    mesh2d.edge_nodes = edge_nodes.get();
+    double lonMin = -1;
+    double lonMax = -0.2;
+    double latMin = 49.1;
+    double latMax = 49.6;
+    double lonRes = 0.1;
+    double latRes = 0.1;
+    int numX = static_cast<int>(std::ceil((lonMax - lonMin) / lonRes));
+    int numY = static_cast<int>(std::ceil((latMax - latMin) / latRes));
 
-    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    meshkernel::MakeGridParameters makeGridParameters{};
+    meshkernelapi::GeometryList geometryList{};
+
+    makeGridParameters.num_columns = numX;
+    makeGridParameters.num_rows = numY;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.block_size = 0.0;
+    makeGridParameters.origin_x = lonMin;
+    makeGridParameters.origin_y = latMin;
+    makeGridParameters.block_size_x = 0.1;
+    makeGridParameters.block_size_y = 0.1;
+
+    auto errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -3143,13 +3159,16 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     griddedSamples.y_coordinates = nullptr;
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
     meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 1;
     meshRefinementParameters.min_edge_size = 0.01;
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.smoothing_iterations = 5;
+    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.smoothing_iterations = 2;
+    meshRefinementParameters.max_courant_time = 120;
+    meshRefinementParameters.directional_refinement = 0;
 
     errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -3158,10 +3177,10 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(9777, mesh2dResults.num_nodes);
-    ASSERT_EQ(19789, mesh2dResults.num_edges);
-    ASSERT_EQ(10013, mesh2dResults.num_faces);
-    ASSERT_EQ(39344, mesh2dResults.num_face_nodes);
+    ASSERT_EQ(2415, mesh2dResults.num_nodes);
+    ASSERT_EQ(5104, mesh2dResults.num_edges);
+    ASSERT_EQ(2690, mesh2dResults.num_faces);
+    ASSERT_EQ(10042, mesh2dResults.num_face_nodes);
 }
 
 TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeMesh)

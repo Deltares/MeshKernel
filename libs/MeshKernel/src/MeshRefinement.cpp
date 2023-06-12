@@ -105,11 +105,6 @@ void MeshRefinement::Compute()
     m_nodeMask.reserve(m_nodeMask.size() * 2);
     for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
-        if (level > 0)
-        {
-            FindBrotherEdges();
-        }
-
         // Compute all edge lengths at once
         m_mesh->ComputeEdgesLengths();
 
@@ -198,6 +193,8 @@ void MeshRefinement::Compute()
 
         m_faceMask.resize(m_mesh->GetNumFaces());
         m_edgeMask.resize(m_mesh->GetNumEdges());
+
+        FindBrotherEdges();
     }
 
     // remove isolated hanging nodes and connect if needed
@@ -1285,16 +1282,16 @@ void MeshRefinement::FindBrotherEdges()
             // check if node k is in the middle
             const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n);
             const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
+            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
 
             // compute tolerance
-            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
+            const auto firstEdgeSquaredLength = ComputeDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto secondEdgeSquaredLength = ComputeDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto tolerance = 1e-4 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
 
             // The center of the two edges coincides with the shared node
-            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
-            const auto squaredDistanceFromCentre = ComputeSquaredDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
-            if (squaredDistanceFromCentre < squaredTolerance)
+            const auto distanceFromCentre = ComputeDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
+            if (distanceFromCentre < tolerance)
             {
                 m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;
                 m_brotherEdges[secondEdgeIndex] = firstEdgeIndex;

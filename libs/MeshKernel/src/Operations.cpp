@@ -463,7 +463,7 @@ namespace meshkernel
 
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
-            Point result(0.0, (firstPoint.y + secondPoint.y) * 0.5);
+            Point result((firstPoint + secondPoint) * 0.5);
             const auto isFirstNodeOnPole = IsPointOnPole(firstPoint);
             const auto isSecondNodeOnPole = IsPointOnPole(secondPoint);
 
@@ -480,7 +480,7 @@ namespace meshkernel
                 const auto maxx = std::max(firstPoint.x, secondPoint.x);
                 const auto minx = std::min(firstPoint.x, secondPoint.x);
 
-                if (std::abs(maxx - minx) > std::numeric_limits<double>::epsilon())
+                if (maxx - minx > 180.0)
                 {
                     result.x = result.x + 180.0;
                 }
