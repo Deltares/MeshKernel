@@ -1317,7 +1317,7 @@ void MeshRefinement::SmoothRefinementMasks()
     {
         std::fill(splitEdge.begin(), splitEdge.end(), false);
 
-        for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
+        for (auto f = 0u; f < m_mesh->GetNumFaces(); ++f)
         {
             if (m_faceMask[f] != 1)
             {
@@ -1326,7 +1326,7 @@ void MeshRefinement::SmoothRefinementMasks()
 
             const auto numEdges = m_mesh->GetNumFaceEdges(f);
 
-            for (auto e = 0; e < numEdges; ++e)
+            for (auto e = 0u; e < numEdges; ++e)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[f][e];
                 const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
@@ -1342,11 +1342,11 @@ void MeshRefinement::SmoothRefinementMasks()
         }
 
         // update face refinement mask
-        for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
+        for (auto f = 0u; f < m_mesh->GetNumFaces(); ++f)
         {
             const auto numEdges = m_mesh->GetNumFaceEdges(f);
 
-            for (auto e = 0; e < numEdges; ++e)
+            for (auto e = 0u; e < numEdges; ++e)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[f][e];
                 if (splitEdge[edgeIndex])
@@ -1357,7 +1357,7 @@ void MeshRefinement::SmoothRefinementMasks()
         }
 
         // update edge refinement mask
-        for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
+        for (auto f = 0u; f < m_mesh->GetNumFaces(); ++f)
         {
             if (m_faceMask[f] != 1)
             {
@@ -1366,7 +1366,7 @@ void MeshRefinement::SmoothRefinementMasks()
 
             const auto numEdges = m_mesh->GetNumFaceEdges(f);
 
-            for (auto e = 0; e < numEdges; ++e)
+            for (auto e = 0u; e < numEdges; ++e)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[f][e];
                 const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
