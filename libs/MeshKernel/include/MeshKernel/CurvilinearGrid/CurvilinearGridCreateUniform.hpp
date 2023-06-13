@@ -43,20 +43,33 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         ///
-        /// @param[in] MakeGridParameters The structure containing the make grid parameters
         /// @param[in] projection The projection to use
-        CurvilinearGridCreateUniform(const MakeGridParameters& MakeMeshParameters, Projection projection);
+        CurvilinearGridCreateUniform(Projection projection);
 
         /// @brief Compute an uniform curvilinear grid using the make mesh parameters
-        CurvilinearGrid Compute() const;
+        /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
+        CurvilinearGrid Compute(const MakeGridParameters& makeGridParameters) const;
 
         /// @brief Compute an uniform curvilinear grid in one polygon
+        /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
         /// @param[in] polygons The input polygons
         /// @param[in] polygonIndex The polygon index
-        CurvilinearGrid Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const;
+        CurvilinearGrid Compute(const MakeGridParameters& makeGridParameters,
+                                std::shared_ptr<Polygons> polygons,
+                                size_t polygonIndex) const;
 
     private:
-        MakeGridParameters m_makeGridParameters; ///< A copy of the structure containing the parameters used for making the grid
-        Projection m_projection;                 ///< The projection to use
+        /// @brief Compute an uniform curvilinear grid on spherical coordinates.
+        /// A correction to the longitudinal discretization is applied to preserve an aspect ratio ds/dy = 1 on real distances.
+        /// For preventing the creation of small edges, the correction stops when the distance is less than 2000 meters and the grid is generated around the poles.
+        /// This is a customized fix for GTSM models.
+        /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
+        static std::vector<std::vector<Point>> ComputeSpherical(const MakeGridParameters& makeGridParameters);
+
+        /// @brief Compute an uniform curvilinear grid on cartesian coordinates.
+        /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
+        static std::vector<std::vector<Point>> ComputeCartesian(const MakeGridParameters& makeGridParameters);
+
+        Projection m_projection; ///< The projection to use
     };
 } // namespace meshkernel

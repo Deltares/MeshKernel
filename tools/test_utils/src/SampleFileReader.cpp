@@ -92,7 +92,7 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
         }
 
         rows.push_back(std::vector<double>());
-        for (auto i = 0; i < ncols + 1; ++i)
+        for (auto i = 0; i < ncols; ++i)
         {
             double value;
             iss >> value;

@@ -124,7 +124,7 @@ namespace meshkernel
         /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
         int use_mass_center_when_refining = 1;
 
-        /// @brief Minimum edge size
+        /// @brief Minimum edge size in meters
         double min_edge_size = 0.5;
 
         /// @brief Refinement criterion type
@@ -135,6 +135,15 @@ namespace meshkernel
 
         /// @brief Take samples outside face into account , 1 yes 0 no
         int account_for_samples_outside = 0;
+
+        /// @brief The number of smoothing iterations
+        int smoothing_iterations = 5;
+
+        /// @brief Maximum courant time in seconds
+        double max_courant_time = 120.0;
+
+        /// @brief Directional refinement, cannot be used when the number of smoothing iterations is larger than 0
+        int directional_refinement = 0;
     };
 
     /// @brief A struct used to describe the orthogonalization parameters in a C-compatible manner
