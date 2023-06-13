@@ -861,8 +861,9 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
     size_t numEdgesToBeRefined = 0;
     std::ranges::fill(m_refineEdgeCache, 0);
 
-    if (m_refinementType == RefinementType::RefinementLevels)
+    switch (m_refinementType)
     {
+    case RefinementType::RefinementLevels:
         if (m_interpolant->GetFaceResult(face) <= 0)
         {
             return;
@@ -872,9 +873,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
             numEdgesToBeRefined++;
             m_refineEdgeCache[i] = 1;
         }
-    }
-    else if (m_refinementType == RefinementType::WaveCourant)
-    {
+        break;
+    case RefinementType::WaveCourant:
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
             const auto edge = m_mesh->m_facesEdges[face][e];
@@ -933,6 +933,10 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
                 numEdgesToBeRefined = 0;
             }
         }
+        break;
+
+    default:
+        throw AlgorithmError("Invalid refinement type");
     }
 
     // Compute face and edge masks
@@ -1285,9 +1289,9 @@ void MeshRefinement::FindBrotherEdges()
             const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
 
             // compute tolerance
-            const auto firstEdgeSquaredLength = ComputeDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto secondEdgeSquaredLength = ComputeDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto minConnectionDistance = 1e-4 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
+            const auto firstEdgeLength = ComputeDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto secondEdgeLength = ComputeDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto minConnectionDistance = 1e-4 * std::max(firstEdgeLength, secondEdgeLength);
 
             // The center of the two edges coincides with the shared node
             const auto distanceFromCentre = ComputeDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
