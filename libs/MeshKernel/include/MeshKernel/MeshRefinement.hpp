@@ -157,16 +157,16 @@ namespace meshkernel
 
         /// @brief Get the number of hanging nodes
         /// @returns The number of hanging nodes
-        size_t countHangingNodes() const;
+        size_t CountHangingNodes() const;
 
         /// @brief Get the number of hanging nodes
         /// @returns The number of hanging nodes
-        size_t countHangingEdges() const;
+        size_t CountHangingEdges() const;
 
         /// @brief Get the number of hanging nodes
         /// @param[in] face The current face index
         /// @returns The number of hanging nodes
-        size_t countEdgesToRefine(size_t face) const;
+        size_t CountEdgesToRefine(size_t face) const;
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes

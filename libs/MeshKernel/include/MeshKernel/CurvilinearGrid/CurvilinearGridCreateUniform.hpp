@@ -64,11 +64,11 @@ namespace meshkernel
         /// For preventing the creation of small edges, the correction stops when the distance is less than 2000 meters and the grid is generated around the poles.
         /// This is a customized fix for GTSM models.
         /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
-        static std::vector<std::vector<Point>> computeSpherical(const MakeGridParameters& makeGridParameters);
+        static std::vector<std::vector<Point>> ComputeSpherical(const MakeGridParameters& makeGridParameters);
 
         /// @brief Compute an uniform curvilinear grid on cartesian coordinates.
         /// @param[in] makeGridParameters The parameters to use for the curvilinear grid generation
-        static std::vector<std::vector<Point>> computeCartesian(const MakeGridParameters& makeGridParameters);
+        static std::vector<std::vector<Point>> ComputeCartesian(const MakeGridParameters& makeGridParameters);
 
         Projection m_projection; ///< The projection to use
     };

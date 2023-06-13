@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Exceptions.hpp"
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -41,16 +43,18 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const MakeGridParameters& 
 {
     if (m_projection == Projection::spherical)
     {
-        return CurvilinearGrid{computeSpherical(makeGridParameters), m_projection};
+        return CurvilinearGrid{ComputeSpherical(makeGridParameters), m_projection};
     }
     if (m_projection == Projection::cartesian)
     {
-        return CurvilinearGrid{computeCartesian(makeGridParameters), m_projection};
+        return CurvilinearGrid{ComputeCartesian(makeGridParameters), m_projection};
     }
-    return CurvilinearGrid();
+
+    const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+    throw NotImplemented(message);
 }
 
-std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::computeCartesian(const MakeGridParameters& makeGridParameters)
+std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const MakeGridParameters& makeGridParameters)
 
 {
     const auto cosineAngle = std::cos(makeGridParameters.angle * constants::conversion::degToRad);
@@ -71,9 +75,9 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::comput
     return result;
 }
 
-std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::computeSpherical(const MakeGridParameters& makeGridParameters)
+std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeSpherical(const MakeGridParameters& makeGridParameters)
 {
-    std::vector result = computeCartesian(makeGridParameters);
+    std::vector result = ComputeCartesian(makeGridParameters);
     if (result.empty())
     {
         return result;
@@ -189,12 +193,12 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const MakeGridParameters& 
     CurvilinearGrid curvilinearGrid;
     if (m_projection == Projection::spherical)
     {
-        curvilinearGrid = CurvilinearGrid{computeSpherical(makeGridParametersInPolygon),
+        curvilinearGrid = CurvilinearGrid{ComputeSpherical(makeGridParametersInPolygon),
                                           m_projection};
     }
     else if (m_projection == Projection::cartesian)
     {
-        curvilinearGrid = CurvilinearGrid{computeCartesian(makeGridParametersInPolygon),
+        curvilinearGrid = CurvilinearGrid{ComputeCartesian(makeGridParametersInPolygon),
                                           m_projection};
     }
 
