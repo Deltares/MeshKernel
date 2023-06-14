@@ -65,14 +65,6 @@ Write-Host 'Build type                  : ' $BuildType
 Write-Host 'Parallel jobs per build     : ' $ParallelJobs
 Write-Host 'Tagged branches to checkout : ' ($GitTags | Out-String)
 
-# Joins paths of multiple children to parent.
-# Not necessary in PowerShell 7 and above. Join-Path accepts multiple children.
-Function Join-Paths {
-    $path = $args[0]
-    $args[1..$args.Count] | ForEach-Object { $path = Join-Path $path $_ }
-    $path
-}
-
 # No need to download and extract m4 when platform is WIN32
 if ($PSVersionTable.Platform -ne 'Unix') {
     # ----------------------------------------------------------------------------------------
@@ -364,21 +356,21 @@ Function Invoke-Post-Build-Steps() {
     $NetCDFLibDir = (Join-Path $NetCDFInstallDir 'lib')
     if ($PSVersionTable.Platform -eq 'Unix') {
         $NetCDFBinDir = (Join-Path $NetCDFInstallDir 'bin')
-        Copy-Item (Join-Paths $ZLIBInstallDir 'lib' 'libz.a')       -Destination (Join-Path $NetCDFLibDir 'libz.a')
-        Copy-Item (Join-Paths $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
-        Copy-Item (Join-Paths $HDF5InstallDir 'lib' 'libhdf5.a')    -Destination (Join-Path $NetCDFLibDir 'libhdf5.a')
-        Copy-Item (Join-Paths $HDF5InstallDir 'lib' 'libhdf5_hl.a') -Destination (Join-Path $NetCDFLibDir 'libhdf5_hl.a')
+        Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.a')       -Destination (Join-Path $NetCDFLibDir 'libz.a')
+        Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
+        Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5.a')    -Destination (Join-Path $NetCDFLibDir 'libhdf5.a')
+        Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.a') -Destination (Join-Path $NetCDFLibDir 'libhdf5_hl.a')
     }
     else {
-        Copy-Item (Join-Paths $ZLIBInstallDir 'lib' 'zlibstatic.lib') -Destination (Join-Path $NetCDFLibDir 'zlib.lib')
-        Copy-Item (Join-Paths $HDF5InstallDir 'lib' 'libhdf5.lib')    -Destination (Join-Path $NetCDFLibDir 'hdf5-static.lib')
-        Copy-Item (Join-Paths $HDF5InstallDir 'lib' 'libhdf5_hl.lib') -Destination (Join-Path $NetCDFLibDir 'hdf5_hl-static.lib')
+        Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'zlibstatic.lib') -Destination (Join-Path $NetCDFLibDir 'zlib.lib')
+        Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5.lib')    -Destination (Join-Path $NetCDFLibDir 'hdf5-static.lib')
+        Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.lib') -Destination (Join-Path $NetCDFLibDir 'hdf5_hl-static.lib')
     }
 
     # Back-up  $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake before modifying it.
     # For reference, the back-up will not be deleted.
-    $NeCDFCMakeTargets = (Join-Paths $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake')
-    Copy-Item $NeCDFCMakeTargets -Destination (Join-Paths $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake.original')
+    $NeCDFCMakeTargets = (Join-Path $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake')
+    Copy-Item $NeCDFCMakeTargets -Destination (Join-Path $NetCDFLibDir 'cmake' 'netCDF' 'netCDFTargets.cmake.original')
 
     # Find the line in set_target_properties where INTERFACE_LINK_LIBRARIES is set
     $Content = (Get-Content -Path $NeCDFCMakeTargets)
