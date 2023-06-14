@@ -54,6 +54,18 @@ $WorkDir = Resolve-Path $WorkDir
 $TransriptPath = (Join-Path $WorkDir 'log.txt')
 Start-Transcript -Path $TransriptPath
 
+Function Invoke-Terminate {
+    Stop-Transcript
+}
+
+# Check version, powershell 7+ is supported
+$MajorPSVers = $PSVersionTable.PSVersion.Major
+if([int]$MajorPSVers -lt 7) { 
+    Write-Error ('Found PowerShell version $MajorPSVers. Version 7+ is required.')
+    Invoke-Terminate
+    Exit
+}
+
 if (-not(Test-Path -Path $InstallDir)) {
     New-Item $InstallDir -Type Directory
 }
@@ -66,7 +78,7 @@ Write-Host 'Parallel jobs per build     : ' $ParallelJobs
 Write-Host 'Tagged branches to checkout : ' ($GitTags | Out-String)
 
 # No need to download and extract m4 when platform is WIN32
-if ($PSVersionTable.Platform -ne 'Unix') {
+if ($IsWindows) {
     # ----------------------------------------------------------------------------------------
     # Download
     # ----------------------------------------------------------------------------------------
@@ -117,10 +129,6 @@ if ($PSVersionTable.Platform -ne 'Unix') {
 
 $ReposDir = (Join-Path $WorkDir 'repositories')
 New-Item -Force $ReposDir -Type Directory
-
-Function Invoke-Terminate {
-    Stop-Transcript
-}
 
 Function Invoke-CloneRepoAndCheckoutTag {
     Param
@@ -178,10 +186,12 @@ $ZLIBSrcDir = (Join-Path $ReposDir $ZLIB)
 Invoke-CloneRepoAndCheckoutTag -Repo $ZLIBRepo -Tag $GitTags.zlib -Destination $ZLIBSrcDir
 
 #Curl
-$Curl = 'curl'
-$CurlRepo = 'https://github.com/curl/curl.git'
-$CurlSrcDir = (Join-Path $ReposDir $Curl)
-Invoke-CloneRepoAndCheckoutTag -Repo $CurlRepo -Tag $GitTags.curl -Destination $CurlSrcDir
+if($IsWindows) {
+    $Curl = 'curl'
+    $CurlRepo = 'https://github.com/curl/curl.git'
+    $CurlSrcDir = (Join-Path $ReposDir $Curl)
+    Invoke-CloneRepoAndCheckoutTag -Repo $CurlRepo -Tag $GitTags.curl -Destination $CurlSrcDir
+}
 
 # HDF5
 $HDF5 = 'hdf5'
@@ -277,21 +287,23 @@ Invoke-BuildAndInstall `
 $env:Path += (';' + $ZLIBInstallDir)
 
 # Curl
-$CurlBuildDir = (Join-Path $BuildDir $Curl)
-$CurlInstallDir = (Join-Path $LocalInstallDir $Curl)
-Invoke-BuildAndInstall `
-    -SrcDir $CurlSrcDir `
-    -BuildDir $CurlBuildDir `
-    -InstallDir $CurlInstallDir `
-    -ParallelJobs $ParallelJobs `
-    -BuildType $BuildType
-$env:Path += (';' + $CurlInstallDir)
+if($IsWindows) {
+    $CurlBuildDir = (Join-Path $BuildDir $Curl)
+    $CurlInstallDir = (Join-Path $LocalInstallDir $Curl)
+    Invoke-BuildAndInstall `
+        -SrcDir $CurlSrcDir `
+        -BuildDir $CurlBuildDir `
+        -InstallDir $CurlInstallDir `
+        -ParallelJobs $ParallelJobs `
+        -BuildType $BuildType
+    $env:Path += (';' + $CurlInstallDir)
+}
 
 # HDF5
 $HDF5BuildDir = (Join-Path $BuildDir $HDF5)
 $HDF5InstallDir = (Join-Path $LocalInstallDir $HDF5)
 $ZlibIncludeDir = (Join-Path $ZLIBInstallDir 'include')
-if ($PSVersionTable.Platform -eq 'Unix') {
+if ($IsLinux -or $IsMacOS) {
     $ZlibStaticLibrary = (Join-Path (Join-Path $ZLIBInstallDir 'lib') 'libz.a')
 }
 else {
@@ -332,7 +344,7 @@ $NetCDFCMakeBuildOptions = @(`
         '-DENABLE_BYTERANGE=OFF', `
         ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
 )
-if ($PSVersionTable.Platform -eq 'Unix') {
+if ($IsLinux -or $IsMacOS) {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
 }
 
@@ -354,14 +366,18 @@ Invoke-BuildAndInstall `
 Function Invoke-Post-Build-Steps() {
     # Copy all necessary static libraries from the local instalaltion directory to the netcdf lib dir
     $NetCDFLibDir = (Join-Path $NetCDFInstallDir 'lib')
-    if ($PSVersionTable.Platform -eq 'Unix') {
+    if ($IsLinux -or $IsMacOS) {
         $NetCDFBinDir = (Join-Path $NetCDFInstallDir 'bin')
         Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.a')       -Destination (Join-Path $NetCDFLibDir 'libz.a')
-        Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5.a')    -Destination (Join-Path $NetCDFLibDir 'libhdf5.a')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.a') -Destination (Join-Path $NetCDFLibDir 'libhdf5_hl.a')
+        if ($IsLinux) {
+            Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
+        } else {
+            Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.dylib')      -Destination (Join-Path $NetCDFBinDir 'libz.dylib')
+        }
     }
-    else {
+    elseif($IsWindows) {
         Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'zlibstatic.lib') -Destination (Join-Path $NetCDFLibDir 'zlib.lib')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5.lib')    -Destination (Join-Path $NetCDFLibDir 'hdf5-static.lib')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.lib') -Destination (Join-Path $NetCDFLibDir 'hdf5_hl-static.lib')
@@ -382,8 +398,11 @@ Function Invoke-Post-Build-Steps() {
     }
 
     # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
-    if ($PSVersionTable.Platform -eq 'Unix') {
+    if ($IsLinux ) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
+    }
+    elseif ($IsMacOS) {
+        $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.dylib"'
     }
     else {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'
