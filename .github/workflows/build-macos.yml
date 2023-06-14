@@ -1,0 +1,33 @@
+name: Build and test MeshKErnel on macos
+on:
+  push:
+    branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
+  pull_request:
+    branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    # Available dependencies: OpenSSL, Curl
+    # Install missing dependencies: boost, m4
+    - name: Install missing dependnecies
+      run: |
+        brew install boost@1.81
+        brew install m4
+    - name: Install OpenSSL
+      run: brew install glib-openssl
+    - name: Install NetCDF static library from script
+      run: |
+        mkdir netcdf
+        cd netcdf
+        mkdir work install
+        pwsh ../../scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+    - name: Configure
+      run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
+    - name: Build
+      run: cmake --build ./build --config Release -j
+    
+      
+
+    
