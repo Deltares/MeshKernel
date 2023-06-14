@@ -17,12 +17,9 @@ jobs:
       run: |
         mkdir ./netcdf
         mkdir ./netcdf/work ./netcdf/install
-        pwsh ../../scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+        pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
     - name: Configure
       run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
     - name: Build
       run: cmake --build ./build --config Release -j
-    
-      
-
     
