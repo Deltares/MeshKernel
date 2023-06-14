@@ -1,7 +1,7 @@
 name: Build and test MeshKErnel on macos
 on:
-  push:
-    branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
+#  push:
+#    branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
   pull_request:
     branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
 jobs:
