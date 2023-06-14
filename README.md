@@ -65,7 +65,7 @@ The requirements are:
   ```
 
 ### NetCDF
-The NetCDF static library is required for building MeshKernel. Optionally, a PowerShell [script](scripts/install_netcdf_static.ps1) is made available for cloning and building [NetCDF](https://github.com/Unidata/netcdf-c) and its dependencies ([HDF5](https://github.com/HDFGroup/hdf5), [ZLIB](https://github.com/madler/zlib), [Curl](https://github.com/curl/curl), and [m4](https://sourceforge.net/projects/gnuwin32/files/m4/)). It can be used under both Windows and Linux.
+The NetCDF static library is required for building MeshKernel. Optionally, a PowerShell [script](scripts/install_netcdf_static.ps1) is made available for cloning and building [NetCDF](https://github.com/Unidata/netcdf-c) and its dependencies ([HDF5](https://github.com/HDFGroup/hdf5), [ZLIB](https://github.com/madler/zlib), [Curl](https://github.com/curl/curl), and [m4](https://sourceforge.net/projects/gnuwin32/files/m4/)). It can be used under both Windows and Linux. The script is compatible with Powershell version 7 and higher.
 
 To run the script in a PowerShell session, use
 ```powershell
