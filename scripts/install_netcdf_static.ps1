@@ -111,14 +111,6 @@ if ($PSVersionTable.Platform -ne 'Unix') {
     New-Item -Force $ExtractDir -Type Directory
 
     # M4
-    # $M4BinExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-bin')
-    # Expand-Archive -Force  $M4BinDownloadPath -DestinationPath $M4BinExtractPath
-    # $env:Path += (';' + $M4BinExtractPath)
-    # $M4DepExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-dep')
-    # Expand-Archive -Force  $M4DepDownloadPath -DestinationPath $M4DepExtractPath
-    # Copy-Item (Join-Paths $M4DepExtractPath 'bin' 'regex2.dll') -Destination (Join-Path $M4BinExtractPath 'bin')
-    # $env:Path += (';' + $M4DepExtractPath)
-
     $M4BinExtractPath = (Join-Path $ExtractDir 'm4-1.4.14-1-bin')
     Expand-Archive -Force  $M4BinDownloadPath -DestinationPath $M4BinExtractPath
     $env:Path += (';' + (Join-Path $M4BinExtractPath 'bin'))
