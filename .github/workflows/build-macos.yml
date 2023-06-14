@@ -9,10 +9,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
-    # Available dependencies: OpenSSL, Curl, m4
     # Install missing dependencies: boost
     - name: Install missing dependencies
-      run: brew install boost@1.81
+      run: |
+        brew install boost@1.81
+        brew install openssl
     - name: Install NetCDF static library from script
       run: |
         mkdir ./netcdf
