@@ -81,14 +81,14 @@ jobs:
           -BuildType '${{ matrix.type }}'
           -ParallelJobs 10
       
-      # Step: Temporary NetCDF artifact, remove!
-      - name: Upload NetCDF artifact [TEMPORARY, REMOVE]
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: artifact_netcdf
-          path: ${{ github.workspace }}/netcdf/install
-          if-no-files-found: error
+      # # Step: Temporary NetCDF artifact, remove!
+      # - name: Upload NetCDF artifact [TEMPORARY, REMOVE]
+      #   uses: actions/upload-artifact@v3
+      #   if: always()
+      #   with:
+      #     name: artifact_netcdf
+      #     path: ${{ github.workspace }}/netcdf/install
+      #     if-no-files-found: error
       
       # Step: CMake configuration
       - name: Configure
