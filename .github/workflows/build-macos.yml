@@ -58,7 +58,7 @@ jobs:
         -S .
         -B ./build
         -DCMAKE_BUILD_TYPE=Release
-        -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c/lib/cmake/netCDF
+        -DnetCDF_DIR=./netcdf/install/netcdf-c
     # CMake build
     - name: Build
       run: cmake --build ./build --config Release -j
