@@ -9,6 +9,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
+      # workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
+      with:
+        fetch-depth: 0
     # Install missing dependencies: boost
     - name: Install missing dependencies
       run: |
