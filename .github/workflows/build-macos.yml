@@ -102,7 +102,15 @@ jobs:
       # Step: CMake build
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release -j
-      
+
+      # Step: Tests
+      - name: Tests
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: |
+          ./${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
+          echo -e "\n\n"
+          ./${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelApiUnitTests
+
       # Step: Upload artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
