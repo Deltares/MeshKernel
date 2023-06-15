@@ -4,6 +4,10 @@ on:
 #    branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
   pull_request:
     branches: [ master, 'release/v[0-9].[0-9].[0-9]', 'feature/**' ]
+ # default compiler on macos is clang, switch to gcc (donn't specify vers, use system's default)
+env:
+  CC: gcc
+  CXX: g++
 jobs:
   build:
     runs-on: macos-latest
@@ -12,11 +16,10 @@ jobs:
       # workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
       with:
         fetch-depth: 0
-    # Install missing dependencies: boost
+    # Install missing dependencies: boost (m4, curl, and openssl provided by build machine)
     - name: Install missing dependencies
       run: |
         brew install boost@1.81
-        brew install openssl
     - name: Install NetCDF static library from script
       run: |
         mkdir ./netcdf
