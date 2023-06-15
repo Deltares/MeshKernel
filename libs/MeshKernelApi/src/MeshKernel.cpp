@@ -68,7 +68,7 @@
 #include <unordered_map>
 #include <vector>
 
-#if defined(__linux__) && defined(__GNUC__)
+#if (defined(__linux__) || defined(__APPLE__)) && defined(__GNUC__)
 #define strncpy_s strncpy
 #endif
 
