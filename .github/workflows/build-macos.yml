@@ -13,7 +13,9 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    # default compiler on macos is clang, switch to gcc-11
+    # default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
+    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
+    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
     env:
       CC: gcc-11
       CXX: g++-11
@@ -22,17 +24,17 @@ jobs:
       # workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
       with:
         fetch-depth: 0
-    # Dependencies:
+    # Dependencies
     # Missing: boost
     # Provided by build machine: m4, curl, and openssl (required by NetCDF)
-    # - name: Install missing dependencies
-    #   run: |
-    #     brew install boost@1.81
-    # - name: Install NetCDF static library from script
-    #   run: |
-    #     mkdir ./netcdf
-    #     mkdir ./netcdf/work ./netcdf/install
-    #     pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+    - name: Install missing dependencies
+      run: |
+        brew install boost@1.81
+    - name: Install NetCDF static library from script
+      run: |
+        mkdir ./netcdf
+        mkdir ./netcdf/work ./netcdf/install
+        pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
     # CMake config
     - name: Configure
       run: > 
