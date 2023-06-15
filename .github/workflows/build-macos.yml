@@ -75,9 +75,9 @@ jobs:
       - name: Build and install NetCDF static library
         # Dependencies m4, curl, and openssl are provided by the build machine
         run: >
-          pwsh ./scripts/install_netcdf_static.ps1
-          -WorkDir ./netcdf/work
-          -InstallDir ./netcdf/install
+          pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
+          -WorkDir ${{ github.workspace }}/netcdf/work
+          -InstallDir ${{ github.workspace }}/netcdf/install
           -BuildType '${{ matrix.type }}'
           -ParallelJobs 10
       
@@ -87,21 +87,21 @@ jobs:
         if: always()
         with:
           name: artifact_netcdf
-          path: ./netcdf/install
+          path: ${{ github.workspace }}/netcdf/install
           if-no-files-found: error
       
       # Step: CMake configuration
       - name: Configure
         run: > 
           cmake
-          -S .
-          -B ./build
+          -S ${{ github.workspace }}
+          -B ${{ github.workspace }}/build
           -DCMAKE_BUILD_TYPE=${{matrix.type}}
-          -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
+          -DCMAKE_PREFIX_PATH=${{ github.workspace }}/netcdf/install/netcdf-c
       
       # Step: CMake build
       - name: Build
-        run: cmake --build ./build --config Release -j
+        run: cmake --build ${{ github.workspace }}/build --config Release -j
       
       # Step: Upload artifacts
       - name: Upload artifacts
@@ -109,5 +109,5 @@ jobs:
         if: always()
         with:
           name: artifact_build
-          path: ./build
+          path: ${{ github.workspace }}/build
           if-no-files-found: error
