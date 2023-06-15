@@ -32,7 +32,9 @@ jobs:
         fetch-depth: 0
     # Dependencies
     - name: Install missing dependencies
-      run:  brew install boost@1.81
+      run: |
+        brew install boost@1.81
+        brew install doxygen
     - name: Build and install NetCDF static library
       # Dependencies m4, curl, and openssl are provided by the build machine
       run: >
