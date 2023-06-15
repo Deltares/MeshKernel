@@ -13,7 +13,7 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    # default compiler on macos is clang, switch to gcc (donn't specify vers, use system's default)
+    # default compiler on macos is clang, switch to gcc (don't specify vers, use system's default)
     env:
       CC: gcc
       CXX: g++
@@ -38,7 +38,7 @@ jobs:
       run: > 
         cmake -S . -B ./build 
         -DCMAKE_BUILD_TYPE=Release 
-        -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX
+        -DCMAKE_C_COMPILER=${{env.CC}} -DCMAKE_CXX_COMPILER=${{env.CXX}}
         -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
     # CMake build
     - name: Build
