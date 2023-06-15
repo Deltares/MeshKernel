@@ -400,14 +400,16 @@ Function Invoke-Post-Build-Steps() {
     # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
     if ($IsLinux ) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
+        $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
     }
     elseif ($IsMacOS) {
-        $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.dylib"'
+        #$NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.dylib"'
     }
     elseif ($IsWindows) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'
+        $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
     }
-    $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
+    #$Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
 
 }
 
