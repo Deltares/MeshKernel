@@ -13,10 +13,10 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    # default compiler on macos is clang, switch to gcc (don't specify vers, use system's default)
+    # default compiler on macos is clang, switch to gcc-11
     env:
-      CC: gcc
-      CXX: g++
+      CC: gcc-11
+      CXX: g++-11
     steps:
     - uses: actions/checkout@v3
       # workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
