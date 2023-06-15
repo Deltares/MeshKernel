@@ -20,55 +20,94 @@ on:
   workflow_dispatch:
 
 jobs:
+  
   build:
-    runs-on: macos-latest
+    
+    # Build strategy
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'macos-latest'
+        type:
+          - 'Release'
+          #- 'Debug'
+          #- 'DebugWithRelInfo '
+
+    # Build platform
+    runs-on: ${{matrix.os}}
+
+    name: ${{ matrix.os }}-${{ matrix.type }}
+
     # default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
     # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
     env:
       CC: gcc-11
       CXX: g++-11
+    
+      # Build steps
     steps:
+
+      # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v3
         # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
         with:
           fetch-depth: 0
-      # Dependencies
-      - name: Install missing dependencies
+      
+      # Step: Install dependencies
+      # macOS
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
         run: |
           brew update
           brew install boost@1.81
           brew install doxygen
+      # Linux
+      - name: Install Ubuntu dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update 
+          sudo apt upgrade
+          sudo apt-get install libboost-all-dev
+          sudo apt-get install doxygen
+      
+      # Step: NetCDF static library
       - name: Build and install NetCDF static library
         # Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ./scripts/install_netcdf_static.ps1
           -WorkDir ./netcdf/work
           -InstallDir ./netcdf/install
-          -BuildType 'Release'
+          -BuildType '${{ matrix.type }}'
           -ParallelJobs 10
-      # Temporary NetCDF artifact, remove!
-      - name: Upload NetCDF artifact [TEMPORARY, REMOVE ME]
+      
+      # Step: Temporary NetCDF artifact, remove!
+      - name: Upload NetCDF artifact [TEMPORARY, REMOVE]
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: artifact_netcdf
           path: ./netcdf/install
           if-no-files-found: error
-      # CMake config
+      
+      # Step: CMake configuration
       - name: Configure
         run: > 
           cmake
           -S .
           -B ./build
-          -DCMAKE_BUILD_TYPE=Release
-          -DnetCDF_DIR=./netcdf/install/netcdf-c
-      # CMake build
+          -DCMAKE_BUILD_TYPE=${{matrix.type}}
+          -DCMAKE_PREFIX_PATH =./netcdf/install/netcdf-c
+      
+      # Step: CMake build
       - name: Build
         run: cmake --build ./build --config Release -j
-      # Have the whole build dir available as an artifact, even when the build fails
-      - name: Upload build artifact
+      
+      # Step: Upload artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         if: always()
         with:
