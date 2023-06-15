@@ -104,13 +104,13 @@ jobs:
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release -j
 
-      # Step: Tests
-      - name: Tests
+      # Step: Test
+      - name: Test
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
-          ./${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
+          .${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
           echo -e "\n\n"
-          ./${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelApiUnitTests
+          .${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelApiUnitTests
 
       # Step: CMake install
       - name: Install
