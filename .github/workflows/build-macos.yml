@@ -25,14 +25,14 @@ jobs:
     # Dependencies:
     # Missing: boost
     # Provided by build machine: m4, curl, and openssl (required by NetCDF)
-    - name: Install missing dependencies
-      run: |
-        brew install boost@1.81
-    - name: Install NetCDF static library from script
-      run: |
-        mkdir ./netcdf
-        mkdir ./netcdf/work ./netcdf/install
-        pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+    # - name: Install missing dependencies
+    #   run: |
+    #     brew install boost@1.81
+    # - name: Install NetCDF static library from script
+    #   run: |
+    #     mkdir ./netcdf
+    #     mkdir ./netcdf/work ./netcdf/install
+    #     pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
     # CMake config
     - name: Configure
       run: > 
