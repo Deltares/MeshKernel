@@ -1,4 +1,5 @@
 name: Build and test on macos
+
 on:
   #push:
   #  branches: 
@@ -15,6 +16,9 @@ on:
       - master
       - 'release/v[0-9].[0-9].[0-9]'
       - 'feature/**'
+  # Allow triggering this workflow manually from the actions tab
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: macos-latest
@@ -25,48 +29,49 @@ jobs:
       CC: gcc-11
       CXX: g++-11
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
-      with:
-        fetch-depth: 0
-    # Dependencies
-    - name: Install missing dependencies
-      run: |
-        brew install boost@1.81
-        brew install doxygen
-    - name: Build and install NetCDF static library
-      # Dependencies m4, curl, and openssl are provided by the build machine
-      run: >
-        pwsh ./scripts/install_netcdf_static.ps1
-        -WorkDir ./netcdf/work
-        -InstallDir ./netcdf/install
-        -BuildType 'Release'
-        -ParallelJobs 10
-    # Temporary NetCDF artifact, remove!
-    - name: Upload NetCDF artifact [TEMPORARY, REMOVE ME]
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: artifact_netcdf
-        path: ./netcdf/install
-        if-no-files-found: error
-    # CMake config
-    - name: Configure
-      run: > 
-        cmake
-        -S .
-        -B ./build
-        -DCMAKE_BUILD_TYPE=Release
-        -DnetCDF_DIR=./netcdf/install/netcdf-c
-    # CMake build
-    - name: Build
-      run: cmake --build ./build --config Release -j
-    # Have the whole build dir available as an artifact, even when the build fails
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: artifact_build
-        path: ./build
-        if-no-files-found: error
+      - name: Checkout
+        uses: actions/checkout@v3
+        # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
+        with:
+          fetch-depth: 0
+      # Dependencies
+      - name: Install missing dependencies
+        run: |
+          brew update
+          brew install boost@1.81
+          brew install doxygen
+      - name: Build and install NetCDF static library
+        # Dependencies m4, curl, and openssl are provided by the build machine
+        run: >
+          pwsh ./scripts/install_netcdf_static.ps1
+          -WorkDir ./netcdf/work
+          -InstallDir ./netcdf/install
+          -BuildType 'Release'
+          -ParallelJobs 10
+      # Temporary NetCDF artifact, remove!
+      - name: Upload NetCDF artifact [TEMPORARY, REMOVE ME]
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: artifact_netcdf
+          path: ./netcdf/install
+          if-no-files-found: error
+      # CMake config
+      - name: Configure
+        run: > 
+          cmake
+          -S .
+          -B ./build
+          -DCMAKE_BUILD_TYPE=Release
+          -DnetCDF_DIR=./netcdf/install/netcdf-c
+      # CMake build
+      - name: Build
+        run: cmake --build ./build --config Release -j
+      # Have the whole build dir available as an artifact, even when the build fails
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: artifact_build
+          path: ./build
+          if-no-files-found: error
