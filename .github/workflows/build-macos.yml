@@ -6,11 +6,11 @@ on:
   #    - 'release/v[0-9].[0-9].[0-9]'
   #    - 'feature/**'
   pull_request:
-    types:
-      - opened
-      - closed
-      - auto_merge_enabled
-      - ready_for_review
+    #types:
+    #  - opened
+    #  - closed
+    #  - auto_merge_enabled
+    #  - ready_for_review
     branches: 
       - master
       - 'release/v[0-9].[0-9].[0-9]'
