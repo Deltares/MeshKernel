@@ -110,7 +110,7 @@ jobs:
         run: |
           .${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
           echo -e "\n\n"
-          .${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelApiUnitTests
+          .${{ github.workspace }}/build/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
 
       # Step: CMake install
       - name: Install
