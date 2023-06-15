@@ -98,6 +98,7 @@ jobs:
           -B ${{ github.workspace }}/build
           -DCMAKE_BUILD_TYPE=${{matrix.type}}
           -DCMAKE_PREFIX_PATH=${{ github.workspace }}/netcdf/install/netcdf-c
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
       
       # Step: CMake build
       - name: Build
@@ -111,11 +112,15 @@ jobs:
           echo -e "\n\n"
           ./${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelApiUnitTests
 
+      # Step: CMake install
+      - name: Install
+        run: cmake --install ${{ github.workspace }}/build
+      
       # Step: Upload artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: artifact_build
-          path: ${{ github.workspace }}/build
+          name: meshkernel-${{ matrix.os }}-${{ matrix.type }}
+          path: ${{ github.workspace }}/install
           if-no-files-found: error
