@@ -35,6 +35,14 @@ jobs:
         mkdir -p ./netcdf
         mkdir -p ./netcdf/work ./netcdf/install
         pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+    # Temporary NetCDF artifact, remove!
+    - name: Upload NetCDF artifact [TEMPORARY, REMOVE ME]
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: artifact_netcdf
+        path: ./netcdf/install
+        if-no-files-found: error
     # CMake config
     - name: Configure
       run: > 
