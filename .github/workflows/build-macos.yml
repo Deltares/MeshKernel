@@ -61,16 +61,13 @@ jobs:
       # macOS
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
-        run: |
-          brew update
+        run: | # brew update
           brew install boost@1.81
           brew install doxygen
       # Linux
       - name: Install Ubuntu dependencies
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update 
-          sudo apt upgrade
+        run: | # sudo apt-get update && sudo apt upgrade
           sudo apt-get install libboost-all-dev
           sudo apt-get install doxygen
       
@@ -100,7 +97,7 @@ jobs:
           -S .
           -B ./build
           -DCMAKE_BUILD_TYPE=${{matrix.type}}
-          -DCMAKE_PREFIX_PATH =./netcdf/install/netcdf-c
+          -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
       
       # Step: CMake build
       - name: Build
