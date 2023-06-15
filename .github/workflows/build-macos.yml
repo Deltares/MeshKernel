@@ -1,4 +1,4 @@
-name: Build and test MeshKErnel on macos
+name: Build and test on macos
 on:
   #push:
   #  branches: 
@@ -6,6 +6,11 @@ on:
   #    - 'release/v[0-9].[0-9].[0-9]'
   #    - 'feature/**'
   pull_request:
+    types:
+      - opened
+      - closed
+      - auto_merge_enabled
+      - ready_for_review
     branches: 
       - master
       - 'release/v[0-9].[0-9].[0-9]'
@@ -20,7 +25,8 @@ jobs:
       CC: gcc-11
       CXX: g++-11
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
       # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
       with:
         fetch-depth: 0
@@ -28,13 +34,14 @@ jobs:
     # Missing: boost
     # Provided by build machine: m4, curl, and openssl (required by NetCDF)
     - name: Install missing dependencies
-      run: |
-        brew install boost@1.81
+      run:  brew install boost@1.81
     - name: Install NetCDF static library from script
-      run: |
-        mkdir -p ./netcdf
-        mkdir -p ./netcdf/work ./netcdf/install
-        pwsh ./scripts/install_netcdf_static.ps1 -WorkDir ./netcdf/work -InstallDir ./netcdf/install -BuildType 'Release' -ParallelJobs 10
+      run: >
+        pwsh ./scripts/install_netcdf_static.ps1
+        -WorkDir ./netcdf/work
+        -InstallDir ./netcdf/install
+        -BuildType 'Release'
+        -ParallelJobs 10
     # Temporary NetCDF artifact, remove!
     - name: Upload NetCDF artifact [TEMPORARY, REMOVE ME]
       uses: actions/upload-artifact@v3
@@ -46,9 +53,10 @@ jobs:
     # CMake config
     - name: Configure
       run: > 
-        cmake -S . -B ./build 
-        -DCMAKE_BUILD_TYPE=Release 
-        -DCMAKE_C_COMPILER=${{env.CC}} -DCMAKE_CXX_COMPILER=${{env.CXX}}
+        cmake
+        -S .
+        -B ./build
+        -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_PREFIX_PATH=./netcdf/install/netcdf-c
     # CMake build
     - name: Build

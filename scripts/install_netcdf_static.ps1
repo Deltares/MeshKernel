@@ -404,7 +404,7 @@ Function Invoke-Post-Build-Steps() {
     elseif ($IsMacOS) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.dylib"'
     }
-    else {
+    elseif ($IsWindows) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'
     }
     $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
