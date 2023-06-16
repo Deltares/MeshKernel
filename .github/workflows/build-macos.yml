@@ -74,7 +74,7 @@ jobs:
           brew install doxygen
       # Linux
       - if: runner.os == 'Linux'
-        name: Install system-provided dependencies
+        name: Install external dependencies
         run: | # sudo apt-get update && sudo apt upgrade
           sudo apt-get install libboost-all-dev
           sudo apt-get install doxygen
