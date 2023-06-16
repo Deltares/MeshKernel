@@ -74,13 +74,13 @@ jobs:
           brew install doxygen
       # Linux
       - if: runner.os == 'Linux'
-        name: Install external dependencies
+        name: Install system-provided dependencies
         run: | # sudo apt-get update && sudo apt upgrade
           sudo apt-get install libboost-all-dev
           sudo apt-get install doxygen
       
       # Step: Cache external dependencies
-      - name: Cache external dependencies
+      - name: Cache user-provided dependencies
         uses: actions/cache@v3
         id: cache-external-dependencies
         with:
