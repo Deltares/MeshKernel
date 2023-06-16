@@ -57,23 +57,34 @@ jobs:
         with:
           fetch-depth: 0
       
-      # Step: Install dependencies
+      # Step: Install system-provided dependencies
       # macOS
-      - name: Install macOS dependencies
-        if: runner.os == 'macOS'
+      - if: runner.os == 'macOS'
+        name: Install system-provided dependencies
         run: | # brew update
           brew install boost@1.81
           brew install doxygen
       # Linux
-      - name: Install Ubuntu dependencies
-        if: runner.os == 'Linux'
+      - if: runner.os == 'Linux'
+        name: Install system-provided dependencies
         run: | # sudo apt-get update && sudo apt upgrade
           sudo apt-get install libboost-all-dev
           sudo apt-get install doxygen
       
-      # Step: NetCDF static library
-      - name: Build and install NetCDF static library
-        # Dependencies m4, curl, and openssl are provided by the build machine
+      # Step: Cache user-provided dependencies
+      - name: Cache user-provided dependencies
+        uses: actions/cache@v3
+        id: cache-user-provided-dependencies
+        with:
+          path: ${{ github.workspace }}/netcdf
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      # Step: Build and install user-provided dependencies, executes only if not previously cached
+      - if: steps.cache-user-provided-dependencies.outputs.cache-hit != 'true'
+        name: Build and install user-provided dependencies
+        # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
           -WorkDir ${{ github.workspace }}/netcdf/work
@@ -95,9 +106,9 @@ jobs:
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release -j
 
-      # Step: Test
-      - name: Test
-        if: runner.os == 'Linux' || runner.os == 'macOS'
+      # Step: Test (Win needs /matrix.type before /tests)
+      - if: runner.os == 'Linux' || runner.os == 'macOS'
+        name: Test
         run: |
           ${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
           echo -e "\n\n"
