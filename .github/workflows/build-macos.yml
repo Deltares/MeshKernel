@@ -81,15 +81,6 @@ jobs:
           -BuildType '${{ matrix.type }}'
           -ParallelJobs 10
       
-      # # Step: Temporary NetCDF artifact, remove!
-      # - name: Upload NetCDF artifact [TEMPORARY, REMOVE]
-      #   uses: actions/upload-artifact@v3
-      #   if: always()
-      #   with:
-      #     name: artifact_netcdf
-      #     path: ${{ github.workspace }}/netcdf/install
-      #     if-no-files-found: error
-      
       # Step: CMake configuration
       - name: Configure
         run: > 
@@ -104,22 +95,13 @@ jobs:
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release -j
 
-      # Step: Temporary build artifact, remove!
-      - name: Upload build artifact [TEMPORARY, REMOVE]
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: artifact_build
-          path: ${{ github.workspace }}/build
-          if-no-files-found: error
-
       # Step: Test
       - name: Test
         if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
-          .${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
+          ${{ github.workspace }}/build/libs/MeshKernel/tests/MeshKernelUnitTests
           echo -e "\n\n"
-          .${{ github.workspace }}/build/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
+          ${{ github.workspace }}/build/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
 
       # Step: CMake install
       - name: Install
