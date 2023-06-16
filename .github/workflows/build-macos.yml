@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - 'ubuntu-latest'
+          #- 'ubuntu-latest'
           - 'macos-latest'
         type:
           - 'Release'
@@ -103,6 +103,15 @@ jobs:
       # Step: CMake build
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --config Release -j
+
+      # Step: Temporary build artifact, remove!
+      - name: Upload build artifact [TEMPORARY, REMOVE]
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: artifact_build
+          path: ${{ github.workspace }}/build
+          if-no-files-found: error
 
       # Step: Test
       - name: Test
