@@ -45,7 +45,7 @@ void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment)
 #if defined(WIN_MSVC_BENCHMARK)
     // std::aligned_alloc is not implemented in VS
     ptr = _aligned_malloc(size, alignment);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
     ptr = std::aligned_alloc(alignment, size);
 #endif
     if (ptr)
@@ -70,7 +70,7 @@ void CustomMemoryManager::AlignedFree(void* ptr)
     Unregister(MemoryBlockSize(ptr));
 #if defined(WIN_MSVC_BENCHMARK)
     _aligned_free(ptr);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
     std::free(ptr);
 #endif
     ptr = nullptr;
@@ -160,7 +160,7 @@ size_t CustomMemoryManager::MemoryBlockSize(void* ptr)
     {
 #if defined(WIN_MSVC_BENCHMARK)
         return _msize(ptr);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
         return malloc_usable_size(ptr);
 #endif
     }

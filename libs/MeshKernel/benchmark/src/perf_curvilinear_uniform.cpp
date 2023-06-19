@@ -46,8 +46,8 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(make_grid_arameters, Projection::cartesian);
-        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(polygons, 0));
+        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(make_grid_arameters, polygons, 0));
     }
 }
 BENCHMARK(BM_CurvilinearUniform)
