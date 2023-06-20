@@ -79,7 +79,7 @@ jobs:
         uses: actions/cache@v3
         id: cache-external-dependencies
         with:
-          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c
+          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           key: ${{ runner.os }}-packages-${{ hashFiles('**/packages*.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-

@@ -58,9 +58,16 @@ Function Invoke-Terminate {
     Stop-Transcript
 }
 
+# Check if OS is supported
+if ( -not ($IsLinux -or $IsMacOS -or $IsWindows)) {
+    Write-Error ('Unsupported operating system. The follwoing are supported: Linux, macOS and Windows.')
+    Invoke-Terminate
+    Exit
+}
+
 # Check version, powershell 7+ is supported
 $MajorPSVers = $PSVersionTable.PSVersion.Major
-if([int]$MajorPSVers -lt 7) { 
+if ([int]$MajorPSVers -lt 7) {
     Write-Error ('Found PowerShell version $MajorPSVers. Version 7+ is required.')
     Invoke-Terminate
     Exit
@@ -186,7 +193,7 @@ $ZLIBSrcDir = (Join-Path $ReposDir $ZLIB)
 Invoke-CloneRepoAndCheckoutTag -Repo $ZLIBRepo -Tag $GitTags.zlib -Destination $ZLIBSrcDir
 
 #Curl
-if($IsWindows) {
+if ($IsWindows) {
     $Curl = 'curl'
     $CurlRepo = 'https://github.com/curl/curl.git'
     $CurlSrcDir = (Join-Path $ReposDir $Curl)
@@ -287,7 +294,7 @@ Invoke-BuildAndInstall `
 $env:Path += (';' + $ZLIBInstallDir)
 
 # Curl
-if($IsWindows) {
+if ($IsWindows) {
     $CurlBuildDir = (Join-Path $BuildDir $Curl)
     $CurlInstallDir = (Join-Path $LocalInstallDir $Curl)
     Invoke-BuildAndInstall `
@@ -318,9 +325,9 @@ $HDF5CMakeBuildOptions = @( `
         '-DBUILD_TESTING:BOOL=OFF', `
         '-DZLIB_USE_EXTERNAL:BOOL=OFF', `
         '-DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON', `
-        ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir), `
-        ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir), `
-        ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary) `
+    ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir), `
+    ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir), `
+    ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary) `
 )
 
 Invoke-BuildAndInstall `
@@ -342,7 +349,7 @@ $NetCDFCMakeBuildOptions = @(`
         '-DENABLE_NETCDF_4=ON', `
         '-DENABLE_DAP=OFF', `
         '-DENABLE_BYTERANGE=OFF', `
-        ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
+    ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
 )
 if ($IsLinux -or $IsMacOS) {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
@@ -373,11 +380,12 @@ Function Invoke-Post-Build-Steps() {
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.a') -Destination (Join-Path $NetCDFLibDir 'libhdf5_hl.a')
         if ($IsLinux) {
             Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
-        } else {
+        }
+        else {
             Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'libz.dylib')      -Destination (Join-Path $NetCDFBinDir 'libz.dylib')
         }
     }
-    elseif($IsWindows) {
+    elseif ($IsWindows) {
         Copy-Item (Join-Path $ZLIBInstallDir 'lib' 'zlibstatic.lib') -Destination (Join-Path $NetCDFLibDir 'zlib.lib')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5.lib')    -Destination (Join-Path $NetCDFLibDir 'hdf5-static.lib')
         Copy-Item (Join-Path $HDF5InstallDir 'lib' 'libhdf5_hl.lib') -Destination (Join-Path $NetCDFLibDir 'hdf5_hl-static.lib')
@@ -398,19 +406,18 @@ Function Invoke-Post-Build-Steps() {
     }
 
     # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
-    if ($IsLinux ) {
+    if ($IsLinux) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
-        $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
     }
     elseif ($IsMacOS) {
-        #$NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.dylib"'
+        $NewLine = $Line
+        $NewLine.Replace($HDF5InstallDir, ${_IMPORT_PREFIX})
+        $NewLine.Replace((Join-Path $ZLIBInstallDir "lib"), (Join-Path ${_IMPORT_PREFIX} "bin"))
     }
     elseif ($IsWindows) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'
-        $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
     }
-    #$Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
-
+    $Content.Replace($Line, $NewLine) | Set-Content $NeCDFCMakeTargets
 }
 
 Invoke-Post-Build-Steps
