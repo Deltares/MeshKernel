@@ -60,7 +60,7 @@ Function Invoke-Terminate {
 
 # Check if OS is supported
 if ( -not ($IsLinux -or $IsMacOS -or $IsWindows)) {
-    Write-Error ('Unsupported operating system. The follwoing are supported: Linux, macOS and Windows.')
+    Write-Error ('Unsupported operating system. The following are supported: Linux, macOS and Windows.')
     Invoke-Terminate
     Exit
 }
@@ -411,8 +411,8 @@ Function Invoke-Post-Build-Steps() {
     }
     elseif ($IsMacOS) {
         $NewLine = $Line
-        $NewLine.Replace($HDF5InstallDir, ${_IMPORT_PREFIX})
-        $NewLine.Replace((Join-Path $ZLIBInstallDir "lib"), (Join-Path ${_IMPORT_PREFIX} "bin"))
+        $NewLine.Replace($HDF5InstallDir, '${_IMPORT_PREFIX}')
+        $NewLine.Replace((Join-Path $ZLIBInstallDir "lib"), (Join-Path '${_IMPORT_PREFIX}' "bin"))
     }
     elseif ($IsWindows) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'
