@@ -67,7 +67,6 @@ public:
         makeGridParameters.num_columns = numberOfColumns;
         makeGridParameters.num_rows = numberOfRows;
         makeGridParameters.angle = 0.0;
-        makeGridParameters.block_size = 0.0;
         makeGridParameters.origin_x = 0.0;
         makeGridParameters.origin_y = 0.0;
         makeGridParameters.block_size_x = blockSize;
@@ -1380,7 +1379,6 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 2;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.block_size_x = 1.0;
@@ -2976,7 +2974,6 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     make_grid_parameters.num_columns = num_x;
     make_grid_parameters.num_rows = num_y;
     make_grid_parameters.angle = 0.0;
-    make_grid_parameters.block_size = 0.0;
     make_grid_parameters.origin_x = lonMin;
     make_grid_parameters.origin_y = latMin;
     make_grid_parameters.block_size_x = lonResolution;
@@ -3135,7 +3132,6 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     makeGridParameters.num_columns = numX;
     makeGridParameters.num_rows = numY;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = lonMin;
     makeGridParameters.origin_y = latMin;
     makeGridParameters.block_size_x = 0.1;
@@ -3191,7 +3187,6 @@ TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeM
     makeGridParameters.num_columns = 8;
     makeGridParameters.num_rows = 5;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = -1.0;
     makeGridParameters.origin_y = 19.1;
     makeGridParameters.block_size_x = 0.01;

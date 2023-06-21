@@ -958,21 +958,44 @@ namespace meshkernelapi
 
             meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
 
-            if (polygon->IsEmpty())
+            if (!polygon->IsEmpty())
             {
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters);
+
+                // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
+                for (size_t polygonIndex = 0; polygonIndex < polygon->GetNumPolygons(); ++polygonIndex)
+                {
+                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
+                                                                                      makeGridParameters.block_size_x,
+                                                                                      makeGridParameters.block_size_y,
+                                                                                      polygon,
+                                                                                      polygonIndex);
+                    auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                }
+            }
+            else if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
+            {
+
+                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
+                                                                                  makeGridParameters.num_rows,
+                                                                                  makeGridParameters.origin_x,
+                                                                                  makeGridParameters.origin_y,
+                                                                                  makeGridParameters.angle,
+                                                                                  makeGridParameters.block_size_x,
+                                                                                  makeGridParameters.block_size_y);
                 auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
                 *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
             }
             else
             {
-                // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
-                for (size_t p = 0; p < polygon->GetNumPolygons(); ++p)
-                {
-                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters, polygon, p);
-                    auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
-                }
+                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
+                                                                                  makeGridParameters.origin_y,
+                                                                                  makeGridParameters.block_size_x,
+                                                                                  makeGridParameters.block_size_y,
+                                                                                  makeGridParameters.upper_right_x,
+                                                                                  makeGridParameters.upper_right_y);
+                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
             }
         }
         catch (...)
@@ -2286,11 +2309,21 @@ namespace meshkernelapi
 
             if (polygon->IsEmpty())
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters);
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
+                                                                                                        makeGridParameters.num_rows,
+                                                                                                        makeGridParameters.origin_x,
+                                                                                                        makeGridParameters.origin_y,
+                                                                                                        makeGridParameters.angle,
+                                                                                                        makeGridParameters.block_size_x,
+                                                                                                        makeGridParameters.block_size_y);
             }
             else
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters, polygon, 0);
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
+                                                                                                        makeGridParameters.block_size_x,
+                                                                                                        makeGridParameters.block_size_y,
+                                                                                                        polygon,
+                                                                                                        0);
             }
         }
         catch (...)

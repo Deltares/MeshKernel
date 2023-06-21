@@ -43,9 +43,6 @@ namespace meshkernel
         /// @brief The grid angle
         double angle = 0.0;
 
-        /// @brief The grid block size, used in x and y direction
-        double block_size = 10.0;
-
         /// @brief The x coordinate of the origin, located at the bottom left corner
         double origin_x = 0.0;
 
@@ -57,6 +54,12 @@ namespace meshkernel
 
         /// @brief The grid block size in y dimension, used only for squared grids
         double block_size_y = 10.0;
+
+        /// @brief The x coordinate of the upper right corner
+        double upper_right_x = 0.0;
+
+        /// @brief The y coordinate of the upper right corner
+        double upper_right_y = 0.0;
     };
 
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
