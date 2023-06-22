@@ -316,11 +316,13 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                       const double upperRightY) const
 {
     CurvilinearGrid curvilinearGrid;
-    int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX) + 1);
-    int numRows = 0;
+    int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX));
+    int numRows;
     const double angle = 0.0;
-    if (m_projection == Projection::spherical)
+
+    switch (m_projection)
     {
+    case Projection::spherical:
 
         numRows = ComputeNumRowsSpherical(originY, upperRightY, blockSizeY);
         curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
@@ -331,10 +333,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                            blockSizeX,
                                                            blockSizeY),
                                           m_projection};
-    }
-    else if (m_projection == Projection::cartesian)
-    {
-        numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY) + 1);
+        break;
+    case Projection::cartesian:
+        numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY));
         curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
                                                            numRows,
                                                            originX,
@@ -343,9 +344,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                            blockSizeX,
                                                            blockSizeY),
                                           m_projection};
-    }
-    else
-    {
+        break;
+    default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);
     }

@@ -3213,7 +3213,7 @@ TEST(ApiStatelessTests, MakeCurvilinearGrid_WithSphericalCoordinatesAndDefinedEx
     meshkernel::MakeGridParameters makeGridParameters;
     meshkernelapi::GeometryList geometryList;
 
-    makeGridParameters.origin_x = -1;
+    makeGridParameters.origin_x = -1.0;
     makeGridParameters.origin_y = 49.1;
     makeGridParameters.upper_right_x = -0.2;
     makeGridParameters.upper_right_y = 49.6;
@@ -3232,6 +3232,6 @@ TEST(ApiStatelessTests, MakeCurvilinearGrid_WithSphericalCoordinatesAndDefinedEx
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    ASSERT_EQ(104, curvilinearGridResults.num_m);
-    ASSERT_EQ(82, curvilinearGridResults.num_n);
+    ASSERT_EQ(103, curvilinearGridResults.num_m);
+    ASSERT_EQ(81, curvilinearGridResults.num_n);
 }
