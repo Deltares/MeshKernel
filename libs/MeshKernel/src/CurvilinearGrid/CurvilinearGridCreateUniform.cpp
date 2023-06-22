@@ -142,7 +142,7 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
         size_t lastRowOnPole = numM;
         for (size_t m = 0; m < numM; ++m)
         {
-            const double adjustedLatitude = ComputeAdjustedLatitude(blockSizeX, result[n - 1][m].y);
+            const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, result[n - 1][m].y);
             result[n][m].y = adjustedLatitude;
 
             if (IsEqual(abs(adjustedLatitude), latitudePoles))
@@ -160,7 +160,7 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
     return result;
 }
 
-double CurvilinearGridCreateUniform::ComputeAdjustedLatitude(double blockSize, double latitude)
+double CurvilinearGridCreateUniform::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude)
 {
     constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
     constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
@@ -180,6 +180,7 @@ double CurvilinearGridCreateUniform::ComputeAdjustedLatitude(double blockSize, d
 
     return result;
 }
+
 int CurvilinearGridCreateUniform::ComputeNumRowsSpherical(double minY,
                                                           double maxY,
                                                           double blockSizeY)
@@ -190,15 +191,13 @@ int CurvilinearGridCreateUniform::ComputeNumRowsSpherical(double minY,
 
     while (currentLatitude < maxY)
     {
-        currentLatitude = ComputeAdjustedLatitude(blockSizeY, currentLatitude);
+        currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, currentLatitude);
         result += 1;
 
         if (IsEqual(abs(currentLatitude), latitudePoles))
         {
             break;
         }
-
-        currentLatitude += blockSizeY;
     }
 
     return result;
@@ -318,11 +317,10 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
 {
     CurvilinearGrid curvilinearGrid;
     int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX) + 1);
-    int numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY) + 1);
+    int numRows = 0;
     const double angle = 0.0;
-    switch (m_projection)
+    if (m_projection == Projection::spherical)
     {
-    case Projection::spherical:
 
         numRows = ComputeNumRowsSpherical(originY, upperRightY, blockSizeY);
         curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
@@ -333,8 +331,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                            blockSizeX,
                                                            blockSizeY),
                                           m_projection};
-        break;
-    case Projection::cartesian:
+    }
+    else if (m_projection == Projection::cartesian)
+    {
         numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY) + 1);
         curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
                                                            numRows,
@@ -344,9 +343,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                            blockSizeX,
                                                            blockSizeY),
                                           m_projection};
-        break;
-    case Projection::sphericalAccurate:
-    default:
+    }
+    else
+    {
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);
     }

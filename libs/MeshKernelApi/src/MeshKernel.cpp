@@ -2307,7 +2307,15 @@ namespace meshkernelapi
 
             meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
 
-            if (polygon->IsEmpty())
+            if (!polygon->IsEmpty())
+            {
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
+                                                                                                        makeGridParameters.block_size_x,
+                                                                                                        makeGridParameters.block_size_y,
+                                                                                                        polygon,
+                                                                                                        0);
+            }
+            else if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
             {
                 *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
                                                                                                         makeGridParameters.num_rows,
@@ -2319,11 +2327,12 @@ namespace meshkernelapi
             }
             else
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
+                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
+                                                                                                        makeGridParameters.origin_y,
                                                                                                         makeGridParameters.block_size_x,
                                                                                                         makeGridParameters.block_size_y,
-                                                                                                        polygon,
-                                                                                                        0);
+                                                                                                        makeGridParameters.upper_right_x,
+                                                                                                        makeGridParameters.upper_right_y);
             }
         }
         catch (...)

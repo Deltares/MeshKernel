@@ -131,7 +131,7 @@ namespace meshkernel
         /// @param[in] blockSize The grid block size in y dimension
         /// @param[in] latitude The current latitude
         /// @returns[in] The adjusted latitude
-        static double ComputeAdjustedLatitude(double blockSize, double latitude);
+        static double ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude);
 
         /// @brief Compute the number of rows required to generate a grid from minY to maxY in spherical coordinates
         /// @param[in] minY The min latitude

@@ -35,10 +35,10 @@ namespace meshkernel
     struct MakeGridParameters
     {
         /// @brief The number of columns in x direction
-        int num_columns = 3;
+        int num_columns = 0;
 
         /// @brief The number of columns in y direction
-        int num_rows = 3;
+        int num_rows = 0;
 
         /// @brief The grid angle
         double angle = 0.0;
@@ -50,10 +50,10 @@ namespace meshkernel
         double origin_y = 0.0;
 
         /// @brief The grid block size in x dimension, used only for squared grids
-        double block_size_x = 10.0;
+        double block_size_x = 0.0;
 
         /// @brief The grid block size in y dimension, used only for squared grids
-        double block_size_y = 10.0;
+        double block_size_y = 0.0;
 
         /// @brief The x coordinate of the upper right corner
         double upper_right_x = 0.0;
