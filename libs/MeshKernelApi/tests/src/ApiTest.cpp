@@ -67,7 +67,6 @@ public:
         makeGridParameters.num_columns = numberOfColumns;
         makeGridParameters.num_rows = numberOfRows;
         makeGridParameters.angle = 0.0;
-        makeGridParameters.block_size = 0.0;
         makeGridParameters.origin_x = 0.0;
         makeGridParameters.origin_y = 0.0;
         makeGridParameters.block_size_x = blockSize;
@@ -1380,7 +1379,6 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 2;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.block_size_x = 1.0;
@@ -2976,7 +2974,6 @@ TEST(Mesh2D, MakeUniformInSpericalCoordinatesShouldGenerateAMesh)
     make_grid_parameters.num_columns = num_x;
     make_grid_parameters.num_rows = num_y;
     make_grid_parameters.angle = 0.0;
-    make_grid_parameters.block_size = 0.0;
     make_grid_parameters.origin_x = lonMin;
     make_grid_parameters.origin_y = latMin;
     make_grid_parameters.block_size_x = lonResolution;
@@ -3135,7 +3132,6 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     makeGridParameters.num_columns = numX;
     makeGridParameters.num_rows = numY;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = lonMin;
     makeGridParameters.origin_y = latMin;
     makeGridParameters.block_size_x = 0.1;
@@ -3183,7 +3179,7 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeMesh)
+TEST(ApiStatelessTests, MakeCurvilinearGrid_WithSphericalCoordinates_ShouldMakeCurvilinearMesh)
 {
     meshkernel::MakeGridParameters makeGridParameters;
     meshkernelapi::GeometryList geometryList;
@@ -3191,7 +3187,6 @@ TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeM
     makeGridParameters.num_columns = 8;
     makeGridParameters.num_rows = 5;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.block_size = 0.0;
     makeGridParameters.origin_x = -1.0;
     makeGridParameters.origin_y = 19.1;
     makeGridParameters.block_size_x = 0.01;
@@ -3211,4 +3206,59 @@ TEST(ApiStatelessTests, MakeCurvilinearMesh_WithSphericalCoordinates_ShouldMakeM
 
     ASSERT_EQ(6, curvilinearGridResults.num_m);
     ASSERT_EQ(9, curvilinearGridResults.num_n);
+}
+
+TEST(ApiStatelessTests, MakeCurvilinearGrid_WithSphericalCoordinatesAndDefinedExtension_ShouldMakeCurvilinearMesh)
+{
+    meshkernel::MakeGridParameters makeGridParameters;
+    meshkernelapi::GeometryList geometryList;
+
+    makeGridParameters.origin_x = -1.0;
+    makeGridParameters.origin_y = 49.1;
+    makeGridParameters.upper_right_x = -0.2;
+    makeGridParameters.upper_right_y = 49.6;
+    makeGridParameters.block_size_x = 0.1;
+    makeGridParameters.block_size_y = 0.1;
+
+    int meshKernelId = 0;
+    int projectionType = 1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(12, curvilinearGridResults.num_m);
+    ASSERT_EQ(9, curvilinearGridResults.num_n);
+}
+TEST(ApiStatelessTests, MakeCurvilinearGrid_WithDefinedExtension_ShouldMakeCurvilinearMesh)
+{
+    meshkernel::MakeGridParameters makeGridParameters;
+    meshkernelapi::GeometryList geometryList;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.upper_right_x = 10.0;
+    makeGridParameters.upper_right_y = 10.0;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 2.0;
+
+    int meshKernelId = 0;
+    int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(6, curvilinearGridResults.num_m);
+    ASSERT_EQ(11, curvilinearGridResults.num_n);
 }
