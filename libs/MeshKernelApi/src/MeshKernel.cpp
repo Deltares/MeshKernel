@@ -988,6 +988,12 @@ namespace meshkernelapi
             }
             else
             {
+
+                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+                {
+                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+                }
+
                 auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
                                                                                   makeGridParameters.origin_y,
                                                                                   makeGridParameters.block_size_x,
@@ -2327,6 +2333,11 @@ namespace meshkernelapi
             }
             else
             {
+                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+                {
+                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+                }
+
                 *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
                                                                                                         makeGridParameters.origin_y,
                                                                                                         makeGridParameters.block_size_x,
