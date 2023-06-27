@@ -3080,7 +3080,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
         y_coordinates[i] = coordinate + i * dy;
     }
 
-    std::vector<double> values((griddedSamples.num_y + 1) * (griddedSamples.num_x + 1));
+    std::vector<double> values(griddedSamples.num_y * griddedSamples.num_x);
     for (size_t i = 0; i < values.size(); ++i)
     {
         values[i] = -0.05;
