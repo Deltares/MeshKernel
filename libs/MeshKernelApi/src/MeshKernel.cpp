@@ -1527,7 +1527,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector values((griddedSamples.n_cols + 1) * (griddedSamples.n_rows + 1), 0.0);
+            std::vector values(griddedSamples.n_cols * griddedSamples.n_rows, 0.0);
             for (size_t i = 0; i < values.size(); ++i)
             {
                 values[i] = griddedSamples.values[i];
@@ -1556,12 +1556,12 @@ namespace meshkernelapi
                     throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
                 }
 
-                std::vector<double> xCoordinates(griddedSamples.n_cols + 1);
+                std::vector<double> xCoordinates(griddedSamples.n_cols);
                 for (size_t i = 0; i < xCoordinates.size(); ++i)
                 {
                     xCoordinates[i] = griddedSamples.x_coordinates[i];
                 }
-                std::vector<double> yCoordinates(griddedSamples.n_rows + 1);
+                std::vector<double> yCoordinates(griddedSamples.n_rows);
                 for (size_t i = 0; i < yCoordinates.size(); ++i)
                 {
                     yCoordinates[i] = griddedSamples.y_coordinates[i];
