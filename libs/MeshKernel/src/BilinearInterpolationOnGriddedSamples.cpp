@@ -133,7 +133,7 @@ double BilinearInterpolationOnGriddedSamples::Interpolation(const Point& point) 
         if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
         {
             const double dx = m_xCoordinates[i + 1] - m_xCoordinates[i];
-            result = (point.x - m_xCoordinates[i]) / dx;
+            result = static_cast<double>(i) + (point.x - m_xCoordinates[i]) / dx;
             break;
         }
     }
@@ -159,7 +159,7 @@ double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Po
         if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])
         {
             const double dy = m_yCoordinates[i + 1] - m_yCoordinates[i];
-            result = (point.y - m_xCoordinates[i]) / dy;
+            result = static_cast<double>(i) + (point.y - m_yCoordinates[i]) / dy;
             break;
         }
     }
