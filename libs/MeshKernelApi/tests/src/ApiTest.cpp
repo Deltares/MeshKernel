@@ -3062,10 +3062,10 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.n_rows = static_cast<int>(nRows + static_cast<size_t>(1));
-    griddedSamples.n_cols = static_cast<int>(nCols + static_cast<size_t>(1));
-    std::vector<double> x_coordinates(griddedSamples.n_cols + 1);
-    std::vector<double> y_coordinates(griddedSamples.n_rows + 1);
+    griddedSamples.n_rows = static_cast<int>(nRows);
+    griddedSamples.n_cols = static_cast<int>(nCols);
+    std::vector<double> x_coordinates(griddedSamples.n_cols);
+    std::vector<double> y_coordinates(griddedSamples.n_rows);
 
     double coordinate = -50.0;
     const double dx = 100.0;
