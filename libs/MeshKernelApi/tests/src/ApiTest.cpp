@@ -3020,13 +3020,13 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
     meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.n_cols = ncols;
-    griddedSamples.n_rows = nrows;
-    griddedSamples.x_origin = xllcenter;
-    griddedSamples.y_origin = yllcenter;
-    griddedSamples.cell_size = cellsize;
+    griddedSamples.num_x = numX;
+    griddedSamples.num_y = numY;
+    griddedSamples.x_origin = xllCenter;
+    griddedSamples.y_origin = yllCenter;
+    griddedSamples.cell_size = cellSize;
     griddedSamples.values = values.data();
     griddedSamples.x_coordinates = nullptr;
     griddedSamples.y_coordinates = nullptr;
@@ -3062,10 +3062,10 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.n_rows = static_cast<int>(nRows + 1);
-    griddedSamples.n_cols = static_cast<int>(nCols + 1);
-    std::vector<double> x_coordinates(griddedSamples.n_cols);
-    std::vector<double> y_coordinates(griddedSamples.n_rows);
+    griddedSamples.num_y = static_cast<int>(nRows + 1);
+    griddedSamples.num_x = static_cast<int>(nCols + 1);
+    std::vector<double> x_coordinates(griddedSamples.num_x);
+    std::vector<double> y_coordinates(griddedSamples.num_y);
 
     double coordinate = -50.0;
     const double dx = 100.0;
@@ -3080,7 +3080,7 @@ TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
         y_coordinates[i] = coordinate + i * dy;
     }
 
-    std::vector<double> values((griddedSamples.n_rows + 1) * (griddedSamples.n_cols + 1));
+    std::vector<double> values((griddedSamples.num_y + 1) * (griddedSamples.num_x + 1));
     for (size_t i = 0; i < values.size(); ++i)
     {
         values[i] = -0.05;
@@ -3145,8 +3145,8 @@ TEST(Mesh2D, Mesh2dRefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalPro
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
     meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.n_cols = ncols;
-    griddedSamples.n_rows = nrows;
+    griddedSamples.num_x = ncols;
+    griddedSamples.num_y = nrows;
     griddedSamples.x_origin = xllcenter;
     griddedSamples.y_origin = yllcenter;
     griddedSamples.cell_size = cellsize;

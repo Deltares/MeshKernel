@@ -32,11 +32,11 @@ namespace meshkernelapi
     /// @brief A struct describing gridded samples
     struct GriddedSamples
     {
-        /// @brief Number of grid columns
-        int n_cols = 0;
+        /// @brief Number of x gridded samples coordinates
+        int num_x = 0;
 
-        /// @brief Number of grid rows
-        int n_rows = 0;
+        /// @brief Number of y gridded samples coordinates
+        int num_y = 0;
 
         /// @brief X coordinate of the grid origin (lower left corner)
         double x_origin = 0.0;

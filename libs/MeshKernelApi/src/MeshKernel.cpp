@@ -1527,7 +1527,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector values(griddedSamples.n_cols * griddedSamples.n_rows, 0.0);
+            std::vector values(griddedSamples.num_x * griddedSamples.num_y, 0.0);
             for (size_t i = 0; i < values.size(); ++i)
             {
                 values[i] = griddedSamples.values[i];
@@ -1538,8 +1538,8 @@ namespace meshkernelapi
             {
                 meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
                 interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  griddedSamples.n_cols,
-                                                                                                  griddedSamples.n_rows,
+                                                                                                  griddedSamples.num_x,
+                                                                                                  griddedSamples.num_y,
                                                                                                   origin,
                                                                                                   griddedSamples.cell_size,
                                                                                                   values);
@@ -1556,12 +1556,12 @@ namespace meshkernelapi
                     throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
                 }
 
-                std::vector<double> xCoordinates(griddedSamples.n_cols);
+                std::vector<double> xCoordinates(griddedSamples.num_x);
                 for (size_t i = 0; i < xCoordinates.size(); ++i)
                 {
                     xCoordinates[i] = griddedSamples.x_coordinates[i];
                 }
-                std::vector<double> yCoordinates(griddedSamples.n_rows);
+                std::vector<double> yCoordinates(griddedSamples.num_y);
                 for (size_t i = 0; i < yCoordinates.size(); ++i)
                 {
                     yCoordinates[i] = griddedSamples.y_coordinates[i];
