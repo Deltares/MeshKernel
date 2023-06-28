@@ -3219,6 +3219,8 @@ TEST(ApiStatelessTests, MakeCurvilinearGrid_WithSphericalCoordinatesAndDefinedEx
     makeGridParameters.upper_right_y = 49.6;
     makeGridParameters.block_size_x = 0.1;
     makeGridParameters.block_size_y = 0.1;
+    makeGridParameters.num_columns = 0;
+    makeGridParameters.num_rows = 0;
 
     int meshKernelId = 0;
     int projectionType = 1;
@@ -3246,6 +3248,8 @@ TEST(ApiStatelessTests, MakeCurvilinearGrid_WithDefinedExtension_ShouldMakeCurvi
     makeGridParameters.upper_right_y = 10.0;
     makeGridParameters.block_size_x = 1.0;
     makeGridParameters.block_size_y = 2.0;
+    makeGridParameters.num_rows = 0;
+    makeGridParameters.num_columns = 0;
 
     int meshKernelId = 0;
     int projectionType = 0;
