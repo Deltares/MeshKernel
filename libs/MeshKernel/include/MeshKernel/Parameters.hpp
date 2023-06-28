@@ -91,7 +91,7 @@ namespace meshkernel
         double aspect_ratio_grow_factor = 1.1;
 
         /// @brief Average mesh width on center spline
-        double average_width = 0.005;
+        double average_width = 500.0;
 
         /// @brief Curvature adapted grid spacing, 1 or not 0
         int curvature_adapted_grid_spacing = 1;
