@@ -26,7 +26,7 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     int err = nc_open(file_path.string().c_str(), NC_NOWRITE, &ncidp);
     if (err != 0)
     {
-        throw("ReadLegacyMesh2DFromFile: Could not load netcdf file.");
+        throw "ReadLegacyMesh2DFromFile: Could not load netcdf file.";
     }
 
     std::string meshNodesName{"nNetNode"};
@@ -34,7 +34,7 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     err = nc_inq_dimid(ncidp, meshNodesName.c_str(), &dimid);
     if (err != 0)
     {
-        throw("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetNode'.");
+        throw "ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetNode'.";
     }
 
     std::size_t num_nodes;
@@ -42,14 +42,14 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     err = nc_inq_dim(ncidp, dimid, read_name.get(), &num_nodes);
     if (err != 0)
     {
-        throw("ReadLegacyMesh2DFromFile: Could not find the length of dimension of 'nNetNode'.");
+        throw "ReadLegacyMesh2DFromFile: Could not find the length of dimension of 'nNetNode'.";
     }
 
     std::string meshEdgesName{"nNetLink"};
     err = nc_inq_dimid(ncidp, meshEdgesName.c_str(), &dimid);
     if (err != 0)
     {
-        throw("ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetLink'.");
+        throw "ReadLegacyMesh2DFromFile: Could not find the ID of a dimension of 'nNetLink'.";
     }
 
     std::size_t num_edges;
