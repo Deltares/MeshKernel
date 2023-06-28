@@ -167,7 +167,7 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
         size_t lastRowOnPole = numM;
         for (size_t m = 0; m < numM; ++m)
         {
-            const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, result[n - 1][m].y);
+            const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result[n - 1][m].y);
             result[n][m].y = adjustedLatitude;
 
             if (IsEqual(abs(adjustedLatitude), latitudePoles))
