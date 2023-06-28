@@ -1,3 +1,4 @@
+#include <array>
 #include <memory>
 #include <stdexcept>
 
@@ -38,8 +39,9 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     }
 
     std::size_t num_nodes;
-    std::unique_ptr<char> read_name(new char[NC_MAX_NAME]);
-    err = nc_inq_dim(ncidp, dimid, read_name.get(), &num_nodes);
+    std::array<char, NC_MAX_NAME> read_name;
+    read_name.fill('\0');
+    err = nc_inq_dim(ncidp, dimid, read_name.data(), &num_nodes);
     if (err != 0)
     {
         throw("ReadLegacyMesh2DFromFile: Could not find the length of dimension of 'nNetNode'.");
@@ -53,11 +55,11 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     }
 
     std::size_t num_edges;
-    nc_inq_dim(ncidp, dimid, read_name.get(), &num_edges);
-    std::shared_ptr<double> node_x(new double[num_nodes]);
-    std::shared_ptr<double> node_y(new double[num_nodes]);
-    std::shared_ptr<int> edge_nodes(new int[num_edges * 2]);
-    std::shared_ptr<int> edge_type(new int[num_edges]);
+    nc_inq_dim(ncidp, dimid, read_name.data(), &num_edges);
+    std::shared_ptr<double> node_x(new double[num_nodes], std::default_delete<double[]>());
+    std::shared_ptr<double> node_y(new double[num_nodes], std::default_delete<double[]>());
+    std::shared_ptr<int> edge_nodes(new int[num_edges * 2], std::default_delete<int[]>());
+    std::shared_ptr<int> edge_type(new int[num_edges], std::default_delete<int[]>());
 
     std::string meshNodeXName{"NetNode_x"};
     int varid = 0;
@@ -251,8 +253,8 @@ MakeRectangularMeshForApiTesting(
     auto num_x = num_columns + static_cast<size_t>(1);
 
     std::vector<std::vector<size_t>> indicesValues(num_x, std::vector<size_t>(num_y));
-    std::shared_ptr<double> node_x(new double[num_x * num_y]);
-    std::shared_ptr<double> node_y(new double[num_x * num_y]);
+    std::shared_ptr<double> node_x(new double[num_x * num_y], std::default_delete<double[]>());
+    std::shared_ptr<double> node_y(new double[num_x * num_y], std::default_delete<double[]>());
 
     size_t nodeIndex = 0;
     for (auto i = 0u; i < num_x; ++i)
@@ -267,7 +269,7 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    std::shared_ptr<int> edge_nodes(new int[((num_x - 1) * num_y + (num_y - 1) * num_x) * 2]);
+    std::shared_ptr<int> edge_nodes(new int[((num_x - 1) * num_y + (num_y - 1) * num_x) * 2], std::default_delete<int[]>());
     size_t edgeIndex = 0;
     for (auto i = 0u; i < num_x - 1; ++i)
     {
