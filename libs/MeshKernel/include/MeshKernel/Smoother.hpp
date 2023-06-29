@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "MeshKernel/Constants.hpp"
+
 namespace meshkernel
 {
     class Mesh2D;
@@ -143,29 +145,29 @@ namespace meshkernel
         std::vector<std::vector<double>> m_ww2;               ///< weights
 
         // Smoother local caches
-        std::vector<size_t> m_sharedFacesCache;                  ///< Cache for shared faces
-        std::vector<size_t> m_connectedNodesCache;               ///< Cache for connected nodes
-        std::vector<std::vector<size_t>> m_faceNodeMappingCache; ///< Cache for face node mapping
-        std::vector<double> m_xiCache;                           ///< Cache for xi
-        std::vector<double> m_etaCache;                          ///< Cache for eta
-        std::vector<size_t> m_boundaryEdgesCache;                ///< Cache for boundary edges
-        std::vector<double> m_leftXFaceCenterCache;              ///< Cache for left x face center
-        std::vector<double> m_leftYFaceCenterCache;              ///< Cache for left y face center
-        std::vector<double> m_rightXFaceCenterCache;             ///< Cache for right x face center
-        std::vector<double> m_rightYFaceCenterCache;             ///< Cache for right y face center
-        std::vector<double> m_xisCache;                          ///< Cache for xis
-        std::vector<double> m_etasCache;                         ///< Cache for etas
+        std::vector<Index> m_sharedFacesCache;                  ///< Cache for shared faces
+        std::vector<Index> m_connectedNodesCache;               ///< Cache for connected nodes
+        std::vector<std::vector<Index>> m_faceNodeMappingCache; ///< Cache for face node mapping
+        std::vector<double> m_xiCache;                          ///< Cache for xi
+        std::vector<double> m_etaCache;                         ///< Cache for eta
+        std::vector<Index> m_boundaryEdgesCache;                ///< Cache for boundary edges
+        std::vector<double> m_leftXFaceCenterCache;             ///< Cache for left x face center
+        std::vector<double> m_leftYFaceCenterCache;             ///< Cache for left y face center
+        std::vector<double> m_rightXFaceCenterCache;            ///< Cache for right x face center
+        std::vector<double> m_rightYFaceCenterCache;            ///< Cache for right y face center
+        std::vector<double> m_xisCache;                         ///< Cache for xis
+        std::vector<double> m_etasCache;                        ///< Cache for etas
 
         // Smoother topologies
-        std::vector<size_t> m_nodeTopologyMapping;                               ///< Node topology mapping
-        std::vector<std::vector<double>> m_topologyXi;                           ///< Topology xi
-        std::vector<std::vector<double>> m_topologyEta;                          ///< Topology eta
-        std::vector<std::vector<size_t>> m_topologySharedFaces;                  ///< Topology shared faces
-        std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping; ///< Topology face node mapping
-        std::vector<std::vector<size_t>> m_topologyConnectedNodes;               ///< Topology connected nodes
+        std::vector<Index> m_nodeTopologyMapping;                               ///< Node topology mapping
+        std::vector<std::vector<double>> m_topologyXi;                          ///< Topology xi
+        std::vector<std::vector<double>> m_topologyEta;                         ///< Topology eta
+        std::vector<std::vector<Index>> m_topologySharedFaces;                  ///< Topology shared faces
+        std::vector<std::vector<std::vector<Index>>> m_topologyFaceNodeMapping; ///< Topology face node mapping
+        std::vector<std::vector<Index>> m_topologyConnectedNodes;               ///< Topology connected nodes
 
-        std::vector<size_t> m_numConnectedNodes;           ///< Number of connected nodes (nmk2)
-        std::vector<std::vector<size_t>> m_connectedNodes; ///< Connected nodes (kk2)
+        std::vector<Index> m_numConnectedNodes;           ///< Number of connected nodes (nmk2)
+        std::vector<std::vector<Index>> m_connectedNodes; ///< Connected nodes (kk2)
 
         // Class variables
         size_t m_maximumNumConnectedNodes = 0; ///< Maximum number of connected nodes

@@ -116,8 +116,8 @@ namespace meshkernel
         {
             double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
             size_t faceIndex{constants::missing::sizetValue};         ///< The face index
-            std::vector<size_t> edgeIndexses;                         ///< The indexes of crossed edges
-            std::vector<size_t> edgeNodes;                            ///< The indexes of the nodes defining the crossed edges
+            std::vector<Index> edgeIndexses;                          ///< The indexes of crossed edges
+            std::vector<Index> edgeNodes;                             ///< The indexes of the nodes defining the crossed edges
         };
 
         /// @brief Default constructor
@@ -308,26 +308,26 @@ namespace meshkernel
         Mesh& operator+=(Mesh const& rhs);
 
         // nodes
-        std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
-        std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbors
-        std::vector<int> m_nodesTypes;                 ///< The node types (nb)
+        std::vector<Point> m_nodes;                   ///< The mesh nodes (xk, yk)
+        std::vector<std::vector<Index>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
+        std::vector<Index> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
+        std::vector<std::vector<Index>> m_nodesNodes; ///< For each node, its neighbors
+        std::vector<int> m_nodesTypes;                ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
-        std::vector<std::vector<size_t>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<size_t> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<Point> m_edgesCenters;             ///< The edges centers
+        std::vector<Edge> m_edges;                    ///< The edges, defined as first and second node(kn)
+        std::vector<std::vector<Index>> m_edgesFaces; ///< For each edge, the shared face index (lne)
+        std::vector<Index> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
+        std::vector<double> m_edgeLengths;            ///< The edge lengths
+        std::vector<Point> m_edgesCenters;            ///< The edges centers
 
         // faces
-        std::vector<std::vector<size_t>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<size_t> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<size_t>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
-        std::vector<Point> m_facesCircumcenters;       ///< The face circumcenters the face circumcenter (xz, yz)
-        std::vector<Point> m_facesMassCenters;         ///< The faces centers of mass (xzw, yzw)
-        std::vector<double> m_faceArea;                ///< The face area
+        std::vector<std::vector<Index>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
+        std::vector<Index> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
+        std::vector<std::vector<Index>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
+        std::vector<Point> m_facesCircumcenters;      ///< The face circumcenters the face circumcenter (xz, yz)
+        std::vector<Point> m_facesMassCenters;        ///< The faces centers of mass (xzw, yzw)
+        std::vector<double> m_faceArea;               ///< The face area
 
         Projection m_projection; ///< The projection used
 

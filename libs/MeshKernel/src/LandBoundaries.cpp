@@ -148,7 +148,7 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     // Connect the m_mesh nodes
     if (m_findOnlyOuterMeshBoundary)
     {
-        std::vector<size_t> connectedNodes;
+        std::vector<Index> connectedNodes;
         for (size_t e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             if (!m_mesh->IsEdgeOnBoundary(e))
@@ -161,14 +161,14 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     }
 }
 
-void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, bool initialize, std::vector<size_t>& nodes, size_t numNodes)
+void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, bool initialize, std::vector<Index>& nodes, size_t numNodes)
 {
     if (m_nodes.empty())
     {
         return;
     }
 
-    std::vector<size_t> nodesLoc;
+    std::vector<Index> nodesLoc;
     size_t numNodesLoc;
 
     if (initialize)
@@ -300,7 +300,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex, boo
     }
 }
 
-void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, size_t numNodesLoc, size_t nodeIndex)
+void LandBoundaries::AddLandBoundary(const std::vector<Index>& nodesLoc, size_t numNodesLoc, size_t nodeIndex)
 {
     if (m_nodes.empty())
     {
@@ -488,7 +488,7 @@ std::tuple<size_t, size_t> LandBoundaries::MakePath(size_t landBoundaryIndex)
     return {numNodesInPath, numRejectedNodesInPath};
 }
 
-void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
+void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
 {
     if (m_nodes.empty())
     {
@@ -500,7 +500,7 @@ void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
     // Try to find a face crossed by the current land boundary polyline:
     // 1. One of the land boundary nodes is inside a face
     // 2. Or one of the land boundary segments is crossing a boundary mesh edge
-    size_t crossedFaceIndex = constants::missing::sizetValue;
+    Index crossedFaceIndex = constants::missing::sizetValue;
     for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
     {
         crossedFaceIndex = m_nodeFaceIndices[i];
@@ -528,7 +528,7 @@ void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
             m_faceMask[crossedFaceIndex] = true;
         }
 
-        std::vector<size_t> landBoundaryFaces{crossedFaceIndex};
+        std::vector<Index> landBoundaryFaces{crossedFaceIndex};
         MaskMeshFaceMask(landBoundaryIndex, landBoundaryFaces);
 
         // Mask all nodes of the masked faces
@@ -564,14 +564,14 @@ void LandBoundaries::ComputeMeshNodeMask(size_t landBoundaryIndex)
     }
 }
 
-void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, const std::vector<size_t>& initialFaces)
+void LandBoundaries::MaskMeshFaceMask(size_t landBoundaryIndex, const std::vector<Index>& initialFaces)
 {
     if (m_nodes.empty())
     {
         return;
     }
 
-    std::vector<size_t> nextFaces;
+    std::vector<Index> nextFaces;
     nextFaces.reserve(initialFaces.size());
     for (const auto& face : initialFaces)
     {
@@ -849,10 +849,10 @@ size_t LandBoundaries::FindStartEndMeshNodesFromEdges(size_t edge, Point point) 
     return secondMeshNodeIndex;
 }
 
-std::vector<size_t> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
-                                                 size_t startMeshNode)
+std::vector<meshkernel::Index> LandBoundaries::ShortestPath(size_t landBoundaryIndex,
+                                                            size_t startMeshNode)
 {
-    std::vector<size_t> connectedNodeEdges;
+    std::vector<Index> connectedNodeEdges;
     if (m_nodes.empty())
     {
         return connectedNodeEdges;

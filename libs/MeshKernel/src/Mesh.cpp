@@ -139,7 +139,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Flag invalid nodes
-    std::vector<size_t> validNodesIndices(m_nodes.size());
+    std::vector<Index> validNodesIndices(m_nodes.size());
     std::ranges::fill(validNodesIndices, constants::missing::sizetValue);
     size_t validIndex = 0;
     for (size_t n = 0; n < m_nodes.size(); ++n)
@@ -213,7 +213,7 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     }
 
     // add all valid edges starting at secondNode
-    std::vector<size_t> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue);
+    std::vector<Index> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue);
     size_t numSecondNodeEdges = 0;
     for (size_t n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
@@ -245,11 +245,11 @@ void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
     }
 
     // re-assign edges to second node
-    m_nodesEdges[secondNodeIndex] = std::vector<size_t>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
+    m_nodesEdges[secondNodeIndex] = std::vector<Index>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::vector<size_t>(0);
+    m_nodesEdges[firstNodeIndex] = std::vector<Index>(0);
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = {constants::missing::doubleValue, constants::missing::doubleValue};
 
@@ -261,7 +261,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<size_t> originalNodeIndices(GetNumNodes(), constants::missing::sizetValue);
+    std::vector<Index> originalNodeIndices(GetNumNodes(), constants::missing::sizetValue);
     size_t index = 0;
     for (size_t i = 0; i < GetNumNodes(); ++i)
     {
@@ -552,8 +552,8 @@ void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
 {
 
     std::vector<double> edgeAngles(Mesh::m_maximumNumberOfEdgesPerNode);
-    std::vector<std::size_t> indices(Mesh::m_maximumNumberOfEdgesPerNode);
-    std::vector<size_t> edgeNodeCopy(Mesh::m_maximumNumberOfEdgesPerNode);
+    std::vector<Index> indices(Mesh::m_maximumNumberOfEdgesPerNode);
+    std::vector<Index> edgeNodeCopy(Mesh::m_maximumNumberOfEdgesPerNode);
     for (auto n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())

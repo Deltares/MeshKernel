@@ -276,7 +276,7 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+            const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], static_cast<Index>(currentNode));
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -782,7 +782,7 @@ void Smoother::ComputeNodeXiEta(size_t currentNode)
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], currentNode);
+        const Index nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], static_cast<Index>(currentNode));
 
         // optimal angle
         dTheta = 2.0 * M_PI / static_cast<double>(numFaceNodes);
@@ -842,8 +842,8 @@ void Smoother::NodeAdministration(size_t currentNode)
         }
 
         // find the face shared by the two edges
-        const auto firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
-        const auto secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
+        const auto firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], static_cast<Index>(2)), static_cast<Index>(1)) - 1;
+        const auto secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], static_cast<Index>(2)), static_cast<Index>(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] ||
@@ -978,14 +978,14 @@ void Smoother::Initialize()
     std::fill(m_numConnectedNodes.begin(), m_numConnectedNodes.end(), 0);
 
     m_connectedNodes.resize(m_mesh->GetNumNodes());
-    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(Mesh::m_maximumNumberOfConnectedNodes, 0));
+    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<Index>(Mesh::m_maximumNumberOfConnectedNodes, 0));
 
     m_sharedFacesCache.reserve(Mesh::m_maximumNumberOfEdgesPerNode);
 
     m_connectedNodesCache.reserve(Mesh::m_maximumNumberOfConnectedNodes);
 
     m_faceNodeMappingCache.resize(Mesh::m_maximumNumberOfConnectedNodes);
-    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(Mesh::m_maximumNumberOfNodesPerFace, 0));
+    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<Index>(Mesh::m_maximumNumberOfNodesPerFace, 0));
 
     m_xiCache.resize(Mesh::m_maximumNumberOfConnectedNodes, 0.0);
     std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);

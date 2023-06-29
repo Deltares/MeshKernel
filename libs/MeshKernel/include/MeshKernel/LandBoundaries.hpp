@@ -86,7 +86,7 @@ namespace meshkernel
         /// @return The number of land boundary nodes.
         auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<size_t> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
+        std::vector<Index> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
@@ -96,14 +96,14 @@ namespace meshkernel
         /// @param[in] numNodes
         void AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex,
                                                    bool initialize,
-                                                   std::vector<size_t>& nodes,
+                                                   std::vector<Index>& nodes,
                                                    size_t numNodes);
 
         /// @brief Add new land boundary segment that connects two others (add_land)
         /// @param[in] nodesLoc
         /// @param[in] numNodesLoc
         /// @param[in] nodeIndex
-        void AddLandBoundary(const std::vector<size_t>& nodesLoc,
+        void AddLandBoundary(const std::vector<Index>& nodesLoc,
                              size_t numNodesLoc,
                              size_t nodeIndex);
 
@@ -116,7 +116,7 @@ namespace meshkernel
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current land boundary polyline (masknodes).
         /// @param[in] landBoundaryIndex The land boundary polyline index
-        void ComputeMeshNodeMask(size_t landBoundaryIndex);
+        void ComputeMeshNodeMask(Index landBoundaryIndex);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
         /// It is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
@@ -141,7 +141,7 @@ namespace meshkernel
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] landBoundaryIndex The land boundary polyline index
         /// @param[in] initialFaces      The initial face seeds
-        void MaskMeshFaceMask(size_t landBoundaryIndex, const std::vector<size_t>& initialFaces);
+        void MaskMeshFaceMask(size_t landBoundaryIndex, const std::vector<Index>& initialFaces);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
         /// @param[in] landBoundaryIndex The land boundary polyline index
@@ -168,7 +168,7 @@ namespace meshkernel
         /// @param[in] landBoundaryIndex The index of a valid landboundary
         /// @param[in] startMeshNode     The starting point
         /// @returns A vector of connected edge indices for each node
-        std::vector<size_t> ShortestPath(size_t landBoundaryIndex, size_t startMeshNode);
+        std::vector<Index> ShortestPath(size_t landBoundaryIndex, size_t startMeshNode);
 
         /// @brief Compute the nearest land boundary segment (toland)
         /// @param[in] landBoundaryIndex The land boundary index
@@ -183,11 +183,11 @@ namespace meshkernel
         std::vector<Point> m_polygonNodesCache;                       ///< Array of points (e.g. points of a face)
         std::vector<std::pair<size_t, size_t>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
         std::vector<std::vector<double>> m_nodesLand;                 ///< Node to land boundary segment mapping
-        std::vector<size_t> m_nodeFaceIndices;                        ///< For each node, the indices of the faces including them
+        std::vector<Index> m_nodeFaceIndices;                         ///< For each node, the indices of the faces including them
 
-        std::vector<size_t> m_nodeMask; ///< Node mask
-        std::vector<bool> m_faceMask;   ///< Face mask
-        std::vector<size_t> m_edgeMask; ///< Edge mask
+        std::vector<Index> m_nodeMask; ///< Node mask
+        std::vector<bool> m_faceMask;  ///< Face mask
+        std::vector<Index> m_edgeMask; ///< Edge mask
 
         bool m_landMask = true;          ///< Land mask
         bool m_addLandboundaries = true; ///< Whether to add land boundaries

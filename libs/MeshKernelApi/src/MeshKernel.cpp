@@ -202,7 +202,7 @@ namespace meshkernelapi
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<size_t> num_face_nodes;
+                std::vector<meshkernel::Index> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {

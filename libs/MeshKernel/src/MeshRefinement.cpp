@@ -230,7 +230,7 @@ size_t MeshRefinement::DeleteIsolatedHangingnodes()
                 const auto faceIndex = m_mesh->m_edgesFaces[e][f];
 
                 if (faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][0] &&
-                    faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], static_cast<size_t>(1))])
+                    faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], static_cast<Index>(1))])
                 {
                     throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
                 }
@@ -465,7 +465,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement
 
     std::vector<Point> facePolygonWithoutHangingNodes;
     facePolygonWithoutHangingNodes.reserve(Mesh::m_maximumNumberOfNodesPerFace);
-    std::vector<size_t> localEdgesNumFaces;
+    std::vector<Index> localEdgesNumFaces;
     localEdgesNumFaces.reserve(Mesh::m_maximumNumberOfEdgesPerFace);
 
     for (size_t e = 0; e < m_mesh->GetNumEdges(); e++)

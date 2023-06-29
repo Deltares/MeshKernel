@@ -89,8 +89,8 @@ namespace meshkernel
         /// @param[in] projection The mesh projection
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
-               const std::vector<std::vector<size_t>>& faceNodes,
-               const std::vector<size_t>& numFaceNodes,
+               const std::vector<std::vector<Index>>& faceNodes,
+               const std::vector<Index>& numFaceNodes,
                Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
@@ -120,8 +120,8 @@ namespace meshkernel
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
         void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
-                                                       std::vector<size_t>& localNodeIndicesCache,
-                                                       std::vector<size_t>& globalEdgeIndicesCache) const;
+                                                       std::vector<Index>& localNodeIndicesCache,
+                                                       std::vector<Index>& globalEdgeIndicesCache) const;
 
         /// @brief For a face create a closed polygon
         /// @param[in]     faceIndex         The face index
@@ -133,7 +133,7 @@ namespace meshkernel
         /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges
         /// @returns       The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                   const std::vector<size_t>& edgesNumFaces) const;
+                                                   const std::vector<Index>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of obtuse triangles
@@ -142,12 +142,12 @@ namespace meshkernel
         /// @brief Gets the edges crossing the small flow edges
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @returns The indices of the edges crossing small flow edges
-        [[nodiscard]] std::vector<size_t> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
+        [[nodiscard]] std::vector<Index> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Gets the flow edges centers from the crossing edges
         /// @param[in] edges The crossing edges indices
         /// @returns The centers of the flow edges
-        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<size_t>& edges) const;
+        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<Index>& edges) const;
 
         /// @brief Deletes small flow edges (removesmallflowlinks, part 1)
         ///
@@ -225,7 +225,7 @@ namespace meshkernel
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
         /// @return The face indexses
-        [[nodiscard]] std::vector<size_t> SortedFacesAroundNode(size_t node) const;
+        [[nodiscard]] std::vector<Index> SortedFacesAroundNode(size_t node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed
@@ -239,12 +239,12 @@ namespace meshkernel
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
                                   std::vector<bool>& isVisited,
-                                  size_t& currentNode,
+                                  Index& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
-        [[nodiscard]] std::vector<size_t> GetHangingEdges() const;
+        [[nodiscard]] std::vector<Index> GetHangingEdges() const;
 
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
@@ -252,7 +252,7 @@ namespace meshkernel
         /// @brief For a collection of points, compute the face indices including them.
         /// @param[in] points The input point vector.
         /// @return The face indices including the points.
-        [[nodiscard]] std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
+        [[nodiscard]] std::vector<Index> PointFaceIndices(const std::vector<Point>& points);
 
         /// @brief Deletes a mesh in a polygon, using several options (delnet)
         /// @param[in] polygon        The polygon where to perform the operation
@@ -315,17 +315,17 @@ namespace meshkernel
                                 size_t node,
                                 size_t previousEdge,
                                 size_t numClosingEdges,
-                                std::vector<size_t>& edges,
-                                std::vector<size_t>& nodes,
-                                std::vector<size_t>& sortedEdges,
-                                std::vector<size_t>& sortedNodes,
+                                std::vector<Index>& edges,
+                                std::vector<Index>& nodes,
+                                std::vector<Index>& sortedEdges,
+                                std::vector<Index>& sortedNodes,
                                 std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes The face nodes composing the triangles
         /// @param[in] nodes The node coordinates
         /// @returns If triangle has an acute triangle
-        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<Index>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()

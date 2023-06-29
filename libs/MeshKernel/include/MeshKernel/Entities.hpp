@@ -35,6 +35,7 @@
 
 namespace meshkernel
 {
+
     // to re-enable when compiling with c++20 support
     // template <typename T>
     // concept IsCoordinate = requires(T t)
@@ -149,7 +150,7 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<size_t, size_t> Edge;
+    typedef std::pair<Index, Index> Edge;
 
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
@@ -259,21 +260,21 @@ namespace meshkernel
     }
 
     /// @brief Converts array of face centers to corresponding vector
-    static std::vector<std::vector<size_t>> ConvertToFaceNodesVector(int num_faces,
-                                                                     const int* const face_nodes,
-                                                                     const int* const nodes_per_face)
+    static std::vector<std::vector<Index>> ConvertToFaceNodesVector(int num_faces,
+                                                                    const int* const face_nodes,
+                                                                    const int* const nodes_per_face)
     {
-        std::vector<std::vector<size_t>> result;
+        std::vector<std::vector<Index>> result;
         result.reserve(num_faces);
 
-        std::vector<size_t> nodes;
+        std::vector<Index> nodes;
         size_t index = 0;
         for (auto f = 0; f < num_faces; f++)
         {
             nodes.clear();
             for (auto n = 0; n < nodes_per_face[f]; n++)
             {
-                nodes.emplace_back(face_nodes[index]);
+                nodes.emplace_back(static_cast<Index>(face_nodes[index]));
                 index++;
             }
             result.emplace_back(nodes);

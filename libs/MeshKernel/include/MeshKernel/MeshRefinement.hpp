@@ -204,18 +204,18 @@ namespace meshkernel
 
         RTree m_samplesRTree; ///< The sample node RTree
 
-        std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int> m_edgeMask;        ///< If 0, edge is not split
-        std::vector<int> m_nodeMask;        ///< The node mask used in the refinement process
-        std::vector<size_t> m_brotherEdges; ///< The index of the brother edge for each edge
+        std::vector<int> m_faceMask;       ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_edgeMask;       ///< If 0, edge is not split
+        std::vector<int> m_nodeMask;       ///< The node mask used in the refinement process
+        std::vector<Index> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging
-        std::vector<bool> m_isHangingEdgeCache;       ///< Cache for maintaining if edge is hanging
-        std::vector<Point> m_polygonNodesCache;       ///< Cache for maintaining polygon nodes
-        std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
-        std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
-        std::vector<size_t> m_refineEdgeCache;        ///< Cache for the edges to be refined
+        std::vector<bool> m_isHangingNodeCache;      ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache;      ///< Cache for maintaining if edge is hanging
+        std::vector<Point> m_polygonNodesCache;      ///< Cache for maintaining polygon nodes
+        std::vector<Index> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
+        std::vector<Index> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
+        std::vector<Index> m_refineEdgeCache;        ///< Cache for the edges to be refined
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
