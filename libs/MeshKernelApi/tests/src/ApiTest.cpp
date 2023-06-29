@@ -590,7 +590,76 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
-TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
+TEST_F(ApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector xCoordinatesIn{
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0};
+
+    std::vector yCoordinatesIn{
+        50.0,
+        50.0,
+        50.0,
+        150.0,
+        150.0,
+        150.0,
+        250.0,
+        250.0,
+        250.0};
+
+    std::vector valuesIn{
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        4.0,
+        4.0,
+        4.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.min_edge_size = 0.5;
+    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.account_for_samples_outside = 0;
+
+    // Execute
+    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(17, mesh2d.num_edges);
+}
+
+TEST_F(ApiTests, RefineBasedOnGebcoSamples_OnAUniformMesh_shouldRefineMesh)
 {
     // Prepare
     MakeMesh();
