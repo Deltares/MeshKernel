@@ -59,7 +59,7 @@ namespace meshkernel
     {
     public:
         /// @brief Builds the tree
-        /// @tparam[in] nodes The nodes
+        /// @param[in] nodes The nodes
         template <std::derived_from<Point> T>
         void BuildTree(std::vector<T> const& nodes)
         {
