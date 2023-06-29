@@ -325,8 +325,9 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
     if (m_edgesNumFaces[previousEdge] >= 2)
         return;
 
-    edges.emplace_back(previousEdge);
-    nodes.emplace_back(node);
+    edges.push_back(previousEdge);
+    nodes.push_back(node);
+
     const auto otherNode = OtherNodeOfEdge(m_edges[previousEdge], node);
 
     // enclosure found
@@ -364,9 +365,11 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
             // is an internal face only if all edges have a different face
             for (size_t ee = 0; ee < edges.size(); ee++)
             {
-                sortedEdgesFaces.emplace_back(m_edgesFaces[edges[ee]][0]);
+                sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
             }
+
             std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
+
             for (size_t n = 0; n < sortedEdgesFaces.size() - 1; n++)
             {
                 if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
@@ -392,7 +395,8 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         // increase m_edgesNumFaces
         for (const auto& edge : edges)
         {
-            m_edgesNumFaces[edge] += 1;
+            // Increment the number of shared faces for the edge.
+            ++m_edgesNumFaces[edge];
             const auto numFace = m_edgesNumFaces[edge];
             m_edgesFaces[edge][numFace - 1] = GetNumFaces();
         }
@@ -441,6 +445,7 @@ void Mesh2D::FindFaces()
     std::vector<Point> nodalValues(m_maximumNumberOfEdgesPerFace);
     std::vector<size_t> edges(m_maximumNumberOfEdgesPerFace);
     std::vector<size_t> nodes(m_maximumNumberOfEdgesPerFace);
+
     for (size_t numEdgesPerFace = 3; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
         for (size_t n = 0; n < GetNumNodes(); n++)
@@ -633,11 +638,13 @@ void Mesh2D::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& poly
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.clear();
-    polygonNodesCache.reserve(numFaceNodes);
+    polygonNodesCache.reserve(numFaceNodes + 1);
+
     for (size_t n = 0; n < numFaceNodes; n++)
     {
         polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
     }
+
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
@@ -665,10 +672,11 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
 {
     const size_t maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
-    std::vector<Point> middlePoints;
-    middlePoints.reserve(m_maximumNumberOfNodesPerFace);
-    std::vector<Point> normals;
-    normals.reserve(m_maximumNumberOfNodesPerFace);
+
+    std::array<Point, m_maximumNumberOfNodesPerFace> middlePoints;
+    std::array<Point, m_maximumNumberOfNodesPerFace> normals;
+    size_t pointCount = 0;
+
     const auto numNodes = polygon.size() - 1;
 
     Point centerOfMass{0.0, 0.0};
@@ -677,7 +685,8 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
         centerOfMass.x += polygon[n].x;
         centerOfMass.y += polygon[n].y;
     }
-    centerOfMass = centerOfMass / static_cast<double>(numNodes);
+
+    centerOfMass /= static_cast<double>(numNodes);
 
     auto result = centerOfMass;
     if (numNodes == m_numNodesInTriangle)
@@ -704,15 +713,17 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                     continue;
                 }
                 const auto nextNode = NextCircularForwardIndex(n, numNodes);
-                middlePoints.emplace_back((polygon[n] + polygon[nextNode]) * 0.5);
-                normals.emplace_back(NormalVector(polygon[n], polygon[nextNode], middlePoints.back(), m_projection));
+
+                middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
+                normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], m_projection);
+                ++pointCount;
             }
 
             Point estimatedCircumCenter = centerOfMass;
             for (size_t iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
             {
                 const Point previousCircumCenter = estimatedCircumCenter;
-                for (size_t n = 0; n < middlePoints.size(); n++)
+                for (size_t n = 0; n < pointCount; n++)
                 {
                     const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
                     const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);

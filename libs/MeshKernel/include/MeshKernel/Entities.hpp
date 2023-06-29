@@ -47,20 +47,22 @@ namespace meshkernel
     /// @brief Generic function for determining if two floating point values are equal
     /// @param[value] The value to compare
     /// @param[ref_value] The reference value to compare to
-    /// @param[eps_mutilpier] Multiplier of machine precision
-    /// @return Boolean indicating whether the value and reference value are equal within machine precision multiplied by the multiplier
+    /// @param[relative_tol] Relative tolerance to which the values are compared.
+    /// @return Boolean indicating whether the value and reference value are equal to a relative tolerance.
     template <std::floating_point T>
-    static bool IsEqual(const T value, T ref_value, T eps_mutilpier = 10.0)
+    static bool IsEqual(const T value, T ref_value, T relative_tol = 10.0 * std::numeric_limits<T>::epsilon())
     {
+
         if (value == ref_value)
         {
             return true;
         }
+
         const T abs_diff = std::abs(value - ref_value);
         const T abs_value = std::abs(value);
         const T abs_ref_value = std::abs(ref_value);
-        static const T tol = eps_mutilpier * std::numeric_limits<T>::epsilon();
-        return abs_diff < tol * std::min(abs_value, abs_ref_value);
+
+        return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
     }
 
     /// @brief Enumerator describing the supported projections
@@ -92,6 +94,14 @@ namespace meshkernel
             : x(x),
               y(y)
         {
+        }
+
+        /// @brief Inplace divide by a scalar value.
+        Point& operator/=(double rhs)
+        {
+            x /= rhs;
+            y /= rhs;
+            return *this;
         }
 
         /// @brief Overloads addition with another Point
