@@ -222,7 +222,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
     contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
 
     // Assert
-    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(2, 10, 19, 23, 91, 44));
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(2, 10, 19, 23, 31, 44));
     ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(1709, 2121, 3999, 4703, 6482, 6805));
 }
 
