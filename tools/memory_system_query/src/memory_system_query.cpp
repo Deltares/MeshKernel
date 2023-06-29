@@ -5,28 +5,18 @@
 #include <string>
 #include <utility>
 
-// clang-format off
 #if defined(_WIN32)
-//
+// clang-format off
 #include <windows.h>
 #include <psapi.h>
-//
+// clang-format on
 #elif defined(__linux__)
-//
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/resource.h>
-#include <sys/sysinfo.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #else
-//
 #error "Unsupported platform"
-//
 #endif
-// clang-format on
 
 MemorySystemQuery& MemorySystemQuery::Instance()
 {
@@ -37,15 +27,15 @@ MemorySystemQuery& MemorySystemQuery::Instance()
 void MemorySystemQuery::Start()
 {
     std::unique_lock lock(mutex);
-    m_max_bytes_used = GetRAMPhysicalUsedByCurrentProcessPeak();
     m_total_allocated_bytes = GetRAMSystemUsedByCurrentProcess();
+    m_max_bytes_used = GetRAMPhysicalUsedByCurrentProcessPeak();
 }
 
 void MemorySystemQuery::Stop(Result* result)
 {
     std::unique_lock lock(mutex);
-    result->max_bytes_used = GetRAMPhysicalUsedByCurrentProcessPeak() - m_max_bytes_used;
     result->total_allocated_bytes = GetRAMSystemUsedByCurrentProcess() - m_total_allocated_bytes;
+    result->max_bytes_used = GetRAMPhysicalUsedByCurrentProcessPeak() - m_max_bytes_used;
 }
 
 int64_t MemorySystemQuery::TotalAllocatedBytes() const
