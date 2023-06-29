@@ -91,9 +91,9 @@ namespace meshkernel
         /// @brief Class constructor parametrized optionally by the source location.
         /// @param[in] source_location The source location.
         MeshKernelError(std::source_location const& source_location = std::source_location::current())
-            : m_what(),
-              m_fmt_message(),
-              m_source_location(source_location)
+            : m_fmt_message(),
+              m_source_location(source_location),
+              m_what()
         {
         }
 
@@ -102,9 +102,9 @@ namespace meshkernel
         /// @param[in] source_location The source location.
         MeshKernelError(VariadicErrorMessage const& message,
                         std::source_location const& source_location = std::source_location::current())
-            : m_what(),
-              m_fmt_message(message.GetFormatted()),
-              m_source_location(source_location)
+            : m_fmt_message(message.GetFormatted()),
+              m_source_location(source_location),
+              m_what()
         {
         }
 
@@ -113,9 +113,9 @@ namespace meshkernel
         /// @param[in] source_location The source location.
         MeshKernelError(std::string_view message,
                         std::source_location const& source_location = std::source_location::current())
-            : m_what(),
-              m_fmt_message(message),
-              m_source_location(source_location)
+            : m_fmt_message(message),
+              m_source_location(source_location),
+              m_what()
 
         {
         }
@@ -150,8 +150,8 @@ namespace meshkernel
         virtual std::string Message() const { return m_fmt_message; }
 
     private:
-        mutable std::string m_what;             ///< C-style formatted message
         std::source_location m_source_location; ///< The source location
+        mutable std::string m_what;             ///< C-style formatted message
 
         /// @brief Strips CMAKE_SRC_DIR from the path of the file name obtained from the source location.
         /// @return The stripped file name.
