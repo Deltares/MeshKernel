@@ -395,7 +395,9 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
         // increase m_edgesNumFaces
         for (const auto& edge : edges)
         {
-            const auto numFace = ++m_edgesNumFaces[edge];
+            // Increment the number of shared faces for the edge.
+            ++m_edgesNumFaces[edge];
+            const auto numFace = m_edgesNumFaces[edge];
             m_edgesFaces[edge][numFace - 1] = GetNumFaces();
         }
 
