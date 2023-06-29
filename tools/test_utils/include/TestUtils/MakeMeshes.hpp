@@ -77,8 +77,8 @@ std::tuple<size_t,
            std::vector<double>,
            std::vector<int>>
 MakeRectangularMeshForApiTesting(
-    size_t num_rows,
-    size_t num_columns,
+    size_t numRows,
+    size_t numColumns,
     double delta);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
