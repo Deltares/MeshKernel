@@ -1,33 +1,47 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "TestUtils/MakeMeshes.hpp"
+
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <gmock/gmock-matchers.h>
 
-TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
+class ContactsTests : public testing::Test
+{
+public:
+    std::shared_ptr<meshkernel::Mesh1D> MakeMesh1D() const
+    {
+        // Create 1d mesh
+        std::vector<meshkernel::Point> nodes{
+            {1.73493900000000, -7.6626510000000},
+            {2.35659313023165, 1.67281447902331},
+            {5.38347452702839, 10.3513746546384},
+            {14.2980910429074, 12.4797224193970},
+            {22.9324017677239, 15.3007317677239},
+            {25.3723169493137, 24.1623588554512},
+            {25.8072280000000, 33.5111870000000}};
+        std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
+        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+    }
+};
+
+TEST_F(ContactsTests, ComputeSingleContacts1dMeshInside2dMesh)
 {
 
     // Create 1d mesh
-    std::vector<meshkernel::Point> nodes{
-        {1.73493900000000, -7.6626510000000},
-        {2.35659313023165, 1.67281447902331},
-        {5.38347452702839, 10.3513746546384},
-        {14.2980910429074, 12.4797224193970},
-        {22.9324017677239, 15.3007317677239},
-        {25.3723169493137, 24.1623588554512},
-        {25.8072280000000, 33.5111870000000}};
-    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
-    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
     const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     // Create contacts
-    std::vector<bool> onedNodeMask(nodes.size(), true);
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
     meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Set the polygon where to generate the contacts
@@ -38,94 +52,41 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
     contacts.ComputeSingleContacts(onedNodeMask, polygon, 0.0);
 
     // Assert
-    {
-        auto const& mesh1dIndices = contacts.Mesh1dIndices();
-        ASSERT_EQ(5, mesh1dIndices.size());
-        ASSERT_EQ(1, mesh1dIndices[0]);
-        ASSERT_EQ(2, mesh1dIndices[1]);
-        ASSERT_EQ(3, mesh1dIndices[2]);
-        ASSERT_EQ(4, mesh1dIndices[3]);
-        ASSERT_EQ(5, mesh1dIndices[4]);
-    }
-
-    {
-        auto const& mesh2dIndices = contacts.Mesh2dIndices();
-        ASSERT_EQ(5, mesh2dIndices.size());
-        ASSERT_EQ(0, mesh2dIndices[0]);
-        ASSERT_EQ(1, mesh2dIndices[1]);
-        ASSERT_EQ(4, mesh2dIndices[2]);
-        ASSERT_EQ(7, mesh2dIndices[3]);
-        ASSERT_EQ(8, mesh2dIndices[4]);
-    }
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(1, 2, 3, 4, 5));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 4, 7, 8));
 }
 
-TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
+TEST_F(ContactsTests, ComputeMultipleContacts1dMeshInside2dMesh)
 {
 
     // Create 1d mesh
-    std::vector<meshkernel::Point> nodes{
-        {1.73493900000000, -7.6626510000000},
-        {2.35659313023165, 1.67281447902331},
-        {5.38347452702839, 10.3513746546384},
-        {14.2980910429074, 12.4797224193970},
-        {22.9324017677239, 15.3007317677239},
-        {25.3723169493137, 24.1623588554512},
-        {25.8072280000000, 33.5111870000000}};
-    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
-    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
     const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     // Create contacts
-    std::vector<bool> onedNodeMask(nodes.size(), true);
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
     meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Execute
     contacts.ComputeMultipleContacts(onedNodeMask);
 
     // Assert
-
-    {
-        auto const& mesh1dIndices = contacts.Mesh1dIndices();
-        ASSERT_EQ(5, mesh1dIndices.size());
-        ASSERT_EQ(1, mesh1dIndices[0]);
-        ASSERT_EQ(2, mesh1dIndices[1]);
-        ASSERT_EQ(3, mesh1dIndices[2]);
-        ASSERT_EQ(4, mesh1dIndices[3]);
-        ASSERT_EQ(5, mesh1dIndices[4]);
-    }
-
-    {
-        auto const& mesh2dIndices = contacts.Mesh2dIndices();
-        ASSERT_EQ(5, mesh2dIndices.size());
-        ASSERT_EQ(0, mesh2dIndices[0]);
-        ASSERT_EQ(1, mesh2dIndices[1]);
-        ASSERT_EQ(4, mesh2dIndices[2]);
-        ASSERT_EQ(7, mesh2dIndices[3]);
-        ASSERT_EQ(8, mesh2dIndices[4]);
-    }
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(1, 2, 3, 4, 5));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 4, 7, 8));
 }
 
-TEST(Contacts, ComputeContactsWithPoints)
+TEST_F(ContactsTests, ComputeContactsWithPoints)
 {
     // Create 1d mesh
-    std::vector<meshkernel::Point> nodes{
-        {1.73493900000000, -7.6626510000000},
-        {2.35659313023165, 1.67281447902331},
-        {5.38347452702839, 10.3513746546384},
-        {14.2980910429074, 12.4797224193970},
-        {22.9324017677239, 15.3007317677239},
-        {25.3723169493137, 24.1623588554512},
-        {25.8072280000000, 33.5111870000000}};
-    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
-    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
     const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     // Create contacts
-    std::vector<bool> onedNodeMask(nodes.size(), true);
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
     meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Create points to connect
@@ -139,24 +100,8 @@ TEST(Contacts, ComputeContactsWithPoints)
     contacts.ComputeContactsWithPoints(onedNodeMask, pointsToConnect);
 
     // Assert
-    {
-        auto const& mesh1dIndices = contacts.Mesh1dIndices();
-        ASSERT_EQ(4, mesh1dIndices.size());
-        ASSERT_EQ(2, mesh1dIndices[0]);
-        ASSERT_EQ(3, mesh1dIndices[1]);
-        ASSERT_EQ(4, mesh1dIndices[2]);
-        ASSERT_EQ(5, mesh1dIndices[3]);
-    }
-
-    {
-
-        auto const& mesh2dIndices = contacts.Mesh2dIndices();
-        ASSERT_EQ(4, mesh2dIndices.size());
-        ASSERT_EQ(1, mesh2dIndices[0]);
-        ASSERT_EQ(3, mesh2dIndices[1]);
-        ASSERT_EQ(7, mesh2dIndices[2]);
-        ASSERT_EQ(8, mesh2dIndices[3]);
-    }
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(2, 3, 4, 5));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(1, 3, 7, 8));
 }
 
 TEST(Contacts, ComputeContactsWithPolygons)
@@ -277,27 +222,8 @@ TEST(Contacts, ComputeContactsWithPolygons)
     contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
 
     // Assert
-    {
-        auto const& mesh1dIndices = contacts.Mesh1dIndices();
-        ASSERT_EQ(6, mesh1dIndices.size());
-        ASSERT_EQ(2, mesh1dIndices[0]);
-        ASSERT_EQ(10, mesh1dIndices[1]);
-        ASSERT_EQ(19, mesh1dIndices[2]);
-        ASSERT_EQ(23, mesh1dIndices[3]);
-        ASSERT_EQ(31, mesh1dIndices[4]);
-        ASSERT_EQ(44, mesh1dIndices[5]);
-    }
-
-    {
-        auto const& mesh2dIndices = contacts.Mesh2dIndices();
-        ASSERT_EQ(6, mesh2dIndices.size());
-        ASSERT_EQ(1709, mesh2dIndices[0]);
-        ASSERT_EQ(2121, mesh2dIndices[1]);
-        ASSERT_EQ(3999, mesh2dIndices[2]);
-        ASSERT_EQ(4703, mesh2dIndices[3]);
-        ASSERT_EQ(6482, mesh2dIndices[4]);
-        ASSERT_EQ(6805, mesh2dIndices[5]);
-    }
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(2, 10, 19, 23, 91, 44));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(1709, 2121, 3999, 4703, 6482, 6805));
 }
 
 TEST(Contacts, ComputeBoundaryContacts)
@@ -330,29 +256,6 @@ TEST(Contacts, ComputeBoundaryContacts)
     contacts.ComputeBoundaryContacts(onedNodeMask, polygon, 200.0);
 
     // Assert
-    {
-        auto const& mesh1dIndices = contacts.Mesh1dIndices();
-        ASSERT_EQ(8, mesh1dIndices.size());
-        ASSERT_EQ(0, mesh1dIndices[0]);
-        ASSERT_EQ(2, mesh1dIndices[1]);
-        ASSERT_EQ(6, mesh1dIndices[2]);
-        ASSERT_EQ(0, mesh1dIndices[3]);
-        ASSERT_EQ(7, mesh1dIndices[4]);
-        ASSERT_EQ(7, mesh1dIndices[5]);
-        ASSERT_EQ(7, mesh1dIndices[6]);
-        ASSERT_EQ(7, mesh1dIndices[7]);
-    }
-
-    {
-        auto const& mesh2dIndices = contacts.Mesh2dIndices();
-        ASSERT_EQ(8, mesh2dIndices.size());
-        ASSERT_EQ(0, mesh2dIndices[0]);
-        ASSERT_EQ(1, mesh2dIndices[1]);
-        ASSERT_EQ(2, mesh2dIndices[2]);
-        ASSERT_EQ(3, mesh2dIndices[3]);
-        ASSERT_EQ(5, mesh2dIndices[4]);
-        ASSERT_EQ(6, mesh2dIndices[5]);
-        ASSERT_EQ(7, mesh2dIndices[6]);
-        ASSERT_EQ(8, mesh2dIndices[7]);
-    }
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(0, 2, 6, 0, 7, 7, 7, 7));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 2, 3, 5, 6, 7, 8));
 }
