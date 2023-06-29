@@ -35,7 +35,7 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleContacts(onedNodeMask, polygon);
+    contacts.ComputeSingleContacts(onedNodeMask, polygon, 0.0);
 
     // Assert
     {

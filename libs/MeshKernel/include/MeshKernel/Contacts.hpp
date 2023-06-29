@@ -70,7 +70,8 @@ namespace meshkernel
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
-        void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons);
+        /// @param[in] projectionFactor     The projection factor used for generating links when 1d nodes are not inside mesh2d
+        void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons, double projectionFactor);
 
         /// @brief Computes 1d-2d contacts,
         /// where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll).
@@ -150,6 +151,9 @@ namespace meshkernel
         /// @param[in] face The 2d face index (end of the contact)
         /// @return True if the contact is crossing an existing contact
         [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
+
+        void Connect1dNodesWithCrossingFaces(size_t node,
+                                             double distanceFactor);
 
         std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
         std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect

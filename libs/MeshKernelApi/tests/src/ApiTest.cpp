@@ -776,7 +776,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
     polygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.data(), polygon);
+    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.data(), polygon, 0.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -2829,7 +2829,7 @@ TEST_F(ApiTests, SetFacesAndComputeSingleContactsThroughApi_ShouldComputeContact
     polygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.data(), polygon);
+    errorCode = mkernel_contacts_compute_single(meshKernelId, onedNodeMask.data(), polygon, 0.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
