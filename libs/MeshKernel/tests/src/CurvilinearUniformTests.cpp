@@ -3,7 +3,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
@@ -69,8 +68,6 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 {
     // 1 Setup
-
-    MakeGridParameters makeGridParameters;
     const double angle = 0.0;
     const double originX = 0.0;
     const double originY = 89.0;
