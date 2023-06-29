@@ -8,11 +8,11 @@
 
 std::tuple<size_t,
            size_t,
-           std::shared_ptr<double>,
-           std::shared_ptr<double>,
+           std::vector<double>,
+           std::vector<double>,
            std::vector<int>,
-           std::shared_ptr<int>,
-           std::shared_ptr<int>>
+           std::vector<int>,
+           std::vector<int>>
 ReadLegacyMeshFile(std::filesystem::path const& file_path)
 {
     {
@@ -56,42 +56,43 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
 
     std::size_t num_edges;
     nc_inq_dim(ncidp, dimid, read_name.data(), &num_edges);
-    std::shared_ptr<double> node_x(new double[num_nodes], std::default_delete<double[]>());
-    std::shared_ptr<double> node_y(new double[num_nodes], std::default_delete<double[]>());
-    std::shared_ptr<int> edge_nodes(new int[num_edges * 2], std::default_delete<int[]>());
-    std::shared_ptr<int> edge_type(new int[num_edges], std::default_delete<int[]>());
+
+    std::vector<double> node_x(num_nodes);
+    std::vector<double> node_y(num_nodes);
+    std::vector<int> edge_nodes(num_edges * 2);
+    std::vector<int> edge_type(num_edges);
 
     std::string meshNodeXName{"NetNode_x"};
     int varid = 0;
     nc_inq_varid(ncidp, meshNodeXName.c_str(), &varid);
-    nc_get_var_double(ncidp, varid, node_x.get());
+    nc_get_var_double(ncidp, varid, node_x.data());
 
     std::string meshNodeYName{"NetNode_y"};
     nc_inq_varid(ncidp, meshNodeYName.c_str(), &varid);
-    nc_get_var_double(ncidp, varid, node_y.get());
+    nc_get_var_double(ncidp, varid, node_y.data());
 
     std::string linkName{"NetLink"};
     nc_inq_varid(ncidp, linkName.c_str(), &varid);
-    nc_get_var_int(ncidp, varid, edge_nodes.get());
+    nc_get_var_int(ncidp, varid, edge_nodes.data());
 
     std::string edgeTypeName{"NetLinkType"};
     nc_inq_varid(ncidp, edgeTypeName.c_str(), &varid);
-    nc_get_var_int(ncidp, varid, edge_type.get());
+    nc_get_var_int(ncidp, varid, edge_type.data());
 
     // Transform into 0 based indexing
     for (size_t i = 0; i < num_edges * 2; i++)
     {
-        edge_nodes.get()[i] -= 1;
+        edge_nodes[i] -= 1;
     }
 
     std::vector<int> node_type(num_nodes);
     size_t index = 0;
     for (size_t i = 0; i < num_edges; i++)
     {
-        const auto type = edge_type.get()[i];
-        const auto firstNode = edge_nodes.get()[index];
+        const auto type = edge_type[i];
+        const auto firstNode = edge_nodes[index];
         index++;
-        const auto secondNode = edge_nodes.get()[index];
+        const auto secondNode = edge_nodes[index];
         index++;
         node_type[firstNode] = type;
         node_type[secondNode] = type;
@@ -130,7 +131,7 @@ ComputeEdgesAndNodes(
         // If the node is not part of a 2 mesh, do not add it in nodes
         if (node_type[i] == nodeType || node_type[i] == 0)
         {
-            nodes.emplace_back(node_x.get()[i], node_y.get()[i]);
+            nodes.emplace_back(node_x[i], node_y[i]);
             nodeMapping[i] = static_cast<int>(nodes.size()) - 1;
         }
     }
@@ -139,8 +140,8 @@ ComputeEdgesAndNodes(
     for (size_t i = 0; i < num_edges; i++)
     {
 
-        auto const firstNode = edge_nodes.get()[index];
-        auto const secondNode = edge_nodes.get()[index + 1];
+        auto const firstNode = edge_nodes[index];
+        auto const secondNode = edge_nodes[index + 1];
         if ((node_type[firstNode] == nodeType || node_type[firstNode] == 0) &&
             (node_type[secondNode] == nodeType || node_type[firstNode] == 0))
         {
@@ -240,9 +241,9 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
 }
 
 std::tuple<size_t, size_t,
-           std::shared_ptr<double>,
-           std::shared_ptr<double>,
-           std::shared_ptr<int>>
+           std::vector<double>,
+           std::vector<double>,
+           std::vector<int>>
 MakeRectangularMeshForApiTesting(
     size_t num_rows,
     size_t num_columns,
@@ -253,8 +254,9 @@ MakeRectangularMeshForApiTesting(
     auto num_x = num_columns + static_cast<size_t>(1);
 
     std::vector<std::vector<size_t>> indicesValues(num_x, std::vector<size_t>(num_y));
-    std::shared_ptr<double> node_x(new double[num_x * num_y], std::default_delete<double[]>());
-    std::shared_ptr<double> node_y(new double[num_x * num_y], std::default_delete<double[]>());
+
+    std::vector<double> node_x(num_x * num_y);
+    std::vector<double> node_y(num_x * num_y);
 
     size_t nodeIndex = 0;
     for (auto i = 0u; i < num_x; ++i)
@@ -262,22 +264,22 @@ MakeRectangularMeshForApiTesting(
         for (auto j = 0u; j < num_y; ++j)
         {
 
-            node_x.get()[nodeIndex] = i * delta;
-            node_y.get()[nodeIndex] = j * delta;
+            node_x[nodeIndex] = i * delta;
+            node_y[nodeIndex] = j * delta;
             indicesValues[i][j] = static_cast<size_t>(i) * num_y + j;
             nodeIndex++;
         }
     }
 
-    std::shared_ptr<int> edge_nodes(new int[((num_x - 1) * num_y + (num_y - 1) * num_x) * 2], std::default_delete<int[]>());
+    std::vector<int> edge_nodes(((num_x - 1) * num_y + (num_y - 1) * num_x) * 2);
     size_t edgeIndex = 0;
     for (auto i = 0u; i < num_x - 1; ++i)
     {
         for (auto j = 0u; j < num_y; ++j)
         {
-            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
+            edge_nodes[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i + 1][j]);
+            edge_nodes[edgeIndex] = static_cast<int>(indicesValues[i + 1][j]);
             edgeIndex++;
         }
     }
@@ -286,9 +288,9 @@ MakeRectangularMeshForApiTesting(
     {
         for (auto j = 0u; j < num_y - 1; ++j)
         {
-            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
+            edge_nodes[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;
-            edge_nodes.get()[edgeIndex] = static_cast<int>(indicesValues[i][j]);
+            edge_nodes[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
         }
     }
