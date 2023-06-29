@@ -29,6 +29,18 @@ public:
         std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
         return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
     }
+
+    std::shared_ptr<meshkernel::Mesh1D> MakeMesh1DOutsideMesh2D() const
+    {
+        // Create 1d mesh
+        std::vector<meshkernel::Point> nodes{
+            {-10.0, 5.0},
+            {-10.0, -10.0},
+            {15.0, 15.0},
+            {35.0, 35.0}};
+        std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}};
+        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+    }
 };
 
 TEST_F(ContactsTests, ComputeSingleContacts1dMeshInside2dMesh)
@@ -54,6 +66,31 @@ TEST_F(ContactsTests, ComputeSingleContacts1dMeshInside2dMesh)
     // Assert
     ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(1, 2, 3, 4, 5));
     ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 4, 7, 8));
+}
+
+TEST_F(ContactsTests, ComputeSingleContacts_onAMesh2DWithLaterals_ShouldComputeContats)
+{
+
+    // Create 1d mesh
+    const auto mesh1d = MakeMesh1DOutsideMesh2D();
+
+    // Create 2d mesh
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
+
+    // Set the polygon where to generate the contacts
+    std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+
+    // Execute
+    contacts.ComputeSingleContacts(onedNodeMask, polygon, 5.0);
+
+    // Assert
+    ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(0, 2));
+    ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 4));
 }
 
 TEST_F(ContactsTests, ComputeMultipleContacts1dMeshInside2dMesh)

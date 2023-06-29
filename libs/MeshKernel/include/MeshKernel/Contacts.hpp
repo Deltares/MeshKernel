@@ -70,7 +70,7 @@ namespace meshkernel
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[in] projectionFactor     The projection factor used for generating links when 1d nodes are not inside mesh2d
+        /// @param[in] projectionFactor     The projection factor used for generating contacts when 1d nodes are not inside mesh2d
         void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons, double projectionFactor);
 
         /// @brief Computes 1d-2d contacts,
