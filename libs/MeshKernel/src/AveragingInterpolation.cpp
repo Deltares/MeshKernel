@@ -51,6 +51,8 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_transformSamples(transformSamples),
       m_minNumSamples(minNumSamples)
 {
+    // build sample r-tree for searches
+    m_samplesRtree.BuildTree(m_samples);
 }
 
 void AveragingInterpolation::Compute()
@@ -61,9 +63,6 @@ void AveragingInterpolation::Compute()
     }
 
     m_visitedSamples.resize(m_samples.size());
-
-    // build sample r-tree for searches
-    m_samplesRtree.BuildTree(m_samples);
 
     std::vector<Point> dualFacePolygon;
     m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
