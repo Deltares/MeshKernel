@@ -25,73 +25,79 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/RTree.hpp>
 
-using meshkernel::RTree;
+#include <limits>
 
-void RTree::SearchPoints(Point node, double searchRadiusSquared)
-{
-    const auto searchRadius = std::sqrt(searchRadiusSquared);
-
-    Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
-    Point2D nodeSought = Point2D(node.x, node.y);
-
-    m_queryCache.reserve(m_queryVectorCapacity);
-    m_queryCache.clear();
-    m_rtree2D.query(bgi::within(box) &&
-                        bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v)
-                                       { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
-                    std::back_inserter(m_queryCache));
-
-    m_queryIndices.reserve(m_queryCache.size());
-    m_queryIndices.clear();
-    for (const auto& [first, second] : m_queryCache)
-    {
-        m_queryIndices.emplace_back(second);
-    }
-}
-
-void RTree::SearchNearestPoint(Point node)
+namespace meshkernel
 {
 
-    m_queryCache.reserve(m_queryVectorCapacity);
-    m_queryCache.clear();
-    const Point2D nodeSought = Point2D(node.x, node.y);
-    m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
-
-    if (!m_queryCache.empty())
+    void RTree::SearchPoints(Point const& node, double searchRadiusSquared)
     {
+        const auto searchRadius = std::sqrt(searchRadiusSquared);
+
+        Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
+        Point2D const nodeSought = Point2D(node.x, node.y);
+
+        m_queryCache.reserve(m_queryVectorCapacity);
+        m_queryCache.clear();
+        m_rtree2D.query(bgi::within(box) &&
+                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
+                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
+                        std::back_inserter(m_queryCache));
+
+        m_queryIndices.reserve(m_queryCache.size());
         m_queryIndices.clear();
-        m_queryIndices.emplace_back(m_queryCache[0].second);
+        for (const auto& [first, second] : m_queryCache)
+        {
+            m_queryIndices.emplace_back(second);
+        }
     }
-}
 
-void RTree::SearchNearestPoint(Point node, double searchRadiusSquared)
-{
-    m_queryCache.reserve(m_queryVectorCapacity);
-    m_queryCache.clear();
-    const Point2D nodeSought = Point2D(node.x, node.y);
-    const auto searchRadius = std::sqrt(searchRadiusSquared);
-    Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
-    m_rtree2D.query(bgi::within(box) &&
-                        bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v)
-                                       { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }) &&
-                        bgi::nearest(nodeSought, 1),
-                    std::back_inserter(m_queryCache));
-
-    if (!m_queryCache.empty())
+    void RTree::SearchNearestPoint(Point const& node)
     {
-        m_queryIndices.clear();
-        m_queryIndices.emplace_back(m_queryCache[0].second);
-    }
-}
 
-void RTree::DeleteNode(size_t position)
-{
-    const auto numberRemoved = m_rtree2D.remove(m_points[position]);
-    if (numberRemoved != 1)
-    {
-        throw std::invalid_argument("DeleteNode: Could not remove node at given position.");
+        m_queryCache.reserve(m_queryVectorCapacity);
+        m_queryCache.clear();
+        const Point2D nodeSought = Point2D(node.x, node.y);
+        m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+
+        if (!m_queryCache.empty())
+        {
+            m_queryIndices.clear();
+            m_queryIndices.emplace_back(m_queryCache[0].second);
+        }
     }
-    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<size_t>::max()};
-}
+
+    void RTree::SearchNearestPoint(Point const& node, double searchRadiusSquared)
+    {
+        m_queryCache.reserve(m_queryVectorCapacity);
+        m_queryCache.clear();
+        const Point2D nodeSought = Point2D(node.x, node.y);
+        const auto searchRadius = std::sqrt(searchRadiusSquared);
+        Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
+        m_rtree2D.query(bgi::within(box) &&
+                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
+                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }) &&
+                            bgi::nearest(nodeSought, 1),
+                        std::back_inserter(m_queryCache));
+
+        if (!m_queryCache.empty())
+        {
+            m_queryIndices.clear();
+            m_queryIndices.emplace_back(m_queryCache[0].second);
+        }
+    }
+
+    void RTree::DeleteNode(size_t position)
+    {
+        const auto numberRemoved = m_rtree2D.remove(m_points[position]);
+        if (numberRemoved != 1)
+        {
+            throw MeshKernelError(VariadicErrorMessage{"DeleteNode: Could not remove node at position {}.", position});
+        }
+        m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue},
+                              std::numeric_limits<size_t>::max()};
+    }
+} // namespace meshkernel

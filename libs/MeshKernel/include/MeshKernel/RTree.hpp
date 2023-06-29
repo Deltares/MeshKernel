@@ -31,11 +31,11 @@
 #include <MeshKernel/Entities.hpp>
 
 // include boost
-#define BOOST_ALLOW_DEPRECATED_HEADERS
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/index/rtree.hpp>
-#undef BOOST_ALLOW_DEPRECATED_HEADERS
+
+#include <concepts>
 
 // r-tree
 // https://gist.github.com/logc/10272165
@@ -57,21 +57,11 @@ namespace meshkernel
     /// and avoid frequent re-allocations when the number of results changes.
     class RTree
     {
-
-        typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D; ///< Typedef for Point2D
-        typedef bg::model::box<Point2D> Box2D;                          ///< Typedef for box of Point2D
-        typedef std::pair<Point2D, size_t> value2D;                     ///< Typedef of pair of Point2D and size_t
-        typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;           ///< Typedef for a 2D RTree
-
-        typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D; ///< Typedef for Point3D
-        typedef std::pair<Point3D, size_t> value3D;                     ///< Typedef of pair of Point3D and size_t
-        typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;           ///< Typedef for a 3D RTree
-
     public:
         /// @brief Builds the tree
-        /// @tparam T Requires IsCoordinate<T>
-        template <typename T>
-        void BuildTree(std::vector<T>& nodes)
+        /// @tparam[in] nodes The nodes
+        template <std::derived_from<Point> T>
+        void BuildTree(std::vector<T> const& nodes)
         {
             m_points.reserve(m_points.size());
             m_points.clear();
@@ -90,16 +80,16 @@ namespace meshkernel
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
-        void SearchPoints(Point node, double searchRadiusSquared);
+        void SearchPoints(Point const& node, double searchRadiusSquared);
+
+        /// @brief Gets the nearest of all nodes
+        /// @param[in] node The node
+        void SearchNearestPoint(Point const& node);
 
         /// @brief Finds the nearest node in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
-        void SearchNearestPoint(Point node, double searchRadiusSquared);
-
-        /// @brief Gets the nearest of all nodes
-        /// @param[in] node The node
-        void SearchNearestPoint(Point node);
+        void SearchNearestPoint(Point const& node, double searchRadiusSquared);
 
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
@@ -121,9 +111,14 @@ namespace meshkernel
         [[nodiscard]] bool HasQueryResults() const { return GetQueryResultSize() > 0; }
 
     private:
+        using Point2D = bg::model::point<double, 2, bg::cs::cartesian>; ///< Typedef for Point2D
+        using Box2D = bg::model::box<Point2D>;                          ///< Typedef for box of Point2D
+        using Value2D = std::pair<Point2D, size_t>;                     ///< Typedef of pair of Point2D and size_t
+        using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;           ///< Typedef for a 2D RTree
+
         RTree2D m_rtree2D;                                ///< The 2D RTree
         std::vector<std::pair<Point2D, size_t>> m_points; ///< The points
-        std::vector<value2D> m_queryCache;                ///< The query cache
+        std::vector<Value2D> m_queryCache;                ///< The query cache
         std::vector<size_t> m_queryIndices;               ///< The query indices
         int m_queryVectorCapacity = 100;                  ///< Capacity of the query vector
     };
