@@ -323,11 +323,11 @@ namespace meshkernel
         std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
-        std::vector<std::vector<size_t>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<size_t> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<Point> m_edgesCenters;             ///< The edges centers
+        std::vector<Edge> m_edges;                       ///< The edges, defined as first and second node(kn)
+        std::vector<std::array<size_t, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
+        std::vector<size_t> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
+        std::vector<double> m_edgeLengths;               ///< The edge lengths
+        std::vector<Point> m_edgesCenters;               ///< The edges centers
 
         // faces
         std::vector<std::vector<size_t>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
