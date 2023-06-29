@@ -30,18 +30,38 @@ target_link_libraries(
 )
 
 if(ENABLE_BENCHMARKING_MEM_REPORT)
-  # link memory manager
-  target_link_libraries(
-    ${TARGET_NAME}
-    PRIVATE
-    MeshKernelBenchmarkMemoryManager
-  )
   # add compiler definition for reporting the memory statistics in src
   target_compile_definitions(
     ${TARGET_NAME}
     PRIVATE
     ENABLE_BENCHMARKING_MEM_REPORT
   )
+
+  if(MEM_COLLECTION_METHOD STREQUAL "QUERY_SYSTEM")
+    # link memory manager
+    target_link_libraries(
+      ${TARGET_NAME}
+      PRIVATE
+      MeshKernelBenchmarkMemorySystemQuery
+    )
+    target_compile_definitions(
+      ${TARGET_NAME}
+      PRIVATE
+      MEM_COLLECTION_METHOD_QUERY_SYSTEM
+    )
+  elseif(MEM_COLLECTION_METHOD STREQUAL "COUNT_BYTES")
+    # link memory manager
+    target_link_libraries(
+      ${TARGET_NAME}
+      PRIVATE
+      MeshKernelBenchmarkMemoryManager
+    )
+    target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE
+        MEM_COLLECTION_METHOD_COUNT_BYTES
+    )
+  endif()
 endif()
 
 # group the sources
