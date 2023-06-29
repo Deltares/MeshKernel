@@ -152,8 +152,11 @@ namespace meshkernel
         /// @return True if the contact is crossing an existing contact
         [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
 
+        /// @brief Connect the current 1D line segment with the faces that intersect a semiline originating from the current node and perpendicular to the current 1D edge.
+        /// @param[in] node The 1d node index (start of the contact)
+        /// @param[in] projectionFactor The semiline length, as a multiplier of the current ad edge length
         void Connect1dNodesWithCrossingFaces(size_t node,
-                                             double distanceFactor);
+                                             double projectionFactor);
 
         std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
         std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
