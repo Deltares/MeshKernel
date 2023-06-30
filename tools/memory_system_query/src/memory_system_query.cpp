@@ -11,9 +11,12 @@
 #include <psapi.h>
 // clang-format on
 #elif defined(__linux__)
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include <fstream>
 #else
 #error "Unsupported platform"
 #endif
@@ -71,17 +74,6 @@ std::string MemorySystemQuery::Statistics(std::string const& caller) const
     return oss.str();
 }
 
-int64_t MemorySystemQuery::GetRAMSystemUsedByCurrentProcess()
-{
-#ifdef _WIN32
-    PROCESS_MEMORY_COUNTERS_EX pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
-    return static_cast<int64_t>(pmc.WorkingSetSize);
-#else
-    return GetRAMPhysicalUsedByCurrentProcess() + GetRAMVirtualUsedByCurrentProcess();
-#endif
-}
-
 #ifdef __linux__
 
 static int64_t constexpr Kilobytes2Bytes{1024};
@@ -100,6 +92,17 @@ static int ParseLine(char* line)
 }
 
 #endif
+
+int64_t MemorySystemQuery::GetRAMSystemUsedByCurrentProcess()
+{
+#ifdef _WIN32
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
+    return static_cast<int64_t>(pmc.WorkingSetSize);
+#else
+    return GetRAMPhysicalUsedByCurrentProcess() + GetRAMVirtualUsedByCurrentProcess();
+#endif
+}
 
 int64_t MemorySystemQuery::GetRAMPhysicalUsedByCurrentProcess()
 {
@@ -170,3 +173,122 @@ int64_t MemorySystemQuery::GetRAMVirtualUsedByCurrentProcess()
     return result;
 #endif
 }
+
+//
+// #ifdef __linux__
+// namespace
+//{
+//    int ParseLine(char* line)
+//    {
+//        const auto i = std::strlen(line);
+//
+//        while (*line < '0' || *line > '9')
+//        {
+//            line++;
+//        }
+//
+//        line[i - 3] = '\0';
+//        return std::atoi(line);
+//    }
+//
+//    std::string const proc_self_status_path("/proc/self/status");
+//
+//    int64_t KiloBytesToBytes(int64_t kilo_bytes)
+//    {
+//        return kilo_bytes * 1024;
+//    }
+//
+//    int64_t Physical()
+//    {
+//        int64_t kilo_bytes = 0;
+//        std::ifstream file(proc_self_status_path, std::ifstream::in);
+//        std::string line;
+//        while (std::getline(file, line))
+//        {
+//            if (line.compare(1, 6, "VmRSS:") == 0)
+//            {
+//                kilo_bytes += ParseLine(line.data());
+//            }
+//        }
+//        file.close();
+//        return KiloBytesToBytes(kilo_bytes);
+//    }
+//
+//    int64_t PhysicalPeak()
+//    {
+//        int64_t kilo_bytes = 0;
+//        std::ifstream file(proc_self_status_path, std::ifstream::in);
+//        std::string line;
+//        while (std::getline(file, line))
+//        {
+//            if (line.compare(1, 6, "VmHWM:") == 0)
+//            {
+//                kilo_bytes += ParseLine(line.data());
+//            }
+//        }
+//        file.close();
+//        return KiloBytesToBytes(kilo_bytes);
+//    }
+//
+//    int64_t Virtual()
+//    {
+//        int64_t kilo_bytes = 0;
+//        std::ifstream file(proc_self_status_path, std::ifstream::in);
+//        std::string line;
+//        while (std::getline(file, line))
+//        {
+//            if (line.compare(1, 7, "VmSize:") == 0)
+//            {
+//                kilo_bytes = ParseLine(line.data());
+//                break;
+//            }
+//        }
+//        file.close();
+//        return KiloBytesToBytes(kilo_bytes);
+//    }
+//} // namespace
+// #endif
+//
+// int64_t MemorySystemQuery::GetRAMSystemUsedByCurrentProcess()
+//{
+// #ifdef _WIN32
+//    PROCESS_MEMORY_COUNTERS_EX pmc;
+//    GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
+//    return static_cast<int64_t>(pmc.WorkingSetSize);
+// #else
+//    return GetRAMPhysicalUsedByCurrentProcess() + GetRAMVirtualUsedByCurrentProcess();
+// #endif
+//}
+//
+// int64_t MemorySystemQuery::GetRAMPhysicalUsedByCurrentProcess()
+//{
+// #ifdef _WIN32
+//    PROCESS_MEMORY_COUNTERS_EX pmc;
+//    GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
+//    return static_cast<int64_t>(pmc.WorkingSetSize);
+// #else
+//    return Physical();
+// #endif
+//}
+//
+// int64_t MemorySystemQuery::GetRAMPhysicalUsedByCurrentProcessPeak()
+//{
+// #if defined(_WIN32)
+//    PROCESS_MEMORY_COUNTERS pmc;
+//    GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+//    return static_cast<int64_t>(pmc.PeakWorkingSetSize);
+// #else
+//    return PhysicalPeak();
+// #endif
+//}
+//
+// int64_t MemorySystemQuery::GetRAMVirtualUsedByCurrentProcess()
+//{
+// #ifdef _WIN32
+//    PROCESS_MEMORY_COUNTERS_EX pmc;
+//    GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
+//    return pmc.PrivateUsage;
+// #else
+//    return Virtual();
+// #endif
+//}
