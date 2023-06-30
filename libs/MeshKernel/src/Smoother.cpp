@@ -842,7 +842,7 @@ void Smoother::NodeAdministration(size_t currentNode)
         }
 
         // find the face shared by the two edges
-        const auto firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], static_cast<Index>(2)), static_cast<Index>(1)) - 1;
+        const auto firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
         const auto secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], static_cast<Index>(2)), static_cast<Index>(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
