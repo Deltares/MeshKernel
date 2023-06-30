@@ -31,9 +31,11 @@
 #include <MeshKernel/Entities.hpp>
 
 // include boost
+#define BOOST_ALLOW_DEPRECATED_HEADERS
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/index/rtree.hpp>
+#undef BOOST_ALLOW_DEPRECATED_HEADERS
 
 #include <concepts>
 
