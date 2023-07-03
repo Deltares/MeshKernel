@@ -126,55 +126,6 @@ namespace meshkernelapi
         }
     }
 
-    meshkernel::CurvilinearGrid CreateUniformCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                             const GeometryList& geometryList,
-                                                             const meshkernel::Projection& projection)
-    {
-        meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
-
-        auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
-
-        const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, projection);
-
-        if (!polygon->IsEmpty())
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y,
-                                                        polygon,
-                                                        0);
-        }
-        if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
-                                                        makeGridParameters.num_rows,
-                                                        makeGridParameters.origin_x,
-                                                        makeGridParameters.origin_y,
-                                                        makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y);
-        }
-        throw meshkernel::AlgorithmError("The num_columns or num_rows in MakeGridParameters is not equal to 0");
-    }
-
-    meshkernel::CurvilinearGrid CreateUniformCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                        const meshkernel::Projection& projection)
-    {
-        meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
-
-        if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
-        {
-            throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
-        }
-
-        return curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                    makeGridParameters.origin_y,
-                                                    makeGridParameters.block_size_x,
-                                                    makeGridParameters.block_size_y,
-                                                    makeGridParameters.upper_right_x,
-                                                    makeGridParameters.upper_right_y);
-    }
-
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         meshKernelId = meshKernelStateCounter++;
