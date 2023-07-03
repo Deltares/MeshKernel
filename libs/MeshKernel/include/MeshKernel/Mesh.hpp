@@ -100,7 +100,7 @@ namespace meshkernel
         };
 
         /// @brief Map of Location enum to string
-        inline static std::map<Location, std::string> const LocationString = {
+        inline static std::map<Location, std::string> const LocationToString = {
             {Location::Faces, "Faces"},
             {Location::Nodes, "Nodes"},
             {Location::Edges, "Edges"},

@@ -95,7 +95,7 @@ namespace meshkernel
         const auto numberRemoved = m_rtree2D.remove(m_points[position]);
         if (numberRemoved != 1)
         {
-            throw MeshKernelError(VariadicErrorMessage{"DeleteNode: Could not remove node at position {}.", position});
+            throw MeshKernelError("DeleteNode: Could not remove node at position {}.", position);
         }
         m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue},
                               std::numeric_limits<size_t>::max()};
