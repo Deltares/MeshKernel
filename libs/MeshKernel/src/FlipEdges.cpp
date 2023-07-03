@@ -72,7 +72,7 @@ void FlipEdges::Compute() const
         }
         numFlippedEdges = 0;
 
-        for (size_t e = 0; e < numEdges; e++)
+        for (Index e = 0; e < static_cast<Index>(numEdges); e++)
         {
 
             if (m_mesh->IsEdgeOnBoundary(e))
@@ -91,8 +91,8 @@ void FlipEdges::Compute() const
                 return;
             }
 
-            size_t nodeLeft = constants::missing::sizetValue;
-            size_t nodeRight = constants::missing::sizetValue;
+            Index nodeLeft = constants::missing::sizetValue;
+            Index nodeRight = constants::missing::sizetValue;
             const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
             if (topologyFunctional >= 0)
@@ -270,9 +270,9 @@ void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
     m_mesh->m_nodesEdges[firstNode].resize(m_mesh->m_nodesNumEdges[firstNode]);
 }
 
-int FlipEdges::ComputeTopologyFunctional(size_t edge,
-                                         size_t& nodeLeft,
-                                         size_t& nodeRight) const
+int FlipEdges::ComputeTopologyFunctional(Index edge,
+                                         Index& nodeLeft,
+                                         Index& nodeRight) const
 {
     const int largeTopologyFunctionalValue = 1000;
 

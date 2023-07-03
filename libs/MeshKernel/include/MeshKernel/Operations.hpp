@@ -123,13 +123,13 @@ namespace meshkernel
     /// @param[in] el The element to search for
     /// @returns The index of element
     template <typename T>
-    [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] T FindIndex(const std::vector<T>& vec, T el)
     {
         for (size_t n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
-                return n;
+              return static_cast<T>(n);
             }
         }
 

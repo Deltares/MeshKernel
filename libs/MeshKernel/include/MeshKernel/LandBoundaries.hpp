@@ -112,7 +112,7 @@ namespace meshkernel
         /// This is done by modifying m_meshNodesLandBoundarySegments.
         /// @param[in] landBoundaryIndex       The current landboundary segment
         /// @returns The number of mesh nodes and rejected nodes for this path
-        std::tuple<size_t, size_t> MakePath(size_t landBoundaryIndex);
+        std::tuple<size_t, size_t> MakePath(Index landBoundaryIndex);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current land boundary polyline (masknodes).
         /// @param[in] landBoundaryIndex The land boundary polyline index

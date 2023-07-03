@@ -186,7 +186,7 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge
-        size_t ConnectNodes(size_t startNode, size_t endNode);
+        Index ConnectNodes(Index startNode, Index endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
@@ -201,7 +201,7 @@ namespace meshkernel
         /// @param[in] firstNodeIndex The index of the first node
         /// @param[in] secondNodeIndex The index of the second node
         /// @return The edge index
-        [[nodiscard]] size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
+        [[nodiscard]] Index FindEdge(Index firstNodeIndex, Index secondNodeIndex) const;
 
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
@@ -254,7 +254,7 @@ namespace meshkernel
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
         /// @param[in] endNode   The last node index where to perform edge sorting.
-        void SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode);
+        void SortEdgesInCounterClockWiseOrder(Index startNode, Index endNode);
 
         /// @brief Compute the max length of the edges connected to a node
         /// @param node The mesh node

@@ -359,7 +359,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<Index>& nodesLoc, size_t 
     m_validLandBoundaries.emplace_back(std::make_pair<size_t, size_t>(m_nodes.size() - 3, m_nodes.size() - 2));
 }
 
-std::tuple<size_t, size_t> LandBoundaries::MakePath(size_t landBoundaryIndex)
+std::tuple<size_t, size_t> LandBoundaries::MakePath(Index landBoundaryIndex)
 {
     if (m_nodes.empty())
     {

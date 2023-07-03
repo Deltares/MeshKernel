@@ -105,6 +105,21 @@ namespace meshkernel
             return *this;
         }
 
+        /// @brief Inplace multiply by a scalar value.
+        Point& operator*=(double rhs)
+        {
+            x *= rhs;
+            y *= rhs;
+            return *this;
+        }
+
+        Point& operator+=(const Point& rhs)
+        {
+            x += rhs.x;
+            y += rhs.y;
+            return *this;
+        }
+
         /// @brief Overloads addition with another Point
         [[nodiscard]] Point operator+(Point const& rhs) const { return Point(x + rhs.x, y + rhs.y); }
 
@@ -166,7 +181,7 @@ namespace meshkernel
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
     /// @returns Node index of other node of the edge
-    size_t static OtherNodeOfEdge(const Edge& edge, size_t node)
+    Index static OtherNodeOfEdge(const Edge& edge, Index node)
     {
         return node == edge.first ? edge.second : edge.first;
     }

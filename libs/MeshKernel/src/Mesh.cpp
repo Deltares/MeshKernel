@@ -43,7 +43,7 @@ Mesh::Mesh(const std::vector<Edge>& edges,
 void Mesh::NodeAdministration()
 {
     // assume no duplicated links
-    for (size_t e = 0; e < GetNumEdges(); e++)
+  for (Index e = 0; e < static_cast<Index>(GetNumEdges()); e++)
     {
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
@@ -141,7 +141,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     // Flag invalid nodes
     std::vector<Index> validNodesIndices(m_nodes.size());
     std::ranges::fill(validNodesIndices, constants::missing::sizetValue);
-    size_t validIndex = 0;
+    Index validIndex = 0;
     for (size_t n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
@@ -263,7 +263,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     std::vector<Point> filteredNodes(GetNumNodes());
     std::vector<Index> originalNodeIndices(GetNumNodes(), constants::missing::sizetValue);
     size_t index = 0;
-    for (size_t i = 0; i < GetNumNodes(); ++i)
+    for (Index i = 0; i < static_cast<Index>(GetNumNodes()); ++i)
     {
         const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
         if (inPolygon)
@@ -303,7 +303,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     AdministrateNodesEdges();
 }
 
-size_t Mesh::ConnectNodes(size_t startNode, size_t endNode)
+meshkernel::Index Mesh::ConnectNodes(Index startNode, Index endNode)
 {
     const auto edgeIndex = FindEdge(startNode, endNode);
 
@@ -410,14 +410,14 @@ size_t Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
     return constants::missing::sizetValue;
 }
 
-size_t Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
+meshkernel::Index Mesh::FindEdge(Index firstNodeIndex, Index secondNodeIndex) const
 {
     if (firstNodeIndex == constants::missing::sizetValue || secondNodeIndex == constants::missing::sizetValue)
     {
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    size_t edgeIndex = constants::missing::sizetValue;
+    Index edgeIndex = constants::missing::sizetValue;
     for (size_t n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
@@ -548,13 +548,13 @@ bool Mesh::IsFaceOnBoundary(size_t face) const
     return isFaceOnBoundary;
 }
 
-void Mesh::SortEdgesInCounterClockWiseOrder(size_t startNode, size_t endNode)
+void Mesh::SortEdgesInCounterClockWiseOrder(Index startNode, Index endNode)
 {
 
     std::vector<double> edgeAngles(Mesh::m_maximumNumberOfEdgesPerNode);
     std::vector<Index> indices(Mesh::m_maximumNumberOfEdgesPerNode);
     std::vector<Index> edgeNodeCopy(Mesh::m_maximumNumberOfEdgesPerNode);
-    for (auto n = startNode; n <= endNode; n++)
+    for (Index n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
         {

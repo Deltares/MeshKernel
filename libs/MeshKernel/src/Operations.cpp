@@ -1404,7 +1404,6 @@ namespace meshkernel
             {
                 continue;
             }
-
             edgesCenters.emplace_back((nodes[first] + nodes[second]) * 0.5);
         }
         return edgesCenters;

@@ -150,7 +150,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
-    std::vector<std::vector<size_t>> nodeIndices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), constants::missing::sizetValue));
+    std::vector<std::vector<meshkernel::Index>> nodeIndices(m_gridNodes.size(), std::vector<meshkernel::Index>(m_gridNodes[0].size(), constants::missing::sizetValue));
     std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::sizetValue, constants::missing::sizetValue});
 
     size_t ind = 0;

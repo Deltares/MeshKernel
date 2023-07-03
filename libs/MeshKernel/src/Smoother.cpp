@@ -308,12 +308,12 @@ void Smoother::ComputeOperatorsNode(size_t currentNode)
     std::fill(m_xisCache.begin(), m_xisCache.end(), 0.0);
     std::fill(m_etasCache.begin(), m_etasCache.end(), 0.0);
 
-    size_t faceRightIndex = 0;
-    size_t faceLeftIndex = 0;
+    Index faceRightIndex = 0;
+    Index faceLeftIndex = 0;
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
-    for (size_t f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
+    for (Index f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
@@ -933,7 +933,7 @@ void Smoother::NodeAdministration(size_t currentNode)
                 if (node == m_connectedNodesCache[i])
                 {
                     isNewNode = false;
-                    m_faceNodeMappingCache[f][faceNodeIndex] = i;
+                    m_faceNodeMappingCache[f][faceNodeIndex] = static_cast<Index>(i);
                     break;
                 }
             }
@@ -941,7 +941,7 @@ void Smoother::NodeAdministration(size_t currentNode)
             if (isNewNode)
             {
                 m_connectedNodesCache.emplace_back(node);
-                m_faceNodeMappingCache[f][faceNodeIndex] = m_connectedNodesCache.size() - 1;
+                m_faceNodeMappingCache[f][faceNodeIndex] = static_cast<Index>(m_connectedNodesCache.size() - 1);
                 m_connectedNodes[currentNode].emplace_back(node);
             }
 
@@ -951,7 +951,7 @@ void Smoother::NodeAdministration(size_t currentNode)
     }
 
     // update connected nodes (kkc)
-    m_numConnectedNodes[currentNode] = m_connectedNodesCache.size();
+    m_numConnectedNodes[currentNode] = static_cast<Index>(m_connectedNodesCache.size());
 }
 
 double Smoother::OptimalEdgeAngle(size_t numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
@@ -1052,7 +1052,7 @@ void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode)
 
         if (!isNewTopology)
         {
-            m_nodeTopologyMapping[currentNode] = topo;
+            m_nodeTopologyMapping[currentNode] = static_cast<Index>(topo);
             break;
         }
     }
@@ -1064,7 +1064,7 @@ void Smoother::SaveNodeTopologyIfNeeded(size_t currentNode)
         m_topologyXi.emplace_back(m_xiCache);
         m_topologyEta.emplace_back(m_etaCache);
         m_topologyFaceNodeMapping.emplace_back(m_faceNodeMappingCache);
-        m_nodeTopologyMapping[currentNode] = m_topologyConnectedNodes.size() - 1;
+        m_nodeTopologyMapping[currentNode] = static_cast<Index>(m_topologyConnectedNodes.size() - 1);
     }
 }
 
