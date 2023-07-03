@@ -952,57 +952,35 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, geometryList, projection);
 
-            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
-
-            if (!polygon->IsEmpty())
+    MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-
-                // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
-                for (size_t polygonIndex = 0; polygonIndex < polygon->GetNumPolygons(); ++polygonIndex)
-                {
-                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
-                                                                                      makeGridParameters.block_size_x,
-                                                                                      makeGridParameters.block_size_y,
-                                                                                      polygon,
-                                                                                      polygonIndex);
-                    auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
-                }
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            else if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
-            {
 
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
-                                                                                  makeGridParameters.num_rows,
-                                                                                  makeGridParameters.origin_x,
-                                                                                  makeGridParameters.origin_y,
-                                                                                  makeGridParameters.angle,
-                                                                                  makeGridParameters.block_size_x,
-                                                                                  makeGridParameters.block_size_y);
-                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
-            }
-            else
-            {
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            auto const curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
 
-                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
-                {
-                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
-                }
-
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                                                  makeGridParameters.origin_y,
-                                                                                  makeGridParameters.block_size_x,
-                                                                                  makeGridParameters.block_size_y,
-                                                                                  makeGridParameters.upper_right_x,
-                                                                                  makeGridParameters.upper_right_y);
-                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
-            }
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
         }
         catch (...)
         {
@@ -2308,44 +2286,31 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters,
+                                                                                            geometryList,
+                                                                                            projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
-            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
-
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
-
-            if (!polygon->IsEmpty())
+    MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
+                                                                  const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
-                                                                                                        makeGridParameters.block_size_x,
-                                                                                                        makeGridParameters.block_size_y,
-                                                                                                        polygon,
-                                                                                                        0);
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            else if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
-            {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
-                                                                                                        makeGridParameters.num_rows,
-                                                                                                        makeGridParameters.origin_x,
-                                                                                                        makeGridParameters.origin_y,
-                                                                                                        makeGridParameters.angle,
-                                                                                                        makeGridParameters.block_size_x,
-                                                                                                        makeGridParameters.block_size_y);
-            }
-            else
-            {
-                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
-                {
-                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
-                }
 
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                                                                        makeGridParameters.origin_y,
-                                                                                                        makeGridParameters.block_size_x,
-                                                                                                        makeGridParameters.block_size_y,
-                                                                                                        makeGridParameters.upper_right_x,
-                                                                                                        makeGridParameters.upper_right_y);
-            }
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
         }
         catch (...)
         {
