@@ -1861,7 +1861,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
                                                     const int* oneDNodeMask,
-                                                    const GeometryList& polygons)
+                                                    const GeometryList& polygons,
+                                                    double projectionFactor)
     {
         int exitCode = Success;
         try
@@ -1882,7 +1883,7 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons);
+            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons, projectionFactor);
         }
         catch (...)
         {

@@ -643,10 +643,12 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not connect)
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
+        /// @param[in] projectionFactor     The projection factor used for generating links when 1d nodes are not inside mesh2d
         /// @return Error code
         MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
                                                         const int* oneDNodeMask,
-                                                        const GeometryList& polygons);
+                                                        const GeometryList& polygons,
+                                                        double projectionFactor);
 
         /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
         ///
