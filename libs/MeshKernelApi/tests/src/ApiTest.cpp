@@ -88,7 +88,7 @@ private:
     int m_meshKernelId;
 };
 
-TEST_F(ApiTests, DeleteNodeThroughApi)
+TEST_F(ApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
 {
     // Prepare
     MakeMesh();
