@@ -988,21 +988,42 @@ namespace meshkernelapi
             }
             else
             {
-
-                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
-                {
-                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
-                }
-
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                                                  makeGridParameters.origin_y,
-                                                                                  makeGridParameters.block_size_x,
-                                                                                  makeGridParameters.block_size_y,
-                                                                                  makeGridParameters.upper_right_x,
-                                                                                  makeGridParameters.upper_right_y);
-                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                throw meshkernel::AlgorithmError("Invalid MakeGridParameters");
             }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
+
+            if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+            {
+                throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+            }
+
+            auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
+                                                                              makeGridParameters.origin_y,
+                                                                              makeGridParameters.block_size_x,
+                                                                              makeGridParameters.block_size_y,
+                                                                              makeGridParameters.upper_right_x,
+                                                                              makeGridParameters.upper_right_y);
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
         }
         catch (...)
         {
@@ -2333,18 +2354,40 @@ namespace meshkernelapi
             }
             else
             {
-                if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
-                {
-                    throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
-                }
-
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                                                                        makeGridParameters.origin_y,
-                                                                                                        makeGridParameters.block_size_x,
-                                                                                                        makeGridParameters.block_size_y,
-                                                                                                        makeGridParameters.upper_right_x,
-                                                                                                        makeGridParameters.upper_right_y);
+                throw meshkernel::AlgorithmError("Invalid MakeGridParameters");
             }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
+                                                                  const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(meshKernelState[meshKernelId].m_projection);
+
+            if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+            {
+                throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+            }
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
+                                                                                                    makeGridParameters.origin_y,
+                                                                                                    makeGridParameters.block_size_x,
+                                                                                                    makeGridParameters.block_size_y,
+                                                                                                    makeGridParameters.upper_right_x,
+                                                                                                    makeGridParameters.upper_right_y);
         }
         catch (...)
         {
