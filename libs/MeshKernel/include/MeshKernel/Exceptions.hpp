@@ -98,7 +98,7 @@ namespace meshkernel
             }
             else
             {
-                m_fmt_message = fmt_::vformat(format_with_source_location.Format(), std::make_format_args(args...));
+                m_fmt_message = fmt_::vformat(format_with_source_location.Format(), fmt_::make_format_args(args...));
             }
         }
 
