@@ -358,7 +358,7 @@ namespace meshkernelapi
                                                         makeGridParameters.block_size_x,
                                                         makeGridParameters.block_size_y);
         }
-        throw meshkernel::AlgorithmError("The num_columns or num_rows in MakeGridParameters is not equal to 0");
+        throw meshkernel::AlgorithmError("The num_columns or num_rows in MakeGridParameters must be larger than 0. Consider using curvilinear_make_uniform_on_extension instead");
     }
 
     /// @brief Generate a uniform curvilinear grid based on extension
