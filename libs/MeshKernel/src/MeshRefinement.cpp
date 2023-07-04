@@ -897,7 +897,8 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
                 }
                 else if (m_faceLocationType[face] == FaceLocation::LandWater)
                 {
-                    doRefinement = true;
+                    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
+                    doRefinement = newEdgeLength >= m_meshRefinementParameters.min_edge_size;
                 }
                 else
                 {
