@@ -60,7 +60,7 @@ endif()
 
 
 if(${USE_LIBFMT})
-  set(LIBFMT_VERSION 9.1.0)
+  set(LIBFMT_VERSION 10.0.0)
 
   message(
     STATUS 

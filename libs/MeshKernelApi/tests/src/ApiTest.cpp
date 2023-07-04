@@ -1237,7 +1237,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     ASSERT_THAT(computedCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 }
 
-TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError)
+TEST(ApiStatelessTests, Orthogonalize_OnInvalidMesh_ShouldThrowAMeshGeometryError)
 {
     // Prepare
     int meshKernelId;

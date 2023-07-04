@@ -93,23 +93,23 @@ namespace meshkernelapi
         {
             std::rethrow_exception(exception_ptr);
         }
-        catch (const meshkernel::NotImplemented<>& e)
+        catch (const meshkernel::NotImplemented& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::NotImplemented;
         }
-        catch (const meshkernel::MeshGeometryError<>& e)
+        catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::MeshGeometryError;
         }
-        catch (meshkernel::AlgorithmError<> const& e)
+        catch (meshkernel::AlgorithmError const& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::AlgorithmError;
         }
-        catch (meshkernel::MeshKernelError<> const& e)
+        catch (meshkernel::MeshKernelError const& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::MeshKernelError;

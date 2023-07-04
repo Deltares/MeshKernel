@@ -41,7 +41,7 @@ namespace meshkernelapi
         /// @brief The number of 1d nodes
         int num_nodes;
         /// @brief The number of 1d edges
-        int num_edges;
+        int num_edges = 0;
     };
 
 } // namespace meshkernelapi

@@ -71,7 +71,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
     }
 
     const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-    throw NotImplemented(message);
+    throw NotImplemented(message.c_str());
 }
 
 std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -342,7 +342,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
     case Projection::sphericalAccurate:
     default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+        throw NotImplemented(message.c_str());
     }
 
     // remove nodes outside the polygon
@@ -403,7 +403,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
         break;
     default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+        throw NotImplemented(message.c_str());
     }
 
     return curvilinearGrid;

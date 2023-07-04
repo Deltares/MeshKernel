@@ -52,30 +52,53 @@ namespace fmt_ = std;
 
 namespace meshkernel
 {
+    /// @brief A helper class for passing the format and source location to the custom exceptions
+    class FormatWithLocation final
+    {
+    public:
+        /// @brief Class constructor
+        /// @param[in] format          The format and source location
+        /// @param[in] source_location The source location
+        FormatWithLocation(const char* format,
+                           std::source_location const& source_location = std::source_location::current())
+            : m_format(format),
+              m_source_location(source_location)
+        {
+        }
 
-    /// @brief A class for throwing general MeshKernel exceptions.
-    template <typename... Args>
+        /// @brief Returns the format
+        /// @return The format
+        const char* Format() const { return m_format; }
+
+        /// @brief Returns the source location
+        /// @return The source location
+        std::source_location const& SourceLocation() const { return m_source_location; }
+
+    private:
+        const char* m_format; ///< The format
+
+        std::source_location m_source_location; ///< The source location
+    };
+
+    /// @brief A class for throwing generic MeshKernel exceptions
     class MeshKernelError : public std::exception
     {
     public:
-        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
-        /// @param[in] message         The variadic error message.
-        /// @param[in] args            The arguments to be formatted.
-        /// @param[in] source_location The source location.
-        MeshKernelError(std::string_view message,
-                        Args&&... args,
-                        std::source_location const& source_location = std::source_location::current())
-            : m_fmt_message(),
-              m_what(),
-              m_source_location(source_location)
+        /// @brief Class constructor
+        /// @param[in] format_with_source_location The format and source location
+        /// @param[in] args                        The arguments to be formatted.
+        template <typename... Args>
+        MeshKernelError(FormatWithLocation const& format_with_source_location,
+                        Args&&... args)
+            : m_fmt_message(), m_what(), m_source_location(format_with_source_location.SourceLocation())
         {
-            if (sizeof...(Args) == 0)
+            if (sizeof...(args) == 0)
             {
-                m_fmt_message = message;
+                m_fmt_message = format_with_source_location.Format();
             }
             else
             {
-                m_fmt_message = fmt_::vformat(message, fmt_::make_format_args(std::forward<Args>(args)...));
+                m_fmt_message = fmt_::vformat(format_with_source_location.Format(), std::make_format_args(args...));
             }
         }
 
@@ -107,7 +130,8 @@ namespace meshkernel
         virtual std::string Message() const { return m_fmt_message; }
 
     private:
-        mutable std::string m_what;             ///< C-style formatted message
+        mutable std::string m_what; ///< C-style formatted message
+
         std::source_location m_source_location; ///< The source location
 
         /// @brief Strips CMAKE_SRC_DIR from the path of the file name obtained from the source location.
@@ -133,71 +157,49 @@ namespace meshkernel
         }
     };
 
-    /// @brief Template deduction guide for MeshKernelError
-    template <typename... Args>
-    MeshKernelError(std::string_view message, Args&&... args) -> MeshKernelError<Args...>;
-
     /// @brief A class for throwing algorithm exceptions
-    template <typename... Args>
-    class NotImplemented final : public MeshKernelError<Args...>
+    class NotImplemented final : public MeshKernelError
     {
     public:
         // inherit
-        using MeshKernelError<Args...>::MeshKernelError;
+        using MeshKernelError::MeshKernelError;
 
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        std::string Category() const override
-        {
-            return "NotImplemented";
-        }
+        std::string Category() const override { return "NotImplemented"; }
     };
 
-    /// @brief Template deduction guide for NotImplemented
-    template <typename... Args>
-    NotImplemented(std::string_view message, Args&&... args) -> NotImplemented<Args...>;
-
     /// @brief A class for throwing algorithm exceptions
-    template <typename... Args>
-    class AlgorithmError final : public MeshKernelError<Args...>
+    class AlgorithmError final : public MeshKernelError
     {
     public:
         // inherit
-        using MeshKernelError<Args...>::MeshKernelError;
+        using MeshKernelError::MeshKernelError;
 
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        std::string Category() const override
-        {
-            return "AlgorithmError";
-        }
+        std::string Category() const override { return "AlgorithmError"; }
     };
-
-    /// @brief Template deduction guide for AlgorithmError
-    template <typename... Args>
-    AlgorithmError(std::string_view message, Args&&... args) -> AlgorithmError<Args...>;
 
     /// @brief A class for throwing mesh geometry errors.
-    template <typename... Args>
-    class MeshGeometryError final : public MeshKernelError<Args...>
+    class MeshGeometryError final : public MeshKernelError
     {
     public:
-        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
-        /// @param[in] invalid_index   The invalid mesh location index.
-        /// @param[in] mesh_location   The location type.
-        /// @param[in] message         The variadic error message.
-        /// @param[in] args            The arguments to be formatted.
-        /// @param[in] source_location The source location.
+        /// @brief Class constructor
+        /// @param[in] invalid_index               The invalid mesh location index.
+        /// @param[in] mesh_location               The location type.
+        /// @param[in] format_with_source_location The format and source location
+        /// @param[in] args                        The arguments to be formatted.
+        template <typename... Args>
         MeshGeometryError(size_t invalid_index,
                           Mesh::Location mesh_location,
-                          std::string_view message,
-                          Args&&... args,
-                          std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError<Args...>(message, std::forward<Args>(args)..., source_location),
-              m_invalid_index(invalid_index),
-              m_mesh_location(mesh_location)
+                          FormatWithLocation const& format_with_source_location,
+                          Args&&... args)
+            : MeshKernelError(format_with_source_location,
+                              std::forward<Args>(args)...),
+              m_invalid_index(invalid_index), m_mesh_location(mesh_location)
         {
         }
 
@@ -217,22 +219,14 @@ namespace meshkernel
         /// @brief Returns the message.
         std::string Message() const override
         {
-            std::string const message = fmt_::format("Error occurred at index {} (location: {}). {}",
-                                                     m_invalid_index,
-                                                     Mesh::LocationToString.at(m_mesh_location),
-                                                     MeshKernelError<Args...>::m_fmt_message);
-            return message;
+            return fmt_::format("Error occurred at index {} (location: {}). {}",
+                                m_invalid_index,
+                                Mesh::LocationToString.at(m_mesh_location),
+                                MeshKernelError::m_fmt_message);
         }
 
         size_t m_invalid_index;         ///< The invalid mesh location index.
         Mesh::Location m_mesh_location; ///< The location type.
     };
-
-    /// @brief Template deduction guide for MeshGeometryError
-    template <typename... Args>
-    MeshGeometryError(size_t invalid_index,
-                      Mesh::Location mesh_location,
-                      std::string_view message,
-                      Args&&... args) -> MeshGeometryError<Args...>;
 
 } // namespace meshkernel

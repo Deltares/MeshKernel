@@ -33,10 +33,10 @@ namespace meshkernelapi
     struct GeometryList
     {
         /// @brief The value used as separator in coordinates_x, coordinates_y and values
-        double geometry_separator;
+        double geometry_separator = -999.0;
 
         /// @brief The value used to separate the inner part of a polygon from its outer part
-        double inner_outer_separator;
+        double inner_outer_separator = -998.0;
 
         /// @brief The number of coordinate values present
         int num_coordinates = 0;
