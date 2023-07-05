@@ -58,7 +58,6 @@ namespace meshkernel
                                                             size_t endIndex,
                                                             double refinementDistance) const;
 
-
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] innerAndOuter Offset inwards or outward

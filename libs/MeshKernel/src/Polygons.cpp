@@ -127,7 +127,6 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
     return generatedPoints;
 }
 
-
 std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
                                                             size_t endIndex,
                                                             double refinementDistance) const
@@ -201,24 +200,24 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     for (size_t i = startIndex; i < endIndex; ++i)
     {
-        Point p = m_nodes [i];
-        Point delta = m_nodes [i+1] - m_nodes [i];
-        double segmentLength = ComputeDistance(m_nodes [i], m_nodes [i + 1], m_projection);
+        Point p = m_nodes[i];
+        Point delta = m_nodes[i + 1] - m_nodes[i];
+        double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
         double lengthAlongInterval = refinementDistance;
         // TODO how large should the tolerance be? 1.0e-3 seems quite tight for this algorithm
         double tolerance = 1.0e-3;
 
         delta *= refinementDistance / segmentLength;
 
-        while ( lengthAlongInterval < segmentLength && !IsEqual ( lengthAlongInterval, segmentLength, tolerance ))
+        while (lengthAlongInterval < segmentLength && !IsEqual(lengthAlongInterval, segmentLength, tolerance))
         {
             p += delta;
             lengthAlongInterval += refinementDistance;
-            refinedPolygon.emplace_back (p);
+            refinedPolygon.emplace_back(p);
         }
 
         // Add last node to the refined polygon point sequence.
-        refinedPolygon.emplace_back (m_nodes[i+1]);
+        refinedPolygon.emplace_back(m_nodes[i + 1]);
     }
 
     // Add nodes after the section to be refined

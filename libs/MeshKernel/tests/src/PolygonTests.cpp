@@ -6,8 +6,6 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
-
-
 TEST(Polygons, MeshBoundaryToPolygon)
 {
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
@@ -105,7 +103,6 @@ TEST(Polygons, RefinePolygon)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-
     nodes.push_back({0, 0});
     nodes.push_back({3, 0});
     nodes.push_back({3, 3});
@@ -149,13 +146,10 @@ TEST(Polygons, RefinePolygon)
     ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
 }
 
-
-
 TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
-
 
     nodes.push_back({0, 0});
     nodes.push_back({3, 0});
@@ -204,10 +198,7 @@ TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
     ASSERT_NEAR(2, refinedPolygon2[10].y, tolerance);
     ASSERT_NEAR(1, refinedPolygon2[11].y, tolerance);
     ASSERT_NEAR(0, refinedPolygon2[12].y, tolerance);
-
-
 }
-
 
 TEST(Polygons, RefinePolygonTwice)
 {
@@ -234,60 +225,58 @@ TEST(Polygons, RefinePolygonTwice)
     // catch any problems in the first refinement.
     ASSERT_EQ(25, refinedPolygon2.size());
 
-    ASSERT_NEAR (0, refinedPolygon2[0].x, tolerance);
-    ASSERT_NEAR (0.5, refinedPolygon2[1].x, tolerance);
-    ASSERT_NEAR (1, refinedPolygon2[2].x, tolerance);
-    ASSERT_NEAR (1.5, refinedPolygon2[3].x, tolerance);
-    ASSERT_NEAR (2, refinedPolygon2[4].x, tolerance);
-    ASSERT_NEAR (2.5, refinedPolygon2[5].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[6].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[7].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[8].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[9].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[10].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[11].x, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[12].x, tolerance);
-    ASSERT_NEAR (2.5, refinedPolygon2[13].x, tolerance);
-    ASSERT_NEAR (2, refinedPolygon2[14].x, tolerance);
-    ASSERT_NEAR (1.5, refinedPolygon2[15].x, tolerance);
-    ASSERT_NEAR (1, refinedPolygon2[16].x, tolerance);
-    ASSERT_NEAR (0.5, refinedPolygon2[17].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[18].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[19].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[20].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[21].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[22].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[23].x, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[24].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[0].x, tolerance);
+    ASSERT_NEAR(0.5, refinedPolygon2[1].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[2].x, tolerance);
+    ASSERT_NEAR(1.5, refinedPolygon2[3].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[4].x, tolerance);
+    ASSERT_NEAR(2.5, refinedPolygon2[5].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[6].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[7].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[8].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[9].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[10].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[11].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[12].x, tolerance);
+    ASSERT_NEAR(2.5, refinedPolygon2[13].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[14].x, tolerance);
+    ASSERT_NEAR(1.5, refinedPolygon2[15].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[16].x, tolerance);
+    ASSERT_NEAR(0.5, refinedPolygon2[17].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[18].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[19].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[20].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[21].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[22].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[23].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[24].x, tolerance);
 
-    ASSERT_NEAR (0, refinedPolygon2[0].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[1].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[2].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[3].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[4].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[5].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[6].y, tolerance);
-    ASSERT_NEAR (0.5, refinedPolygon2[7].y, tolerance);
-    ASSERT_NEAR (1, refinedPolygon2[8].y, tolerance);
-    ASSERT_NEAR (1.5, refinedPolygon2[9].y, tolerance);
-    ASSERT_NEAR (2, refinedPolygon2[10].y, tolerance);
-    ASSERT_NEAR (2.5, refinedPolygon2[11].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[12].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[13].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[14].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[15].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[16].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[17].y, tolerance);
-    ASSERT_NEAR (3, refinedPolygon2[18].y, tolerance);
-    ASSERT_NEAR (2.5, refinedPolygon2[19].y, tolerance);
-    ASSERT_NEAR (2, refinedPolygon2[20].y, tolerance);
-    ASSERT_NEAR (1.5, refinedPolygon2[21].y, tolerance);
-    ASSERT_NEAR (1, refinedPolygon2[22].y, tolerance);
-    ASSERT_NEAR (0.5, refinedPolygon2[23].y, tolerance);
-    ASSERT_NEAR (0, refinedPolygon2[24].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[0].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[1].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[2].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[3].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[4].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[5].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[6].y, tolerance);
+    ASSERT_NEAR(0.5, refinedPolygon2[7].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[8].y, tolerance);
+    ASSERT_NEAR(1.5, refinedPolygon2[9].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[10].y, tolerance);
+    ASSERT_NEAR(2.5, refinedPolygon2[11].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[12].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[13].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[14].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[15].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[16].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[17].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[18].y, tolerance);
+    ASSERT_NEAR(2.5, refinedPolygon2[19].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[20].y, tolerance);
+    ASSERT_NEAR(1.5, refinedPolygon2[21].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[22].y, tolerance);
+    ASSERT_NEAR(0.5, refinedPolygon2[23].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[24].y, tolerance);
 }
-
-
 
 TEST(Polygons, RefinePolygonOneSide)
 {
@@ -364,14 +353,13 @@ TEST(Polygons, RefinePolygonTwoTimesOneSideSameRefinement)
     ASSERT_NEAR(3.0, refinedPolygon[5].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[6].y, tolerance);
 
-    ASSERT_EQ (refinedPolygon.size (), refinedPolygon2.size ());
+    ASSERT_EQ(refinedPolygon.size(), refinedPolygon2.size());
 
-    for (size_t i = 0; i < refinedPolygon.size (); ++i )
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
     {
-      ASSERT_NEAR(refinedPolygon[i].x, refinedPolygon2[i].x, tolerance);
-      ASSERT_NEAR(refinedPolygon[i].y, refinedPolygon2[i].y, tolerance);
+        ASSERT_NEAR(refinedPolygon[i].x, refinedPolygon2[i].x, tolerance);
+        ASSERT_NEAR(refinedPolygon[i].y, refinedPolygon2[i].y, tolerance);
     }
-
 }
 
 TEST(Polygons, RefinePolygonTwoTimesOneSide)
@@ -398,38 +386,38 @@ TEST(Polygons, RefinePolygonTwoTimesOneSide)
     const double tolerance = 1.0e-13;
 
     // Check points from first refinement
-    ASSERT_NEAR (0.0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon[5].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon[1].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon[2].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon[3].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[4].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[5].x, tolerance);
 
-    ASSERT_NEAR (0.0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR (2.0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon[5].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
+    ASSERT_NEAR(2.0, refinedPolygon[2].y, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon[3].y, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon[4].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[5].y, tolerance);
 
     // Check points from second refinement
-    ASSERT_NEAR (0.0, refinedPolygon2[0].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[1].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[2].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[3].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[4].x, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[5].x, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon2[6].x, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon2[7].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[0].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[1].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[2].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[3].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[4].x, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[5].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[6].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[7].x, tolerance);
 
-    ASSERT_NEAR (0.0, refinedPolygon2[0].y, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon2[1].y, tolerance);
-    ASSERT_NEAR (1.0, refinedPolygon2[2].y, tolerance);
-    ASSERT_NEAR (2.0, refinedPolygon2[3].y, tolerance);
-    ASSERT_NEAR (3.0, refinedPolygon2[4].y, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[5].y, tolerance);
-    ASSERT_NEAR (4.0, refinedPolygon2[6].y, tolerance);
-    ASSERT_NEAR (0.0, refinedPolygon2[7].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[0].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[1].y, tolerance);
+    ASSERT_NEAR(1.0, refinedPolygon2[2].y, tolerance);
+    ASSERT_NEAR(2.0, refinedPolygon2[3].y, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon2[4].y, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[5].y, tolerance);
+    ASSERT_NEAR(4.0, refinedPolygon2[6].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon2[7].y, tolerance);
 }
 
 TEST(Polygons, RefinePolygonLongerSquare)
