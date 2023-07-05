@@ -76,6 +76,7 @@ TEST(Polygons, CreatePointsInPolygons)
 TEST(Polygons, RefineDefaultPolygon)
 {
     meshkernel::Polygons polygon;
+    // Should fail, polygon is empty.
     EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 0, 1.0), std::invalid_argument);
     EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 1, 1.0), std::invalid_argument);
 }
