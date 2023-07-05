@@ -87,7 +87,7 @@ namespace meshkernelapi
     static size_t CharsToCopy(const char* message)
     {
         size_t len = std::strlen(message);
-        return len < charBufferSize ? len : charBufferSize;
+        return len < charBufferSize ? len + 1 : charBufferSize + 1;
     }
     static int HandleExceptions(std::exception_ptr const exception_ptr)
     {
