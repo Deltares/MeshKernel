@@ -76,8 +76,8 @@ TEST(Polygons, CreatePointsInPolygons)
 TEST(Polygons, RefineDefaultPolygon)
 {
     meshkernel::Polygons polygon;
-    EXPECT_THROW(polygon.RefineFirstPolygon(0, 0, 1.0), std::invalid_argument);
-    EXPECT_THROW(polygon.RefineFirstPolygon(0, 1, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 0, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 1, 1.0), std::invalid_argument);
 }
 
 TEST(Polygons, InvalidRefinePolygonIndex)
@@ -93,9 +93,9 @@ TEST(Polygons, InvalidRefinePolygonIndex)
     meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
 
     // First is greater than last
-    EXPECT_THROW(polygon.RefineFirstPolygon(10, 8, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(10, 8, 1.0), std::invalid_argument);
     // Last index is out of range
-    EXPECT_THROW(polygon.RefineFirstPolygon(3, 9, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(3, 9, 1.0), std::invalid_argument);
 }
 
 TEST(Polygons, RefinePolygon)
