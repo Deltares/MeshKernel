@@ -80,9 +80,15 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static char exceptionMessage[512] = "";
+    static size_t const charBufferSize = 512;
+    static char exceptionMessage[charBufferSize] = "";
     static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError(0, meshkernel::Mesh::Location::Unknown, "");
 
+    static size_t CharsToCopy(const char* message)
+    {
+        size_t len = std::strlen(message);
+        return len < charBufferSize ? len : charBufferSize;
+    }
     static int HandleExceptions(std::exception_ptr const exception_ptr)
     {
         if (!exception_ptr)
@@ -96,33 +102,34 @@ namespace meshkernelapi
         }
         catch (const meshkernel::NotImplemented& e)
         {
-            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), CharsToCopy(e.what()));
             return MeshKernelApiErrors::NotImplemented;
         }
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
-            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), CharsToCopy(e.what()));
             return MeshKernelApiErrors::MeshGeometryError;
         }
         catch (meshkernel::AlgorithmError const& e)
         {
-            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), CharsToCopy(e.what()));
             return MeshKernelApiErrors::AlgorithmError;
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), CharsToCopy(e.what()));
             return MeshKernelApiErrors::MeshKernelError;
         }
         catch (const std::exception& e)
         {
-            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), CharsToCopy(e.what()));
             return MeshKernelApiErrors::StadardLibraryException;
         }
         catch (...)
         {
-            strncpy_s(exceptionMessage, "Unknown exception", sizeof exceptionMessage);
+            const char* message = "Unknown exception";
+            strncpy_s(exceptionMessage, message, CharsToCopy(message));
             return MeshKernelApiErrors::UnknownException;
         }
     }
