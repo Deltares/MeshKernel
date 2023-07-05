@@ -56,8 +56,8 @@ namespace meshkernel
     class FormatWithLocation final
     {
     public:
-        /// @brief Class constructor
-        /// @param[in] format          The format and source location
+        /// @brief Class constructor accepting a const char* format
+        /// @param[in] format          The format
         /// @param[in] source_location The source location
         FormatWithLocation(const char* format,
                            std::source_location const& source_location = std::source_location::current())
@@ -66,16 +66,26 @@ namespace meshkernel
         {
         }
 
+        /// @brief Class constructor accepting a std::string format
+        /// @param[in] format          The format
+        /// @param[in] source_location The source location
+        FormatWithLocation(std::string const& format,
+                           std::source_location const& source_location = std::source_location::current())
+            : m_format(format.c_str()),
+              m_source_location(source_location)
+        {
+        }
+
         /// @brief Returns the format
         /// @return The format
-        const char* Format() const { return m_format; }
+        std::string const& Format() const { return m_format; }
 
         /// @brief Returns the source location
         /// @return The source location
         std::source_location const& SourceLocation() const { return m_source_location; }
 
     private:
-        const char* m_format; ///< The format
+        std::string m_format; ///< The format
 
         std::source_location m_source_location; ///< The source location
     };
