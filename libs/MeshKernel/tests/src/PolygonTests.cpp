@@ -201,6 +201,39 @@ TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
     ASSERT_NEAR(0, refinedPolygon2[12].y, tolerance);
 }
 
+TEST(Polygons, RefinePolygonTwiceWithLargerRefinement)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
+
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 2.0);
+
+    const double tolerance = 1e-13;
+
+    // Only need to check the points from the second refinement, the test above will
+    // catch any problems in the first refinement.
+    ASSERT_EQ(13, refinedPolygon.size());
+    ASSERT_EQ(refinedPolygon.size(), refinedPolygon2.size());
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(refinedPolygon[i].x, refinedPolygon2[i].x, tolerance);
+        EXPECT_NEAR(refinedPolygon[i].y, refinedPolygon2[i].y, tolerance);
+    }
+}
+
 TEST(Polygons, RefinePolygonTwice)
 {
     // Prepare
