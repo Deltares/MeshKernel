@@ -181,8 +181,6 @@ namespace meshkernel
             constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
 
-
-
     /// @brief Describes an edge with two indices
     typedef std::pair<size_t, size_t> Edge;
 
@@ -317,7 +315,6 @@ namespace meshkernel
     }
 
 } // namespace meshkernel
-
 
 inline meshkernel::Point& meshkernel::Point::operator+=(const Point& p)
 {
