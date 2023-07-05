@@ -94,6 +94,39 @@ namespace meshkernel
         {
         }
 
+        /// @brief Inplace add point to point.
+        Point& operator+=(const Point& p);
+
+        /// @brief Inplace subtract point from point.
+        Point& operator-=(const Point& p);
+
+        /// @brief Inplace divide point by point.
+        ///
+        /// No check is made that any component of the divisor is 0
+        Point& operator/=(const Point& p);
+
+        /// @brief Inplace multiply point by point.
+        Point& operator*=(const Point& p);
+
+        /// @brief Inplace add scalar to point.
+        Point& operator+=(const double p);
+
+        /// @brief Inplace subtract scalar from point.
+        Point& operator-=(const double p);
+
+        /// @brief Inplace divide point by scalar.
+        ///
+        /// No check is made that the divisor is 0
+        Point& operator/=(const double p);
+
+        /// @brief Inplace multiply point by scalar.
+        Point& operator*=(const double p);
+
+        // // SHould this be separate function
+        // double distanceFrom (const Point& p) const;
+
+        // TODO move out of class definition
+
         /// @brief Overloads addition with another Point
         [[nodiscard]] Point operator+(Point const& rhs) const { return Point(x + rhs.x, y + rhs.y); }
 
@@ -147,6 +180,8 @@ namespace meshkernel
             constants::conversion::degToRad *
             constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
+
+
 
     /// @brief Describes an edge with two indices
     typedef std::pair<size_t, size_t> Edge;
@@ -282,3 +317,60 @@ namespace meshkernel
     }
 
 } // namespace meshkernel
+
+
+inline meshkernel::Point& meshkernel::Point::operator+=(const Point& p)
+{
+    x += p.x;
+    y += p.y;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator-=(const Point& p)
+{
+    x -= p.x;
+    y -= p.y;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator/=(const Point& p)
+{
+    x /= p.x;
+    y /= p.y;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator*=(const Point& p)
+{
+    x *= p.x;
+    y *= p.y;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator+=(const double p)
+{
+    x += p;
+    y += p;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator-=(const double p)
+{
+    x -= p;
+    y -= p;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator/=(const double p)
+{
+    x /= p;
+    y /= p;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
+{
+    x *= p;
+    y *= p;
+    return *this;
+}

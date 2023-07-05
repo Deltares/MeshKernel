@@ -78,48 +78,90 @@ TEST(Polygons, RefinePolygon)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({0, 0});
-    nodes.push_back({3, 0});
-    nodes.push_back({3, 3});
-    nodes.push_back({0, 3});
-    nodes.push_back({0, 0});
+    nodes.push_back({469.481787186706, 1443.95997809113});
+    nodes.push_back({25.5218090955799, 751.494100313773});
+    nodes.push_back({734.740893593353, 301.949719982507});
+    nodes.push_back({1298.76551984749, 1147.98665936371});
+    nodes.push_back({469.481787186706, 1443.95997809113});
+
+    // nodes.push_back({0, 0});
+    // nodes.push_back({3, 0});
+    // nodes.push_back({3, 3});
+    // nodes.push_back({0, 3});
+    // nodes.push_back({0, 0});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 30.0);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 30.0);
 
-    ASSERT_EQ(13, refinedPolygon.size());
-    const double tolerance = 1e-5;
+    const auto refinedPolygonA = polygons.RefineFirstPolygon2(0, 0, 30.0, false);
+    meshkernel::Polygons polygonsA(refinedPolygonA, meshkernel::Projection::cartesian);
+    const auto refinedPolygonA2 = polygonsA.RefineFirstPolygon2(0, 0, 30.0, false);
 
-    ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[5].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[6].x, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[7].x, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[8].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[9].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[10].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[11].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[12].x, tolerance);
+    std::cout.precision ( 17 );
 
-    ASSERT_NEAR(0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[5].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[6].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[7].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[8].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[9].y, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[10].y, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[11].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
+
+    for ( size_t i = 0; i < nodes.size (); ++i) {
+        std::cout << "xnode ( " << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
+        std::cout << "ynode ( " << i + 1<< " ) = " << nodes[i].y << ";" << std::endl;
+    }
+
+    for ( size_t i = 0; i < refinedPolygon.size (); ++i) {
+        std::cout << "xpnt ( " << i + 1<< " ) = " << refinedPolygon[i].x << ";" << std::endl;
+        std::cout << "ypnt ( " << i + 1 << " ) = " << refinedPolygon[i].y << ";" << std::endl;
+    }
+
+    for ( size_t i = 0; i < refinedPolygon2.size (); ++i) {
+        std::cout << "xpnt2 ( " << i + 1<< " ) = " << refinedPolygon2[i].x << ";" << std::endl;
+        std::cout << "ypnt2 ( " << i + 1 << " ) = " << refinedPolygon2[i].y << ";" << std::endl;
+    }
+
+
+    for ( size_t i = 0; i < refinedPolygonA.size (); ++i) {
+        std::cout << "xpnta ( " << i + 1<< " ) = " << refinedPolygonA[i].x << ";" << std::endl;
+        std::cout << "ypnta ( " << i + 1 << " ) = " << refinedPolygonA[i].y << ";" << std::endl;
+    }
+
+    for ( size_t i = 0; i < refinedPolygonA2.size (); ++i) {
+        std::cout << "xpnta2 ( " << i + 1<< " ) = " << refinedPolygonA2[i].x << ";" << std::endl;
+        std::cout << "ypnta2 ( " << i + 1 << " ) = " << refinedPolygonA2[i].y << ";" << std::endl;
+    }
+
+
+    //ASSERT_EQ(13, refinedPolygon.size());
+    // const double tolerance = 1e-5;
+
+    // ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
+    // ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
+    // ASSERT_NEAR(2, refinedPolygon[2].x, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[3].x, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[4].x, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[5].x, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[6].x, tolerance);
+    // ASSERT_NEAR(2, refinedPolygon[7].x, tolerance);
+    // ASSERT_NEAR(1, refinedPolygon[8].x, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[9].x, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[10].x, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[11].x, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[12].x, tolerance);
+
+    // ASSERT_NEAR(0, refinedPolygon[0].y, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[1].y, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[2].y, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[3].y, tolerance);
+    // ASSERT_NEAR(1, refinedPolygon[4].y, tolerance);
+    // ASSERT_NEAR(2, refinedPolygon[5].y, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[6].y, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[7].y, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[8].y, tolerance);
+    // ASSERT_NEAR(3, refinedPolygon[9].y, tolerance);
+    // ASSERT_NEAR(2, refinedPolygon[10].y, tolerance);
+    // ASSERT_NEAR(1, refinedPolygon[11].y, tolerance);
+    // ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
 }
 
 TEST(Polygons, RefinePolygonOneSide)

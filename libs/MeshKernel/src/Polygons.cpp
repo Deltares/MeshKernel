@@ -127,6 +127,114 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
     return generatedPoints;
 }
 
+
+std::vector<meshkernel::Point> Polygons::RefineFirstPolygon2(size_t startIndex,
+                                                             size_t endIndex,
+                                                             double refinementDistance,
+                                                             bool uniform [[maybe_unused]]) const
+{
+
+    if (m_outer_polygons_indices.empty())
+    {
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
+    }
+
+    if (startIndex == 0 && endIndex == 0)
+    {
+        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[0];
+        startIndex = outerStart;
+        endIndex = outerEnd;
+    }
+
+    if (endIndex <= startIndex)
+    {
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
+    }
+
+    //--------------------------------
+    // This can be a separate function, except perhaps the throwing of the excetpion
+
+    bool areIndicesValid = false;
+    size_t polygonIndex;
+
+    for (size_t i = 0; i < GetNumPolygons(); ++i)
+    {
+        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[i];
+        if (startIndex >= outerStart && endIndex <= outerEnd)
+        {
+            areIndicesValid = true;
+            polygonIndex = i;
+            break;
+        }
+    }
+
+    if (!areIndicesValid)
+    {
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
+    }
+
+    //--------------------------------
+
+    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
+
+    const auto edgeLengths = PolygonEdgeLengths(m_nodes);
+    std::vector<double> nodeLengthCoordinate(edgeLengths.size());
+    nodeLengthCoordinate[0] = 0.0;
+
+    for (size_t i = 1; i < edgeLengths.size(); ++i)
+    {
+        nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
+    }
+
+    // Approximate number of nodes in the refined sections.
+    const size_t numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
+    size_t numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
+    // Approximate the number of nodes in the refined polygon.
+    size_t totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+    std::vector<Point> refinedPolygon;
+
+    refinedPolygon.reserve(totalNumNodes);
+
+    // Add nodes before the section to be refined
+    for (size_t i = outerStart; i <= startIndex; ++i)
+    {
+        refinedPolygon.emplace_back(m_nodes[i]);
+    }
+
+    for (size_t i = startIndex; i < endIndex; ++i)
+    {
+        Point p = m_nodes [i];
+        Point delta = m_nodes [i+1] - m_nodes [i];
+        // TODO why can this be negative?
+        double segmentLength = std::abs ( ComputeDistance(m_nodes [i], m_nodes [i + 1], m_projection));
+        double lengthAlongInterval = refinementDistance;
+        // TODO how to handle this? IsEqual with a relaxed tolerance?
+        // TODO how large should the tolerance be? 1.0e-3 seems quite tight for this algorithm
+        double tolerance = 1.0e-3;
+
+        delta *= refinementDistance / segmentLength;
+
+        while ( lengthAlongInterval < segmentLength && !IsEqual ( lengthAlongInterval, segmentLength, tolerance ))
+        // while ( lengthAlongInterval < segmentLength - tolerance)
+        {
+            p += delta;
+            lengthAlongInterval += refinementDistance;
+            refinedPolygon.emplace_back (p);
+        }
+
+        // Add last node to the refined polygon point sequence.
+        refinedPolygon.emplace_back (m_nodes[i+1]);
+    }
+
+    // Add nodes after the section to be refined
+    for (size_t i = endIndex + 1; i <= outerEnd; ++i)
+    {
+        refinedPolygon.emplace_back(m_nodes[i]);
+    }
+
+    return refinedPolygon;
+}
+
 std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
                                                             size_t endIndex,
                                                             double refinementDistance) const
@@ -169,12 +277,13 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
     const auto edgeLengths = PolygonEdgeLengths(m_nodes);
     std::vector<double> nodeLengthCoordinate(edgeLengths.size());
     nodeLengthCoordinate[0] = 0.0;
+
     for (size_t i = 1; i < edgeLengths.size(); ++i)
     {
         nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
     }
 
-    const auto numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
+    const size_t numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
     const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
     const auto numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
     const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
@@ -194,6 +303,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
     Point p1 = m_nodes[nextNodeIndex];
     double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
     bool snappedToLastPoint = false;
+
     while (nodeIndex < endIndex)
     {
         // initial point already accounted for
