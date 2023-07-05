@@ -354,8 +354,6 @@ namespace meshkernel
     /// @return The reference point
     [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection);
 
-    // TODO Many of these functions can be moved to same file as Point definition
-
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root
     /// @param[in] firstPoint  The first point.

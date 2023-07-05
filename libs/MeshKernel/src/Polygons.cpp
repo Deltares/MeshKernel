@@ -146,7 +146,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     if (endIndex <= startIndex)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index: " + std::to_string(startIndex) + " >= " + std::to_string(endIndex));
     }
 
     //--------------------------------
@@ -167,7 +167,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     if (!areIndicesValid)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid: " + std::to_string(startIndex) + ", " + std::to_string(endIndex));
     }
 
     //--------------------------------

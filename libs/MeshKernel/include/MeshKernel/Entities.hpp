@@ -122,11 +122,6 @@ namespace meshkernel
         /// @brief Inplace multiply point by scalar.
         Point& operator*=(const double p);
 
-        // // SHould this be separate function
-        // double distanceFrom (const Point& p) const;
-
-        // TODO move out of class definition
-
         /// @brief Overloads addition with another Point
         [[nodiscard]] Point operator+(Point const& rhs) const { return Point(x + rhs.x, y + rhs.y); }
 
