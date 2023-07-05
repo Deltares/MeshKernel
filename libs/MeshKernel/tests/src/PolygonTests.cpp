@@ -6,6 +6,8 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+
+
 TEST(Polygons, MeshBoundaryToPolygon)
 {
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
@@ -73,96 +75,219 @@ TEST(Polygons, CreatePointsInPolygons)
     ASSERT_NEAR(471.38037100000003, generatedPoints[0][4].y, tolerance);
 }
 
+TEST(Polygons, RefineDefaultPolygon)
+{
+    meshkernel::Polygons polygon;
+    EXPECT_THROW(polygon.RefineFirstPolygon(0, 0, 1.0), std::invalid_argument);
+    EXPECT_THROW(polygon.RefineFirstPolygon(0, 1, 1.0), std::invalid_argument);
+}
+
+TEST(Polygons, InvalidRefinePolygonIndex)
+{
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+
+    // First is greater than last
+    EXPECT_THROW(polygon.RefineFirstPolygon(10, 8, 1.0), std::invalid_argument);
+    // Last index is out of range
+    EXPECT_THROW(polygon.RefineFirstPolygon(3, 9, 1.0), std::invalid_argument);
+}
+
 TEST(Polygons, RefinePolygon)
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({469.481787186706, 1443.95997809113});
-    nodes.push_back({25.5218090955799, 751.494100313773});
-    nodes.push_back({734.740893593353, 301.949719982507});
-    nodes.push_back({1298.76551984749, 1147.98665936371});
-    nodes.push_back({469.481787186706, 1443.95997809113});
 
-    // nodes.push_back({0, 0});
-    // nodes.push_back({3, 0});
-    // nodes.push_back({3, 3});
-    // nodes.push_back({0, 3});
-    // nodes.push_back({0, 0});
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 30.0);
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
-    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 30.0);
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
-    const auto refinedPolygonA = polygons.RefineFirstPolygon2(0, 0, 30.0, false);
-    meshkernel::Polygons polygonsA(refinedPolygonA, meshkernel::Projection::cartesian);
-    const auto refinedPolygonA2 = polygonsA.RefineFirstPolygon2(0, 0, 30.0, false);
+    ASSERT_EQ(13, refinedPolygon.size());
+    const double tolerance = 1e-5;
 
-    std::cout.precision ( 17 );
+    ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon[2].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[3].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[4].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[5].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[6].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon[7].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon[8].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[9].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[10].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[11].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[12].x, tolerance);
 
-
-    for ( size_t i = 0; i < nodes.size (); ++i) {
-        std::cout << "xnode ( " << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
-        std::cout << "ynode ( " << i + 1<< " ) = " << nodes[i].y << ";" << std::endl;
-    }
-
-    for ( size_t i = 0; i < refinedPolygon.size (); ++i) {
-        std::cout << "xpnt ( " << i + 1<< " ) = " << refinedPolygon[i].x << ";" << std::endl;
-        std::cout << "ypnt ( " << i + 1 << " ) = " << refinedPolygon[i].y << ";" << std::endl;
-    }
-
-    for ( size_t i = 0; i < refinedPolygon2.size (); ++i) {
-        std::cout << "xpnt2 ( " << i + 1<< " ) = " << refinedPolygon2[i].x << ";" << std::endl;
-        std::cout << "ypnt2 ( " << i + 1 << " ) = " << refinedPolygon2[i].y << ";" << std::endl;
-    }
-
-
-    for ( size_t i = 0; i < refinedPolygonA.size (); ++i) {
-        std::cout << "xpnta ( " << i + 1<< " ) = " << refinedPolygonA[i].x << ";" << std::endl;
-        std::cout << "ypnta ( " << i + 1 << " ) = " << refinedPolygonA[i].y << ";" << std::endl;
-    }
-
-    for ( size_t i = 0; i < refinedPolygonA2.size (); ++i) {
-        std::cout << "xpnta2 ( " << i + 1<< " ) = " << refinedPolygonA2[i].x << ";" << std::endl;
-        std::cout << "ypnta2 ( " << i + 1 << " ) = " << refinedPolygonA2[i].y << ";" << std::endl;
-    }
-
-
-    //ASSERT_EQ(13, refinedPolygon.size());
-    // const double tolerance = 1e-5;
-
-    // ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
-    // ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
-    // ASSERT_NEAR(2, refinedPolygon[2].x, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[3].x, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[4].x, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[5].x, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[6].x, tolerance);
-    // ASSERT_NEAR(2, refinedPolygon[7].x, tolerance);
-    // ASSERT_NEAR(1, refinedPolygon[8].x, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[9].x, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[10].x, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[11].x, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[12].x, tolerance);
-
-    // ASSERT_NEAR(0, refinedPolygon[0].y, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[1].y, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[2].y, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[3].y, tolerance);
-    // ASSERT_NEAR(1, refinedPolygon[4].y, tolerance);
-    // ASSERT_NEAR(2, refinedPolygon[5].y, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[6].y, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[7].y, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[8].y, tolerance);
-    // ASSERT_NEAR(3, refinedPolygon[9].y, tolerance);
-    // ASSERT_NEAR(2, refinedPolygon[10].y, tolerance);
-    // ASSERT_NEAR(1, refinedPolygon[11].y, tolerance);
-    // ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[0].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[1].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[2].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[3].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon[4].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon[5].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[6].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[7].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[8].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon[9].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon[10].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon[11].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
 }
+
+
+
+TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
+
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 1.0);
+
+    const double tolerance = 1e-5;
+
+    // Only need to check the points from the second refinement, the test above will
+    // catch any problems in the first refinement.
+    ASSERT_EQ(13, refinedPolygon2.size());
+
+    ASSERT_NEAR(0, refinedPolygon2[0].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[1].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[2].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[3].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[4].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[5].x, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[6].x, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[7].x, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[8].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[9].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[10].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[11].x, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[12].x, tolerance);
+
+    ASSERT_NEAR(0, refinedPolygon2[0].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[1].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[2].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[3].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[4].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[5].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[6].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[7].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[8].y, tolerance);
+    ASSERT_NEAR(3, refinedPolygon2[9].y, tolerance);
+    ASSERT_NEAR(2, refinedPolygon2[10].y, tolerance);
+    ASSERT_NEAR(1, refinedPolygon2[11].y, tolerance);
+    ASSERT_NEAR(0, refinedPolygon2[12].y, tolerance);
+
+
+}
+
+
+TEST(Polygons, RefinePolygonTwice)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
+
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 0.5);
+
+    const double tolerance = 1e-5;
+
+    // Only need to check the points from the second refinement, the test above will
+    // catch any problems in the first refinement.
+    ASSERT_EQ(25, refinedPolygon2.size());
+
+    ASSERT_NEAR (0, refinedPolygon2[0].x, tolerance);
+    ASSERT_NEAR (0.5, refinedPolygon2[1].x, tolerance);
+    ASSERT_NEAR (1, refinedPolygon2[2].x, tolerance);
+    ASSERT_NEAR (1.5, refinedPolygon2[3].x, tolerance);
+    ASSERT_NEAR (2, refinedPolygon2[4].x, tolerance);
+    ASSERT_NEAR (2.5, refinedPolygon2[5].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[6].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[7].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[8].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[9].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[10].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[11].x, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[12].x, tolerance);
+    ASSERT_NEAR (2.5, refinedPolygon2[13].x, tolerance);
+    ASSERT_NEAR (2, refinedPolygon2[14].x, tolerance);
+    ASSERT_NEAR (1.5, refinedPolygon2[15].x, tolerance);
+    ASSERT_NEAR (1, refinedPolygon2[16].x, tolerance);
+    ASSERT_NEAR (0.5, refinedPolygon2[17].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[18].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[19].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[20].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[21].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[22].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[23].x, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[24].x, tolerance);
+
+    ASSERT_NEAR (0, refinedPolygon2[0].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[1].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[2].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[3].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[4].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[5].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[6].y, tolerance);
+    ASSERT_NEAR (0.5, refinedPolygon2[7].y, tolerance);
+    ASSERT_NEAR (1, refinedPolygon2[8].y, tolerance);
+    ASSERT_NEAR (1.5, refinedPolygon2[9].y, tolerance);
+    ASSERT_NEAR (2, refinedPolygon2[10].y, tolerance);
+    ASSERT_NEAR (2.5, refinedPolygon2[11].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[12].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[13].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[14].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[15].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[16].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[17].y, tolerance);
+    ASSERT_NEAR (3, refinedPolygon2[18].y, tolerance);
+    ASSERT_NEAR (2.5, refinedPolygon2[19].y, tolerance);
+    ASSERT_NEAR (2, refinedPolygon2[20].y, tolerance);
+    ASSERT_NEAR (1.5, refinedPolygon2[21].y, tolerance);
+    ASSERT_NEAR (1, refinedPolygon2[22].y, tolerance);
+    ASSERT_NEAR (0.5, refinedPolygon2[23].y, tolerance);
+    ASSERT_NEAR (0, refinedPolygon2[24].y, tolerance);
+}
+
+
 
 TEST(Polygons, RefinePolygonOneSide)
 {
@@ -198,6 +323,113 @@ TEST(Polygons, RefinePolygonOneSide)
     ASSERT_NEAR(3.0, refinedPolygon[4].y, tolerance);
     ASSERT_NEAR(3.0, refinedPolygon[5].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[6].y, tolerance);
+}
+
+TEST(Polygons, RefinePolygonTwoTimesOneSideSameRefinement)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
+
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    // Now there are additional segments in the polygon, the segments to refine is different.
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 3, 1.0);
+
+    ASSERT_EQ(7, refinedPolygon.size());
+    const double tolerance = 1e-10;
+
+    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
+    ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
+    ASSERT_NEAR(2.0, refinedPolygon[2].x, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[3].x, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[5].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[6].x, tolerance);
+
+    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[2].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[3].y, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[4].y, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[5].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[6].y, tolerance);
+
+    ASSERT_EQ (refinedPolygon.size (), refinedPolygon2.size ());
+
+    for (size_t i = 0; i < refinedPolygon.size (); ++i )
+    {
+      ASSERT_NEAR(refinedPolygon[i].x, refinedPolygon2[i].x, tolerance);
+      ASSERT_NEAR(refinedPolygon[i].y, refinedPolygon2[i].y, tolerance);
+    }
+
+}
+
+TEST(Polygons, RefinePolygonTwoTimesOneSide)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0, 0});
+    nodes.push_back({4, 0});
+    nodes.push_back({4, 4});
+    nodes.push_back({0, 4});
+    nodes.push_back({0, 0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.RefineFirstPolygon(1, 2, 2.0);
+
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+
+    // Refine the same edge, this time there should be two segments making up the edge.
+    const auto refinedPolygon2 = polygons2.RefineFirstPolygon(1, 3, 1.0);
+
+    const double tolerance = 1.0e-13;
+
+    // Check points from first refinement
+    ASSERT_NEAR (0.0, refinedPolygon[0].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon[1].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon[2].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon[3].x, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon[4].x, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon[5].x, tolerance);
+
+    ASSERT_NEAR (0.0, refinedPolygon[0].y, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon[1].y, tolerance);
+    ASSERT_NEAR (2.0, refinedPolygon[2].y, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon[3].y, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon[4].y, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon[5].y, tolerance);
+
+    // Check points from second refinement
+    ASSERT_NEAR (0.0, refinedPolygon2[0].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[1].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[2].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[3].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[4].x, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[5].x, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon2[6].x, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon2[7].x, tolerance);
+
+    ASSERT_NEAR (0.0, refinedPolygon2[0].y, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon2[1].y, tolerance);
+    ASSERT_NEAR (1.0, refinedPolygon2[2].y, tolerance);
+    ASSERT_NEAR (2.0, refinedPolygon2[3].y, tolerance);
+    ASSERT_NEAR (3.0, refinedPolygon2[4].y, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[5].y, tolerance);
+    ASSERT_NEAR (4.0, refinedPolygon2[6].y, tolerance);
+    ASSERT_NEAR (0.0, refinedPolygon2[7].y, tolerance);
 }
 
 TEST(Polygons, RefinePolygonLongerSquare)
