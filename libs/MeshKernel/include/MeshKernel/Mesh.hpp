@@ -234,7 +234,7 @@ namespace meshkernel
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @return The shared node (constants::missing::sizetValue if no node is found)
-        [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
+        [[nodiscard]] Index FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();

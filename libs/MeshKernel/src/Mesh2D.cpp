@@ -64,7 +64,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
     std::vector<Index> local_edges;
     std::vector<Point> local_nodes;
     std::vector<Index> local_node_indices;
-    for (size_t f = 0; f < m_facesNodes.size(); ++f)
+    for (Index f = 0; f < m_facesNodes.size(); ++f)
     {
         local_edges.clear();
         local_nodes.clear();
@@ -304,10 +304,10 @@ void Mesh2D::DeleteDegeneratedTriangles()
     Administrate();
 }
 
-void Mesh2D::FindFacesRecursive(size_t startNode,
-                                size_t node,
-                                size_t previousEdge,
-                                size_t numClosingEdges,
+void Mesh2D::FindFacesRecursive(Index startNode,
+                                Index node,
+                                Index previousEdge,
+                                Index numClosingEdges,
                                 std::vector<Index>& edges,
                                 std::vector<Index>& nodes,
                                 std::vector<Index>& sortedEdgesFaces,
@@ -398,7 +398,7 @@ void Mesh2D::FindFacesRecursive(size_t startNode,
             // Increment the number of shared faces for the edge.
             ++m_edgesNumFaces[edge];
             const auto numFace = m_edgesNumFaces[edge];
-            m_edgesFaces[edge][numFace - 1] = GetNumFaces();
+            m_edgesFaces[edge][numFace - 1] = static_cast<Index>(GetNumFaces());
         }
 
         // store the result
@@ -446,16 +446,16 @@ void Mesh2D::FindFaces()
     std::vector<Index> edges(m_maximumNumberOfEdgesPerFace);
     std::vector<Index> nodes(m_maximumNumberOfEdgesPerFace);
 
-    for (size_t numEdgesPerFace = 3; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    for (Index numEdgesPerFace = 3; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        for (size_t n = 0; n < GetNumNodes(); n++)
+      for (Index n = 0; n < static_cast<Index>(GetNumNodes()); n++)
         {
             if (!m_nodes[n].IsValid())
             {
                 continue;
             }
 
-            for (size_t e = 0; e < m_nodesNumEdges[n]; e++)
+            for (Index e = 0; e < m_nodesNumEdges[n]; e++)
             {
                 nodes.clear();
                 edges.clear();

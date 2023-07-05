@@ -133,10 +133,10 @@ void FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            size_t firstEdgeLeftFace = constants::missing::sizetValue;
-            size_t firstEdgeRightFace = constants::missing::sizetValue;
-            size_t secondEdgeLeftFace = constants::missing::sizetValue;
-            size_t secondEdgeRightFace = constants::missing::sizetValue;
+            Index firstEdgeLeftFace = constants::missing::sizetValue;
+            Index firstEdgeRightFace = constants::missing::sizetValue;
+            Index secondEdgeLeftFace = constants::missing::sizetValue;
+            Index secondEdgeRightFace = constants::missing::sizetValue;
             for (size_t i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
@@ -294,8 +294,8 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
     }
 
     // Find the nodes that are connected to both k1 and k
-    size_t sumIndicesLeftFace = 0;
-    size_t sumIndicesRightFace = 0;
+    Index sumIndicesLeftFace = 0;
+    Index sumIndicesRightFace = 0;
     for (auto i = 0; i < 3; i++)
     {
         sumIndicesLeftFace += m_mesh->m_facesNodes[faceL][i];
@@ -383,7 +383,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
     return topologyFunctional;
 }
 
-int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
+int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::sizetValue)
     {

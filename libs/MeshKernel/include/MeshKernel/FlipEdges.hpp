@@ -73,7 +73,7 @@ namespace meshkernel
         /// @brief Compute the difference with the optimal number of edges by counting the numbers of edges that
         ///        connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
         /// @returns Difference form optimum
-        [[nodiscard]] int DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const;
+        [[nodiscard]] int DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index secondNode) const;
 
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove

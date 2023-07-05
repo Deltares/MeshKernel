@@ -311,10 +311,10 @@ namespace meshkernel
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
         /// @param[in,out] nodalValues The nodal values building a closed polygon
-        void FindFacesRecursive(size_t startNode,
-                                size_t node,
-                                size_t previousEdge,
-                                size_t numClosingEdges,
+        void FindFacesRecursive(Index startNode,
+                                Index node,
+                                Index previousEdge,
+                                Index numClosingEdges,
                                 std::vector<Index>& edges,
                                 std::vector<Index>& nodes,
                                 std::vector<Index>& sortedEdges,

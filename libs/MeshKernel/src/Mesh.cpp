@@ -386,7 +386,7 @@ void Mesh::ComputeEdgesCenters()
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
-size_t Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
+meshkernel::Index Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
 {
     const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     const auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
