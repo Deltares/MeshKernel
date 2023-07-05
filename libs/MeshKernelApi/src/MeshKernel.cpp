@@ -82,7 +82,7 @@ namespace meshkernelapi
     static char exceptionMessage[512] = "";
     static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError(0, meshkernel::Mesh::Location::Unknown, "");
 
-    int HandleExceptions(std::exception_ptr const exception_ptr)
+    static int HandleExceptions(std::exception_ptr const exception_ptr)
     {
         if (!exception_ptr)
         {
