@@ -187,6 +187,8 @@ void Triangulation(int jatri,
             *ns3 = mid.numberofpoints;
         }
 
+        free(in.segmentlist);
+
     }
 
 

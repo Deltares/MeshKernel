@@ -80,6 +80,8 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     nc_inq_varid(ncidp, edgeTypeName.c_str(), &varid);
     nc_get_var_int(ncidp, varid, edge_type.data());
 
+    nc_close(ncidp);
+
     // Transform into 0 based indexing
     for (size_t i = 0; i < num_edges * 2; i++)
     {
