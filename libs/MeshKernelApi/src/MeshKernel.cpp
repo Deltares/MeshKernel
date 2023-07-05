@@ -63,6 +63,7 @@
 
 #include <Version/Version.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
 #include <unordered_map>
@@ -95,28 +96,28 @@ namespace meshkernelapi
         }
         catch (const meshkernel::NotImplemented& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::NotImplemented;
         }
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::MeshGeometryError;
         }
         catch (meshkernel::AlgorithmError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::AlgorithmError;
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::MeshKernelError;
         }
         catch (const std::exception& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            strncpy_s(exceptionMessage, e.what(), sizeof exceptionMessage);
             return MeshKernelApiErrors::StadardLibraryException;
         }
         catch (...)

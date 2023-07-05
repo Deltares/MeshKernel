@@ -100,7 +100,9 @@ namespace meshkernel
         template <typename... Args>
         MeshKernelError(FormatWithLocation const& format_with_source_location,
                         Args&&... args)
-            : m_fmt_message(), m_what(), m_source_location(format_with_source_location.SourceLocation())
+            : m_fmt_message(),
+              m_what(),
+              m_source_location(format_with_source_location.SourceLocation())
         {
             if (sizeof...(args) == 0)
             {
@@ -119,16 +121,14 @@ namespace meshkernel
         /// @return the explanatory string of the error.
         const char* what() const noexcept override
         {
-            /*m_what = fmt_::format("Exception of type '{}' in {} ({}:{}) {}: {}\n",
+            m_what = fmt_::format("Exception of type '{}' in {} ({}:{}) {}: {}\n",
                                   Category(),
                                   StrippedFilePath(),
                                   m_source_location.line(),
                                   m_source_location.column(),
                                   m_source_location.function_name(),
                                   Message());
-            return m_what.c_str();*/
-
-            return "what_str";
+            return m_what.c_str();
         }
 
     protected:
