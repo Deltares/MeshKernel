@@ -3065,7 +3065,7 @@ namespace meshkernelapi
         projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
         return Success;
     }
-    MKERNEL_API int mkernel_get_meshkernel_projection(int meshKernelId, int& projection)
+    MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
     {
         projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
         return Success;

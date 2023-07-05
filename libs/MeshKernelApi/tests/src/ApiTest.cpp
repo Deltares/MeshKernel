@@ -3351,3 +3351,19 @@ TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_Shoul
     ASSERT_EQ(6, curvilinearGridResults.num_m);
     ASSERT_EQ(11, curvilinearGridResults.num_n);
 }
+
+TEST(MeshState, MKernelGetProjection_ShouldGetProjection)
+{
+    // Setup
+    int meshKernelId = 0;
+    int setProjectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    int getProjectionType = 0;
+    errorCode = meshkernelapi::mkernel_get_projection(meshKernelId, getProjectionType);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(setProjectionType, getProjectionType);
+}
