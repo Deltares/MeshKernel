@@ -1145,6 +1145,12 @@ namespace meshkernelapi
         /// @return Error code
         MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection);
 
+        /// @brief Gets the coordinate projection of the meshkernel state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] projection The int indicating the projection type
+        /// @return Error code
+        MKERNEL_API int mkernel_get_meshkernel_projection(int meshKernelId, int& projection);
+
 #ifdef __cplusplus
     }
 #endif
