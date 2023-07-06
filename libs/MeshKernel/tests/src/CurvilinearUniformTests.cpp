@@ -3,7 +3,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
@@ -20,18 +19,17 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::cartesian);
 
-    MakeGridParameters makeGridParameters;
-    makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = 0.0;
-    makeGridParameters.origin_y = 0.0;
-    makeGridParameters.num_columns = 3;
-    makeGridParameters.num_rows = 3;
-    makeGridParameters.block_size_x = 1.0;
-    makeGridParameters.block_size_y = 1.0;
+    const double angle = 0.0;
+    const double blockSizeX = 1.0;
+    const double blockSizeY = 1.0;
 
     // Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::cartesian);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
+                                                                                                        blockSizeX,
+                                                                                                        blockSizeY,
+                                                                                                        polygons,
+                                                                                                        0));
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -50,18 +48,17 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 
     const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::spherical);
 
-    MakeGridParameters makeGridParameters;
-    makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = 0.0;
-    makeGridParameters.origin_y = 0.0;
-    makeGridParameters.num_columns = 3;
-    makeGridParameters.num_rows = 3;
-    makeGridParameters.block_size_x = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeGridParameters.block_size_y = 5000000.0;
+    const double angle = 0.0;
+    const double blockSizeX = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    const double blockSizeY = 5000000.0;
 
     // Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::spherical);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(polygons, 0));
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
+                                                                                                        blockSizeX,
+                                                                                                        blockSizeY,
+                                                                                                        polygons,
+                                                                                                        0));
 
     // Assert
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -71,57 +68,52 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 {
     // 1 Setup
-
-    MakeGridParameters makeGridParameters;
-    makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = 0.0;
-    makeGridParameters.origin_y = 0.0;
-    makeGridParameters.num_columns = 3;
-    makeGridParameters.num_rows = 3;
-    makeGridParameters.block_size_x = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeGridParameters.block_size_y = 5000000.0;
+    const double angle = 0.0;
+    const double originX = 0.0;
+    const double originY = 89.0;
+    const int numColumns = 3;
+    const int numRows = 10;
+    const double blockSizeX = 0.1; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    const double blockSizeY = 0.1;
 
     // 2 Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(makeGridParameters, Projection::spherical);
-    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute(numColumns,
+                                                                                  numRows,
+                                                                                  originX,
+                                                                                  originY,
+                                                                                  angle,
+                                                                                  blockSizeX,
+                                                                                  blockSizeY)
+                                                 .ConvertCurvilinearToNodesAndEdges();
 
     Mesh2D mesh(edges, nodes, Projection::spherical);
 
     // 3 Assert
-    ASSERT_EQ(24, mesh.GetNumEdges());
-    ASSERT_EQ(16, mesh.GetNumNodes());
+    ASSERT_EQ(10, mesh.GetNumEdges());
+    ASSERT_EQ(8, mesh.GetNumNodes());
 
     // x coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].x);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[1].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[2].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[3].x);
+    ASSERT_EQ(blockSizeX, mesh.m_nodes[1].x);
+    ASSERT_EQ(blockSizeX * 2, mesh.m_nodes[2].x);
+    ASSERT_EQ(blockSizeX * 3, mesh.m_nodes[3].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[4].x);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[5].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[6].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[7].x);
-
-    ASSERT_EQ(0.0, mesh.m_nodes[8].x);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[9].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 2, mesh.m_nodes[10].x);
-    ASSERT_EQ(makeGridParameters.block_size_x * 3, mesh.m_nodes[11].x);
+    ASSERT_EQ(blockSizeX, mesh.m_nodes[5].x);
+    ASSERT_EQ(blockSizeX * 2, mesh.m_nodes[6].x);
+    ASSERT_EQ(blockSizeX * 3, mesh.m_nodes[7].x);
 
     // y coordinate
-    ASSERT_EQ(0.0, mesh.m_nodes[0].y);
-    ASSERT_EQ(0.0, mesh.m_nodes[1].y);
-    ASSERT_EQ(0.0, mesh.m_nodes[2].y);
-    ASSERT_EQ(0.0, mesh.m_nodes[3].y);
+    ASSERT_EQ(89.0, mesh.m_nodes[0].y);
+    ASSERT_EQ(89.0, mesh.m_nodes[1].y);
+    ASSERT_EQ(89.0, mesh.m_nodes[2].y);
+    ASSERT_EQ(89.0, mesh.m_nodes[3].y);
 
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[4].y);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[5].y);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[6].y);
-    ASSERT_EQ(makeGridParameters.block_size_x, mesh.m_nodes[7].y);
-
-    ASSERT_EQ(3830222.2156113400, mesh.m_nodes[8].y);
-    ASSERT_EQ(3830222.2156113400, mesh.m_nodes[9].y);
-    ASSERT_EQ(3830222.2156113400, mesh.m_nodes[10].y);
-    ASSERT_EQ(3830222.2156113400, mesh.m_nodes[11].y);
+    ASSERT_EQ(90.0, mesh.m_nodes[4].y);
+    ASSERT_EQ(90.0, mesh.m_nodes[5].y);
+    ASSERT_EQ(90.0, mesh.m_nodes[6].y);
+    ASSERT_EQ(90.0, mesh.m_nodes[7].y);
 }
 
 TEST(CurvilinearGrid, InsertFace_OnBottomLeft_ShouldInsertFace)

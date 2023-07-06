@@ -142,14 +142,10 @@ namespace meshkernel
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         void ComputeRefinementMasksFromSamples();
 
-        /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
+        /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
-        /// @param face The number of face nodes
-        /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
-        /// @param numEdgesToBeRefined The computed number of edges to refined
-        void ComputeEdgesRefinementMaskFromSamples(size_t face,
-                                                   std::vector<size_t>& refineEdgeCache,
-                                                   size_t& numEdgesToBeRefined);
+        /// @param face The face index
+        void ComputeRefinementMasksFromSamples(size_t face);
 
         /// Computes the edge refinement mask (comp_jalink)
         void ComputeEdgesRefinementMask();
@@ -157,7 +153,20 @@ namespace meshkernel
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
         /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
-        std::tuple<size_t, size_t, size_t> FindHangingNodes(size_t face);
+        void FindHangingNodes(size_t face);
+
+        /// @brief Get the number of hanging nodes
+        /// @returns The number of hanging nodes
+        size_t CountHangingNodes() const;
+
+        /// @brief Get the number of hanging nodes
+        /// @returns The number of hanging nodes
+        size_t CountHangingEdges() const;
+
+        /// @brief Get the number of hanging nodes
+        /// @param[in] face The current face index
+        /// @returns The number of hanging nodes
+        size_t CountEdgesToRefine(size_t face) const;
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
@@ -166,8 +175,8 @@ namespace meshkernel
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
 
-        /// @brief Smooth the face refinement mask (smooth_jarefine)
-        void SmoothEdgeRefinementMask() const;
+        /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
+        void SmoothRefinementMasks();
 
         /// @brief Computes m_faceMask, if a face must be split later on (split_cells)
         void ComputeIfFaceShouldBeSplit();
@@ -188,10 +197,8 @@ namespace meshkernel
         /// @returns If the edge should be refined based on Courant criteria
         bool IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const;
 
-        /// @brief Compute the face location type based on the depths values on the node
-        /// @param face The face index
-        /// @returns The face location type
-        FaceLocation ComputeFaceLocationType(size_t face) const;
+        /// @brief Compute the face location type based on the depths values on the nodes
+        void ComputeFaceLocationTypes();
 
         RTree m_samplesRTree; ///< The sample node RTree
 
@@ -206,10 +213,11 @@ namespace meshkernel
         std::vector<Point> m_polygonNodesCache;       ///< Cache for maintaining polygon nodes
         std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
         std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
+        std::vector<size_t> m_refineEdgeCache;        ///< Cache for the edges to be refined
+        std::vector<FaceLocation> m_faceLocationType; ///< Cache for the face location types
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
-        bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
         std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
         std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance

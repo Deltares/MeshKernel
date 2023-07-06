@@ -105,11 +105,6 @@ void MeshRefinement::Compute()
     m_nodeMask.reserve(m_nodeMask.size() * 2);
     for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
-        if (level > 0)
-        {
-            FindBrotherEdges();
-        }
-
         // Compute all edge lengths at once
         m_mesh->ComputeEdgesLengths();
 
@@ -125,7 +120,7 @@ void MeshRefinement::Compute()
                 edge = -edge;
             }
 
-            // TODO: implement SmoothEdgeRefinementMask SmoothEdgeRefinementMask();
+            SmoothRefinementMasks();
         }
         else
         {
@@ -198,6 +193,8 @@ void MeshRefinement::Compute()
 
         m_faceMask.resize(m_mesh->GetNumFaces());
         m_edgeMask.resize(m_mesh->GetNumEdges());
+
+        FindBrotherEdges();
     }
 
     // remove isolated hanging nodes and connect if needed
@@ -734,7 +731,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1);
     m_localNodeIndicesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1, constants::missing::sizetValue);
     m_globalEdgeIndicesCache.resize(Mesh::m_maximumNumberOfEdgesPerFace + 1, constants::missing::sizetValue);
-    std::vector<size_t> refineEdgeCache(Mesh::m_maximumNumberOfEdgesPerFace);
+    m_refineEdgeCache.resize(Mesh::m_maximumNumberOfEdgesPerFace, 0);
 
     // Compute all interpolated values
     m_interpolant->Compute();
@@ -743,37 +740,12 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     {
         FindHangingNodes(f);
 
-        std::ranges::fill(refineEdgeCache, 0);
-
-        size_t numEdgesToBeRefined = 0;
-        ComputeEdgesRefinementMaskFromSamples(f, refineEdgeCache, numEdgesToBeRefined);
-
-        m_faceMask[f] = 0;
-        if (numEdgesToBeRefined > 1)
-        {
-            m_faceMask[f] = 1;
-
-            for (size_t n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
-            {
-                if (refineEdgeCache[n] == 1)
-                {
-                    const auto edgeIndex = m_mesh->m_facesEdges[f][n];
-                    if (edgeIndex != constants::missing::sizetValue)
-                    {
-                        m_edgeMask[edgeIndex] = 1;
-                    }
-                }
-            }
-        }
+        ComputeRefinementMasksFromSamples(f);
     }
 }
 
-std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
+void MeshRefinement::FindHangingNodes(size_t face)
 {
-
-    size_t numEdgesToRefine = 0;
-    size_t numHangingEdges = 0;
-    size_t numHangingNodes = 0;
     const auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
 
     if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
@@ -790,10 +762,6 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
     for (size_t n = 0; n < numFaceNodes; n++)
     {
         const auto edgeIndex = m_mesh->m_facesEdges[face][n];
-        if (m_edgeMask[edgeIndex] != 0)
-        {
-            numEdgesToRefine += 1;
-        }
 
         // check if the parent edge is in the cell
         if (m_brotherEdges[edgeIndex] != constants::missing::sizetValue)
@@ -824,14 +792,12 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
             if (commonNode != constants::missing::sizetValue)
             {
                 m_isHangingEdgeCache[n] = true;
-                numHangingEdges++;
                 for (size_t nn = 0; nn < numFaceNodes; nn++)
                 {
                     kknod = NextCircularForwardIndex(kknod, numFaceNodes);
 
                     if (m_mesh->m_facesNodes[face][kknod] == commonNode && !m_isHangingNodeCache[kknod])
                     {
-                        numHangingNodes++;
                         m_isHangingNodeCache[kknod] = true;
                         break;
                     }
@@ -839,23 +805,65 @@ std::tuple<size_t, size_t, size_t> MeshRefinement::FindHangingNodes(size_t face)
             }
         }
     }
-
-    return {numHangingEdges, numHangingNodes, numEdgesToRefine};
 }
 
-void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
-                                                           std::vector<size_t>& refineEdgeCache,
-                                                           size_t& numEdgesToBeRefined)
+size_t MeshRefinement::CountHangingNodes() const
 {
-    numEdgesToBeRefined = 0;
+    size_t result = 0;
+    for (const auto& v : m_isHangingNodeCache)
+    {
+        if (v)
+        {
+            result++;
+        }
+    }
+    return result;
+}
+
+size_t MeshRefinement::CountHangingEdges() const
+{
+    size_t result = 0;
+    for (const auto& v : m_isHangingEdgeCache)
+    {
+        if (v)
+        {
+            result++;
+        }
+    }
+    return result;
+}
+
+size_t MeshRefinement::CountEdgesToRefine(size_t face) const
+{
+    const auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
+
+    size_t result = 0;
+
+    for (size_t n = 0; n < numFaceNodes; n++)
+    {
+        const auto edgeIndex = m_mesh->m_facesEdges[face][n];
+        if (m_edgeMask[edgeIndex] != 0)
+        {
+            result += 1;
+        }
+    }
+    return result;
+}
+
+void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
+{
 
     if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
     {
         return;
     }
 
-    if (m_refinementType == RefinementType::RefinementLevels)
+    size_t numEdgesToBeRefined = 0;
+    std::ranges::fill(m_refineEdgeCache, 0);
+
+    switch (m_refinementType)
     {
+    case RefinementType::RefinementLevels:
         if (m_interpolant->GetFaceResult(face) <= 0)
         {
             return;
@@ -863,12 +871,14 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
         for (size_t i = 0; i < m_mesh->GetNumFaceEdges(face); i++)
         {
             numEdgesToBeRefined++;
-            refineEdgeCache[i] = 1;
+            m_refineEdgeCache[i] = 1;
         }
-        return;
-    }
-    if (m_refinementType == RefinementType::WaveCourant)
-    {
+        break;
+    case RefinementType::WaveCourant:
+        if (m_useNodalRefinement)
+        {
+            ComputeFaceLocationTypes();
+        }
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
             const auto edge = m_mesh->m_facesEdges[face][e];
@@ -881,20 +891,31 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
             bool doRefinement;
             if (m_useNodalRefinement)
             {
-                const auto faceLocationType = ComputeFaceLocationType(face);
-                doRefinement = IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(edge, faceLocationType);
+                if (m_faceLocationType[face] == FaceLocation::Land)
+                {
+                    doRefinement = false;
+                }
+                else if (m_faceLocationType[face] == FaceLocation::LandWater)
+                {
+                    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
+                    doRefinement = newEdgeLength >= m_meshRefinementParameters.min_edge_size;
+                }
+                else
+                {
+                    const auto edgeDepth = std::abs(m_interpolant->GetEdgeResult(edge));
+                    doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, edgeDepth);
+                }
             }
             else
             {
-                const double refinementValue = m_interpolant->GetFaceResult(face);
-                doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, refinementValue);
+                const double faceDepth = m_interpolant->GetFaceResult(face);
+                doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, faceDepth);
             }
 
             if (doRefinement)
             {
-
                 numEdgesToBeRefined++;
-                refineEdgeCache[e] = 1;
+                m_refineEdgeCache[e] = 1;
             }
         }
 
@@ -903,14 +924,14 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
             numEdgesToBeRefined = 0;
             for (size_t i = 0; i < m_mesh->GetNumFaceEdges(face); i++)
             {
-                if (refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
+                if (m_refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
                 {
                     numEdgesToBeRefined++;
                 }
             }
         }
 
-        if (!m_directionalRefinement)
+        if (m_meshRefinementParameters.directional_refinement == 0)
         {
             if (numEdgesToBeRefined == m_mesh->GetNumFaceEdges(face))
             {
@@ -918,7 +939,7 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                 {
                     if (!m_isHangingNodeCache[i])
                     {
-                        refineEdgeCache[i] = 1;
+                        m_refineEdgeCache[i] = 1;
                     }
                 }
             }
@@ -927,49 +948,56 @@ void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                 numEdgesToBeRefined = 0;
             }
         }
+        break;
+
+    default:
+        throw AlgorithmError("Invalid refinement type");
+    }
+
+    // Compute face and edge masks
+    if (numEdgesToBeRefined > 1)
+    {
+        m_faceMask[face] = 1;
+
+        for (size_t n = 0; n < m_mesh->GetNumFaceEdges(face); n++)
+        {
+            if (m_refineEdgeCache[n] == 1)
+            {
+                const auto edgeIndex = m_mesh->m_facesEdges[face][n];
+                if (edgeIndex != constants::missing::sizetValue)
+                {
+                    m_edgeMask[edgeIndex] = 1;
+                }
+            }
+        }
     }
 }
 
-MeshRefinement::FaceLocation MeshRefinement::ComputeFaceLocationType(size_t face) const
+void MeshRefinement::ComputeFaceLocationTypes()
 {
-    double maxVal = -std::numeric_limits<double>::max();
-    double minVal = std::numeric_limits<double>::max();
-    for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
+    m_faceLocationType.resize(m_mesh->GetNumFaces());
+    std::ranges::fill(m_faceLocationType, FaceLocation::Water);
+    for (size_t face = 0; face < m_mesh->GetNumFaces(); face++)
     {
-        const auto node = m_mesh->m_facesNodes[face][e];
-        const auto val = m_interpolant->GetNodeResult(node);
-        maxVal = std::max(maxVal, val);
-        minVal = std::min(minVal, val);
-    }
+        double maxVal = -std::numeric_limits<double>::max();
+        double minVal = std::numeric_limits<double>::max();
+        for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
+        {
+            const auto node = m_mesh->m_facesNodes[face][e];
+            const auto val = m_interpolant->GetNodeResult(node);
+            maxVal = std::max(maxVal, val);
+            minVal = std::min(minVal, val);
+        }
 
-    if (minVal > 0.0)
-    {
-        return FaceLocation::Land;
+        if (minVal > 0.0)
+        {
+            m_faceLocationType[face] = FaceLocation::Land;
+        }
+        if (maxVal >= 0.0 && (!IsEqual(minVal, constants::missing::doubleValue) && minVal < 0.0))
+        {
+            m_faceLocationType[face] = FaceLocation::LandWater;
+        }
     }
-    if (maxVal >= 0.0 && (!IsEqual(minVal, constants::missing::doubleValue) && minVal < 0.0))
-    {
-        return FaceLocation::LandWater;
-    }
-    return FaceLocation::Water;
-}
-
-bool MeshRefinement::IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(size_t edge, FaceLocation faceLocationType) const
-{
-    if (faceLocationType == FaceLocation::LandWater)
-    {
-        return true;
-    }
-    if (faceLocationType == FaceLocation::Land)
-    {
-        return false;
-    }
-
-    const auto& [first, second] = m_mesh->m_edges[edge];
-    const auto firstDepth = m_interpolant->GetNodeResult(first);
-    const auto secondDepth = m_interpolant->GetNodeResult(second);
-    const auto refinementValue = std::abs(0.5 * (firstDepth + secondDepth));
-
-    return IsRefineNeededBasedOnCourantCriteria(edge, refinementValue);
 }
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const
@@ -1002,7 +1030,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                 continue;
             }
 
-            auto [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
+            const auto numHangingNodes = CountHangingEdges();
 
             const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
@@ -1060,7 +1088,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: The number the links in the cell is not equals 3.");
                 }
 
-                numEdgesToRefine = 0;
+                size_t numEdgesToRefine = 0;
                 size_t firstEdgeIndex = 0;
                 size_t secondEdgeIndex = 0;
                 for (size_t i = 0; i < Mesh::m_numNodesQuads; i++)
@@ -1148,7 +1176,11 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 continue;
             }
 
-            auto const [numHangingEdges, numHangingNodes, numEdgesToRefine] = FindHangingNodes(f);
+            const auto numEdgesToRefine = CountEdgesToRefine(f);
+
+            FindHangingNodes(f);
+            const auto numHangingEdges = CountHangingEdges();
+            const auto numHangingNodes = CountHangingNodes();
 
             bool isSplittingRequired = false;
 
@@ -1254,16 +1286,16 @@ void MeshRefinement::FindBrotherEdges()
             // check if node k is in the middle
             const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n);
             const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
+            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
 
             // compute tolerance
-            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
-            const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
+            const auto firstEdgeLength = ComputeDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto secondEdgeLength = ComputeDistance(m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);
+            const auto minConnectionDistance = 1e-4 * std::max(firstEdgeLength, secondEdgeLength);
 
             // The center of the two edges coincides with the shared node
-            const auto center = ComputeMiddlePointAccountingForPoles(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection);
-            const auto squaredDistanceFromCentre = ComputeSquaredDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
-            if (squaredDistanceFromCentre < squaredTolerance)
+            const auto distanceFromCentre = ComputeDistance(center, m_mesh->m_nodes[n], m_mesh->m_projection);
+            if (distanceFromCentre < minConnectionDistance)
             {
                 m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;
                 m_brotherEdges[secondEdgeIndex] = firstEdgeIndex;
@@ -1272,7 +1304,85 @@ void MeshRefinement::FindBrotherEdges()
     }
 }
 
-void MeshRefinement::SmoothEdgeRefinementMask() const
+void MeshRefinement::SmoothRefinementMasks()
 {
-    throw AlgorithmError("MeshRefinement::SmoothEdgeRefinementMask: Not implemented yet.");
+    if (m_meshRefinementParameters.directional_refinement == 1)
+    {
+        throw AlgorithmError("Directional refinement cannot be used in combination with smoothing. Please set directional refinement to off!");
+    }
+    if (m_meshRefinementParameters.smoothing_iterations == 0)
+    {
+        return;
+    }
+
+    std::vector splitEdge(m_edgeMask.size(), false);
+
+    for (int iter = 0; iter < m_meshRefinementParameters.smoothing_iterations; ++iter)
+    {
+        std::fill(splitEdge.begin(), splitEdge.end(), false);
+
+        for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
+        {
+            if (m_faceMask[f] != 1)
+            {
+                continue;
+            }
+
+            const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+            for (size_t e = 0; e < numEdges; ++e)
+            {
+                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+                const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
+                const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
+                const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
+                                   m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
+
+                if (split)
+                {
+                    splitEdge[edgeIndex] = true;
+                }
+            }
+        }
+
+        // update face refinement mask
+        for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
+        {
+            const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+            for (size_t e = 0; e < numEdges; ++e)
+            {
+                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+                if (splitEdge[edgeIndex])
+                {
+                    m_faceMask[f] = 1;
+                }
+            }
+        }
+
+        // update edge refinement mask
+        for (size_t f = 0; f < m_mesh->GetNumFaces(); ++f)
+        {
+            if (m_faceMask[f] != 1)
+            {
+                continue;
+            }
+
+            const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+            for (size_t e = 0; e < numEdges; ++e)
+            {
+                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+                const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
+                const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
+                const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
+                                   m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
+
+                if (split)
+                {
+                    m_edgeMask[edgeIndex] = 1;
+                }
+            }
+        }
+    }
 }

@@ -35,11 +35,11 @@
 
 std::tuple<size_t,
            size_t,
-           std::shared_ptr<double>,
-           std::shared_ptr<double>,
+           std::vector<double>,
+           std::vector<double>,
            std::vector<int>,
-           std::shared_ptr<int>,
-           std::shared_ptr<int>>
+           std::vector<int>,
+           std::vector<int>>
 ReadLegacyMeshFile(std::filesystem::path const& file_path);
 
 std::tuple<std::vector<meshkernel::Point>,
@@ -73,12 +73,12 @@ std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
 
 std::tuple<size_t,
            size_t,
-           std::shared_ptr<double>,
-           std::shared_ptr<double>,
-           std::shared_ptr<int>>
+           std::vector<double>,
+           std::vector<double>,
+           std::vector<int>>
 MakeRectangularMeshForApiTesting(
-    size_t num_rows,
-    size_t num_columns,
+    size_t numRows,
+    size_t numColumns,
     double delta);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();

@@ -51,6 +51,9 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_transformSamples(transformSamples),
       m_minNumSamples(minNumSamples)
 {
+    // build sample r-tree for searches
+    m_samplesRtree.BuildTree(m_samples);
+    m_visitedSamples.resize(m_samples.size());
 }
 
 void AveragingInterpolation::Compute()
@@ -60,31 +63,22 @@ void AveragingInterpolation::Compute()
         throw AlgorithmError("AveragingInterpolation::Compute: No samples available.");
     }
 
-    m_visitedSamples.resize(m_samples.size());
-
-    // build sample r-tree for searches
-    m_samplesRtree.BuildTree(m_samples);
-
-    std::vector<Point> dualFacePolygon;
-    m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
-    std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
-
-    // make sure edge centers are computed
-    m_mesh.ComputeEdgesCenters();
-    for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
+    if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
     {
-        m_mesh.MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
 
-        const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.m_nodes[n]);
+        m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
+        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
-        // flag the visited samples
-        for (size_t i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
+        // make sure edge centers are computed
+        m_mesh.ComputeEdgesCenters();
+
+        std::vector<Point> dualFacePolygon;
+        for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
-            const auto sample = m_samplesRtree.GetQueryResult(i);
-            m_visitedSamples[sample] = true;
+            m_mesh.MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
+            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.m_nodes[n]);
+            m_nodeResults[n] = result;
         }
-
-        m_nodeResults[n] = result;
     }
 
     // for edges, an average of the nodal interpolated value is made
@@ -97,8 +91,8 @@ void AveragingInterpolation::Compute()
         {
             const auto& [first, second] = m_mesh.m_edges[e];
 
-            const auto firstValue = m_nodeResults[first];
-            const auto secondValue = m_nodeResults[second];
+            const auto& firstValue = m_nodeResults[first];
+            const auto& secondValue = m_nodeResults[second];
 
             if (!IsEqual(firstValue, constants::missing::doubleValue) && !IsEqual(secondValue, constants::missing::doubleValue))
             {

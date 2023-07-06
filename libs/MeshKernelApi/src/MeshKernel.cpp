@@ -68,7 +68,7 @@
 #include <unordered_map>
 #include <vector>
 
-#if defined(__linux__) && defined(__GNUC__)
+#if (defined(__linux__) || defined(__APPLE__)) && defined(__GNUC__)
 #define strncpy_s strncpy
 #endif
 
@@ -952,28 +952,35 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, geometryList, projection);
 
-            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
-
-            if (polygon->IsEmpty())
+    MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                auto const curvilinearGrid = curvilinearGridCreateUniform.Compute();
-                auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            else
-            {
-                // compute one curvilinear grid at the time, convert it to unstructured and add it to the existing mesh2d
-                for (size_t p = 0; p < polygon->GetNumPolygons(); ++p)
-                {
-                    auto const curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, p);
-                    auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
-                    *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
-                }
-            }
+
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            auto const curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
+
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
         }
         catch (...)
         {
@@ -1498,7 +1505,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector values((griddedSamples.n_cols + 1) * (griddedSamples.n_rows + 1), 0.0);
+            std::vector values(griddedSamples.num_x * griddedSamples.num_y, 0.0);
             for (size_t i = 0; i < values.size(); ++i)
             {
                 values[i] = griddedSamples.values[i];
@@ -1509,8 +1516,8 @@ namespace meshkernelapi
             {
                 meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
                 interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  griddedSamples.n_cols,
-                                                                                                  griddedSamples.n_rows,
+                                                                                                  griddedSamples.num_x,
+                                                                                                  griddedSamples.num_y,
                                                                                                   origin,
                                                                                                   griddedSamples.cell_size,
                                                                                                   values);
@@ -1527,12 +1534,12 @@ namespace meshkernelapi
                     throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
                 }
 
-                std::vector<double> xCoordinates(griddedSamples.n_cols + 1);
+                std::vector<double> xCoordinates(griddedSamples.num_x);
                 for (size_t i = 0; i < xCoordinates.size(); ++i)
                 {
                     xCoordinates[i] = griddedSamples.x_coordinates[i];
                 }
-                std::vector<double> yCoordinates(griddedSamples.n_rows + 1);
+                std::vector<double> yCoordinates(griddedSamples.num_y);
                 for (size_t i = 0; i < yCoordinates.size(); ++i)
                 {
                     yCoordinates[i] = griddedSamples.y_coordinates[i];
@@ -1832,7 +1839,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
                                                     const int* oneDNodeMask,
-                                                    const GeometryList& polygons)
+                                                    const GeometryList& polygons,
+                                                    double projectionFactor)
     {
         int exitCode = Success;
         try
@@ -1853,7 +1861,7 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
-            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons);
+            meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons, projectionFactor);
         }
         catch (...)
         {
@@ -2278,20 +2286,31 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters,
+                                                                                            geometryList,
+                                                                                            projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
-            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
-
-            meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, meshKernelState[meshKernelId].m_projection);
-
-            if (polygon->IsEmpty())
+    MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
+                                                                  const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
             {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute();
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            else
-            {
-                *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridCreateUniform.Compute(polygon, 0);
-            }
+
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
         }
         catch (...)
         {
@@ -3044,6 +3063,11 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
+        return Success;
+    }
+    MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
+    {
+        projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
         return Success;
     }
 
