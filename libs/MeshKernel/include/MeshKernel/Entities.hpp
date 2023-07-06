@@ -102,7 +102,7 @@ namespace meshkernel
 
         /// @brief Inplace divide point by point.
         ///
-        /// No check is made that any component of the divisor is 0
+        /// \note No check is made that any component of the divisor is 0
         Point& operator/=(const Point& p);
 
         /// @brief Inplace multiply point by point.
@@ -116,7 +116,7 @@ namespace meshkernel
 
         /// @brief Inplace divide point by scalar.
         ///
-        /// No check is made that the divisor is 0
+        /// \note No check is made that the divisor is 0
         Point& operator/=(const double p);
 
         /// @brief Inplace multiply point by scalar.

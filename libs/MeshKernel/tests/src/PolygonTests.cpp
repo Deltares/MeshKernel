@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/Definitions.hpp>
@@ -55,7 +56,7 @@ TEST(Polygons, CreatePointsInPolygons)
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
     // Assert
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(302.00250199999999, generatedPoints[0][0].x, tolerance);
     ASSERT_NEAR(472.13037100000003, generatedPoints[0][0].y, tolerance);
@@ -77,8 +78,8 @@ TEST(Polygons, RefineDefaultPolygon)
 {
     meshkernel::Polygons polygon;
     // Should fail, polygon is empty.
-    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 0, 1.0), std::invalid_argument);
-    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 1, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 0, 1.0), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(0, 1, 1.0), meshkernel::ConstraintError);
 }
 
 TEST(Polygons, InvalidRefinePolygonIndex)
@@ -94,9 +95,9 @@ TEST(Polygons, InvalidRefinePolygonIndex)
     meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
 
     // First is greater than last
-    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(10, 8, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(10, 8, 1.0), meshkernel::ConstraintError);
     // Last index is out of range
-    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(3, 9, 1.0), std::invalid_argument);
+    EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(3, 9, 1.0), meshkernel::ConstraintError);
 }
 
 TEST(Polygons, RefinePolygon)
@@ -116,7 +117,7 @@ TEST(Polygons, RefinePolygon)
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
     ASSERT_EQ(13, refinedPolygon.size());
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
@@ -166,7 +167,7 @@ TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
     meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 1.0);
 
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     // Only need to check the points from the second refinement, the test above will
     // catch any problems in the first refinement.
@@ -220,7 +221,7 @@ TEST(Polygons, RefinePolygonTwiceWithLargerRefinement)
     meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 2.0);
 
-    const double tolerance = 1e-13;
+    constexpr double tolerance = 1e-13;
 
     // Only need to check the points from the second refinement, the test above will
     // catch any problems in the first refinement.
@@ -253,7 +254,7 @@ TEST(Polygons, RefinePolygonTwice)
     meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 0.5);
 
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     // Only need to check the points from the second refinement, the test above will
     // catch any problems in the first refinement.
@@ -329,7 +330,7 @@ TEST(Polygons, RefinePolygonOneSide)
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
 
     ASSERT_EQ(7, refinedPolygon.size());
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
@@ -369,7 +370,7 @@ TEST(Polygons, RefinePolygonTwoTimesOneSideSameRefinement)
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 3, 1.0);
 
     ASSERT_EQ(7, refinedPolygon.size());
-    const double tolerance = 1e-10;
+    constexpr double tolerance = 1e-10;
 
     ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
@@ -417,7 +418,7 @@ TEST(Polygons, RefinePolygonTwoTimesOneSide)
     // Refine the same edge, this time there should be two segments making up the edge.
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(1, 3, 1.0);
 
-    const double tolerance = 1.0e-13;
+    constexpr double tolerance = 1.0e-13;
 
     // Check points from first refinement
     ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
@@ -471,7 +472,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
     ASSERT_EQ(15, refinedPolygon.size());
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
@@ -522,7 +523,7 @@ TEST(Polygons, OffsetCopy)
     bool innerAndOuter = false;
     const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
 
-    const double tolerance = 1e-5;
+    constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(newPolygon.Node(0).x, 286.75373149966771, tolerance);
     ASSERT_NEAR(newPolygon.Node(1).x, 284.34914611880089, tolerance);

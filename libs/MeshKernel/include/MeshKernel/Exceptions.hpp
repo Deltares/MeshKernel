@@ -224,6 +224,38 @@ namespace meshkernel
         std::string Category() const override { return "AlgorithmError"; }
     };
 
+    /// @brief An exception class thrown when an attempt is made that violates a range constraint.
+    ///
+    /// 1. When an index is out of bounds or violates a range constraint.
+    /// 2. Attempt to retrieve a component that does not exist.
+    /// 3. Attempt to dereference a null pointer.
+    class ConstraintError final : public MeshKernelError
+    {
+    public:
+        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
+        /// @param[in] message         The variadic error message.
+        /// @param[in] source_location The source location.
+        ConstraintError(VariadicErrorMessage const& message,
+                        std::source_location const& source_location = std::source_location::current())
+            : MeshKernelError(message, source_location)
+        {
+        }
+
+        /// @brief Class constructor parametrized by a string error message and optionally the source location.
+        /// @param[in] message         The string error message.
+        /// @param[in] source_location The source location.
+        ConstraintError(std::string_view message,
+                        std::source_location const& source_location = std::source_location::current())
+            : MeshKernelError(message, source_location)
+        {
+        }
+
+    private:
+        /// @brief Returns the error category.
+        /// @return The  error category.
+        std::string Category() const override { return "ConstraintError"; }
+    };
+
     /// @brief A class for throwing mesh geometry errors.
     class MeshGeometryError final : public MeshKernelError
     {

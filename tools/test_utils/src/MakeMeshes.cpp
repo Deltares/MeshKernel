@@ -249,8 +249,8 @@ MakeRectangularMeshForApiTesting(
     double delta)
 {
 
-    auto num_y = num_rows + static_cast<size_t>(1);
-    auto num_x = num_columns + static_cast<size_t>(1);
+    size_t num_y = num_rows + 1U;
+    size_t num_x = num_columns + 1U;
 
     std::vector<std::vector<size_t>> indicesValues(num_x, std::vector<size_t>(num_y));
     std::shared_ptr<double> node_x(new double[num_x * num_y], std::default_delete<double[]>());

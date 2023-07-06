@@ -134,7 +134,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     if (m_outer_polygons_indices.empty())
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
+        throw ConstraintError("Polygons::RefineFirstPolygon: No nodes in polygon.");
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -146,7 +146,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     if (endIndex <= startIndex)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index: " + std::to_string(startIndex) + " >= " + std::to_string(endIndex));
+        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The end index is smaller than the start index: {} >= {}.", startIndex, endIndex));
     }
 
     //--------------------------------
@@ -167,7 +167,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
 
     if (!areIndicesValid)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid: " + std::to_string(startIndex) + ", " + std::to_string(endIndex));
+        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The indices are not valid: {}, {}.", startIndex, endIndex));
     }
 
     //--------------------------------
@@ -198,18 +198,19 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
         refinedPolygon.emplace_back(m_nodes[i]);
     }
 
+    // Refine each line segment.
     for (size_t i = startIndex; i < endIndex; ++i)
     {
+        // Line segment starting point.
         Point p = m_nodes[i];
-        Point delta = m_nodes[i + 1] - m_nodes[i];
-        double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
+        const double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
+        // Refined segment step size.
+        const Point delta = (m_nodes[i + 1] - m_nodes[i]) * refinementDistance / segmentLength;
         double lengthAlongInterval = refinementDistance;
-        // TODO how large should the tolerance be? 1.0e-3 seems quite tight for this algorithm
-        double tolerance = 1.0e-3;
 
-        delta *= refinementDistance / segmentLength;
-
-        while (lengthAlongInterval < segmentLength && !IsEqual(lengthAlongInterval, segmentLength, tolerance))
+        // Exit when the lengthAlongInterval is greater or equal than segmentLength
+        // To prevent very small refined segment lengths, also exit when lengthAlongInterval is a small fraction less (defined by refinementTolerance)
+        while (lengthAlongInterval < segmentLength && !IsEqual(lengthAlongInterval, segmentLength, constants::geometric::refinementTolerance))
         {
             p += delta;
             lengthAlongInterval += refinementDistance;
