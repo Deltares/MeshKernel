@@ -102,7 +102,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <tr class="separator:a4a39fcca4669fa55c513a71ba798c91a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b30d86e3b934395b628d6a919649eef"><td class="memItemLeft" align="right" valign="top"><a id="a8b30d86e3b934395b628d6a919649eef"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#a8b30d86e3b934395b628d6a919649eef">min_edge_size</a> = 0.5</td></tr>
-<tr class="memdesc:a8b30d86e3b934395b628d6a919649eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum edge size. <br /></td></tr>
+<tr class="memdesc:a8b30d86e3b934395b628d6a919649eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum edge size in meters. <br /></td></tr>
 <tr class="separator:a8b30d86e3b934395b628d6a919649eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c1fb9c41739362ff3d3db9ee48b8351"><td class="memItemLeft" align="right" valign="top"><a id="a5c1fb9c41739362ff3d3db9ee48b8351"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#a5c1fb9c41739362ff3d3db9ee48b8351">refinement_type</a> = 2</td></tr>
@@ -116,6 +116,18 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#a7f67d5c8c4af34722edba2c7dcf2c9a5">account_for_samples_outside</a> = 0</td></tr>
 <tr class="memdesc:a7f67d5c8c4af34722edba2c7dcf2c9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take samples outside face into account , 1 yes 0 no. <br /></td></tr>
 <tr class="separator:a7f67d5c8c4af34722edba2c7dcf2c9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad74f6967d8491b6fb385073deede6f05"><td class="memItemLeft" align="right" valign="top"><a id="ad74f6967d8491b6fb385073deede6f05"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#ad74f6967d8491b6fb385073deede6f05">smoothing_iterations</a> = 5</td></tr>
+<tr class="memdesc:ad74f6967d8491b6fb385073deede6f05"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of smoothing iterations. <br /></td></tr>
+<tr class="separator:ad74f6967d8491b6fb385073deede6f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae325bf14f35c7a459a559e2f3c08e52a"><td class="memItemLeft" align="right" valign="top"><a id="ae325bf14f35c7a459a559e2f3c08e52a"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#ae325bf14f35c7a459a559e2f3c08e52a">max_courant_time</a> = 120.0</td></tr>
+<tr class="memdesc:ae325bf14f35c7a459a559e2f3c08e52a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum courant time in seconds. <br /></td></tr>
+<tr class="separator:ae325bf14f35c7a459a559e2f3c08e52a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98c7a4f188214dbddb5d213475e1491"><td class="memItemLeft" align="right" valign="top"><a id="aa98c7a4f188214dbddb5d213475e1491"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html#aa98c7a4f188214dbddb5d213475e1491">directional_refinement</a> = 0</td></tr>
+<tr class="memdesc:aa98c7a4f188214dbddb5d213475e1491"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional refinement, cannot be used when the number of smoothing iterations is larger than 0. <br /></td></tr>
+<tr class="separator:aa98c7a4f188214dbddb5d213475e1491"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A struct used to describe the mesh refinement parameters in a C-compatible manner. </p>

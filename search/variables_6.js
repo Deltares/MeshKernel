@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['inner_5fiterations_934',['inner_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#a0157ecc1cdf621644d68bb0833d0b8f7',1,'meshkernel::OrthogonalizationParameters']]],
-  ['inner_5fouter_5fseparator_935',['inner_outer_separator',['../structmeshkernelapi_1_1_geometry_list.html#a71b4d4559df3af088ccb16150af8cb39',1,'meshkernelapi::GeometryList']]]
+  ['geometry_5fseparator_945',['geometry_separator',['../structmeshkernelapi_1_1_geometry_list.html#ae9f007e7e6475e4a0f783666173324b3',1,'meshkernelapi::GeometryList']]],
+  ['grow_5fgrid_5foutside_946',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
 ];

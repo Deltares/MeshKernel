@@ -88,21 +88,21 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a8e29d1db3487b9d2469b37c4d0dd3759"><td class="memItemLeft" align="right" valign="top"><a id="a8e29d1db3487b9d2469b37c4d0dd3759"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a8e29d1db3487b9d2469b37c4d0dd3759">n_cols</a> = 0</td></tr>
-<tr class="memdesc:a8e29d1db3487b9d2469b37c4d0dd3759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of grid columns. <br /></td></tr>
-<tr class="separator:a8e29d1db3487b9d2469b37c4d0dd3759"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14a8733b746d2262e58002c75e96e7cf"><td class="memItemLeft" align="right" valign="top"><a id="a14a8733b746d2262e58002c75e96e7cf"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a14a8733b746d2262e58002c75e96e7cf">n_rows</a> = 0</td></tr>
-<tr class="memdesc:a14a8733b746d2262e58002c75e96e7cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of grid rows. <br /></td></tr>
-<tr class="separator:a14a8733b746d2262e58002c75e96e7cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f1ca40187aa23d56c5349213b3c9e2"><td class="memItemLeft" align="right" valign="top"><a id="a46f1ca40187aa23d56c5349213b3c9e2"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a46f1ca40187aa23d56c5349213b3c9e2">num_x</a> = 0</td></tr>
+<tr class="memdesc:a46f1ca40187aa23d56c5349213b3c9e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of x gridded samples coordinates. <br /></td></tr>
+<tr class="separator:a46f1ca40187aa23d56c5349213b3c9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a265ee6f184ecbba3e615f9a685ab2d8a"><td class="memItemLeft" align="right" valign="top"><a id="a265ee6f184ecbba3e615f9a685ab2d8a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a265ee6f184ecbba3e615f9a685ab2d8a">num_y</a> = 0</td></tr>
+<tr class="memdesc:a265ee6f184ecbba3e615f9a685ab2d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of y gridded samples coordinates. <br /></td></tr>
+<tr class="separator:a265ee6f184ecbba3e615f9a685ab2d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad885c20427a12d4aab4a56938bcf4dbf"><td class="memItemLeft" align="right" valign="top"><a id="ad885c20427a12d4aab4a56938bcf4dbf"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#ad885c20427a12d4aab4a56938bcf4dbf">x_origin</a> = 0.0</td></tr>
-<tr class="memdesc:ad885c20427a12d4aab4a56938bcf4dbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate of the grid origin. <br /></td></tr>
+<tr class="memdesc:ad885c20427a12d4aab4a56938bcf4dbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate of the grid origin (lower left corner) <br /></td></tr>
 <tr class="separator:ad885c20427a12d4aab4a56938bcf4dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ebf53862c05ee5da99a8ccf5c286b0d"><td class="memItemLeft" align="right" valign="top"><a id="a4ebf53862c05ee5da99a8ccf5c286b0d"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a4ebf53862c05ee5da99a8ccf5c286b0d">y_origin</a> = 0.0</td></tr>
-<tr class="memdesc:a4ebf53862c05ee5da99a8ccf5c286b0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of the grid origin. <br /></td></tr>
+<tr class="memdesc:a4ebf53862c05ee5da99a8ccf5c286b0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of the grid origin (lower left corner) <br /></td></tr>
 <tr class="separator:a4ebf53862c05ee5da99a8ccf5c286b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a8c8b312a02772f65344ac3b07b31ab"><td class="memItemLeft" align="right" valign="top"><a id="a3a8c8b312a02772f65344ac3b07b31ab"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a3a8c8b312a02772f65344ac3b07b31ab">cell_size</a> = 0.0</td></tr>
@@ -120,6 +120,14 @@ double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#aab159ea4c8567ff71c93a22671f57e01">values</a> = nullptr</td></tr>
 <tr class="memdesc:aab159ea4c8567ff71c93a22671f57e01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample values. <br /></td></tr>
 <tr class="separator:aab159ea4c8567ff71c93a22671f57e01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9888153370e7c93732fa8194c7fa0621"><td class="memItemLeft" align="right" valign="top"><a id="a9888153370e7c93732fa8194c7fa0621"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a9888153370e7c93732fa8194c7fa0621">x_upper_right</a> = 0.0</td></tr>
+<tr class="memdesc:a9888153370e7c93732fa8194c7fa0621"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate of the upper right. <br /></td></tr>
+<tr class="separator:a9888153370e7c93732fa8194c7fa0621"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cf2b0c1764068dd3c3275a3bda231c3"><td class="memItemLeft" align="right" valign="top"><a id="a5cf2b0c1764068dd3c3275a3bda231c3"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html#a5cf2b0c1764068dd3c3275a3bda231c3">y_upper_right</a> = 0.0</td></tr>
+<tr class="memdesc:a5cf2b0c1764068dd3c3275a3bda231c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of the upper right. <br /></td></tr>
+<tr class="separator:a5cf2b0c1764068dd3c3275a3bda231c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A struct describing gridded samples. </p>

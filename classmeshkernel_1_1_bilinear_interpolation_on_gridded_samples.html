@@ -97,9 +97,9 @@ Inheritance diagram for meshkernel::BilinearInterpolationOnGriddedSamples:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afd9893ab00f0778f6359fdff4132646a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#afd9893ab00f0778f6359fdff4132646a">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, size_t numColumns, size_t numRows, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)</td></tr>
-<tr class="memdesc:afd9893ab00f0778f6359fdff4132646a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#afd9893ab00f0778f6359fdff4132646a">More...</a><br /></td></tr>
-<tr class="separator:afd9893ab00f0778f6359fdff4132646a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae262180753b95d357f9a5f5758914c26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae262180753b95d357f9a5f5758914c26">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, size_t numXCoord, size_t numYCoord, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)</td></tr>
+<tr class="memdesc:ae262180753b95d357f9a5f5758914c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae262180753b95d357f9a5f5758914c26">More...</a><br /></td></tr>
+<tr class="separator:ae262180753b95d357f9a5f5758914c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd319fa66fdb540e952069d268f35f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const std::vector&lt; double &gt; &amp;xCoordinates, const std::vector&lt; double &gt; &amp;yCoordinates, const std::vector&lt; double &gt; &amp;values)</td></tr>
 <tr class="memdesc:aebd319fa66fdb540e952069d268f35f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">More...</a><br /></td></tr>
 <tr class="separator:aebd319fa66fdb540e952069d268f35f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,8 +150,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for performing bilinear interpolation on gridded samples. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="afd9893ab00f0778f6359fdff4132646a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd9893ab00f0778f6359fdff4132646a">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
+<a id="ae262180753b95d357f9a5f5758914c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae262180753b95d357f9a5f5758914c26">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,13 +166,13 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numColumns</em>, </td>
+          <td class="paramname"><em>numXCoord</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numRows</em>, </td>
+          <td class="paramname"><em>numYCoord</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -204,8 +204,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The input mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">numColumns</td><td>The number of grid columns </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">numRows</td><td>The number of grid rows </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numXCoord</td><td>The number of x coordinates of the gridded data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numYCoord</td><td>The number of y coordinates of the gridded data </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">origin</td><td>The coordinate of the grid origin </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cellSize</td><td>The grid cell size </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">values</td><td>The values of the gridded samples </td></tr>

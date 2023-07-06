@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['polylinedistance_1017',['polylineDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a6afd9cf7eeb667d616612c9a04b73ad8',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection::polylineDistance()'],['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a8214e290245fa388f1fce673e8d551d7',1,'meshkernel::Mesh::FaceMeshPolylineIntersection::polylineDistance()']]],
-  ['polylinesegmentindex_1018',['polylineSegmentIndex',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a9718c9a82d78df9aab8a9f0381f1eff5',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]]
+  ['origin_5fx_1026',['origin_x',['../structmeshkernel_1_1_make_grid_parameters.html#a60cdb3c6af88a871de6792d38f9ee616',1,'meshkernel::MakeGridParameters']]],
+  ['origin_5fy_1027',['origin_y',['../structmeshkernel_1_1_make_grid_parameters.html#a0a0d9a11f43adf3a0567ad07a65c8bdf',1,'meshkernel::MakeGridParameters']]],
+  ['orthogonalization_5fto_5fsmoothing_5ffactor_1028',['orthogonalization_to_smoothing_factor',['../structmeshkernel_1_1_orthogonalization_parameters.html#afbd641160ab86c9f1b0450ce575fae30',1,'meshkernel::OrthogonalizationParameters']]],
+  ['orthogonalization_5fto_5fsmoothing_5ffactor_5fat_5fboundary_1029',['orthogonalization_to_smoothing_factor_at_boundary',['../structmeshkernel_1_1_orthogonalization_parameters.html#a8a7b60d1c3cc7ea530f6a8dc7a193cdd',1,'meshkernel::OrthogonalizationParameters']]],
+  ['outer_5fiterations_1030',['outer_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#ade6b28e27d5e3fd722db09f7d73d2b1f',1,'meshkernel::OrthogonalizationParameters']]]
 ];

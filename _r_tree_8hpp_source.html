@@ -116,85 +116,82 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;boost/geometry/index/rtree.hpp&gt;</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#undef BOOST_ALLOW_DEPRECATED_HEADERS</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">// r-tree</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">// https://gist.github.com/logc/10272165</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// using a namespace alias</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">namespace </span>bg = boost::geometry;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">namespace </span>bgi = boost::geometry::index;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html">   58</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_r_tree.html">RTree</a></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keyword">typedef</span> bg::model::point&lt;double, 2, bg::cs::cartesian&gt; Point2D; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keyword">typedef</span> bg::model::box&lt;Point2D&gt; Box2D;                          </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keyword">typedef</span> std::pair&lt;Point2D, size_t&gt; value2D;                     </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keyword">typedef</span> bgi::rtree&lt;value2D, bgi::linear&lt;16&gt;&gt; RTree2D;           </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keyword">typedef</span> bg::model::point&lt;double, 3, bg::cs::cartesian&gt; Point3D; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keyword">typedef</span> std::pair&lt;Point3D, size_t&gt; value3D;                     </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keyword">typedef</span> bgi::rtree&lt;value3D, bgi::linear&lt;16&gt;&gt; RTree3D;           </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#a4772363a9a5973495b4cff786438cfcf">   74</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a4772363a9a5973495b4cff786438cfcf">BuildTree</a>(std::vector&lt;T&gt;&amp; nodes)</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            m_points.reserve(m_points.size());</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            m_points.clear();</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            m_rtree2D.clear();</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; nodes.size(); ++n)</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                <span class="keywordflow">if</span> (nodes[n].x != constants::missing::doubleValue &amp;&amp; nodes[n].y != constants::missing::doubleValue)</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                }</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;            }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;            m_rtree2D = RTree2D(m_points.begin(), m_points.end());</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a9bad37e4a7003efa257987f04ae90d7e">SearchPoints</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> node, <span class="keywordtype">double</span> searchRadiusSquared);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a88983e69503b090734d4e9b65964f996">SearchNearestPoint</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> node, <span class="keywordtype">double</span> searchRadiusSquared);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;concepts&gt;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">// r-tree</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">// https://gist.github.com/logc/10272165</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// using a namespace alias</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">namespace </span>bg = boost::geometry;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">namespace </span>bgi = boost::geometry::index;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html">   60</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_r_tree.html">RTree</a></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keyword">template</span> &lt;std::derived_from&lt;Po<span class="keywordtype">int</span>&gt; T&gt;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#ab2f2ce7fd75e01bba8152a7d8251e36a">   66</a></span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#ab2f2ce7fd75e01bba8152a7d8251e36a">BuildTree</a>(std::vector&lt;T&gt; <span class="keyword">const</span>&amp; nodes)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            m_points.reserve(m_points.size());</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            m_points.clear();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            m_rtree2D.clear();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; nodes.size(); ++n)</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                <span class="keywordflow">if</span> (nodes[n].x != constants::missing::doubleValue &amp;&amp; nodes[n].y != constants::missing::doubleValue)</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            m_rtree2D = RTree2D(m_points.begin(), m_points.end());</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#afc013842428429270a5bc24071c44f76">SearchPoints</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; node, <span class="keywordtype">double</span> searchRadiusSquared);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a14589b7ff0a734b46a35d0cfe2c17187">SearchNearestPoint</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; node, <span class="keywordtype">double</span> searchRadiusSquared);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a14589b7ff0a734b46a35d0cfe2c17187">SearchNearestPoint</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> <span class="keyword">const</span>&amp; node);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#acbe97257637d8b929442f6be028d4abf">DeleteNode</a>(<span class="keywordtype">size_t</span> position);</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a88983e69503b090734d4e9b65964f996">SearchNearestPoint</a>(<a class="code" href="classmeshkernel_1_1_point.html">Point</a> node);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#acbe97257637d8b929442f6be028d4abf">DeleteNode</a>(<span class="keywordtype">size_t</span> position);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">  109</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">Size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_rtree2D.size(); };</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">  112</a></span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">Empty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_rtree2D.empty(); }</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">  115</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">GetQueryResultSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_queryCache.size(); }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">  118</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">GetQueryResult</a>(<span class="keywordtype">size_t</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_queryIndices[index]; }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">  121</a></span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">HasQueryResults</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">GetQueryResultSize</a>() &gt; 0; }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        RTree2D m_rtree2D;                                </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        std::vector&lt;std::pair&lt;Point2D, size_t&gt;&gt; m_points; </div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        std::vector&lt;value2D&gt; m_queryCache;                </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        std::vector&lt;size_t&gt; m_queryIndices;               </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordtype">int</span> m_queryVectorCapacity = 100;                  </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    };</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">  101</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">Size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_rtree2D.size(); };</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">  104</a></span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">Empty</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_rtree2D.empty(); }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">  107</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">GetQueryResultSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_queryCache.size(); }</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">  110</a></span>&#160;        [[nodiscard]] <span class="keywordtype">size_t</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">GetQueryResult</a>(<span class="keywordtype">size_t</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_queryIndices[index]; }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">  113</a></span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">HasQueryResults</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">GetQueryResultSize</a>() &gt; 0; }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <span class="keyword">using</span> Point2D = bg::model::point&lt;double, 2, bg::cs::cartesian&gt;; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keyword">using</span> Box2D = bg::model::box&lt;Point2D&gt;;                          </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keyword">using</span> Value2D = std::pair&lt;Point2D, size_t&gt;;                     </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keyword">using</span> RTree2D = bgi::rtree&lt;Value2D, bgi::linear&lt;16&gt;&gt;;           </div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        RTree2D m_rtree2D;                                </div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        std::vector&lt;std::pair&lt;Point2D, size_t&gt;&gt; m_points; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        std::vector&lt;Value2D&gt; m_queryCache;                </div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        std::vector&lt;size_t&gt; m_queryIndices;               </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordtype">int</span> m_queryVectorCapacity = 100;                  </div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    };</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a4772363a9a5973495b4cff786438cfcf"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a4772363a9a5973495b4cff786438cfcf">meshkernel::RTree::BuildTree</a></div><div class="ttdeci">void BuildTree(std::vector&lt; T &gt; &amp;nodes)</div><div class="ttdoc">Builds the tree.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:74</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_ab2f2ce7fd75e01bba8152a7d8251e36a"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#ab2f2ce7fd75e01bba8152a7d8251e36a">meshkernel::RTree::BuildTree</a></div><div class="ttdeci">void BuildTree(std::vector&lt; T &gt; const &amp;nodes)</div><div class="ttdoc">Builds the tree.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:66</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_acbe97257637d8b929442f6be028d4abf"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#acbe97257637d8b929442f6be028d4abf">meshkernel::RTree::DeleteNode</a></div><div class="ttdeci">void DeleteNode(size_t position)</div><div class="ttdoc">Deletes a node.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_point_html"><div class="ttname"><a href="classmeshkernel_1_1_point.html">meshkernel::Point</a></div><div class="ttdoc">A struct describing a point in a two-dimensional space.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:75</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a8ff27cb7bdd80f818ad6286a225f20f3"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">meshkernel::RTree::Size</a></div><div class="ttdeci">size_t Size() const</div><div class="ttdoc">Determines size of the RTree.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:109</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html">meshkernel::RTree</a></div><div class="ttdoc">Class used for inquiring adjacent nodes.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:58</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a37a5e441bc4cd078a90a662731a6ac5a"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">meshkernel::RTree::GetQueryResultSize</a></div><div class="ttdeci">size_t GetQueryResultSize() const</div><div class="ttdoc">Gets the size of the query.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:115</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_abbfbacf1efb3ed39ea81fea05017bac0"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">meshkernel::RTree::HasQueryResults</a></div><div class="ttdeci">bool HasQueryResults() const</div><div class="ttdoc">True if a query has results, false otherwise.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:121</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_aebcfd5d832bb6ea3861a6c821b5d0aca"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">meshkernel::RTree::Empty</a></div><div class="ttdeci">bool Empty() const</div><div class="ttdoc">Determines if the RTree is empty.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:112</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a88983e69503b090734d4e9b65964f996"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a88983e69503b090734d4e9b65964f996">meshkernel::RTree::SearchNearestPoint</a></div><div class="ttdeci">void SearchNearestPoint(Point node, double searchRadiusSquared)</div><div class="ttdoc">Finds the nearest node in the search radius and stores the results in the query cache,...</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_point_html"><div class="ttname"><a href="classmeshkernel_1_1_point.html">meshkernel::Point</a></div><div class="ttdoc">A struct describing a point in a two-dimensional space.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:77</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a8ff27cb7bdd80f818ad6286a225f20f3"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3">meshkernel::RTree::Size</a></div><div class="ttdeci">size_t Size() const</div><div class="ttdoc">Determines size of the RTree.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:101</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html">meshkernel::RTree</a></div><div class="ttdoc">Class used for inquiring adjacent nodes.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:60</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a37a5e441bc4cd078a90a662731a6ac5a"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a">meshkernel::RTree::GetQueryResultSize</a></div><div class="ttdeci">size_t GetQueryResultSize() const</div><div class="ttdoc">Gets the size of the query.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:107</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_abbfbacf1efb3ed39ea81fea05017bac0"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#abbfbacf1efb3ed39ea81fea05017bac0">meshkernel::RTree::HasQueryResults</a></div><div class="ttdeci">bool HasQueryResults() const</div><div class="ttdoc">True if a query has results, false otherwise.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:113</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_aebcfd5d832bb6ea3861a6c821b5d0aca"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#aebcfd5d832bb6ea3861a6c821b5d0aca">meshkernel::RTree::Empty</a></div><div class="ttdeci">bool Empty() const</div><div class="ttdoc">Determines if the RTree is empty.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:104</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_abe2c436ded228f83eea77d522a991f72"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">meshkernel::RTree::GetQueryResult</a></div><div class="ttdeci">size_t GetQueryResult(size_t index) const</div><div class="ttdoc">Gets the index of a sample in the query.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:118</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a9bad37e4a7003efa257987f04ae90d7e"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a9bad37e4a7003efa257987f04ae90d7e">meshkernel::RTree::SearchPoints</a></div><div class="ttdeci">void SearchPoints(Point node, double searchRadiusSquared)</div><div class="ttdoc">Finds all nodes in the search radius and stores the results in the query cache, to be inquired later.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_abe2c436ded228f83eea77d522a991f72"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72">meshkernel::RTree::GetQueryResult</a></div><div class="ttdeci">size_t GetQueryResult(size_t index) const</div><div class="ttdoc">Gets the index of a sample in the query.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:110</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_afc013842428429270a5bc24071c44f76"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#afc013842428429270a5bc24071c44f76">meshkernel::RTree::SearchPoints</a></div><div class="ttdeci">void SearchPoints(Point const &amp;node, double searchRadiusSquared)</div><div class="ttdoc">Finds all nodes in the search radius and stores the results in the query cache, to be inquired later.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html_a14589b7ff0a734b46a35d0cfe2c17187"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html#a14589b7ff0a734b46a35d0cfe2c17187">meshkernel::RTree::SearchNearestPoint</a></div><div class="ttdeci">void SearchNearestPoint(Point const &amp;node, double searchRadiusSquared)</div><div class="ttdoc">Finds the nearest node in the search radius and stores the results in the query cache,...</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
