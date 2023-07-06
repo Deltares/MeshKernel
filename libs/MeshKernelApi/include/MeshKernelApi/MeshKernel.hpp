@@ -316,6 +316,13 @@ namespace meshkernelapi
                                                     const meshkernel::MakeGridParameters& makeGridParameters,
                                                     const GeometryList& geometryList);
 
+        /// @brief Makes uniform mesh on a defined extension
+        /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] makeGridParameters The structure containing the make grid parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
+                                                                 const meshkernel::MakeGridParameters& makeGridParameters);
+
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
         ///
         /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
@@ -810,6 +817,13 @@ namespace meshkernelapi
                                                          const meshkernel::MakeGridParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
+        /// @brief Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used
+        /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] makeGridParameters The structure containing the make grid parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters);
+
         /// @brief Initializes the orthogonal curvilinear algorithm
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
@@ -1130,6 +1144,12 @@ namespace meshkernelapi
         /// @param[out] projection The int indicating the spherical accurate projection
         /// @return Error code
         MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection);
+
+        /// @brief Gets the coordinate projection of the meshkernel state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] projection The int indicating the projection type
+        /// @return Error code
+        MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection);
 
 #ifdef __cplusplus
     }

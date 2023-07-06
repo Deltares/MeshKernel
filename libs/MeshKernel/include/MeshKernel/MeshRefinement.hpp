@@ -197,10 +197,8 @@ namespace meshkernel
         /// @returns If the edge should be refined based on Courant criteria
         bool IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const;
 
-        /// @brief Compute the face location type based on the depths values on the node
-        /// @param face The face index
-        /// @returns The face location type
-        FaceLocation ComputeFaceLocationType(size_t face) const;
+        /// @brief Compute the face location type based on the depths values on the nodes
+        void ComputeFaceLocationTypes();
 
         RTree m_samplesRTree; ///< The sample node RTree
 
@@ -216,6 +214,7 @@ namespace meshkernel
         std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
         std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
         std::vector<size_t> m_refineEdgeCache;        ///< Cache for the edges to be refined
+        std::vector<FaceLocation> m_faceLocationType; ///< Cache for the face location types
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
