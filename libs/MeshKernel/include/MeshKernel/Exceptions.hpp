@@ -71,7 +71,7 @@ namespace meshkernel
         /// @param[in] source_location The source location
         FormatWithLocation(std::string const& format,
                            std::source_location const& source_location = std::source_location::current())
-            : m_format(format.c_str()),
+            : m_format(format),
               m_source_location(source_location)
         {
         }
