@@ -125,7 +125,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (size_t i = 0; i < Mesh::m_numNodesInTriangle; ++i)
+            for (Index i = 0; i < Mesh::m_numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
                 if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)

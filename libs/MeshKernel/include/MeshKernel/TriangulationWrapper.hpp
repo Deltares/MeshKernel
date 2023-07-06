@@ -79,7 +79,7 @@ namespace meshkernel
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
-                     size_t estimatedNumberOfTriangles)
+                     Index estimatedNumberOfTriangles)
         {
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());

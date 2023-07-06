@@ -129,7 +129,7 @@ namespace meshkernel
         {
             if (vec[n] == el)
             {
-              return static_cast<T>(n);
+                return static_cast<T>(n);
             }
         }
 
@@ -142,15 +142,15 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
+    std::vector<std::pair<Index, Index>> FindIndices(const std::vector<Point>& vec, Index start, Index end, double separator);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
     /// @returns The indices of elements
     template <typename T>
-    [[nodiscard]] std::vector<size_t> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<Index> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<size_t> indices(v.size());
+        std::vector<Index> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
         std::ranges::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
                                  { return v[i1] < v[i2]; });
@@ -162,7 +162,7 @@ namespace meshkernel
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
-    auto ReorderVector(const std::vector<T>& v, const std::vector<size_t>& order)
+    auto ReorderVector(const std::vector<T>& v, const std::vector<Index>& order)
     {
         std::vector<T> ordered;
         ordered.reserve(v.size());
@@ -232,13 +232,13 @@ namespace meshkernel
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
-    [[nodiscard]] size_t NextCircularForwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] Index NextCircularForwardIndex(Index currentIndex, Index size);
 
     /// @brief Get the next backward index.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
-    [[nodiscard]] size_t NextCircularBackwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] Index NextCircularBackwardIndex(Index currentIndex, Index size);
 
     /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
     /// @param[in] point The current point.
@@ -277,8 +277,8 @@ namespace meshkernel
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
-                                             size_t startNode = constants::missing::sizetValue,
-                                             size_t endNode = constants::missing::sizetValue);
+                                             Index startNode = constants::missing::sizetValue,
+                                             Index endNode = constants::missing::sizetValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -511,8 +511,8 @@ namespace meshkernel
                                                                         const std::vector<Point>& bottomDiscretization,
                                                                         const std::vector<Point>& upperDiscretization,
                                                                         const Projection& projection,
-                                                                        size_t numM,
-                                                                        size_t numN);
+                                                                        Index numM,
+                                                                        Index numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.

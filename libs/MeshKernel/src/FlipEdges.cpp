@@ -60,11 +60,11 @@ void FlipEdges::Compute() const
         m_mesh->Administrate();
     }
 
-    const size_t MaxIter = 10;
+    const Index MaxIter = 10;
     const auto numEdges = m_mesh->GetNumEdges();
-    size_t numFlippedEdges = constants::missing::sizetValue;
+    Index numFlippedEdges = constants::missing::sizetValue;
 
-    for (size_t iteration = 0; iteration < MaxIter; ++iteration)
+    for (Index iteration = 0; iteration < MaxIter; ++iteration)
     {
         if (numFlippedEdges == 0)
         {
@@ -137,7 +137,7 @@ void FlipEdges::Compute() const
             Index firstEdgeRightFace = constants::missing::sizetValue;
             Index secondEdgeLeftFace = constants::missing::sizetValue;
             Index secondEdgeRightFace = constants::missing::sizetValue;
-            for (size_t i = 0; i < NumEdgesLeftFace; i++)
+            for (Index i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
                 if (edgeIndex == e)
@@ -157,7 +157,7 @@ void FlipEdges::Compute() const
                 }
             }
 
-            for (size_t i = 0; i < NumEdgesRightFace; i++)
+            for (Index i = 0; i < NumEdgesRightFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[rightFace][i];
                 if (edgeIndex == e)
@@ -244,10 +244,10 @@ void FlipEdges::Compute() const
     m_mesh->Administrate();
 }
 
-void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
+void FlipEdges::DeleteEdgeFromNode(Index edge, Index firstNode) const
 {
     // Update node, delete edge from m_mesh->m_nodesEdges[firstNode]
-    size_t kk = 0;
+    Index kk = 0;
     while (m_mesh->m_nodesEdges[firstNode][kk] != edge && kk < m_mesh->m_nodesNumEdges[firstNode])
     {
         kk = kk + 1;
@@ -257,8 +257,8 @@ void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
         throw std::invalid_argument("FlipEdges::DeleteEdgeFromNode: The edge does not match the given node.");
     }
 
-    size_t count = 0;
-    for (size_t i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
+    Index count = 0;
+    for (Index i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
     {
         if (i + 1 <= kk || i > kk)
         {
@@ -312,7 +312,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
 
     // Check that kl is part of faceL
     bool nodeFound = false;
-    for (size_t i = 0; i < NumEdgesLeftFace; i++)
+    for (Index i = 0; i < NumEdgesLeftFace; i++)
     {
         if (m_mesh->m_facesNodes[faceL][i] == nodeLeft)
         {
@@ -328,7 +328,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
 
     // Check that kr is part of faceR
     nodeFound = false;
-    for (size_t i = 0; i < NumEdgesRightFace; i++)
+    for (Index i = 0; i < NumEdgesRightFace; i++)
     {
         if (m_mesh->m_facesNodes[faceR][i] == nodeRight)
         {
@@ -401,8 +401,8 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // Find the first edge connecting firstNode
-    size_t edgeIndexConnectingFirstNode = constants::missing::sizetValue;
-    for (size_t i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    Index edgeIndexConnectingFirstNode = constants::missing::sizetValue;
+    for (Index i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -419,8 +419,8 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // Find the first edge connecting secondNode
-    size_t edgeIndexConnectingSecondNode = constants::missing::sizetValue;
-    for (size_t i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    Index edgeIndexConnectingSecondNode = constants::missing::sizetValue;
+    for (Index i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -442,7 +442,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
     auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
-    size_t num = 1;
+    Index num = 1;
     while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
@@ -453,7 +453,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
         num++;
     }
 
-    size_t firstEdgeInPathIndex = constants::missing::sizetValue;
+    Index firstEdgeInPathIndex = constants::missing::sizetValue;
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
@@ -461,7 +461,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
-    size_t secondEdgeInPathIndex = constants::missing::sizetValue;
+    Index secondEdgeInPathIndex = constants::missing::sizetValue;
     if (currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
@@ -506,9 +506,9 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     return 6;
 }
 
-size_t FlipEdges::OptimalNumberOfConnectedNodes(size_t index) const
+meshkernel::Index FlipEdges::OptimalNumberOfConnectedNodes(Index index) const
 {
-    size_t optimalNumber = 6;
+    Index optimalNumber = 6;
     if (m_mesh->m_nodesTypes[index] == 2)
     {
         optimalNumber = 4;

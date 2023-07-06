@@ -105,9 +105,9 @@ namespace meshkernel
             int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
             double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
             double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            size_t edgeIndex{constants::missing::sizetValue};                            ///< The first node of the edge is on the left (the virtual node)
-            size_t edgeFirstNode{constants::missing::sizetValue};                        ///< The first node of the edge is on the left (the virtual node)
-            size_t edgeSecondNode{constants::missing::sizetValue};                       ///< The second node of the edge is on the right (the inner node)
+            Index edgeIndex{constants::missing::sizetValue};                             ///< The first node of the edge is on the left (the virtual node)
+            Index edgeFirstNode{constants::missing::sizetValue};                         ///< The first node of the edge is on the left (the virtual node)
+            Index edgeSecondNode{constants::missing::sizetValue};                        ///< The second node of the edge is on the right (the inner node)
             double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
         };
 
@@ -115,7 +115,7 @@ namespace meshkernel
         struct FaceMeshPolylineIntersection
         {
             double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
-            size_t faceIndex{constants::missing::sizetValue};         ///< The face index
+            Index faceIndex{constants::missing::sizetValue};          ///< The face index
             std::vector<Index> edgeIndexses;                          ///< The indexes of crossed edges
             std::vector<Index> edgeNodes;                             ///< The indexes of the nodes defining the crossed edges
         };
@@ -138,7 +138,7 @@ namespace meshkernel
         /// @brief Inquire if a node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
-        [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
+        [[nodiscard]] bool IsNodeOnBoundary(Index node) const { return m_nodesNumEdges[node] == 1; }
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid node
@@ -155,27 +155,27 @@ namespace meshkernel
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaceEdges(size_t faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] auto GetNumFaceEdges(Index faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] auto GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] auto GetNumEdgesFaces(Index edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index
         /// @return If the edge is on boundary
-        [[nodiscard]] bool IsEdgeOnBoundary(size_t edge) const { return m_edgesNumFaces[edge] == 1; }
+        [[nodiscard]] bool IsEdgeOnBoundary(Index edge) const { return m_edgesNumFaces[edge] == 1; }
 
         /// @brief Inquire if a face is on boundary
         /// @param[in] face The face index
         /// @return If the face is on boundary
-        [[nodiscard]] bool IsFaceOnBoundary(size_t face) const;
+        [[nodiscard]] bool IsFaceOnBoundary(Index face) const;
 
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
-        void MergeTwoNodes(size_t startNode, size_t endNode);
+        void MergeTwoNodes(Index startNode, Index endNode);
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
@@ -191,11 +191,11 @@ namespace meshkernel
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node
-        size_t InsertNode(const Point& newPoint);
+        Index InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
         /// @param[in] node The index of the node to delete
-        void DeleteNode(size_t node);
+        void DeleteNode(Index node);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -206,35 +206,35 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        void MoveNode(Point newPoint, size_t nodeindex);
+        void MoveNode(Point newPoint, Index nodeindex);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
         /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
         /// @returns The index of the closest node
-        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
+        [[nodiscard]] Index FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
-        [[nodiscard]] size_t FindNodeCloseToAPoint(Point const& point, double searchRadius);
+        [[nodiscard]] Index FindNodeCloseToAPoint(Point const& point, double searchRadius);
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
-        void DeleteEdge(size_t edge);
+        void DeleteEdge(Index edge);
 
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
         /// @returns The index of the closest edge
-        [[nodiscard]] size_t FindEdgeCloseToAPoint(Point point);
+        [[nodiscard]] Index FindEdgeCloseToAPoint(Point point);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @return The shared node (constants::missing::sizetValue if no node is found)
-        [[nodiscard]] Index FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
+        [[nodiscard]] Index FindCommonNode(Index firstEdgeIndex, Index secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
@@ -259,7 +259,7 @@ namespace meshkernel
         /// @brief Compute the max length of the edges connected to a node
         /// @param node The mesh node
         /// @return The max edge length
-        double ComputeMaxLengthSurroundingEdges(size_t node);
+        double ComputeMaxLengthSurroundingEdges(Index node);
 
         /// @brief Build the rtree for the corresponding location
         /// @param[in] meshLocation The mesh location for which the RTree is build
@@ -287,13 +287,13 @@ namespace meshkernel
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        size_t GetNumLocations(Location meshLocation) const;
+        Index GetNumLocations(Location meshLocation) const;
 
         /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] size_t GetLocationsIndices(size_t index, Mesh::Location meshLocation);
+        [[nodiscard]] Index GetLocationsIndices(Index index, Mesh::Location meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
@@ -339,12 +339,12 @@ namespace meshkernel
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
 
         // constants
-        static constexpr size_t m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
-        static constexpr size_t m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
-        static constexpr size_t m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
-        static constexpr size_t m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-        static constexpr size_t m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
-        static constexpr size_t m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
+        static constexpr Index m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
+        static constexpr Index m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
+        static constexpr Index m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
+        static constexpr Index m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+        static constexpr Index m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
+        static constexpr Index m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate

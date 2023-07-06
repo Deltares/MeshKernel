@@ -68,7 +68,7 @@ namespace meshkernel
         /// @brief Determine the optimal number of connected nodes for each node (nmk_opt)
         /// @param nodeIndex
         /// @returns Optimal number of connected nodes
-        [[nodiscard]] size_t OptimalNumberOfConnectedNodes(size_t nodeIndex) const;
+        [[nodiscard]] Index OptimalNumberOfConnectedNodes(Index nodeIndex) const;
 
         /// @brief Compute the difference with the optimal number of edges by counting the numbers of edges that
         ///        connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
@@ -78,7 +78,7 @@ namespace meshkernel
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove
         /// @param[in] nodeIndex The index of the node to process
-        void DeleteEdgeFromNode(size_t edgeIndex, size_t nodeIndex) const;
+        void DeleteEdgeFromNode(Index edgeIndex, Index nodeIndex) const;
 
         std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to the 2D mesh
         std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to the land boundaries
