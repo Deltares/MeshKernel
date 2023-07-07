@@ -23,7 +23,7 @@ public:
 
     /// @brief Stop recording and fills out the given Result structure
     /// @param[result] Structure
-    void Stop(Result* result) override;
+    void Stop(Result& result) override;
 
     /// @brief Custom std::malloc wrapper which registers the allocation in a global BenchmarkMemoryManager object
     /// @param[size] Number of bytes of uninitialized storage to be allocated

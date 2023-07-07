@@ -18,13 +18,13 @@ void CustomMemoryManager::Start()
     ResetStatistics();
 }
 
-void CustomMemoryManager::Stop(Result* result)
+void CustomMemoryManager::Stop(Result& result)
 {
     std::unique_lock lock(mutex);
-    result->num_allocs = m_num_allocations;
-    result->max_bytes_used = m_max_bytes_used;
-    result->total_allocated_bytes = m_total_allocated_bytes;
-    result->net_heap_growth = m_net_heap_growth;
+    result.num_allocs = m_num_allocations;
+    result.max_bytes_used = m_max_bytes_used;
+    result.total_allocated_bytes = m_total_allocated_bytes;
+    result.net_heap_growth = m_net_heap_growth;
 }
 
 void* CustomMemoryManager::Alloc(size_t size)
