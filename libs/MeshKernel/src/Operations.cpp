@@ -46,12 +46,12 @@ namespace meshkernel
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec,
-                                                       size_t start,
-                                                       size_t end,
+    std::vector<std::pair<Index, Index>> FindIndices(const std::vector<Point>& vec,
+                                                       Index start,
+                                                       Index end,
                                                        double separator)
     {
-        std::vector<std::pair<size_t, size_t>> result;
+        std::vector<std::pair<Index, Index>> result;
 
         if (vec.empty())
         {
@@ -65,7 +65,7 @@ namespace meshkernel
         }
 
         bool inRange = false;
-        size_t startRange;
+        Index startRange;
         for (auto n = start; n < end; n++)
         {
 
@@ -90,9 +90,9 @@ namespace meshkernel
         return result;
     }
 
-    size_t NextCircularForwardIndex(size_t currentIndex, size_t size)
+    Index NextCircularForwardIndex(Index currentIndex, Index size)
     {
-        size_t index = currentIndex + 1;
+        Index index = currentIndex + 1;
         if (index >= size)
         {
             index = index - size;
@@ -100,7 +100,7 @@ namespace meshkernel
         return index;
     }
 
-    size_t NextCircularBackwardIndex(size_t currentIndex, size_t size)
+    Index NextCircularBackwardIndex(Index currentIndex, Index size)
     {
         if (currentIndex == 0)
         {
@@ -146,8 +146,8 @@ namespace meshkernel
                                const std::vector<Point>& polygonNodes,
                                const Projection& projection,
                                Point polygonCenter,
-                               size_t startNode,
-                               size_t endNode)
+                               Index startNode,
+                               Index endNode)
     {
         if (polygonNodes.empty())
         {
@@ -224,7 +224,7 @@ namespace meshkernel
             // get 3D polygon coordinates
             std::vector<Cartesian3DPoint> cartesian3DPoints;
             cartesian3DPoints.reserve(currentPolygonSize);
-            for (size_t i = 0; i < currentPolygonSize; ++i)
+            for (Index i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
             }
@@ -232,7 +232,7 @@ namespace meshkernel
             // enlarge around polygon
             const double enlargementFactor = 1.000001;
             const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-            for (size_t i = 0; i < currentPolygonSize; ++i)
+            for (Index i = 0; i < currentPolygonSize; ++i)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
                 cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
@@ -248,7 +248,7 @@ namespace meshkernel
             int inside = 0;
 
             // loop over the polygon nodes
-            for (size_t i = 0; i < currentPolygonSize - 1; ++i)
+            for (Index i = 0; i < currentPolygonSize - 1; ++i)
             {
                 const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
                 const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
@@ -741,7 +741,7 @@ namespace meshkernel
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
         const auto numPoints = polygon.size();
-        for (size_t i = 0; i < numPoints; ++i)
+        for (Index i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
             if (abs(polygon[i].y) < abs(minY))
@@ -753,7 +753,7 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             double maxX = std::numeric_limits<double>::lowest();
-            for (size_t i = 0; i < numPoints; ++i)
+            for (Index i = 0; i < numPoints; ++i)
             {
                 maxX = std::max(polygon[i].x, maxX);
             }
@@ -761,7 +761,7 @@ namespace meshkernel
             if (maxX - minX > 180.0)
             {
                 const double deltaX = maxX - 180.0;
-                for (size_t i = 0; i < numPoints; ++i)
+                for (Index i = 0; i < numPoints; ++i)
                 {
                     if (polygon[i].x < deltaX)
                     {
@@ -1171,7 +1171,7 @@ namespace meshkernel
         const double minArea = 1e-8;
         const Point reference = ReferencePoint(polygon, projection);
         const auto numberOfPointsOpenedPolygon = polygon.size() - 1;
-        for (size_t n = 0; n < numberOfPointsOpenedPolygon; n++)
+        for (Index n = 0; n < numberOfPointsOpenedPolygon; n++)
         {
             const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
             double dx0 = GetDx(reference, polygon[n], projection);
@@ -1219,7 +1219,7 @@ namespace meshkernel
         std::vector<double> result(v.size());
 
         result[0] = 0;
-        for (size_t i = 1; i < v.size(); ++i)
+        for (Index i = 1; i < v.size(); ++i)
         {
             result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
@@ -1229,7 +1229,7 @@ namespace meshkernel
             return {result, totalDistance};
         }
         const double inverseTotalDistance = 1.0 / totalDistance;
-        for (size_t i = 1; i < v.size(); ++i)
+        for (Index i = 1; i < v.size(); ++i)
         {
             result[i] = result[i] * inverseTotalDistance;
         }
@@ -1242,8 +1242,8 @@ namespace meshkernel
                                                           const std::vector<Point>& bottomDiscretization,
                                                           const std::vector<Point>& upperDiscretization,
                                                           const Projection& projection,
-                                                          size_t numM,
-                                                          size_t numN)
+                                                          Index numM,
+                                                          Index numN)
     {
         const auto [sideOneAdimensional, totalLengthOne] = ComputeAdimensionalDistancesFromPointSerie(leftDiscretization, projection);
         const auto [sideTwoAdimensional, totalLengthTwo] = ComputeAdimensionalDistancesFromPointSerie(rightDiscretization, projection);
@@ -1256,9 +1256,9 @@ namespace meshkernel
 
         std::vector<std::vector<double>> iWeightFactor(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> jWeightFactor(numMPoints, std::vector<double>(numNPoints));
-        for (size_t m = 0; m < numMPoints; m++)
+        for (Index m = 0; m < numMPoints; m++)
         {
-            for (size_t n = 0; n < numNPoints; n++)
+            for (Index n = 0; n < numNPoints; n++)
             {
                 const double mWeight = double(m) / double(numM);
                 const double nWeight = double(n) / double(numN);
@@ -1272,9 +1272,9 @@ namespace meshkernel
         std::vector<std::vector<double>> weightTwo(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> weightThree(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> weightFour(numMPoints, std::vector<double>(numNPoints));
-        for (size_t m = 0; m < numMPoints; m++)
+        for (Index m = 0; m < numMPoints; m++)
         {
-            for (size_t n = 0; n < numNPoints; n++)
+            for (Index n = 0; n < numNPoints; n++)
             {
 
                 weightOne[m][n] = (1.0 - jWeightFactor[m][n]) * totalLengthThree + jWeightFactor[m][n] * totalLengthFour;
@@ -1289,21 +1289,21 @@ namespace meshkernel
 
         // border points
         std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
-        for (size_t m = 0; m < numMPoints; m++)
+        for (Index m = 0; m < numMPoints; m++)
         {
             result[m][0] = bottomDiscretization[m];
             result[m][numN] = upperDiscretization[m];
         }
-        for (size_t n = 0; n < numNPoints; n++)
+        for (Index n = 0; n < numNPoints; n++)
         {
             result[0][n] = leftDiscretization[n];
             result[numM][n] = rightDiscretization[n];
         }
 
         // first interpolation
-        for (size_t m = 1; m < numM; m++)
+        for (Index m = 1; m < numM; m++)
         {
-            for (size_t n = 1; n < numN; n++)
+            for (Index n = 1; n < numN; n++)
             {
 
                 result[m][n].x = (leftDiscretization[n].x * (1.0 - iWeightFactor[m][n]) + rightDiscretization[n].x * iWeightFactor[m][n]) * weightOne[m][n] +
@@ -1315,9 +1315,9 @@ namespace meshkernel
         }
 
         // update weights
-        for (size_t m = 0; m < numMPoints; m++)
+        for (Index m = 0; m < numMPoints; m++)
         {
-            for (size_t n = 0; n < numNPoints; n++)
+            for (Index n = 0; n < numNPoints; n++)
             {
                 weightOne[m][n] = (1.0 - jWeightFactor[m][n]) * sideThreeAdimensional[m] * totalLengthThree +
                                   jWeightFactor[m][n] * sideFourAdimensional[m] * totalLengthFour;
@@ -1326,55 +1326,55 @@ namespace meshkernel
             }
         }
 
-        for (size_t m = 1; m < numMPoints; m++)
+        for (Index m = 1; m < numMPoints; m++)
         {
-            for (size_t n = 0; n < numNPoints; n++)
+            for (Index n = 0; n < numNPoints; n++)
             {
                 weightThree[m][n] = weightOne[m][n] - weightOne[m - 1][n];
             }
         }
 
-        for (size_t m = 0; m < numMPoints; m++)
+        for (Index m = 0; m < numMPoints; m++)
         {
-            for (size_t n = 1; n < numNPoints; n++)
+            for (Index n = 1; n < numNPoints; n++)
             {
                 weightFour[m][n] = weightTwo[m][n] - weightTwo[m][n - 1];
             }
         }
 
-        for (size_t m = 1; m < numMPoints; m++)
+        for (Index m = 1; m < numMPoints; m++)
         {
-            for (size_t n = 1; n < numNPoints - 1; n++)
+            for (Index n = 1; n < numNPoints - 1; n++)
             {
                 weightOne[m][n] = 0.25 * (weightFour[m][n] + weightFour[m][n + 1] + weightFour[m - 1][n] + weightFour[m - 1][n + 1]) / weightThree[m][n];
             }
         }
 
-        for (size_t m = 1; m < numMPoints - 1; m++)
+        for (Index m = 1; m < numMPoints - 1; m++)
         {
-            for (size_t n = 1; n < numNPoints; n++)
+            for (Index n = 1; n < numNPoints; n++)
             {
                 weightTwo[m][n] = 0.25 * (weightThree[m][n] + weightThree[m][n - 1] + weightThree[m + 1][n] + weightThree[m + 1][n - 1]) / weightFour[m][n];
             }
         }
 
         // Iterate several times over
-        const size_t numIterations = 25;
-        for (size_t iter = 0; iter < numIterations; iter++)
+        const Index numIterations = 25;
+        for (Index iter = 0; iter < numIterations; iter++)
         {
             // re-assign the weights
-            for (size_t m = 0; m < numMPoints; m++)
+            for (Index m = 0; m < numMPoints; m++)
             {
-                for (size_t n = 0; n < numNPoints; n++)
+                for (Index n = 0; n < numNPoints; n++)
                 {
                     weightThree[m][n] = result[m][n].x;
                     weightFour[m][n] = result[m][n].y;
                 }
             }
 
-            for (size_t m = 1; m < numM; m++)
+            for (Index m = 1; m < numM; m++)
             {
-                for (size_t n = 1; n < numN; n++)
+                for (Index n = 1; n < numN; n++)
                 {
 
                     const double wa = 1.0 / (weightOne[m][n] + weightOne[m + 1][n] + weightTwo[m][n] + weightTwo[m][n + 1]);
@@ -1492,7 +1492,7 @@ namespace meshkernel
         std::vector<double> edgeLengths;
         edgeLengths.reserve(polyline.size());
 
-        for (size_t p = 0; p < polyline.size() - 1; ++p)
+        for (Index p = 0; p < polyline.size() - 1; ++p)
         {
             const auto firstNode = p;
             auto secondNode = p + 1;
@@ -1507,7 +1507,7 @@ namespace meshkernel
         auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
         std::vector<double> chainages(polyline.size());
         chainages[0] = 0.0;
-        for (size_t i = 0; i < edgeLengths.size(); ++i)
+        for (Index i = 0; i < edgeLengths.size(); ++i)
         {
             chainages[i + 1] = chainages[i] + edgeLengths[i];
         }
@@ -1527,7 +1527,7 @@ namespace meshkernel
 
         std::vector<Point> discretization;
         discretization.reserve(chainages.size());
-        size_t curentNodalIndex = 0;
+        Index curentNodalIndex = 0;
         std::sort(chainages.begin(), chainages.end());
         for (auto const& chainage : chainages)
         {

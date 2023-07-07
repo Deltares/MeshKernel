@@ -66,13 +66,13 @@ namespace meshkernel
         /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
-        [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
+        [[nodiscard]] bool IsNodeOnBoundary(Index node) const { return m_nodesNumEdges[node] == 1; }
 
         /// @brief Compute a projected node along a line normal to the edges connected to the node.
         /// @param node [in] The node
         /// @param distanceFactor [in] The distance factor
         /// @return The projected node
-        [[nodiscard]] Point ComputeProjectedNode(size_t node, double distanceFactor) const;
+        [[nodiscard]] Point ComputeProjectedNode(Index node, double distanceFactor) const;
     };
 
 } // namespace meshkernel

@@ -132,28 +132,28 @@ namespace meshkernel
 
         /// @brief Gets the 1d mesh indices
         /// @return Vector of 1d mesh indices
-        std::vector<size_t> const& Mesh1dIndices() const { return m_mesh1dIndices; }
+        std::vector<Index> const& Mesh1dIndices() const { return m_mesh1dIndices; }
 
         /// @brief Gets the 2d mesh indices
         /// @return Vector of 2d mesh indices
-        std::vector<size_t> const& Mesh2dIndices() const { return m_mesh2dIndices; }
+        std::vector<Index> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
         /// @param[in] node The 1d node index (start of the contact)
         /// @param[in] face The 2d face index (end of the contact)
         /// @return True if the contact is crossing a 1d mesh edge
-        [[nodiscard]] bool IsContactIntersectingMesh1d(size_t node, size_t face) const;
+        [[nodiscard]] bool IsContactIntersectingMesh1d(Index node, Index face) const;
 
         /// @brief Asserts if a contact is crossing an existing contact
         /// @param[in] node The 1d node index (start of the contact)
         /// @param[in] face The 2d face index (end of the contact)
         /// @return True if the contact is crossing an existing contact
-        [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
+        [[nodiscard]] bool IsContactIntersectingContact(Index node, Index face) const;
 
         std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
         std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
+        std::vector<Index> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        std::vector<Index> m_mesh2dIndices; ///< The indices of the connected 2-d faces
     };
 } // namespace meshkernel

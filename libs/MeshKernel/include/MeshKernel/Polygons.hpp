@@ -54,7 +54,7 @@ namespace meshkernel
         /// @param[in] endIndex The end index
         /// @param[in] refinementDistance The chosen refinement distance
         /// @return refinedPolygon The computed polygon
-        [[nodiscard]] std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
+        [[nodiscard]] std::vector<Point> RefineFirstPolygon(Index startIndex, Index endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
@@ -67,12 +67,12 @@ namespace meshkernel
         /// @param[in] point The point to check
         /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
-        [[nodiscard]] bool IsPointInPolygon(Point const& point, size_t polygonIndex) const;
+        [[nodiscard]] bool IsPointInPolygon(Point const& point, Index polygonIndex) const;
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
         /// @return The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue
-        [[nodiscard]] std::tuple<bool, size_t> IsPointInPolygons(Point point) const;
+        [[nodiscard]] std::tuple<bool, Index> IsPointInPolygons(Point point) const;
 
         /// @brief For each point, compute the index of the polygon including it
         /// @param[in] point The vector of points
@@ -85,7 +85,7 @@ namespace meshkernel
 
         /// @brief Gives the number of polygons
         /// @return Number of polygons
-        [[nodiscard]] size_t GetNumPolygons() const;
+        [[nodiscard]] Index GetNumPolygons() const;
 
         /// @brief Gets the number of polygon nodes
         /// @return The number of polygon nodes
@@ -98,7 +98,7 @@ namespace meshkernel
         /// @brief Gets the start-end indices of each outer polygon
         /// @param[in] i Outer polygon index
         /// @return Pair of start and end indices
-        [[nodiscard]] std::pair<size_t, size_t> const& OuterIndices(size_t i) const
+        [[nodiscard]] std::pair<Index, Index> const& OuterIndices(Index i) const
         {
             return m_outer_polygons_indices[i];
         }
@@ -110,13 +110,13 @@ namespace meshkernel
         /// @brief Gets the coordinates of a node by index
         /// @param[in] i Node index
         /// @return Node coordinates
-        [[nodiscard]] Point const& Node(size_t i) const { return m_nodes[i]; }
+        [[nodiscard]] Point const& Node(Index i) const { return m_nodes[i]; }
 
     private:
         std::vector<Point> m_nodes;                                                                  ///< The polygon nodes
         Projection m_projection;                                                                     ///< The current projection
-        std::vector<std::pair<size_t, size_t>> m_outer_polygons_indices;                             ///< Start-end indices of each outer polygon in m_nodes
-        std::unordered_map<size_t, std::vector<std::pair<size_t, size_t>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
+        std::vector<std::pair<Index, Index>> m_outer_polygons_indices;                             ///< Start-end indices of each outer polygon in m_nodes
+        std::unordered_map<Index, std::vector<std::pair<Index, Index>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
 
         /// @brief Computes the perimeter of a closed polygon
         /// @param[in] polygonNodes The polygon nodes to use in the computation

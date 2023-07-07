@@ -51,7 +51,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetWeight(size_t node, int connectedNode)
+        [[nodiscard]] auto GetWeight(Index node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -60,7 +60,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetConnectedNodeIndex(size_t node, int connectedNode)
+        [[nodiscard]] auto GetConnectedNodeIndex(Index node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -68,7 +68,7 @@ namespace meshkernel
         /// @brief Get number of connected nodes
         /// @brief node
         /// @returns
-        [[nodiscard]] auto GetNumConnectedNodes(size_t node)
+        [[nodiscard]] auto GetNumConnectedNodes(Index node)
         {
             return m_numConnectedNodes[node];
         }
@@ -94,15 +94,15 @@ namespace meshkernel
 
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// @param[in] currentNode
-        void ComputeOperatorsNode(size_t currentNode);
+        void ComputeOperatorsNode(Index currentNode);
 
         /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// @param[in] currentNode
-        void NodeAdministration(size_t currentNode);
+        void NodeAdministration(Index currentNode);
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
-        void ComputeNodeXiEta(size_t currentNode);
+        void ComputeNodeXiEta(Index currentNode);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -110,23 +110,23 @@ namespace meshkernel
         /// @brief theta2
         /// @brief isBoundaryEdge
         /// @returns
-        [[nodiscard]] double OptimalEdgeAngle(size_t numFaceNodes,
+        [[nodiscard]] double OptimalEdgeAngle(Index numFaceNodes,
                                               double theta1 = -1.0,
                                               double theta2 = -1.0,
                                               bool isBoundaryEdge = false) const;
 
         /// @brief Allocate smoother operators
         /// @param[in] topologyIndex
-        void AllocateNodeOperators(size_t topologyIndex);
+        void AllocateNodeOperators(Index topologyIndex);
 
         /// @brief If it is a new topology, save it
         /// @param[in] currentNode
-        void SaveNodeTopologyIfNeeded(size_t currentNode);
+        void SaveNodeTopologyIfNeeded(Index currentNode);
 
         /// @brief Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
         /// @param[in] currentNode
         /// @param[out] J
-        void ComputeJacobian(size_t currentNode, std::vector<double>& J) const;
+        void ComputeJacobian(Index currentNode, std::vector<double>& J) const;
 
         // The mesh to smooth
         std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
@@ -170,8 +170,8 @@ namespace meshkernel
         std::vector<std::vector<Index>> m_connectedNodes; ///< Connected nodes (kk2)
 
         // Class variables
-        size_t m_maximumNumConnectedNodes = 0; ///< Maximum number of connected nodes
-        size_t m_maximumNumSharedFaces = 0;    ///< Maximum number of shared faces
+        Index m_maximumNumConnectedNodes = 0; ///< Maximum number of connected nodes
+        Index m_maximumNumSharedFaces = 0;    ///< Maximum number of shared faces
 
         static constexpr int m_topologyInitialSize = 10; ///< Initial size of topology vectors
         static constexpr double m_thetaTolerance = 1e-4; ///< Tolerance

@@ -44,8 +44,8 @@ namespace meshkernel
         /// @param[in] cellSize The grid cell size
         /// @param[in] values The values of the gridded samples
         BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                              size_t numXCoord,
-                                              size_t numYCoord,
+                                              Index numXCoord,
+                                              Index numYCoord,
                                               const Point& origin,
                                               double cellSize,
                                               const std::vector<double>& values);
@@ -81,7 +81,7 @@ namespace meshkernel
 
         /// @brief Gets the sample value at specific row and column
         /// @return The sample value
-        [[nodiscard]] double getGriddedValue(size_t columnIndex, size_t rowIndex) const
+        [[nodiscard]] double getGriddedValue(Index columnIndex, Index rowIndex) const
         {
             const auto index = rowIndex * m_numXCoord + columnIndex;
             return m_values[index];
@@ -89,8 +89,8 @@ namespace meshkernel
 
         const Mesh2D& m_mesh; ///< Pointer to the mesh
 
-        size_t m_numXCoord; ///< The number of x coordinates of the gridded data
-        size_t m_numYCoord; ///< The number of y coordinates of the gridded data
+        Index m_numXCoord; ///< The number of x coordinates of the gridded data
+        Index m_numYCoord; ///< The number of y coordinates of the gridded data
         Point m_origin;     ///< The coordinate of the origin
         double m_cellSize;  ///< The grid cell size
 

@@ -118,7 +118,7 @@ namespace meshkernel
         /// @param[out] polygonNodesCache      The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache  The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
-        void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
+        void ComputeFaceClosedPolygonWithLocalMappings(Index faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<Index>& localNodeIndicesCache,
                                                        std::vector<Index>& globalEdgeIndicesCache) const;
@@ -126,7 +126,7 @@ namespace meshkernel
         /// @brief For a face create a closed polygon
         /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
+        void ComputeFaceClosedPolygon(Index faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
@@ -220,12 +220,12 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(size_t node, double enlargementFactor, std::vector<Point>& dualFace);
+        void MakeDualFace(Index node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
         /// @return The face indexses
-        [[nodiscard]] std::vector<Index> SortedFacesAroundNode(size_t node) const;
+        [[nodiscard]] std::vector<Index> SortedFacesAroundNode(Index node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed
@@ -265,7 +265,7 @@ namespace meshkernel
         /// @param[in] firstPoint The first point of the segment
         /// @param[in] secondPoint The second point of the segment
         /// @return A tuple with the intersectedFace face index and intersected  edge index
-        [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
+        [[nodiscard]] std::tuple<Index, Index> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
         /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
         /// @param[in] polyLine An input polyline, defined as a series of points
@@ -292,7 +292,7 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
-        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
+        Index m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
         // orthogonalization
@@ -311,10 +311,10 @@ namespace meshkernel
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
         /// @param[in,out] nodalValues The nodal values building a closed polygon
-        void FindFacesRecursive(size_t startNode,
-                                size_t node,
-                                size_t previousEdge,
-                                size_t numClosingEdges,
+        void FindFacesRecursive(Index startNode,
+                                Index node,
+                                Index previousEdge,
+                                Index numClosingEdges,
                                 std::vector<Index>& edges,
                                 std::vector<Index>& nodes,
                                 std::vector<Index>& sortedEdges,

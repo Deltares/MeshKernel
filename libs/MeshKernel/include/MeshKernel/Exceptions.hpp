@@ -155,7 +155,7 @@ namespace meshkernel
 #ifdef _WIN32
             std::replace(path_to_erase.begin(), path_to_erase.end(), '/', '\\');
 #endif
-            if (size_t pos = path.find(path_to_erase); pos != std::string::npos)
+            if (Index pos = path.find(path_to_erase); pos != std::string::npos)
             {
                 // erase including the trailing slash
                 path.erase(pos, path_to_erase.length() + 1);
@@ -243,7 +243,7 @@ namespace meshkernel
         /// @param[in] mesh_location   The location type.
         /// @param[in] source_location The source location.
         MeshGeometryError(VariadicErrorMessage const& message,
-                          size_t invalid_index,
+                          Index invalid_index,
                           Mesh::Location mesh_location,
                           std::source_location const& source_location = std::source_location::current())
             : MeshKernelError(message, source_location),
@@ -258,7 +258,7 @@ namespace meshkernel
         /// @param[in] mesh_location   The location type.
         /// @param[in] source_location The source location.
         MeshGeometryError(std::string_view message,
-                          size_t invalid_index,
+                          Index invalid_index,
                           Mesh::Location mesh_location,
                           std::source_location const& source_location = std::source_location::current())
             : MeshKernelError(message, source_location),
@@ -269,7 +269,7 @@ namespace meshkernel
 
         /// @brief Returns the invalid index.
         /// @return The invalid index.
-        size_t InavlidIndex() const { return m_invalid_index; }
+        Index InavlidIndex() const { return m_invalid_index; }
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
@@ -280,7 +280,7 @@ namespace meshkernel
         /// @return The  error category.
         std::string Category() const override { return "MeshGeometryError"; }
 
-        size_t m_invalid_index;         ///< The invalid mesh location index.
+        Index m_invalid_index;         ///< The invalid mesh location index.
         Mesh::Location m_mesh_location; ///< The location type.
     };
 

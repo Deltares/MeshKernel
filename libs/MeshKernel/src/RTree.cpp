@@ -86,12 +86,12 @@ void RTree::SearchNearestPoint(Point node, double searchRadiusSquared)
     }
 }
 
-void RTree::DeleteNode(size_t position)
+void RTree::DeleteNode(Index position)
 {
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
     {
         throw std::invalid_argument("DeleteNode: Could not remove node at given position.");
     }
-    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<size_t>::max()};
+    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<Index>::max()};
 }

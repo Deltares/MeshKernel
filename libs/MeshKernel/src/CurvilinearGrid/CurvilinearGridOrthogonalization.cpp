@@ -100,11 +100,11 @@ CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
-    for (size_t n = 0; n < m_grid.m_numN; ++n)
+    for (Index n = 0; n < m_grid.m_numN; ++n)
     {
-        size_t startM = constants::missing::sizetValue;
+        Index startM = constants::missing::sizetValue;
         int nextVertical = 0;
-        for (size_t m = 0; m < m_grid.m_numM; ++m)
+        for (Index m = 0; m < m_grid.m_numM; ++m)
         {
             const auto nodeType = m_grid.m_gridNodesTypes[m][n];
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)

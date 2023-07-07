@@ -62,7 +62,7 @@ void OrthogonalizationAndSmoothing::Initialize()
     const auto nodeMask = m_mesh->NodeMaskFromPolygon(*m_polygons, true);
 
     // Flag nodes outside the polygon as corner points
-    for (size_t n = 0; n < nodeMask.size(); n++)
+    for (Index n = 0; n < nodeMask.size(); n++)
     {
         if (nodeMask[n] == 0)
         {
@@ -91,7 +91,7 @@ void OrthogonalizationAndSmoothing::Initialize()
 
         m_localCoordinatesIndices.resize(m_mesh->GetNumNodes() + 1);
         m_localCoordinatesIndices[0] = 1;
-        for (size_t n = 0; n < m_mesh->GetNumNodes(); ++n)
+        for (Index n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
             m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
@@ -148,7 +148,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
         m_compressedStartNodeIndex.resize(m_mesh->GetNumNodes());
         std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
 
-        for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (Index n = 0; n < m_mesh->GetNumNodes(); n++)
         {
             m_compressedEndNodeIndex[n] = m_nodeCacheSize;
             m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
@@ -210,7 +210,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             m_compressedWeightY[cacheIndex] = wwy;
             cacheIndex++;
         }
-        const size_t firstCacheIndex = n * 2;
+        const Index firstCacheIndex = n * 2;
         m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
         m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
     }
@@ -240,10 +240,10 @@ void OrthogonalizationAndSmoothing::Solve()
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
     // in this case the nearest point is the point itself
-    std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
+    std::vector<Index> nearestPoints(m_mesh->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
 
-    for (size_t n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (Index n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         const auto nearestPointIndex = nearestPoints[n];
         if (m_mesh->m_nodesTypes[n] == 2 && m_mesh->m_nodesNumEdges[n] > 0 && m_mesh->m_nodesNumEdges[nearestPointIndex] > 0)
@@ -255,12 +255,12 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             }
 
             const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
-            size_t numNodes = 0;
-            size_t leftNode = constants::missing::sizetValue;
-            size_t rightNode = constants::missing::sizetValue;
+            Index numNodes = 0;
+            Index leftNode = constants::missing::sizetValue;
+            Index rightNode = constants::missing::sizetValue;
             Point secondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             Point thirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-            for (size_t nn = 0; nn < numEdges; nn++)
+            for (Index nn = 0; nn < numEdges; nn++)
             {
                 const auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
                 if (m_mesh->IsEdgeOnBoundary(edgeIndex))
@@ -328,7 +328,7 @@ void OrthogonalizationAndSmoothing::ComputeCoordinates() const
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 }
 
-void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
+void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(Index nodeIndex)
 {
 
     double dx0 = 0.0;
@@ -377,11 +377,11 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
     }
 }
 
-void OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
+void OrthogonalizationAndSmoothing::ComputeLocalIncrements(Index nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
     const auto numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
-    for (size_t nn = 1; nn < numConnectedNodes; nn++)
+    for (Index nn = 1; nn < numConnectedNodes; nn++)
     {
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];

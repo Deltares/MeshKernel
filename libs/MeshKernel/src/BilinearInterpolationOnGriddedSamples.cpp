@@ -33,8 +33,8 @@
 using namespace meshkernel;
 
 BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                             size_t numXCoord,
-                                                                             size_t numYCoord,
+                                                                             Index numXCoord,
+                                                                             Index numYCoord,
                                                                              const Point& origin,
                                                                              double cellSize,
                                                                              const std::vector<double>& values) : m_mesh(mesh),
@@ -62,7 +62,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
 {
     m_nodeResults.resize(m_mesh.GetNumNodes());
     std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
-    for (size_t n = 0; n < m_mesh.GetNumNodes(); ++n)
+    for (Index n = 0; n < m_mesh.GetNumNodes(); ++n)
     {
         const auto node = m_mesh.m_nodes[n];
         m_nodeResults[n] = Interpolation(node);
@@ -70,7 +70,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
 
     m_edgeResults.resize(m_mesh.GetNumEdges());
     std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
-    for (size_t e = 0; e < m_mesh.GetNumEdges(); ++e)
+    for (Index e = 0; e < m_mesh.GetNumEdges(); ++e)
     {
         const auto& [first, second] = m_mesh.m_edges[e];
         m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
@@ -78,7 +78,7 @@ void BilinearInterpolationOnGriddedSamples::Compute()
 
     m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
     std::ranges::fill(m_faceResults, constants::missing::doubleValue);
-    for (size_t f = 0; f < m_mesh.GetNumFaces(); ++f)
+    for (Index f = 0; f < m_mesh.GetNumFaces(); ++f)
     {
         m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);
     }
@@ -101,8 +101,8 @@ double BilinearInterpolationOnGriddedSamples::Interpolation(const Point& point) 
         return constants::missing::doubleValue;
     }
 
-    size_t const columnIndex = static_cast<size_t>(columnIndexTmp);
-    size_t const rowIndex = static_cast<size_t>(rowIndexTmp);
+    Index const columnIndex = static_cast<Index>(columnIndexTmp);
+    Index const rowIndex = static_cast<Index>(rowIndexTmp);
 
     if (columnIndex + 1 >= m_numXCoord || rowIndex + 1 >= m_numYCoord)
     {
@@ -127,7 +127,7 @@ double BilinearInterpolationOnGriddedSamples::Interpolation(const Point& point) 
     {
         return result;
     }
-    for (size_t i = 0; i < m_xCoordinates.size() - 1; ++i)
+    for (Index i = 0; i < m_xCoordinates.size() - 1; ++i)
     {
 
         if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
@@ -153,7 +153,7 @@ double BilinearInterpolationOnGriddedSamples::GetFractionalNumberOfRows(const Po
         return result;
     }
 
-    for (size_t i = 0; i < m_yCoordinates.size() - 1; ++i)
+    for (Index i = 0; i < m_yCoordinates.size() - 1; ++i)
     {
 
         if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])

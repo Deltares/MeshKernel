@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "MeshKernel/Constants.hpp"
+
 namespace meshkernel
 {
     /// @brief The interpolant types
@@ -49,17 +51,17 @@ namespace meshkernel
         /// @brief Gets the interpolation value at a specific node
         /// @param[in] node The node index
         /// @return The interpolated value
-        [[nodiscard]] double GetNodeResult(size_t node) const { return m_nodeResults[node]; }
+        [[nodiscard]] double GetNodeResult(Index node) const { return m_nodeResults[node]; }
 
         /// @brief Gets the interpolation value at a specific edge
         /// @param[in] edge The edge index
         /// @return The interpolated value
-        [[nodiscard]] double GetEdgeResult(size_t edge) const { return m_edgeResults[edge]; }
+        [[nodiscard]] double GetEdgeResult(Index edge) const { return m_edgeResults[edge]; }
 
         /// @brief Gets the interpolation value at a specific face
         /// @param[in] face The face index
         /// @return  The interpolated value
-        [[nodiscard]] double GetFaceResult(size_t face) const { return m_faceResults[face]; }
+        [[nodiscard]] double GetFaceResult(Index face) const { return m_faceResults[face]; }
 
         /// @brief Gets all interpolated values at nodes
         /// @return The interpolated values

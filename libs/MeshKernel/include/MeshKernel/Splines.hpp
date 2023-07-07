@@ -59,21 +59,21 @@ namespace meshkernel
         /// @param[in] splines The spline corner points
         /// @param[in] start The starting index in splines
         /// @param[in] size The end index splines
-        void AddSpline(const std::vector<Point>& splines, size_t start, size_t size);
+        void AddSpline(const std::vector<Point>& splines, Index start, Index size);
 
         /// @brief Second order derivative at spline corner points, from the start node to the end node of the spline (splint)
         /// @param[in] splines The spline corner points
         /// @param[in] startIndex The start spline node
         /// @param[in] endIndex The end spline node
         /// @returns coordinatesDerivatives The second order derivative at corner points
-        [[nodiscard]] static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, size_t startIndex, size_t endIndex);
+        [[nodiscard]] static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, Index startIndex, Index endIndex);
 
         /// @brief Second order derivative at spline corner point coordinates (splint)
         /// @param[in] coordinates The spline corner point coordinate (x or y)
         /// @param[in] startIndex The start spline node
         /// @param[in] endIndex The end spline node
         /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
-        [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, size_t startIndex, size_t endIndex);
+        [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, Index startIndex, Index endIndex);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline
@@ -83,8 +83,8 @@ namespace meshkernel
         /// @param[out] firstSplineRatio The ratio of the first spline length where the intersection occurs
         /// @param[out] secondSplineRatio The ratio of the second spline length where the intersection occurs
         /// @returns If a valid intersection is found
-        bool GetSplinesIntersection(size_t first,
-                                    size_t second,
+        bool GetSplinesIntersection(Index first,
+                                    Index second,
                                     double& crossProductIntersection,
                                     Point& intersectionPoint,
                                     double& firstSplineRatio,
@@ -99,10 +99,10 @@ namespace meshkernel
         /// @param[in] height When accounting for curvature, the height to use
         /// @param[in] assignedDelta When larger than zero, the number of intervals the spline is divided when computing the length
         /// @returns The computed length
-        [[nodiscard]] double ComputeSplineLength(size_t index,
+        [[nodiscard]] double ComputeSplineLength(Index index,
                                                  double startAdimensionalCoordinate,
                                                  double endAdimensionalCoordinate,
-                                                 size_t numSamples = 100,
+                                                 Index numSamples = 100,
                                                  bool accountForCurvature = false,
                                                  double height = 1.0,
                                                  double assignedDelta = -1.0) const;
@@ -113,7 +113,7 @@ namespace meshkernel
         /// @param[in] isSpacingCurvatureAdapted Is spacing-curvature adapted
         /// @param[in] distances The dimensional distances of each point
         /// @returns The points along the splineand the adimensional distances of each point
-        std::tuple<std::vector<Point>, std::vector<double>> ComputePointOnSplineFromAdimensionalDistance(size_t index,
+        std::tuple<std::vector<Point>, std::vector<double>> ComputePointOnSplineFromAdimensionalDistance(Index index,
                                                                                                          double maximumGridHeight,
                                                                                                          bool isSpacingCurvatureAdapted,
                                                                                                          const std::vector<double>& distances);
@@ -124,7 +124,7 @@ namespace meshkernel
         /// @param[in] endSplineSegment The end of the spline segment to consider
         /// @param[in] point The point to account for in the calculation
         /// @returns The point on a spline segment which is the closest to the input point
-        Point ComputeClosestPointOnSplineSegment(size_t index, double startSplineSegment, double endSplineSegment, Point point);
+        Point ComputeClosestPointOnSplineSegment(Index index, double startSplineSegment, double endSplineSegment, Point point);
 
         /// @brief Get the number of splines
         /// @return the number of splines
@@ -139,18 +139,18 @@ namespace meshkernel
         /// @brief Adds a new corner point in an existing spline
         /// @param[in] splineIndex The spline index
         /// @param[in] point The point to add
-        void AddPointInExistingSpline(size_t splineIndex, const Point& point);
+        void AddPointInExistingSpline(Index splineIndex, const Point& point);
 
         /// @brief Computes curvature in a spline point (comp_curv)
         /// @param[in] splineIndex the spline index
         /// @param[in] adimensionalPointCoordinate The adimensional coordinate of the point along the spline
         /// @returns The computed curvatureFactor, normal vector and tangential vector
-        std::tuple<Point, Point, double> ComputeCurvatureOnSplinePoint(size_t splineIndex,
+        std::tuple<Point, Point, double> ComputeCurvatureOnSplinePoint(Index splineIndex,
                                                                        double adimensionalPointCoordinate) const;
 
         /// @brief Delete a spline
         /// @param[in] splineIndex The index of the spline to delete
-        void DeleteSpline(size_t splineIndex);
+        void DeleteSpline(Index splineIndex);
 
         /// @brief Allocate spline properties vectors
         void AllocateSplinesProperties();
@@ -165,7 +165,7 @@ namespace meshkernel
         /// @param[in] isSpacingCurvatureAdapted Is spacing curvature adapted
         /// @param[in] h When accounting for curvature, the height to use
         FuncAdimensionalToDimensionalDistanceOnSpline(Splines* splines,
-                                                      size_t splineIndex,
+                                                      Index splineIndex,
                                                       bool isSpacingCurvatureAdapted,
                                                       double h) : m_spline(splines),
                                                                   m_splineIndex(splineIndex),
@@ -194,10 +194,10 @@ namespace meshkernel
         }
 
         Splines* m_spline = nullptr;        ///< Pointer to splines
-        size_t m_splineIndex;               ///< Spline index
+        Index m_splineIndex;               ///< Spline index
         bool m_isSpacingCurvatureAdapted;   ///< Is spacing curvature adapted
         double m_h;                         ///< When accounting for curvature, the height to use
-        size_t m_numSamples = 10;           ///< Number of samples
+        Index m_numSamples = 10;           ///< Number of samples
         double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };
 
@@ -209,7 +209,7 @@ namespace meshkernel
         /// @param[in] splineIndex The index of the current spline
         /// @param[in] point The point from where the distance is calculated
         FuncDistanceFromAPoint(Splines* splines,
-                               size_t splineIndex,
+                               Index splineIndex,
                                Point point) : m_spline(splines),
                                               m_splineIndex(splineIndex),
                                               m_point(point)
@@ -228,7 +228,7 @@ namespace meshkernel
         }
 
         Splines* m_spline;                  ///< Pointer to splines
-        size_t m_splineIndex;               ///< Spline index
+        Index m_splineIndex;               ///< Spline index
         Point m_point;                      ///< The point from where the distance is calculated
         double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };

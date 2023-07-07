@@ -221,7 +221,7 @@ namespace meshkernel
         {
             // Build the samples
             std::vector<Sample> samples(numSamples);
-            for (size_t i = 0; i < samples.size(); ++i)
+            for (Index i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
                 samples[i].y = (*samplesYCoordinate)[i];
@@ -293,7 +293,7 @@ namespace meshkernel
         result.reserve(num_faces);
 
         std::vector<Index> nodes;
-        size_t index = 0;
+        Index index = 0;
         for (auto f = 0; f < num_faces; f++)
         {
             nodes.clear();

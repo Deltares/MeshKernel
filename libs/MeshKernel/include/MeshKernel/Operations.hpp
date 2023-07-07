@@ -43,7 +43,7 @@ namespace meshkernel
     /// @param[in] fill Whatever fill or not fill the vector with missing values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, size_t const& firstDimension, size_t const& secondDimension, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, Index const& firstDimension, Index const& secondDimension, bool fill = false, const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
@@ -65,7 +65,7 @@ namespace meshkernel
     /// @param[in] fill Whatever fill or not fill the vector with missing values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, size_t const& firstDimension, size_t const& secondDimension, size_t const& thirdDim, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, Index const& firstDimension, Index const& secondDimension, Index const& thirdDim, bool fill = false, const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
@@ -125,7 +125,7 @@ namespace meshkernel
     template <typename T>
     [[nodiscard]] T FindIndex(const std::vector<T>& vec, T el)
     {
-        for (size_t n = 0; n < vec.size(); n++)
+        for (Index n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
@@ -142,17 +142,17 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
+    std::vector<std::pair<Index, Index>> FindIndices(const std::vector<Point>& vec, Index start, Index end, double separator);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
     /// @returns The indices of elements
     template <typename T>
-    [[nodiscard]] std::vector<size_t> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<Index> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<size_t> indices(v.size());
+        std::vector<Index> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
-        std::ranges::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
+        std::ranges::stable_sort(indices.begin(), indices.end(), [&v](Index i1, Index i2)
                                  { return v[i1] < v[i2]; });
         return indices;
     }
@@ -162,7 +162,7 @@ namespace meshkernel
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
-    auto ReorderVector(const std::vector<T>& v, const std::vector<size_t>& order)
+    auto ReorderVector(const std::vector<T>& v, const std::vector<Index>& order)
     {
         std::vector<T> ordered;
         ordered.reserve(v.size());
@@ -232,13 +232,13 @@ namespace meshkernel
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
-    [[nodiscard]] size_t NextCircularForwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] Index NextCircularForwardIndex(Index currentIndex, Index size);
 
     /// @brief Get the next backward index.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
-    [[nodiscard]] size_t NextCircularBackwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] Index NextCircularBackwardIndex(Index currentIndex, Index size);
 
     /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
     /// @param[in] point The current point.
@@ -277,8 +277,8 @@ namespace meshkernel
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
-                                             size_t startNode = constants::missing::sizetValue,
-                                             size_t endNode = constants::missing::sizetValue);
+                                             Index startNode = constants::missing::sizetValue,
+                                             Index endNode = constants::missing::sizetValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -453,11 +453,11 @@ namespace meshkernel
         const auto coordinate = std::floor(pointAdimensionalCoordinate);
         if (pointAdimensionalCoordinate - coordinate < eps)
         {
-            return pointCoordinate = coordinates[static_cast<size_t>(coordinate)];
+            return pointCoordinate = coordinates[static_cast<Index>(coordinate)];
         }
 
-        const size_t low = static_cast<size_t>(coordinate);
-        const size_t high = low + 1;
+        const Index low = static_cast<Index>(coordinate);
+        const Index high = low + 1;
         const double a = high - pointAdimensionalCoordinate;
         const double b = pointAdimensionalCoordinate - low;
 
@@ -473,7 +473,7 @@ namespace meshkernel
     template <class T>
     void SwapVectorElements(std::vector<T>& v)
     {
-        for (size_t i = 0; i < v.size() / 2; ++i)
+        for (Index i = 0; i < v.size() / 2; ++i)
         {
             const auto a = v[i];
             v[i] = v[i + 1];
@@ -511,8 +511,8 @@ namespace meshkernel
                                                                         const std::vector<Point>& bottomDiscretization,
                                                                         const std::vector<Point>& upperDiscretization,
                                                                         const Projection& projection,
-                                                                        size_t numM,
-                                                                        size_t numN);
+                                                                        Index numM,
+                                                                        Index numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
@@ -583,11 +583,11 @@ namespace meshkernel
         return {{minx, miny}, {maxx, maxy}};
     }
 
-    /// @brief Calculates the absolute difference between to `size_t` numbers.
+    /// @brief Calculates the absolute difference between to `Index` numbers.
     ///
     /// @param[in] number_1 The first number
     /// @param[in] number_2 The second number
-    size_t AbsoluteDifference(size_t number_1, size_t number_2);
+    Index AbsoluteDifference(Index number_1, Index number_2);
 
     /// @brief Computes the discretization points along a polyline
     /// @param polyline A polyline described by its nodes

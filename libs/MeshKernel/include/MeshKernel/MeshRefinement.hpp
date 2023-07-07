@@ -145,7 +145,7 @@ namespace meshkernel
         /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
         /// @param face The face index
-        void ComputeRefinementMasksFromSamples(size_t face);
+        void ComputeRefinementMasksFromSamples(Index face);
 
         /// Computes the edge refinement mask (comp_jalink)
         void ComputeEdgesRefinementMask();
@@ -153,24 +153,24 @@ namespace meshkernel
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
         /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
-        void FindHangingNodes(size_t face);
+        void FindHangingNodes(Index face);
 
         /// @brief Get the number of hanging nodes
         /// @returns The number of hanging nodes
-        size_t CountHangingNodes() const;
+        Index CountHangingNodes() const;
 
         /// @brief Get the number of hanging nodes
         /// @returns The number of hanging nodes
-        size_t CountHangingEdges() const;
+        Index CountHangingEdges() const;
 
         /// @brief Get the number of hanging nodes
         /// @param[in] face The current face index
         /// @returns The number of hanging nodes
-        size_t CountEdgesToRefine(size_t face) const;
+        Index CountEdgesToRefine(Index face) const;
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
-        [[nodiscard]] size_t DeleteIsolatedHangingnodes();
+        [[nodiscard]] Index DeleteIsolatedHangingnodes();
 
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
@@ -183,24 +183,24 @@ namespace meshkernel
 
         /// @brief The refinement operation by splitting the face (refine_cells)
         /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
-        void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
+        void RefineFacesBySplittingEdges(Index numEdgesBeforeRefinement);
 
         /// @brief Compute if an edge must be refined based on the face location type and the Courant criteria
         /// @param edge The index of the edge to be refined
         /// @param faceLocationType The face location type
         /// @returns If the edge should be refined
-        bool IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(size_t edge, FaceLocation faceLocationType) const;
+        bool IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(Index edge, FaceLocation faceLocationType) const;
 
         /// @brief Compute if an edge must be refined based on the face location type
         /// @param edge The index of the edge to be refined
         /// @param depthValues The depth value
         /// @returns If the edge should be refined based on Courant criteria
-        bool IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const;
+        bool IsRefineNeededBasedOnCourantCriteria(Index edge, double depthValues) const;
 
         /// @brief Compute the face location type based on the depths values on the node
         /// @param face The face index
         /// @returns The face location type
-        FaceLocation ComputeFaceLocationType(size_t face) const;
+        FaceLocation ComputeFaceLocationType(Index face) const;
 
         RTree m_samplesRTree; ///< The sample node RTree
 

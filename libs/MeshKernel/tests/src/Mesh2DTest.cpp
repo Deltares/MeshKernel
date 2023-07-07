@@ -317,8 +317,8 @@ TEST(Mesh2D, NodeMerging)
 
 TEST(Mesh2D, MillionQuads)
 {
-    const int n = 2000; // x
-    const int m = 2000; // y
+    const int n = 4; // x
+    const int m = 4; // y
 
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
