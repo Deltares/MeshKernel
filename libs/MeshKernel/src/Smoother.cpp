@@ -381,7 +381,7 @@ void Smoother::ComputeOperatorsNode(Index currentNode)
         else
         {
             faceLeftIndex = f;
-            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, m_topologySharedFaces[currentTopology].size());
+            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, static_cast<Index>(m_topologySharedFaces[currentTopology].size()));
 
             if (faceRightIndex == constants::missing::sizetValue)
             {
@@ -537,7 +537,7 @@ void Smoother::ComputeNodeXiEta(Index currentNode)
     std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
     std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
 
-    const auto numSharedFaces = m_sharedFacesCache.size();
+    const auto numSharedFaces = static_cast<Index>(m_sharedFacesCache.size());
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(m_connectedNodesCache.size(), constants::missing::doubleValue);
     // for each shared face, a boolean indicating if it is squared or not
@@ -895,7 +895,7 @@ void Smoother::NodeAdministration(Index currentNode)
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
     if (m_faceNodeMappingCache.size() < m_sharedFacesCache.size())
     {
-        ResizeAndFill2DVector(m_faceNodeMappingCache, m_sharedFacesCache.size(), Mesh::m_maximumNumberOfNodesPerFace);
+        ResizeAndFill2DVector(m_faceNodeMappingCache, static_cast<Index>(m_sharedFacesCache.size()), Mesh::m_maximumNumberOfNodesPerFace);
     }
     for (Index f = 0; f < m_sharedFacesCache.size(); f++)
     {
@@ -999,8 +999,8 @@ void Smoother::Initialize()
 
 void Smoother::AllocateNodeOperators(Index topologyIndex)
 {
-    const auto numSharedFaces = m_topologySharedFaces[topologyIndex].size();
-    const auto numConnectedNodes = m_topologyConnectedNodes[topologyIndex].size();
+    const auto numSharedFaces = static_cast<Index>(m_topologySharedFaces[topologyIndex].size());
+    const auto numConnectedNodes = static_cast<Index>(m_topologyConnectedNodes[topologyIndex].size());
 
     // will reallocate only if necessary
     m_Az[topologyIndex].resize(numSharedFaces);

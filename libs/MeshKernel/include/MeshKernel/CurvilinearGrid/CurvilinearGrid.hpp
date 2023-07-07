@@ -29,6 +29,7 @@
 
 #include <vector>
 
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -74,7 +75,7 @@ namespace meshkernel
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons
         /// @param[in] polygonIndex The index of the polygon to use for deletion
-        void Delete(std::shared_ptr<Polygons> polygons, size_t polygonIndex);
+        void Delete(std::shared_ptr<Polygons> polygons, Index polygonIndex);
 
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
@@ -109,7 +110,7 @@ namespace meshkernel
         /// @param[in] m The m coordinate
         /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
-        [[nodiscard]] bool IsValidFace(size_t m, size_t n) const;
+        [[nodiscard]] bool IsValidFace(Index m, Index n) const;
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
@@ -177,8 +178,8 @@ namespace meshkernel
         /// @param[in] toPoint The coordinates of the new position
         void MoveNode(Point const& fromPoint, Point const& toPoint);
 
-        size_t m_numM = 0;                                     ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                     ///< The number of n coordinates (horizontal lines)
+        Index m_numM = 0;                                      ///< The number of m coordinates (vertical lines)
+        Index m_numN = 0;                                      ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
         std::vector<std::vector<bool>> m_gridFacesMask;        ///< The mask of the grid faces (true/false)
         std::vector<std::vector<NodeType>> m_gridNodesTypes;   ///< The grid node types

@@ -63,7 +63,7 @@ bool CurvilinearGridLine::IsNodeOnLine(CurvilinearGridNodeIndices const& node) c
     return false;
 }
 
-CurvilinearGridNodeIndices CurvilinearGridLine::GetNodeIndexFromCoordinate(size_t const& coordinate) const
+CurvilinearGridNodeIndices CurvilinearGridLine::GetNodeIndexFromCoordinate(Index const& coordinate) const
 {
     auto const mCoordinate = IsMGridLine() ? coordinate : m_constantCoordinate;
     auto const nCoordinate = IsMGridLine() ? m_constantCoordinate : coordinate;
