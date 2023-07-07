@@ -841,7 +841,7 @@ namespace meshkernelapi
             const auto numSplines = static_cast<meshkernel::Index>(indices.size());
 
             int index = 0;
-            for (size_t s = 0; s < numSplines; s++)
+            for (Index s = 0; s < numSplines; s++)
             {
                 const auto& [startIndex, endIndex] = indices[s];
                 std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
@@ -1498,7 +1498,7 @@ namespace meshkernelapi
                                                                                         relativeSearchRadius,
                                                                                         refineOutsideFace,
                                                                                         transformSamples,
-                                                                                        static_cast<size_t>(minimumNumSamples));
+                                                                                        static_cast<meshkernel::Index>(minimumNumSamples));
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
             meshRefinement.Compute();
@@ -2519,7 +2519,7 @@ namespace meshkernelapi
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<size_t>(smoothingIterations));
+                                                                          static_cast<meshkernel::Index>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(curvilinearGridSmoothing.Compute());
@@ -2969,7 +2969,7 @@ namespace meshkernelapi
                                                          relativeSearchSize,
                                                          false,
                                                          false,
-                                                         minNumSamples);
+                                                         static_cast<meshkernel::Index>(minNumSamples));
 
             averaging.Compute();
 
