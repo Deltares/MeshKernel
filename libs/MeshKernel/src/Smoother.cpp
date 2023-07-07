@@ -259,7 +259,7 @@ void Smoother::ComputeOperatorsNode(Index currentNode)
         Index edgeRight = edgeLeft + 1;
         if (edgeRight > m_topologySharedFaces[currentTopology].size())
         {
-            edgeRight -= m_topologySharedFaces[currentTopology].size();
+            edgeRight -= static_cast<Index>(m_topologySharedFaces[currentTopology].size());
         }
 
         const auto xiLeft = m_topologyXi[currentTopology][edgeLeft];

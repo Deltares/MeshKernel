@@ -162,10 +162,10 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
     bool onPoles = false;
     constexpr double latitudePoles = 90.0;
 
-    for (size_t n = 1; n < numN; ++n)
+    for (Index n = 1; n < numN; ++n)
     {
-        size_t lastRowOnPole = numM;
-        for (size_t m = 0; m < numM; ++m)
+        Index lastRowOnPole = numM;
+        for (Index m = 0; m < numM; ++m)
         {
             const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result[n - 1][m].y);
             result[n][m].y = adjustedLatitude;
@@ -241,7 +241,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
                                                       const double blockSizeX,
                                                       const double blockSizeY,
                                                       std::shared_ptr<Polygons> polygons,
-                                                      size_t polygonIndex) const
+                                                      Index polygonIndex) const
 {
     if (blockSizeX <= 0.0)
     {
