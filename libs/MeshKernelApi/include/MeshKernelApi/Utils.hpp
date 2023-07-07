@@ -225,7 +225,7 @@ namespace meshkernelapi
 
         const auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-        const auto indices = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::constants::missing::doubleValue);
+        const auto indices = FindIndices(splineCornerPoints, 0, static_cast<meshkernel::Index>(splineCornerPoints.size()), meshkernel::constants::missing::doubleValue);
 
         for (const auto& index : indices)
         {

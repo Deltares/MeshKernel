@@ -473,7 +473,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(Index index,
 
     FuncAdimensionalToDimensionalDistanceOnSpline func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = static_cast<Index>(m_splineNodes[index].size());
-    for (Index i = 0, size = distances.size(); i < size; ++i)
+    for (Index i = 0, size = static_cast<Index>(distances.size()); i < size; ++i)
     {
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);

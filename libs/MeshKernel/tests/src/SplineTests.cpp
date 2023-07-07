@@ -14,7 +14,7 @@ TEST(Splines, SetSpline)
                                                 {1030.506469726562, 653.380187988281}});
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
-    splines.AddSpline(splineNodes, 0, splineNodes.size());
+    splines.AddSpline(splineNodes, 0, static_cast<meshkernel::Index>(splineNodes.size()));
 
     ASSERT_EQ(1, splines.GetNumSplines());
     ASSERT_EQ(4, splines.m_splineNodes[0].size());
@@ -29,7 +29,7 @@ TEST(Splines, CubicSplineInterpolation)
     splineNodes.push_back(meshkernel::Point{930.506469726562, 453.380187988281});
 
     int pointsBetweenNodes = 20;
-    auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes, 0, splineNodes.size() - 1);
+    auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes, 0, static_cast<meshkernel::Index>(splineNodes.size()) - 1);
     std::vector<meshkernel::Point> splineCoordinates;
 
     for (size_t n = 0; n < splineNodes.size() - 1; n++)
@@ -68,12 +68,12 @@ TEST(Splines, SplineIntersection)
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
 
-    splines.AddSpline(firstSpline, 0, firstSpline.size());
+    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::Index>(firstSpline.size()));
 
     std::vector<meshkernel::Point> secondSpline;
     secondSpline.push_back(meshkernel::Point{72.5010681152344, 391.129577636719});
     secondSpline.push_back(meshkernel::Point{462.503479003906, 90.3765411376953});
-    splines.AddSpline(secondSpline, 0, secondSpline.size());
+    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::Index>(secondSpline.size()));
 
     double crossProductIntersection;
     meshkernel::Point dimensionalIntersection;
