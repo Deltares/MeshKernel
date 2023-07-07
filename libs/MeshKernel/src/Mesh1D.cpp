@@ -62,7 +62,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
             edges.emplace_back(i, i + 1);
         }
         // Poly lines are separated. If the end of one polyline coincides with the start of another, the two nodes will be merged later on.
-        numNodes = numNodes + nodes.size();
+        numNodes = numNodes + static_cast<Index>(nodes.size());
     }
 
     // Sets the edges, nodes and projections

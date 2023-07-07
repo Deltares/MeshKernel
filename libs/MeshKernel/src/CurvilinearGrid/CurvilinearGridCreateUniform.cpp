@@ -157,8 +157,8 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
                                           blockSizeX,
                                           blockSizeY);
 
-    const auto numM = result[0].size();
-    const auto numN = result.size();
+    const auto numM = static_cast<Index>(result[0].size());
+    const auto numN = static_cast<Index>(result.size());
     bool onPoles = false;
     constexpr double latitudePoles = 90.0;
 

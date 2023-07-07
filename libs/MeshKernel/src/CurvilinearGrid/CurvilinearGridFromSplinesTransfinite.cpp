@@ -562,7 +562,7 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(Index startFirst,
 template <typename T>
 void CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, Index firstRow, Index secondRow) const
 {
-    auto minSize = std::min(v[firstRow].size(), v[secondRow].size());
+    auto minSize = std::min(static_cast<Index>(v[firstRow].size()), static_cast<Index>(v[secondRow].size()));
     minSize = std::min(minSize, m_splines->GetNumSplines());
 
     for (Index i = 0; i < minSize; i++)

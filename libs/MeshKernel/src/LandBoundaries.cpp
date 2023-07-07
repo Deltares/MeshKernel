@@ -98,7 +98,7 @@ void LandBoundaries::Administrate()
 
     // Split every land boundary in order to get rid of closed land boundaries
     // (some pieces of software cannot handle closed polygons, only polylines)
-    const auto numSegmentIndicesBeforeSplitting = m_validLandBoundaries.size();
+    const auto numSegmentIndicesBeforeSplitting = static_cast<Index>(m_validLandBoundaries.size());
     for (Index i = 0; i < numSegmentIndicesBeforeSplitting; ++i)
     {
         const auto [startSegmentIndex, endSegmentIndex] = m_validLandBoundaries[i];
@@ -356,7 +356,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<Index>& nodesLoc, Index n
     m_nodes.emplace_back(Point());
 
     // Update segment indices
-    m_validLandBoundaries.emplace_back(std::make_pair<Index, Index>(m_nodes.size() - 3, m_nodes.size() - 2));
+    m_validLandBoundaries.emplace_back(std::make_pair<Index, Index>(static_cast<Index>(m_nodes.size()) - 3, static_cast<Index>(m_nodes.size()) - 2));
 }
 
 std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::MakePath(Index landBoundaryIndex)
@@ -980,7 +980,7 @@ std::tuple<double, meshkernel::Point, meshkernel::Index, double> LandBoundaries:
     }
 
     const auto startLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? 0 : m_validLandBoundaries[segmentIndex].first;
-    const auto endLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? m_nodes.size() : m_validLandBoundaries[segmentIndex].second;
+    const auto endLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? static_cast<Index>(m_nodes.size()) : m_validLandBoundaries[segmentIndex].second;
 
     for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
     {

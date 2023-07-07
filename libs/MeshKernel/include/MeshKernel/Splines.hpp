@@ -128,7 +128,7 @@ namespace meshkernel
 
         /// @brief Get the number of splines
         /// @return the number of splines
-        auto GetNumSplines() const { return m_splineNodes.size(); }
+        auto GetNumSplines() const { return static_cast<Index>(m_splineNodes.size()); }
 
         std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
@@ -194,10 +194,10 @@ namespace meshkernel
         }
 
         Splines* m_spline = nullptr;        ///< Pointer to splines
-        Index m_splineIndex;               ///< Spline index
+        Index m_splineIndex;                ///< Spline index
         bool m_isSpacingCurvatureAdapted;   ///< Is spacing curvature adapted
         double m_h;                         ///< When accounting for curvature, the height to use
-        Index m_numSamples = 10;           ///< Number of samples
+        Index m_numSamples = 10;            ///< Number of samples
         double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };
 
@@ -228,7 +228,7 @@ namespace meshkernel
         }
 
         Splines* m_spline;                  ///< Pointer to splines
-        Index m_splineIndex;               ///< Spline index
+        Index m_splineIndex;                ///< Spline index
         Point m_point;                      ///< The point from where the distance is calculated
         double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };

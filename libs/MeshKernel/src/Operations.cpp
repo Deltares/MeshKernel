@@ -47,9 +47,9 @@ namespace meshkernel
     }
 
     std::vector<std::pair<Index, Index>> FindIndices(const std::vector<Point>& vec,
-                                                       Index start,
-                                                       Index end,
-                                                       double separator)
+                                                     Index start,
+                                                     Index end,
+                                                     double separator)
     {
         std::vector<std::pair<Index, Index>> result;
 
@@ -157,7 +157,7 @@ namespace meshkernel
         if (startNode == constants::missing::sizetValue && endNode == constants::missing::sizetValue)
         {
             startNode = 0;
-            endNode = polygonNodes.size() - 1; // closed polygon
+            endNode = static_cast<Index>(polygonNodes.size()) - 1; // closed polygon
         }
 
         if (endNode <= startNode)
@@ -740,7 +740,7 @@ namespace meshkernel
     {
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
-        const auto numPoints = polygon.size();
+        const auto numPoints = static_cast<Index>(polygon.size());
         for (Index i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
@@ -1170,7 +1170,7 @@ namespace meshkernel
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
         const Point reference = ReferencePoint(polygon, projection);
-        const auto numberOfPointsOpenedPolygon = polygon.size() - 1;
+        const auto numberOfPointsOpenedPolygon = static_cast<Index>(polygon.size()) - 1;
         for (Index n = 0; n < numberOfPointsOpenedPolygon; n++)
         {
             const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);

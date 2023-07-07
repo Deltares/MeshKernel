@@ -36,7 +36,7 @@ using meshkernel::Polygons;
 Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
 {
     // Find the polygons in the current list of points
-    m_outer_polygons_indices = FindIndices(polygon, 0, polygon.size(), constants::missing::doubleValue);
+    m_outer_polygons_indices = FindIndices(polygon, 0, static_cast<Index>(polygon.size()), constants::missing::doubleValue);
     for (Index i = 0; i < m_outer_polygons_indices.size(); ++i)
     {
         m_inner_polygons_indices[i] = std::vector<std::pair<Index, Index>>{};
@@ -87,7 +87,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         }
 
         // not a closed polygon
-        const auto numLocalPoints = localPolygon.size();
+        const auto numLocalPoints = static_cast<Index>(localPolygon.size());
         if (localPolygon[numLocalPoints - 1] != localPolygon[0] || localPolygon.size() < 4)
         {
             continue;
@@ -344,7 +344,7 @@ bool Polygons::IsPointInPolygon(Point const& point, Index polygonIndex) const
 
 meshkernel::Index Polygons::GetNumPolygons() const
 {
-    return m_outer_polygons_indices.size();
+    return static_cast<Index>(m_outer_polygons_indices.size());
 }
 
 std::tuple<bool, meshkernel::Index> Polygons::IsPointInPolygons(Point point) const

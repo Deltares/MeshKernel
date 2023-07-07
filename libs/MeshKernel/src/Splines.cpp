@@ -45,14 +45,14 @@ Splines::Splines(CurvilinearGrid const& grid)
         {
             mGridLines[n][m] = grid.m_gridNodes[m][n];
         }
-        AddSpline(mGridLines[n], 0, mGridLines[n].size());
+        AddSpline(mGridLines[n], 0, static_cast<Index>(mGridLines[n].size()));
     }
 
     // then the m_m m_n-gridlines
     std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
     for (Index m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid.m_gridNodes[m], 0, grid.m_gridNodes[m].size());
+        AddSpline(grid.m_gridNodes[m], 0, static_cast<Index>(grid.m_gridNodes[m].size()));
     }
 
     m_projection = grid.m_projection;
@@ -78,7 +78,7 @@ void Splines::AddSpline(const std::vector<Point>& splines, Index start, Index si
 
     // compute second order derivatives
     std::vector<Point> splineDerivatives(splinesNodes.size());
-    const auto indices = FindIndices(splinesNodes, 0, splinesNodes.size(), constants::missing::doubleValue);
+    const auto indices = FindIndices(splinesNodes, 0, static_cast<Index>(splinesNodes.size()), constants::missing::doubleValue);
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
@@ -124,8 +124,8 @@ bool Splines::GetSplinesIntersection(Index first,
     Index firstCrossingIndex = 0;
     Index secondCrossingIndex = 0;
     Point closestIntersection;
-    const auto numNodesFirstSpline = m_splineNodes[first].size();
-    const auto numNodesSecondSpline = m_splineNodes[second].size();
+    const auto numNodesFirstSpline = static_cast<Index>(m_splineNodes[first].size());
+    const auto numNodesSecondSpline = static_cast<Index>(m_splineNodes[second].size());
 
     // First find a valid crossing, the closest to spline central point
     for (Index n = 0; n < numNodesFirstSpline - 1; n++)
@@ -472,7 +472,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(Index index,
     std::vector<double> adimensionalDistances(distances.size());
 
     FuncAdimensionalToDimensionalDistanceOnSpline func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
-    const auto numNodes = m_splineNodes[index].size();
+    const auto numNodes = static_cast<Index>(m_splineNodes[index].size());
     for (Index i = 0, size = distances.size(); i < size; ++i)
     {
         func.SetDimensionalDistance(distances[i]);

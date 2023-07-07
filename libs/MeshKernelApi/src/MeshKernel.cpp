@@ -837,8 +837,8 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.coordinates_y[i];
             }
 
-            const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::constants::missing::doubleValue);
-            const auto numSplines = indices.size();
+            const auto indices = FindIndices(splines, 0, static_cast<Index>(splines.size()), meshkernel::constants::missing::doubleValue);
+            const auto numSplines = static_cast<Index>(indices.size());
 
             int index = 0;
             for (size_t s = 0; s < numSplines; s++)
@@ -846,7 +846,7 @@ namespace meshkernelapi
                 const auto& [startIndex, endIndex] = indices[s];
                 std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
                 const int numNodes = static_cast<int>(endIndex) - static_cast<int>(startIndex) + 1;
-                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
+                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, static_cast<Index>(coordinates.size()) - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {

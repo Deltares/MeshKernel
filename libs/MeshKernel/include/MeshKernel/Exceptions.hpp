@@ -155,7 +155,7 @@ namespace meshkernel
 #ifdef _WIN32
             std::replace(path_to_erase.begin(), path_to_erase.end(), '/', '\\');
 #endif
-            if (Index pos = path.find(path_to_erase); pos != std::string::npos)
+            if (size_t pos = path.find(path_to_erase); pos != std::string::npos)
             {
                 // erase including the trailing slash
                 path.erase(pos, path_to_erase.length() + 1);
@@ -280,7 +280,7 @@ namespace meshkernel
         /// @return The  error category.
         std::string Category() const override { return "MeshGeometryError"; }
 
-        Index m_invalid_index;         ///< The invalid mesh location index.
+        Index m_invalid_index;          ///< The invalid mesh location index.
         Mesh::Location m_mesh_location; ///< The location type.
     };
 

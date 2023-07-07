@@ -43,8 +43,8 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
     }
 
     m_projection = projection;
-    m_numM = m_gridNodes.size();
-    m_numN = m_gridNodes[0].size();
+    m_numM = static_cast<Index>(m_gridNodes.size());
+    m_numN = static_cast<Index>(m_gridNodes[0].size());
 
     SetFlatCopies();
 }
@@ -63,8 +63,8 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, Index polygonIn
         return;
     }
 
-    const auto numN = m_gridNodes.size();
-    const auto numM = m_gridNodes[0].size();
+    const auto numN = static_cast<Index>(m_gridNodes.size());
+    const auto numM = static_cast<Index>(m_gridNodes[0].size());
 
     std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
     std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
@@ -133,8 +133,8 @@ void CurvilinearGrid::SetFlatCopies()
         return;
     }
 
-    m_numM = m_gridNodes.size();
-    m_numN = m_gridNodes[0].size();
+    m_numM = static_cast<Index>(m_gridNodes.size());
+    m_numN = static_cast<Index>(m_gridNodes[0].size());
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
     m_edges = edges;

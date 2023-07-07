@@ -672,7 +672,7 @@ void MeshRefinement::RefineFacesBySplittingEdges(Index numEdgesBeforeRefinement)
         {
             for (Index n = 0; n < notHangingFaceNodes.size(); ++n)
             {
-                const auto nn = NextCircularForwardIndex(n, notHangingFaceNodes.size());
+                const auto nn = NextCircularForwardIndex(n, static_cast<Index>(notHangingFaceNodes.size()));
                 m_mesh->ConnectNodes(notHangingFaceNodes[n], notHangingFaceNodes[nn]);
             }
         }
