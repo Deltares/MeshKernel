@@ -841,7 +841,7 @@ namespace meshkernelapi
             const auto numSplines = static_cast<meshkernel::Index>(indices.size());
 
             int index = 0;
-            for (Index s = 0; s < numSplines; s++)
+            for (meshkernel::Index s = 0; s < numSplines; s++)
             {
                 const auto& [startIndex, endIndex] = indices[s];
                 std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
