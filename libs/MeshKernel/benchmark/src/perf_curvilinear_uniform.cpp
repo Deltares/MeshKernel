@@ -47,7 +47,8 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         state.ResumeTiming();
 
         CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
-        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(make_grid_arameters, polygons, 0));
+        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(make_grid_arameters.angle, make_grid_arameters.block_size_x, make_grid_arameters.block_size_y, polygons, 0));
+        // const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinear_grid_create_uniform.Compute(make_grid_arameters, polygons, 0));
     }
 }
 BENCHMARK(BM_CurvilinearUniform)

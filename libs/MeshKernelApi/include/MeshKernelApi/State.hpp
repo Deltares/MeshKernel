@@ -69,7 +69,7 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
 
         // Exclusively owned state
-        meshkernel::Projection m_projection; ///< Projection used by the meshes
+        meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
     };
 
 } // namespace meshkernelapi
