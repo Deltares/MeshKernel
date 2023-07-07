@@ -19,7 +19,7 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
         std::error_code error_code;
         if (!std::filesystem::exists(file_path, error_code))
         {
-            throw std::filesystem::filesystem_error("File does no exist", error_code);
+            throw std::filesystem::filesystem_error("File does not exist", error_code);
         }
     }
 
@@ -78,6 +78,8 @@ ReadLegacyMeshFile(std::filesystem::path const& file_path)
     std::string edgeTypeName{"NetLinkType"};
     nc_inq_varid(ncidp, edgeTypeName.c_str(), &varid);
     nc_get_var_int(ncidp, varid, edge_type.data());
+
+    nc_close(ncidp);
 
     // Transform into 0 based indexing
     for (size_t i = 0; i < num_edges * 2; i++)

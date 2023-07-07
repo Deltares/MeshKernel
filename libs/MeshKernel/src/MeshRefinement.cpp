@@ -875,6 +875,10 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
         }
         break;
     case RefinementType::WaveCourant:
+        if (m_useNodalRefinement)
+        {
+            ComputeFaceLocationTypes();
+        }
         for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
         {
             const auto edge = m_mesh->m_facesEdges[face][e];
@@ -887,18 +891,29 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
             bool doRefinement;
             if (m_useNodalRefinement)
             {
-                const auto faceLocationType = ComputeFaceLocationType(face);
-                doRefinement = IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(edge, faceLocationType);
+                if (m_faceLocationType[face] == FaceLocation::Land)
+                {
+                    doRefinement = false;
+                }
+                else if (m_faceLocationType[face] == FaceLocation::LandWater)
+                {
+                    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
+                    doRefinement = newEdgeLength >= m_meshRefinementParameters.min_edge_size;
+                }
+                else
+                {
+                    const auto edgeDepth = std::abs(m_interpolant->GetEdgeResult(edge));
+                    doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, edgeDepth);
+                }
             }
             else
             {
-                const double refinementValue = m_interpolant->GetFaceResult(face);
-                doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, refinementValue);
+                const double faceDepth = m_interpolant->GetFaceResult(face);
+                doRefinement = IsRefineNeededBasedOnCourantCriteria(edge, faceDepth);
             }
 
             if (doRefinement)
             {
-
                 numEdgesToBeRefined++;
                 m_refineEdgeCache[e] = 1;
             }
@@ -958,46 +973,31 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(size_t face)
     }
 }
 
-MeshRefinement::FaceLocation MeshRefinement::ComputeFaceLocationType(size_t face) const
+void MeshRefinement::ComputeFaceLocationTypes()
 {
-    double maxVal = -std::numeric_limits<double>::max();
-    double minVal = std::numeric_limits<double>::max();
-    for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
+    m_faceLocationType.resize(m_mesh->GetNumFaces());
+    std::ranges::fill(m_faceLocationType, FaceLocation::Water);
+    for (size_t face = 0; face < m_mesh->GetNumFaces(); face++)
     {
-        const auto node = m_mesh->m_facesNodes[face][e];
-        const auto val = m_interpolant->GetNodeResult(node);
-        maxVal = std::max(maxVal, val);
-        minVal = std::min(minVal, val);
-    }
+        double maxVal = -std::numeric_limits<double>::max();
+        double minVal = std::numeric_limits<double>::max();
+        for (size_t e = 0; e < m_mesh->GetNumFaceEdges(face); ++e)
+        {
+            const auto node = m_mesh->m_facesNodes[face][e];
+            const auto val = m_interpolant->GetNodeResult(node);
+            maxVal = std::max(maxVal, val);
+            minVal = std::min(minVal, val);
+        }
 
-    if (minVal > 0.0)
-    {
-        return FaceLocation::Land;
+        if (minVal > 0.0)
+        {
+            m_faceLocationType[face] = FaceLocation::Land;
+        }
+        if (maxVal >= 0.0 && (!IsEqual(minVal, constants::missing::doubleValue) && minVal < 0.0))
+        {
+            m_faceLocationType[face] = FaceLocation::LandWater;
+        }
     }
-    if (maxVal >= 0.0 && (!IsEqual(minVal, constants::missing::doubleValue) && minVal < 0.0))
-    {
-        return FaceLocation::LandWater;
-    }
-    return FaceLocation::Water;
-}
-
-bool MeshRefinement::IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(size_t edge, FaceLocation faceLocationType) const
-{
-    if (faceLocationType == FaceLocation::LandWater)
-    {
-        return true;
-    }
-    if (faceLocationType == FaceLocation::Land)
-    {
-        return false;
-    }
-
-    const auto& [first, second] = m_mesh->m_edges[edge];
-    const auto firstDepth = m_interpolant->GetNodeResult(first);
-    const auto secondDepth = m_interpolant->GetNodeResult(second);
-    const auto refinementValue = std::abs(0.5 * (firstDepth + secondDepth));
-
-    return IsRefineNeededBasedOnCourantCriteria(edge, refinementValue);
 }
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(size_t edge, double depthValues) const
