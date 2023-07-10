@@ -23,7 +23,7 @@ public:
 
     /// @brief Stop recording and fills out the given Result structure
     /// @param[result] Structure
-    void Stop(Result* result) override;
+    void Stop(Result& result) override;
 
     /// @brief Gets the total memory allocated in bytes between Start and Stop
     /// @return Total memory allocated in bytes
@@ -54,32 +54,9 @@ private:
     MemorySystemQuery(MemorySystemQuery const&) = delete;
     MemorySystemQuery& operator=(MemorySystemQuery const&) = delete;
 
-    ///
-    /// The sum of the physical RAM used by the current process and the virtual RAM used by the current process.
-    ///
-    static int64_t GetRAMSystemUsedByCurrentProcess();
+    static uint64_t CurrentMemoryUsage();
 
-    ///
-    /// On Windows, this is defined by the Working Set Size.  The working set size is defined as "The working set of a process is the set of pages in
-    /// the virtual address space of the process that are currently resident in physical memory. The working set contains only pageable memory
-    /// allocations; nonpageable memory allocations such as Address Windowing Extensions (AWE) or large page allocations are not included in the
-    /// working set."
-    /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms684877(v=vs.85).aspx
-    /// https://msdn.microsoft.com/en-us/library/windows/desktop/cc441804(v=vs.85).aspx
-    ///
-    static int64_t GetRAMPhysicalUsedByCurrentProcess();
-
-    ///
-    ///
-    ///
-    static int64_t GetRAMPhysicalUsedByCurrentProcessPeak();
-
-    ///
-    /// On Windows, this is defined as the commit charge.  "The Commit Charge value in bytes for this process. Commit Charge is the total amount of
-    /// memory that the memory manager has committed for a running process."
-    /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms684877(v=vs.85).aspx
-    ///
-    static int64_t GetRAMVirtualUsedByCurrentProcess();
+    static uint64_t PeakMemoryUsage();
 };
 
 /// @brief Overlaod of oepartor << for printing the statistics of the class MemorySystemQuery

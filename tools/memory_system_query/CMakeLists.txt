@@ -28,6 +28,7 @@ set(
 set(
   INC_LIST
   ${INC_DIR}/memory_system_query.hpp
+  ${INC_DIR}/memory_monitor_linux.hpp
 )
 
 # add sources to target
