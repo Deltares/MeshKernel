@@ -1259,10 +1259,9 @@ double CurvilinearGridFromSplines::ComputeGrowFactor(Index splineIndex) const
 
 double CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRatio, double height, Index numLayers) const
 {
-    const auto absAspectRatioMinusOne = std::abs(aspectRatio - 1.0);
-    if (absAspectRatioMinusOne < 1e-8 && absAspectRatioMinusOne > 0.0)
+    if (std::abs(aspectRatio - 1.0) > 1e-8)
     {
-        return (std::pow(aspectRatio, static_cast<int>(numLayers)) - 1.0) / absAspectRatioMinusOne * height;
+        return (std::pow(aspectRatio, static_cast<int>(numLayers)) - 1.0) / (aspectRatio - 1.0) * height;
     }
     return height * static_cast<double>(numLayers);
 }
