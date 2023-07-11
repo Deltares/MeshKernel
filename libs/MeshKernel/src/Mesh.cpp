@@ -43,7 +43,7 @@ Mesh::Mesh(const std::vector<Edge>& edges,
 void Mesh::NodeAdministration()
 {
     // assume no duplicated links
-  for (Index e = 0; e < static_cast<Index>(GetNumEdges()); e++)
+    for (Index e = 0; e < static_cast<Index>(GetNumEdges()); e++)
     {
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
