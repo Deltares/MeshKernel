@@ -28,7 +28,6 @@
 #pragma once
 
 #include <cmath>
-#include <type_traits>
 #include <vector>
 
 #include <MeshKernel/Constants.hpp>
@@ -105,6 +104,7 @@ namespace meshkernel
             return *this;
         }
 
+        /// @brief Inplace sum with another point.
         Point& operator+=(const Point& rhs)
         {
             x += rhs.x;
