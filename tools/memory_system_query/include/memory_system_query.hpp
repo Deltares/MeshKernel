@@ -33,15 +33,15 @@ public:
     /// @return Peak memory use in bytes between Start and Stop
     int64_t MaxBytesUsed() const;
 
+    /// @brief Gets the current statistics
+    /// @return The statistics as a ormatted string
+    std::string Statistics(std::string const& caller = std::string()) const;
+
     /// @brief Overlaod of oepartor << for printing the statistics of the class MemorySystemQuery
     /// @param[ostream] Output stream
     /// @param[ostream] Custom memory manager instance
     /// @return Output stream
     friend std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager);
-
-    /// @brief Gets the current statistics
-    /// @return The statistics as a ormatted string
-    std::string Statistics(std::string const& caller = std::string()) const;
 
 private:
     mutable std::shared_mutex mutex;

@@ -48,12 +48,6 @@ int64_t MemorySystemQuery::MaxBytesUsed() const
     return PeakMemoryUsage() - m_max_bytes_used;
 }
 
-std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager)
-{
-    ostream << custom_memory_manager.Statistics();
-    return ostream;
-}
-
 std::string MemorySystemQuery::Statistics(std::string const& caller) const
 {
     std::shared_lock lock(mutex);
@@ -63,8 +57,8 @@ std::string MemorySystemQuery::Statistics(std::string const& caller) const
         oss << "<Caller : " << caller << ">\n";
     }
     oss << "Current memory query:"
-        << "\n Total allocated bytes  : " << m_total_allocated_bytes
-        << "\n Max bytes used         : " << m_max_bytes_used
+        << "\n Total allocated bytes : " << TotalAllocatedBytes()
+        << "\n Max bytes used        : " << MaxBytesUsed()
         << '\n';
     return oss.str();
 }
@@ -93,4 +87,10 @@ uint64_t MemorySystemQuery::PeakMemoryUsage()
 #else
     return MemoryMonitor::PeakUsage();
 #endif
+}
+
+std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager)
+{
+    ostream << custom_memory_manager.Statistics();
+    return ostream;
 }
