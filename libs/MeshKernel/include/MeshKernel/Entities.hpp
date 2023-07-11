@@ -104,14 +104,6 @@ namespace meshkernel
             return *this;
         }
 
-        /// @brief Inplace sum with another point.
-        Point& operator+=(const Point& rhs)
-        {
-            x += rhs.x;
-            y += rhs.y;
-            return *this;
-        }
-
         /// @brief Overloads addition with another Point
         [[nodiscard]] Point operator+(Point const& rhs) const { return Point(x + rhs.x, y + rhs.y); }
 
