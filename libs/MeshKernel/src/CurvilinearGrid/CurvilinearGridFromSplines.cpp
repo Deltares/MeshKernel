@@ -1262,7 +1262,7 @@ double CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRa
 
     if (std::abs(aspectRatio - 1.0) > 1e-8)
     {
-        return (std::pow(aspectRatio, numLayers) - 1.0) / (aspectRatio - 1.0) * height;
+        return (std::pow(aspectRatio, static_cast<int>(numLayers)) - 1.0) / (aspectRatio - 1.0) * height;
     }
     return height * static_cast<double>(numLayers);
 }
