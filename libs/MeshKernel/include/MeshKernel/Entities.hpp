@@ -31,6 +31,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <Eigen/Core>
+
 #include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
@@ -159,7 +161,17 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<size_t, size_t> Edge;
+    using Edge = std::pair<size_t, size_t>;
+
+    /// @brief Row major dynamic matrix
+    /// @tparam T Data type
+    template <class T>
+    using MatrixRowMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+    /// @brief Column major dynamic matrix
+    /// @tparam T Data type
+    template <class T>
+    using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge

@@ -185,6 +185,7 @@ target_link_libraries(
   LINK_PUBLIC
     Triangle
     OpenMP::OpenMP_CXX
+    Eigen3::Eigen
 )
 
 if(${USE_LIBFMT})

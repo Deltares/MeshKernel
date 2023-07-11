@@ -84,3 +84,19 @@ if(${USE_LIBFMT})
 
   endif()
   
+# Eigen
+# Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so master will be used here.
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        master
+)
+
+FetchContent_GetProperties(Eigen)
+
+set(BUILD_TESTING OFF)
+
+if(NOT eigen_POPULATED)
+  FetchContent_Populate(Eigen)
+  add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
