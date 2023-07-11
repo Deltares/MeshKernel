@@ -105,14 +105,6 @@ namespace meshkernel
             return *this;
         }
 
-        /// @brief Inplace multiply by a scalar value.
-        Point& operator*=(double rhs)
-        {
-            x *= rhs;
-            y *= rhs;
-            return *this;
-        }
-
         Point& operator+=(const Point& rhs)
         {
             x += rhs.x;

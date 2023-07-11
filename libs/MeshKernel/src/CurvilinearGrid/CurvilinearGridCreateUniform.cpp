@@ -157,15 +157,15 @@ std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::Comput
                                           blockSizeX,
                                           blockSizeY);
 
-    const auto numM = static_cast<Index>(result[0].size());
-    const auto numN = static_cast<Index>(result.size());
+    const auto numM = result[0].size();
+    const auto numN = result.size();
     bool onPoles = false;
     constexpr double latitudePoles = 90.0;
 
-    for (Index n = 1; n < numN; ++n)
+    for (size_t n = 1; n < numN; ++n)
     {
-        Index lastRowOnPole = numM;
-        for (Index m = 0; m < numM; ++m)
+        size_t lastRowOnPole = numM;
+        for (size_t m = 0; m < numM; ++m)
         {
             const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result[n - 1][m].y);
             result[n][m].y = adjustedLatitude;
