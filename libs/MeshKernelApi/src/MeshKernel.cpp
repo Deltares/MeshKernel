@@ -206,7 +206,7 @@ namespace meshkernelapi
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<size_t>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<meshkernel::Index>(mesh2d.nodes_per_face[n]));
                 }
 
                 // Do not change the pointer, just the object it is pointing to

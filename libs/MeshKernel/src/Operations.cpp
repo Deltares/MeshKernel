@@ -84,7 +84,7 @@ namespace meshkernel
         // in case no separator was found
         if (inRange)
         {
-            result.emplace_back(startRange, vec.size() - 1);
+            result.emplace_back(startRange, static_cast<Index>(vec.size() - 1));
         }
 
         return result;

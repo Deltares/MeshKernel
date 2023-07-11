@@ -41,7 +41,7 @@ public:
     /// @param[in]  numRows            Number of rows
     /// @param[in]  numColumns            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(size_t numRows = 2, size_t numColumns = 3, double delta = 1.0)
+    void MakeMesh(meshkernel::Index numRows = 2, meshkernel::Index numColumns = 3, double delta = 1.0)
     {
         // Set-up new mesh
         auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numRows, numColumns, delta);
@@ -58,14 +58,14 @@ public:
         }
     }
 
-    void MakeUniformCurvilinearGrid(int numberOfColumns = 4, int numberOfRows = 4, double blockSize = 10.0)
+    void MakeUniformCurvilinearGrid(meshkernel::Index numberOfColumns = 4, meshkernel::Index numberOfRows = 4, double blockSize = 10.0)
     {
 
         meshkernel::MakeGridParameters makeGridParameters{};
         meshkernelapi::GeometryList geometryList{};
 
-        makeGridParameters.num_columns = numberOfColumns;
-        makeGridParameters.num_rows = numberOfRows;
+        makeGridParameters.num_columns = static_cast<int>(numberOfColumns);
+        makeGridParameters.num_rows = static_cast<int>(numberOfRows);
         makeGridParameters.angle = 0.0;
         makeGridParameters.origin_x = 0.0;
         makeGridParameters.origin_y = 0.0;
@@ -3056,8 +3056,8 @@ TEST(Mesh2D, RefineAMeshBasedOnConstantGriddedSamplesShouldRefine)
 TEST_F(ApiTests, RefineAMeshBasedOnNonConstantGriddedSamplesShouldRefine)
 {
     // Prepare
-    size_t nRows{5};
-    size_t nCols{4};
+    meshkernel::Index nRows{5};
+    meshkernel::Index nCols{4};
     MakeMesh(nRows, nCols, 100.0);
     auto const meshKernelId = GetMeshKernelId();
 

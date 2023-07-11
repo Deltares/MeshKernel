@@ -224,7 +224,7 @@ TEST(Mesh, NodeMerging)
 
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
+    meshkernel::Index nodeIndex = 0;
     for (auto j = 0; j < m; ++j)
     {
         for (auto i = 0; i < n; ++i)
@@ -267,10 +267,10 @@ TEST(Mesh, NodeMerging)
 
     nodes.resize(mesh.GetNumNodes() * 2);
     edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
-    int originalNodeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    meshkernel::Index originalNodeIndex = 0;
+    for (meshkernel::Index j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::Index i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
@@ -308,33 +308,33 @@ TEST(Mesh, MillionQuads)
     const int n = 4; // x
     const int m = 4; // y
 
-    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<std::vector<meshkernel::Index>> indicesValues(n, std::vector<meshkernel::Index>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::Index j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::Index i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = {(double)i, (double)j};
+            nodes[nodeIndex] = {static_cast<double>(i), static_cast<double>(j)};
             nodeIndex++;
         }
     }
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::Index j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n - 1; ++i)
+        for (meshkernel::Index i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (auto j = 0; j < m - 1; ++j)
+    for (meshkernel::Index j = 0; j < m - 1; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::Index i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
