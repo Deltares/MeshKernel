@@ -88,11 +88,10 @@ namespace meshkernel
         }
 
         const Mesh2D& m_mesh; ///< Pointer to the mesh
-
-        Index m_numXCoord; ///< The number of x coordinates of the gridded data
-        Index m_numYCoord; ///< The number of y coordinates of the gridded data
-        Point m_origin;     ///< The coordinate of the origin
-        double m_cellSize;  ///< The grid cell size
+        Index m_numXCoord;    ///< The number of x coordinates of the gridded data
+        Index m_numYCoord;    ///< The number of y coordinates of the gridded data
+        Point m_origin;       ///< The coordinate of the origin
+        double m_cellSize;    ///< The grid cell size
 
         std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
         std::vector<double> m_yCoordinates; ///< The y coordinates of the grid

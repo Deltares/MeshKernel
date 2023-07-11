@@ -120,7 +120,7 @@ namespace meshkernel
         /// The algorithms works as follows:
         /// - For each oned node, find the closest 2d boundary faces within the search radius.
         /// - If a boundary face can be connected to multiple oned nodes, choose the closest one.
-        /// - Generate the 1d-2d contacts.
+        /// - Generate the 1d-2d contacts.Index m_numM = 0;                                     ///< Number of columns in the curvilinear grid
         /// \image html ComputeBoundaryContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.
         /// The mesh 2d boundary faces are connected to the closest 1d nodes."
         ///
@@ -158,8 +158,8 @@ namespace meshkernel
         void Connect1dNodesWithCrossingFaces(Index node,
                                              double projectionFactor);
 
-        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
+        std::shared_ptr<Mesh1D> m_mesh1d;   ///< The 1-d mesh to connect
+        std::shared_ptr<Mesh2D> m_mesh2d;   ///< The 2-d mesh to connect
         std::vector<Index> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
         std::vector<Index> m_mesh2dIndices; ///< The indices of the connected 2-d faces
     };
