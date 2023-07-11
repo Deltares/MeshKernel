@@ -129,7 +129,7 @@ namespace meshkernel
         {
             if (vec[n] == el)
             {
-              return static_cast<T>(n);
+                return static_cast<T>(n);
             }
         }
 

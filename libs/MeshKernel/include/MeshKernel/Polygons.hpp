@@ -113,9 +113,9 @@ namespace meshkernel
         [[nodiscard]] Point const& Node(Index i) const { return m_nodes[i]; }
 
     private:
-        std::vector<Point> m_nodes;                                                                  ///< The polygon nodes
-        Projection m_projection;                                                                     ///< The current projection
-        std::vector<std::pair<Index, Index>> m_outer_polygons_indices;                             ///< Start-end indices of each outer polygon in m_nodes
+        std::vector<Point> m_nodes;                                                               ///< The polygon nodes
+        Projection m_projection;                                                                  ///< The current projection
+        std::vector<std::pair<Index, Index>> m_outer_polygons_indices;                            ///< Start-end indices of each outer polygon in m_nodes
         std::unordered_map<Index, std::vector<std::pair<Index, Index>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
 
         /// @brief Computes the perimeter of a closed polygon

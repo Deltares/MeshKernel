@@ -177,13 +177,13 @@ namespace meshkernel
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
         std::tuple<double, Point, Index, double> NearestLandBoundarySegment(Index landBoundaryIndex, const Point& node);
 
-        std::shared_ptr<Mesh2D> m_mesh;                               ///< A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;                         ///< A pointer to polygons
-        std::vector<Point> m_nodes;                                   ///< XLAN, YLAN
-        std::vector<Point> m_polygonNodesCache;                       ///< Array of points (e.g. points of a face)
+        std::shared_ptr<Mesh2D> m_mesh;                             ///< A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;                       ///< A pointer to polygons
+        std::vector<Point> m_nodes;                                 ///< XLAN, YLAN
+        std::vector<Point> m_polygonNodesCache;                     ///< Array of points (e.g. points of a face)
         std::vector<std::pair<Index, Index>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
-        std::vector<std::vector<double>> m_nodesLand;                 ///< Node to land boundary segment mapping
-        std::vector<Index> m_nodeFaceIndices;                         ///< For each node, the indices of the faces including them
+        std::vector<std::vector<double>> m_nodesLand;               ///< Node to land boundary segment mapping
+        std::vector<Index> m_nodeFaceIndices;                       ///< For each node, the indices of the faces including them
 
         std::vector<Index> m_nodeMask; ///< Node mask
         std::vector<bool> m_faceMask;  ///< Face mask
