@@ -27,16 +27,14 @@
 
 #pragma once
 
+#include "MeshKernel/Definitions.hpp"
+
 #include <cmath>
-#include <cstdint>
 #include <limits>
 #include <math.h>
 
 namespace meshkernel
 {
-
-    /// @brief Integer type used when indexing mesh graph entities.
-    using UInt = std::uint32_t;
 
     namespace constants
     {
