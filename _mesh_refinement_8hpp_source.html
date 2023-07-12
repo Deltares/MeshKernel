@@ -110,7 +110,7 @@ $(function() {
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Parameters.hpp&gt;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Polygons.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/RTree.hpp&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Utilities/RTree.hpp&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
@@ -183,7 +183,7 @@ $(function() {
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="keywordtype">void</span> ComputeFaceLocationTypes();</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160; </div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <a class="code" href="classmeshkernel_1_1_r_tree.html">RTree</a> m_samplesRTree; </div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        RTree m_samplesRTree; </div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        std::vector&lt;int&gt; m_faceMask;        </div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        std::vector&lt;int&gt; m_edgeMask;        </div>
@@ -212,7 +212,6 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html">meshkernel::MeshRefinement</a></div><div class="ttdoc">A class used to refine a Mesh2D instance.</div><div class="ttdef"><b>Definition:</b> MeshRefinement.hpp:75</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a3a40b0e1f0feb0b6c052ebfa740009be"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be">meshkernel::MeshRefinement::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Compute mesh refinement (refinecellsandfaces2).</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_r_tree_html"><div class="ttname"><a href="classmeshkernel_1_1_r_tree.html">meshkernel::RTree</a></div><div class="ttdoc">Class used for inquiring adjacent nodes.</div><div class="ttdef"><b>Definition:</b> RTree.hpp:60</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
 <div class="ttc" id="astructmeshkernel_1_1_mesh_refinement_parameters_html"><div class="ttname"><a href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a></div><div class="ttdoc">A struct used to describe the mesh refinement parameters in a C-compatible manner.</div><div class="ttdef"><b>Definition:</b> Parameters.hpp:119</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_polygons_html"><div class="ttname"><a href="classmeshkernel_1_1_polygons.html">meshkernel::Polygons</a></div><div class="ttdoc">A class describing polygons.</div><div class="ttdef"><b>Definition:</b> Polygons.hpp:36</div></div>

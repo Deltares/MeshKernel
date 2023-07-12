@@ -1,13 +1,7 @@
 var searchData=
 [
-  ['transformglobalvectortolocal_495',['TransformGlobalVectorToLocal',['../namespacemeshkernel.html#ae0627229f0f4bf223d00001cc39b8686',1,'meshkernel']]],
-  ['transformsphericaltocartesian_496',['TransformSphericalToCartesian',['../classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3',1,'meshkernel::Point']]],
-  ['triangulatefaces_497',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a4836ba2335da505e7c952bbc8706873b',1,'meshkernel::Mesh2D']]],
-  ['triangulatepoints_498',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulatepointsandgeneratefaces_499',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulation_500',['Triangulation',['../namespacemeshkernel.html#a329282934f3c7bc126cc4e4016307e0f',1,'meshkernel']]],
-  ['triangulationinterpolation_501',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html',1,'meshkernel::TriangulationInterpolation'],['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation::TriangulationInterpolation()']]],
-  ['triangulationoptions_502',['TriangulationOptions',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulationwrapper_503',['TriangulationWrapper',['../structmeshkernel_1_1_triangulation_wrapper.html',1,'meshkernel']]],
-  ['type_504',['Type',['../classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078',1,'meshkernel::Mesh']]]
+  ['unknown_497',['Unknown',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e',1,'meshkernel::Mesh']]],
+  ['upper_5fright_5fx_498',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
+  ['upper_5fright_5fy_499',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
+  ['use_5fmass_5fcenter_5fwhen_5frefining_500',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
 ];

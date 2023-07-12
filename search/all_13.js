@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['walkboundaryfromnode_513',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh2_d.html#a8462ca5491385d8351864f36b7dc5e99',1,'meshkernel::Mesh2D']]],
-  ['what_514',['what',['../classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e',1,'meshkernel::MeshKernelError']]]
+  ['x_507',['x',['../classmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a',1,'meshkernel::Point::x()'],['../structmeshkernel_1_1_cartesian3_d_point.html#a9d9cd481cc25c8de8c69c6529ac99436',1,'meshkernel::Cartesian3DPoint::x()']]],
+  ['x_5fcoordinates_508',['x_coordinates',['../structmeshkernelapi_1_1_gridded_samples.html#aa87e0276e14be0cb3859e2ea12d6ef8d',1,'meshkernelapi::GriddedSamples']]],
+  ['x_5forigin_509',['x_origin',['../structmeshkernelapi_1_1_gridded_samples.html#ad885c20427a12d4aab4a56938bcf4dbf',1,'meshkernelapi::GriddedSamples']]],
+  ['x_5fupper_5fright_510',['x_upper_right',['../structmeshkernelapi_1_1_gridded_samples.html#a9888153370e7c93732fa8194c7fa0621',1,'meshkernelapi::GriddedSamples']]]
 ];

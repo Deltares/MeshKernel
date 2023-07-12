@@ -1,12 +1,11 @@
 var searchData=
 [
-  ['point_455',['Point',['../classmeshkernel_1_1_point.html',1,'meshkernel::Point'],['../classmeshkernel_1_1_point.html#a2384ebe5ded0c09fdfb3554a11b9c456',1,'meshkernel::Point::Point()'],['../classmeshkernel_1_1_point.html#ad9e87c3c0fb5d00e7d7c6f85a56a43aa',1,'meshkernel::Point::Point(double x, double y)']]],
-  ['pointfaceindices_456',['PointFaceIndices',['../classmeshkernel_1_1_mesh2_d.html#a97bc195a366c88af68ab87b9d2a5f032',1,'meshkernel::Mesh2D']]],
-  ['pointsinpolygons_457',['PointsInPolygons',['../classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488',1,'meshkernel::Polygons']]],
-  ['polygons_458',['Polygons',['../classmeshkernel_1_1_polygons.html',1,'meshkernel::Polygons'],['../classmeshkernel_1_1_polygons.html#a2b6c5d883cc74192c9aecc92bfe3aecf',1,'meshkernel::Polygons::Polygons()=default'],['../classmeshkernel_1_1_polygons.html#a140506286f9ea3796c9e1b5e357edd04',1,'meshkernel::Polygons::Polygons(const std::vector&lt; Point &gt; &amp;polygon, Projection projection)']]],
-  ['polylinedistance_459',['polylineDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a6afd9cf7eeb667d616612c9a04b73ad8',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection::polylineDistance()'],['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a8214e290245fa388f1fce673e8d551d7',1,'meshkernel::Mesh::FaceMeshPolylineIntersection::polylineDistance()']]],
-  ['polylinesegmentindex_460',['polylineSegmentIndex',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a9718c9a82d78df9aab8a9f0381f1eff5',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]],
-  ['prepareouteriteration_461',['PrepareOuterIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#ad54c20c22842692c9aa098eee4808d53',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['projection_462',['Projection',['../namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716',1,'meshkernel']]],
-  ['projecttolandboundaryoption_463',['ProjectToLandBoundaryOption',['../classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29',1,'meshkernel::LandBoundaries']]]
+  ['referencepoint_460',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
+  ['refine_5fintersected_461',['refine_intersected',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa39ee6bd0a820b00f564fac00e06cc26',1,'meshkernel::MeshRefinementParameters']]],
+  ['refinefirstpolygon_462',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#a54e732f1c9ea29133459404f86581100',1,'meshkernel::Polygons']]],
+  ['refinement_5ftype_463',['refinement_type',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a5c1fb9c41739362ff3d3db9ee48b8351',1,'meshkernel::MeshRefinementParameters']]],
+  ['remove_5fskinny_5ftriangles_464',['remove_skinny_triangles',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a15b853a211af2462adf0e4e3ecd440c3',1,'meshkernel::SplinesToCurvilinearParameters']]],
+  ['reordervector_465',['ReorderVector',['../namespacemeshkernel.html#a646ed9a7bd91f6f1bfb614977d686d94',1,'meshkernel']]],
+  ['resizeandfill2dvector_466',['ResizeAndFill2DVector',['../namespacemeshkernel.html#ad65d4aca184527272ef32a5d5a946d3f',1,'meshkernel']]],
+  ['resizeandfill3dvector_467',['ResizeAndFill3DVector',['../namespacemeshkernel.html#ae4039e4e8f6367b7bf414e0986f6c384',1,'meshkernel']]]
 ];

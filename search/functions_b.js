@@ -1,16 +1,18 @@
 var searchData=
 [
-  ['network1d_847',['Network1D',['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
-  ['nextcircularbackwardindex_848',['NextCircularBackwardIndex',['../namespacemeshkernel.html#af9e63a9340283b6689bfbd3c1d6e47b0',1,'meshkernel']]],
-  ['nextcircularforwardindex_849',['NextCircularForwardIndex',['../namespacemeshkernel.html#a1ab16fb9b1292e8a70f954256d2d6f1d',1,'meshkernel']]],
-  ['node_850',['Node',['../classmeshkernel_1_1_polygons.html#ac8e23511289fe8cddb60ca69ee5565e3',1,'meshkernel::Polygons']]],
-  ['nodeadministration_851',['NodeAdministration',['../classmeshkernel_1_1_mesh.html#ab38045736a55485cb9fe2ad078928c5b',1,'meshkernel::Mesh']]],
-  ['nodemaskfromedgemask_852',['NodeMaskFromEdgeMask',['../classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216',1,'meshkernel::Mesh2D']]],
-  ['nodemaskfrompolygon_853',['NodeMaskFromPolygon',['../classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91',1,'meshkernel::Mesh2D']]],
-  ['nodes_854',['Nodes',['../classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439',1,'meshkernel::Polygons']]],
-  ['normalizedinnerproducttwosegments_855',['NormalizedInnerProductTwoSegments',['../namespacemeshkernel.html#a753af36980a58942bff49dfd40f5edff',1,'meshkernel']]],
-  ['normalvector_856',['NormalVector',['../namespacemeshkernel.html#a7d6e1aab3f39437c400e8b41f2672655',1,'meshkernel']]],
-  ['normalvectorinside_857',['NormalVectorInside',['../namespacemeshkernel.html#ae04b6bc704df7891f149706c2bbd84e8',1,'meshkernel']]],
-  ['normalvectoroutside_858',['NormalVectorOutside',['../namespacemeshkernel.html#ae335ccbbc8c7587705691d226055a2d1',1,'meshkernel']]],
-  ['notimplemented_859',['NotImplemented',['../classmeshkernel_1_1_not_implemented.html#abda130873f7e128624bee765ea6aadaf',1,'meshkernel::NotImplemented::NotImplemented(VariadicErrorMessage const &amp;message, std::source_location const &amp;source_location=std::source_location::current())'],['../classmeshkernel_1_1_not_implemented.html#afa26c855fa6a84b5ebcc84aefa4909d1',1,'meshkernel::NotImplemented::NotImplemented(std::string_view message, std::source_location const &amp;source_location=std::source_location::current())']]]
+  ['offsetcopy_847',['OffsetCopy',['../classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369',1,'meshkernel::Polygons']]],
+  ['offsetsphericalcoordinates_848',['OffsetSphericalCoordinates',['../classmeshkernel_1_1_mesh2_d.html#a9e874419b2e05ab89e9000f16f3e905b',1,'meshkernel::Mesh2D']]],
+  ['operator_28_29_849',['operator()',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a2f8b460bb401c789e5a188fcd8e3eaf5',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline::operator()()'],['../structmeshkernel_1_1_func_distance_from_a_point.html#a292623e5d5cac258eb43e33b68390737',1,'meshkernel::FuncDistanceFromAPoint::operator()()']]],
+  ['operator_2a_850',['operator*',['../classmeshkernel_1_1_point.html#a997603ecb94cde8b12695e3da0b1571f',1,'meshkernel::Point::operator*(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#af1269ccb901cda0952201303ef4fafa0',1,'meshkernel::Point::operator*(double const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#aa7c6bcba47a27e28552f462657b6aba5',1,'meshkernel::Point::operator*(int const &amp;rhs) const']]],
+  ['operator_2b_851',['operator+',['../classmeshkernel_1_1_point.html#a8a7b9f4eb1b4d8beb7725878052aa4e5',1,'meshkernel::Point::operator+(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#a17508f65e97c18a81af2e024d1a8ce56',1,'meshkernel::Point::operator+(double const &amp;rhs) const']]],
+  ['operator_2b_3d_852',['operator+=',['../classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881',1,'meshkernel::Mesh']]],
+  ['operator_2d_853',['operator-',['../classmeshkernel_1_1_point.html#a4821eb516b6ca631ad63228a27573c8c',1,'meshkernel::Point::operator-(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#acc3f832468b7300c61f80ca2e6fc6e2e',1,'meshkernel::Point::operator-(double const &amp;rhs) const']]],
+  ['operator_2f_854',['operator/',['../classmeshkernel_1_1_point.html#afbd9599b74c4e9829e903e69a4d10bab',1,'meshkernel::Point::operator/(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#a958a65c922febb232d139ae9df7d71a7',1,'meshkernel::Point::operator/(double const &amp;rhs) const']]],
+  ['operator_2f_3d_855',['operator/=',['../classmeshkernel_1_1_point.html#a03cad9cc3b3ac711e26ce0444f0f9fee',1,'meshkernel::Point']]],
+  ['operator_3d_3d_856',['operator==',['../classmeshkernel_1_1_point.html#ac702fdf239b107e02f4cdf0927f96f47',1,'meshkernel::Point']]],
+  ['orthogonalizationandsmoothing_857',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a15523500465dc8015118b6c761df4d0a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['orthogonalizer_858',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb',1,'meshkernel::Orthogonalizer']]],
+  ['orthogonalprojectiononsegment_859',['OrthogonalProjectionOnSegment',['../namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450',1,'meshkernel']]],
+  ['outerindices_860',['OuterIndices',['../classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c',1,'meshkernel::Polygons']]],
+  ['outerproducttwosegments_861',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
 ];

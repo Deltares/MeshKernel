@@ -1,18 +1,8 @@
 var searchData=
 [
-  ['offsetcopy_860',['OffsetCopy',['../classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369',1,'meshkernel::Polygons']]],
-  ['offsetsphericalcoordinates_861',['OffsetSphericalCoordinates',['../classmeshkernel_1_1_mesh2_d.html#a9e874419b2e05ab89e9000f16f3e905b',1,'meshkernel::Mesh2D']]],
-  ['operator_28_29_862',['operator()',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a2f8b460bb401c789e5a188fcd8e3eaf5',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline::operator()()'],['../structmeshkernel_1_1_func_distance_from_a_point.html#a292623e5d5cac258eb43e33b68390737',1,'meshkernel::FuncDistanceFromAPoint::operator()()']]],
-  ['operator_2a_863',['operator*',['../classmeshkernel_1_1_point.html#a997603ecb94cde8b12695e3da0b1571f',1,'meshkernel::Point::operator*(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#af1269ccb901cda0952201303ef4fafa0',1,'meshkernel::Point::operator*(double const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#aa7c6bcba47a27e28552f462657b6aba5',1,'meshkernel::Point::operator*(int const &amp;rhs) const']]],
-  ['operator_2b_864',['operator+',['../classmeshkernel_1_1_point.html#a8a7b9f4eb1b4d8beb7725878052aa4e5',1,'meshkernel::Point::operator+(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#a17508f65e97c18a81af2e024d1a8ce56',1,'meshkernel::Point::operator+(double const &amp;rhs) const']]],
-  ['operator_2b_3d_865',['operator+=',['../classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881',1,'meshkernel::Mesh']]],
-  ['operator_2d_866',['operator-',['../classmeshkernel_1_1_point.html#a4821eb516b6ca631ad63228a27573c8c',1,'meshkernel::Point::operator-(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#acc3f832468b7300c61f80ca2e6fc6e2e',1,'meshkernel::Point::operator-(double const &amp;rhs) const']]],
-  ['operator_2f_867',['operator/',['../classmeshkernel_1_1_point.html#afbd9599b74c4e9829e903e69a4d10bab',1,'meshkernel::Point::operator/(Point const &amp;rhs) const'],['../classmeshkernel_1_1_point.html#a958a65c922febb232d139ae9df7d71a7',1,'meshkernel::Point::operator/(double const &amp;rhs) const']]],
-  ['operator_2f_3d_868',['operator/=',['../classmeshkernel_1_1_point.html#a03cad9cc3b3ac711e26ce0444f0f9fee',1,'meshkernel::Point']]],
-  ['operator_3d_3d_869',['operator==',['../classmeshkernel_1_1_point.html#ac702fdf239b107e02f4cdf0927f96f47',1,'meshkernel::Point']]],
-  ['orthogonalizationandsmoothing_870',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a15523500465dc8015118b6c761df4d0a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['orthogonalizer_871',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb',1,'meshkernel::Orthogonalizer']]],
-  ['orthogonalprojectiononsegment_872',['OrthogonalProjectionOnSegment',['../namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450',1,'meshkernel']]],
-  ['outerindices_873',['OuterIndices',['../classmeshkernel_1_1_polygons.html#aa6f475f12fdc61fc0267da0de9c29e1c',1,'meshkernel::Polygons']]],
-  ['outerproducttwosegments_874',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
+  ['point_862',['Point',['../classmeshkernel_1_1_point.html#a2384ebe5ded0c09fdfb3554a11b9c456',1,'meshkernel::Point::Point()'],['../classmeshkernel_1_1_point.html#ad9e87c3c0fb5d00e7d7c6f85a56a43aa',1,'meshkernel::Point::Point(double x, double y)']]],
+  ['pointfaceindices_863',['PointFaceIndices',['../classmeshkernel_1_1_mesh2_d.html#a97bc195a366c88af68ab87b9d2a5f032',1,'meshkernel::Mesh2D']]],
+  ['pointsinpolygons_864',['PointsInPolygons',['../classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488',1,'meshkernel::Polygons']]],
+  ['polygons_865',['Polygons',['../classmeshkernel_1_1_polygons.html#a2b6c5d883cc74192c9aecc92bfe3aecf',1,'meshkernel::Polygons::Polygons()=default'],['../classmeshkernel_1_1_polygons.html#a140506286f9ea3796c9e1b5e357edd04',1,'meshkernel::Polygons::Polygons(const std::vector&lt; Point &gt; &amp;polygon, Projection projection)']]],
+  ['prepareouteriteration_866',['PrepareOuterIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#ad54c20c22842692c9aa098eee4808d53',1,'meshkernel::OrthogonalizationAndSmoothing']]]
 ];

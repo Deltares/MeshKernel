@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['directional_5frefinement_931',['directional_refinement',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa98c7a4f188214dbddb5d213475e1491',1,'meshkernel::MeshRefinementParameters']]]
+  ['directional_5frefinement_915',['directional_refinement',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa98c7a4f188214dbddb5d213475e1491',1,'meshkernel::MeshRefinementParameters']]]
 ];

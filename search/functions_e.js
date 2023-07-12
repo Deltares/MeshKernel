@@ -1,8 +1,18 @@
 var searchData=
 [
-  ['referencepoint_880',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
-  ['refinefirstpolygon_881',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#a54e732f1c9ea29133459404f86581100',1,'meshkernel::Polygons']]],
-  ['reordervector_882',['ReorderVector',['../namespacemeshkernel.html#a646ed9a7bd91f6f1bfb614977d686d94',1,'meshkernel']]],
-  ['resizeandfill2dvector_883',['ResizeAndFill2DVector',['../namespacemeshkernel.html#ad65d4aca184527272ef32a5d5a946d3f',1,'meshkernel']]],
-  ['resizeandfill3dvector_884',['ResizeAndFill3DVector',['../namespacemeshkernel.html#ae4039e4e8f6367b7bf414e0986f6c384',1,'meshkernel']]]
+  ['sample_872',['Sample',['../classmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../classmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
+  ['searchlocations_873',['SearchLocations',['../classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923',1,'meshkernel::Mesh']]],
+  ['searchnearestlocation_874',['SearchNearestLocation',['../classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70',1,'meshkernel::Mesh::SearchNearestLocation(Point point, Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b',1,'meshkernel::Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)']]],
+  ['secondorderderivative_875',['SecondOrderDerivative',['../classmeshkernel_1_1_splines.html#aab7d41efa05019f403ed2f5ce22b2b01',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; Point &gt; &amp;splines, size_t startIndex, size_t endIndex)'],['../classmeshkernel_1_1_splines.html#aa774a586c219bf3d9423266ea883e4c4',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; double &gt; &amp;coordinates, size_t startIndex, size_t endIndex)']]],
+  ['setdimensionaldistance_876',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a465d832ec91e1c9275ae38bcf13ce64d',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline']]],
+  ['sgn_877',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
+  ['smoother_878',['Smoother',['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother']]],
+  ['snapmeshtolandboundaries_879',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
+  ['solve_880',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['sortedfacesaroundnode_881',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#a4d5245c9e158f76dfbbd1cf12366cc98',1,'meshkernel::Mesh2D']]],
+  ['sortedgesincounterclockwiseorder_882',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#a3ee0e0e1b31c6723772fa1f4710efe24',1,'meshkernel::Mesh']]],
+  ['sortedindices_883',['SortedIndices',['../namespacemeshkernel.html#addc034baff4660617d88a46aae221a99',1,'meshkernel']]],
+  ['sphericaltocartesian3d_884',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
+  ['splines_885',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
+  ['swapvectorelements_886',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
 ];

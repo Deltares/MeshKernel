@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['variadicerrormessage_908',['VariadicErrorMessage',['../classmeshkernel_1_1_variadic_error_message.html#ab0f66073acb49ce612021b74597c728b',1,'meshkernel::VariadicErrorMessage']]],
-  ['vectorproduct_909',['VectorProduct',['../namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c',1,'meshkernel']]]
+  ['walkboundaryfromnode_894',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh2_d.html#a8462ca5491385d8351864f36b7dc5e99',1,'meshkernel::Mesh2D']]],
+  ['what_895',['what',['../classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e',1,'meshkernel::MeshKernelError']]]
 ];
