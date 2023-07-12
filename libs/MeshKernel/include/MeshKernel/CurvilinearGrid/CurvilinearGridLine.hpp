@@ -59,7 +59,7 @@ namespace meshkernel
         /// @brief Gets the indices of a node on the grid line
         /// @param[in] coordinate The one-dimensional coordinate along the grid line
         /// @return The node indices
-        [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndexFromCoordinate(Index const& coordinate) const;
+        [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndexFromCoordinate(UInt const& coordinate) const;
 
         /// @brief Inquires if the grid line is an M grid line
         /// @return True if it is an M grid line
@@ -71,9 +71,9 @@ namespace meshkernel
 
         CurvilinearGridNodeIndices m_startNode; ///< The start node of the grid line
         CurvilinearGridNodeIndices m_endNode;   ///< The end node of the grid line
-        Index m_startCoordinate;                ///< The start coordinate. If it is an MDirection, the start m otherwise the start n
-        Index m_endCoordinate;                  ///< The end coordinate. If it is an MDirection, the end m otherwise the end n
-        Index m_constantCoordinate;             ///< The constant coordinate. If it is an MDirection, the n coordinate, otherwise the m coordinate
+        UInt m_startCoordinate;                 ///< The start coordinate. If it is an MDirection, the start m otherwise the start n
+        UInt m_endCoordinate;                   ///< The end coordinate. If it is an MDirection, the end m otherwise the end n
+        UInt m_constantCoordinate;              ///< The constant coordinate. If it is an MDirection, the n coordinate, otherwise the m coordinate
         GridLineDirection m_gridLineType;       ///< The grid line type
     };
 } // namespace meshkernel

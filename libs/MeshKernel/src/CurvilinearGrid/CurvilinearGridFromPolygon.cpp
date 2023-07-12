@@ -37,9 +37,9 @@ using meshkernel::CurvilinearGridFromPolygon;
 
 CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon) {}
 
-CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
-                                                    Index secondNode,
-                                                    Index thirdNode,
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
+                                                    UInt secondNode,
+                                                    UInt thirdNode,
                                                     bool useFourthSide) const
 {
     if (m_polygon->IsEmpty())
@@ -63,10 +63,10 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Not enough points in polygon.");
     }
 
-    const Index numPolygonNodes = end - start + 1;
+    const UInt numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
-    Index diffForward;
+    UInt diffForward;
     if (firstNode > secondNode)
     {
         diffForward = secondNode + numPolygonNodes - firstNode;
@@ -76,7 +76,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         diffForward = secondNode - firstNode;
     }
 
-    Index diffBackward;
+    UInt diffBackward;
     if (secondNode > firstNode)
     {
         diffBackward = firstNode + numPolygonNodes - secondNode;
@@ -87,7 +87,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     }
 
     int direction;
-    Index numMNodes;
+    UInt numMNodes;
     if (diffForward <= diffBackward)
     {
         direction = 1;
@@ -119,7 +119,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         diffBackward = secondNode - thirdNode;
     }
 
-    Index numNNodes;
+    UInt numNNodes;
     if (direction == 1)
     {
         numNNodes = diffForward + 1;
@@ -140,7 +140,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         fourthNode -= numPolygonNodes;
     }
 
-    Index numRequiredPoints;
+    UInt numRequiredPoints;
     if (useFourthSide)
     {
         numRequiredPoints = 2 * (numMNodes - 1) + 2 * (numNNodes - 1);
@@ -165,12 +165,12 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon->Nodes()),
                                          startIndex = start,
                                          endIndex = end,
-                                         numPolygonNodes](Index nodeIndex,
-                                                          Index numPointsSide,
+                                         numPolygonNodes](UInt nodeIndex,
+                                                          UInt numPointsSide,
                                                           int direction,
                                                           std::vector<Point>& sideToFill)
     {
-        for (Index i = 0; i < numPointsSide; i++)
+        for (UInt i = 0; i < numPointsSide; i++)
         {
             sideToFill[i] = nodes[nodeIndex];
 
@@ -196,7 +196,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     else
     {
         // Interpolate fourth side
-        for (Index i = 0; i < numNNodes; i++)
+        for (UInt i = 0; i < numNNodes; i++)
         {
             const double fac = static_cast<double>(i) / static_cast<double>(numNNodes - 1);
             sideOne[i] = m_polygon->Node(firstNode) * (1.0 - fac) +
@@ -215,9 +215,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
 
     // Assign the points to the curvilinear grid
     std::vector<std::vector<Point>> gridNodes(numMNodes, std::vector<Point>(numNNodes));
-    for (Index i = 0; i < numMNodes; i++)
+    for (UInt i = 0; i < numMNodes; i++)
     {
-        for (Index j = 0; j < numNNodes; j++)
+        for (UInt j = 0; j < numNNodes; j++)
         {
             gridNodes[i][j] = result[i][j];
         }
@@ -225,9 +225,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     return CurvilinearGrid(std::move(gridNodes), polygonProjection);
 }
 
-CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
-                                                    Index secondNode,
-                                                    Index thirdNode) const
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
+                                                    UInt secondNode,
+                                                    UInt thirdNode) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -254,7 +254,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     const auto numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
-    Index numPointsFirstSide;
+    UInt numPointsFirstSide;
     if (firstNode > secondNode)
     {
         numPointsFirstSide = secondNode + numPolygonNodes - firstNode;
@@ -264,7 +264,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         numPointsFirstSide = secondNode - firstNode;
     }
 
-    Index numPointsSecondSide;
+    UInt numPointsSecondSide;
     if (secondNode > thirdNode)
     {
         numPointsSecondSide = thirdNode + numPolygonNodes - secondNode;
@@ -275,7 +275,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
     }
 
     const auto numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
-    const auto blockSize = static_cast<Index>(static_cast<double>(numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
+    const auto blockSize = static_cast<UInt>(static_cast<double>(numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
 
     if (numPointsThirdSide >= blockSize || numPointsSecondSide >= blockSize || numPointsFirstSide >= blockSize)
     {
@@ -288,30 +288,30 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
 
     // compute the midpoint
 
-    Index firstSideMiddlePoint = firstNode + n1;
+    UInt firstSideMiddlePoint = firstNode + n1;
     if (firstSideMiddlePoint >= numPolygonNodes)
     {
         firstSideMiddlePoint = firstSideMiddlePoint - numPolygonNodes;
     }
-    Index secondSideMiddlePoint = secondNode + n3;
+    UInt secondSideMiddlePoint = secondNode + n3;
     if (secondSideMiddlePoint >= numPolygonNodes)
     {
         secondSideMiddlePoint = secondSideMiddlePoint - numPolygonNodes;
     }
-    Index thirdSideMiddlePoint = thirdNode + n2;
+    UInt thirdSideMiddlePoint = thirdNode + n2;
     if (thirdSideMiddlePoint >= numPolygonNodes)
     {
         thirdSideMiddlePoint = thirdSideMiddlePoint - numPolygonNodes;
     }
 
     // set dimensions of blocks
-    std::vector<Index> numM{n1, n3, n2};
-    std::vector<Index> numN{n3, n2, n1};
+    std::vector<UInt> numM{n1, n3, n2};
+    std::vector<UInt> numN{n3, n2, n1};
 
     // set pointers of block corners
-    std::vector<Index> cornerPoints{firstNode, secondNode, thirdNode};
-    std::vector<Index> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
-    std::vector<Index> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
+    std::vector<UInt> cornerPoints{firstNode, secondNode, thirdNode};
+    std::vector<UInt> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
+    std::vector<UInt> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
 
     // compute triangle middle point
     const auto xia = static_cast<double>(n1) / static_cast<double>(numPointsFirstSide);
@@ -337,7 +337,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
 
     Projection const polygonProjection = m_polygon->GetProjection();
 
-    for (Index t = 0; t < Mesh::m_numNodesInTriangle; ++t)
+    for (UInt t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {
         std::ranges::fill(sideOne, Point());
         std::ranges::fill(sideTwo, Point());
@@ -346,7 +346,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
 
         // backward
         auto cornerIndex = cornerPoints[t];
-        for (Index i = 0; i < numN[t] + 1; ++i)
+        for (UInt i = 0; i < numN[t] + 1; ++i)
         {
             sideOne[i] = polygonNodes[cornerIndex];
             if (cornerIndex == 0 || cornerIndex < start)
@@ -365,7 +365,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
 
         // forward
         cornerIndex = cornerPoints[t];
-        for (Index i = 0; i < numM[t] + 1; ++i)
+        for (UInt i = 0; i < numM[t] + 1; ++i)
         {
             sideThree[i] = polygonNodes[cornerIndex];
             cornerIndex += 1;
@@ -380,14 +380,14 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         }
 
         // fill side four
-        for (Index i = 0; i < numM[t] + 1; ++i)
+        for (UInt i = 0; i < numM[t] + 1; ++i)
         {
             double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
             sideFour[i] = polygonNodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
-        for (Index i = 0; i < numN[t] + 1; ++i)
+        for (UInt i = 0; i < numN[t] + 1; ++i)
         {
             double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
             sideTwo[i] = polygonNodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
@@ -404,9 +404,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         // add to grid
         if (t == 0)
         {
-            for (Index i = 0; i < result.size(); ++i)
+            for (UInt i = 0; i < result.size(); ++i)
             {
-                for (Index j = 0; j < result[0].size(); ++j)
+                for (UInt j = 0; j < result[0].size(); ++j)
                 {
                     gridNodes[i][j] = result[i][j];
                 }
@@ -414,9 +414,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         }
         if (t == 1)
         {
-            for (Index i = 0; i < result.size(); ++i)
+            for (UInt i = 0; i < result.size(); ++i)
             {
-                for (Index j = 0; j < result[0].size(); ++j)
+                for (UInt j = 0; j < result[0].size(); ++j)
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
@@ -426,9 +426,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(Index firstNode,
         }
         if (t == 2)
         {
-            for (Index i = 0; i < result[0].size(); ++i)
+            for (UInt i = 0; i < result[0].size(); ++i)
             {
-                for (Index j = 0; j < result.size(); ++j)
+                for (UInt j = 0; j < result.size(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
                     gridNodes[i][jIndex] = result[j][i];

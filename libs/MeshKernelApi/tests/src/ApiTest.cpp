@@ -41,7 +41,7 @@ public:
     /// @param[in]  numRows            Number of rows
     /// @param[in]  numColumns            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(meshkernel::Index numRows = 2, meshkernel::Index numColumns = 3, double delta = 1.0)
+    void MakeMesh(meshkernel::UInt numRows = 2, meshkernel::UInt numColumns = 3, double delta = 1.0)
     {
         // Set-up new mesh
         auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numRows, numColumns, delta);
@@ -58,8 +58,8 @@ public:
         }
     }
 
-    void MakeUniformCurvilinearGrid(meshkernel::Index numberOfColumns = 4,
-                                    meshkernel::Index numberOfRows = 4,
+    void MakeUniformCurvilinearGrid(meshkernel::UInt numberOfColumns = 4,
+                                    meshkernel::UInt numberOfRows = 4,
                                     double blockSizeX = 10.0,
                                     double blockSizeY = 10.0,
                                     double originX = 0.0,
@@ -3140,8 +3140,8 @@ TEST(Mesh2D, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMe
 TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
 {
     // Prepare
-    meshkernel::Index nRows{5};
-    meshkernel::Index nCols{4};
+    meshkernel::UInt nRows{5};
+    meshkernel::UInt nCols{4};
     MakeMesh(nRows, nCols, 100.0);
     auto const meshKernelId = GetMeshKernelId();
 

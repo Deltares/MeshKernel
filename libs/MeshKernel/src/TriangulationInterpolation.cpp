@@ -74,7 +74,7 @@ void TriangulationInterpolation::Compute()
     for (auto f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
-        for (Index n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < Mesh::m_numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.GetFaceNode(f, n);
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -93,7 +93,7 @@ void TriangulationInterpolation::Compute()
     const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
 
     // loop over locations
-    for (Index n = 0; n < m_locations.size(); ++n)
+    for (UInt n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsEqual(m_results[n], constants::missing::doubleValue))
@@ -125,7 +125,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (Index i = 0; i < Mesh::m_numNodesInTriangle; ++i)
+            for (UInt i = 0; i < Mesh::m_numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
                 if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)

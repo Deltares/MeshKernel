@@ -43,7 +43,7 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
 {
     if (!landBoundary.empty())
     {
-        Index const nodeVectorPreallocation = 10000;
+        UInt const nodeVectorPreallocation = 10000;
         m_nodes.reserve(nodeVectorPreallocation);
         std::copy(landBoundary.begin(), landBoundary.end(), std::back_inserter(m_nodes));
         m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace);
@@ -62,7 +62,7 @@ void LandBoundaries::Administrate()
 
     // Do not consider the landboundary nodes outside the polygon
     std::vector<bool> nodeMask(m_nodes.size(), false);
-    for (Index n = 0; n < m_nodes.size() - 1; n++)
+    for (UInt n = 0; n < m_nodes.size() - 1; n++)
     {
         if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
         {
@@ -80,7 +80,7 @@ void LandBoundaries::Administrate()
     const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
     // Find the start/end node of the land boundaries
-    const auto landBoundaryIndices = FindIndices(m_nodes, 0, static_cast<Index>(m_nodes.size()), constants::missing::doubleValue);
+    const auto landBoundaryIndices = FindIndices(m_nodes, 0, static_cast<UInt>(m_nodes.size()), constants::missing::doubleValue);
 
     // Emplace start/end node of the land boundaries back in m_validLandBoundaries,
     // if the land boundary segment is close to a mesh node
@@ -98,8 +98,8 @@ void LandBoundaries::Administrate()
 
     // Split every land boundary in order to get rid of closed land boundaries
     // (some pieces of software cannot handle closed polygons, only polylines)
-    const auto numSegmentIndicesBeforeSplitting = static_cast<Index>(m_validLandBoundaries.size());
-    for (Index i = 0; i < numSegmentIndicesBeforeSplitting; ++i)
+    const auto numSegmentIndicesBeforeSplitting = static_cast<UInt>(m_validLandBoundaries.size());
+    for (UInt i = 0; i < numSegmentIndicesBeforeSplitting; ++i)
     {
         const auto [startSegmentIndex, endSegmentIndex] = m_validLandBoundaries[i];
         if (endSegmentIndex - startSegmentIndex > 1)
@@ -133,7 +133,7 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     m_nodesMinDistances.resize(m_mesh->GetNumNodes(), constants::missing::doubleValue);
 
     // Loop over the segments of the land boundary and assign each node to the land boundary segment index
-    for (Index landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); ++landBoundarySegment)
+    for (UInt landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); ++landBoundarySegment)
     {
         const auto [_, numRejectedPaths] = MakePath(landBoundarySegment);
 
@@ -148,8 +148,8 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     // Connect the m_mesh nodes
     if (m_findOnlyOuterMeshBoundary)
     {
-        std::vector<Index> connectedNodes;
-        for (Index e = 0; e < m_mesh->GetNumEdges(); ++e)
+        std::vector<UInt> connectedNodes;
+        for (UInt e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             if (!m_mesh->IsEdgeOnBoundary(e))
             {
@@ -161,15 +161,15 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     }
 }
 
-void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool initialize, std::vector<Index>& nodes, Index numNodes)
+void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, std::vector<UInt>& nodes, UInt numNodes)
 {
     if (m_nodes.empty())
     {
         return;
     }
 
-    std::vector<Index> nodesLoc;
-    Index numNodesLoc;
+    std::vector<UInt> nodesLoc;
+    UInt numNodesLoc;
 
     if (initialize)
     {
@@ -220,7 +220,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
 
     const auto lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
-    for (Index e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
+    for (UInt e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
     {
         const auto edge = m_mesh->m_nodesEdges[lastVisitedNode][e];
 
@@ -252,7 +252,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
         if (m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue)
         {
             // Now check landboundary for otherNode
-            for (Index n = 1; n < numNodesLoc; n++)
+            for (UInt n = 1; n < numNodesLoc; n++)
             {
                 const auto meshNode = nodesLoc[n];
                 const auto [minimumDistance,
@@ -261,8 +261,8 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
                             edgeRatio] = NearestLandBoundarySegment(constants::missing::sizetValue, m_mesh->m_nodes[meshNode]);
 
                 // find the segment index of the found point
-                Index landboundarySegmentIndex = std::numeric_limits<Index>::max();
-                for (Index s = 0; s < m_validLandBoundaries.size(); s++)
+                UInt landboundarySegmentIndex = std::numeric_limits<UInt>::max();
+                for (UInt s = 0; s < m_validLandBoundaries.size(); s++)
                 {
                     const auto& [startIndex, endIndex] = m_validLandBoundaries[s];
                     if (nearestLandBoundaryNodeIndex >= startIndex && nearestLandBoundaryNodeIndex < endIndex)
@@ -272,7 +272,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
                     }
                 }
 
-                if (landboundarySegmentIndex == std::numeric_limits<Index>::max())
+                if (landboundarySegmentIndex == std::numeric_limits<UInt>::max())
                 {
                     throw AlgorithmError("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: No segment index found: cannot assign segment to mesh nodes.");
                 }
@@ -284,7 +284,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
                     if (m_addLandboundaries)
                     {
                         AddLandBoundary(nodesLoc, numNodesLoc, lastVisitedNode);
-                        m_meshNodesLandBoundarySegments[meshNode] = static_cast<Index>(m_validLandBoundaries.size()) - 1; // last added ;and boundary
+                        m_meshNodesLandBoundarySegments[meshNode] = static_cast<UInt>(m_validLandBoundaries.size()) - 1; // last added ;and boundary
                     }
                 }
                 else
@@ -300,7 +300,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(Index edgeIndex, bool
     }
 }
 
-void LandBoundaries::AddLandBoundary(const std::vector<Index>& nodesLoc, Index numNodesLoc, Index nodeIndex)
+void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt numNodesLoc, UInt nodeIndex)
 {
     if (m_nodes.empty())
     {
@@ -356,10 +356,10 @@ void LandBoundaries::AddLandBoundary(const std::vector<Index>& nodesLoc, Index n
     m_nodes.emplace_back(Point());
 
     // Update segment indices
-    m_validLandBoundaries.emplace_back(std::make_pair<Index, Index>(static_cast<Index>(m_nodes.size()) - 3, static_cast<Index>(m_nodes.size()) - 2));
+    m_validLandBoundaries.emplace_back(std::make_pair<UInt, UInt>(static_cast<UInt>(m_nodes.size()) - 3, static_cast<UInt>(m_nodes.size()) - 2));
 }
 
-std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::MakePath(Index landBoundaryIndex)
+std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt landBoundaryIndex)
 {
     if (m_nodes.empty())
     {
@@ -384,11 +384,11 @@ std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::MakePath(Index 
     const auto connectedNodeEdges = ShortestPath(landBoundaryIndex, startMeshNode);
 
     auto lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
-    Index lastNode = constants::missing::sizetValue;
+    UInt lastNode = constants::missing::sizetValue;
     auto currentNode = endMeshNode;
-    Index numConnectedNodes = 0;
-    Index numNodesInPath = 0;
-    Index numRejectedNodesInPath = 0;
+    UInt numConnectedNodes = 0;
+    UInt numNodesInPath = 0;
+    UInt numRejectedNodesInPath = 0;
 
     while (true)
     {
@@ -488,7 +488,7 @@ std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::MakePath(Index 
     return {numNodesInPath, numRejectedNodesInPath};
 }
 
-void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
+void LandBoundaries::ComputeMeshNodeMask(UInt landBoundaryIndex)
 {
     if (m_nodes.empty())
     {
@@ -500,7 +500,7 @@ void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
     // Try to find a face crossed by the current land boundary polyline:
     // 1. One of the land boundary nodes is inside a face
     // 2. Or one of the land boundary segments is crossing a boundary mesh edge
-    Index crossedFaceIndex = constants::missing::sizetValue;
+    UInt crossedFaceIndex = constants::missing::sizetValue;
     for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
     {
         crossedFaceIndex = m_nodeFaceIndices[i];
@@ -528,15 +528,15 @@ void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
             m_faceMask[crossedFaceIndex] = true;
         }
 
-        std::vector<Index> landBoundaryFaces{crossedFaceIndex};
+        std::vector<UInt> landBoundaryFaces{crossedFaceIndex};
         MaskMeshFaceMask(landBoundaryIndex, landBoundaryFaces);
 
         // Mask all nodes of the masked faces
-        for (Index f = 0; f < m_mesh->GetNumFaces(); f++)
+        for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
         {
             if (m_faceMask[f])
             {
-                for (Index n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
+                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
                 {
                     m_nodeMask[m_mesh->m_facesNodes[f][n]] = landBoundaryIndex;
                 }
@@ -551,7 +551,7 @@ void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
         }
     }
 
-    for (Index n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (UInt n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         if (m_nodeMask[n] != constants::missing::sizetValue)
         {
@@ -564,14 +564,14 @@ void LandBoundaries::ComputeMeshNodeMask(Index landBoundaryIndex)
     }
 }
 
-void LandBoundaries::MaskMeshFaceMask(Index landBoundaryIndex, const std::vector<Index>& initialFaces)
+void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<UInt>& initialFaces)
 {
     if (m_nodes.empty())
     {
         return;
     }
 
-    std::vector<Index> nextFaces;
+    std::vector<UInt> nextFaces;
     nextFaces.reserve(initialFaces.size());
     for (const auto& face : initialFaces)
     {
@@ -579,7 +579,7 @@ void LandBoundaries::MaskMeshFaceMask(Index landBoundaryIndex, const std::vector
         // These are the faces that are close (up to a certain tolerance) by a land boundary
         if (face == constants::missing::sizetValue)
         {
-            for (Index e = 0; e < m_mesh->GetNumEdges(); e++)
+            for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
             {
                 // only boundary edges are considered
                 if (!m_mesh->IsEdgeOnBoundary(e))
@@ -670,9 +670,9 @@ void LandBoundaries::MaskMeshFaceMask(Index landBoundaryIndex, const std::vector
     }
 }
 
-meshkernel::Index LandBoundaries::IsMeshEdgeCloseToLandBoundaries(Index landBoundaryIndex, Index edge)
+meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBoundaryIndex, UInt edge)
 {
-    Index landBoundaryNode = constants::missing::sizetValue;
+    UInt landBoundaryNode = constants::missing::sizetValue;
     if (m_nodes.empty())
     {
         return landBoundaryNode;
@@ -680,7 +680,7 @@ meshkernel::Index LandBoundaries::IsMeshEdgeCloseToLandBoundaries(Index landBoun
 
     const auto& [startLandBoundaryIndex, endLandBoundaryIndex] = m_validLandBoundaries[landBoundaryIndex];
 
-    const auto startNode = std::max(std::min(static_cast<Index>(0), endLandBoundaryIndex - 1), startLandBoundaryIndex);
+    const auto startNode = std::max(std::min(static_cast<UInt>(0), endLandBoundaryIndex - 1), startLandBoundaryIndex);
     if (m_mesh->m_edges[edge].first == constants::missing::sizetValue || m_mesh->m_edges[edge].second == constants::missing::sizetValue)
     {
         return landBoundaryNode;
@@ -696,9 +696,9 @@ meshkernel::Index LandBoundaries::IsMeshEdgeCloseToLandBoundaries(Index landBoun
 
     // Now search over the land boundaries
     auto currentNode = startNode;
-    Index searchIterations = 0;
+    UInt searchIterations = 0;
     int stepNode = 0;
-    const Index maximumNumberOfIterations = 3;
+    const UInt maximumNumberOfIterations = 3;
     while (searchIterations < maximumNumberOfIterations)
     {
         const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], m_mesh->m_projection);
@@ -760,7 +760,7 @@ meshkernel::Index LandBoundaries::IsMeshEdgeCloseToLandBoundaries(Index landBoun
     return landBoundaryNode;
 }
 
-std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(Index landBoundaryIndex)
+std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex)
 {
     if (m_nodes.empty())
     {
@@ -780,10 +780,10 @@ std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::FindStartEndMes
     // Get the edges that are closest the land boundary
     auto minDistStart = std::numeric_limits<double>::max();
     auto minDistEnd = std::numeric_limits<double>::max();
-    Index startEdge = constants::missing::sizetValue;
-    Index endEdge = constants::missing::sizetValue;
+    UInt startEdge = constants::missing::sizetValue;
+    UInt endEdge = constants::missing::sizetValue;
 
-    for (Index e = 0; e < m_mesh->GetNumEdges(); e++)
+    for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
     {
         // If the edge has an invalid node, continue
         if (m_mesh->m_edges[e].first == constants::missing::sizetValue || m_mesh->m_edges[e].second == constants::missing::sizetValue)
@@ -830,7 +830,7 @@ std::tuple<meshkernel::Index, meshkernel::Index> LandBoundaries::FindStartEndMes
     return {startMeshNode, endMeshNode};
 }
 
-meshkernel::Index LandBoundaries::FindStartEndMeshNodesFromEdges(Index edge, Point point) const
+meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point point) const
 {
     if (m_nodes.empty())
     {
@@ -849,10 +849,10 @@ meshkernel::Index LandBoundaries::FindStartEndMeshNodesFromEdges(Index edge, Poi
     return secondMeshNodeIndex;
 }
 
-std::vector<meshkernel::Index> LandBoundaries::ShortestPath(Index landBoundaryIndex,
-                                                            Index startMeshNode)
+std::vector<meshkernel::UInt> LandBoundaries::ShortestPath(UInt landBoundaryIndex,
+                                                           UInt startMeshNode)
 {
-    std::vector<Index> connectedNodeEdges;
+    std::vector<UInt> connectedNodeEdges;
     if (m_nodes.empty())
     {
         return connectedNodeEdges;
@@ -947,7 +947,7 @@ std::vector<meshkernel::Index> LandBoundaries::ShortestPath(Index landBoundaryIn
         // Linear search with masking
         currentNodeIndex = 0;
         double minValue = std::numeric_limits<double>::max();
-        for (Index n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (UInt n = 0; n < m_mesh->GetNumNodes(); n++)
         {
             if (m_nodeMask[n] == landBoundaryIndex && !isVisited[n] && nodeDistances[n] < minValue)
             {
@@ -967,11 +967,11 @@ std::vector<meshkernel::Index> LandBoundaries::ShortestPath(Index landBoundaryIn
     return connectedNodeEdges;
 }
 
-std::tuple<double, meshkernel::Point, meshkernel::Index, double> LandBoundaries::NearestLandBoundarySegment(Index segmentIndex, const Point& node)
+std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::NearestLandBoundarySegment(UInt segmentIndex, const Point& node)
 {
     double minimumDistance = std::numeric_limits<double>::max();
     Point pointOnLandBoundary = node;
-    Index nearestLandBoundaryNodeIndex = constants::missing::sizetValue;
+    UInt nearestLandBoundaryNodeIndex = constants::missing::sizetValue;
     double edgeRatio = -1.0;
 
     if (m_nodes.empty())
@@ -980,7 +980,7 @@ std::tuple<double, meshkernel::Point, meshkernel::Index, double> LandBoundaries:
     }
 
     const auto startLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? 0 : m_validLandBoundaries[segmentIndex].first;
-    const auto endLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? static_cast<Index>(m_nodes.size()) : m_validLandBoundaries[segmentIndex].second;
+    const auto endLandBoundaryIndex = segmentIndex == constants::missing::sizetValue ? static_cast<UInt>(m_nodes.size()) : m_validLandBoundaries[segmentIndex].second;
 
     for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
     {
@@ -1011,7 +1011,7 @@ void LandBoundaries::SnapMeshToLandBoundaries()
     }
 
     const auto numNodes = m_mesh->GetNumNodes();
-    for (Index n = 0; n < numNodes; ++n)
+    for (UInt n = 0; n < numNodes; ++n)
     {
         if (m_mesh->m_nodesTypes[n] == 1 || m_mesh->m_nodesTypes[n] == 2 || m_mesh->m_nodesTypes[n] == 3)
         {

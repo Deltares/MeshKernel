@@ -72,7 +72,7 @@ namespace meshkernel
                                 const double blockSizeX,
                                 const double blockSizeY,
                                 std::shared_ptr<Polygons> polygons,
-                                Index polygonIndex) const;
+                                UInt polygonIndex) const;
 
         /// @brief Compute an uniform curvilinear grid in one polygon, given the block size and the extension. The grid angle is 0
         /// @param[in] originX The x coordinate of the origin, located at the bottom left corner

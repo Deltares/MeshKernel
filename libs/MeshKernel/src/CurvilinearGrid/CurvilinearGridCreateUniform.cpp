@@ -241,7 +241,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
                                                       const double blockSizeX,
                                                       const double blockSizeY,
                                                       std::shared_ptr<Polygons> polygons,
-                                                      Index polygonIndex) const
+                                                      UInt polygonIndex) const
 {
     if (blockSizeX <= 0.0)
     {

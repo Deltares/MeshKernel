@@ -49,13 +49,13 @@ void TriangulationWrapper::BuildTriangulation()
     // Create m_faceNodes
     ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::sizetValue);
     ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::sizetValue);
-    Index faceCounter = 0;
+    UInt faceCounter = 0;
     for (int f = 0; f < m_numFaces; ++f)
     {
         for (int e = 0; e < 3; ++e)
         {
-            m_faceNodes[f][e] = static_cast<Index>(m_faceNodesFlat[faceCounter] - 1);
-            m_faceEdges[f][e] = static_cast<Index>(m_faceEdgesFlat[faceCounter] - 1);
+            m_faceNodes[f][e] = static_cast<UInt>(m_faceNodesFlat[faceCounter] - 1);
+            m_faceEdges[f][e] = static_cast<UInt>(m_faceEdgesFlat[faceCounter] - 1);
             faceCounter++;
         }
     }
@@ -67,12 +67,12 @@ void TriangulationWrapper::BuildTriangulation()
     }
 
     ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::sizetValue);
-    Index edgeCounter = 0;
+    UInt edgeCounter = 0;
     for (int e = 0; e < m_numEdges; ++e)
     {
         for (int n = 0; n < 2; ++n)
         {
-            m_edgeNodes[e][n] = static_cast<Index>(m_edgeNodesFlat[edgeCounter] - 1);
+            m_edgeNodes[e][n] = static_cast<UInt>(m_edgeNodesFlat[edgeCounter] - 1);
             edgeCounter++;
         }
     }
@@ -82,9 +82,9 @@ void TriangulationWrapper::BuildTriangulation()
     for (int f = 0; f < m_numFaces; ++f)
     {
 
-        for (Index n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < Mesh::m_numNodesInTriangle; ++n)
         {
-            auto const edge = static_cast<Index>(m_faceEdgesFlat[edgeCounter] - 1);
+            auto const edge = static_cast<UInt>(m_faceEdgesFlat[edgeCounter] - 1);
             edgeCounter++;
             // For each edge, the shared face index
             if (m_edgesFaces[edge][0] == constants::missing::sizetValue)

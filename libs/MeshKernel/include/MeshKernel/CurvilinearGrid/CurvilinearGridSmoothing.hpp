@@ -43,7 +43,7 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] smoothingIterations         The number of smoothing iterations to perform
-        CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, Index smoothingIterations);
+        CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, UInt smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
         /// @return The smoothed grid
@@ -65,9 +65,9 @@ namespace meshkernel
         /// @param[in] point The point to project
         /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
         /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
-        void ProjectPointOnClosestGridBoundary(Point const& point, Index m, Index n);
+        void ProjectPointOnClosestGridBoundary(Point const& point, UInt m, UInt n);
 
-        Index m_smoothingIterations;                      ///< The orthogonalization parameters
+        UInt m_smoothingIterations;                       ///< The orthogonalization parameters
         std::vector<std::vector<Point>> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };
 } // namespace meshkernel

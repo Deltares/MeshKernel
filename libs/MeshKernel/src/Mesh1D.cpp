@@ -43,7 +43,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
 {
     std::vector<Edge> edges;
     std::vector<Point> nodes;
-    Index numNodes = 0;
+    UInt numNodes = 0;
 
     // Compute 1d mesh discretization
     auto const discretizations = network1d.ComputeDiscretizationsFromChainages();
@@ -62,7 +62,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
             edges.emplace_back(i, i + 1);
         }
         // Poly lines are separated. If the end of one polyline coincides with the start of another, the two nodes will be merged later on.
-        numNodes = numNodes + static_cast<Index>(nodes.size());
+        numNodes = numNodes + static_cast<UInt>(nodes.size());
     }
 
     // Sets the edges, nodes and projections
@@ -78,7 +78,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
     MergeNodesInPolygon(polygon, minFaceSize);
 }
 
-Point Mesh1D::ComputeProjectedNode(Index node, double distanceFactor) const
+Point Mesh1D::ComputeProjectedNode(UInt node, double distanceFactor) const
 {
 
     if (m_nodesNumEdges[node] <= 0)

@@ -79,11 +79,11 @@ namespace meshkernel
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
-                     Index estimatedNumberOfTriangles)
+                     UInt estimatedNumberOfTriangles)
         {
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
-            for (Index i = 0; i < inputNodes.size(); ++i)
+            for (UInt i = 0; i < inputNodes.size(); ++i)
             {
                 xLocalPolygon[i] = inputNodes[i].x;
                 yLocalPolygon[i] = inputNodes[i].y;
@@ -98,7 +98,7 @@ namespace meshkernel
 
             if (estimatedNumberOfTriangles == 0)
             {
-                estimatedNumberOfTriangles = static_cast<Index>(inputNodes.size()) * 6 + 10;
+                estimatedNumberOfTriangles = static_cast<UInt>(inputNodes.size()) * 6 + 10;
             }
 
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
@@ -175,7 +175,7 @@ namespace meshkernel
         /// @brief Gets the nodes of a triangulated face
         /// @param faceIndex The face index
         /// @return The triangulated nodes
-        [[nodiscard]] const std::vector<Index>& GetFaceNodes(const Index faceIndex) const
+        [[nodiscard]] const std::vector<UInt>& GetFaceNodes(const UInt faceIndex) const
         {
             return m_faceNodes[faceIndex];
         }
@@ -184,7 +184,7 @@ namespace meshkernel
         /// @param faceIndex The index of the face to retrieve the node from
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the node with the specified index for the specified face
-        [[nodiscard]] Index GetFaceNode(const Index faceIndex, const Index nodeIndex) const
+        [[nodiscard]] UInt GetFaceNode(const UInt faceIndex, const UInt nodeIndex) const
         {
             return m_faceNodes[faceIndex][nodeIndex];
         }
@@ -193,7 +193,7 @@ namespace meshkernel
         /// @param faceIndex The index of the face to retrieve the edge from
         /// @param edgeIndex The index of the edge to retrieve
         /// @return const reference to the edge with the specified index for the specified face
-        [[nodiscard]] Index GetFaceEdge(const Index faceIndex, const Index edgeIndex) const
+        [[nodiscard]] UInt GetFaceEdge(const UInt faceIndex, const UInt edgeIndex) const
         {
             return m_faceEdges[faceIndex][edgeIndex];
         }
@@ -202,7 +202,7 @@ namespace meshkernel
         /// @param edgeIndex The index of the edge to retrieve the node from
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the node with the specified index for the specified face
-        [[nodiscard]] Index GetEdgeNode(const Index edgeIndex, const Index nodeIndex) const
+        [[nodiscard]] UInt GetEdgeNode(const UInt edgeIndex, const UInt nodeIndex) const
         {
             return m_edgeNodes[edgeIndex][nodeIndex];
         }
@@ -211,7 +211,7 @@ namespace meshkernel
         /// @param edgeIndex The index of the edge to retrieve the node from
         /// @param faceIndex The index of the face to retrieve
         /// @return const reference to the edge with the specified index for the specified face
-        [[nodiscard]] Index GetEdgeFace(const Index edgeIndex, const Index faceIndex) const
+        [[nodiscard]] UInt GetEdgeFace(const UInt edgeIndex, const UInt faceIndex) const
         {
             return m_edgesFaces[edgeIndex][faceIndex];
         }
@@ -219,7 +219,7 @@ namespace meshkernel
         /// @brief Retrieves the x coordinate of a triangulated node
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the x coordinate
-        [[nodiscard]] double GetXCoord(const Index nodeIndex) const
+        [[nodiscard]] double GetXCoord(const UInt nodeIndex) const
         {
             return m_xCoordFlat[nodeIndex];
         }
@@ -227,7 +227,7 @@ namespace meshkernel
         /// @brief Retrieves the y coordinate of a triangulated node
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the y coordinate
-        [[nodiscard]] double GetYCoord(const Index nodeIndex) const
+        [[nodiscard]] double GetYCoord(const UInt nodeIndex) const
         {
             return m_yCoordFlat[nodeIndex];
         }
@@ -242,11 +242,11 @@ namespace meshkernel
         int m_numEdges{0};                ///< Initial number of triangulated edges
         int m_numFaces{0};                ///< Initial number of triangulated faces
 
-        std::vector<Point> m_nodes;                   ///< Reconstructed vector of nodes
-        std::vector<std::vector<Index>> m_faceNodes;  ///< Reconstructed vector of face nodes
-        std::vector<std::vector<Index>> m_faceEdges;  ///< Reconstructed vector of face edges
-        std::vector<std::vector<Index>> m_edgeNodes;  ///< Reconstructed vector of edge nodes
-        std::vector<std::vector<Index>> m_edgesFaces; ///< Reconstructed vector of edge faces
+        std::vector<Point> m_nodes;                  ///< Reconstructed vector of nodes
+        std::vector<std::vector<UInt>> m_faceNodes;  ///< Reconstructed vector of face nodes
+        std::vector<std::vector<UInt>> m_faceEdges;  ///< Reconstructed vector of face edges
+        std::vector<std::vector<UInt>> m_edgeNodes;  ///< Reconstructed vector of edge nodes
+        std::vector<std::vector<UInt>> m_edgesFaces; ///< Reconstructed vector of edge faces
     };
 
 } // namespace meshkernel

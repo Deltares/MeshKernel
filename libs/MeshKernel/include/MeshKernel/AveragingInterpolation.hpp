@@ -103,7 +103,7 @@ namespace meshkernel
                                double relativeSearchRadius,
                                bool useClosestSampleIfNoneAvailable,
                                bool subtractSampleValues,
-                               Index minNumSamples);
+                               UInt minNumSamples);
 
         /// @brief Compute interpolation
         void Compute() override;
@@ -134,7 +134,7 @@ namespace meshkernel
         /// @brief Gets the sample value from an r-tree query
         /// param[in] index            The query index
         /// @return The sample value
-        [[nodiscard]] double GetSampleValueFromRTree(Index index);
+        [[nodiscard]] double GetSampleValueFromRTree(UInt index);
 
         /// @brief Compute a search radius from a point and a polygon
         /// @param searchPolygon The input polygon
@@ -150,7 +150,7 @@ namespace meshkernel
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
-        Index m_minNumSamples = 1;                      ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
+        UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
         std::vector<bool> m_visitedSamples; ///< The visited samples
 

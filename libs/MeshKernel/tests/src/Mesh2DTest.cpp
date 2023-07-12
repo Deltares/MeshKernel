@@ -236,7 +236,7 @@ TEST(Mesh2D, NodeMerging)
 
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
-    meshkernel::Index nodeIndex = 0;
+    meshkernel::UInt nodeIndex = 0;
     for (auto j = 0; j < m; ++j)
     {
         for (auto i = 0; i < n; ++i)
@@ -248,10 +248,10 @@ TEST(Mesh2D, NodeMerging)
     }
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
-    meshkernel::Index edgeIndex = 0;
-    for (meshkernel::Index j = 0; j < m; ++j)
+    meshkernel::UInt edgeIndex = 0;
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (meshkernel::Index i = 0; i < n - 1; ++i)
+        for (meshkernel::UInt i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
@@ -279,10 +279,10 @@ TEST(Mesh2D, NodeMerging)
 
     nodes.resize(mesh.GetNumNodes() * 2);
     edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
-    meshkernel::Index originalNodeIndex = 0;
-    for (meshkernel::Index j = 0; j < m; ++j)
+    meshkernel::UInt originalNodeIndex = 0;
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (meshkernel::Index i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 

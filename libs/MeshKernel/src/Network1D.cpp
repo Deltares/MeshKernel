@@ -39,7 +39,7 @@ Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
     m_chainages.resize(m_polyLines.size());
 
     // start and end polyline chainages should always be accounted for
-    for (Index i = 0; i < m_polyLines.size(); ++i)
+    for (UInt i = 0; i < m_polyLines.size(); ++i)
     {
         auto const nodalChainages = ComputePolyLineNodalChainages(m_polyLines[i], projection);
         m_chainages[i].push_back(nodalChainages.front());
@@ -57,7 +57,7 @@ void Network1D::ComputeFixedChainages(std::vector<std::vector<double>> const& fi
         throw std::invalid_argument("Network1D::ComputeFixedChainages: The polyline vector and the fixed chainages vector size must be the same");
     }
 
-    for (Index p = 0; p < m_polyLines.size(); ++p)
+    for (UInt p = 0; p < m_polyLines.size(); ++p)
     {
         if (fixedChainagesByPolyline[p].empty())
         {
@@ -102,20 +102,20 @@ void Network1D::ComputeFixedChainages(std::vector<std::vector<double>> const& fi
 void Network1D::ComputeOffsettedChainages(double offset)
 {
 
-    for (Index p = 0; p < m_polyLines.size(); ++p)
+    for (UInt p = 0; p < m_polyLines.size(); ++p)
     {
         // Sort whatever is there
         std::sort(m_chainages[p].begin(), m_chainages[p].end());
         std::vector<double> chainagesAtInterval;
-        for (Index i = 1; i < m_chainages[p].size(); ++i)
+        for (UInt i = 1; i < m_chainages[p].size(); ++i)
         {
             double const segmentLength = m_chainages[p][i] - m_chainages[p][i - 1];
             if (segmentLength < offset)
             {
                 continue;
             }
-            auto const numberOfNewSegments = static_cast<Index>(std::ceil(segmentLength / offset));
-            for (Index j = 1; j < numberOfNewSegments; j++)
+            auto const numberOfNewSegments = static_cast<UInt>(std::ceil(segmentLength / offset));
+            for (UInt j = 1; j < numberOfNewSegments; j++)
             {
                 chainagesAtInterval.push_back(m_chainages[p][i - 1] + j * (segmentLength / static_cast<double>(numberOfNewSegments)));
             }
@@ -129,7 +129,7 @@ void Network1D::ComputeOffsettedChainages(double offset)
 std::vector<std::vector<Point>> Network1D::ComputeDiscretizationsFromChainages()
 {
     std::vector<std::vector<Point>> result;
-    for (Index p = 0; p < m_polyLines.size(); ++p)
+    for (UInt p = 0; p < m_polyLines.size(); ++p)
     {
         result.emplace_back(ComputePolyLineDiscretization(m_polyLines[p], m_chainages[p], m_projection));
     }

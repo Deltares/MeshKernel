@@ -159,13 +159,13 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<Index, Index> Edge;
+    typedef std::pair<UInt, UInt> Edge;
 
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
     /// @returns Node index of other node of the edge
-    Index static OtherNodeOfEdge(const Edge& edge, Index node)
+    UInt static OtherNodeOfEdge(const Edge& edge, UInt node)
     {
         return node == edge.first ? edge.second : edge.first;
     }
@@ -205,7 +205,7 @@ namespace meshkernel
         {
             // Build the samples
             std::vector<Sample> samples(numSamples);
-            for (Index i = 0; i < samples.size(); ++i)
+            for (UInt i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
                 samples[i].y = (*samplesYCoordinate)[i];
@@ -269,21 +269,21 @@ namespace meshkernel
     }
 
     /// @brief Converts array of face centers to corresponding vector
-    static std::vector<std::vector<Index>> ConvertToFaceNodesVector(int num_faces,
-                                                                    const int* const face_nodes,
-                                                                    const int* const nodes_per_face)
+    static std::vector<std::vector<UInt>> ConvertToFaceNodesVector(int num_faces,
+                                                                   const int* const face_nodes,
+                                                                   const int* const nodes_per_face)
     {
-        std::vector<std::vector<Index>> result;
+        std::vector<std::vector<UInt>> result;
         result.reserve(num_faces);
 
-        std::vector<Index> nodes;
-        Index index = 0;
+        std::vector<UInt> nodes;
+        UInt index = 0;
         for (auto f = 0; f < num_faces; f++)
         {
             nodes.clear();
             for (auto n = 0; n < nodes_per_face[f]; n++)
             {
-                nodes.emplace_back(static_cast<Index>(face_nodes[index]));
+                nodes.emplace_back(static_cast<UInt>(face_nodes[index]));
                 index++;
             }
             result.emplace_back(nodes);

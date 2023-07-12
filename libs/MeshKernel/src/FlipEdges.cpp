@@ -60,11 +60,11 @@ void FlipEdges::Compute() const
         m_mesh->Administrate();
     }
 
-    const Index MaxIter = 10;
+    const UInt MaxIter = 10;
     const auto numEdges = m_mesh->GetNumEdges();
-    Index numFlippedEdges = constants::missing::sizetValue;
+    UInt numFlippedEdges = constants::missing::sizetValue;
 
-    for (Index iteration = 0; iteration < MaxIter; ++iteration)
+    for (UInt iteration = 0; iteration < MaxIter; ++iteration)
     {
         if (numFlippedEdges == 0)
         {
@@ -72,7 +72,7 @@ void FlipEdges::Compute() const
         }
         numFlippedEdges = 0;
 
-        for (Index e = 0; e < static_cast<Index>(numEdges); e++)
+        for (UInt e = 0; e < static_cast<UInt>(numEdges); e++)
         {
 
             if (m_mesh->IsEdgeOnBoundary(e))
@@ -91,8 +91,8 @@ void FlipEdges::Compute() const
                 return;
             }
 
-            Index nodeLeft = constants::missing::sizetValue;
-            Index nodeRight = constants::missing::sizetValue;
+            UInt nodeLeft = constants::missing::sizetValue;
+            UInt nodeRight = constants::missing::sizetValue;
             const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
             if (topologyFunctional >= 0)
@@ -133,11 +133,11 @@ void FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            Index firstEdgeLeftFace = constants::missing::sizetValue;
-            Index firstEdgeRightFace = constants::missing::sizetValue;
-            Index secondEdgeLeftFace = constants::missing::sizetValue;
-            Index secondEdgeRightFace = constants::missing::sizetValue;
-            for (Index i = 0; i < NumEdgesLeftFace; i++)
+            UInt firstEdgeLeftFace = constants::missing::sizetValue;
+            UInt firstEdgeRightFace = constants::missing::sizetValue;
+            UInt secondEdgeLeftFace = constants::missing::sizetValue;
+            UInt secondEdgeRightFace = constants::missing::sizetValue;
+            for (UInt i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
                 if (edgeIndex == e)
@@ -157,7 +157,7 @@ void FlipEdges::Compute() const
                 }
             }
 
-            for (Index i = 0; i < NumEdgesRightFace; i++)
+            for (UInt i = 0; i < NumEdgesRightFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[rightFace][i];
                 if (edgeIndex == e)
@@ -244,10 +244,10 @@ void FlipEdges::Compute() const
     m_mesh->Administrate();
 }
 
-void FlipEdges::DeleteEdgeFromNode(Index edge, Index firstNode) const
+void FlipEdges::DeleteEdgeFromNode(UInt edge, UInt firstNode) const
 {
     // Update node, delete edge from m_mesh->m_nodesEdges[firstNode]
-    Index kk = 0;
+    UInt kk = 0;
     while (m_mesh->m_nodesEdges[firstNode][kk] != edge && kk < m_mesh->m_nodesNumEdges[firstNode])
     {
         kk = kk + 1;
@@ -257,8 +257,8 @@ void FlipEdges::DeleteEdgeFromNode(Index edge, Index firstNode) const
         throw std::invalid_argument("FlipEdges::DeleteEdgeFromNode: The edge does not match the given node.");
     }
 
-    Index count = 0;
-    for (Index i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
+    UInt count = 0;
+    for (UInt i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
     {
         if (i + 1 <= kk || i > kk)
         {
@@ -270,9 +270,9 @@ void FlipEdges::DeleteEdgeFromNode(Index edge, Index firstNode) const
     m_mesh->m_nodesEdges[firstNode].resize(m_mesh->m_nodesNumEdges[firstNode]);
 }
 
-int FlipEdges::ComputeTopologyFunctional(Index edge,
-                                         Index& nodeLeft,
-                                         Index& nodeRight) const
+int FlipEdges::ComputeTopologyFunctional(UInt edge,
+                                         UInt& nodeLeft,
+                                         UInt& nodeRight) const
 {
     const int largeTopologyFunctionalValue = 1000;
 
@@ -294,8 +294,8 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
     }
 
     // Find the nodes that are connected to both k1 and k
-    Index sumIndicesLeftFace = 0;
-    Index sumIndicesRightFace = 0;
+    UInt sumIndicesLeftFace = 0;
+    UInt sumIndicesRightFace = 0;
     for (auto i = 0; i < 3; i++)
     {
         sumIndicesLeftFace += m_mesh->m_facesNodes[faceL][i];
@@ -312,7 +312,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
 
     // Check that kl is part of faceL
     bool nodeFound = false;
-    for (Index i = 0; i < NumEdgesLeftFace; i++)
+    for (UInt i = 0; i < NumEdgesLeftFace; i++)
     {
         if (m_mesh->m_facesNodes[faceL][i] == nodeLeft)
         {
@@ -328,7 +328,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
 
     // Check that kr is part of faceR
     nodeFound = false;
-    for (Index i = 0; i < NumEdgesRightFace; i++)
+    for (UInt i = 0; i < NumEdgesRightFace; i++)
     {
         if (m_mesh->m_facesNodes[faceR][i] == nodeRight)
         {
@@ -383,7 +383,7 @@ int FlipEdges::ComputeTopologyFunctional(Index edge,
     return topologyFunctional;
 }
 
-int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index secondNode) const
+int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::sizetValue)
     {
@@ -401,8 +401,8 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // Find the first edge connecting firstNode
-    Index edgeIndexConnectingFirstNode = constants::missing::sizetValue;
-    for (Index i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    UInt edgeIndexConnectingFirstNode = constants::missing::sizetValue;
+    for (UInt i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -419,8 +419,8 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // Find the first edge connecting secondNode
-    Index edgeIndexConnectingSecondNode = constants::missing::sizetValue;
-    for (Index i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    UInt edgeIndexConnectingSecondNode = constants::missing::sizetValue;
+    for (UInt i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -442,7 +442,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
     auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
-    Index num = 1;
+    UInt num = 1;
     while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
@@ -453,7 +453,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
         num++;
     }
 
-    Index firstEdgeInPathIndex = constants::missing::sizetValue;
+    UInt firstEdgeInPathIndex = constants::missing::sizetValue;
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
@@ -461,7 +461,7 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     }
 
     // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
-    Index secondEdgeInPathIndex = constants::missing::sizetValue;
+    UInt secondEdgeInPathIndex = constants::missing::sizetValue;
     if (currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
@@ -506,9 +506,9 @@ int FlipEdges::DifferenceFromOptimum(Index nodeIndex, Index firstNode, Index sec
     return 6;
 }
 
-meshkernel::Index FlipEdges::OptimalNumberOfConnectedNodes(Index index) const
+meshkernel::UInt FlipEdges::OptimalNumberOfConnectedNodes(UInt index) const
 {
-    Index optimalNumber = 6;
+    UInt optimalNumber = 6;
     if (m_mesh->m_nodesTypes[index] == 2)
     {
         optimalNumber = 4;
