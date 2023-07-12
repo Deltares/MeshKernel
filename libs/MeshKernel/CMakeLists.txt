@@ -83,6 +83,7 @@ set(
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
+  ${DOMAIN_INC_DIR}/Definitions.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
