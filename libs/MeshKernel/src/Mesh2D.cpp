@@ -32,8 +32,8 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::Mesh2D;
 

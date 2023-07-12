@@ -1,5 +1,5 @@
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 #include <benchmark/benchmark.h>
 
