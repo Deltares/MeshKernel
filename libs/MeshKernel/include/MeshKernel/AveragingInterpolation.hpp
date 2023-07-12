@@ -31,7 +31,7 @@
 
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 namespace meshkernel
 {

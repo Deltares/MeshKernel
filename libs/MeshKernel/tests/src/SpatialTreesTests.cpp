@@ -3,7 +3,7 @@
 #include <random>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 TEST(RTree, RTreeRemovePoint)
 {

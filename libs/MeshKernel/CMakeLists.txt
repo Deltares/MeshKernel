@@ -16,12 +16,14 @@ add_library(${TARGET_NAME} STATIC)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(AVERAGING_STRATEGIES_SRC_DIR ${SRC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_SRC_DIR ${SRC_DIR}/CurvilinearGrid)
+set(UTILITIES_SRC_DIR ${SRC_DIR}/Utilities)
 
 # include directories
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
 set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernel)
 set(AVERAGING_STRATEGIES_INC_DIR ${DOMAIN_INC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
+set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
 
 # list of target sources
 set(
@@ -40,7 +42,6 @@ set(
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygons.cpp
-  ${SRC_DIR}/RTree.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
@@ -76,6 +77,11 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp  
 )
 
+set(
+  UTILITIES_SRC_LIST
+  ${UTILITIES_SRC_DIR}/RTree.cpp
+)
+
 # list of target headers
 set(
   INC_LIST
@@ -98,7 +104,6 @@ set(
   ${DOMAIN_INC_DIR}/Orthogonalizer.hpp
   ${DOMAIN_INC_DIR}/Parameters.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
-  ${DOMAIN_INC_DIR}/RTree.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
@@ -136,6 +141,20 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
 )
 
+set(
+  UTILITIES_INC_LIST
+  ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
+  ${UTILITIES_INC_DIR}/RTree.hpp
+)
+
+set(
+  HEADERS 
+  ${INC_LIST}
+  ${AVERAGING_STRATEGIES_INC_LIST}
+  ${CURVILINEAR_GRID_INC_LIST}
+  ${UTILITIES_INC_LIST}
+)
+
 # add sources to target
 target_sources(
   ${TARGET_NAME}
@@ -143,32 +162,20 @@ target_sources(
     ${SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
+    ${UTILITIES_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
         ${INC_DIR}
       FILES
-        ${INC_LIST}
-        ${AVERAGING_STRATEGIES_INC_LIST}
-        ${CURVILINEAR_GRID_INC_LIST}
+        ${HEADERS}
 )
 
-# define the public header
-set_target_properties(
-  ${TARGET_NAME}
-  PROPERTIES
-    PUBLIC_HEADER 
-      "${INC_LIST}"
-      "${AVERAGING_STRATEGIES_INC_LIST}"
-      "${CURVILINEAR_GRID_INC_LIST}"
-)
+# set the public headers
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 # Expose the interface of the static lib
-target_include_directories(
-  ${TARGET_NAME} 
-  PUBLIC 
-    ${INC_DIR}
-)
+target_include_directories(  ${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Add target link dependencies
 
@@ -235,11 +242,13 @@ install(TARGETS ${TARGET_NAME} PUBLIC_HEADER DESTINATION "include/MeshKernel")
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
+source_group("Source Files/Utilities" FILES ${UTILITIES_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
+source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})
 
 # Add unit tests
 if(ENABLE_UNIT_TESTING)
