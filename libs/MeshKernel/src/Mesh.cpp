@@ -48,7 +48,7 @@ void Mesh::NodeAdministration()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode == constants::missing::sizetValue || secondNode == constants::missing::sizetValue)
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
         {
             continue;
         }
@@ -107,7 +107,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
     for (const auto& [firstNode, secondNode] : m_edges)
     {
-        if (firstNode == constants::missing::sizetValue || secondNode == constants::missing::sizetValue)
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
         {
             numInvalidEdges++;
             continue;
@@ -140,7 +140,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
     // Flag invalid nodes
     std::vector<UInt> validNodesIndices(m_nodes.size());
-    std::ranges::fill(validNodesIndices, constants::missing::sizetValue);
+    std::ranges::fill(validNodesIndices, constants::missing::uintValue);
     UInt validIndex = 0;
     for (UInt n = 0; n < m_nodes.size(); ++n)
     {
@@ -154,15 +154,15 @@ void Mesh::DeleteInvalidNodesAndEdges()
     // Flag invalid edges
     for (auto& [firstNode, secondNode] : m_edges)
     {
-        if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue && validNodesIndices[firstNode] != constants::missing::sizetValue && validNodesIndices[secondNode] != constants::missing::sizetValue)
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && validNodesIndices[firstNode] != constants::missing::uintValue && validNodesIndices[secondNode] != constants::missing::uintValue)
         {
             firstNode = validNodesIndices[firstNode];
             secondNode = validNodesIndices[secondNode];
             continue;
         }
 
-        firstNode = constants::missing::sizetValue;
-        secondNode = constants::missing::sizetValue;
+        firstNode = constants::missing::uintValue;
+        secondNode = constants::missing::uintValue;
     }
 
     // Remove invalid nodes, without reducing capacity
@@ -172,7 +172,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
     // Remove invalid edges, without reducing capacity
     const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e)
-                                              { return e.first == constants::missing::sizetValue || e.second == constants::missing::sizetValue; });
+                                              { return e.first == constants::missing::uintValue || e.second == constants::missing::uintValue; });
     m_edges.erase(endEdgeVector, m_edges.end());
 }
 
@@ -184,10 +184,10 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
-    if (edgeIndex != constants::missing::sizetValue)
+    if (edgeIndex != constants::missing::uintValue)
     {
-        m_edges[edgeIndex].first = constants::missing::sizetValue;
-        m_edges[edgeIndex].second = constants::missing::sizetValue;
+        m_edges[edgeIndex].first = constants::missing::uintValue;
+        m_edges[edgeIndex].second = constants::missing::uintValue;
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
@@ -196,7 +196,7 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto& firstEdge = m_edges[firstEdgeIndex];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
-        if (firstEdgeOtherNode != constants::missing::sizetValue && firstEdgeOtherNode != secondNodeIndex)
+        if (firstEdgeOtherNode != constants::missing::uintValue && firstEdgeOtherNode != secondNodeIndex)
         {
             for (UInt nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
@@ -205,20 +205,20 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
                 const auto secondNodeSecondEdge = OtherNodeOfEdge(secondEdge, firstEdgeOtherNode);
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
-                    m_edges[secondEdgeIndex].first = constants::missing::sizetValue;
-                    m_edges[secondEdgeIndex].second = constants::missing::sizetValue;
+                    m_edges[secondEdgeIndex].first = constants::missing::uintValue;
+                    m_edges[secondEdgeIndex].second = constants::missing::uintValue;
                 }
             }
         }
     }
 
     // add all valid edges starting at secondNode
-    std::vector<UInt> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue);
+    std::vector<UInt> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[secondNodeIndex][n];
-        if (m_edges[edgeIndex].first != constants::missing::sizetValue)
+        if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             numSecondNodeEdges++;
@@ -229,7 +229,7 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        if (m_edges[edgeIndex].first != constants::missing::sizetValue)
+        if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             if (m_edges[edgeIndex].first == firstNodeIndex)
@@ -261,7 +261,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::sizetValue);
+    std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
     UInt index = 0;
     for (UInt i = 0; i < static_cast<UInt>(GetNumNodes()); ++i)
     {
@@ -308,8 +308,8 @@ meshkernel::UInt Mesh::ConnectNodes(UInt startNode, UInt endNode)
     const auto edgeIndex = FindEdge(startNode, endNode);
 
     // The nodes are already connected
-    if (edgeIndex != constants::missing::sizetValue)
-        return constants::missing::sizetValue;
+    if (edgeIndex != constants::missing::uintValue)
+        return constants::missing::uintValue;
 
     // increment the edges container
     const auto newEdgeIndex = GetNumEdges();
@@ -358,13 +358,13 @@ void Mesh::DeleteNode(UInt node)
 
 void Mesh::DeleteEdge(UInt edge)
 {
-    if (edge == constants::missing::sizetValue)
+    if (edge == constants::missing::uintValue)
     {
         throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
-    m_edges[edge].first = constants::missing::sizetValue;
-    m_edges[edge].second = constants::missing::sizetValue;
+    m_edges[edge].first = constants::missing::uintValue;
+    m_edges[edge].second = constants::missing::uintValue;
 
     m_edgesRTreeRequiresUpdate = true;
 }
@@ -394,7 +394,7 @@ meshkernel::UInt Mesh::FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex)
     const auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
     const auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
 
-    if (firstEdgeFirstNode == constants::missing::sizetValue || firstEdgeEdgeSecondNode == constants::missing::sizetValue || secondEdgeFirstNode == constants::missing::sizetValue || secondEdgeSecondNode == constants::missing::sizetValue)
+    if (firstEdgeFirstNode == constants::missing::uintValue || firstEdgeEdgeSecondNode == constants::missing::uintValue || secondEdgeFirstNode == constants::missing::uintValue || secondEdgeSecondNode == constants::missing::uintValue)
     {
         throw std::invalid_argument("Mesh::FindCommonNode: At least one of the given edges is invalid.");
     }
@@ -407,17 +407,17 @@ meshkernel::UInt Mesh::FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex)
     {
         return firstEdgeEdgeSecondNode;
     }
-    return constants::missing::sizetValue;
+    return constants::missing::uintValue;
 }
 
 meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
 {
-    if (firstNodeIndex == constants::missing::sizetValue || secondNodeIndex == constants::missing::sizetValue)
+    if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
     {
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    UInt edgeIndex = constants::missing::sizetValue;
+    UInt edgeIndex = constants::missing::uintValue;
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
@@ -569,7 +569,7 @@ void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
 
             auto firstNode = m_edges[m_nodesEdges[n][edgeIndex]].first;
             auto secondNode = m_edges[m_nodesEdges[n][edgeIndex]].second;
-            if (firstNode == constants::missing::sizetValue || secondNode == constants::missing::sizetValue)
+            if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
             {
                 continue;
             }
@@ -718,7 +718,7 @@ meshkernel::UInt Mesh::GetNumLocations(Location meshLocation) const
         return m_edgesRTree.GetQueryResultSize();
     case Location::Unknown:
     default:
-        return constants::missing::sizetValue;
+        return constants::missing::uintValue;
     }
 }
 
@@ -734,7 +734,7 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
         return m_edgesRTree.GetQueryResult(index);
     case Location::Unknown:
     default:
-        return constants::missing::sizetValue;
+        return constants::missing::uintValue;
     }
 }
 
@@ -762,7 +762,7 @@ void Mesh::AdministrateNodesEdges()
     }
 
     m_nodesEdges.resize(m_nodes.size());
-    std::ranges::fill(m_nodesEdges, std::vector(m_maximumNumberOfEdgesPerNode, constants::missing::sizetValue));
+    std::ranges::fill(m_nodesEdges, std::vector(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue));
 
     m_nodesNumEdges.resize(m_nodes.size());
     std::ranges::fill(m_nodesNumEdges, 0);
@@ -807,7 +807,7 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
         for (const auto& [firstNode, secondNode] : m_edges)
         {
 
-            if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue)
+            if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
             {
                 result.emplace_back((m_nodes[firstNode] + m_nodes[secondNode]) * 0.5);
             }

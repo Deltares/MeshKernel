@@ -62,7 +62,7 @@ void FlipEdges::Compute() const
 
     const UInt MaxIter = 10;
     const auto numEdges = m_mesh->GetNumEdges();
-    UInt numFlippedEdges = constants::missing::sizetValue;
+    UInt numFlippedEdges = constants::missing::uintValue;
 
     for (UInt iteration = 0; iteration < MaxIter; ++iteration)
     {
@@ -91,8 +91,8 @@ void FlipEdges::Compute() const
                 return;
             }
 
-            UInt nodeLeft = constants::missing::sizetValue;
-            UInt nodeRight = constants::missing::sizetValue;
+            UInt nodeLeft = constants::missing::uintValue;
+            UInt nodeRight = constants::missing::uintValue;
             const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
             if (topologyFunctional >= 0)
@@ -133,10 +133,10 @@ void FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            UInt firstEdgeLeftFace = constants::missing::sizetValue;
-            UInt firstEdgeRightFace = constants::missing::sizetValue;
-            UInt secondEdgeLeftFace = constants::missing::sizetValue;
-            UInt secondEdgeRightFace = constants::missing::sizetValue;
+            UInt firstEdgeLeftFace = constants::missing::uintValue;
+            UInt firstEdgeRightFace = constants::missing::uintValue;
+            UInt secondEdgeLeftFace = constants::missing::uintValue;
+            UInt secondEdgeRightFace = constants::missing::uintValue;
             for (UInt i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
@@ -305,7 +305,7 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
     nodeLeft = sumIndicesLeftFace - firstNode - secondNode;
     nodeRight = sumIndicesRightFace - firstNode - secondNode;
 
-    if (nodeLeft == constants::missing::sizetValue || nodeRight == constants::missing::sizetValue)
+    if (nodeLeft == constants::missing::uintValue || nodeRight == constants::missing::uintValue)
     {
         return largeTopologyFunctionalValue;
     }
@@ -350,7 +350,7 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
 
     if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
-        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != constants::missing::sizetValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != constants::missing::sizetValue)
+        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
         {
             // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;
@@ -385,7 +385,7 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
 
 int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt secondNode) const
 {
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::sizetValue)
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::uintValue)
     {
         return static_cast<int>(m_mesh->m_nodesNumEdges[nodeIndex]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeIndex));
     }
@@ -401,7 +401,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     }
 
     // Find the first edge connecting firstNode
-    UInt edgeIndexConnectingFirstNode = constants::missing::sizetValue;
+    UInt edgeIndexConnectingFirstNode = constants::missing::uintValue;
     for (UInt i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -413,13 +413,13 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         }
     }
 
-    if (edgeIndexConnectingFirstNode == constants::missing::sizetValue)
+    if (edgeIndexConnectingFirstNode == constants::missing::uintValue)
     {
         return 0;
     }
 
     // Find the first edge connecting secondNode
-    UInt edgeIndexConnectingSecondNode = constants::missing::sizetValue;
+    UInt edgeIndexConnectingSecondNode = constants::missing::uintValue;
     for (UInt i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -431,7 +431,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         }
     }
 
-    if (edgeIndexConnectingSecondNode == constants::missing::sizetValue)
+    if (edgeIndexConnectingSecondNode == constants::missing::uintValue)
     {
         return 0;
     }
@@ -443,7 +443,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
     UInt num = 1;
-    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
+    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
@@ -453,22 +453,22 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         num++;
     }
 
-    UInt firstEdgeInPathIndex = constants::missing::sizetValue;
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
+    UInt firstEdgeInPathIndex = constants::missing::uintValue;
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::uintValue ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
         firstEdgeInPathIndex = edgeIndex;
     }
 
     // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
-    UInt secondEdgeInPathIndex = constants::missing::sizetValue;
+    UInt secondEdgeInPathIndex = constants::missing::uintValue;
     if (currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
         edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
         otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
         num = num + 1;
-        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::sizetValue &&
+        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
                !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
                currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode &&
                edgeIndex != firstEdgeInPathIndex)
@@ -483,7 +483,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
             }
         }
 
-        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::sizetValue ||
+        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != constants::missing::uintValue ||
              m_mesh->IsEdgeOnBoundary(edgeIndex)) &&
             edgeIndex != firstEdgeInPathIndex)
         {
@@ -497,7 +497,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         return 0;
     }
 
-    if (firstEdgeInPathIndex != constants::missing::sizetValue && secondEdgeInPathIndex != constants::missing::sizetValue)
+    if (firstEdgeInPathIndex != constants::missing::uintValue && secondEdgeInPathIndex != constants::missing::uintValue)
     {
         // Internal boundary
         return 4;

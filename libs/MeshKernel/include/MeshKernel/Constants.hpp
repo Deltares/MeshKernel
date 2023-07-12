@@ -47,7 +47,7 @@ namespace meshkernel
             constexpr double doubleValue = -999.0;         ///< Double value used as missing value
             constexpr int intValue = -999;                 ///< Integer value used as missing value
             // TODO rename this to something like invalidIndex.
-            constexpr UInt sizetValue = std::numeric_limits<UInt>::max(); ///< missing value used for invalid indices
+            constexpr UInt uintValue = std::numeric_limits<UInt>::max();  ///< missing value used for invalid indices
         }                                                                 // namespace missing
 
         // often used values

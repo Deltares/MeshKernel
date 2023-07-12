@@ -232,7 +232,7 @@ namespace meshkernel
         /// @param[in] source_location The source location.
         explicit MeshGeometryError(std::source_location const& source_location = std::source_location::current())
             : MeshKernelError("", source_location),
-              m_invalid_index{constants::missing::sizetValue},
+              m_invalid_index{constants::missing::uintValue},
               m_mesh_location(Mesh::Location::Unknown)
         {
         }

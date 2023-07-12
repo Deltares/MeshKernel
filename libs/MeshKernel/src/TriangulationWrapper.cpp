@@ -47,8 +47,8 @@ void TriangulationWrapper::BuildTriangulation()
     }
 
     // Create m_faceNodes
-    ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::sizetValue);
-    ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::sizetValue);
+    ResizeAndFill2DVector(m_faceNodes, m_numFaces, 3, true, constants::missing::uintValue);
+    ResizeAndFill2DVector(m_faceEdges, m_numFaces, 3, true, constants::missing::uintValue);
     UInt faceCounter = 0;
     for (int f = 0; f < m_numFaces; ++f)
     {
@@ -66,7 +66,7 @@ void TriangulationWrapper::BuildTriangulation()
         return;
     }
 
-    ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::sizetValue);
+    ResizeAndFill2DVector(m_edgeNodes, m_numEdges, 2, true, constants::missing::uintValue);
     UInt edgeCounter = 0;
     for (int e = 0; e < m_numEdges; ++e)
     {
@@ -77,7 +77,7 @@ void TriangulationWrapper::BuildTriangulation()
         }
     }
 
-    ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::sizetValue);
+    ResizeAndFill2DVector(m_edgesFaces, m_numEdges, 2, true, constants::missing::uintValue);
     edgeCounter = 0;
     for (int f = 0; f < m_numFaces; ++f)
     {
@@ -87,7 +87,7 @@ void TriangulationWrapper::BuildTriangulation()
             auto const edge = static_cast<UInt>(m_faceEdgesFlat[edgeCounter] - 1);
             edgeCounter++;
             // For each edge, the shared face index
-            if (m_edgesFaces[edge][0] == constants::missing::sizetValue)
+            if (m_edgesFaces[edge][0] == constants::missing::uintValue)
             {
                 m_edgesFaces[edge][0] = f;
             }

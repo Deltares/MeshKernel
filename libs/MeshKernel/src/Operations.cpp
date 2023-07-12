@@ -154,7 +154,7 @@ namespace meshkernel
             return true;
         }
 
-        if (startNode == constants::missing::sizetValue && endNode == constants::missing::sizetValue)
+        if (startNode == constants::missing::uintValue && endNode == constants::missing::uintValue)
         {
             startNode = 0;
             endNode = static_cast<UInt>(polygonNodes.size()) - 1; // closed polygon
@@ -1400,7 +1400,7 @@ namespace meshkernel
         {
             auto const first = edge.first;
             auto const second = edge.second;
-            if (first == constants::missing::sizetValue || second == constants::missing::sizetValue)
+            if (first == constants::missing::uintValue || second == constants::missing::uintValue)
             {
                 continue;
             }

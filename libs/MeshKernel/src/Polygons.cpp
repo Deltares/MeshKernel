@@ -352,7 +352,7 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(Point point) cons
     // empty polygon means everything is included
     if (m_outer_polygons_indices.empty())
     {
-        return {true, constants::missing::sizetValue};
+        return {true, constants::missing::uintValue};
     }
 
     bool inPolygon = false;
@@ -385,14 +385,14 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(Point point) cons
             {
                 if (IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), startInner, endInner))
                 {
-                    return {false, constants::missing::sizetValue};
+                    return {false, constants::missing::uintValue};
                 }
             }
             return {true, polygonIndex};
         }
     }
 
-    return {false, constants::missing::sizetValue};
+    return {false, constants::missing::uintValue};
 }
 
 std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const

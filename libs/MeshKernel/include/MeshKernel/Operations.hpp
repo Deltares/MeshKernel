@@ -277,8 +277,8 @@ namespace meshkernel
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
-                                             UInt startNode = constants::missing::sizetValue,
-                                             UInt endNode = constants::missing::sizetValue);
+                                             UInt startNode = constants::missing::uintValue,
+                                             UInt endNode = constants::missing::uintValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);

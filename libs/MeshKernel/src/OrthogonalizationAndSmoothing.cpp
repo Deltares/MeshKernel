@@ -256,8 +256,8 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
             UInt numNodes = 0;
-            UInt leftNode = constants::missing::sizetValue;
-            UInt rightNode = constants::missing::sizetValue;
+            UInt leftNode = constants::missing::uintValue;
+            UInt rightNode = constants::missing::uintValue;
             Point secondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             Point thirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             for (UInt nn = 0; nn < numEdges; nn++)
@@ -269,7 +269,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     if (numNodes == 1)
                     {
                         leftNode = m_mesh->m_nodesNodes[n][nn];
-                        if (leftNode == constants::missing::sizetValue)
+                        if (leftNode == constants::missing::uintValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
@@ -278,7 +278,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     else if (numNodes == 2)
                     {
                         rightNode = m_mesh->m_nodesNodes[n][nn];
-                        if (rightNode == constants::missing::sizetValue)
+                        if (rightNode == constants::missing::uintValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }

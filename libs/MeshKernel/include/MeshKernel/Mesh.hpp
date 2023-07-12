@@ -105,9 +105,9 @@ namespace meshkernel
             int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
             double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
             double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            UInt edgeIndex{constants::missing::sizetValue};                              ///< The first node of the edge is on the left (the virtual node)
-            UInt edgeFirstNode{constants::missing::sizetValue};                          ///< The first node of the edge is on the left (the virtual node)
-            UInt edgeSecondNode{constants::missing::sizetValue};                         ///< The second node of the edge is on the right (the inner node)
+            UInt edgeIndex{constants::missing::uintValue};                               ///< The first node of the edge is on the left (the virtual node)
+            UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
+            UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
             double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
         };
 
@@ -115,7 +115,7 @@ namespace meshkernel
         struct FaceMeshPolylineIntersection
         {
             double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
-            UInt faceIndex{constants::missing::sizetValue};           ///< The face index
+            UInt faceIndex{constants::missing::uintValue};            ///< The face index
             std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
             std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
         };

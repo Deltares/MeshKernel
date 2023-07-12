@@ -335,7 +335,7 @@ namespace meshkernel
             std::ranges::fill(m_edgesNumFaces, 0);
 
             m_edgesFaces.resize(m_edges.size());
-            std::ranges::fill(m_edgesFaces, std::array{constants::missing::sizetValue, constants::missing::sizetValue});
+            std::ranges::fill(m_edgesFaces, std::array{constants::missing::uintValue, constants::missing::uintValue});
 
             m_facesMassCenters.clear();
             m_faceArea.clear();

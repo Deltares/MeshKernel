@@ -282,7 +282,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
             for (UInt e = 0; e < m_numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
-                m_edges[edge] = {constants::missing::sizetValue, constants::missing::sizetValue};
+                m_edges[edge] = {constants::missing::uintValue, constants::missing::uintValue};
             }
             // save degenerated face index
             degeneratedTriangles.emplace_back(f);
@@ -318,7 +318,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     if (nodes.size() >= numClosingEdges)
         return;
 
-    if (m_edges[previousEdge].first == constants::missing::sizetValue || m_edges[previousEdge].second == constants::missing::sizetValue)
+    if (m_edges[previousEdge].first == constants::missing::uintValue || m_edges[previousEdge].second == constants::missing::uintValue)
         throw std::invalid_argument("Mesh2D::FindFacesRecursive: The selected edge is invalid. This should not happen since all invalid edges should have been cleaned up.");
 
     // Check if the faces are already found
@@ -523,7 +523,7 @@ void Mesh2D::ClassifyNodes()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode == constants::missing::sizetValue || secondNode == constants::missing::sizetValue)
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
         {
             continue;
         }
@@ -556,8 +556,8 @@ void Mesh2D::ClassifyNodes()
             }
             else
             {
-                UInt firstNode = constants::missing::sizetValue;
-                UInt secondNode = constants::missing::sizetValue;
+                UInt firstNode = constants::missing::uintValue;
+                UInt secondNode = constants::missing::uintValue;
                 for (UInt i = 0; i < m_nodesNumEdges[n]; ++i)
                 {
                     const auto edgeIndex = m_nodesEdges[n][i];
@@ -578,7 +578,7 @@ void Mesh2D::ClassifyNodes()
 
                 // point at the border
                 m_nodesTypes[n] = 2;
-                if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue)
+                if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
                 {
                     const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
 
@@ -812,7 +812,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetEdgesCrossingSmallFlowEdges(double smal
         const auto firstFace = m_edgesFaces[e][0];
         const auto secondFace = m_edgesFaces[e][1];
 
-        if (firstFace != constants::missing::sizetValue && secondFace != constants::missing::sizetValue)
+        if (firstFace != constants::missing::uintValue && secondFace != constants::missing::uintValue)
         {
             const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
             const double cutOffDistance = smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
@@ -850,7 +850,7 @@ void Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
         // invalidate the edges
         for (const auto& e : edges)
         {
-            m_edges[e] = {constants::missing::sizetValue, constants::missing::sizetValue};
+            m_edges[e] = {constants::missing::uintValue, constants::missing::uintValue};
         }
         Administrate();
     }
@@ -893,10 +893,10 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
         }
 
         double minCosPhiSmallTriangle = 1.0;
-        UInt nodeToPreserve = constants::missing::sizetValue;
-        UInt firstNodeToMerge = constants::missing::sizetValue;
-        UInt secondNodeToMerge = constants::missing::sizetValue;
-        UInt thirdEdgeSmallTriangle = constants::missing::sizetValue;
+        UInt nodeToPreserve = constants::missing::uintValue;
+        UInt firstNodeToMerge = constants::missing::uintValue;
+        UInt secondNodeToMerge = constants::missing::uintValue;
+        UInt thirdEdgeSmallTriangle = constants::missing::uintValue;
         for (UInt e = 0; e < m_numNodesInTriangle; ++e)
         {
             const auto previousEdge = NextCircularBackwardIndex(e, m_numNodesInTriangle);
@@ -919,7 +919,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
             }
         }
 
-        if (thirdEdgeSmallTriangle != constants::missing::sizetValue && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
+        if (thirdEdgeSmallTriangle != constants::missing::uintValue && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
         {
             smallTrianglesNodes.emplace_back(std::initializer_list<UInt>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
@@ -976,7 +976,7 @@ void Mesh2D::ComputeNodeNeighbours()
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
 
-    ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, constants::missing::sizetValue);
+    ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, constants::missing::uintValue);
     // for each node, determine the neighboring nodes
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
@@ -998,7 +998,7 @@ std::vector<double> Mesh2D::GetOrthogonality()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
             val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
                                                     m_nodes[secondNode],
@@ -1025,7 +1025,7 @@ std::vector<double> Mesh2D::GetSmoothness()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
@@ -1151,7 +1151,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
         const auto first = m_edges[e].first;
         const auto second = m_edges[e].second;
 
-        if (first == constants::missing::sizetValue || second == constants::missing::sizetValue)
+        if (first == constants::missing::uintValue || second == constants::missing::uintValue)
             continue;
         if (m_edgesNumFaces[e] == 0)
             continue;
@@ -1220,7 +1220,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
             const auto firstNodeIndex = m_edges[edgeIndex].first;
             const auto secondNodeIndex = m_edges[edgeIndex].second;
 
-            if (firstNodeIndex != constants::missing::sizetValue && secondNodeIndex != constants::missing::sizetValue)
+            if (firstNodeIndex != constants::missing::uintValue && secondNodeIndex != constants::missing::uintValue)
             {
                 const auto diff = m_nodes[firstNodeIndex].x - m_nodes[secondNodeIndex].x;
 
@@ -1237,7 +1237,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
         dualFace.emplace_back(edgeCenter);
 
         const auto faceIndex = sortedFacesIndices[e];
-        if (faceIndex != constants::missing::sizetValue)
+        if (faceIndex != constants::missing::uintValue)
         {
             dualFace.emplace_back(m_facesMassCenters[faceIndex]);
         }
@@ -1288,7 +1288,7 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
         const auto secondEdge = m_nodesEdges[node][ee];
         const auto firstFace = m_edgesFaces[firstEdge][0];
 
-        UInt secondFace = constants::missing::sizetValue;
+        UInt secondFace = constants::missing::uintValue;
         if (m_edgesNumFaces[firstEdge] > 1)
         {
             secondFace = m_edgesFaces[firstEdge][1];
@@ -1435,7 +1435,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode != constants::missing::sizetValue && secondNode != constants::missing::sizetValue)
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
         {
             // if one of the nodes has no other attached edges, the current edge is an hanging edge
             if (m_nodesNumEdges[firstNode] > 1 && m_nodesNumEdges[secondNode] > 1)
@@ -1478,7 +1478,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
             for (UInt f = 0; f < GetNumEdgesFaces(e); ++f)
             {
                 const auto faceIndex = m_edgesFaces[e][f];
-                if (faceIndex == constants::missing::sizetValue)
+                if (faceIndex == constants::missing::uintValue)
                 {
                     continue;
                 }
@@ -1501,7 +1501,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
                 const auto firstNodeIndex = m_edges[e].first;
                 const auto secondNodeIndex = m_edges[e].second;
 
-                if (firstNodeIndex == constants::missing::sizetValue || secondNodeIndex == constants::missing::sizetValue)
+                if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
                 {
                     continue;
                 }
@@ -1518,8 +1518,8 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
             if (allFaceCircumcentersInPolygon)
             {
-                m_edges[e].first = constants::missing::sizetValue;
-                m_edges[e].second = constants::missing::sizetValue;
+                m_edges[e].first = constants::missing::uintValue;
+                m_edges[e].second = constants::missing::uintValue;
             }
         }
     }
@@ -1534,8 +1534,8 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
         {
             if (edgeMask[e] == 1)
             {
-                m_edges[e].first = constants::missing::sizetValue;
-                m_edges[e].second = constants::missing::sizetValue;
+                m_edges[e].first = constants::missing::uintValue;
+                m_edges[e].second = constants::missing::uintValue;
             }
         }
     }
@@ -1559,16 +1559,16 @@ std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>&
 {
     const auto numPoints = static_cast<UInt>(points.size());
     std::vector<UInt> result;
-    result.resize(numPoints, constants::missing::sizetValue);
+    result.resize(numPoints, constants::missing::uintValue);
     std::vector<Point> polygonNodesCache;
 
     for (UInt i = 0; i < numPoints; ++i)
     {
         const auto edgeIndex = FindEdgeCloseToAPoint(points[i]);
 
-        if (edgeIndex == constants::missing::sizetValue)
+        if (edgeIndex == constants::missing::uintValue)
         {
-            result[i] = constants::missing::sizetValue;
+            result[i] = constants::missing::uintValue;
             continue;
         }
 
@@ -1591,8 +1591,8 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> Mesh2D::IsSegmentCrossingABoundar
                                                                                       const Point& secondPoint) const
 {
     double intersectionRatio = std::numeric_limits<double>::max();
-    UInt intersectedFace = constants::missing::sizetValue;
-    UInt intersectedEdge = constants::missing::sizetValue;
+    UInt intersectedFace = constants::missing::uintValue;
+    UInt intersectedEdge = constants::missing::uintValue;
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
         if (!IsEdgeOnBoundary(e))
@@ -1812,15 +1812,15 @@ std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bo
         int isEdgeIncluded;
         if (includeIntersected)
         {
-            isEdgeIncluded = ((firstNodeIndex != constants::missing::sizetValue && nodeMask[firstNodeIndex] == 1) ||
-                              (secondNodeIndex != constants::missing::sizetValue && nodeMask[secondNodeIndex] == 1))
+            isEdgeIncluded = ((firstNodeIndex != constants::missing::uintValue && nodeMask[firstNodeIndex] == 1) ||
+                              (secondNodeIndex != constants::missing::uintValue && nodeMask[secondNodeIndex] == 1))
                                  ? 1
                                  : 0;
         }
         else
         {
-            isEdgeIncluded = (firstNodeIndex != constants::missing::sizetValue && nodeMask[firstNodeIndex] == 1 &&
-                              secondNodeIndex != constants::missing::sizetValue && nodeMask[secondNodeIndex] == 1)
+            isEdgeIncluded = (firstNodeIndex != constants::missing::uintValue && nodeMask[firstNodeIndex] == 1 &&
+                              secondNodeIndex != constants::missing::uintValue && nodeMask[secondNodeIndex] == 1)
                                  ? 1
                                  : 0;
         }
@@ -1838,7 +1838,7 @@ std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bo
             for (UInt n = 0; n < GetNumFaceEdges(f); ++n)
             {
                 const auto edgeIndex = m_facesEdges[f][n];
-                if (edgeIndex != constants::missing::sizetValue && edgeMask[edgeIndex] == 0)
+                if (edgeIndex != constants::missing::uintValue && edgeMask[edgeIndex] == 0)
                 {
                     isOneEdgeNotIncluded = true;
                     break;
@@ -1850,7 +1850,7 @@ std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bo
                 for (UInt n = 0; n < GetNumFaceEdges(f); ++n)
                 {
                     const auto edgeIndex = m_facesEdges[f][n];
-                    if (edgeIndex != constants::missing::sizetValue)
+                    if (edgeIndex != constants::missing::uintValue)
                     {
                         secondEdgeMask[edgeIndex] = 0;
                     }
@@ -1898,11 +1898,11 @@ std::vector<int> Mesh2D::NodeMaskFromEdgeMask(std::vector<int> const& edgeMask) 
         const auto firstNodeIndex = m_edges[e].first;
         const auto secondNodeIndex = m_edges[e].second;
 
-        if (firstNodeIndex != constants::missing::sizetValue)
+        if (firstNodeIndex != constants::missing::uintValue)
         {
             nodeMask[firstNodeIndex] = 1;
         }
-        if (secondNodeIndex != constants::missing::sizetValue)
+        if (secondNodeIndex != constants::missing::uintValue)
         {
             nodeMask[secondNodeIndex] = 1;
         }

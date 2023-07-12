@@ -150,8 +150,8 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
-    std::vector<std::vector<meshkernel::UInt>> nodeIndices(m_gridNodes.size(), std::vector<meshkernel::UInt>(m_gridNodes[0].size(), constants::missing::sizetValue));
-    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::sizetValue, constants::missing::sizetValue});
+    std::vector<std::vector<meshkernel::UInt>> nodeIndices(m_gridNodes.size(), std::vector<meshkernel::UInt>(m_gridNodes[0].size(), constants::missing::uintValue));
+    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::uintValue, constants::missing::uintValue});
 
     UInt ind = 0;
     for (UInt m = 0; m < m_gridNodes.size(); m++)
@@ -170,7 +170,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (UInt n = 0; n < m_gridNodes[0].size(); n++)
         {
-            if (nodeIndices[m][n] != constants::missing::sizetValue && nodeIndices[m + 1][n] != constants::missing::sizetValue)
+            if (nodeIndices[m][n] != constants::missing::uintValue && nodeIndices[m + 1][n] != constants::missing::uintValue)
             {
                 edges[ind].first = nodeIndices[m][n];
                 edges[ind].second = nodeIndices[m + 1][n];
@@ -183,7 +183,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (UInt n = 0; n < m_gridNodes[0].size() - 1; n++)
         {
-            if (nodeIndices[m][n] != constants::missing::sizetValue && nodeIndices[m][n + 1] != constants::missing::sizetValue)
+            if (nodeIndices[m][n] != constants::missing::uintValue && nodeIndices[m][n + 1] != constants::missing::uintValue)
             {
                 edges[ind].first = nodeIndices[m][n];
                 edges[ind].second = nodeIndices[m][n + 1];
@@ -223,7 +223,7 @@ CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
     SearchNearestLocation(point, Mesh::Location::Nodes);
     if (GetNumLocations(Mesh::Location::Nodes) == 0)
     {
-        return {constants::missing::sizetValue, constants::missing::sizetValue};
+        return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
     const auto nodeIndex = GetLocationsIndices(0, Mesh::Location::Nodes);

@@ -102,7 +102,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
     // m grid lines (horizontal)
     for (UInt n = 0; n < m_grid.m_numN; ++n)
     {
-        UInt startM = constants::missing::sizetValue;
+        UInt startM = constants::missing::uintValue;
         int nextVertical = 0;
         for (UInt m = 0; m < m_grid.m_numM; ++m)
         {
@@ -125,7 +125,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
             // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
             // The interval ranges from startM to the next BottomRight or UpperRight node.
-            if (startM != constants::missing::sizetValue &&
+            if (startM != constants::missing::uintValue &&
                 (nodeType == CurvilinearGrid::NodeType::BottomRight || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextVertical != 0)
             {
@@ -181,7 +181,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
     // m gridlines (vertical)
     for (UInt m = 0; m < m_grid.m_numM; ++m)
     {
-        UInt startN = constants::missing::sizetValue;
+        UInt startN = constants::missing::uintValue;
         int nextHorizontal = 0;
         for (UInt n = 0; n < m_grid.m_numN; ++n)
         {
@@ -206,7 +206,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
             // The interval ranges from startN to the next UpperLeft or UpperRight node.
             if ((nodeType == CurvilinearGrid::NodeType::UpperLeft || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextHorizontal != 0 &&
-                startN != constants::missing::sizetValue)
+                startN != constants::missing::uintValue)
             {
                 for (auto nn = startN + 1; nn < n; ++nn)
                 {
