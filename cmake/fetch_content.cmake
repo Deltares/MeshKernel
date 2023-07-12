@@ -85,11 +85,11 @@ if(${USE_LIBFMT})
   endif()
   
 # Eigen
-# Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so master will be used here.
+# Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so the head master will be used here.
 FetchContent_Declare(
   Eigen
   GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG        master
+  GIT_TAG        21cd3fe20990a5ac1d683806f605110962aac3f1
 )
 
 FetchContent_GetProperties(Eigen)
