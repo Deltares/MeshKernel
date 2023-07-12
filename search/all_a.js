@@ -2,9 +2,9 @@ var searchData=
 [
   ['n_5frefinement_399',['n_refinement',['../structmeshkernel_1_1_curvilinear_parameters.html#a45aec3c24de32bd32bb17b1a52791358',1,'meshkernel::CurvilinearParameters']]],
   ['network1d_400',['Network1D',['../classmeshkernel_1_1_network1_d.html',1,'meshkernel::Network1D'],['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
-  ['nextcircularbackwardindex_401',['NextCircularBackwardIndex',['../namespacemeshkernel.html#af9e63a9340283b6689bfbd3c1d6e47b0',1,'meshkernel']]],
-  ['nextcircularforwardindex_402',['NextCircularForwardIndex',['../namespacemeshkernel.html#a1ab16fb9b1292e8a70f954256d2d6f1d',1,'meshkernel']]],
-  ['node_403',['Node',['../classmeshkernel_1_1_polygons.html#ac8e23511289fe8cddb60ca69ee5565e3',1,'meshkernel::Polygons']]],
+  ['nextcircularbackwardindex_401',['NextCircularBackwardIndex',['../namespacemeshkernel.html#a6560021860904bb4568f5e214453822c',1,'meshkernel']]],
+  ['nextcircularforwardindex_402',['NextCircularForwardIndex',['../namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee',1,'meshkernel']]],
+  ['node_403',['Node',['../classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc',1,'meshkernel::Polygons']]],
   ['node_5fx_404',['node_x',['../structmeshkernelapi_1_1_curvilinear_grid.html#a25189b10d35910b3c6dc020d49b7046f',1,'meshkernelapi::CurvilinearGrid::node_x()'],['../structmeshkernelapi_1_1_mesh1_d.html#a97f68f54d7b204c198fe655b9551b4cb',1,'meshkernelapi::Mesh1D::node_x()'],['../structmeshkernelapi_1_1_mesh2_d.html#adfc825d66e9fe09ee30d0f526b81a8c4',1,'meshkernelapi::Mesh2D::node_x()']]],
   ['node_5fy_405',['node_y',['../structmeshkernelapi_1_1_curvilinear_grid.html#a8b9eac5ad3043c3549b2deb39058025f',1,'meshkernelapi::CurvilinearGrid::node_y()'],['../structmeshkernelapi_1_1_mesh1_d.html#a6471e0c2a8f03e8e3cc4819f7af1c9d5',1,'meshkernelapi::Mesh1D::node_y()'],['../structmeshkernelapi_1_1_mesh2_d.html#a1411afdfd80ed03509e958275aae00c9',1,'meshkernelapi::Mesh2D::node_y()']]],
   ['nodeadministration_406',['NodeAdministration',['../classmeshkernel_1_1_mesh.html#ab38045736a55485cb9fe2ad078928c5b',1,'meshkernel::Mesh']]],

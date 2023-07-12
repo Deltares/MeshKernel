@@ -146,12 +146,12 @@ $(function() {
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keywordtype">void</span> ComputeLinearSystemTerms();</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordtype">void</span> ComputeLocalIncrements(<span class="keywordtype">size_t</span> nodeIndex,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordtype">void</span> ComputeLocalIncrements(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex,</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                                    <span class="keywordtype">double</span>&amp; dx0,</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                                    <span class="keywordtype">double</span>&amp; dy0,</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                                    std::array&lt;double, 2&gt;&amp; weightsSum);</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordtype">void</span> UpdateNodeCoordinates(<span class="keywordtype">size_t</span> nodeIndex);</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordtype">void</span> UpdateNodeCoordinates(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex);</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordtype">void</span> AllocateLinearSystem();</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
@@ -165,19 +165,19 @@ $(function() {
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <a class="code" href="classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29">LandBoundaries::ProjectToLandBoundaryOption</a> m_projectToLandBoundaryOption; </div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <a class="code" href="structmeshkernel_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> m_orthogonalizationParameters;                 </div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        std::vector&lt;size_t&gt; m_localCoordinatesIndices; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        std::vector&lt;Point&gt; m_localCoordinates;         </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        std::vector&lt;Point&gt; m_orthogonalCoordinates;    </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        std::vector&lt;Point&gt; m_originalNodes;            </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        std::vector&lt;UInt&gt; m_localCoordinatesIndices; </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        std::vector&lt;Point&gt; m_localCoordinates;       </div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        std::vector&lt;Point&gt; m_orthogonalCoordinates;  </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        std::vector&lt;Point&gt; m_originalNodes;          </div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        <span class="comment">// Linear system terms</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordtype">size_t</span> m_nodeCacheSize = 0;                     </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        std::vector&lt;size_t&gt; m_compressedEndNodeIndex;   </div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        std::vector&lt;size_t&gt; m_compressedStartNodeIndex; </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        std::vector&lt;double&gt; m_compressedWeightX;        </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        std::vector&lt;double&gt; m_compressedWeightY;        </div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        std::vector&lt;double&gt; m_compressedRhs;            </div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        std::vector&lt;size_t&gt; m_compressedNodesNodes;     </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_nodeCacheSize = 0;                     </div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        std::vector&lt;UInt&gt; m_compressedEndNodeIndex;   </div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        std::vector&lt;UInt&gt; m_compressedStartNodeIndex; </div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        std::vector&lt;double&gt; m_compressedWeightX;      </div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        std::vector&lt;double&gt; m_compressedWeightY;      </div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        std::vector&lt;double&gt; m_compressedRhs;          </div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        std::vector&lt;UInt&gt; m_compressedNodesNodes;     </div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="comment">// run-time parameters</span></div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="keywordtype">double</span> m_mumax = 0.0; </div>
@@ -190,7 +190,8 @@ $(function() {
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html_ad54c20c22842692c9aa098eee4808d53"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#ad54c20c22842692c9aa098eee4808d53">meshkernel::OrthogonalizationAndSmoothing::PrepareOuterIteration</a></div><div class="ttdeci">void PrepareOuterIteration()</div><div class="ttdoc">Prepares the outer iteration, calculates orthogonalizer and smoother coefficients and assable the lin...</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html_a36882183b2f25248d84f06861d64b93b"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#a36882183b2f25248d84f06861d64b93b">meshkernel::OrthogonalizationAndSmoothing::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Executes the entire algorithm.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html">meshkernel::OrthogonalizationAndSmoothing</a></div><div class="ttdoc">Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or are...</div><div class="ttdef"><b>Definition:</b> OrthogonalizationAndSmoothing.hpp:80</div></div>
-<div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
+<div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:37</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:35</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html_ac40b0272b753b40dd24a2d270b138991"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#ac40b0272b753b40dd24a2d270b138991">meshkernel::OrthogonalizationAndSmoothing::Initialize</a></div><div class="ttdeci">void Initialize()</div><div class="ttdoc">Initializes the object.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html_a15523500465dc8015118b6c761df4d0a"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#a15523500465dc8015118b6c761df4d0a">meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing</a></div><div class="ttdeci">OrthogonalizationAndSmoothing(std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; Smoother &gt; smoother, std::shared_ptr&lt; Orthogonalizer &gt; orthogonalizer, std::shared_ptr&lt; Polygons &gt; polygon, std::shared_ptr&lt; LandBoundaries &gt; landBoundaries, LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption, const OrthogonalizationParameters &amp;orthogonalizationParameters)</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_orthogonalization_and_smoothing_html_aaf52332adb61bb54610d43923a06566a"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a">meshkernel::OrthogonalizationAndSmoothing::Solve</a></div><div class="ttdeci">void Solve()</div><div class="ttdoc">Performs an inner iteration, update the mesh node positions.</div></div>

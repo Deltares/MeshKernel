@@ -110,12 +110,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ec01984b66446a3db7cd48de077e5df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">ComputeBoundaryContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double searchRadius)</td></tr>
 <tr class="memdesc:a4ec01984b66446a3db7cd48de077e5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">More...</a><br /></td></tr>
 <tr class="separator:a4ec01984b66446a3db7cd48de077e5df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cfee1f3e47ed4550a9f5823dd760229"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a9cfee1f3e47ed4550a9f5823dd760229">Mesh1dIndices</a> () const</td></tr>
-<tr class="memdesc:a9cfee1f3e47ed4550a9f5823dd760229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 1d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#a9cfee1f3e47ed4550a9f5823dd760229">More...</a><br /></td></tr>
-<tr class="separator:a9cfee1f3e47ed4550a9f5823dd760229"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ae756e610f1c155ba9dbbe12b95d7f16e">Mesh2dIndices</a> () const</td></tr>
-<tr class="memdesc:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 2d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#ae756e610f1c155ba9dbbe12b95d7f16e">More...</a><br /></td></tr>
-<tr class="separator:ae756e610f1c155ba9dbbe12b95d7f16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae05594ce9476ec8138b80230eed74abc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ae05594ce9476ec8138b80230eed74abc">Mesh1dIndices</a> () const</td></tr>
+<tr class="memdesc:ae05594ce9476ec8138b80230eed74abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 1d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#ae05594ce9476ec8138b80230eed74abc">More...</a><br /></td></tr>
+<tr class="separator:ae05594ce9476ec8138b80230eed74abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba245fc87cc502ef76c0c5e757a6c816"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#aba245fc87cc502ef76c0c5e757a6c816">Mesh2dIndices</a> () const</td></tr>
+<tr class="memdesc:aba245fc87cc502ef76c0c5e757a6c816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 2d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#aba245fc87cc502ef76c0c5e757a6c816">More...</a><br /></td></tr>
+<tr class="separator:aba245fc87cc502ef76c0c5e757a6c816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an 1d-2d contacts. </p>
@@ -195,7 +195,7 @@ Public Member Functions</h2></td></tr>
 <p>The algorithms works as follows:</p><ul>
 <li>For each oned node, find the closest 2d boundary faces within the search radius.</li>
 <li>If a boundary face can be connected to multiple oned nodes, choose the closest one.</li>
-<li>Generate the 1d-2d contacts. <div class="image">
+<li>Generate the 1d-2d contacts.Index m_numM = 0; ///&lt; Number of columns in the curvilinear grid <div class="image">
 <img src="ComputeBoundaryContacts.jpg" alt=""/>
 <div class="caption">
 1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.</div></div>
@@ -376,8 +376,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9cfee1f3e47ed4550a9f5823dd760229"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9cfee1f3e47ed4550a9f5823dd760229">&#9670;&nbsp;</a></span>Mesh1dIndices()</h2>
+<a id="ae05594ce9476ec8138b80230eed74abc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae05594ce9476ec8138b80230eed74abc">&#9670;&nbsp;</a></span>Mesh1dIndices()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -386,7 +386,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;size_t&gt; const&amp; meshkernel::Contacts::Mesh1dIndices </td>
+          <td class="memname">std::vector&lt;<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt; const&amp; meshkernel::Contacts::Mesh1dIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -404,8 +404,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae756e610f1c155ba9dbbe12b95d7f16e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae756e610f1c155ba9dbbe12b95d7f16e">&#9670;&nbsp;</a></span>Mesh2dIndices()</h2>
+<a id="aba245fc87cc502ef76c0c5e757a6c816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba245fc87cc502ef76c0c5e757a6c816">&#9670;&nbsp;</a></span>Mesh2dIndices()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -414,7 +414,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;size_t&gt; const&amp; meshkernel::Contacts::Mesh2dIndices </td>
+          <td class="memname">std::vector&lt;<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt; const&amp; meshkernel::Contacts::Mesh2dIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>

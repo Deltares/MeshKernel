@@ -97,9 +97,9 @@ Inheritance diagram for meshkernel::BilinearInterpolationOnGriddedSamples:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae262180753b95d357f9a5f5758914c26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae262180753b95d357f9a5f5758914c26">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, size_t numXCoord, size_t numYCoord, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)</td></tr>
-<tr class="memdesc:ae262180753b95d357f9a5f5758914c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae262180753b95d357f9a5f5758914c26">More...</a><br /></td></tr>
-<tr class="separator:ae262180753b95d357f9a5f5758914c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fe1250442d34f13d1a998a1cb68eca7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a9fe1250442d34f13d1a998a1cb68eca7">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)</td></tr>
+<tr class="memdesc:a9fe1250442d34f13d1a998a1cb68eca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a9fe1250442d34f13d1a998a1cb68eca7">More...</a><br /></td></tr>
+<tr class="separator:a9fe1250442d34f13d1a998a1cb68eca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebd319fa66fdb540e952069d268f35f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const std::vector&lt; double &gt; &amp;xCoordinates, const std::vector&lt; double &gt; &amp;yCoordinates, const std::vector&lt; double &gt; &amp;values)</td></tr>
 <tr class="memdesc:aebd319fa66fdb540e952069d268f35f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">More...</a><br /></td></tr>
 <tr class="separator:aebd319fa66fdb540e952069d268f35f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,15 +112,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a98d8740c58b7f73d0ec869f4032d2267">~MeshInterpolation</a> ()=default</td></tr>
 <tr class="memdesc:a98d8740c58b7f73d0ec869f4032d2267 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual destructor. <br /></td></tr>
 <tr class="separator:a98d8740c58b7f73d0ec869f4032d2267 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4c7f26454573cba78a2f4230219cdfa inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#af4c7f26454573cba78a2f4230219cdfa">GetNodeResult</a> (size_t node) const</td></tr>
-<tr class="memdesc:af4c7f26454573cba78a2f4230219cdfa inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific node.  <a href="classmeshkernel_1_1_mesh_interpolation.html#af4c7f26454573cba78a2f4230219cdfa">More...</a><br /></td></tr>
-<tr class="separator:af4c7f26454573cba78a2f4230219cdfa inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61682e1aa3e4812d5e45571f40bf7e99 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a61682e1aa3e4812d5e45571f40bf7e99">GetEdgeResult</a> (size_t edge) const</td></tr>
-<tr class="memdesc:a61682e1aa3e4812d5e45571f40bf7e99 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific edge.  <a href="classmeshkernel_1_1_mesh_interpolation.html#a61682e1aa3e4812d5e45571f40bf7e99">More...</a><br /></td></tr>
-<tr class="separator:a61682e1aa3e4812d5e45571f40bf7e99 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d059a2e90aac48e6c8dc4cb5c3299f5 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a2d059a2e90aac48e6c8dc4cb5c3299f5">GetFaceResult</a> (size_t face) const</td></tr>
-<tr class="memdesc:a2d059a2e90aac48e6c8dc4cb5c3299f5 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific face.  <a href="classmeshkernel_1_1_mesh_interpolation.html#a2d059a2e90aac48e6c8dc4cb5c3299f5">More...</a><br /></td></tr>
-<tr class="separator:a2d059a2e90aac48e6c8dc4cb5c3299f5 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a3fcd32e5f2af92e25fa2e4b25e2750 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a6a3fcd32e5f2af92e25fa2e4b25e2750">GetNodeResult</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node) const</td></tr>
+<tr class="memdesc:a6a3fcd32e5f2af92e25fa2e4b25e2750 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific node.  <a href="classmeshkernel_1_1_mesh_interpolation.html#a6a3fcd32e5f2af92e25fa2e4b25e2750">More...</a><br /></td></tr>
+<tr class="separator:a6a3fcd32e5f2af92e25fa2e4b25e2750 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3e5e36c7f837001b6e7b3fcc638cdab inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#af3e5e36c7f837001b6e7b3fcc638cdab">GetEdgeResult</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge) const</td></tr>
+<tr class="memdesc:af3e5e36c7f837001b6e7b3fcc638cdab inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific edge.  <a href="classmeshkernel_1_1_mesh_interpolation.html#af3e5e36c7f837001b6e7b3fcc638cdab">More...</a><br /></td></tr>
+<tr class="separator:af3e5e36c7f837001b6e7b3fcc638cdab inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3629d65df5f530b784e2af73a65d7c36 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a3629d65df5f530b784e2af73a65d7c36">GetFaceResult</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> face) const</td></tr>
+<tr class="memdesc:a3629d65df5f530b784e2af73a65d7c36 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the interpolation value at a specific face.  <a href="classmeshkernel_1_1_mesh_interpolation.html#a3629d65df5f530b784e2af73a65d7c36">More...</a><br /></td></tr>
+<tr class="separator:a3629d65df5f530b784e2af73a65d7c36 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ba253850436a4dce5833a8be8b6bbbb inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a5ba253850436a4dce5833a8be8b6bbbb">GetNodeResults</a> () const</td></tr>
 <tr class="memdesc:a5ba253850436a4dce5833a8be8b6bbbb inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets all interpolated values at nodes.  <a href="classmeshkernel_1_1_mesh_interpolation.html#a5ba253850436a4dce5833a8be8b6bbbb">More...</a><br /></td></tr>
 <tr class="separator:a5ba253850436a4dce5833a8be8b6bbbb inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,8 +150,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for performing bilinear interpolation on gridded samples. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae262180753b95d357f9a5f5758914c26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae262180753b95d357f9a5f5758914c26">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
+<a id="a9fe1250442d34f13d1a998a1cb68eca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe1250442d34f13d1a998a1cb68eca7">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,13 +165,13 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
           <td class="paramname"><em>numXCoord</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
           <td class="paramname"><em>numYCoord</em>, </td>
         </tr>
         <tr>
