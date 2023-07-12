@@ -29,7 +29,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 namespace meshkernel
 {

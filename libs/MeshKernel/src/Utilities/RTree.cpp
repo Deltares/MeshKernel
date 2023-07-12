@@ -25,7 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::RTree;
 

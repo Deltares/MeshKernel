@@ -31,7 +31,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 namespace meshkernel
 {

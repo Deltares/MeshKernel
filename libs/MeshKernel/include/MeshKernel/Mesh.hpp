@@ -28,7 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/RTree.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library

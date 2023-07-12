@@ -159,7 +159,7 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<UInt, UInt> Edge;
+    using Edge = std::pair<UInt, UInt>;
 
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
