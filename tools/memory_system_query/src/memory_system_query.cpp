@@ -1,20 +1,7 @@
 #include "memory_system_query.hpp"
 
-#include <map>
 #include <sstream>
 #include <string>
-#include <utility>
-
-#if defined(_WIN32)
-// clang-format off
-#include <windows.h>
-#include <psapi.h>
-// clang-format on
-#elif defined(__linux__)
-#include "memory_monitor_linux.hpp"
-#else
-#error "Unsupported platform"
-#endif
 
 MemorySystemQuery& MemorySystemQuery::Instance()
 {
@@ -24,33 +11,40 @@ MemorySystemQuery& MemorySystemQuery::Instance()
 
 void MemorySystemQuery::Start()
 {
-    std::unique_lock lock(mutex);
+    std::unique_lock lock(m_mutex);
     m_total_allocated_bytes = CurrentMemoryUsage();
     m_max_bytes_used = PeakMemoryUsage();
+    /*std::cout << "start: "
+              << "phys: " << m_memory_monitor->Usage(MemoryType::Physical)
+              << " virt: " << m_memory_monitor->Usage(MemoryType::Virtual) << std::endl;*/
 }
 
 void MemorySystemQuery::Stop(Result& result)
 {
-    std::unique_lock lock(mutex);
+    std::unique_lock lock(m_mutex);
     result.total_allocated_bytes = CurrentMemoryUsage() - m_total_allocated_bytes;
     result.max_bytes_used = PeakMemoryUsage() - m_max_bytes_used;
+    /*std::cout << "end  : "
+              << "phys: " << m_memory_monitor->Usage(MemoryType::Physical)
+              << " virt: " << m_memory_monitor->Usage(MemoryType::Virtual) << std::endl;
+    std::cout << "diff : " << result.total_allocated_bytes << std::endl;*/
 }
 
 int64_t MemorySystemQuery::TotalAllocatedBytes() const
 {
-    std::shared_lock lock(mutex);
+    std::shared_lock lock(m_mutex);
     return CurrentMemoryUsage() - m_total_allocated_bytes;
 }
 
 int64_t MemorySystemQuery::MaxBytesUsed() const
 {
-    std::shared_lock lock(mutex);
+    std::shared_lock lock(m_mutex);
     return PeakMemoryUsage() - m_max_bytes_used;
 }
 
 std::string MemorySystemQuery::Statistics(std::string const& caller) const
 {
-    std::shared_lock lock(mutex);
+    std::shared_lock lock(m_mutex);
     std::ostringstream oss;
     if (!caller.empty())
     {
@@ -63,33 +57,18 @@ std::string MemorySystemQuery::Statistics(std::string const& caller) const
     return oss.str();
 }
 
-uint64_t MemorySystemQuery::CurrentMemoryUsage()
+uint64_t MemorySystemQuery::CurrentMemoryUsage() const
 {
-#ifdef _WIN32
-    PROCESS_MEMORY_COUNTERS_EX pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(),
-                         reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc),
-                         sizeof(pmc));
-    return static_cast<uint64_t>(pmc.WorkingSetSize + pmc.PrivateUsage);
-#else
-    return MemoryMonitor::CurrentUsage();
-#endif
+    return m_memory_monitor->CurrentUsage();
 }
 
-uint64_t MemorySystemQuery::PeakMemoryUsage()
+uint64_t MemorySystemQuery::PeakMemoryUsage() const
 {
-#ifdef _WIN32
-    PROCESS_MEMORY_COUNTERS pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(),
-                         &pmc,
-                         sizeof(pmc));
-    return static_cast<uint64_t>(pmc.PeakWorkingSetSize);
-#else
-    return MemoryMonitor::PeakUsage();
-#endif
+    return m_memory_monitor->PeakUsage();
 }
 
-std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager)
+std::ostream& operator<<(std::ostream& ostream,
+                         MemorySystemQuery const& custom_memory_manager)
 {
     ostream << custom_memory_manager.Statistics();
     return ostream;

@@ -10,6 +10,8 @@
 
 #include <benchmark/benchmark.h>
 
+#include "memory_monitor_factory.hpp"
+
 /// @brief Custom memory manager for registration via ::benchmark::RegisterMemoryManager
 ///        (implemented as a therad-safe singleton)
 class MemorySystemQuery final : public ::benchmark::MemoryManager
@@ -41,10 +43,13 @@ public:
     /// @param[ostream] Output stream
     /// @param[ostream] Custom memory manager instance
     /// @return Output stream
-    friend std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager);
+    friend std::ostream& operator<<(std::ostream& ostream,
+                                    MemorySystemQuery const& custom_memory_manager);
 
 private:
-    mutable std::shared_mutex mutex;
+    mutable std::shared_mutex m_mutex;
+
+    std::unique_ptr<MemoryMonitor> m_memory_monitor = CreateMemoryMonitor();
 
     int64_t m_total_allocated_bytes = 0;       ///< The total memory allocated in bytes between Start and Stop
     int64_t m_max_bytes_used = TombstoneValue; ///< The peak memory use in bytes between Start and Stop
@@ -54,15 +59,16 @@ private:
     MemorySystemQuery(MemorySystemQuery const&) = delete;
     MemorySystemQuery& operator=(MemorySystemQuery const&) = delete;
 
-    static uint64_t CurrentMemoryUsage();
+    uint64_t CurrentMemoryUsage() const;
 
-    static uint64_t PeakMemoryUsage();
+    uint64_t PeakMemoryUsage() const;
 };
 
 /// @brief Overlaod of oepartor << for printing the statistics of the class MemorySystemQuery
 /// @param[ostream] Output stream
 /// @param[ostream] Custom memory manager instance
 /// @return Output stream
-std::ostream& operator<<(std::ostream& ostream, MemorySystemQuery const& custom_memory_manager);
+std::ostream& operator<<(std::ostream& ostream,
+                         MemorySystemQuery const& custom_memory_manager);
 
 #define MEMORY_SYSTEM_QUERY MemorySystemQuery::Instance()
