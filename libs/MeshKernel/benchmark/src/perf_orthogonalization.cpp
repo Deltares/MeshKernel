@@ -1,3 +1,4 @@
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
@@ -38,7 +39,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         // move nodes to skew the mesh
         double const delta_x = dim_x / static_cast<double>(n - 1);
         double const delta_y = dim_y / static_cast<double>(m - 1);
-        for (size_t i = 0; i < mesh->m_nodes.size(); ++i)
+        for (meshkernel::Index i = 0; i < mesh->m_nodes.size(); ++i)
         {
             // only move inetrnal nodes
             if (!mesh->IsNodeOnBoundary(i))

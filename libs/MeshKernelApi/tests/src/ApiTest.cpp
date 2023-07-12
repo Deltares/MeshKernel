@@ -41,7 +41,7 @@ public:
     /// @param[in]  numRows            Number of rows
     /// @param[in]  numColumns            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(size_t numRows = 2, size_t numColumns = 3, double delta = 1.0)
+    void MakeMesh(meshkernel::UInt numRows = 2, meshkernel::UInt numColumns = 3, double delta = 1.0)
     {
         // Set-up new mesh
         auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numRows, numColumns, delta);
@@ -58,18 +58,18 @@ public:
         }
     }
 
-    void MakeUniformCurvilinearGrid(int numberOfColumns = 4,
-                                    int numberOfRows = 4,
+    void MakeUniformCurvilinearGrid(meshkernel::UInt numberOfColumns = 4,
+                                    meshkernel::UInt numberOfRows = 4,
                                     double blockSizeX = 10.0,
                                     double blockSizeY = 10.0,
                                     double originX = 0.0,
-                                    double originY = 0.0)
+                                    double originY = 0.0) const
     {
         meshkernel::MakeGridParameters makeGridParameters{};
         meshkernelapi::GeometryList geometryList{};
 
-        makeGridParameters.num_columns = numberOfColumns;
-        makeGridParameters.num_rows = numberOfRows;
+        makeGridParameters.num_columns = static_cast<int>(numberOfColumns);
+        makeGridParameters.num_rows = static_cast<int>(numberOfRows);
         makeGridParameters.angle = 0.0;
         makeGridParameters.origin_x = originX;
         makeGridParameters.origin_y = originY;
@@ -3140,8 +3140,8 @@ TEST(Mesh2D, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMe
 TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
 {
     // Prepare
-    size_t nRows{5};
-    size_t nCols{4};
+    meshkernel::UInt nRows{5};
+    meshkernel::UInt nCols{4};
     MakeMesh(nRows, nCols, 100.0);
     auto const meshKernelId = GetMeshKernelId();
 

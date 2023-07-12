@@ -100,11 +100,11 @@ CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
-    for (size_t n = 0; n < m_grid.m_numN; ++n)
+    for (UInt n = 0; n < m_grid.m_numN; ++n)
     {
-        size_t startM = constants::missing::sizetValue;
+        UInt startM = constants::missing::uintValue;
         int nextVertical = 0;
-        for (size_t m = 0; m < m_grid.m_numM; ++m)
+        for (UInt m = 0; m < m_grid.m_numM; ++m)
         {
             const auto nodeType = m_grid.m_gridNodesTypes[m][n];
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)
@@ -125,7 +125,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
             // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
             // The interval ranges from startM to the next BottomRight or UpperRight node.
-            if (startM != constants::missing::sizetValue &&
+            if (startM != constants::missing::uintValue &&
                 (nodeType == CurvilinearGrid::NodeType::BottomRight || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextVertical != 0)
             {
@@ -179,11 +179,11 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
     // m gridlines (vertical)
-    for (size_t m = 0; m < m_grid.m_numM; ++m)
+    for (UInt m = 0; m < m_grid.m_numM; ++m)
     {
-        size_t startN = constants::missing::sizetValue;
+        UInt startN = constants::missing::uintValue;
         int nextHorizontal = 0;
-        for (size_t n = 0; n < m_grid.m_numN; ++n)
+        for (UInt n = 0; n < m_grid.m_numN; ++n)
         {
             const auto nodeType = m_grid.m_gridNodesTypes[m][n];
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::BottomRight)
@@ -206,7 +206,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
             // The interval ranges from startN to the next UpperLeft or UpperRight node.
             if ((nodeType == CurvilinearGrid::NodeType::UpperLeft || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextHorizontal != 0 &&
-                startN != constants::missing::sizetValue)
+                startN != constants::missing::uintValue)
             {
                 for (auto nn = startN + 1; nn < n; ++nn)
                 {
@@ -263,8 +263,8 @@ void CurvilinearGridOrthogonalization::Solve()
     const double factor = 0.9 * 0.9;
 
     // Only the internal nodes of the orthogonalization box
-    const auto minMInternal = std::max(static_cast<size_t>(1), m_lowerLeft.m_m);
-    const auto minNInternal = std::max(static_cast<size_t>(1), m_lowerLeft.m_n);
+    const auto minMInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_m);
+    const auto minNInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_n);
 
     const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.m_numM - 1);
     const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.m_numN - 1);
@@ -408,7 +408,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidVerticalBoundaryNodes();
     // Store the counter
-    std::vector<std::vector<size_t>> counter(m_grid.m_numM, std::vector<size_t>(m_grid.m_numN, 0));
+    std::vector<std::vector<UInt>> counter(m_grid.m_numM, std::vector<UInt>(m_grid.m_numN, 0));
 
     // Perform left sum
     for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
@@ -461,7 +461,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidHorizontalBoundaryNodes();
-    std::vector<std::vector<size_t>> counter(m_grid.m_numM, std::vector<size_t>(m_grid.m_numN, 0));
+    std::vector<std::vector<UInt>> counter(m_grid.m_numM, std::vector<UInt>(m_grid.m_numN, 0));
 
     // Perform bottom sum
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)

@@ -45,11 +45,11 @@ namespace meshkernel
 
         /// @brief Compute curvilinear in a polygon (pol2curvi)
         /// @returns The computed curvilinear grid
-        CurvilinearGrid Compute(size_t firstNode, size_t secondNode, size_t thirdNode, bool useFourthSide) const;
+        CurvilinearGrid Compute(UInt firstNode, UInt secondNode, UInt thirdNode, bool useFourthSide) const;
 
         /// @brief Compute curvilinear in a triangle (pol2curvi_tri)
         /// @returns The computed curvilinear grid
-        CurvilinearGrid Compute(size_t firstNode, size_t secondNode, size_t thirdNode) const;
+        CurvilinearGrid Compute(UInt firstNode, UInt secondNode, UInt thirdNode) const;
 
     private:
         std::shared_ptr<Polygons> m_polygon; ///< A pointer to Polygons

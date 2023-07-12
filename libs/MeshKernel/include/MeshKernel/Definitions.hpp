@@ -27,31 +27,10 @@
 
 #pragma once
 
-#include <memory>
-
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Splines.hpp>
+#include <cstdint>
 
 namespace meshkernel
 {
-    class CurvilinearGrid;
-
-    /// @brief A class implementing the curvilinear grid refinement algorithm
-    class CurvilinearGridRefinement : public CurvilinearGridAlgorithm
-    {
-    public:
-        /// @brief Class constructor
-        ///
-        /// \p firstPoint and \p secondPoint must lie on the same gridline
-        /// @param[in] grid The input curvilinear grid
-        /// @param[in] refinement  The number of refinement lines between the points set by SetBlock()
-        CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, UInt refinement);
-
-        /// @brief Refine the curvilinear grid
-        CurvilinearGrid Compute() override;
-
-    private:
-        UInt m_refinement; ///< The selected number of refinement lines
-        Splines m_splines; ///< An instance of the spline class storing the individual grid lines as splines
-    };
+    /// @brief Integer type used when indexing mesh graph entities.
+    using UInt = std::uint32_t;
 } // namespace meshkernel

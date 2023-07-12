@@ -69,7 +69,7 @@ namespace meshkernel
             m_points.clear();
             m_rtree2D.clear();
 
-            for (size_t n = 0; n < nodes.size(); ++n)
+            for (UInt n = 0; n < nodes.size(); ++n)
             {
                 if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
                 {
@@ -95,19 +95,19 @@ namespace meshkernel
 
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
-        void DeleteNode(size_t position);
+        void DeleteNode(UInt position);
 
         /// @brief Determines size of the RTree
-        [[nodiscard]] size_t Size() const { return m_rtree2D.size(); };
+        [[nodiscard]] UInt Size() const { return static_cast<UInt>(m_rtree2D.size()); };
 
         /// @brief Determines if the RTree is empty
         [[nodiscard]] bool Empty() const { return m_rtree2D.empty(); }
 
         /// @brief Gets the size of the query
-        [[nodiscard]] size_t GetQueryResultSize() const { return m_queryCache.size(); }
+        [[nodiscard]] UInt GetQueryResultSize() const { return static_cast<UInt>(m_queryCache.size()); }
 
         /// @brief Gets the index of a sample in the query
-        [[nodiscard]] size_t GetQueryResult(size_t index) const { return m_queryIndices[index]; }
+        [[nodiscard]] UInt GetQueryResult(UInt index) const { return m_queryIndices[index]; }
 
         /// @brief True if a query has results, false otherwise
         [[nodiscard]] bool HasQueryResults() const { return GetQueryResultSize() > 0; }
@@ -115,14 +115,14 @@ namespace meshkernel
     private:
         using Point2D = bg::model::point<double, 2, bg::cs::cartesian>; ///< Typedef for Point2D
         using Box2D = bg::model::box<Point2D>;                          ///< Typedef for box of Point2D
-        using Value2D = std::pair<Point2D, size_t>;                     ///< Typedef of pair of Point2D and size_t
+        using Value2D = std::pair<Point2D, UInt>;                       ///< Typedef of pair of Point2D and size_t
         using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;           ///< Typedef for a 2D RTree
 
-        RTree2D m_rtree2D;                                ///< The 2D RTree
-        std::vector<std::pair<Point2D, size_t>> m_points; ///< The points
-        std::vector<Value2D> m_queryCache;                ///< The query cache
-        std::vector<size_t> m_queryIndices;               ///< The query indices
-        int m_queryVectorCapacity = 100;                  ///< Capacity of the query vector
+        RTree2D m_rtree2D;                              ///< The 2D RTree
+        std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
+        std::vector<Value2D> m_queryCache;              ///< The query cache
+        std::vector<UInt> m_queryIndices;               ///< The query indices
+        UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
     };
 
 } // namespace meshkernel

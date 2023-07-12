@@ -202,11 +202,11 @@ namespace meshkernelapi
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<size_t> num_face_nodes;
+                std::vector<meshkernel::UInt> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<size_t>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
                 }
 
                 // Do not change the pointer, just the object it is pointing to
@@ -837,16 +837,16 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.coordinates_y[i];
             }
 
-            const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::constants::missing::doubleValue);
-            const auto numSplines = indices.size();
+            const auto indices = FindIndices(splines, 0, static_cast<meshkernel::UInt>(splines.size()), meshkernel::constants::missing::doubleValue);
+            const auto numSplines = static_cast<meshkernel::UInt>(indices.size());
 
             int index = 0;
-            for (size_t s = 0; s < numSplines; s++)
+            for (meshkernel::UInt s = 0; s < numSplines; s++)
             {
                 const auto& [startIndex, endIndex] = indices[s];
                 std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
                 const int numNodes = static_cast<int>(endIndex) - static_cast<int>(startIndex) + 1;
-                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
+                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, static_cast<meshkernel::UInt>(coordinates.size()) - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {
@@ -1476,7 +1476,7 @@ namespace meshkernelapi
                                                                                         relativeSearchRadius,
                                                                                         refineOutsideFace,
                                                                                         transformSamples,
-                                                                                        static_cast<size_t>(minimumNumSamples));
+                                                                                        static_cast<meshkernel::UInt>(minimumNumSamples));
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
             meshRefinement.Compute();
@@ -2485,7 +2485,7 @@ namespace meshkernelapi
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<size_t>(smoothingIterations));
+                                                                          static_cast<meshkernel::UInt>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(curvilinearGridSmoothing.Compute());
@@ -2935,7 +2935,7 @@ namespace meshkernelapi
                                                          relativeSearchSize,
                                                          false,
                                                          false,
-                                                         minNumSamples);
+                                                         static_cast<meshkernel::UInt>(minNumSamples));
 
             averaging.Compute();
 

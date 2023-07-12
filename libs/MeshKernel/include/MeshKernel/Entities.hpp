@@ -28,13 +28,13 @@
 #pragma once
 
 #include <cmath>
-#include <type_traits>
 #include <vector>
 
 #include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
 {
+
     // to re-enable when compiling with c++20 support
     // template <typename T>
     // concept IsCoordinate = requires(T t)
@@ -159,13 +159,13 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    using Edge = std::pair<size_t, size_t>;
+    using Edge = std::pair<UInt, UInt>;
 
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
     /// @returns Node index of other node of the edge
-    size_t static OtherNodeOfEdge(const Edge& edge, size_t node)
+    UInt static OtherNodeOfEdge(const Edge& edge, UInt node)
     {
         return node == edge.first ? edge.second : edge.first;
     }
@@ -205,7 +205,7 @@ namespace meshkernel
         {
             // Build the samples
             std::vector<Sample> samples(numSamples);
-            for (size_t i = 0; i < samples.size(); ++i)
+            for (UInt i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
                 samples[i].y = (*samplesYCoordinate)[i];
@@ -269,21 +269,21 @@ namespace meshkernel
     }
 
     /// @brief Converts array of face centers to corresponding vector
-    static std::vector<std::vector<size_t>> ConvertToFaceNodesVector(int num_faces,
-                                                                     const int* const face_nodes,
-                                                                     const int* const nodes_per_face)
+    static std::vector<std::vector<UInt>> ConvertToFaceNodesVector(int num_faces,
+                                                                   const int* const face_nodes,
+                                                                   const int* const nodes_per_face)
     {
-        std::vector<std::vector<size_t>> result;
+        std::vector<std::vector<UInt>> result;
         result.reserve(num_faces);
 
-        std::vector<size_t> nodes;
-        size_t index = 0;
+        std::vector<UInt> nodes;
+        UInt index = 0;
         for (auto f = 0; f < num_faces; f++)
         {
             nodes.clear();
             for (auto n = 0; n < nodes_per_face[f]; n++)
             {
-                nodes.emplace_back(face_nodes[index]);
+                nodes.emplace_back(static_cast<UInt>(face_nodes[index]));
                 index++;
             }
             result.emplace_back(nodes);

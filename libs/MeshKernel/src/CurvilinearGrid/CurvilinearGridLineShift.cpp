@@ -54,7 +54,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
 
     const double eps = 1e-5;
     auto previousCoordinate = m_lines[0].m_startCoordinate;
-    for (size_t i = 1; i <= m_lines[0].m_endCoordinate; ++i)
+    for (UInt i = 1; i <= m_lines[0].m_endCoordinate; ++i)
     {
         auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
@@ -69,7 +69,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
         /// On the original algorithm currentDelta is distributed on the nodes above the current i,
         /// except for the last node m_endCoordinate, where currentDelta is distributed on the entire grid line
         const auto currentLastCoordinate = i == m_lines[0].m_endCoordinate ? i : i - 1;
-        for (size_t j = previousCoordinate; j <= currentLastCoordinate; ++j)
+        for (UInt j = previousCoordinate; j <= currentLastCoordinate; ++j)
         {
 
             auto const nodeIndex = m_lines[0].GetNodeIndexFromCoordinate(j);

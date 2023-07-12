@@ -113,7 +113,7 @@ ComputeEdgesAndNodes(
         ReadLegacyMeshFile(file_path);
     std::vector<meshkernel::Edge> edges;
     std::vector<meshkernel::Point> nodes;
-    std::vector<int> nodeMapping;
+    std::vector<meshkernel::UInt> nodeMapping;
     edges.reserve(num_edges);
     nodes.reserve(num_nodes);
     nodeMapping.resize(num_nodes);
@@ -128,18 +128,18 @@ ComputeEdgesAndNodes(
         nodeType = 2;
     }
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (meshkernel::UInt i = 0; i < num_nodes; i++)
     {
         // If the node is not part of a 2 mesh, do not add it in nodes
         if (node_type[i] == nodeType || node_type[i] == 0)
         {
             nodes.emplace_back(node_x[i], node_y[i]);
-            nodeMapping[i] = static_cast<int>(nodes.size()) - 1;
+            nodeMapping[i] = static_cast<meshkernel::UInt>(nodes.size()) - 1;
         }
     }
 
     auto index = 0;
-    for (size_t i = 0; i < num_edges; i++)
+    for (meshkernel::UInt i = 0; i < num_edges; i++)
     {
 
         auto const firstNode = edge_nodes[index];
@@ -172,23 +172,23 @@ std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    size_t n,
-    size_t m,
+    meshkernel::UInt n,
+    meshkernel::UInt m,
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
     meshkernel::Point const& origin)
 {
-    std::vector<std::vector<size_t>> node_indices(n, std::vector<size_t>(m));
+    std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
 
     {
-        std::size_t index = 0;
+        meshkernel::UInt index = 0;
         double const delta_x = dim_x / static_cast<double>(n - 1);
         double const delta_y = dim_y / static_cast<double>(m - 1);
-        for (size_t i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
-            for (size_t j = 0; j < m; ++j)
+            for (meshkernel::UInt j = 0; j < m; ++j)
             {
                 node_indices[i][j] = i * m + j;
                 nodes[index] = {origin.x + i * delta_x, origin.y + j * delta_y};
@@ -200,20 +200,20 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
 
     {
-        std::size_t index = 0;
+        meshkernel::UInt index = 0;
 
-        for (size_t i = 0; i < n - 1; ++i)
+        for (meshkernel::UInt i = 0; i < n - 1; ++i)
         {
-            for (size_t j = 0; j < m; ++j)
+            for (meshkernel::UInt j = 0; j < m; ++j)
             {
                 edges[index] = {node_indices[i][j], node_indices[i + 1][j]};
                 index++;
             }
         }
 
-        for (size_t i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
-            for (size_t j = 0; j < m - 1; ++j)
+            for (meshkernel::UInt j = 0; j < m - 1; ++j)
             {
                 edges[index] = {node_indices[i][j + 1], node_indices[i][j]};
                 index++;
@@ -225,8 +225,8 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    int n,
-    int m,
+    meshkernel::UInt n,
+    meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
     meshkernel::Point const& origin)
@@ -242,42 +242,43 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         origin);
 }
 
-std::tuple<size_t, size_t,
+std::tuple<meshkernel::UInt,
+           meshkernel::UInt,
            std::vector<double>,
            std::vector<double>,
            std::vector<int>>
 MakeRectangularMeshForApiTesting(
-    size_t numRows,
-    size_t numColumns,
+    meshkernel::UInt numRows,
+    meshkernel::UInt numColumns,
     double delta)
 {
 
-    const auto numY = numRows + static_cast<size_t>(1);
-    const auto numX = numColumns + static_cast<size_t>(1);
+    const auto numY = numRows + static_cast<meshkernel::UInt>(1);
+    const auto numX = numColumns + static_cast<meshkernel::UInt>(1);
 
-    std::vector<std::vector<size_t>> indicesValues(numX, std::vector<size_t>(numY));
+    std::vector<std::vector<meshkernel::UInt>> indicesValues(numX, std::vector<meshkernel::UInt>(numY));
 
     std::vector<double> nodeX(numX * numY);
     std::vector<double> nodeY(numX * numY);
 
-    size_t nodeIndex = 0;
-    for (auto i = 0u; i < numX; ++i)
+    meshkernel::UInt nodeIndex = 0;
+    for (meshkernel::UInt i = 0; i < numX; ++i)
     {
-        for (auto j = 0u; j < numY; ++j)
+        for (meshkernel::UInt j = 0; j < numY; ++j)
         {
 
             nodeX[nodeIndex] = i * delta;
             nodeY[nodeIndex] = j * delta;
-            indicesValues[i][j] = static_cast<size_t>(i) * numY + j;
+            indicesValues[i][j] = i * numY + j;
             nodeIndex++;
         }
     }
 
     std::vector<int> edgeNodes(((numX - 1) * numY + (numY - 1) * numX) * 2);
-    size_t edgeIndex = 0;
-    for (auto i = 0u; i < numX - 1; ++i)
+    meshkernel::UInt edgeIndex = 0;
+    for (meshkernel::UInt i = 0; i < numX - 1; ++i)
     {
-        for (auto j = 0u; j < numY; ++j)
+        for (meshkernel::UInt j = 0; j < numY; ++j)
         {
             edgeNodes[edgeIndex] = static_cast<int>(indicesValues[i][j]);
             edgeIndex++;
@@ -286,9 +287,9 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    for (auto i = 0u; i < numX; ++i)
+    for (meshkernel::UInt i = 0; i < numX; ++i)
     {
-        for (auto j = 0u; j < numY - 1; ++j)
+        for (meshkernel::UInt j = 0; j < numY - 1; ++j)
         {
             edgeNodes[edgeIndex] = static_cast<int>(indicesValues[i][j + 1]);
             edgeIndex++;
@@ -297,8 +298,8 @@ MakeRectangularMeshForApiTesting(
         }
     }
 
-    auto const numNodes = nodeIndex;
-    auto const numEdges = edgeIndex / 2;
+    const meshkernel::UInt numNodes = nodeIndex;
+    const meshkernel::UInt numEdges = static_cast<meshkernel::UInt>(edgeIndex * 0.5);
 
     return {numNodes, numEdges, nodeX, nodeY, edgeNodes};
 }

@@ -34,11 +34,11 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridSmoothing;
 
-CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, size_t smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
+CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
 
 {
     // Allocate cache for storing grid nodes values
-    ResizeAndFill2DVector(m_gridNodesCache, m_grid.m_gridNodes.size(), m_grid.m_gridNodes[0].size());
+    ResizeAndFill2DVector(m_gridNodesCache, static_cast<UInt>(m_grid.m_gridNodes.size()), static_cast<UInt>(m_grid.m_gridNodes[0].size()));
 
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
@@ -47,7 +47,7 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGr
 CurvilinearGrid CurvilinearGridSmoothing::Compute()
 {
     // Perform smoothing iterations
-    for (size_t smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
+    for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
@@ -85,7 +85,7 @@ CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()
     m_upperRight = upperRightBlock;
 
     // Perform smoothing iterations
-    for (size_t smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
+    for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         SolveDirectional();
     }
@@ -97,9 +97,9 @@ void CurvilinearGridSmoothing::SolveDirectional()
 {
 
     // assign current nodal values to the m_gridNodesCache
-    for (size_t m = 0; m < m_grid.m_gridNodes.size(); ++m)
+    for (UInt m = 0; m < m_grid.m_gridNodes.size(); ++m)
     {
-        for (size_t n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
+        for (UInt n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
         {
             m_gridNodesCache[m][n] = m_grid.m_gridNodes[m][n];
         }
@@ -175,9 +175,9 @@ void CurvilinearGridSmoothing::Solve()
     double const b = 1.0 - a;
 
     // assign current nodal values to the m_gridNodesCache
-    for (size_t m = 0; m < m_grid.m_gridNodes.size(); ++m)
+    for (UInt m = 0; m < m_grid.m_gridNodes.size(); ++m)
     {
-        for (size_t n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
+        for (UInt n = 0; n < m_grid.m_gridNodes[0].size(); ++n)
         {
             m_gridNodesCache[m][n] = m_grid.m_gridNodes[m][n];
         }
@@ -231,7 +231,7 @@ void CurvilinearGridSmoothing::Solve()
     }
 }
 
-void CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n)
+void CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& point, UInt m, UInt n)
 {
     // Project the new position on the original boundary segment
     Point previousNode;

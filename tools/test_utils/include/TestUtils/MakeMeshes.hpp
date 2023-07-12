@@ -49,16 +49,16 @@ ComputeEdgesAndNodes(
     meshkernel::Mesh::Type meshType);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    size_t n,
-    size_t m,
+    meshkernel::UInt n,
+    meshkernel::UInt m,
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0});
 
 std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
-    int n,
-    int m,
+    meshkernel::UInt n,
+    meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0});
@@ -71,14 +71,14 @@ std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
     std::filesystem::path const& file_path,
     meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
-std::tuple<size_t,
-           size_t,
+std::tuple<meshkernel::UInt,
+           meshkernel::UInt,
            std::vector<double>,
            std::vector<double>,
            std::vector<int>>
 MakeRectangularMeshForApiTesting(
-    size_t numRows,
-    size_t numColumns,
+    meshkernel::UInt numRows,
+    meshkernel::UInt numColumns,
     double delta);
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
