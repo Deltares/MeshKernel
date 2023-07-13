@@ -87,9 +87,6 @@
                         <Component Id="cmp7D2F2CBBAD10599EFD4741513387C4A5" Guid="94E22C07-EA23-4852-8744-52BA97645C9D">
                             <File Id="filD45EF6AB2AED41F63E2280DCE8C7A0D2" KeyPath="yes" Source="meshkernel\include\MeshKernel\Polygons.hpp" />
                         </Component>
-                        <Component Id="cmpDC25AD44A099C180E98DBC0BF5AF1387" Guid="D4CAF589-9BA9-4BF7-8BCA-3E466E7E7FA0">
-                            <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\RTree.hpp" />
-                        </Component>
                         <Component Id="cmpB499DA38D9FD803AD117C5B97E87BBDE" Guid="7664246B-3B6F-436C-8959-5C2E961FDFCD">
                             <File Id="fil35FA0E3B2E9462BA1F02384F6186B84D" KeyPath="yes" Source="meshkernel\include\MeshKernel\Smoother.hpp" />
                         </Component>
@@ -126,6 +123,12 @@
                             </Component>
                             <Component Id="cmp5F2CBEF1CA996B38393D14B47AA9C01F" Guid="C8486C5B-C923-4733-B99D-E22749B6D28C">
                                 <File Id="fil5D0F43C4FDD672189EF022CF0591BEFB" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\SimpleAveragingStrategy.hpp" />
+                            </Component>
+                            <Component Id="cmpDC25AD44A099C180E98DBC0BF5AF1387" Guid="D4CAF589-9BA9-4BF7-8BCA-3E466E7E7FA0">
+                                <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\RTree.hpp" />
+                            </Component>
+                            <Component Id="cmp76376BAC0A694B038D8768F5D18190A2" Guid="7D753EED-8B1E-480D-9448-4920B53BE0B2">
+                                <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\LinearAlgebra.hpp" />
                             </Component>
                         </Directory>
                         <Directory Id="dirB07CC972EDEE3DD94D9084A2869C6981" Name="CurvilinearGrid">
