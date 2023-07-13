@@ -128,7 +128,7 @@
                                 <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\RTree.hpp" />
                             </Component>
                             <Component Id="cmp76376BAC0A694B038D8768F5D18190A2" Guid="7D753EED-8B1E-480D-9448-4920B53BE0B2">
-                                <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\LinearAlgebra.hpp" />
+                                <File Id="fil29CD4F1A3B274840A6A3BE85F86C4429" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\LinearAlgebra.hpp" />
                             </Component>
                         </Directory>
                         <Directory Id="dirB07CC972EDEE3DD94D9084A2869C6981" Name="CurvilinearGrid">
