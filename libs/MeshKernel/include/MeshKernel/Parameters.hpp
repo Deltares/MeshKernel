@@ -43,9 +43,6 @@ namespace meshkernel
         /// @brief The grid angle
         double angle = 0.0;
 
-        /// @brief The grid block size, used in x and y direction
-        double block_size = 10.0;
-
         /// @brief The x coordinate of the origin, located at the bottom left corner
         double origin_x = 0.0;
 
@@ -57,6 +54,12 @@ namespace meshkernel
 
         /// @brief The grid block size in y dimension, used only for squared grids
         double block_size_y = 10.0;
+
+        /// @brief The x coordinate of the upper right corner
+        double upper_right_x = 0.0;
+
+        /// @brief The y coordinate of the upper right corner
+        double upper_right_y = 0.0;
     };
 
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
@@ -88,7 +91,7 @@ namespace meshkernel
         double aspect_ratio_grow_factor = 1.1;
 
         /// @brief Average mesh width on center spline
-        double average_width = 0.005;
+        double average_width = 500.0;
 
         /// @brief Curvature adapted grid spacing, 1 or not 0
         int curvature_adapted_grid_spacing = 1;
@@ -124,7 +127,7 @@ namespace meshkernel
         /// Whether to use the mass center when splitting a face in the refinement process (yes=1/no=0)
         int use_mass_center_when_refining = 1;
 
-        /// @brief Minimum edge size
+        /// @brief Minimum edge size in meters
         double min_edge_size = 0.5;
 
         /// @brief Refinement criterion type
@@ -135,6 +138,15 @@ namespace meshkernel
 
         /// @brief Take samples outside face into account , 1 yes 0 no
         int account_for_samples_outside = 0;
+
+        /// @brief The number of smoothing iterations
+        int smoothing_iterations = 5;
+
+        /// @brief Maximum courant time in seconds
+        double max_courant_time = 120.0;
+
+        /// @brief Directional refinement, cannot be used when the number of smoothing iterations is larger than 0
+        int directional_refinement = 0;
     };
 
     /// @brief A struct used to describe the orthogonalization parameters in a C-compatible manner

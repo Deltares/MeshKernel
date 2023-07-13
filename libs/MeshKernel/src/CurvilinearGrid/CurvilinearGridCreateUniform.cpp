@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Exceptions.hpp"
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -33,44 +35,223 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridCreateUniform;
 
-CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const MakeGridParameters& makeGridParameters, Projection projection)
-    : m_makeGridParameters(makeGridParameters), m_projection(projection)
+CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection projection) : m_projection(projection)
 {
 }
 
-CurvilinearGrid CurvilinearGridCreateUniform::Compute() const
+CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
+                                                      const int numRows,
+                                                      const double originX,
+                                                      const double originY,
+                                                      const double angle,
+                                                      const double blockSizeX,
+                                                      const double blockSizeY) const
 {
-    // regular grid
-    auto numM = static_cast<size_t>(m_makeGridParameters.num_columns + 1);
-    auto numN = static_cast<size_t>(m_makeGridParameters.num_rows + 1);
-    const double XGridBlockSize = m_makeGridParameters.block_size_x;
-    const double YGridBlockSize = m_makeGridParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeGridParameters.angle * constants::conversion::degToRad);
-    const double sinAngle = std::sin(m_makeGridParameters.angle * constants::conversion::degToRad);
-    double OriginXCoordinate = m_makeGridParameters.origin_x;
-    double OriginYCoordinate = m_makeGridParameters.origin_y;
-
-    // No polygon, use MakeGridParameters as is
-
-    std::vector<std::vector<Point>> gridNodes(numN, std::vector<Point>(numM));
-    for (size_t n = 0; n < numN; ++n)
+    if (m_projection == Projection::spherical)
     {
-        for (size_t m = 0; m < numM; ++m)
+        return CurvilinearGrid{ComputeSpherical(numColumns,
+                                                numRows,
+                                                originX,
+                                                originY,
+                                                angle,
+                                                blockSizeX,
+                                                blockSizeY),
+                               m_projection};
+    }
+    if (m_projection == Projection::cartesian)
+    {
+        return CurvilinearGrid{ComputeCartesian(numColumns,
+                                                numRows,
+                                                originX,
+                                                originY,
+                                                angle,
+                                                blockSizeX,
+                                                blockSizeY),
+                               m_projection};
+    }
+
+    const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+    throw NotImplemented(message);
+}
+
+std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
+                                                                                           const int numRows,
+                                                                                           const double originX,
+                                                                                           const double originY,
+                                                                                           const double angle,
+                                                                                           const double blockSizeX,
+                                                                                           const double blockSizeY)
+
+{
+    if (numColumns <= 0)
+    {
+        throw AlgorithmError("Number of columns cannot be <= 0");
+    }
+    if (numRows <= 0)
+    {
+        throw AlgorithmError("Number of rows cannot be <= 0");
+    }
+    if (blockSizeX <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeX cannot be <= 0");
+    }
+    if (blockSizeY <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeY cannot be <= 0");
+    }
+
+    const auto angleInRad = angle * constants::conversion::degToRad;
+    const auto cosineAngle = std::cos(angleInRad);
+    const auto sinAngle = std::sin(angleInRad);
+
+    const auto numM = numColumns + 1;
+    const auto numN = numRows + 1;
+
+    std::vector<std::vector<Point>> result(numN, std::vector<Point>(numM));
+    const auto blockSizeXByCos = blockSizeX * cosineAngle;
+    const auto blockSizeYbySin = blockSizeY * sinAngle;
+    const auto blockSizeXBySin = blockSizeX * sinAngle;
+    const auto blockSizeYByCos = blockSizeY * cosineAngle;
+    for (int n = 0; n < numN; ++n)
+    {
+        for (int m = 0; m < numM; ++m)
         {
-            const double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
-            double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
-            if (m_projection == Projection::spherical && n > 0)
-            {
-                newPointYCoordinate = XGridBlockSize * cos(constants::conversion::degToRad * gridNodes[n - 1][m].y);
-            }
-            gridNodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
+            const double newPointXCoordinate = originX + m * blockSizeXByCos - n * blockSizeYbySin;
+            const double newPointYCoordinate = originY + m * blockSizeXBySin + n * blockSizeYByCos;
+            result[n][m] = {newPointXCoordinate, newPointYCoordinate};
         }
     }
-    return CurvilinearGrid{gridNodes, m_projection};
+    return result;
 }
 
-CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const
+std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeSpherical(const int numColumns,
+                                                                                           const int numRows,
+                                                                                           const double originX,
+                                                                                           const double originY,
+                                                                                           const double angle,
+                                                                                           const double blockSizeX,
+                                                                                           const double blockSizeY)
 {
+    if (numColumns <= 0)
+    {
+        throw AlgorithmError("Number of columns cannot be <= 0");
+    }
+    if (numRows <= 0)
+    {
+        throw AlgorithmError("Number of rows cannot be <= 0");
+    }
+    if (blockSizeX <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeX cannot be <= 0");
+    }
+    if (blockSizeY <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeY cannot be <= 0");
+    }
+
+    std::vector result = ComputeCartesian(numColumns,
+                                          numRows,
+                                          originX,
+                                          originY,
+                                          angle,
+                                          blockSizeX,
+                                          blockSizeY);
+
+    const auto numM = result[0].size();
+    const auto numN = result.size();
+    bool onPoles = false;
+    constexpr double latitudePoles = 90.0;
+
+    for (size_t n = 1; n < numN; ++n)
+    {
+        size_t lastRowOnPole = numM;
+        for (size_t m = 0; m < numM; ++m)
+        {
+            const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result[n - 1][m].y);
+            result[n][m].y = adjustedLatitude;
+
+            if (IsEqual(abs(adjustedLatitude), latitudePoles))
+            {
+                onPoles = true;
+                lastRowOnPole = n;
+            }
+        }
+        if (onPoles)
+        {
+            result.erase(result.begin() + lastRowOnPole + 1, result.end());
+            break;
+        }
+    }
+    return result;
+}
+
+double CurvilinearGridCreateUniform::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude)
+{
+    constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
+    constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
+
+    const auto latitudeInRadiants = cos(constants::conversion::degToRad * latitude);
+    const auto asp = latitudeInRadiants + (1.0 - latitudeInRadiants) * 0.3;
+    const auto dy = blockSize * latitudeInRadiants * asp;
+
+    double result = latitude + dy;
+    // prevent too small dy increments in case we are on the poles
+    const double difference = dy * constants::conversion::degToRad * constants::geometric::earth_radius;
+    if (abs(result) > latitudeCloseToPoles && difference < minimumDistance)
+    {
+        const double sign = result < 0 ? -1.0 : 1.0;
+        result = 90.0 * sign;
+    }
+
+    return result;
+}
+
+int CurvilinearGridCreateUniform::ComputeNumRowsSpherical(double minY,
+                                                          double maxY,
+                                                          double blockSizeY)
+{
+    if (blockSizeY <= 0.0)
+    {
+        throw AlgorithmError("blockSizeY cannot be <= 0");
+    }
+    if (blockSizeY > std::abs(maxY - minY))
+    {
+        throw AlgorithmError("blockSizeY cannot be larger than mesh height");
+    }
+
+    double currentLatitude = minY;
+    int result = 0;
+    constexpr double latitudePoles = 90.0;
+
+    while (currentLatitude < maxY)
+    {
+        currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, currentLatitude);
+        result += 1;
+
+        if (IsEqual(abs(currentLatitude), latitudePoles))
+        {
+            break;
+        }
+    }
+
+    return result;
+}
+
+CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
+                                                      const double blockSizeX,
+                                                      const double blockSizeY,
+                                                      std::shared_ptr<Polygons> polygons,
+                                                      UInt polygonIndex) const
+{
+    if (blockSizeX <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeX cannot be <= 0");
+    }
+    if (blockSizeY <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeY cannot be <= 0");
+    }
+
     if (polygons->GetProjection() != m_projection)
     {
         throw std::invalid_argument("CurvilinearGridCreateUniform::Compute polygon projection is not equal to CurvilinearGridCreateUniform projection ");
@@ -99,11 +280,9 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
     double etamin = std::numeric_limits<double>::max();
     double etamax = -etamin;
 
-    const double XGridBlockSize = m_makeGridParameters.block_size_x;
-    const double YGridBlockSize = m_makeGridParameters.block_size_y;
-    const double cosineAngle = std::cos(m_makeGridParameters.angle * constants::conversion::degToRad);
-    const double sinAngle = std::sin(m_makeGridParameters.angle * constants::conversion::degToRad);
-
+    const auto angleInRad = angle * constants::conversion::degToRad;
+    const auto cosineAngle = std::cos(angleInRad);
+    const auto sinAngle = std::sin(angleInRad);
     Projection const polygonProjection = polygons->GetProjection();
 
     for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
@@ -130,30 +309,102 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(std::shared_ptr<Polygons> 
         yShift = yShift / (constants::geometric::earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
     }
 
-    auto const OriginXCoordinate = referencePoint.x + xShift;
-    auto const OriginYCoordinate = referencePoint.y + yShift;
-    auto const numN = static_cast<size_t>(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
-    auto const numM = static_cast<size_t>(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
+    const double originX = referencePoint.x + xShift;
+    const double originY = referencePoint.y + yShift;
+    const int numM = static_cast<int>(std::ceil((etamax - etamin) / blockSizeX) + 1);
+    const int numColumns = numM > 0 ? numM - 1 : 0;
+    const int numN = static_cast<int>(std::ceil((xmax - xmin) / blockSizeY) + 1);
+    const int numRows = numN > 0 ? numN - 1 : 0;
 
-    std::vector<std::vector<Point>> gridNodes(numN, std::vector<Point>(numM));
-    for (size_t n = 0; n < numN; ++n)
+    CurvilinearGrid curvilinearGrid;
+    switch (m_projection)
     {
-        for (size_t m = 0; m < numM; ++m)
-        {
-            const double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
-            double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
-            if (polygonProjection == Projection::spherical && n > 0)
-            {
-                newPointYCoordinate = XGridBlockSize * cos(constants::conversion::degToRad * gridNodes[n - 1][m].y);
-            }
-            gridNodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
-        }
+    case Projection::spherical:
+        curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
+                                                           numRows,
+                                                           originX,
+                                                           originY,
+                                                           angle,
+                                                           blockSizeX,
+                                                           blockSizeY),
+                                          m_projection};
+        break;
+    case Projection::cartesian:
+        curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
+                                                           numRows,
+                                                           originX,
+                                                           originY,
+                                                           angle,
+                                                           blockSizeX,
+                                                           blockSizeY),
+                                          m_projection};
+        break;
+    case Projection::sphericalAccurate:
+    default:
+        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+        throw NotImplemented(message);
     }
-
-    CurvilinearGrid curvilinearGrid(gridNodes, m_projection);
 
     // remove nodes outside the polygon
     curvilinearGrid.Delete(polygons, polygonIndex);
+
+    return curvilinearGrid;
+}
+
+CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
+                                                      const double originY,
+                                                      const double blockSizeX,
+                                                      const double blockSizeY,
+                                                      const double upperRightX,
+                                                      const double upperRightY) const
+{
+    if (blockSizeX <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeX cannot be <= 0");
+    }
+    if (blockSizeY <= 0.0)
+    {
+        throw AlgorithmError("BlockSizeY cannot be <= 0");
+    }
+
+    const int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX));
+    if (numColumns <= 0)
+    {
+        throw AlgorithmError("Number of columns cannot be <= 0");
+    }
+
+    const double angle = 0.0;
+    int numRows;
+    CurvilinearGrid curvilinearGrid;
+    switch (m_projection)
+    {
+    case Projection::spherical:
+
+        numRows = ComputeNumRowsSpherical(originY, upperRightY, blockSizeY);
+        curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
+                                                           numRows,
+                                                           originX,
+                                                           originY,
+                                                           angle,
+                                                           blockSizeX,
+                                                           blockSizeY),
+                                          m_projection};
+        break;
+    case Projection::cartesian:
+        numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY));
+        curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
+                                                           numRows,
+                                                           originX,
+                                                           originY,
+                                                           angle,
+                                                           blockSizeX,
+                                                           blockSizeY),
+                                          m_projection};
+        break;
+    default:
+        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+        throw NotImplemented(message);
+    }
 
     return curvilinearGrid;
 }

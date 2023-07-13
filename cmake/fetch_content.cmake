@@ -5,7 +5,7 @@ if(ENABLE_UNIT_TESTING)
   FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.11.0)
+  GIT_TAG v1.13.0)
 
   FetchContent_GetProperties(googletest)
   if(NOT googletest_POPULATED)
@@ -28,7 +28,7 @@ if(ENABLE_BENCHMARKING)
     FetchContent_Declare(
       googlebenchmark
       GIT_REPOSITORY https://github.com/google/benchmark.git
-      GIT_TAG v1.7.1
+      GIT_TAG v1.8.2
     )
 
     FetchContent_GetProperties(benchmark)
@@ -60,7 +60,7 @@ endif()
 
 
 if(${USE_LIBFMT})
-  set(LIBFMT_VERSION 9.1.0)
+  set(LIBFMT_VERSION 10.0.0)
 
   message(
     STATUS 
@@ -84,3 +84,19 @@ if(${USE_LIBFMT})
 
   endif()
   
+# Eigen
+# Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so the head master will be used here.
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        21cd3fe20990a5ac1d683806f605110962aac3f1
+)
+
+FetchContent_GetProperties(Eigen)
+
+set(BUILD_TESTING OFF)
+
+if(NOT eigen_POPULATED)
+  FetchContent_Populate(Eigen)
+  add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()

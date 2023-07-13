@@ -28,9 +28,9 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::TriangulationInterpolation;
 
@@ -74,7 +74,7 @@ void TriangulationInterpolation::Compute()
     for (auto f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
-        for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < Mesh::m_numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.GetFaceNode(f, n);
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -93,7 +93,7 @@ void TriangulationInterpolation::Compute()
     const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
 
     // loop over locations
-    for (size_t n = 0; n < m_locations.size(); ++n)
+    for (UInt n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsEqual(m_results[n], constants::missing::doubleValue))
@@ -112,7 +112,7 @@ void TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         int numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::uintValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -125,7 +125,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (size_t i = 0; i < Mesh::m_numNodesInTriangle; ++i)
+            for (UInt i = 0; i < Mesh::m_numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
                 if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)
@@ -160,7 +160,7 @@ void TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
+        if (isInTriangle && triangle != constants::missing::uintValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

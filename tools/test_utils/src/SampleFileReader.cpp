@@ -37,12 +37,12 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
     std::string line;
     std::ifstream infile(filePath.c_str());
 
-    int ncols = 0;
-    int nrows = 0;
-    double xllcenter = 0.0;
-    double yllcenter = 0.0;
-    double cellsize = 0.0;
-    double nodata_value;
+    int numX = 0;
+    int numY = 0;
+    double xllCenter = 0.0;
+    double yllCenter = 0.0;
+    double cellSize = 0.0;
+    double nodataValue;
 
     int numlines = 0;
     std::vector<std::vector<double>> rows;
@@ -52,48 +52,48 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
         if (numlines == 0)
         {
             std::string s;
-            iss >> s >> ncols;
+            iss >> s >> numX;
             numlines++;
             continue;
         }
         if (numlines == 1)
         {
             std::string s;
-            iss >> s >> nrows;
+            iss >> s >> numY;
             numlines++;
             continue;
         }
         if (numlines == 2)
         {
             std::string s;
-            iss >> s >> xllcenter;
+            iss >> s >> xllCenter;
             numlines++;
             continue;
         }
         if (numlines == 3)
         {
             std::string s;
-            iss >> s >> yllcenter;
+            iss >> s >> yllCenter;
             numlines++;
             continue;
         }
         if (numlines == 4)
         {
             std::string s;
-            iss >> s >> cellsize;
+            iss >> s >> cellSize;
             numlines++;
             continue;
         }
         if (numlines == 5)
         {
             std::string s;
-            iss >> s >> nodata_value;
+            iss >> s >> nodataValue;
             numlines++;
             continue;
         }
 
         rows.push_back(std::vector<double>());
-        for (auto i = 0; i < ncols + 1; ++i)
+        for (auto i = 0; i < numX; ++i)
         {
             double value;
             iss >> value;
@@ -112,5 +112,5 @@ std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAs
         }
     }
 
-    return {ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values};
+    return {numX, numY, xllCenter, yllCenter, cellSize, nodataValue, values};
 }

@@ -264,7 +264,7 @@ namespace meshkernel
         /// @param[in] source_location The source location.
         explicit MeshGeometryError(std::source_location const& source_location = std::source_location::current())
             : MeshKernelError("", source_location),
-              m_invalid_index{constants::missing::sizetValue},
+              m_invalid_index{constants::missing::uintValue},
               m_mesh_location(Mesh::Location::Unknown)
         {
         }
@@ -275,7 +275,7 @@ namespace meshkernel
         /// @param[in] mesh_location   The location type.
         /// @param[in] source_location The source location.
         MeshGeometryError(VariadicErrorMessage const& message,
-                          size_t invalid_index,
+                          UInt invalid_index,
                           Mesh::Location mesh_location,
                           std::source_location const& source_location = std::source_location::current())
             : MeshKernelError(message, source_location),
@@ -290,7 +290,7 @@ namespace meshkernel
         /// @param[in] mesh_location   The location type.
         /// @param[in] source_location The source location.
         MeshGeometryError(std::string_view message,
-                          size_t invalid_index,
+                          UInt invalid_index,
                           Mesh::Location mesh_location,
                           std::source_location const& source_location = std::source_location::current())
             : MeshKernelError(message, source_location),
@@ -301,7 +301,7 @@ namespace meshkernel
 
         /// @brief Returns the invalid index.
         /// @return The invalid index.
-        size_t InavlidIndex() const { return m_invalid_index; }
+        UInt InavlidIndex() const { return m_invalid_index; }
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
@@ -312,7 +312,7 @@ namespace meshkernel
         /// @return The  error category.
         std::string Category() const override { return "MeshGeometryError"; }
 
-        size_t m_invalid_index;         ///< The invalid mesh location index.
+        UInt m_invalid_index;           ///< The invalid mesh location index.
         Mesh::Location m_mesh_location; ///< The location type.
     };
 

@@ -27,39 +27,10 @@
 
 #pragma once
 
-namespace meshkernelapi
+#include <cstdint>
+
+namespace meshkernel
 {
-    /// @brief A struct describing gridded samples
-    struct GriddedSamples
-    {
-        /// @brief Number of x gridded samples coordinates
-        int num_x = 0;
-
-        /// @brief Number of y gridded samples coordinates
-        int num_y = 0;
-
-        /// @brief X coordinate of the grid origin (lower left corner)
-        double x_origin = 0.0;
-
-        /// @brief Y coordinate of the grid origin (lower left corner)
-        double y_origin = 0.0;
-
-        /// @brief Constant grid cell size
-        double cell_size = 0.0;
-
-        /// @brief If not nullptr, coordinates for non-uniform grid spacing in x direction
-        double* x_coordinates = nullptr;
-
-        /// @brief If not nullptr, coordinates for non-uniform grid spacing in y direction
-        double* y_coordinates = nullptr;
-
-        /// @brief Sample values
-        double* values = nullptr;
-
-        /// @brief X coordinate of the upper right
-        double x_upper_right = 0.0;
-
-        /// @brief Y coordinate of the upper right
-        double y_upper_right = 0.0;
-    };
-} // namespace meshkernelapi
+    /// @brief Integer type used when indexing mesh graph entities.
+    using UInt = std::uint32_t;
+} // namespace meshkernel

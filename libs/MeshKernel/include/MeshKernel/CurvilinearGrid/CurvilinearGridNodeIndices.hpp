@@ -37,15 +37,15 @@ namespace meshkernel
     struct CurvilinearGridNodeIndices
     {
         /// @brief Default constructor sets the indices to invalid
-        CurvilinearGridNodeIndices() : m_m(constants::missing::sizetValue), m_n(constants::missing::sizetValue){};
+        CurvilinearGridNodeIndices() : m_m(constants::missing::uintValue), m_n(constants::missing::uintValue){};
 
         /// @brief Constructor sets indices from values
         /// @param[in] m The m index
         /// @param[in] n The n index
-        CurvilinearGridNodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
+        CurvilinearGridNodeIndices(UInt m, UInt n) : m_m(m), m_n(n){};
 
         /// @brief Determines if one of the indices  equals to \p missingValue
-        [[nodiscard]] bool IsValid(const size_t missingValue = constants::missing::sizetValue) const
+        [[nodiscard]] bool IsValid(const UInt missingValue = constants::missing::uintValue) const
         {
             return m_m != missingValue && m_n != missingValue;
         }
@@ -61,7 +61,7 @@ namespace meshkernel
             return m_m == rhs.m_m || m_n == rhs.m_n;
         }
 
-        size_t m_m; ///< Columns
-        size_t m_n; ///< Rows
+        UInt m_m; ///< Columns
+        UInt m_n; ///< Rows
     };
 } // namespace meshkernel

@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridRefinement;
 
-CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, size_t refinement)
+CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, UInt refinement)
     : CurvilinearGridAlgorithm(grid),
       m_refinement(refinement)
 {
@@ -58,8 +58,8 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     // Estimate the dimension of the refined grid
     const auto numMToRefine = m_upperRight.m_m - m_lowerLeft.m_m;
     const auto numNToRefine = m_upperRight.m_n - m_lowerLeft.m_n;
-    const size_t maxM = m_grid.m_numM + numMToRefine * (m_refinement - 1);
-    const size_t maxN = m_grid.m_numN + numNToRefine * (m_refinement - 1);
+    const UInt maxM = m_grid.m_numM + numMToRefine * (m_refinement - 1);
+    const UInt maxN = m_grid.m_numN + numNToRefine * (m_refinement - 1);
 
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
@@ -70,20 +70,20 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     // The refined grid
     std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
 
-    size_t refinedM = 0;
-    for (size_t currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
+    UInt refinedM = 0;
+    for (UInt currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
     {
-        size_t localMRefinement = 1;
+        UInt localMRefinement = 1;
         if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
         {
             localMRefinement = m_refinement;
         }
 
-        size_t refinedN = 0;
-        for (size_t currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
+        UInt refinedN = 0;
+        for (UInt currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
         {
 
-            size_t localNRefinement = 1;
+            UInt localNRefinement = 1;
             if (currentN >= m_lowerLeft.m_n && currentN < m_upperRight.m_n)
             {
                 localNRefinement = m_refinement;
@@ -98,7 +98,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
                 topRefinement.clear();
-                for (size_t m = 0; m < localMRefinement + 1; ++m)
+                for (UInt m = 0; m < localMRefinement + 1; ++m)
                 {
                     const auto splineIndex = currentN;
                     const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
@@ -109,7 +109,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                 // Calculate m-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
-                for (size_t n = 0; n < localNRefinement + 1; ++n)
+                for (UInt n = 0; n < localNRefinement + 1; ++n)
                 {
                     const auto splineIndex = m_grid.m_numN + currentM;
                     const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
@@ -126,9 +126,9 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
-                for (size_t m = 0; m < localMRefinement + 1; ++m)
+                for (UInt m = 0; m < localMRefinement + 1; ++m)
                 {
-                    for (size_t n = 0; n < localNRefinement + 1; ++n)
+                    for (UInt n = 0; n < localNRefinement + 1; ++n)
                     {
                         refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
                     }

@@ -1,0 +1,133 @@
+name: Build and test on macos
+
+on:
+  pull_request:
+    types:
+      - opened             # triggers build when opened
+      - closed             # triggers build when merged
+      - synchronize        # triggers build when commits are pushed to HEAD
+      - auto_merge_enabled # triggers build when auto-merge is enabled
+    branches: 
+      - master
+      - 'release/v[0-9].[0-9].[0-9]'
+      - 'feature/**'
+  # Allow triggering this workflow manually from the actions tab
+  workflow_dispatch:
+
+jobs:
+  
+  build:
+    
+    # Build strategy
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          #- 'ubuntu-latest'
+          - 'macos-latest'
+        build_type:
+          - 'Release'
+          #- 'Debug'
+          #- 'DebugWithRelInfo '
+
+    # Build platform
+    runs-on: ${{ matrix.platform }}
+
+    name: ${{ matrix.platform }}-${{ matrix.build_type }}
+
+    # default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
+    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
+    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
+    env:
+      CC: gcc-11
+      CXX: g++-11
+    
+      # Build steps
+    steps:
+
+      # Step: Checkout
+      - name: Checkout
+        uses: actions/checkout@v3
+        # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
+        with:
+          fetch-depth: 0
+
+      # Step: Set paths
+      - name: Set paths
+        id: paths
+        run : |
+          echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
+          echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
+          echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
+
+      # Step: Install system-provided dependencies
+      # macOS
+      - if: runner.os == 'macOS'
+        name: Install system-provided dependencies
+        run: | # brew update
+          brew install boost
+          brew install doxygen
+      # Linux
+      - if: runner.os == 'Linux'
+        name: Install system-provided dependencies
+        run: | # sudo apt-get update && sudo apt upgrade
+          sudo apt-get install libboost-all-dev
+          sudo apt-get install doxygen
+      
+      # Step: Cache external dependencies
+      - name: Cache user-provided dependencies
+        uses: actions/cache@v3
+        id: cache-external-dependencies
+        with:
+          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      # Step: Build and install user-provided dependencies, executes only if not previously cached
+      - if: steps.cache-external-dependencies.outputs.cache-hit != 'true'
+        name: Build and install user-provided dependencies
+        # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
+        run: >
+          pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
+          -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work
+          -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
+          -BuildType '${{ matrix.build_type }}'
+          -ParallelJobs 10
+      
+      # Step: CMake configuration
+      - name: Configure
+        run: >
+          cmake
+          -S ${{ github.workspace }}
+          -B ${{ steps.paths.outputs.build_dir }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+          -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+      
+      # Step: CMake build
+      - name: Build
+        run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ matrix.build_type }} -j
+
+      # Step: Test
+      #       Works if runner.os == 'Linux' or runner.os == 'macOS'
+      #       if runner.os == 'Windows',  /matrix.build_type needs to be inserted before /tests
+      - name: Test
+        run: |
+          echo -e "\n***************   MeshKernel Tests   ***************\n"
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
+          echo -e "\n*************** MeshKernel API Tests ***************\n"
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
+
+      # Step: CMake install
+      - name: Install
+        run: cmake --install ${{ steps.paths.outputs.build_dir }}
+      
+      # Step: Upload artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
+          path: ${{ steps.paths.outputs.install_dir }}
+          if-no-files-found: error

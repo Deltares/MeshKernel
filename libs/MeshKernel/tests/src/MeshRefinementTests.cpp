@@ -40,6 +40,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -131,6 +132,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
@@ -231,6 +233,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -425,6 +428,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -490,6 +494,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
 
@@ -648,6 +653,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
 
     MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
@@ -827,7 +833,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
 
     std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
-    const auto interpolator = std::make_shared<BilinearInterpolationOnGriddedSamples>(*mesh, 2, 2, origin, 10.0, values);
+    const auto interpolator = std::make_shared<BilinearInterpolationOnGriddedSamples>(*mesh, 3, 3, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;

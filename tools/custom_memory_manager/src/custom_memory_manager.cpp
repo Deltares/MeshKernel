@@ -18,13 +18,13 @@ void CustomMemoryManager::Start()
     ResetStatistics();
 }
 
-void CustomMemoryManager::Stop(Result* result)
+void CustomMemoryManager::Stop(Result& result)
 {
     std::unique_lock lock(mutex);
-    result->num_allocs = m_num_allocations;
-    result->max_bytes_used = m_max_bytes_used;
-    result->total_allocated_bytes = m_total_allocated_bytes;
-    result->net_heap_growth = m_net_heap_growth;
+    result.num_allocs = m_num_allocations;
+    result.max_bytes_used = m_max_bytes_used;
+    result.total_allocated_bytes = m_total_allocated_bytes;
+    result.net_heap_growth = m_net_heap_growth;
 }
 
 void* CustomMemoryManager::Alloc(size_t size)
@@ -45,7 +45,7 @@ void* CustomMemoryManager::AlignedAlloc(size_t size, size_t alignment)
 #if defined(WIN_MSVC_BENCHMARK)
     // std::aligned_alloc is not implemented in VS
     ptr = _aligned_malloc(size, alignment);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
     ptr = std::aligned_alloc(alignment, size);
 #endif
     if (ptr)
@@ -70,7 +70,7 @@ void CustomMemoryManager::AlignedFree(void* ptr)
     Unregister(MemoryBlockSize(ptr));
 #if defined(WIN_MSVC_BENCHMARK)
     _aligned_free(ptr);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
     std::free(ptr);
 #endif
     ptr = nullptr;
@@ -160,7 +160,7 @@ size_t CustomMemoryManager::MemoryBlockSize(void* ptr)
     {
 #if defined(WIN_MSVC_BENCHMARK)
         return _msize(ptr);
-#elif defined(LINUX_GNUC_BENCHMARK)
+#elif defined(LINUX_OR_APPLE_GNUC_BENCHMARK)
         return malloc_usable_size(ptr);
 #endif
     }
