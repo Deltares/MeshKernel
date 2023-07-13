@@ -25,11 +25,11 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
 namespace meshkernel
 {
@@ -175,8 +175,7 @@ namespace meshkernel
             return false;
         }
 
-        if (const auto& [lowerleft, upperRight] = GetBoundingBox(polygonNodes);
-            point.x < lowerleft.x || point.x > upperRight.x || point.y < lowerleft.y || point.y > upperRight.y)
+        if (const auto boundingBox = BoundingBox(polygonNodes); !boundingBox.IsContained(point))
         {
             return false;
         }

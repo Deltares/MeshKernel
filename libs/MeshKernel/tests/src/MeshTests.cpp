@@ -439,6 +439,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
     const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
 
@@ -455,6 +456,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
     const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
 

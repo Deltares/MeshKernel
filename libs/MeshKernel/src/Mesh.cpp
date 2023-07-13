@@ -263,7 +263,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     std::vector<Point> filteredNodes(GetNumNodes());
     std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
     UInt index = 0;
-    for (UInt i = 0; i < static_cast<UInt>(GetNumNodes()); ++i)
+    for (UInt i = 0; i < GetNumNodes(); ++i)
     {
         const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
         if (inPolygon)
@@ -455,18 +455,9 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    // create rtree a first time
-    if (m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
+    SearchNearestLocation(point, Location::Nodes);
 
-    m_nodesRTree.SearchNearestPoint(point);
-    const auto resultSize = m_nodesRTree.GetQueryResultSize();
-
-    // no results found
-    if (resultSize <= 0)
+    if (GetNumLocations(Location::Nodes) <= 0)
     {
         throw AlgorithmError("Mesh::FindNodeCloseToAPoint: query result size <= 0.");
     }
@@ -474,13 +465,13 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool
     // resultSize > 0, no node mask applied
     if (oneDNodeMask.empty())
     {
-        return m_nodesRTree.GetQueryResult(0);
+        return GetLocationsIndices(0, Location::Nodes);
     }
 
     // resultSize > 0, a mask is applied
-    for (UInt index = 0; index < resultSize; ++index)
+    for (UInt index = 0; index < GetNumLocations(Location::Nodes); ++index)
     {
-        const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
+        const auto nodeIndex = GetLocationsIndices(index, Location::Nodes);
         if (oneDNodeMask[nodeIndex])
         {
             return nodeIndex;
@@ -625,30 +616,8 @@ void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
     }
 }
 
-void Mesh::BuildTree(Location meshLocation)
-{
-    if (meshLocation == Location::Nodes && m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
-
-    if (meshLocation == Location::Edges && m_edgesRTree.Empty())
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-    }
-
-    if (meshLocation == Location::Faces && m_facesRTree.Empty())
-    {
-        m_facesRTree.BuildTree(m_facesCircumcenters);
-    }
-}
-
 void Mesh::SearchNearestLocation(Point point, Location meshLocation)
 {
-    BuildTree(meshLocation);
     switch (meshLocation)
     {
     case Location::Nodes:
@@ -668,7 +637,6 @@ void Mesh::SearchNearestLocation(Point point, Location meshLocation)
 
 void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)
 {
-    BuildTree(meshLocation);
     switch (meshLocation)
     {
     case Location::Faces:
@@ -688,7 +656,6 @@ void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location mes
 
 void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocation)
 {
-    BuildTree(meshLocation);
     switch (meshLocation)
     {
     case Location::Faces:
@@ -703,6 +670,51 @@ void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocat
     case Location::Unknown:
     default:
         throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
+    }
+}
+
+void Mesh::BuildTree(Location meshLocation)
+{
+    if (meshLocation == Location::Nodes && m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    else if (meshLocation == Location::Edges && m_edgesRTree.Empty())
+    {
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters);
+        m_edgesRTreeRequiresUpdate = false;
+    }
+
+    else if (meshLocation == Location::Faces && m_facesRTree.Empty())
+    {
+        m_facesRTree.BuildTree(m_facesCircumcenters);
+    }
+}
+
+void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
+{
+    if (meshLocation == Location::Nodes && (m_nodesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    {
+        m_nodesRTree.BuildTree(m_nodes, boundingBox);
+        m_nodesRTreeRequiresUpdate = false;
+        m_boundingBoxCache = boundingBox;
+    }
+
+    else if (meshLocation == Location::Edges && (m_edgesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    {
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
+        m_edgesRTreeRequiresUpdate = false;
+        m_boundingBoxCache = boundingBox;
+    }
+
+    else if (meshLocation == Location::Faces && (m_facesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    {
+        m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
+        m_boundingBoxCache = boundingBox;
     }
 }
 
@@ -746,6 +758,7 @@ void Mesh::AdministrateNodesEdges()
     {
         m_nodesRTree.BuildTree(m_nodes);
         m_nodesRTreeRequiresUpdate = false;
+        m_boundingBoxCache = BoundingBox();
     }
 
     if (m_edgesRTreeRequiresUpdate && !m_edgesRTree.Empty())
@@ -753,6 +766,7 @@ void Mesh::AdministrateNodesEdges()
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters);
         m_edgesRTreeRequiresUpdate = false;
+        m_boundingBoxCache = BoundingBox();
     }
 
     // return if there are no nodes or no edges

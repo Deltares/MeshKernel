@@ -148,7 +148,9 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
 
     if (m_mesh.m_projection == Projection::spherical)
     {
-        auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon);
+        const auto boundingBox = BoundingBox(searchPolygon);
+        const auto lowerLeft = boundingBox.lowerLeft();
+        const auto upperRight = boundingBox.upperRight();
 
         if (upperRight.x - lowerLeft.x <= 180.0)
             return searchPolygon;

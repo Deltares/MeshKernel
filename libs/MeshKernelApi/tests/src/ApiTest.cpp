@@ -1395,7 +1395,7 @@ TEST_F(CartesianApiTests, GetClosestMeshCoordinateThroughApi)
 
     // Execute
     double xCoordinatesOut, yCoordinatesOut;
-    auto errorCode = meshkernelapi::mkernel_mesh2d_get_closest_node(meshKernelId, -5.0, 5.0, 10.0, xCoordinatesOut, yCoordinatesOut);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_closest_node(meshKernelId, -5.0, 5.0, 10.0, 0, 0, 0, 0, xCoordinatesOut, yCoordinatesOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -1955,7 +1955,7 @@ TEST_F(CartesianApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOne
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 3.0, 3.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     int numHangingEdges;
@@ -1979,7 +1979,7 @@ TEST_F(CartesianApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDel
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 3.0, 3.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Before deletion
@@ -2200,7 +2200,7 @@ TEST_F(CartesianApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
 
     // Execute
     int edgeIndex;
-    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_edge(meshKernelId, 0.5, -0.5, edgeIndex);
+    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_edge(meshKernelId, 0.5, -0.5, 0.0, 0.0, 3.0, 3.0, edgeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -2215,7 +2215,7 @@ TEST_F(CartesianApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
 
     // Execute
     int nodeIndex;
-    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId, 3.0, 3.0, 10.0, nodeIndex);
+    const auto errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId, 3.0, 3.0, 10.0, 0.0, 0.0, 3.0, 3.0, nodeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert

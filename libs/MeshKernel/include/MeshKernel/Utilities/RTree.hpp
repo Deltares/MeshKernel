@@ -37,6 +37,8 @@
 #include <boost/geometry/index/rtree.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
+#include "MeshKernel/BoundingBox.hpp"
+
 #include <concepts>
 
 // r-tree
@@ -79,6 +81,30 @@ namespace meshkernel
             m_rtree2D = RTree2D(m_points.begin(), m_points.end());
         }
 
+        /// @brief Builds the tree with nodes
+        /// @param[in] nodes The nodes
+        template <std::derived_from<Point> T>
+        void BuildTree(std::vector<T> const& nodes, const BoundingBox& boundingBox)
+        {
+            m_points.reserve(m_points.size());
+            m_points.clear();
+            m_rtree2D.clear();
+
+            for (UInt n = 0; n < nodes.size(); ++n)
+            {
+                if (!boundingBox.IsContained(nodes[n]))
+                {
+                    continue;
+                }
+
+                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
+                {
+                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
+                }
+            }
+            m_rtree2D = RTree2D(m_points.begin(), m_points.end());
+        }
+
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
         /// @param[in] node The node
         /// @param[in] searchRadiusSquared The squared search radius around the node
@@ -110,7 +136,7 @@ namespace meshkernel
         [[nodiscard]] UInt GetQueryResult(UInt index) const { return m_queryIndices[index]; }
 
         /// @brief True if a query has results, false otherwise
-        [[nodiscard]] bool HasQueryResults() const { return GetQueryResultSize() > 0; }
+        [[nodiscard]] bool HasQueryResults() const { return !m_queryCache.empty(); }
 
     private:
         using Point2D = bg::model::point<double, 2, bg::cs::cartesian>; ///< Typedef for Point2D

@@ -78,9 +78,9 @@ void MeshRefinement::Compute()
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
     if (m_mesh->m_projection == Projection::spherical)
     {
-        const auto boundingBox = GetBoundingBox(m_mesh->m_nodes);
-        lowerLeft = std::get<0>(boundingBox);
-        upperRight = std::get<1>(boundingBox);
+        const auto boundingBox = BoundingBox(m_mesh->m_nodes);
+        lowerLeft = boundingBox.lowerLeft();
+        upperRight = boundingBox.upperRight();
     }
 
     // select the nodes to refine

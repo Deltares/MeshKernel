@@ -154,6 +154,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 
     // build mesh2d face circumcenters r-tree
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
+    m_mesh2d->BuildTree(Mesh::Location::Faces);
 
     // loop over 1d mesh edges
     for (UInt e = 0; e < m_mesh1d->GetNumEdges(); ++e)
@@ -265,6 +266,8 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     std::vector<double> minimalDistance(polygons.GetNumPolygons(), constants::missing::doubleValue);
     std::vector<UInt> closest1dNodeIndices(polygons.GetNumPolygons(), constants::missing::uintValue);
     std::vector<UInt> closest2dNodeIndices(polygons.GetNumPolygons(), constants::missing::uintValue);
+    m_mesh1d->BuildTree(Mesh::Location::Nodes);
+
     for (UInt faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         // if face is not within a polygon, continue
@@ -274,7 +277,6 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         }
         const auto polygonIndex = facePolygonIndex[faceIndex];
         const auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
-
         const auto close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
 
         const auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
@@ -309,6 +311,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
     m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d->BuildTree(Mesh::Location::Nodes);
 
     // find the face indices containing the 1d points
     const auto pointsFaceIndices = m_mesh2d->PointFaceIndices(points);

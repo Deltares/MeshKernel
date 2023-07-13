@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <unordered_map>
 
@@ -81,7 +82,7 @@ namespace meshkernel
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
-        bool IsEmpty() const;
+        [[nodiscard]] bool IsEmpty() const;
 
         /// @brief Gives the number of polygons
         /// @return Number of polygons
@@ -111,6 +112,15 @@ namespace meshkernel
         /// @param[in] i Node index
         /// @return Node coordinates
         [[nodiscard]] Point const& Node(UInt i) const { return m_nodes[i]; }
+
+        BoundingBox ComputeBoundingBox(UInt i) const
+        {
+            std::vector<Point> points;
+            if (IsEmpty())
+            {
+                return BoundingBox(points);
+            }
+        }
 
     private:
         std::vector<Point> m_nodes;                                                            ///< The polygon nodes

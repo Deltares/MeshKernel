@@ -174,7 +174,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
         nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
     }
 
-    const auto numNodesRefinedPart = UInt(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
+    const auto numNodesRefinedPart = static_cast<UInt>(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
     const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
     const auto numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
     const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
