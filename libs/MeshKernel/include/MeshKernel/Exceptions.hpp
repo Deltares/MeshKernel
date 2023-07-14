@@ -200,7 +200,7 @@ namespace meshkernel
     class AlgorithmError final : public MeshKernelError
     {
     public:
-        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
+        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
         /// @param[in] message         The variadic error message.
         /// @param[in] source_location The source location.
         AlgorithmError(VariadicErrorMessage const& message,
@@ -232,23 +232,8 @@ namespace meshkernel
     class ConstraintError final : public MeshKernelError
     {
     public:
-        // @brief Class constructor parametrized by a variadic error message and optionally the source location.
-        /// @param[in] message         The variadic error message.
-        /// @param[in] source_location The source location.
-        ConstraintError(VariadicErrorMessage const& message,
-                        std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError(message, source_location)
-        {
-        }
-
-        /// @brief Class constructor parametrized by a string error message and optionally the source location.
-        /// @param[in] message         The string error message.
-        /// @param[in] source_location The source location.
-        ConstraintError(std::string_view message,
-                        std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError(message, source_location)
-        {
-        }
+        /// @brief ConstraintError constructor
+        using MeshKernelError::MeshKernelError;
 
     private:
         /// @brief Returns the error category.
