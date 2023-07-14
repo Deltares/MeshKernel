@@ -47,12 +47,13 @@ var searchData=
   ['computetwobasecomponents_66',['ComputeTwoBaseComponents',['../namespacemeshkernel.html#ad08b467bb0943757f7db680c09a98977',1,'meshkernel']]],
   ['connect_5fhanging_5fnodes_67',['connect_hanging_nodes',['../structmeshkernel_1_1_mesh_refinement_parameters.html#abdb41599cc4fc2d9c39e949c7c37e9e5',1,'meshkernel::MeshRefinementParameters']]],
   ['connectnodes_68',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#aff5991f06852a3cc289a8e821677a850',1,'meshkernel::Mesh']]],
-  ['contacts_69',['Contacts',['../classmeshkernel_1_1_contacts.html',1,'meshkernel::Contacts'],['../structmeshkernelapi_1_1_contacts.html',1,'meshkernelapi::Contacts'],['../classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc',1,'meshkernel::Contacts::Contacts()=default'],['../classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492',1,'meshkernel::Contacts::Contacts(std::shared_ptr&lt; Mesh1D &gt; mesh1d, std::shared_ptr&lt; Mesh2D &gt; mesh2d)']]],
-  ['converttosamples_70',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
-  ['coordinates_5fx_71',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
-  ['coordinates_5fy_72',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
-  ['crossproduct_73',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]],
-  ['curvature_5fadapted_5fgrid_5fspacing_74',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
-  ['curvilineargrid_75',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_76',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
+  ['constrainterror_69',['ConstraintError',['../classmeshkernel_1_1_constraint_error.html',1,'meshkernel']]],
+  ['contacts_70',['Contacts',['../classmeshkernel_1_1_contacts.html',1,'meshkernel::Contacts'],['../structmeshkernelapi_1_1_contacts.html',1,'meshkernelapi::Contacts'],['../classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc',1,'meshkernel::Contacts::Contacts()=default'],['../classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492',1,'meshkernel::Contacts::Contacts(std::shared_ptr&lt; Mesh1D &gt; mesh1d, std::shared_ptr&lt; Mesh2D &gt; mesh2d)']]],
+  ['converttosamples_71',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
+  ['coordinates_5fx_72',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
+  ['coordinates_5fy_73',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
+  ['crossproduct_74',['crossProduct',['../namespacemeshkernel.html#a4609136f4cc71e1030ea54840e8397f6',1,'meshkernel']]],
+  ['curvature_5fadapted_5fgrid_5fspacing_75',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
+  ['curvilineargrid_76',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_77',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];

@@ -146,16 +146,17 @@ $(function() {
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            constexpr <span class="keywordtype">double</span> earth_radius = 6378137.0;                  </div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            constexpr <span class="keywordtype">double</span> inverse_earth_radius = 1.0 / earth_radius; </div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            constexpr <span class="keywordtype">double</span> absLatitudeAtPoles = 0.0001;               </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        }                                                               <span class="comment">// namespace geometric</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">namespace </span>physical</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            constexpr <span class="keywordtype">double</span> gravity = 9.80665;                    </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> sqrt_gravity = std::sqrt(gravity); </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        }                                                          <span class="comment">// namespace physical</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    } <span class="comment">// namespace constants</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            constexpr <span class="keywordtype">double</span> refinementTolerance = 1.0e-2;              </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        }                                                               <span class="comment">// namespace geometric</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">namespace </span>physical</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            constexpr <span class="keywordtype">double</span> gravity = 9.80665;                    </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> sqrt_gravity = std::sqrt(gravity); </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }                                                          <span class="comment">// namespace physical</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    } <span class="comment">// namespace constants</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:37</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:35</div></div>
