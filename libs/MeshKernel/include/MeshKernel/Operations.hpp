@@ -37,13 +37,17 @@ namespace meshkernel
 {
     /// @brief Resizes and fills a two dimensional vector
     /// @tparam T The type of the vector elements
-    /// @param[in] v The input two dimensional vector
+    /// @param[in,out] v The input two dimensional vector
     /// @param[in] firstDimension The first new dimension
     /// @param[in] secondDimension The second new dimension
-    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fill Whether to fill or not to fill the vector with fill values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, UInt const& firstDimension, UInt const& secondDimension, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v,
+                               UInt firstDimension,
+                               UInt secondDimension,
+                               bool fill = false,
+                               const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
@@ -58,14 +62,18 @@ namespace meshkernel
 
     /// @brief Resizes and fills a three dimensional vector
     /// @tparam T The type of the vector elements
-    /// @param[in] v The input three dimensional vector
+    /// @param[in,out] v The input three dimensional vector
     /// @param[in] firstDimension The first new dimension
     /// @param[in] secondDimension The second new dimension
     /// @param[in] thirdDim The third new dimension
-    /// @param[in] fill Whatever fill or not fill the vector with missing values
+    /// @param[in] fill Whether to fill or not to fill the vector with fill values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, UInt const& firstDimension, UInt const& secondDimension, UInt const& thirdDim, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v,
+                               UInt firstDimension,
+                               UInt secondDimension, UInt const& thirdDim,
+                               bool fill = false,
+                               const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
