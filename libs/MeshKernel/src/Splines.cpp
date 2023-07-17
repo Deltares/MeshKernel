@@ -711,10 +711,13 @@ void Splines::snapSpline(const LandBoundaries& landBoundary,
         {
             Point point(xf(i), yf(i));
             landBoundary.nearestPointOnLandBoundary(point, 2, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
-            // toLand(xf[i], 1, mxlan, 2, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
             xbVec(i) = nearestPoint.x;
             ybVec(i) = nearestPoint.y;
         }
+
+        // TODO how to get a pointwise multiply here?
+        // xbVec = weights.colwise() * xbVec.colwise();
+        // Can then replace the two nested loops below with a gemv.
 
         // Could be replaced with gemv.
         for (size_t i = 0; i < splinePoints.size(); ++i)
@@ -729,6 +732,7 @@ void Splines::snapSpline(const LandBoundaries& landBoundary,
             }
         }
 
+        // Compute constraints.
         lambda = eMatrix * (bMatrix * atwaInverse * atwxb + cMatrix * atwaInverse * atwyb - dVector);
 
         rhsx = atwxb - bMatrix.transpose() * lambda;
