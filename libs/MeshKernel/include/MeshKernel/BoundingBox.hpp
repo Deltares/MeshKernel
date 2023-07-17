@@ -68,23 +68,11 @@ namespace meshkernel
             }
             m_lowerLeft = Point(minx, miny);
             m_upperRight = Point(maxx, maxy);
-        };
-
-        /// @brief Checks if one bounding box is contained in onother
-        /// @tparam    T          Requires IsCoordinate<T>
-        /// @param[in] other      The other bounding box
-        /// @param[in] lowerLeft  The lower left corner of the bounding box
-        /// @param[in] upperRight The upper right corner of the bounding box
-        /// @returns If the point is in the bounding box
-        bool
-        IsContained(const BoundingBox& other) const
-        {
-            return IsContained(other.m_lowerLeft) && IsContained(other.m_upperRight);
         }
 
-        bool IsEqual(const BoundingBox& other) const
+        bool operator!=(const BoundingBox& other) const
         {
-            return other.m_lowerLeft == m_lowerLeft && other.m_upperRight == m_upperRight;
+            return other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
         }
 
         /// @brief Checks if value is inside a bounding box

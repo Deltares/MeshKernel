@@ -696,14 +696,14 @@ void Mesh::BuildTree(Location meshLocation)
 
 void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
 {
-    if (meshLocation == Location::Nodes && (m_nodesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    if (meshLocation == Location::Nodes && (m_nodesRTree.Empty() || m_boundingBoxCache != boundingBox))
     {
         m_nodesRTree.BuildTree(m_nodes, boundingBox);
         m_nodesRTreeRequiresUpdate = false;
         m_boundingBoxCache = boundingBox;
     }
 
-    else if (meshLocation == Location::Edges && (m_edgesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    else if (meshLocation == Location::Edges && (m_edgesRTree.Empty() || m_boundingBoxCache != boundingBox))
     {
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
@@ -711,7 +711,7 @@ void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
         m_boundingBoxCache = boundingBox;
     }
 
-    else if (meshLocation == Location::Faces && (m_facesRTree.Empty() || !m_boundingBoxCache.IsEqual(boundingBox)))
+    else if (meshLocation == Location::Faces && (m_facesRTree.Empty() || m_boundingBoxCache != boundingBox))
     {
         m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
         m_boundingBoxCache = boundingBox;
