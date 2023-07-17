@@ -86,6 +86,14 @@ namespace meshkernel
         /// @return The number of land boundary nodes.
         auto GetNumNodes() const { return m_nodes.size(); }
 
+        // toland
+        void nearestPointOnLandBoundary(const Point& pnt,
+                                        const int jainview,
+                                        Point& nearestPoint,
+                                        double& shortestDistance,
+                                        UInt& segmentStartIndex,
+                                        double& scaledDistanceToStart) const;
+
         std::vector<UInt> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
 
     private:

@@ -27,7 +27,9 @@
 
 #pragma once
 
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Operations.hpp>
 
 namespace meshkernel
@@ -48,11 +50,11 @@ namespace meshkernel
         Splines() = default;
 
         /// @brief Ctor, set projection
-        /// @brief[in] projection The map projection
+        /// @brief[in] projection   The map projection
         explicit Splines(Projection projection);
 
         /// @brief Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines
-        /// @brief[in] The curvilinear grid
+        /// @brief[in] grid         The curvilinear grid
         explicit Splines(CurvilinearGrid const& grid);
 
         /// @brief Adds a new spline to m_splineCornerPoints
@@ -74,6 +76,28 @@ namespace meshkernel
         /// @param[in] endIndex The end spline node
         /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
         [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex);
+
+        static lin_alg::ColumnVector<double> ComputeSplineWeights(const std::vector<Point>& splinePoints,
+                                                                  const UInt totalNumberOfPoints,
+                                                                  const Projection projection);
+
+        /// @brief Evaluate a spline function (splint)
+        static Point evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
+
+        // sample_spline
+        static void sampleSpline(const std::vector<Point>& controlPoints,
+                                 const size_t intermediatePointCount,
+                                 std::vector<Point>& samplePoints);
+
+        // comp_afinespline
+        static void compAfinespline(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat);
+
+        static lin_alg::MatrixColMajor<double> ComputeInterpolationMatrix(const lin_alg::MatrixColMajor<double>& splineCoefficients,
+                                                                          const lin_alg::ColumnVector<double>& weights);
+
+        // snap_spline
+        void snapSpline(const LandBoundaries& landBoundary,
+                        const size_t splineIndex);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline

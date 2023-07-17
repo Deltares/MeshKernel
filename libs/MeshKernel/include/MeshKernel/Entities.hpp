@@ -124,35 +124,11 @@ namespace meshkernel
         /// @brief Inplace multiply point by scalar.
         Point& operator*=(const double p);
 
-        /// @brief Overloads addition with another Point
-        [[nodiscard]] Point operator+(Point const& rhs) const { return Point(x + rhs.x, y + rhs.y); }
-
-        /// @brief Overloads addition with a double
-        [[nodiscard]] Point operator+(double const& rhs) const { return Point(x + rhs, y + rhs); }
-
-        /// @brief Overloads subtraction with another Point
-        [[nodiscard]] Point operator-(Point const& rhs) const { return Point(x - rhs.x, y - rhs.y); }
-
-        /// @brief Overloads subtraction with a double
-        [[nodiscard]] Point operator-(double const& rhs) const { return Point(x - rhs, y - rhs); }
-
-        /// @brief Overloads multiplication with another Point
-        [[nodiscard]] Point operator*(Point const& rhs) const { return Point(x * rhs.x, y * rhs.y); }
-
-        /// @brief Overloads multiplication with a double
-        [[nodiscard]] Point operator*(double const& rhs) const { return Point(x * rhs, y * rhs); }
-
-        /// @brief Overloads multiplication with a double
+        /// @brief Overloads multiplication with a integer
         [[nodiscard]] Point operator*(int const& rhs) const { return Point(x * rhs, y * rhs); }
 
-        /// @brief Overloads division with another Point
-        [[nodiscard]] Point operator/(Point const& rhs) const { return Point(x / rhs.x, y / rhs.y); }
-
-        /// @brief Overloads division with a double
-        [[nodiscard]] Point operator/(double const& rhs) const { return Point(x / rhs, y / rhs); }
-
-        /// @brief Overloads equality with another Point
-        bool operator==(const Point& rhs) const { return IsEqual(x, rhs.x) && IsEqual(y, rhs.y); }
+        // /// @brief Overloads equality with another Point
+        // bool operator==(const Point& rhs) const { return IsEqual(x, rhs.x) && IsEqual(y, rhs.y); }
 
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
@@ -177,6 +153,48 @@ namespace meshkernel
             constants::conversion::degToRad *
             constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
+
+    /// @brief Add two points
+    Point operator+(const Point& p1, const Point& p2);
+
+    /// @brief Add points and scalar
+    Point operator+(const Point& p, const double x);
+
+    /// @brief Add points and scalar
+    Point operator+(const double x, const Point& p);
+
+    /// @brief Subtract two points
+    Point operator-(const Point& p1, const Point& p2);
+
+    /// @brief Subtract scalar from point
+    Point operator-(const Point& p, const double x);
+
+    /// @brief Subtract point from scalar
+    Point operator-(const double x, const Point& p);
+
+    /// @brief Multiply point by a point
+    ///
+    /// Computes a point-wise product.
+    Point operator*(const Point& p1, const Point& p2);
+
+    /// @brief Multiply point by a scalar
+    Point operator*(const double x, const Point& p);
+
+    /// @brief Multiply point by a scalar
+    Point operator*(const Point& p, const double x);
+
+    /// @brief Divide point by a point
+    ///
+    /// Computes a point-wise division.
+    /// \note No check is made to determine is divisors are zero.
+    Point operator/(const Point& p1, const Point& p2);
+
+    /// @brief Divide point by a scalar
+    /// \note No check is made to determine is divisor is zero.
+    Point operator/(const Point& p, const double x);
+
+    /// @brief Test points for equality
+    bool operator==(const Point& p1, const Point& p2);
 
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;
@@ -367,4 +385,64 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     x *= p;
     y *= p;
     return *this;
+}
+
+inline meshkernel::Point meshkernel::operator+(const Point& p1, const Point& p2)
+{
+    return Point(p1.x + p2.x, p1.y + p2.y);
+}
+
+inline meshkernel::Point meshkernel::operator+(const Point& p, const double x)
+{
+    return Point(p.x + x, p.y + x);
+}
+
+inline meshkernel::Point meshkernel::operator+(const double x, const Point& p)
+{
+    return Point(p.x + x, p.y + x);
+}
+
+inline meshkernel::Point meshkernel::operator-(const Point& p1, const Point& p2)
+{
+    return Point(p1.x - p2.x, p1.y - p2.y);
+}
+
+inline meshkernel::Point meshkernel::operator-(const Point& p, const double x)
+{
+    return Point(p.x - x, p.y - x);
+}
+
+inline meshkernel::Point meshkernel::operator-(const double x, const Point& p)
+{
+    return Point(x - p.x, x - p.y);
+}
+
+inline meshkernel::Point meshkernel::operator*(const Point& p1, const Point& p2)
+{
+    return Point(p1.x * p2.x, p1.y * p2.y);
+}
+
+inline meshkernel::Point meshkernel::operator*(const double x, const Point& p)
+{
+    return Point(x * p.x, x * p.y);
+}
+
+inline meshkernel::Point meshkernel::operator*(const Point& p, const double x)
+{
+    return Point(x * p.x, x * p.y);
+}
+
+inline meshkernel::Point meshkernel::operator/(const Point& p1, const Point& p2)
+{
+    return Point(p1.x / p2.x, p1.y / p2.y);
+}
+
+inline meshkernel::Point meshkernel::operator/(const Point& p, const double x)
+{
+    return Point(p.x / x, p.y / x);
+}
+
+inline bool meshkernel::operator==(const Point& p1, const Point& p2)
+{
+    return IsEqual(p1.x, p2.x) && IsEqual(p1.y, p2.y);
 }

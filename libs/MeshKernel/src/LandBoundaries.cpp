@@ -1030,3 +1030,50 @@ void LandBoundaries::SnapMeshToLandBoundaries()
         }
     }
 }
+
+void LandBoundaries::nearestPointOnLandBoundary(const Point& samplePoint,
+                                                const int jainview,
+                                                Point& nearestPoint,
+                                                double& minimumDistance,
+                                                UInt& segmentStartIndex,
+                                                double& scaledDistanceToStart) const
+{
+
+    nearestPoint = samplePoint;
+    segmentStartIndex = constants::missing::intValue;
+    scaledDistanceToStart = -1.0;
+
+    minimumDistance = 9.0e33;
+
+    for (size_t i = 0; i < m_nodes.size() - 1; ++i)
+    {
+        Point firstPoint = m_nodes[i];
+        Point nextPoint = m_nodes[i + 1];
+
+        bool doIt = true;
+
+        if (jainview == 2)
+        {
+            doIt = IsPointInPolygonNodes(firstPoint, m_nodes, m_mesh->m_projection) && IsPointInPolygonNodes(nextPoint, m_nodes, m_mesh->m_projection);
+        }
+
+        if (doIt)
+        {
+            auto [distance, linePoint, distanceFromFirstNode] = DistanceFromLine(samplePoint, firstPoint, nextPoint, m_mesh->m_projection);
+            // TODO What is this and from where do I get it?
+            int ja = 1;
+
+            if (ja == 1)
+            {
+
+                if (distance < minimumDistance)
+                {
+                    nearestPoint = linePoint;
+                    minimumDistance = distance;
+                    segmentStartIndex = i;
+                    scaledDistanceToStart = distanceFromFirstNode;
+                }
+            }
+        }
+    }
+}
