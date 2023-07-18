@@ -306,15 +306,8 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     const auto& [startNodeLeftBoundary, endNodeLeftBoundary] = m_validLandBoundaries[startSegmentIndex];
 
     Point newNodeLeft;
-    if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_landBoundary.node(startNodeLeftBoundary),
-                               m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_landBoundary.node(endNodeLeftBoundary), m_mesh->m_projection))
-    {
-        newNodeLeft = m_landBoundary.node(startNodeLeftBoundary);
-    }
-    else
-    {
-        newNodeLeft = m_landBoundary.node(endNodeLeftBoundary);
-    }
+
+    newNodeLeft = m_landBoundary.closestPoint (m_mesh->m_nodes[nodeIndex], startNodeLeftBoundary, endNodeLeftBoundary, m_mesh->m_projection);
 
     Point newNodeRight;
     if (endSegmentIndex == startSegmentIndex)
@@ -325,19 +318,10 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     {
         // find start/end
         const auto& [startNodeRightBoundary, endNodeRightBoundary] = m_validLandBoundaries[endSegmentIndex];
-
-        if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_landBoundary.node(startNodeRightBoundary),
-                                   m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_landBoundary.node(endNodeRightBoundary), m_mesh->m_projection))
-        {
-            newNodeRight = m_landBoundary.node(startNodeRightBoundary);
-        }
-        else
-        {
-            newNodeRight = m_landBoundary.node(endNodeRightBoundary);
-        }
+        newNodeRight = m_landBoundary.closestPoint (m_mesh->m_nodes[nodeIndex], startNodeRightBoundary, endNodeRightBoundary, m_mesh->m_projection);
     }
 
-    // Update nodes
+    // Update land boundary nodes
     m_landBoundary.AddSegment (newNodeLeft, newNodeRight);
 
     // Update segment indices

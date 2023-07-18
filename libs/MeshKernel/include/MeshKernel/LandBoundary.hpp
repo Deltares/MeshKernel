@@ -66,6 +66,9 @@ namespace meshkernel
         /// @brief Add a new land boundary polyline segment
         void AddSegment (const Point& leftNode, const Point& rightNode);
 
+        /// @brief Find the closest of two points to a given point.
+        Point ClosestPoint (const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const;
+
         /// @brief Find all start-end positions of the individual poly-lines that make up the land boundary
         std::vector<std::pair<UInt, UInt>> FindPolylineIndices () const;
 

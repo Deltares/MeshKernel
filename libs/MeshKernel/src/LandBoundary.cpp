@@ -2,7 +2,7 @@
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
 
-meshkernel::LandBoundary::LandBoundary (const std::vector<Point>& landBoundary) : m_nodes (landBoundary) {}
+meshkernel::LandBoundary::LandBoundary (const std::vector<Point>& landBoundary) : m_nodes (landBoundary){}
 
 void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
                                                 const Projection& projection,
@@ -68,4 +68,18 @@ std::vector<bool> meshkernel::LandBoundary::GetNodeMask (const Polygons& polygon
     }
 
     return nodeMask;
+}
+
+meshkernel::Point meshkernel::LandBoundary::ClosestPoint (const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const
+{
+
+    if (ComputeSquaredDistance(point, m_nodes[point1Index], projection) <= ComputeSquaredDistance(point, m_nodes[point2Index], projection))
+    {
+        return m_nodes[point1Index];
+    }
+    else
+    {
+        return m_nodes[point2Index];
+    }
+
 }
