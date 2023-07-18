@@ -542,9 +542,9 @@ bool Mesh::IsFaceOnBoundary(UInt face) const
 void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
 {
 
-    std::vector<double> edgeAngles(Mesh::m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> indices(Mesh::m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> edgeNodeCopy(Mesh::m_maximumNumberOfEdgesPerNode);
+    std::vector<double> edgeAngles(m_maximumNumberOfEdgesPerNode);
+    std::vector<UInt> indices(m_maximumNumberOfEdgesPerNode);
+    std::vector<UInt> edgeNodeCopy(m_maximumNumberOfEdgesPerNode);
     for (UInt n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
@@ -675,35 +675,34 @@ void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocat
 
 void Mesh::BuildTree(Location meshLocation)
 {
-    if (meshLocation == Location::Nodes && m_nodesRTree.Empty())
+    if (m_nodesRTreeRequiresUpdate && meshLocation == Location::Nodes)
     {
         m_nodesRTree.BuildTree(m_nodes);
         m_nodesRTreeRequiresUpdate = false;
     }
-
-    else if (meshLocation == Location::Edges && m_edgesRTree.Empty())
+    else if (m_edgesRTreeRequiresUpdate && meshLocation == Location::Edges)
     {
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters);
         m_edgesRTreeRequiresUpdate = false;
     }
-
-    else if (meshLocation == Location::Faces && m_facesRTree.Empty())
+    else if (m_facesRTreeRequiresUpdate && meshLocation == Location::Faces)
     {
         m_facesRTree.BuildTree(m_facesCircumcenters);
+        m_facesRTreeRequiresUpdate = false;
     }
 }
 
 void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
 {
-    if (meshLocation == Location::Nodes && (m_nodesRTree.Empty() || m_boundingBoxCache != boundingBox))
+    if (m_nodesRTreeRequiresUpdate && meshLocation == Location::Nodes && m_boundingBoxCache != boundingBox)
     {
         m_nodesRTree.BuildTree(m_nodes, boundingBox);
         m_nodesRTreeRequiresUpdate = false;
         m_boundingBoxCache = boundingBox;
     }
 
-    else if (meshLocation == Location::Edges && (m_edgesRTree.Empty() || m_boundingBoxCache != boundingBox))
+    else if (m_edgesRTreeRequiresUpdate && meshLocation == Location::Edges && m_boundingBoxCache != boundingBox)
     {
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
@@ -711,10 +710,11 @@ void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
         m_boundingBoxCache = boundingBox;
     }
 
-    else if (meshLocation == Location::Faces && (m_facesRTree.Empty() || m_boundingBoxCache != boundingBox))
+    else if (m_facesRTreeRequiresUpdate && meshLocation == Location::Faces && m_boundingBoxCache != boundingBox)
     {
         m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
         m_boundingBoxCache = boundingBox;
+        m_facesRTreeRequiresUpdate = false;
     }
 }
 
@@ -753,21 +753,6 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
 void Mesh::AdministrateNodesEdges()
 {
     DeleteInvalidNodesAndEdges();
-
-    if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-        m_boundingBoxCache = BoundingBox();
-    }
-
-    if (m_edgesRTreeRequiresUpdate && !m_edgesRTree.Empty())
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-        m_boundingBoxCache = BoundingBox();
-    }
 
     // return if there are no nodes or no edges
     if (m_nodes.empty() || m_edges.empty())

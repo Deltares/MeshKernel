@@ -299,13 +299,13 @@ namespace meshkernel
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, Mesh::Location meshLocation);
+        [[nodiscard]] UInt GetLocationsIndices(UInt index, Location meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(Mesh::Location location) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
@@ -340,6 +340,7 @@ namespace meshkernel
         // counters
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
+        bool m_facesRTreeRequiresUpdate = true; ///< m_facesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
