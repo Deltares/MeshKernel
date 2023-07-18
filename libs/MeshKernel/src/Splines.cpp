@@ -523,7 +523,7 @@ void Splines::sampleSpline(const std::vector<Point>& splinePoints,
     samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
 }
 
-void Splines::compAfinespline(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat)
+void Splines::ComputeInterpolationMatrix(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat)
 {
 
     if (n < 1)
@@ -561,8 +561,8 @@ void Splines::compAfinespline(const UInt n, const UInt numRef, UInt& count, lin_
     }
 }
 
-lin_alg::MatrixColMajor<double> Splines::ComputeInterpolationMatrix(const lin_alg::MatrixColMajor<double>& splineCoefficients,
-                                                                    const lin_alg::ColumnVector<double>& weights)
+lin_alg::MatrixColMajor<double> Splines::ComputeLeastSquaresMatrixInverse(const lin_alg::MatrixColMajor<double>& splineCoefficients,
+                                                                          const lin_alg::ColumnVector<double>& weights)
 {
 
     lin_alg::MatrixColMajor<double> atwa(splineCoefficients.cols(), splineCoefficients.cols());
@@ -657,7 +657,7 @@ void Splines::snapSpline(const LandBoundary& landBoundary,
 
     // Compute spline coefficients.
     // Resizes the matrix to be totalNumberOfPoints by splinePoints.size()
-    compAfinespline(splinePoints.size(), numberRefinements, totalNumberOfPoints, aMatrix);
+    ComputeInterpolationMatrix(splinePoints.size(), numberRefinements, totalNumberOfPoints, aMatrix);
 
     // Returns two Eigen vectors
     auto [xf, yf] = ComputeSamplePoints (splinePoints, aMatrix);
@@ -669,7 +669,7 @@ void Splines::snapSpline(const LandBoundary& landBoundary,
     auto [startCurvature, startNormal, startTangent] = ComputeCurvatureOnSplinePoint(splineIndex, 0.0);
     auto [endCurvature, endNormal, endTangent] = ComputeCurvatureOnSplinePoint(splineIndex, static_cast<double>(splinePoints.size() - 1));
 
-    lin_alg::MatrixColMajor<double> atwaInverse(ComputeInterpolationMatrix(aMatrix, weights));
+    lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(aMatrix, weights));
     lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, splinePoints.size());
     lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, splinePoints.size());
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);

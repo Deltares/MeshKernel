@@ -77,6 +77,7 @@ namespace meshkernel
         /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
         [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex);
 
+        /// @brief Compute the spline weights.
         static lin_alg::ColumnVector<double> ComputeSplineWeights(const std::vector<Point>& splinePoints,
                                                                   const UInt totalNumberOfPoints,
                                                                   const Projection projection);
@@ -89,13 +90,16 @@ namespace meshkernel
                                  const size_t intermediatePointCount,
                                  std::vector<Point>& samplePoints);
 
-        // comp_afinespline
-        static void compAfinespline(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat);
+        /// @brief Compute the interpolation matrix (comp_afinespline)
+        static void ComputeInterpolationMatrix(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat);
 
-        static lin_alg::MatrixColMajor<double> ComputeInterpolationMatrix(const lin_alg::MatrixColMajor<double>& splineCoefficients,
-                                                                          const lin_alg::ColumnVector<double>& weights);
+        /// @brief Compute the inverse of the least squares matrix
+        static lin_alg::MatrixColMajor<double> ComputeLeastSquaresMatrixInverse(const lin_alg::MatrixColMajor<double>& splineCoefficients,
+                                                                                const lin_alg::ColumnVector<double>& weights);
 
-        // snap_spline
+        /// @brief Snap the spline to the land boundary (snap_spline)
+        ///
+        /// If the algorithm fails to converge exception AlgorithmError is thrown, and the spline is not updated.
         void snapSpline(const LandBoundary& landBoundary,
                         const size_t splineIndex);
 
