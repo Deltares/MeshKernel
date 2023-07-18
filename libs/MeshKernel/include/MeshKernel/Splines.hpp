@@ -85,7 +85,9 @@ namespace meshkernel
         /// @brief Evaluate a spline function (splint)
         static Point evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
 
-        // sample_spline
+        /// @brief Sample the spline. (sample_spline)
+        ///
+        /// Sample points can be at a high resolution that the control points.
         static void sampleSpline(const std::vector<Point>& controlPoints,
                                  const size_t intermediatePointCount,
                                  std::vector<Point>& samplePoints);
