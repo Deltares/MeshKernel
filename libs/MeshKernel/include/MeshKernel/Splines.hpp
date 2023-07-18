@@ -29,7 +29,7 @@
 
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
 
 namespace meshkernel
@@ -96,7 +96,7 @@ namespace meshkernel
                                                                           const lin_alg::ColumnVector<double>& weights);
 
         // snap_spline
-        void snapSpline(const LandBoundaries& landBoundary,
+        void snapSpline(const LandBoundary& landBoundary,
                         const size_t splineIndex);
 
         /// @brief Computes the intersection of two splines (sect3r)
@@ -160,6 +160,11 @@ namespace meshkernel
         Projection m_projection = Projection::cartesian;     ///< The map projection
 
     private:
+        /// @brief Compute the spline sample points.
+        static std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> ComputeSamplePoints (const std::vector<Point>& splinePoints,
+                                                                                                             const lin_alg::MatrixColMajor<double>& aMatrix);
+
+
         /// @brief Adds a new corner point in an existing spline
         /// @param[in] splineIndex The spline index
         /// @param[in] point The point to add

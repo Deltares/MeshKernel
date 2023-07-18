@@ -603,12 +603,34 @@ lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const std::vector<Po
     return weights;
 }
 
-void Splines::snapSpline(const LandBoundaries& landBoundary,
+std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> Splines::ComputeSamplePoints (const std::vector<Point>& splinePoints,
+                                                                                                       const lin_alg::MatrixColMajor<double>& aMatrix)
+{
+
+    lin_alg::ColumnVector<double> xf(aMatrix.rows ());
+    lin_alg::ColumnVector<double> yf(aMatrix.rows ());
+
+    for (int r = 0; r < aMatrix.rows (); ++r)
+    {
+        xf(r) = 0.0;
+        yf(r) = 0.0;
+
+        for (int c = 0; c < aMatrix.cols (); ++c)
+        {
+            xf (r) += aMatrix (r,c) * splinePoints[c].x;
+            yf (r) += aMatrix (r,c) * splinePoints[c].y;
+        }
+    }
+
+    return {xf, yf};
+}
+
+void Splines::snapSpline(const LandBoundary& landBoundary,
                          const size_t splineIndex)
 {
-    if (splineIndex > GetNumSplines())
+    if (splineIndex >= GetNumSplines())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}", splineIndex));
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
     }
 
     if (m_splineNodes[splineIndex].empty())
@@ -637,21 +659,9 @@ void Splines::snapSpline(const LandBoundaries& landBoundary,
     // Resizes the matrix to be totalNumberOfPoints by splinePoints.size()
     compAfinespline(splinePoints.size(), numberRefinements, totalNumberOfPoints, aMatrix);
 
-    // Vectors containing x- and y-coordinates
-    // Simplifies linear algebra operations to have then in Eigen::vector format.
-    // TODO Only problem, they are used only once, to compute a gemv. Is there an easier way?
-    lin_alg::ColumnVector<double> vecX(splinePoints.size());
-    lin_alg::ColumnVector<double> vecY(splinePoints.size());
+    // Returns two Eigen vectors
+    auto [xf, yf] = ComputeSamplePoints (splinePoints, aMatrix);
 
-    // extract spline points to vectors.
-    for (size_t i = 0; i < splinePoints.size(); ++i)
-    {
-        vecX(i) = splinePoints[i].x;
-        vecY(i) = splinePoints[i].y;
-    }
-
-    lin_alg::ColumnVector<double> xf(aMatrix * vecX);
-    lin_alg::ColumnVector<double> yf(aMatrix * vecY);
     lin_alg::ColumnVector<double> xfOld(xf);
     lin_alg::ColumnVector<double> yfOld(yf);
     lin_alg::ColumnVector<double> weights(ComputeSplineWeights(splinePoints, totalNumberOfPoints, m_projection));
@@ -710,7 +720,7 @@ void Splines::snapSpline(const LandBoundaries& landBoundary,
         for (size_t i = 0; i < splinePoints.size(); ++i)
         {
             Point point(xf(i), yf(i));
-            landBoundary.nearestPointOnLandBoundary(point, 2, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
+            landBoundary.FindNearestPoint(point, m_projection, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
             xbVec(i) = nearestPoint.x;
             ybVec(i) = nearestPoint.y;
         }
