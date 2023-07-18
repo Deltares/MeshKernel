@@ -82,14 +82,49 @@ namespace meshkernel
 
         OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
-        std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
-        std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation
-        std::vector<std::vector<double>> m_c;   ///< The c term of the orthogonalization equation
-        std::vector<std::vector<double>> m_d;   ///< The d term of the orthogonalization equation
-        std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
-        std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
+        struct Terms
+        {
+            Terms(UInt M, UInt N)
+            {
+                lin_alg::ResizeAndFillMatrix(a, M, N, false, constants::missing::doubleValue);
+                lin_alg::ResizeAndFillMatrix(b, M, N, false, constants::missing::doubleValue);
+                lin_alg::ResizeAndFillMatrix(c, M, N, false, constants::missing::doubleValue);
+                lin_alg::ResizeAndFillMatrix(d, M, N, false, constants::missing::doubleValue);
+                lin_alg::ResizeAndFillMatrix(e, M, N, false, constants::missing::doubleValue);
+                lin_alg::ResizeAndFillMatrix(atp, M, N, false, constants::missing::doubleValue);
+            }
 
-        std::vector<std::vector<bool>> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
+            // Preserves atp
+            void Reset()
+            {
+                a.fill(0.0);
+                b.fill(0.0);
+                c.fill(0.0);
+                d.fill(0.0);
+                e.fill(0.0);
+            }
+
+            void Invalidate()
+            {
+                a.fill(constants::missing::doubleValue);
+                b.fill(constants::missing::doubleValue);
+                c.fill(constants::missing::doubleValue);
+                d.fill(constants::missing::doubleValue);
+                e.fill(constants::missing::doubleValue);
+                atp.fill(constants::missing::doubleValue);
+            }
+
+            lin_alg::MatrixRowMajor<double> a;   ///< The a term of the orthogonalization equation
+            lin_alg::MatrixRowMajor<double> b;   ///< The b term of the orthogonalization equation
+            lin_alg::MatrixRowMajor<double> c;   ///< The c term of the orthogonalization equation
+            lin_alg::MatrixRowMajor<double> d;   ///< The d term of the orthogonalization equation
+            lin_alg::MatrixRowMajor<double> e;   ///< The e term of the orthogonalization equation
+            lin_alg::MatrixRowMajor<double> atp; ///< The atp term of the orthogonalization equation
+        };
+
+        Terms m_terms;
+
+        lin_alg::MatrixRowMajor<bool> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
 
         Splines m_splines; ///< The grid lines stored as splines
     };

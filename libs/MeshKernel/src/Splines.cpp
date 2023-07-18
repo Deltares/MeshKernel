@@ -35,6 +35,10 @@ using meshkernel::Splines;
 
 Splines::Splines(Projection projection) : m_projection(projection) {}
 
+void Test()
+{
+}
+
 Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
@@ -43,7 +47,7 @@ Splines::Splines(CurvilinearGrid const& grid)
     {
         for (UInt m = 0; m < grid.m_numM; ++m)
         {
-            mGridLines[n][m] = grid.m_gridNodes[m][n];
+            mGridLines[n][m] = grid.m_gridNodes(m, n);
         }
         AddSpline(mGridLines[n], 0, static_cast<UInt>(mGridLines[n].size()));
     }

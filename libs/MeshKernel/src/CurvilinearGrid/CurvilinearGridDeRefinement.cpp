@@ -49,6 +49,7 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
+    lin_alg::MatrixRowMajor<Point> deRefinedGrid(m_grid.m_numM, m_grid.m_numN);
     deRefinedGrid.reserve(m_grid.m_numM);
 
     UInt mIndexOriginalGrid = 0;
@@ -70,7 +71,7 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
+            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes(mIndexOriginalGrid, nIndexOriginalGrid));
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;

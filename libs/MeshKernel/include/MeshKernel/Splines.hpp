@@ -61,6 +61,8 @@ namespace meshkernel
         /// @param[in] size The end index splines
         void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
 
+        void AddSpline(Point const* const splines, UInt start, UInt size);
+
         /// @brief Second order derivative at spline corner points, from the start node to the end node of the spline (splint)
         /// @param[in] splines The spline corner points
         /// @param[in] startIndex The start spline node

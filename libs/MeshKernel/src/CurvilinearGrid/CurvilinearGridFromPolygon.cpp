@@ -31,6 +31,9 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
+
+#include <array>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridFromPolygon;
@@ -210,19 +213,10 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     Projection const polygonProjection = m_polygon->GetProjection();
 
-    const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
-                                              polygonProjection, numMNodes - 1, numNNodes - 1);
+    const auto gridNodes = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
+                                                 polygonProjection, numMNodes - 1, numNNodes - 1);
 
-    // Assign the points to the curvilinear grid
-    std::vector<std::vector<Point>> gridNodes(numMNodes, std::vector<Point>(numNNodes));
-    for (UInt i = 0; i < numMNodes; i++)
-    {
-        for (UInt j = 0; j < numNNodes; j++)
-        {
-            gridNodes[i][j] = result[i][j];
-        }
-    }
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(gridNodes, polygonProjection);
 }
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
@@ -305,13 +299,13 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     }
 
     // set dimensions of blocks
-    std::vector<UInt> numM{n1, n3, n2};
-    std::vector<UInt> numN{n3, n2, n1};
+    std::array<UInt, 3> numM{n1, n3, n2};
+    std::array<UInt, 3> numN{n3, n2, n1};
 
     // set pointers of block corners
-    std::vector<UInt> cornerPoints{firstNode, secondNode, thirdNode};
-    std::vector<UInt> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
-    std::vector<UInt> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
+    std::array<UInt, 3> cornerPoints{firstNode, secondNode, thirdNode};
+    std::array<UInt, 3> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
+    std::array<UInt, 3> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
 
     // compute triangle middle point
     const auto xia = static_cast<double>(n1) / static_cast<double>(numPointsFirstSide);
@@ -333,7 +327,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     std::vector<Point> sideThree(maximumNumberOfNodes);
     std::vector<Point> sideFour(maximumNumberOfNodes);
 
-    std::vector gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
+    lin_alg::MatrixRowMajor gridNodes(n1 + n3 + 1, n2 + n3 + 1);
 
     Projection const polygonProjection = m_polygon->GetProjection();
 
@@ -404,38 +398,32 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         // add to grid
         if (t == 0)
         {
-            for (UInt i = 0; i < result.size(); ++i)
-            {
-                for (UInt j = 0; j < result[0].size(); ++j)
-                {
-                    gridNodes[i][j] = result[i][j];
-                }
-            }
+            gridNodes = result;
         }
         if (t == 1)
         {
-            for (UInt i = 0; i < result.size(); ++i)
+            for (UInt i = 0; i < result.rows(); ++i)
             {
-                for (UInt j = 0; j < result[0].size(); ++j)
+                for (UInt j = 0; j < result.cols(); ++j)
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
-                    gridNodes[iIndex][jIndex] = result[i][j];
+                    gridNodes(iIndex, jIndex) = result(i, j);
                 }
             }
         }
         if (t == 2)
         {
-            for (UInt i = 0; i < result[0].size(); ++i)
+            for (UInt i = 0; i < result.cols(); ++i)
             {
-                for (UInt j = 0; j < result.size(); ++j)
+                for (UInt j = 0; j < result.rows(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
-                    gridNodes[i][jIndex] = result[j][i];
+                    gridNodes(i, jIndex) = result(j, i);
                 }
             }
         }
     }
 
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(gridNodes, polygonProjection);
 }

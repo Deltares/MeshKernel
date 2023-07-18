@@ -172,6 +172,11 @@ namespace meshkernel
             return !isInvalid;
         }
 
+        void Invalidate()
+        {
+            *this = Point(constants::missing::doubleValue, constants::missing::doubleValue);
+        }
+
     private:
         static double constexpr m_trans_factor =
             constants::conversion::degToRad *

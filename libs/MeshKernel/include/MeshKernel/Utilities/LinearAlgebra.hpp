@@ -35,15 +35,15 @@ namespace meshkernel
                                                bool preserve = false,
                                                T const& fill_value = {})
         {
-            UInt const rows_old = static_cast<UInt>(matrix.rows());
-            UInt const cols_old = static_cast<UInt>(matrix.cols());
-            matrix.resize(rows, cols);
             if (!preserve)
             {
-                matrix.fill(fill_value);
+                matrix.setConstant(rows, cols, fill_value);
             }
             else
             {
+                UInt const rows_old = static_cast<UInt>(matrix.rows());
+                UInt const cols_old = static_cast<UInt>(matrix.cols());
+                matrix.conservativeResize(rows, cols);
                 for (UInt i = rows_old; i < matrix.rows(); ++i)
                 {
                     for (UInt j = cols_old; j < matrix.cols(); ++j)
@@ -52,6 +52,12 @@ namespace meshkernel
                     }
                 }
             }
+        }
+
+        template <class T>
+        [[nodiscard]] inline static bool MatrixIsEmpty(MatrixRowMajor<T> const& matrix)
+        {
+            return matrix.size() == 0;
         }
     } // namespace lin_alg
 

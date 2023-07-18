@@ -73,15 +73,15 @@ namespace meshkernel
         /// @brief Constructor taking only a projection
         CurvilinearGrid(Projection projection);
 
+        /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
+        /// @param[in] grid       The input grid points
+        /// @param[in] projection The projection to use
+        CurvilinearGrid(lin_alg::MatrixRowMajor<Point> const& grid, Projection projection);
+
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons
         /// @param[in] polygonIndex The index of the polygon to use for deletion
         void Delete(std::shared_ptr<Polygons> polygons, UInt polygonIndex);
-
-        /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
-        /// @param[in] grid       The input grid points
-        /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise
@@ -181,7 +181,7 @@ namespace meshkernel
 
         UInt m_numM = 0;                                       ///< The number of m coordinates (vertical lines)
         UInt m_numN = 0;                                       ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
+        lin_alg::MatrixRowMajor<Point> m_gridNodes;            ///< Member variable storing the grid
         lin_alg::MatrixRowMajor<bool> m_gridFacesMask;         ///< The mask of the grid faces (true/false)
         lin_alg::MatrixRowMajor<NodeType> m_gridNodesTypes;    ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid

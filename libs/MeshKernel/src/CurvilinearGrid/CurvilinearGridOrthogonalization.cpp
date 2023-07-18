@@ -39,20 +39,14 @@ using meshkernel::CurvilinearGridOrthogonalization;
 CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
-      m_orthogonalizationParameters(orthogonalizationParameters)
+      m_orthogonalizationParameters(orthogonalizationParameters),
+      m_terms(m_grid.m_numM, m_grid.m_numN)
 
 {
+    lin_alg::ResizeAndFillMatrix(m_isGridNodeFrozen, m_grid.m_numM, m_grid.m_numN, true, false);
+
     /// Store the grid lines of the grid as splines
     m_splines = Splines(m_grid);
-
-    /// allocate matrix coefficients
-    ResizeAndFill2DVector(m_a, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_b, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_c, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_d, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_e, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_atp, m_grid.m_numM, m_grid.m_numN, true, constants::missing::doubleValue);
-    ResizeAndFill2DVector(m_isGridNodeFrozen, m_grid.m_numM, m_grid.m_numN, true, false);
 }
 
 void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
@@ -63,7 +57,7 @@ void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
         {
             for (auto n = frozenLine.m_startNode.m_n; n <= frozenLine.m_endNode.m_n; ++n)
             {
-                m_isGridNodeFrozen[m][n] = true;
+                m_isGridNodeFrozen(m, n) = true;
             }
         }
     }
@@ -141,15 +135,15 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                         continue;
                     }
 
-                    const auto leftNode = m_grid.m_gridNodes[mm - 1][n];
-                    const auto verticalNode = m_grid.m_gridNodes[mm][n + nextVertical];
-                    const auto rightNode = m_grid.m_gridNodes[mm + 1][n];
+                    const auto leftNode = m_grid.m_gridNodes(mm - 1, n);
+                    const auto verticalNode = m_grid.m_gridNodes(mm, n + nextVertical);
+                    const auto rightNode = m_grid.m_gridNodes(mm + 1, n);
 
                     Point boundaryNode;
                     if (nextVertical == 1)
                     {
-                        const double qb = m_atp[mm - 1][n];
-                        const double qc = m_atp[mm][n];
+                        const double qb = m_terms.atp(mm - 1, n);
+                        const double qc = m_terms.atp(mm, n);
                         const auto qbc = 1.0 / qb + 1.0 / qc;
                         const auto rn = qb + qc + qbc;
                         boundaryNode.x = (leftNode.x * qb + verticalNode.x * qbc + rightNode.x * qc + rightNode.y - leftNode.y) / rn;
@@ -158,15 +152,15 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
                     if (nextVertical == -1)
                     {
-                        const double qb = m_atp[mm - 1][n - 1];
-                        const double qc = m_atp[mm][n - 1];
+                        const double qb = m_terms.atp(mm - 1, n - 1);
+                        const double qc = m_terms.atp(mm, n - 1);
                         const auto qbc = 1.0 / qb + 1.0 / qc;
                         const auto rn = qb + qc + qbc;
                         boundaryNode.x = (leftNode.x * qb + verticalNode.x * qbc + rightNode.x * qc + leftNode.y - rightNode.y) / rn;
                         boundaryNode.y = (leftNode.y * qb + verticalNode.y * qbc + rightNode.y * qc + rightNode.x - leftNode.x) / rn;
                     }
 
-                    m_grid.m_gridNodes[mm][n] = m_splines.ComputeClosestPointOnSplineSegment(n,
+                    m_grid.m_gridNodes(mm, n) = m_splines.ComputeClosestPointOnSplineSegment(n,
                                                                                              static_cast<double>(startM),
                                                                                              static_cast<double>(m),
                                                                                              boundaryNode);
@@ -219,16 +213,16 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                     {
                         continue;
                     }
-                    const auto bottomNode = m_grid.m_gridNodes[m][nn - 1];
-                    const auto horizontalNode = m_grid.m_gridNodes[m + nextHorizontal][nn];
-                    const auto upperNode = m_grid.m_gridNodes[m][nn + 1];
+                    const auto bottomNode = m_grid.m_gridNodes(m, nn - 1);
+                    const auto horizontalNode = m_grid.m_gridNodes(m + nextHorizontal, nn);
+                    const auto upperNode = m_grid.m_gridNodes(m, nn + 1);
 
                     Point boundaryNode;
                     if (nextHorizontal == 1)
                     {
-                        const auto qb = 1.0 / m_atp[m][nn - 1];
-                        const auto qc = 1.0 / m_atp[m][nn];
-                        const auto qbc = m_atp[m][nn - 1] + m_atp[m][nn];
+                        const auto qb = 1.0 / m_terms.atp(m, nn - 1);
+                        const auto qc = 1.0 / m_terms.atp(m, nn);
+                        const auto qbc = m_terms.atp(m, nn - 1) + m_terms.atp(m, nn);
                         const auto rn = qb + qc + qbc;
                         boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + bottomNode.y - upperNode.y) / rn;
                         boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + upperNode.x - bottomNode.x) / rn;
@@ -236,9 +230,9 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 
                     if (nextHorizontal == -1)
                     {
-                        const auto qb = 1.0 / m_atp[m - 1][nn - 1];
-                        const auto qc = 1.0 / m_atp[m - 1][nn];
-                        const auto qbc = m_atp[m - 1][nn - 1] + m_atp[m - 1][nn];
+                        const auto qb = 1.0 / m_terms.atp(m - 1, nn - 1);
+                        const auto qc = 1.0 / m_terms.atp(m - 1, nn);
+                        const auto qbc = m_terms.atp(m - 1, nn - 1) + m_terms.atp(m - 1, nn);
                         const auto rn = qb + qc + qbc;
                         boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + upperNode.y - bottomNode.y) / rn;
                         boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + bottomNode.x - upperNode.x) / rn;
@@ -246,7 +240,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 
                     // Vertical spline index
                     const auto splineIndex = m_grid.m_numN + m;
-                    m_grid.m_gridNodes[m][nn] = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
+                    m_grid.m_gridNodes(m, nn) = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
                                                                                              static_cast<double>(startN),
                                                                                              static_cast<double>(n),
                                                                                              boundaryNode);
@@ -280,19 +274,19 @@ void CurvilinearGridOrthogonalization::Solve()
                     continue;
                 }
 
-                if (m_isGridNodeFrozen[m][n])
+                if (m_isGridNodeFrozen(m, n))
                 {
                     continue;
                 }
 
                 const auto residual =
-                    m_grid.m_gridNodes[m + 1][n] * m_a[m][n] +
-                    m_grid.m_gridNodes[m - 1][n] * m_b[m][n] +
-                    m_grid.m_gridNodes[m][n + 1] * m_c[m][n] +
-                    m_grid.m_gridNodes[m][n - 1] * m_d[m][n] +
-                    m_grid.m_gridNodes[m][n] * m_e[m][n];
+                    m_grid.m_gridNodes(m + 1, n) * m_terms.a(m, n) +
+                    m_grid.m_gridNodes(m - 1, n) * m_terms.b(m, n) +
+                    m_grid.m_gridNodes(m, n + 1) * m_terms.c(m, n) +
+                    m_grid.m_gridNodes(m, n - 1) * m_terms.d(m, n) +
+                    m_grid.m_gridNodes(m, n) * m_terms.e(m, n);
 
-                m_grid.m_gridNodes[m][n] = m_grid.m_gridNodes[m][n] - residual / m_e[m][n] * omega;
+                m_grid.m_gridNodes(m, n) = m_grid.m_gridNodes(m, n) - residual / m_terms.e(m, n) * omega;
             }
         }
 
@@ -309,13 +303,7 @@ void CurvilinearGridOrthogonalization::Solve()
 
 void CurvilinearGridOrthogonalization::ComputeCoefficients()
 {
-    /// allocate matrix coefficients
-    std::fill(m_a.begin(), m_a.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
-    std::fill(m_b.begin(), m_b.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
-    std::fill(m_c.begin(), m_c.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
-    std::fill(m_d.begin(), m_d.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
-    std::fill(m_e.begin(), m_e.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
-    std::fill(m_atp.begin(), m_atp.end(), std::vector<double>(m_grid.m_numN, constants::missing::doubleValue));
+    m_terms.Invalidate();
 
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
@@ -326,19 +314,19 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
                 continue;
             }
 
-            const auto bottom = ComputeDistance(m_grid.m_gridNodes[m][n], m_grid.m_gridNodes[m + 1][n], Projection::cartesian);
-            const auto upper = ComputeDistance(m_grid.m_gridNodes[m][n + 1], m_grid.m_gridNodes[m + 1][n + 1], Projection::cartesian);
-            const auto left = ComputeDistance(m_grid.m_gridNodes[m][n], m_grid.m_gridNodes[m][n + 1], Projection::cartesian);
-            const auto right = ComputeDistance(m_grid.m_gridNodes[m + 1][n], m_grid.m_gridNodes[m + 1][n + 1], Projection::cartesian);
+            const auto bottom = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m + 1, n), Projection::cartesian);
+            const auto upper = ComputeDistance(m_grid.m_gridNodes(m, n + 1), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
+            const auto left = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m, n + 1), Projection::cartesian);
+            const auto right = ComputeDistance(m_grid.m_gridNodes(m + 1, n), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
 
-            m_a[m][n] = (bottom + upper) * 0.5;
-            m_b[m][n] = (left + right) * 0.5;
+            m_terms.a(m, n) = (bottom + upper) * 0.5;
+            m_terms.b(m, n) = (left + right) * 0.5;
 
-            m_atp[m][n] = m_a[m][n];
-            m_e[m][n] = m_b[m][n];
+            m_terms.atp(m, n) = m_terms.a(m, n);
+            m_terms.e(m, n) = m_terms.b(m, n);
 
-            m_c[m][n] = m_atp[m][n];
-            m_d[m][n] = m_e[m][n];
+            m_terms.c(m, n) = m_terms.atp(m, n);
+            m_terms.d(m, n) = m_terms.e(m, n);
         }
     }
 
@@ -355,36 +343,34 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
             {
                 continue;
             }
-            m_atp[m][n] = m_atp[m][n] * m_a[m][n] / m_c[m][n];
-            m_atp[m][n] = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_atp[m][n] + smoothingFactor * m_a[m][n];
-            m_e[m][n] = m_e[m][n] * m_b[m][n] / m_d[m][n];
-            m_e[m][n] = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_e[m][n] + smoothingFactor * m_b[m][n];
+            m_terms.atp(m, n) = m_terms.atp(m, n) * m_terms.a(m, n) / m_terms.c(m, n);
+            m_terms.atp(m, n) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_terms.atp(m, n) +
+                                smoothingFactor * m_terms.a(m, n);
+            m_terms.e(m, n) = m_terms.e(m, n) * m_terms.b(m, n) / m_terms.d(m, n);
+            m_terms.e(m, n) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_terms.e(m, n) +
+                              smoothingFactor * m_terms.b(m, n);
 
-            m_a[m][n] = m_atp[m][n];
-            m_b[m][n] = m_e[m][n];
+            m_terms.a(m, n) = m_terms.atp(m, n);
+            m_terms.b(m, n) = m_terms.e(m, n);
         }
     }
 
-    // Calculate m_atp
+    // Calculate m_terms.atp
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (!m_grid.m_gridFacesMask(m, n))
             {
-                m_atp[m][n] = constants::missing::doubleValue;
+                m_terms.atp(m, n) = constants::missing::doubleValue;
                 continue;
             }
-            m_atp[m][n] = m_b[m][n] / m_a[m][n];
+            m_terms.atp(m, n) = m_terms.b(m, n) / m_terms.a(m, n);
         }
     }
 
-    // Re-set coefficients
-    std::fill(m_a.begin(), m_a.end(), std::vector<double>(m_grid.m_numN, 0.0));
-    std::fill(m_b.begin(), m_b.end(), std::vector<double>(m_grid.m_numN, 0.0));
-    std::fill(m_c.begin(), m_c.end(), std::vector<double>(m_grid.m_numN, 0.0));
-    std::fill(m_d.begin(), m_d.end(), std::vector<double>(m_grid.m_numN, 0.0));
-    std::fill(m_e.begin(), m_e.end(), std::vector<double>(m_grid.m_numN, 0.0));
+    // Re-set coefficients, preserve atp
+    m_terms.Reset();
 
     for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
     {
@@ -394,12 +380,11 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
             {
                 continue;
             }
-            m_a[m][n] = m_atp[m][n - 1] + m_atp[m][n];
-            m_b[m][n] = m_atp[m - 1][n - 1] + m_atp[m - 1][n];
-            m_c[m][n] = 1.0 / m_atp[m - 1][n] + 1.0 / m_atp[m][n];
-            m_d[m][n] = 1.0 / m_atp[m - 1][n - 1] + 1.0 / m_atp[m][n - 1];
-
-            m_e[m][n] = -m_a[m][n] - m_b[m][n] - m_c[m][n] - m_d[m][n];
+            m_terms.a(m, n) = m_terms.atp(m, n - 1) + m_terms.atp(m, n);
+            m_terms.b(m, n) = m_terms.atp(m - 1, n - 1) + m_terms.atp(m - 1, n);
+            m_terms.c(m, n) = 1.0 / m_terms.atp(m - 1, n) + 1.0 / m_terms.atp(m, n);
+            m_terms.d(m, n) = 1.0 / m_terms.atp(m - 1, n - 1) + 1.0 / m_terms.atp(m, n - 1);
+            m_terms.e(m, n) = -m_terms.a(m, n) - m_terms.b(m, n) - m_terms.c(m, n) - m_terms.d(m, n);
         }
     }
 }
@@ -408,7 +393,8 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidVerticalBoundaryNodes();
     // Store the counter
-    std::vector<std::vector<UInt>> counter(m_grid.m_numM, std::vector<UInt>(m_grid.m_numN, 0));
+    lin_alg::MatrixRowMajor<UInt> counter(m_grid.m_numM, m_grid.m_numN);
+    counter.fill(0);
 
     // Perform left sum
     for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
@@ -417,13 +403,13 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
         {
 
             if (m_grid.IsValidFace(m, n) &&
-                !IsEqual(m_a[m][n], constants::missing::doubleValue) &&
-                !IsEqual(m_a[m - 1][n], constants::missing::doubleValue) &&
+                !IsEqual(m_terms.a(m, n), constants::missing::doubleValue) &&
+                !IsEqual(m_terms.a(m - 1, n), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes[m][n])
             {
-                m_a[m][n] += m_a[m - 1][n];
-                m_c[m][n] += m_c[m - 1][n];
-                counter[m][n] = counter[m - 1][n] + 1;
+                m_terms.a(m, n) += m_terms.a(m - 1, n);
+                m_terms.c(m, n) += m_terms.c(m - 1, n);
+                counter(m, n) = counter(m - 1, n) + 1;
             }
         }
     }
@@ -434,13 +420,13 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
         for (auto m = int(m_upperRight.m_m) - 1; m >= int(m_lowerLeft.m_m); --m)
         {
             if (m_grid.IsValidFace(m, n) &&
-                !IsEqual(m_a[m][n], constants::missing::doubleValue) &&
-                !IsEqual(m_a[m + 1][n], constants::missing::doubleValue) &&
+                !IsEqual(m_terms.a(m, n), constants::missing::doubleValue) &&
+                !IsEqual(m_terms.a(m + 1, n), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes[m + 1][n])
             {
-                m_a[m][n] = m_a[m + 1][n];
-                m_c[m][n] = m_c[m + 1][n];
-                counter[m][n] = counter[m + 1][n];
+                m_terms.a(m, n) = m_terms.a(m + 1, n);
+                m_terms.c(m, n) = m_terms.c(m + 1, n);
+                counter(m, n) = counter(m + 1, n);
             }
         }
     }
@@ -451,8 +437,8 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
         {
             if (m_grid.IsValidFace(m, n))
             {
-                m_a[m][n] /= static_cast<double>(counter[m][n] + 1);
-                m_c[m][n] /= static_cast<double>(counter[m][n] + 1);
+                m_terms.a(m, n) /= static_cast<double>(counter(m, n) + 1);
+                m_terms.c(m, n) /= static_cast<double>(counter(m, n) + 1);
             }
         }
     }
@@ -461,7 +447,8 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidHorizontalBoundaryNodes();
-    std::vector<std::vector<UInt>> counter(m_grid.m_numM, std::vector<UInt>(m_grid.m_numN, 0));
+    lin_alg::MatrixRowMajor<UInt> counter(m_grid.m_numM, m_grid.m_numN);
+    counter.fill(0);
 
     // Perform bottom sum
     for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
@@ -469,13 +456,13 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
         for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             if (m_grid.IsValidFace(m, n) &&
-                !IsEqual(m_b[m][n], constants::missing::doubleValue) &&
-                !IsEqual(m_b[m][n - 1], constants::missing::doubleValue) &&
+                !IsEqual(m_terms.b(m, n), constants::missing::doubleValue) &&
+                !IsEqual(m_terms.b(m, n - 1), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes[m][n])
             {
-                m_b[m][n] += m_b[m][n - 1];
-                m_d[m][n] += m_d[m][n - 1];
-                counter[m][n] = counter[m][n - 1] + 1;
+                m_terms.b(m, n) += m_terms.b(m, n - 1);
+                m_terms.d(m, n) += m_terms.d(m, n - 1);
+                counter(m, n) = counter(m, n - 1) + 1;
             }
         }
     }
@@ -486,13 +473,13 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
         for (auto n = static_cast<int>(m_upperRight.m_n) - 1; n >= static_cast<int>(m_lowerLeft.m_n); --n)
         {
             if (m_grid.IsValidFace(m, n) &&
-                !IsEqual(m_b[m][n], constants::missing::doubleValue) &&
-                !IsEqual(m_b[m][n + 1], constants::missing::doubleValue) &&
+                !IsEqual(m_terms.b(m, n), constants::missing::doubleValue) &&
+                !IsEqual(m_terms.b(m, n + 1), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes[m][n + 1])
             {
-                m_b[m][n] = m_b[m][n + 1];
-                m_d[m][n] = m_d[m][n + 1];
-                counter[m][n] = counter[m][n + 1];
+                m_terms.b(m, n) = m_terms.b(m, n + 1);
+                m_terms.d(m, n) = m_terms.d(m, n + 1);
+                counter(m, n) = counter(m, n + 1);
             }
         }
     }
@@ -504,8 +491,8 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
         {
             if (m_grid.IsValidFace(m, n))
             {
-                m_b[m][n] /= static_cast<double>(counter[m][n] + 1);
-                m_d[m][n] /= static_cast<double>(counter[m][n] + 1);
+                m_terms.b(m, n) /= static_cast<double>(counter(m, n) + 1);
+                m_terms.d(m, n) /= static_cast<double>(counter(m, n) + 1);
             }
         }
     }
