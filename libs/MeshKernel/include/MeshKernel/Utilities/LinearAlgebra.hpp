@@ -2,8 +2,6 @@
 
 #include "MeshKernel/Definitions.hpp"
 
-// Not allowed, must be signed!
-// #define EIGEN_DEFAULT_DENSE_INDEX_TYPE UInt
 #include <Eigen/Core>
 
 namespace meshkernel
@@ -29,7 +27,7 @@ namespace meshkernel
         /// @param[in]     preserve Optional parameter that determines if the existing elements in
         ///                         the matrix should be presrved or overwritten by the provided
         ///                         or deflault (if not provided) fill value
-        /// @param[in]     fill_value The otional the fill value (defaults to the template class constructor)
+        /// @param[in]     fill_value The optional the fill value (defaults to the template class constructor)
         template <class T>
         inline static void ResizeAndFillMatrix(MatrixRowMajor<T>& matrix,
                                                UInt rows,

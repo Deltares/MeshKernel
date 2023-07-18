@@ -183,7 +183,7 @@ namespace meshkernel
         UInt m_numN = 0;                                       ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
         lin_alg::MatrixRowMajor<bool> m_gridFacesMask;         ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesTypes;   ///< The grid node types
+        lin_alg::MatrixRowMajor<NodeType> m_gridNodesTypes;    ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:

@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
@@ -358,7 +359,7 @@ namespace meshkernel
     void CurvilinearGrid::ComputeGridNodeTypes()
     {
         RemoveInvalidNodes(true);
-        ResizeAndFill2DVector(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
+        lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
 
         // Flag faces based on boundaries
         for (UInt m = 0; m < m_numM; ++m)
@@ -374,85 +375,85 @@ namespace meshkernel
                 // Left side
                 if (m == 0 && n == 0)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                    m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                     continue;
                 }
                 if (m == 0 && n == m_numN - 1)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                    m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                     continue;
                 }
                 if (m == 0 && !m_gridNodes[m][n - 1].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                    m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                     continue;
                 }
                 if (m == 0 && !m_gridNodes[m][n + 1].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                    m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                     continue;
                 }
                 if (m == 0)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Left;
+                    m_gridNodesTypes(m, n) = NodeType::Left;
                     continue;
                 }
                 // Right side
                 if (m == m_numM - 1 && n == 0)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                    m_gridNodesTypes(m, n) = NodeType::BottomRight;
                     continue;
                 }
                 if (m == m_numM - 1 && n == m_numN - 1)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                    m_gridNodesTypes(m, n) = NodeType::UpperRight;
                     continue;
                 }
                 if (m == m_numM - 1 && !m_gridNodes[m][n - 1].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                    m_gridNodesTypes(m, n) = NodeType::BottomRight;
                     continue;
                 }
                 if (m == m_numM - 1 && !m_gridNodes[m][n + 1].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                    m_gridNodesTypes(m, n) = NodeType::UpperRight;
                     continue;
                 }
                 if (m == m_numM - 1)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Right;
+                    m_gridNodesTypes(m, n) = NodeType::Right;
                     continue;
                 }
                 // Bottom side
                 if (n == 0 && !m_gridNodes[m - 1][n].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                    m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                     continue;
                 }
                 if (n == 0 && !m_gridNodes[m + 1][n].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                    m_gridNodesTypes(m, n) = NodeType::BottomRight;
                     continue;
                 }
                 if (n == 0)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Bottom;
+                    m_gridNodesTypes(m, n) = NodeType::Bottom;
                     continue;
                 }
                 // Upper side
                 if (n == m_numN - 1 && !m_gridNodes[m - 1][n].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                    m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                     continue;
                 }
                 if (n == m_numN - 1 && !m_gridNodes[m + 1][n].IsValid())
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                    m_gridNodesTypes(m, n) = NodeType::UpperRight;
                     continue;
                 }
                 if (n == m_numN - 1)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Up;
+                    m_gridNodesTypes(m, n) = NodeType::Up;
                     continue;
                 }
 
@@ -466,7 +467,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::InternalValid;
+                    m_gridNodesTypes(m, n) = NodeType::InternalValid;
                     continue;
                 }
                 if (!isTopRightFaceValid &&
@@ -474,7 +475,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                    m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                     continue;
                 }
                 if (isTopRightFaceValid &&
@@ -482,7 +483,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                    m_gridNodesTypes(m, n) = NodeType::BottomRight;
                     continue;
                 }
                 if (isTopRightFaceValid &&
@@ -490,7 +491,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                    m_gridNodesTypes(m, n) = NodeType::UpperRight;
                     continue;
                 }
                 if (isTopRightFaceValid &&
@@ -498,7 +499,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                    m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                     continue;
                 }
 
@@ -507,7 +508,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Bottom;
+                    m_gridNodesTypes(m, n) = NodeType::Bottom;
                     continue;
                 }
                 if (isTopRightFaceValid &&
@@ -515,7 +516,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Left;
+                    m_gridNodesTypes(m, n) = NodeType::Left;
                     continue;
                 }
 
@@ -524,7 +525,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Up;
+                    m_gridNodesTypes(m, n) = NodeType::Up;
                     continue;
                 }
 
@@ -533,7 +534,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::Right;
+                    m_gridNodesTypes(m, n) = NodeType::Right;
                     continue;
                 }
 
@@ -542,7 +543,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                    m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                     continue;
                 }
 
@@ -551,7 +552,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                    m_gridNodesTypes(m, n) = NodeType::BottomRight;
                     continue;
                 }
 
@@ -560,7 +561,7 @@ namespace meshkernel
                     isBottomLeftFaceValid &&
                     !isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                    m_gridNodesTypes(m, n) = NodeType::UpperRight;
                     continue;
                 }
 
@@ -569,7 +570,7 @@ namespace meshkernel
                     !isBottomLeftFaceValid &&
                     isBottomRightFaceValid)
                 {
-                    m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                    m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                 }
             }
         }
@@ -641,8 +642,8 @@ namespace meshkernel
 
     CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const
     {
-        auto const firstNodeType = m_gridNodesTypes[firstNode.m_m][firstNode.m_n];
-        auto const secondNodeType = m_gridNodesTypes[secondNode.m_m][secondNode.m_n];
+        auto const firstNodeType = m_gridNodesTypes(firstNode.m_m, firstNode.m_n);
+        auto const secondNodeType = m_gridNodesTypes(secondNode.m_m, secondNode.m_n);
 
         if (firstNodeType == NodeType::InternalValid || firstNodeType == NodeType::Invalid ||
             secondNodeType == NodeType::InternalValid || secondNodeType == NodeType::Invalid)
