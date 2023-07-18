@@ -82,6 +82,12 @@ namespace meshkernel
                                                                   const UInt totalNumberOfPoints,
                                                                   const Projection projection);
 
+        /// @brief Compute the spline weights.
+        static lin_alg::ColumnVector<double> ComputeSplineWeights(const lin_alg::ColumnVector<double>& xf,
+                                                                  const lin_alg::ColumnVector<double>& yf,
+                                                                  const UInt totalNumberOfPoints,
+                                                                  const Projection projection);
+
         /// @brief Evaluate a spline function (splint)
         static Point evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
 
@@ -102,8 +108,8 @@ namespace meshkernel
         /// @brief Snap the spline to the land boundary (snap_spline)
         ///
         /// If the algorithm fails to converge exception AlgorithmError is thrown, and the spline is not updated.
-        void snapSpline(const LandBoundary& landBoundary,
-                        const size_t splineIndex);
+        void snapSpline(const size_t splineIndex,
+                        const LandBoundary& landBoundary);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline

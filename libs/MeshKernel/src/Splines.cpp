@@ -28,6 +28,8 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
+#include <iostream>
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -591,13 +593,38 @@ lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const std::vector<Po
 {
 
     lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
+    weights.fill ( 99999.0 );
 
     // Compute weights
     for (size_t i = 1; i <= totalNumberOfPoints; ++i)
     {
         size_t il = std::max<size_t>(1, i - 1);
         size_t ir = std::min<size_t>(totalNumberOfPoints, i + 1);
+        std::cout << "weight caluclation: " << i << "  " << il << "  "<< ir << "  " << ir - il << std::endl;
         weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(splinePoints[il - 1], splinePoints[ir - 1], projection) / static_cast<double>(ir - il));
+    }
+
+    return weights;
+}
+
+lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const lin_alg::ColumnVector<double>& xf,
+                                                            const lin_alg::ColumnVector<double>& yf,
+                                                            const UInt totalNumberOfPoints,
+                                                            const Projection projection)
+{
+
+    lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
+    weights.fill ( 99999.0 );
+
+    // Compute weights
+    for (size_t i = 1; i <= totalNumberOfPoints; ++i)
+    {
+        size_t il = std::max<size_t>(1, i - 1);
+        size_t ir = std::min<size_t>(totalNumberOfPoints, i + 1);
+        std::cout << "weight caluclation: " << i << "  " << il << "  "<< ir << "  " << ir - il << std::endl;
+        Point p1{xf[il - 1], yf[il - 1]};
+        Point p2{xf[ir - 1], yf[ir - 1]};
+        weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(p1, p2, projection) / static_cast<double>(ir - il));
     }
 
     return weights;
@@ -625,8 +652,8 @@ std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> Splines
     return {xf, yf};
 }
 
-void Splines::snapSpline(const LandBoundary& landBoundary,
-                         const size_t splineIndex)
+void Splines::snapSpline(const size_t splineIndex,
+                         const LandBoundary& landBoundary)
 {
     if (splineIndex >= GetNumSplines())
     {
@@ -664,12 +691,18 @@ void Splines::snapSpline(const LandBoundary& landBoundary,
 
     lin_alg::ColumnVector<double> xfOld(xf);
     lin_alg::ColumnVector<double> yfOld(yf);
-    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(splinePoints, totalNumberOfPoints, m_projection));
+    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(xf, yf, totalNumberOfPoints, m_projection));
 
     auto [startCurvature, startNormal, startTangent] = ComputeCurvatureOnSplinePoint(splineIndex, 0.0);
     auto [endCurvature, endNormal, endTangent] = ComputeCurvatureOnSplinePoint(splineIndex, static_cast<double>(splinePoints.size() - 1));
 
+    std::cout << "a matrix: " << aMatrix << std::endl;
+    std::cout << "weights: " << weights << std::endl;
+
+
     lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(aMatrix, weights));
+    std::cout << "a matrix inverse: " << atwaInverse << std::endl;
+
     lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, splinePoints.size());
     lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, splinePoints.size());
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);
@@ -688,11 +721,13 @@ void Splines::snapSpline(const LandBoundary& landBoundary,
 
     lin_alg::MatrixColMajor<double> eMatrix = bMatrix * atwaInverse * bMatrix.transpose() + cMatrix * atwaInverse * cMatrix.transpose();
 
+    std::cout << eMatrix << std::endl;
+
     lambda.setZero();
     // Inplace inversion of the e-matrix.
     eMatrix = eMatrix.inverse();
 
-    bool converged = true;
+    bool converged = false;
 
     lin_alg::ColumnVector<double> xbVec(totalNumberOfPoints);
     lin_alg::ColumnVector<double> ybVec(totalNumberOfPoints);
@@ -754,19 +789,31 @@ void Splines::snapSpline(const LandBoundary& landBoundary,
         xf = aMatrix * xVals;
         yf = aMatrix * yVals;
 
+        std::cout << "xf new " << xf << std::endl;
+        std::cout << "xf old " << xfOld << std::endl;
+        std::cout << "yf new " << yf << std::endl;
+        std::cout << "yf old " << yfOld << std::endl;
+
         // TODO is there a better check for convergence?
         // AND what should the tolerance be?
         converged = (xf - xfOld).norm() + (yf - yfOld).norm() < tolerance;
         xfOld = xf;
         yfOld = yf;
+
+
         ++iterationCount;
     }
+
+    std::cout << " done loop " << std::boolalpha << converged << "  "<< iterationCount << std::endl;
 
     if (converged)
     {
         // Copy vectors back to array of points.
         for (size_t i = 0; i < splinePoints.size(); ++i)
         {
+
+            std::cout << "snapped point: " << xf(i) << ", " << yf(i) << std::endl;
+
             splinePoints[i].x = xf(i);
             splinePoints[i].y = yf(i);
         }

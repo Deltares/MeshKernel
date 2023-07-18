@@ -2,6 +2,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -88,4 +89,32 @@ TEST(Splines, SplineIntersection)
     ASSERT_NEAR(0.601498208554790, firstSplineRatio, tolerance);
     ASSERT_NEAR(0.485216749175026, secondSplineRatio, tolerance);
     ASSERT_NEAR(-0.996215079635043, crossProductIntersection, tolerance);
+}
+
+
+TEST(Splines, SnapToLandBoundaryTest)
+{
+    std::vector<meshkernel::Point> landBoundaryPoints{{257.002197, 442.130066},
+                                                      {518.753845, 301.128662},
+                                                      {938.006470, 416.629822}};
+
+    meshkernel::LandBoundary landBoundary (landBoundaryPoints);
+
+    std::vector<meshkernel::Point> originalSpline {{ 2.810023E+02, 4.473801E+02},
+                                                   { 3.672529E+02, 4.016296E+02},
+                                                   { 4.617534E+02, 3.543792E+02},
+                                                   { 5.172538E+02, 3.183788E+02},
+                                                   { 6.140045E+02, 3.386290E+02},
+                                                   { 7.205051E+02, 3.776294E+02},
+                                                   { 8.277558E+02, 4.173798E+02},
+                                                   { 9.237563E+02, 4.241299E+02}};
+
+   meshkernel::Splines splines(meshkernel::Projection::cartesian);
+
+   splines.AddSpline(originalSpline, 0, static_cast<meshkernel::UInt>(originalSpline.size()));
+
+   splines.snapSpline (0, landBoundary);
+
+
+
 }
