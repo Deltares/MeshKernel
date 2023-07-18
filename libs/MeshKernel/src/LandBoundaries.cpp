@@ -307,7 +307,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
 
     Point newNodeLeft;
 
-    newNodeLeft = m_landBoundary.closestPoint (m_mesh->m_nodes[nodeIndex], startNodeLeftBoundary, endNodeLeftBoundary, m_mesh->m_projection);
+    newNodeLeft = m_landBoundary.ClosestPoint (m_mesh->m_nodes[nodeIndex], startNodeLeftBoundary, endNodeLeftBoundary, m_mesh->m_projection);
 
     Point newNodeRight;
     if (endSegmentIndex == startSegmentIndex)
@@ -318,7 +318,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     {
         // find start/end
         const auto& [startNodeRightBoundary, endNodeRightBoundary] = m_validLandBoundaries[endSegmentIndex];
-        newNodeRight = m_landBoundary.closestPoint (m_mesh->m_nodes[nodeIndex], startNodeRightBoundary, endNodeRightBoundary, m_mesh->m_projection);
+        newNodeRight = m_landBoundary.ClosestPoint (m_mesh->m_nodes[nodeIndex], startNodeRightBoundary, endNodeRightBoundary, m_mesh->m_projection);
     }
 
     // Update land boundary nodes
