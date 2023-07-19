@@ -675,46 +675,69 @@ void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocat
 
 void Mesh::BuildTree(Location meshLocation)
 {
-    if (m_nodesRTreeRequiresUpdate && meshLocation == Location::Nodes)
+    switch (meshLocation)
     {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
-    else if (m_edgesRTreeRequiresUpdate && meshLocation == Location::Edges)
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-    }
-    else if (m_facesRTreeRequiresUpdate && meshLocation == Location::Faces)
-    {
-        m_facesRTree.BuildTree(m_facesCircumcenters);
-        m_facesRTreeRequiresUpdate = false;
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate)
+        {
+            m_facesRTree.BuildTree(m_facesCircumcenters);
+            m_facesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate)
+        {
+
+            m_nodesRTree.BuildTree(m_nodes);
+            m_nodesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate)
+        {
+            ComputeEdgesCenters();
+            m_edgesRTree.BuildTree(m_edgesCenters);
+            m_edgesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
     }
 }
 
 void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
 {
-    if (m_nodesRTreeRequiresUpdate && meshLocation == Location::Nodes && m_boundingBoxCache != boundingBox)
+    switch (meshLocation)
     {
-        m_nodesRTree.BuildTree(m_nodes, boundingBox);
-        m_nodesRTreeRequiresUpdate = false;
-        m_boundingBoxCache = boundingBox;
-    }
-
-    else if (m_edgesRTreeRequiresUpdate && meshLocation == Location::Edges && m_boundingBoxCache != boundingBox)
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
-        m_edgesRTreeRequiresUpdate = false;
-        m_boundingBoxCache = boundingBox;
-    }
-
-    else if (m_facesRTreeRequiresUpdate && meshLocation == Location::Faces && m_boundingBoxCache != boundingBox)
-    {
-        m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
-        m_boundingBoxCache = boundingBox;
-        m_facesRTreeRequiresUpdate = false;
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
+            m_facesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            m_nodesRTree.BuildTree(m_nodes, boundingBox);
+            m_nodesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            ComputeEdgesCenters();
+            m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
+            m_edgesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Invalid location");
     }
 }
 

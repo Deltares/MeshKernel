@@ -33,21 +33,25 @@
 
 namespace meshkernel
 {
+    /// @brief A class defining a bounding box
     class BoundingBox
     {
     public:
+        /// @brief Default constructor
         BoundingBox() = default;
 
-        BoundingBox(const Point& m_lower_left, const Point& m_upper_right)
-            : m_lowerLeft(m_lower_left),
-              m_upperRight(m_upper_right)
+        /// @brief Constructor taking the corner points of the bounding box
+        /// @param[in] lowerLeft The lower left corner of the bounding box
+        /// @param[in] upperRight The upper right corner of the bounding box
+        BoundingBox(const Point& lowerLeft, const Point& upperRight)
+            : m_lowerLeft(lowerLeft),
+              m_upperRight(upperRight)
         {
         }
 
-        /// @brief Given a vector of coordinates, get the lowest upper and right points
+        /// @brief Constructor taking a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
-        /// @returns A tuple with bottom left and upper right corners of the bounding box
         template <typename T>
         BoundingBox(const std::vector<T>& points)
         {
@@ -70,14 +74,18 @@ namespace meshkernel
             m_upperRight = Point(maxx, maxy);
         }
 
+        /// @brief Not equal operator
+        /// @param[in] other The other bounding box to compare
+        /// @return True if the other bounding box is not equal
         bool operator!=(const BoundingBox& other) const
         {
             return other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
         }
 
-        /// @brief Checks if value is inside a bounding box
+        /// @brief Checks if a point is inside a bounding box
         /// @tparam    T          Requires IsCoordinate<T>
         /// @param[in] point      The point to inquire
+        /// @return True if the point is contained, false otherwise
         template <typename T>
         bool IsContained(T point) const
         {
@@ -86,11 +94,16 @@ namespace meshkernel
                    point.y >= m_lowerLeft.y && point.y <= m_upperRight.y;
         }
 
-        const auto lowerLeft() const { return m_lowerLeft; }
-        const auto upperRight() const { return m_upperRight; }
+        /// @brief Returns the lower left corner of the bounding box
+        /// @return The lower left corner of the bounding box
+        auto lowerLeft() const { return m_lowerLeft; }
+
+        /// @brief Returns the upper right corner
+        /// @return The upper right corner of the bounding box
+        auto upperRight() const { return m_upperRight; }
 
     private:
-        Point m_lowerLeft;
-        Point m_upperRight;
+        Point m_lowerLeft;  ///< The lower left corner of the bounding box
+        Point m_upperRight; ///< The upper right corner of the bounding box
     };
 } // namespace meshkernel
