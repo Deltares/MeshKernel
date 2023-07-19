@@ -33,6 +33,7 @@ set(
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
   ${SRC_DIR}/OrthogonalizationTests.cpp
+  ${SRC_DIR}/PointTests.cpp
   ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
   ${SRC_DIR}/SplineTests.cpp

@@ -131,9 +131,10 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
                                                             UInt endIndex,
                                                             double refinementDistance) const
 {
+
     if (m_outer_polygons_indices.empty())
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
+        throw ConstraintError("Polygons::RefineFirstPolygon: No nodes in polygon.");
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -145,8 +146,10 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (endIndex <= startIndex)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
+        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The end index is smaller than the start index: {} >= {}.", startIndex, endIndex));
     }
+
+    //--------------------------------
 
     bool areIndicesValid = false;
     UInt polygonIndex;
@@ -163,8 +166,12 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (!areIndicesValid)
     {
-        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
+        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The indices are not valid: {}, {}.", startIndex, endIndex));
     }
+
+    //--------------------------------
+
+    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
 
     const auto edgeLengths = PolygonEdgeLengths(m_nodes);
     std::vector<double> nodeLengthCoordinate(edgeLengths.size());
@@ -174,77 +181,47 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
         nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
     }
 
-    const auto numNodesRefinedPart = static_cast<UInt>(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
-    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
-    const auto numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
-    const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+    // Approximate number of nodes in the refined sections.
+    const UInt numNodesRefinedPart = static_cast<UInt>(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance)) + endIndex - startIndex;
+    UInt numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
+    // Approximate the number of nodes in the refined polygon.
+    UInt totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+
     std::vector<Point> refinedPolygon;
+
     refinedPolygon.reserve(totalNumNodes);
 
-    // before refinement
-    for (auto i = outerStart; i <= startIndex; ++i)
+    // Add nodes before the section to be refined
+    for (size_t i = outerStart; i <= startIndex; ++i)
     {
         refinedPolygon.emplace_back(m_nodes[i]);
     }
 
-    // refined part
-    auto nodeIndex = startIndex;
-    auto nextNodeIndex = nodeIndex + 1;
-    Point p0 = m_nodes[nodeIndex];
-    Point p1 = m_nodes[nextNodeIndex];
-    double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
-    bool snappedToLastPoint = false;
-    while (nodeIndex < endIndex)
+    // Refine each line segment.
+    for (size_t i = startIndex; i < endIndex; ++i)
     {
-        // initial point already accounted for
-        pointLengthCoordinate += refinementDistance;
-        if (pointLengthCoordinate > nodeLengthCoordinate[nextNodeIndex])
-        {
-            // if not snapped to the original last polygon point, snap it
-            if (!snappedToLastPoint)
-            {
-                refinedPolygon.emplace_back(m_nodes[nextNodeIndex]);
-            }
+        // Line segment starting point.
+        Point p = m_nodes[i];
+        const double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
+        // Refined segment step size.
+        const Point delta = (m_nodes[i + 1] - m_nodes[i]) * refinementDistance / segmentLength;
+        double lengthAlongInterval = refinementDistance;
 
-            // find the next point
-            bool nextNodeFound = false;
-            for (auto i = nextNodeIndex + 1; i <= endIndex; ++i)
-            {
-                if (nodeLengthCoordinate[i] > pointLengthCoordinate)
-                {
-                    nextNodeFound = true;
-                    nodeIndex = i - 1;
-                    nextNodeIndex = i;
-                    break;
-                }
-            }
-            if (nextNodeIndex > endIndex || !nextNodeFound)
-            {
-                break;
-            }
+        // Exit when the lengthAlongInterval is greater or equal than segmentLength
+        // To prevent very small refined segment lengths, also exit when lengthAlongInterval is a small fraction less (defined by refinementTolerance)
+        while (lengthAlongInterval < segmentLength && !IsEqual(lengthAlongInterval, segmentLength, constants::geometric::refinementTolerance))
+        {
+            p += delta;
+            lengthAlongInterval += refinementDistance;
+            refinedPolygon.emplace_back(p);
+        }
 
-            p0 = m_nodes[nodeIndex];
-            p1 = m_nodes[nextNodeIndex];
-            pointLengthCoordinate = nodeLengthCoordinate[nodeIndex] + refinementDistance;
-            snappedToLastPoint = false;
-        }
-        double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
-        const double factor = distanceFromLastNode / edgeLengths[nodeIndex];
-        Point p;
-        if (IsEqual(factor, 1.0))
-        {
-            snappedToLastPoint = true;
-            p = p1;
-        }
-        else
-        {
-            p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
-        }
-        refinedPolygon.emplace_back(p);
+        // Add last node to the refined polygon point sequence.
+        refinedPolygon.emplace_back(m_nodes[i + 1]);
     }
 
-    // after refinement
-    for (auto i = endIndex + 1; i <= outerEnd; ++i)
+    // Add nodes after the section to be refined
+    for (size_t i = endIndex + 1; i <= outerEnd; ++i)
     {
         refinedPolygon.emplace_back(m_nodes[i]);
     }
