@@ -113,15 +113,6 @@ namespace meshkernel
         /// @return Node coordinates
         [[nodiscard]] Point const& Node(UInt i) const { return m_nodes[i]; }
 
-        BoundingBox ComputeBoundingBox(UInt i) const
-        {
-            std::vector<Point> points;
-            if (IsEmpty())
-            {
-                return BoundingBox(points);
-            }
-        }
-
     private:
         std::vector<Point> m_nodes;                                                            ///< The polygon nodes
         Projection m_projection;                                                               ///< The current projection

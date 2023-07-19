@@ -30,6 +30,7 @@
 #include "Entities.hpp"
 
 #include <algorithm>
+#include <limits>
 
 namespace meshkernel
 {
@@ -38,7 +39,8 @@ namespace meshkernel
     {
     public:
         /// @brief Default constructor
-        BoundingBox() = default;
+        BoundingBox() : m_lowerLeft(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()),
+                        m_upperRight(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {}
 
         /// @brief Constructor taking the corner points of the bounding box
         /// @param[in] lowerLeft The lower left corner of the bounding box
@@ -87,7 +89,7 @@ namespace meshkernel
         /// @param[in] point      The point to inquire
         /// @return True if the point is contained, false otherwise
         template <typename T>
-        bool IsContained(T point) const
+        bool Contains(const T& point) const
         {
 
             return point.x >= m_lowerLeft.x && point.x <= m_upperRight.x &&

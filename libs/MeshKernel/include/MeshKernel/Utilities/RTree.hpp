@@ -92,7 +92,7 @@ namespace meshkernel
 
             for (UInt n = 0; n < nodes.size(); ++n)
             {
-                if (!boundingBox.IsContained(nodes[n]))
+                if (!boundingBox.Contains(nodes[n]))
                 {
                     continue;
                 }

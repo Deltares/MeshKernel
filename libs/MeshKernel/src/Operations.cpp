@@ -175,7 +175,7 @@ namespace meshkernel
             return false;
         }
 
-        if (const auto boundingBox = BoundingBox(polygonNodes); !boundingBox.IsContained(point))
+        if (const auto boundingBox = BoundingBox(polygonNodes); !boundingBox.Contains(point))
         {
             return false;
         }

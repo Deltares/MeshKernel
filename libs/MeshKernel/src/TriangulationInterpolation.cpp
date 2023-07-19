@@ -95,7 +95,7 @@ void TriangulationInterpolation::Compute()
     // loop over locations
     for (UInt n = 0; n < m_locations.size(); ++n)
     {
-        if (!boundingBox.IsContained(m_locations[n]) ||
+        if (!boundingBox.Contains(m_locations[n]) ||
             !IsEqual(m_results[n], constants::missing::doubleValue))
         {
             continue;
