@@ -1,8 +1,8 @@
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/LandBoundary.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Operations.hpp"
 
-meshkernel::LandBoundary::LandBoundary (const std::vector<Point>& landBoundary) : m_nodes (landBoundary){}
+meshkernel::LandBoundary::LandBoundary(const std::vector<Point>& landBoundary) : m_nodes(landBoundary) {}
 
 void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
                                                 const Projection& projection,
@@ -15,6 +15,7 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
     segmentStartIndex = constants::missing::intValue;
     scaledDistanceToStart = -1.0;
 
+    // TODO better value for initial value and move to constants namespace
     minimumDistance = 9.0e33;
 
     for (size_t i = 0; i < m_nodes.size() - 1; ++i)
@@ -26,15 +27,15 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
 
         if (distance < minimumDistance)
         {
-            nearestPoint = linePoint;
             minimumDistance = distance;
+            nearestPoint = linePoint;
             segmentStartIndex = i;
             scaledDistanceToStart = distanceFromFirstNode;
         }
     }
 }
 
-void meshkernel::LandBoundary::AddSegment (const Point& leftNode, const Point& rightNode)
+void meshkernel::LandBoundary::AddSegment(const Point& leftNode, const Point& rightNode)
 {
     // Update nodes
     m_nodes.emplace_back(Point());
@@ -43,13 +44,12 @@ void meshkernel::LandBoundary::AddSegment (const Point& leftNode, const Point& r
     m_nodes.emplace_back(Point());
 }
 
-std::vector<std::pair<meshkernel::UInt, meshkernel::UInt>> meshkernel::LandBoundary::FindPolylineIndices () const
+std::vector<std::pair<meshkernel::UInt, meshkernel::UInt>> meshkernel::LandBoundary::FindPolylineIndices() const
 {
-    return FindIndices (m_nodes, 0, static_cast<UInt>(m_nodes.size ()), constants::missing::doubleValue);
+    return FindIndices(m_nodes, 0, static_cast<UInt>(m_nodes.size()), constants::missing::doubleValue);
 }
 
-
-std::vector<bool> meshkernel::LandBoundary::GetNodeMask (const Polygons& polygons) const
+std::vector<bool> meshkernel::LandBoundary::GetNodeMask(const Polygons& polygons) const
 {
     std::vector<bool> nodeMask(GetNumNodes(), false);
 
@@ -70,7 +70,7 @@ std::vector<bool> meshkernel::LandBoundary::GetNodeMask (const Polygons& polygon
     return nodeMask;
 }
 
-meshkernel::Point meshkernel::LandBoundary::ClosestPoint (const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const
+meshkernel::Point meshkernel::LandBoundary::ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const
 {
 
     if (ComputeSquaredDistance(point, m_nodes[point1Index], projection) <= ComputeSquaredDistance(point, m_nodes[point2Index], projection))
@@ -81,5 +81,4 @@ meshkernel::Point meshkernel::LandBoundary::ClosestPoint (const Point& point, co
     {
         return m_nodes[point2Index];
     }
-
 }

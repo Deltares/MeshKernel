@@ -593,14 +593,14 @@ lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const std::vector<Po
 {
 
     lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
-    weights.fill ( 99999.0 );
+    weights.fill(99999.0);
 
     // Compute weights
     for (size_t i = 1; i <= totalNumberOfPoints; ++i)
     {
         size_t il = std::max<size_t>(1, i - 1);
         size_t ir = std::min<size_t>(totalNumberOfPoints, i + 1);
-        std::cout << "weight caluclation: " << i << "  " << il << "  "<< ir << "  " << ir - il << std::endl;
+        std::cout << "weight caluclation: " << i << "  " << il << "  " << ir << "  " << ir - il << std::endl;
         weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(splinePoints[il - 1], splinePoints[ir - 1], projection) / static_cast<double>(ir - il));
     }
 
@@ -614,14 +614,12 @@ lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const lin_alg::Colum
 {
 
     lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
-    weights.fill ( 99999.0 );
 
     // Compute weights
     for (size_t i = 1; i <= totalNumberOfPoints; ++i)
     {
         size_t il = std::max<size_t>(1, i - 1);
         size_t ir = std::min<size_t>(totalNumberOfPoints, i + 1);
-        std::cout << "weight caluclation: " << i << "  " << il << "  "<< ir << "  " << ir - il << std::endl;
         Point p1{xf[il - 1], yf[il - 1]};
         Point p2{xf[ir - 1], yf[ir - 1]};
         weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(p1, p2, projection) / static_cast<double>(ir - il));
@@ -630,201 +628,26 @@ lin_alg::ColumnVector<double> Splines::ComputeSplineWeights(const lin_alg::Colum
     return weights;
 }
 
-std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> Splines::ComputeSamplePoints (const std::vector<Point>& splinePoints,
-                                                                                                       const lin_alg::MatrixColMajor<double>& aMatrix)
+std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> Splines::ComputeSamplePoints(const std::vector<Point>& splinePoints,
+                                                                                                      const lin_alg::MatrixColMajor<double>& aMatrix)
 {
 
-    lin_alg::ColumnVector<double> xf(aMatrix.rows ());
-    lin_alg::ColumnVector<double> yf(aMatrix.rows ());
+    lin_alg::ColumnVector<double> xf(aMatrix.rows());
+    lin_alg::ColumnVector<double> yf(aMatrix.rows());
 
-    for (int r = 0; r < aMatrix.rows (); ++r)
+    for (int r = 0; r < aMatrix.rows(); ++r)
     {
         xf(r) = 0.0;
         yf(r) = 0.0;
 
-        for (int c = 0; c < aMatrix.cols (); ++c)
+        for (int c = 0; c < aMatrix.cols(); ++c)
         {
-            xf (r) += aMatrix (r,c) * splinePoints[c].x;
-            yf (r) += aMatrix (r,c) * splinePoints[c].y;
+            xf(r) += aMatrix(r, c) * splinePoints[c].x;
+            yf(r) += aMatrix(r, c) * splinePoints[c].y;
         }
     }
 
     return {xf, yf};
-}
-
-void Splines::snapSpline(const size_t splineIndex,
-                         const LandBoundary& landBoundary)
-{
-    if (splineIndex >= GetNumSplines())
-    {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
-    }
-
-    if (m_splineNodes[splineIndex].empty())
-    {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline at index: {}", splineIndex));
-    }
-
-    constexpr int MaxNumberOfIterations = 10;
-    constexpr double tolerance = 1.0e-5;
-
-    // Number of additional points between spline control points for sampled spline.
-    constexpr UInt numberRefinements = 19;
-    constexpr UInt numberOfConstraints = 2;
-
-    std::vector<Point>& splinePoints(m_splineNodes[splineIndex]);
-    std::vector<Point>& splineDerivative(m_splineDerivatives[splineIndex]);
-
-    // Save original spline end points
-    Point startPoint = splinePoints.front();
-    Point endPoint = splinePoints.back();
-    UInt totalNumberOfPoints = 0;
-
-    lin_alg::MatrixColMajor<double> aMatrix;
-
-    // Compute spline coefficients.
-    // Resizes the matrix to be totalNumberOfPoints by splinePoints.size()
-    ComputeInterpolationMatrix(splinePoints.size(), numberRefinements, totalNumberOfPoints, aMatrix);
-
-    // Returns two Eigen vectors
-    auto [xf, yf] = ComputeSamplePoints (splinePoints, aMatrix);
-
-    lin_alg::ColumnVector<double> xfOld(xf);
-    lin_alg::ColumnVector<double> yfOld(yf);
-    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(xf, yf, totalNumberOfPoints, m_projection));
-
-    auto [startCurvature, startNormal, startTangent] = ComputeCurvatureOnSplinePoint(splineIndex, 0.0);
-    auto [endCurvature, endNormal, endTangent] = ComputeCurvatureOnSplinePoint(splineIndex, static_cast<double>(splinePoints.size() - 1));
-
-    std::cout << "a matrix: " << aMatrix << std::endl;
-    std::cout << "weights: " << weights << std::endl;
-
-
-    lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(aMatrix, weights));
-    std::cout << "a matrix inverse: " << atwaInverse << std::endl;
-
-    lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, splinePoints.size());
-    lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, splinePoints.size());
-    lin_alg::ColumnVector<double> dVector(numberOfConstraints);
-    lin_alg::ColumnVector<double> lambda(numberOfConstraints);
-
-    // Compute the matrix for the constraints.
-    bMatrix.setZero();
-    cMatrix.setZero();
-
-    bMatrix(0, 0) = startNormal.y;
-    cMatrix(0, 0) = -startNormal.x;
-    dVector(0) = startNormal.y * startPoint.x - startNormal.x * startPoint.y;
-    bMatrix(1, splinePoints.size() - 1) = endNormal.y;
-    cMatrix(1, splinePoints.size() - 1) = -endNormal.x;
-    dVector(1) = endNormal.y * endPoint.x - endNormal.x * endPoint.y;
-
-    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * atwaInverse * bMatrix.transpose() + cMatrix * atwaInverse * cMatrix.transpose();
-
-    std::cout << eMatrix << std::endl;
-
-    lambda.setZero();
-    // Inplace inversion of the e-matrix.
-    eMatrix = eMatrix.inverse();
-
-    bool converged = false;
-
-    lin_alg::ColumnVector<double> xbVec(totalNumberOfPoints);
-    lin_alg::ColumnVector<double> ybVec(totalNumberOfPoints);
-
-    lin_alg::ColumnVector<double> atwxb(splinePoints.size());
-    lin_alg::ColumnVector<double> atwyb(splinePoints.size());
-
-    lin_alg::ColumnVector<double> rhsx(numberOfConstraints);
-    lin_alg::ColumnVector<double> rhsy(numberOfConstraints);
-
-    lin_alg::ColumnVector<double> xVals(numberOfConstraints);
-    lin_alg::ColumnVector<double> yVals(numberOfConstraints);
-
-    int iterationCount = 0;
-
-    while (!converged && iterationCount <= MaxNumberOfIterations)
-    {
-        Point nearestPoint;
-
-        // These variable are unused in the rest of the algorithm
-        double smallestDistance;
-        double scaledDistance;
-        UInt segmentIndex;
-
-        for (size_t i = 0; i < splinePoints.size(); ++i)
-        {
-            Point point(xf(i), yf(i));
-            landBoundary.FindNearestPoint(point, m_projection, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
-            xbVec(i) = nearestPoint.x;
-            ybVec(i) = nearestPoint.y;
-        }
-
-        // TODO how to get a pointwise multiply here?
-        // xbVec = weights.colwise() * xbVec.colwise();
-        // Can then replace the two nested loops below with a gemv.
-
-        // Could be replaced with gemv.
-        for (size_t i = 0; i < splinePoints.size(); ++i)
-        {
-            atwxb(i) = 0.0;
-            atwyb(i) = 0.0;
-
-            for (size_t j = 0; j < splinePoints.size(); ++j)
-            {
-                atwxb(i) += aMatrix(j, i) * weights(j) * xbVec(j);
-                atwyb(i) += aMatrix(j, i) * weights(j) * ybVec(j);
-            }
-        }
-
-        // Compute constraints.
-        lambda = eMatrix * (bMatrix * atwaInverse * atwxb + cMatrix * atwaInverse * atwyb - dVector);
-
-        rhsx = atwxb - bMatrix.transpose() * lambda;
-        rhsy = atwyb - cMatrix.transpose() * lambda;
-
-        xVals = atwaInverse * rhsx;
-        yVals = atwaInverse * rhsy;
-
-        xf = aMatrix * xVals;
-        yf = aMatrix * yVals;
-
-        std::cout << "xf new " << xf << std::endl;
-        std::cout << "xf old " << xfOld << std::endl;
-        std::cout << "yf new " << yf << std::endl;
-        std::cout << "yf old " << yfOld << std::endl;
-
-        // TODO is there a better check for convergence?
-        // AND what should the tolerance be?
-        converged = (xf - xfOld).norm() + (yf - yfOld).norm() < tolerance;
-        xfOld = xf;
-        yfOld = yf;
-
-
-        ++iterationCount;
-    }
-
-    std::cout << " done loop " << std::boolalpha << converged << "  "<< iterationCount << std::endl;
-
-    if (converged)
-    {
-        // Copy vectors back to array of points.
-        for (size_t i = 0; i < splinePoints.size(); ++i)
-        {
-
-            std::cout << "snapped point: " << xf(i) << ", " << yf(i) << std::endl;
-
-            splinePoints[i].x = xf(i);
-            splinePoints[i].y = yf(i);
-        }
-
-        splineDerivative = SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
-    }
-    else
-    {
-        throw AlgorithmError(VariadicErrorMessage("Failed to reach convergence for snapping spline {} to land boundary after {} iterations for {} tolerance",
-                                                  splineIndex, MaxNumberOfIterations, tolerance));
-    }
 }
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<double>>
@@ -857,4 +680,168 @@ meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double
     FuncDistanceFromAPoint func(this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
+}
+
+void Splines::snapSpline(const size_t splineIndex,
+                         const LandBoundary& landBoundary)
+{
+    if (splineIndex >= GetNumSplines())
+    {
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
+    }
+
+    if (m_splineNodes[splineIndex].empty())
+    {
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline at index: {}", splineIndex));
+    }
+
+    constexpr int MaxNumberOfIterations = 2000;
+    constexpr double tolerance = 1.0e-5;
+
+    // Number of additional points between spline control points for sampled spline.
+    constexpr UInt numberRefinements = 19;
+    constexpr UInt numberOfConstraints = 2;
+
+    std::vector<Point>& splinePoints(m_splineNodes[splineIndex]);
+    std::vector<Point>& splineDerivative(m_splineDerivatives[splineIndex]);
+
+    // Save original spline end points
+    Point startPoint = splinePoints.front();
+    Point endPoint = splinePoints.back();
+    UInt numberOfSamplePoints = 0;
+
+    lin_alg::MatrixColMajor<double> aMatrix;
+
+    // Compute spline coefficients.
+    // Resizes the matrix to be numberOfSamplePoints by splinePoints.size()
+    ComputeInterpolationMatrix(splinePoints.size(), numberRefinements, numberOfSamplePoints, aMatrix);
+
+    // Returns two Eigen vectors
+    auto [xf, yf] = ComputeSamplePoints(splinePoints, aMatrix);
+
+    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(xf, yf, numberOfSamplePoints, m_projection));
+
+    // The tangent vector is unused
+    auto [startNormal, startTangent, startCurvature] = ComputeCurvatureOnSplinePoint(splineIndex, 0.0);
+    auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splineIndex, static_cast<double>(splinePoints.size() - 0));
+
+    // TODO rename variable
+    lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(aMatrix, weights));
+
+    lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, splinePoints.size());
+    lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, splinePoints.size());
+    lin_alg::ColumnVector<double> dVector(numberOfConstraints);
+    lin_alg::ColumnVector<double> lambda(numberOfConstraints);
+
+    // Compute the matrix for the constraints.
+    bMatrix.setZero();
+    cMatrix.setZero();
+
+    bMatrix(0, 0) = startNormal.y;
+    cMatrix(0, 0) = -startNormal.x;
+    dVector(0) = startNormal.y * startPoint.x - startNormal.x * startPoint.y;
+    bMatrix(1, splinePoints.size() - 1) = endNormal.y;
+    cMatrix(1, splinePoints.size() - 1) = -endNormal.x;
+    dVector(1) = endNormal.y * endPoint.x - endNormal.x * endPoint.y;
+
+    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * atwaInverse * bMatrix.transpose() + cMatrix * atwaInverse * cMatrix.transpose();
+
+    lambda.setZero();
+    // Inplace inversion of the e-matrix.
+    eMatrix = eMatrix.inverse();
+
+    bool converged = false;
+
+    lin_alg::ColumnVector<double> xbVec(numberOfSamplePoints);
+    lin_alg::ColumnVector<double> ybVec(numberOfSamplePoints);
+
+    lin_alg::ColumnVector<double> atwxb(splinePoints.size());
+    lin_alg::ColumnVector<double> atwyb(splinePoints.size());
+
+    lin_alg::ColumnVector<double> rhsx(splinePoints.size());
+    lin_alg::ColumnVector<double> rhsy(splinePoints.size());
+
+    lin_alg::ColumnVector<double> xVals(splinePoints.size());
+    lin_alg::ColumnVector<double> yVals(splinePoints.size());
+
+    lin_alg::ColumnVector<double> xValsOld(splinePoints.size());
+    lin_alg::ColumnVector<double> yValsOld(splinePoints.size());
+
+    int iterationCount = 0;
+
+    for (size_t i = 0; i < splinePoints.size(); ++i)
+    {
+        xVals(i) = splinePoints[i].x;
+        yVals(i) = splinePoints[i].y;
+    }
+
+    std::cout.precision(20);
+
+    while (!converged && iterationCount <= MaxNumberOfIterations)
+    {
+        Point nearestPoint;
+
+        // These variable are unused in the rest of the algorithm
+        double smallestDistance;
+        double scaledDistance;
+        UInt segmentIndex;
+
+        for (size_t i = 0; i < numberOfSamplePoints; ++i)
+        {
+            Point point(xf(i), yf(i));
+            landBoundary.FindNearestPoint(point, m_projection, nearestPoint, smallestDistance, segmentIndex, scaledDistance);
+            xbVec(i) = nearestPoint.x;
+            ybVec(i) = nearestPoint.y;
+        }
+
+        // Could be replaced with gemv.
+        for (int i = 0; i < aMatrix.cols(); ++i)
+        {
+            atwxb(i) = 0.0;
+            atwyb(i) = 0.0;
+
+            for (int j = 0; j < aMatrix.rows(); ++j)
+            {
+                atwxb(i) += aMatrix(j, i) * weights(j) * xbVec(j);
+                atwyb(i) += aMatrix(j, i) * weights(j) * ybVec(j);
+            }
+        }
+
+        // Compute constraints.
+        lambda = eMatrix * (bMatrix * (atwaInverse * atwxb) + cMatrix * (atwaInverse * atwyb) - dVector);
+
+        rhsx = atwxb - bMatrix.transpose() * lambda;
+        rhsy = atwyb - cMatrix.transpose() * lambda;
+
+        xValsOld = xVals;
+        yValsOld = yVals;
+
+        xVals = atwaInverse * rhsx;
+        yVals = atwaInverse * rhsy;
+
+        xf = aMatrix * xVals;
+        yf = aMatrix * yVals;
+
+        // TODO is there a better check for convergence?
+        // AND what should the tolerance be?
+        converged = (xVals - xValsOld).norm() + (yVals - yValsOld).norm() < tolerance;
+        ++iterationCount;
+    }
+
+    if (true or converged)
+    {
+        // Copy vectors back to array of points.
+        for (size_t i = 0; i < splinePoints.size(); ++i)
+        {
+            splinePoints[i].x = xVals(i);
+            splinePoints[i].y = yVals(i);
+        }
+
+        splineDerivative = SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
+    }
+    else
+    {
+        throw AlgorithmError(VariadicErrorMessage("Failed to reach convergence for snapping spline {} to land boundary after {} iterations for {} tolerance",
+                                                  splineIndex, MaxNumberOfIterations, tolerance));
+    }
 }
