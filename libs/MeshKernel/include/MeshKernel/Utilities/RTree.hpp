@@ -65,7 +65,7 @@ namespace meshkernel
         /// @brief Builds the tree
         /// @param[in] nodes The nodes
         template <std::derived_from<Point> T>
-        void BuildTree(std::vector<T> const& nodes)
+        void BuildTree(const std::vector<T>& nodes)
         {
             m_points.reserve(m_points.size());
             m_points.clear();
@@ -84,7 +84,7 @@ namespace meshkernel
         /// @brief Builds the tree with nodes
         /// @param[in] nodes The nodes
         template <std::derived_from<Point> T>
-        void BuildTree(std::vector<T> const& nodes, const BoundingBox& boundingBox)
+        void BuildTree(const std::vector<T>& nodes, const BoundingBox& boundingBox)
         {
             m_points.reserve(m_points.size());
             m_points.clear();

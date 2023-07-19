@@ -62,7 +62,7 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     std::cout << "Elapsed time search " << nodes.size() << " nodes in RTree: " << elapsedTime << " s " << std::endl;
 }
 
-TEST(RTree, FindNodesInSquare)
+TEST(RTree, SearchPoints_MustComputeCorrectQuerySize)
 {
     const int n = 4; // x
     const int m = 4; // y
@@ -91,4 +91,26 @@ TEST(RTree, FindNodesInSquare)
     squaredDistance = 0.700 * 0.700;
     rtree.SearchPoints(pointToSearch, squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 0);
+}
+
+TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
+{
+    // 1 Setup
+    const auto boundingBox = meshkernel::BoundingBox({0.0, 0.0}, {10.0, 10.0});
+
+    std::vector<meshkernel::Point> points;
+    points.push_back({0.0, 0.0});
+    points.push_back({5.5, 5.0});
+    points.push_back({10.0, 10.0});
+    points.push_back({-10.0, -10.0});
+    points.push_back({20.0, 20.0});
+    points.push_back({-20.0, 10.0});
+
+    auto rtree = meshkernel::RTree();
+
+    // 2 Execute
+    rtree.BuildTree(points, boundingBox);
+
+    // 3 Assert
+    ASSERT_EQ(3, rtree.Size());
 }

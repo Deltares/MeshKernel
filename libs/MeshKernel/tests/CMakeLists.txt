@@ -12,6 +12,7 @@ set(
   SRC_LIST
   ${SRC_DIR}/AveragingStrategyTests.cpp
   ${SRC_DIR}/AveragingTests.cpp
+  ${SRC_DIR}/BoundingBoxTests.cpp
   ${SRC_DIR}/ContactsTests.cpp
   ${SRC_DIR}/CurvilinearGridDeRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridFromPolygonTests.cpp
