@@ -27,14 +27,12 @@
 
 #pragma once
 
-
-
 #include <numeric>
 
+#include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
-#include "MeshKernel/BoundingBox.hpp"
 
 namespace meshkernel
 {
