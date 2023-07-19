@@ -172,6 +172,7 @@ namespace meshkernel
             return !isInvalid;
         }
 
+        /// @brief Invalidates the point
         void Invalidate()
         {
             *this = Point(constants::missing::doubleValue, constants::missing::doubleValue);

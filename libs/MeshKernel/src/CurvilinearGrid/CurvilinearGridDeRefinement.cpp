@@ -44,13 +44,18 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
     }
 
     /// estimate the dimension of the refined grid
-    const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m ? m_upperRight.m_m - m_lowerLeft.m_m : 1;
-    const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n ? m_upperRight.m_n - m_lowerLeft.m_n : 1;
+    const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m
+                                    ? m_upperRight.m_m - m_lowerLeft.m_m
+                                    : 1;
+    const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n
+                                    ? m_upperRight.m_n - m_lowerLeft.m_n
+                                    : 1;
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
-    lin_alg::MatrixRowMajor<Point> deRefinedGrid(m_grid.m_numM, m_grid.m_numN);
     deRefinedGrid.reserve(m_grid.m_numM);
+
+    lin_alg::MatrixRowMajor<Point> deRefinedGrid(m_grid.m_numM, m_grid.m_numN);
 
     UInt mIndexOriginalGrid = 0;
     while (mIndexOriginalGrid < m_grid.m_numM)
@@ -78,5 +83,5 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
     }
 
     // substitute original grid with the derefined one
-    return CurvilinearGrid(std::move(deRefinedGrid), m_grid.m_projection);
+    return CurvilinearGrid(deRefinedGrid, m_grid.m_projection);
 }

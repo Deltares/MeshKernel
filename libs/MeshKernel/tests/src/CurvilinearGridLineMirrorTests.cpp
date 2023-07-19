@@ -16,17 +16,17 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
 
     // Asserts
     const double tolerance = 1e-6;
-    ASSERT_NEAR(79885.972404917018, mirroredGrid.m_gridNodes[0].front().x, tolerance);
-    ASSERT_NEAR(79945.113707304932, mirroredGrid.m_gridNodes[1].front().x, tolerance);
-    ASSERT_NEAR(79997.648681153471, mirroredGrid.m_gridNodes[2].front().x, tolerance);
-    ASSERT_NEAR(80022.752290748060, mirroredGrid.m_gridNodes[3].front().x, tolerance);
-    ASSERT_NEAR(80049.721398047535, mirroredGrid.m_gridNodes[4].front().x, tolerance);
+    ASSERT_NEAR(79885.972404917018, mirroredGrid.m_gridNodes(0, 0).x, tolerance);
+    ASSERT_NEAR(79945.113707304932, mirroredGrid.m_gridNodes(1, 0).x, tolerance);
+    ASSERT_NEAR(79997.648681153471, mirroredGrid.m_gridNodes(2, 0).x, tolerance);
+    ASSERT_NEAR(80022.752290748060, mirroredGrid.m_gridNodes(3, 0).x, tolerance);
+    ASSERT_NEAR(80049.721398047535, mirroredGrid.m_gridNodes(4, 0).x, tolerance);
 
-    ASSERT_NEAR(366871.50371491740, mirroredGrid.m_gridNodes[0].front().y, tolerance);
-    ASSERT_NEAR(366772.69280839822, mirroredGrid.m_gridNodes[1].front().y, tolerance);
-    ASSERT_NEAR(366659.31789138837, mirroredGrid.m_gridNodes[2].front().y, tolerance);
-    ASSERT_NEAR(366598.79661874950, mirroredGrid.m_gridNodes[3].front().y, tolerance);
-    ASSERT_NEAR(366516.53233619139, mirroredGrid.m_gridNodes[4].front().y, tolerance);
+    ASSERT_NEAR(366871.50371491740, mirroredGrid.m_gridNodes(0, 0).y, tolerance);
+    ASSERT_NEAR(366772.69280839822, mirroredGrid.m_gridNodes(1, 0).y, tolerance);
+    ASSERT_NEAR(366659.31789138837, mirroredGrid.m_gridNodes(2, 0).y, tolerance);
+    ASSERT_NEAR(366598.79661874950, mirroredGrid.m_gridNodes(3, 0).y, tolerance);
+    ASSERT_NEAR(366516.53233619139, mirroredGrid.m_gridNodes(4, 0).y, tolerance);
 }
 
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundaryWithZeroMirrowingFactor_ShouldNotAddFacesOnBottomBoundary)
@@ -75,25 +75,25 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldAddFacesOnLef
 
     // Asserts
     const double tolerance = 1e-6;
-    ASSERT_NEAR(79899.555713630645, mirroredGrid.m_gridNodes.front()[0].x, tolerance);
-    ASSERT_NEAR(79970.016439946601, mirroredGrid.m_gridNodes.front()[1].x, tolerance);
-    ASSERT_NEAR(80039.226795186711, mirroredGrid.m_gridNodes.front()[2].x, tolerance);
-    ASSERT_NEAR(80107.373974174203, mirroredGrid.m_gridNodes.front()[3].x, tolerance);
-    ASSERT_NEAR(80174.667394645265, mirroredGrid.m_gridNodes.front()[4].x, tolerance);
-    ASSERT_NEAR(80233.729789995661, mirroredGrid.m_gridNodes.front()[5].x, tolerance);
-    ASSERT_NEAR(80293.934851283411, mirroredGrid.m_gridNodes.front()[6].x, tolerance);
-    ASSERT_NEAR(80355.263363179940, mirroredGrid.m_gridNodes.front()[7].x, tolerance);
-    ASSERT_NEAR(80417.692693760589, mirroredGrid.m_gridNodes.front()[8].x, tolerance);
+    ASSERT_NEAR(79899.555713630645, mirroredGrid.m_gridNodes(0, 0).x, tolerance);
+    ASSERT_NEAR(79970.016439946601, mirroredGrid.m_gridNodes(0, 1).x, tolerance);
+    ASSERT_NEAR(80039.226795186711, mirroredGrid.m_gridNodes(0, 2).x, tolerance);
+    ASSERT_NEAR(80107.373974174203, mirroredGrid.m_gridNodes(0, 3).x, tolerance);
+    ASSERT_NEAR(80174.667394645265, mirroredGrid.m_gridNodes(0, 4).x, tolerance);
+    ASSERT_NEAR(80233.729789995661, mirroredGrid.m_gridNodes(0, 5).x, tolerance);
+    ASSERT_NEAR(80293.934851283411, mirroredGrid.m_gridNodes(0, 6).x, tolerance);
+    ASSERT_NEAR(80355.263363179940, mirroredGrid.m_gridNodes(0, 7).x, tolerance);
+    ASSERT_NEAR(80417.692693760589, mirroredGrid.m_gridNodes(0, 8).x, tolerance);
 
-    ASSERT_NEAR(367068.55540497036, mirroredGrid.m_gridNodes.front()[0].y, tolerance);
-    ASSERT_NEAR(367133.95424016198, mirroredGrid.m_gridNodes.front()[1].y, tolerance);
-    ASSERT_NEAR(367201.17228871223, mirroredGrid.m_gridNodes.front()[2].y, tolerance);
-    ASSERT_NEAR(367270.06081416988, mirroredGrid.m_gridNodes.front()[3].y, tolerance);
-    ASSERT_NEAR(367340.45903014857, mirroredGrid.m_gridNodes.front()[4].y, tolerance);
-    ASSERT_NEAR(367425.25311140029, mirroredGrid.m_gridNodes.front()[5].y, tolerance);
-    ASSERT_NEAR(367508.49440735363, mirroredGrid.m_gridNodes.front()[6].y, tolerance);
-    ASSERT_NEAR(367590.20902999706, mirroredGrid.m_gridNodes.front()[7].y, tolerance);
-    ASSERT_NEAR(367670.42773418076, mirroredGrid.m_gridNodes.front()[8].y, tolerance);
+    ASSERT_NEAR(367068.55540497036, mirroredGrid.m_gridNodes(0, 0).y, tolerance);
+    ASSERT_NEAR(367133.95424016198, mirroredGrid.m_gridNodes(0, 1).y, tolerance);
+    ASSERT_NEAR(367201.17228871223, mirroredGrid.m_gridNodes(0, 2).y, tolerance);
+    ASSERT_NEAR(367270.06081416988, mirroredGrid.m_gridNodes(0, 3).y, tolerance);
+    ASSERT_NEAR(367340.45903014857, mirroredGrid.m_gridNodes(0, 4).y, tolerance);
+    ASSERT_NEAR(367425.25311140029, mirroredGrid.m_gridNodes(0, 5).y, tolerance);
+    ASSERT_NEAR(367508.49440735363, mirroredGrid.m_gridNodes(0, 6).y, tolerance);
+    ASSERT_NEAR(367590.20902999706, mirroredGrid.m_gridNodes(0, 7).y, tolerance);
+    ASSERT_NEAR(367670.42773418076, mirroredGrid.m_gridNodes(0, 8).y, tolerance);
 }
 
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRightBoundary)
