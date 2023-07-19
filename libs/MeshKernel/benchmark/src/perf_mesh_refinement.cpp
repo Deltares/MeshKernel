@@ -18,15 +18,15 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         state.PauseTiming();
 
         std::shared_ptr<meshkernel::Mesh2D> mesh =
-            MakeRectangularMeshForTesting(static_cast<size_t>(state.range(0)),
-                                          static_cast<size_t>(state.range(1)),
+            MakeRectangularMeshForTesting(static_cast<UInt>(state.range(0)),
+                                          static_cast<UInt>(state.range(1)),
                                           10.0,
                                           15.0,
                                           Projection::cartesian);
 
         // sample points
         std::vector<Sample> samples;
-        for (size_t i = 0; i < mesh->GetNumNodes(); i++)
+        for (UInt i = 0; i < mesh->GetNumNodes(); i++)
         {
             if (mesh->m_nodes[i].y > 7.0 && mesh->m_nodes[i].y < 8.0)
             {
@@ -80,8 +80,8 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
         state.PauseTiming();
 
         std::shared_ptr<meshkernel::Mesh2D> mesh =
-            MakeRectangularMeshForTesting(static_cast<size_t>(state.range(0)),
-                                          static_cast<size_t>(state.range(1)),
+            MakeRectangularMeshForTesting(static_cast<UInt>(state.range(0)),
+                                          static_cast<UInt>(state.range(1)),
                                           10.0,
                                           15.0,
                                           Projection::cartesian);
