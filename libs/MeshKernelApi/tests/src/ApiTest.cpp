@@ -1955,7 +1955,7 @@ TEST_F(CartesianApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOne
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 3.0, 3.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 1.0, 1.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     int numHangingEdges;
@@ -1979,7 +1979,7 @@ TEST_F(CartesianApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDel
     auto const meshKernelId = GetMeshKernelId();
 
     // delete an edge at the lower left corner to create a new hanging edge
-    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 3.0, 3.0);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 1.0, 1.0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Before deletion
