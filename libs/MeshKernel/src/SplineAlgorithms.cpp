@@ -323,21 +323,23 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     ComputeInterpolationMatrix(splinePoints.size(), numberRefinements, numberOfSamplePoints, interpolationMatrix);
 
     // Returns two Eigen vectors, for the x- and y-sample points.
-    auto [xf, yf] = ComputeSamplePoints(splinePoints, interpolationMatrix);
+    auto [splineValuesX, splineValuesY] = ComputeSamplePoints(splinePoints, interpolationMatrix);
 
-    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(xf, yf, projection));
+    lin_alg::ColumnVector<double> weights(ComputeSplineWeights(splineValuesX, splineValuesY, projection));
 
     // The tangent vector is unused
     auto [startNormal, startTangent, startCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, 0.0, projection);
     auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, static_cast<double>(splinePoints.size() - 1), projection);
 
-    // TODO rename variable
-    lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));
+    // (a^t w a)^-1
+    lin_alg::MatrixColMajor<double> leastSquaresMatrixInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));
 
+    // Matrix and vectors used in the Lagrange multipler method.
     lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);
-    lin_alg::ColumnVector<double> lambda(numberOfConstraints);
+    // Lagrange multipler values
+    lin_alg::ColumnVector<double> constraintValues(numberOfConstraints);
 
     bMatrix.setZero();
     cMatrix.setZero();
@@ -350,18 +352,19 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     cMatrix(1, splinePoints.size() - 1) = -endNormal.x;
     dVector(1) = endNormal.y * endPoint.x - endNormal.x * endPoint.y;
 
-    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * atwaInverse * bMatrix.transpose() + cMatrix * atwaInverse * cMatrix.transpose();
+    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * leastSquaresMatrixInverse * bMatrix.transpose() + cMatrix * leastSquaresMatrixInverse * cMatrix.transpose();
 
-    lambda.setZero();
+    constraintValues.setZero();
     // Inplace inversion of the e-matrix.
     eMatrix = eMatrix.inverse();
 
     std::vector<Point> nearestPoints(numberOfSamplePoints);
 
-    // The
+    // Weighted evaluation of spline at sample points
     lin_alg::ColumnVector<double> atwxb(splinePoints.size());
     lin_alg::ColumnVector<double> atwyb(splinePoints.size());
 
+    // Intermediate result vector when solving the
     lin_alg::ColumnVector<double> rhsx(splinePoints.size());
     lin_alg::ColumnVector<double> rhsy(splinePoints.size());
 
@@ -386,7 +389,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
         for (int i = 0; i < numberOfSamplePoints; ++i)
         {
-            Point point(xf(i), yf(i));
+            Point point(splineValuesX(i), splineValuesY(i));
 
             double smallestDistance;
             double scaledDistance;
@@ -408,19 +411,19 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
         }
 
         // Compute constraints.
-        lambda = eMatrix * (bMatrix * (atwaInverse * atwxb) + cMatrix * (atwaInverse * atwyb) - dVector);
+        constraintValues = eMatrix * (bMatrix * (leastSquaresMatrixInverse * atwxb) + cMatrix * (leastSquaresMatrixInverse * atwyb) - dVector);
 
-        rhsx = atwxb - bMatrix.transpose() * lambda;
-        rhsy = atwyb - cMatrix.transpose() * lambda;
+        rhsx = atwxb - bMatrix.transpose() * constraintValues;
+        rhsy = atwyb - cMatrix.transpose() * constraintValues;
 
         xValsOld = xVals;
         yValsOld = yVals;
 
-        xVals = atwaInverse * rhsx;
-        yVals = atwaInverse * rhsy;
+        xVals = leastSquaresMatrixInverse * rhsx;
+        yVals = leastSquaresMatrixInverse * rhsy;
 
-        xf = interpolationMatrix * xVals;
-        yf = interpolationMatrix * yVals;
+        splineValuesX = interpolationMatrix * xVals;
+        splineValuesY = interpolationMatrix * yVals;
 
         // TODO is there a better check for convergence?
         // AND what should the tolerance be?

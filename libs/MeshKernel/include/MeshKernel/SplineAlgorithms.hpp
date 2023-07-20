@@ -77,6 +77,7 @@ namespace meshkernel
 
         /// @brief Snap the spline to the land boundary (snap_spline)
         ///
+        /// Uses an iterated Lagrange multiplier scheme to snap the points.
         /// @param[in, out] splinePoints The spline points, these will be updated
         /// @param[in] splineDerivative Derivative of the spline at the spline points
         /// @param[in] landBoundary The land boundary to which the spline will be snapped
