@@ -2,6 +2,8 @@
 
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
+#include <iostream>
+
 using namespace meshkernel;
 
 TEST(LinearAlgebra, Empty)
@@ -28,9 +30,9 @@ TEST(LinearAlgebra, Resize)
         EXPECT_TRUE(lin_alg::ResizeAndFillMatrix(matrix, rows, cols)); // 3x4
         EXPECT_EQ(matrix.rows(), rows);
         EXPECT_EQ(matrix.cols(), cols);
-        // fill value was not set, expect default int initialisation
 
-        lin_alg::MatrixRowMajor<int> expected_matrix;
+        // fill value was not set, expect default int initialisation
+        lin_alg::MatrixRowMajor<int> expected_matrix(rows, cols);
         expected_matrix.setZero();
         EXPECT_EQ(matrix, expected_matrix);
 
@@ -77,6 +79,8 @@ TEST(LinearAlgebra, Resize)
             expected_matrix.setOnes();
             EXPECT_EQ(matrix, expected_matrix);
         }
+        // std::cout << "matrix:\n"
+        //           << matrix << std::endl;
     }
 
     // add 3 extra cols, preserve old matrix and fill 2ith 666
@@ -165,7 +169,7 @@ TEST(LinearAlgebra, EraseMultipleRows)
     lin_alg::EraseRows(matrix, 2, 3); // remove rows 2 and 3
     EXPECT_EQ(matrix.rows(), 4);      // 6 -2 = 4 rows left
     EXPECT_EQ(matrix.cols(), cols);   // unchanged
-    lin_alg::MatrixRowMajor<int> expected_matrix(3, 3);
+    lin_alg::MatrixRowMajor<int> expected_matrix(4, 3);
     expected_matrix << 1, 2, 3,
         4, 5, 6,
         13, 14, 15,
@@ -222,19 +226,9 @@ TEST(LinearAlgebra, EraseMultipleCols)
     lin_alg::EraseCols(matrix, 2, 3); // remove cols 2 and 3
     EXPECT_EQ(matrix.rows(), rows);   // unchanged
     EXPECT_EQ(matrix.cols(), 4);      // 6 -2 = 4 cols left
-    lin_alg::MatrixRowMajor<int> expected_matrix(3, 3);
+    lin_alg::MatrixRowMajor<int> expected_matrix(3, 4);
     expected_matrix << 1, 2, 5, 6,
         7, 8, 11, 12,
         13, 14, 17, 18;
     EXPECT_EQ(matrix, expected_matrix);
-}
-
-TEST(LinearAlgebra, NewTemplate)
-{
-    lin_alg::Matrix<int, Eigen::RowMajor> matrix(3, 4);
-    /*matrix << 1, 2, 3, 4,
-        5, 6, 7, 8,
-        9, 10, 11, 12;*/
-
-    matrix.setRandom();
 }

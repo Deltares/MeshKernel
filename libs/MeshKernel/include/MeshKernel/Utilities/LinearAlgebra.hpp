@@ -19,11 +19,6 @@ namespace meshkernel
         template <class T>
         using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
-        // @brief Dynamic matrix
-        /// @tparam T Data type
-        template <typename T, Eigen::StorageOptions storage_option>
-        using Matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage_option>;
-
         /// @brief Checks if a matrix is empty by inspecting its size
         /// @tparam T      The type of the matrix elements
         /// @param matrix  The matrix
@@ -105,6 +100,17 @@ namespace meshkernel
             Eigen::Index const rows_to_move_up = rows_new - row_begin;
             Eigen::Index const cols = matrix.cols();
 
+            // std::cout << "rows           " << matrix.rows() << '\n'
+            //           << "rows_to_remove " << rows_to_remove << '\n'
+            //           << "rows_new       " << rows_new << '\n'
+            //           << "rows_begin     " << row_begin << '\n'
+            //           << "rows_end       " << row_end << '\n'
+            //           << "rows_to_shift  " << rows_new - row_begin << '\n'
+            //           << "block to remove \n"
+            //           << matrix.block(row_begin, 0, rows_to_remove, cols) << '\n'
+            //           << "block to shift \n"
+            //           << matrix.block(row_end + 1, 0, rows_to_move_up, cols) << '\n';
+
             // move the block of rows to keep to the position of the block of rows to remove
             matrix.block(row_begin, 0, rows_to_move_up, cols) =
                 matrix.block(row_end + 1, 0, rows_to_move_up, cols);
@@ -144,6 +150,17 @@ namespace meshkernel
             Eigen::Index const cols_to_remove = col_end - col_begin + 1;
             Eigen::Index const cols_new = matrix.cols() - cols_to_remove;
             Eigen::Index const cols_to_move_left = cols_new - col_begin;
+
+            // std::cout << "col           " << matrix.cols() << '\n'
+            //           << "cols_to_remove " << cols_to_remove << '\n'
+            //           << "cols_new       " << cols_new << '\n'
+            //           << "cols_begin     " << col_begin << '\n'
+            //           << "cols_end       " << col_end << '\n'
+            //           << "cols_to_shift  " << cols_new - col_begin << '\n'
+            //           << "block to remove \n"
+            //           << matrix.block(0, col_begin, rows, cols_to_remove) << '\n'
+            //           << "block to shift \n"
+            //           << matrix.block(0, col_end + 1, rows, cols_to_move_left) << '\n';
 
             // move the block of columns to keep to the position of the block of columns to remove
             matrix.block(0, col_begin, rows, cols_to_move_left) =
