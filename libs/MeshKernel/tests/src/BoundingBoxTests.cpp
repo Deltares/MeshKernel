@@ -4,6 +4,18 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
+TEST(BoundingBox, DefaultIntialization_MustIntializeCornersToNumericLimits)
+{
+    // Setup
+    const auto boundingBox = meshkernel::BoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.lowerLeft().x, std::numeric_limits<double>::lowest());
+    ASSERT_EQ(boundingBox.lowerLeft().y, std::numeric_limits<double>::lowest());
+    ASSERT_EQ(boundingBox.upperRight().x, std::numeric_limits<double>::max());
+    ASSERT_EQ(boundingBox.upperRight().y, std::numeric_limits<double>::max());
+}
+
 TEST(BoundingBox, Contains_WhenPointInside_MustReturnTrue)
 {
     // Setup
