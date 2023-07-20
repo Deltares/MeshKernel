@@ -40,7 +40,7 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
                                std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<Polygons> polygons) : m_mesh(mesh),
                                                                      m_polygons(polygons),
-                                                                     m_landBoundary (boundaryNodes)
+                                                                     m_landBoundary(boundaryNodes)
 {
     if (!m_landBoundary.IsEmpty())
     {
@@ -56,10 +56,10 @@ void LandBoundaries::Administrate()
     }
 
     // Computes the land boundary nodes inside a polygon
-    m_nodeFaceIndices = m_mesh->PointFaceIndices(m_landBoundary.GetNodes ());
+    m_nodeFaceIndices = m_mesh->PointFaceIndices(m_landBoundary.GetNodes());
 
     // Do not consider the landboundary nodes outside the polygon
-    std::vector<bool> nodeMask(m_landBoundary.GetNodeMask (*m_polygons));
+    std::vector<bool> nodeMask(m_landBoundary.GetNodeMask(*m_polygons));
 
     // Mesh boundary to polygon
     const std::vector<Point> polygonNodes;
@@ -307,7 +307,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
 
     Point newNodeLeft;
 
-    newNodeLeft = m_landBoundary.ClosestPoint (m_mesh->m_nodes[nodeIndex], startNodeLeftBoundary, endNodeLeftBoundary, m_mesh->m_projection);
+    newNodeLeft = m_landBoundary.ClosestPoint(m_mesh->m_nodes[nodeIndex], startNodeLeftBoundary, endNodeLeftBoundary, m_mesh->m_projection);
 
     Point newNodeRight;
     if (endSegmentIndex == startSegmentIndex)
@@ -318,11 +318,11 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     {
         // find start/end
         const auto& [startNodeRightBoundary, endNodeRightBoundary] = m_validLandBoundaries[endSegmentIndex];
-        newNodeRight = m_landBoundary.ClosestPoint (m_mesh->m_nodes[nodeIndex], startNodeRightBoundary, endNodeRightBoundary, m_mesh->m_projection);
+        newNodeRight = m_landBoundary.ClosestPoint(m_mesh->m_nodes[nodeIndex], startNodeRightBoundary, endNodeRightBoundary, m_mesh->m_projection);
     }
 
     // Update land boundary nodes
-    m_landBoundary.AddSegment (newNodeLeft, newNodeRight);
+    m_landBoundary.AddSegment(newNodeLeft, newNodeRight);
 
     // Update segment indices
     m_validLandBoundaries.emplace_back(std::make_pair<UInt, UInt>(static_cast<UInt>(m_landBoundary.GetNumNodes()) - 3, static_cast<UInt>(m_landBoundary.GetNumNodes()) - 2));

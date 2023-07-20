@@ -36,11 +36,11 @@ namespace meshkernel
 {
 
     /// @brief A class containing the land boundary polylines
-    class LandBoundary {
-    public :
-
+    class LandBoundary
+    {
+    public:
         /// @brief Construct with vector of points defining the land boundary
-        LandBoundary (const std::vector<Point>& landBoundary);
+        LandBoundary(const std::vector<Point>& landBoundary);
 
         /// @brief Find the nearest point on the land boundary (toland)
         void FindNearestPoint(const Point& samplePoint,
@@ -50,56 +50,53 @@ namespace meshkernel
                               UInt& segmentStartIndex,
                               double& scaledDistanceToStart) const;
 
-
         /// @brief Gets the number of land boundary nodes.
         size_t GetNumNodes() const;
 
         ///@ Determine if the land boundary objct is empty
-        bool IsEmpty () const;
+        bool IsEmpty() const;
 
         /// @brief Get the node at position i.
-        const Point& node (const size_t i) const;
+        const Point& node(const size_t i) const;
 
         /// @brief Get vector containing all land boundary nodes.
-        const std::vector<Point>& GetNodes () const;
+        const std::vector<Point>& GetNodes() const;
 
         /// @brief Add a new land boundary polyline segment
-        void AddSegment (const Point& leftNode, const Point& rightNode);
+        void AddSegment(const Point& leftNode, const Point& rightNode);
 
         /// @brief Find the closest of two points to a given point.
-        Point ClosestPoint (const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const;
+        Point ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const;
 
         /// @brief Find all start-end positions of the individual poly-lines that make up the land boundary
-        std::vector<std::pair<UInt, UInt>> FindPolylineIndices () const;
+        std::vector<std::pair<UInt, UInt>> FindPolylineIndices() const;
 
         /// @brief Get vector of Boolean values indicating a valid node
-        std::vector<bool> GetNodeMask (const Polygons& polygons) const;
+        std::vector<bool> GetNodeMask(const Polygons& polygons) const;
 
-    private :
-
+    private:
         /// @brief The nodes making up the land boundary (XLAN, YLAN)
         std::vector<Point> m_nodes;
-
     };
 
 } // namespace meshkernel
 
-inline size_t meshkernel::LandBoundary::GetNumNodes () const
+inline size_t meshkernel::LandBoundary::GetNumNodes() const
 {
     return m_nodes.size();
 }
 
-inline bool meshkernel::LandBoundary::IsEmpty () const
+inline bool meshkernel::LandBoundary::IsEmpty() const
 {
     return m_nodes.empty();
 }
 
-inline const meshkernel::Point& meshkernel::LandBoundary::node (const size_t i) const
+inline const meshkernel::Point& meshkernel::LandBoundary::node(const size_t i) const
 {
     return m_nodes[i];
 }
 
-inline const std::vector<meshkernel::Point>& meshkernel::LandBoundary::GetNodes () const
+inline const std::vector<meshkernel::Point>& meshkernel::LandBoundary::GetNodes() const
 {
     return m_nodes;
 }
