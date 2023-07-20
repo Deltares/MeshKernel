@@ -136,15 +136,15 @@ lin_alg::ColumnVector<double> SplineAlgorithms::ComputeSplineWeights(const lin_a
                                                                      const Projection projection)
 {
 
-    const int totalNumberOfPoints = xf.size();
+    const EigenIndex totalNumberOfPoints = xf.size();
 
     lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
 
     // Compute weights
     for (int i = 1; i <= totalNumberOfPoints; ++i)
     {
-        int il = std::max(1, i - 1);
-        int ir = std::min(totalNumberOfPoints, i + 1);
+        int il = std::max<EigenIndex>(1, i - 1);
+        int ir = std::min<EigenIndex>(totalNumberOfPoints, i + 1);
         Point p1{xf[il - 1], yf[il - 1]};
         Point p2{xf[ir - 1], yf[ir - 1]};
         weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(p1, p2, projection) / static_cast<double>(ir - il));
@@ -214,9 +214,9 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
     samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
 }
 
-void SplineAlgorithms::ComputeInterpolationMatrix(const int numberOfSplinePoints,
-                                                  const int intervalRefinement,
-                                                  int& numberOfSamplePoints,
+void SplineAlgorithms::ComputeInterpolationMatrix(const EigenIndex numberOfSplinePoints,
+                                                  const EigenIndex intervalRefinement,
+                                                  EigenIndex& numberOfSamplePoints,
                                                   lin_alg::MatrixColMajor<double>& interpolationMatrix)
 {
 
@@ -308,13 +308,13 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     constexpr double tolerance = 1.0e-5;
 
     // Number of additional points between spline control points for sampled spline.
-    constexpr int numberRefinements = 19;
-    constexpr int numberOfConstraints = 2;
+    constexpr EigenIndex numberRefinements = 19;
+    constexpr EigenIndex numberOfConstraints = 2;
 
     // Save original spline end points
     Point startPoint = splinePoints.front();
     Point endPoint = splinePoints.back();
-    int numberOfSamplePoints = 0;
+    EigenIndex numberOfSamplePoints = 0;
 
     lin_alg::MatrixColMajor<double> interpolationMatrix;
 
@@ -334,8 +334,8 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     // TODO rename variable
     lin_alg::MatrixColMajor<double> atwaInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));
 
-    lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, static_cast<int>(splinePoints.size()));
-    lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, static_cast<int>(splinePoints.size()));
+    lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
+    lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);
     lin_alg::ColumnVector<double> lambda(numberOfConstraints);
 
