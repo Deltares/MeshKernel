@@ -261,12 +261,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a744a1d9dcec872bb2fcb07dcf01dc326"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a744a1d9dcec872bb2fcb07dcf01dc326">mkernel_mesh2d_move_node</a> (int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)</td></tr>
 <tr class="memdesc:a744a1d9dcec872bb2fcb07dcf01dc326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a mesh2d node to a new position.  <a href="namespacemeshkernelapi.html#a744a1d9dcec872bb2fcb07dcf01dc326">More...</a><br /></td></tr>
 <tr class="separator:a744a1d9dcec872bb2fcb07dcf01dc326"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e0e51c373aa4be81fe7f99cec597259"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2e0e51c373aa4be81fe7f99cec597259">mkernel_mesh2d_delete_edge</a> (int meshKernelId, double xCoordinate, double yCoordinate)</td></tr>
-<tr class="memdesc:a2e0e51c373aa4be81fe7f99cec597259"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the closest mesh2d edge to a point. The coordinates of the edge middle points are used for calculating the distances to the point.  <a href="namespacemeshkernelapi.html#a2e0e51c373aa4be81fe7f99cec597259">More...</a><br /></td></tr>
-<tr class="separator:a2e0e51c373aa4be81fe7f99cec597259"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abae5d423970126325dbe7a26b3112ad3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abae5d423970126325dbe7a26b3112ad3">mkernel_mesh2d_get_edge</a> (int meshKernelId, double xCoordinate, double yCoordinate, int &amp;edgeIndex)</td></tr>
-<tr class="memdesc:abae5d423970126325dbe7a26b3112ad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the closest mesh2d edge to a point.  <a href="namespacemeshkernelapi.html#abae5d423970126325dbe7a26b3112ad3">More...</a><br /></td></tr>
-<tr class="separator:abae5d423970126325dbe7a26b3112ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ce1ba846742ee85f26b34c71336ef9b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0ce1ba846742ee85f26b34c71336ef9b">mkernel_mesh2d_delete_edge</a> (int meshKernelId, double xCoordinate, double yCoordinate, double xLowerLeftBoundingBox, double yLowerLeftBoundingBox, double xUpperRightBoundingBox, double yUpperRightBoundingBox)</td></tr>
+<tr class="memdesc:a0ce1ba846742ee85f26b34c71336ef9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the closest mesh2d edge to a point. The coordinates of the edge middle points are used for calculating the distances to the point.  <a href="namespacemeshkernelapi.html#a0ce1ba846742ee85f26b34c71336ef9b">More...</a><br /></td></tr>
+<tr class="separator:a0ce1ba846742ee85f26b34c71336ef9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f0a192a35692dbb03284457fb8730b1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3f0a192a35692dbb03284457fb8730b1">mkernel_mesh2d_get_edge</a> (int meshKernelId, double xCoordinate, double yCoordinate, double xLowerLeftBoundingBox, double yLowerLeftBoundingBox, double xUpperRightBoundingBox, double yUpperRightBoundingBox, int &amp;edgeIndex)</td></tr>
+<tr class="memdesc:a3f0a192a35692dbb03284457fb8730b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the closest mesh2d edge to a point in a bounding box.  <a href="namespacemeshkernelapi.html#a3f0a192a35692dbb03284457fb8730b1">More...</a><br /></td></tr>
+<tr class="separator:a3f0a192a35692dbb03284457fb8730b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3833a1ecc2962cd39b9ea36a2982392e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3833a1ecc2962cd39b9ea36a2982392e">mkernel_polygon_get_offset</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inWard, double distance, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
 <tr class="memdesc:a3833a1ecc2962cd39b9ea36a2982392e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new polygon from an existing one by offsetting the perimeter by a given distance.  <a href="namespacemeshkernelapi.html#a3833a1ecc2962cd39b9ea36a2982392e">More...</a><br /></td></tr>
 <tr class="separator:a3833a1ecc2962cd39b9ea36a2982392e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -282,12 +282,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aa4e296f36170b57a36cea8efc3f2a365"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa4e296f36170b57a36cea8efc3f2a365">mkernel_mesh2d_refine_based_on_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:aa4e296f36170b57a36cea8efc3f2a365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.  <a href="namespacemeshkernelapi.html#aa4e296f36170b57a36cea8efc3f2a365">More...</a><br /></td></tr>
 <tr class="separator:aa4e296f36170b57a36cea8efc3f2a365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01b3709bfd53ce4233481b720298c1cc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a01b3709bfd53ce4233481b720298c1cc">mkernel_mesh2d_get_node_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, int &amp;nodeIndex)</td></tr>
-<tr class="memdesc:a01b3709bfd53ce4233481b720298c1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the mesh2d node closest to a point, within a search radius.  <a href="namespacemeshkernelapi.html#a01b3709bfd53ce4233481b720298c1cc">More...</a><br /></td></tr>
-<tr class="separator:a01b3709bfd53ce4233481b720298c1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad31c0a7e8aa8c874fecf9c6fa21a7d07"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad31c0a7e8aa8c874fecf9c6fa21a7d07">mkernel_mesh2d_get_closest_node</a> (int meshKernelId, double xCoordinateIn, double yCoordinateIn, double searchRadius, double &amp;xCoordinateOut, double &amp;yCoordinateOut)</td></tr>
-<tr class="memdesc:ad31c0a7e8aa8c874fecf9c6fa21a7d07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the closest mesh2d node coordinates to a point, searching within a radius.  <a href="namespacemeshkernelapi.html#ad31c0a7e8aa8c874fecf9c6fa21a7d07">More...</a><br /></td></tr>
-<tr class="separator:ad31c0a7e8aa8c874fecf9c6fa21a7d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7157b97182f7c850d2e9af416c775e2a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7157b97182f7c850d2e9af416c775e2a">mkernel_mesh2d_get_node_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, double searchRadius, double xLowerLeftBoundingBox, double yLowerLeftBoundingBox, double xUpperRightBoundingBox, double yUpperRightBoundingBox, int &amp;nodeIndex)</td></tr>
+<tr class="memdesc:a7157b97182f7c850d2e9af416c775e2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the mesh2d node closest to a point, within a search radius.  <a href="namespacemeshkernelapi.html#a7157b97182f7c850d2e9af416c775e2a">More...</a><br /></td></tr>
+<tr class="separator:a7157b97182f7c850d2e9af416c775e2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b6df0f168c0bd9535114fd65a41ded1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4b6df0f168c0bd9535114fd65a41ded1">mkernel_mesh2d_get_closest_node</a> (int meshKernelId, double xCoordinateIn, double yCoordinateIn, double searchRadius, double xLowerLeftBoundingBox, double yLowerLeftBoundingBox, double xUpperRightBoundingBox, double yUpperRightBoundingBox, double &amp;xCoordinateOut, double &amp;yCoordinateOut)</td></tr>
+<tr class="memdesc:a4b6df0f168c0bd9535114fd65a41ded1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the closest mesh2d node coordinates to a point, searching within a radius.  <a href="namespacemeshkernelapi.html#a4b6df0f168c0bd9535114fd65a41ded1">More...</a><br /></td></tr>
+<tr class="separator:a4b6df0f168c0bd9535114fd65a41ded1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affe136285361f89d9d13b87f7a7f5a84"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#affe136285361f89d9d13b87f7a7f5a84">mkernel_polygon_get_included_points</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToSelect, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectionResults)</td></tr>
 <tr class="memdesc:affe136285361f89d9d13b87f7a7f5a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the polygon nodes within another polygon.  <a href="namespacemeshkernelapi.html#affe136285361f89d9d13b87f7a7f5a84">More...</a><br /></td></tr>
 <tr class="separator:affe136285361f89d9d13b87f7a7f5a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3523,8 +3523,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a2e0e51c373aa4be81fe7f99cec597259"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e0e51c373aa4be81fe7f99cec597259">&#9670;&nbsp;</a></span>mkernel_mesh2d_delete_edge()</h2>
+<a id="a0ce1ba846742ee85f26b34c71336ef9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce1ba846742ee85f26b34c71336ef9b">&#9670;&nbsp;</a></span>mkernel_mesh2d_delete_edge()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3545,7 +3545,31 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>yCoordinate</em>&#160;</td>
+          <td class="paramname"><em>yCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yUpperRightBoundingBox</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3561,6 +3585,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The x coordinate of the point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The y coordinate of the point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftBoundingBox</td><td>The x coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftBoundingBox</td><td>The y coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
   </table>
   </dd>
 </dl>
@@ -3791,8 +3819,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="ad31c0a7e8aa8c874fecf9c6fa21a7d07"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad31c0a7e8aa8c874fecf9c6fa21a7d07">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_closest_node()</h2>
+<a id="a4b6df0f168c0bd9535114fd65a41ded1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b6df0f168c0bd9535114fd65a41ded1">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_closest_node()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3824,6 +3852,30 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">double &amp;&#160;</td>
           <td class="paramname"><em>xCoordinateOut</em>, </td>
         </tr>
@@ -3848,6 +3900,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinateIn</td><td>The x coordinate of the node to insert </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinateIn</td><td>The y coordinate of the node to insert </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radii where to search for mesh nodes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftBoundingBox</td><td>The x coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftBoundingBox</td><td>The y coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">xCoordinateOut</td><td>The x coordinate of the found <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">yCoordinateOut</td><td>The y coordinate of the found <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node </td></tr>
   </table>
@@ -3933,8 +3989,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="abae5d423970126325dbe7a26b3112ad3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abae5d423970126325dbe7a26b3112ad3">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_edge()</h2>
+<a id="a3f0a192a35692dbb03284457fb8730b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0a192a35692dbb03284457fb8730b1">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_edge()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3960,6 +4016,30 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int &amp;&#160;</td>
           <td class="paramname"><em>edgeIndex</em>&#160;</td>
         </tr>
@@ -3971,12 +4051,16 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the closest mesh2d edge to a point. </p>
+<p>Gets the closest mesh2d edge to a point in a bounding box. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The x coordinate of the point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The y coordinate of the point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftBoundingBox</td><td>The x coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftBoundingBox</td><td>The y coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">edgeIndex</td><td>The found edge index </td></tr>
   </table>
   </dd>
@@ -4061,8 +4145,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a01b3709bfd53ce4233481b720298c1cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01b3709bfd53ce4233481b720298c1cc">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_node_index()</h2>
+<a id="a7157b97182f7c850d2e9af416c775e2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7157b97182f7c850d2e9af416c775e2a">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_node_index()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4094,6 +4178,30 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yLowerLeftBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yUpperRightBoundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int &amp;&#160;</td>
           <td class="paramname"><em>nodeIndex</em>&#160;</td>
         </tr>
@@ -4112,6 +4220,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The x coordinate of the point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The y coordinate of the point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The search radius </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftBoundingBox</td><td>The x coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftBoundingBox</td><td>The y coordinate of the lower left corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td>The index of the found node </td></tr>
   </table>
   </dd>

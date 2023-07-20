@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7emeshinterpolation_903',['~MeshInterpolation',['../classmeshkernel_1_1_mesh_interpolation.html#a98d8740c58b7f73d0ec869f4032d2267',1,'meshkernel::MeshInterpolation']]],
-  ['_7emeshkernelerror_904',['~MeshKernelError',['../classmeshkernel_1_1_mesh_kernel_error.html#a5897d249c7573bc7c7e30854e6f39f52',1,'meshkernel::MeshKernelError']]]
+  ['walkboundaryfromnode_910',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh2_d.html#a16f25bd9ed676e12cf753f9275737fcb',1,'meshkernel::Mesh2D']]],
+  ['what_911',['what',['../classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e',1,'meshkernel::MeshKernelError']]]
 ];

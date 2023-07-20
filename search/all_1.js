@@ -4,6 +4,7 @@ var searchData=
   ['block_5fsize_5fx_17',['block_size_x',['../structmeshkernel_1_1_make_grid_parameters.html#a7fe6b82bad2505e05e8ef94ddbd0efce',1,'meshkernel::MakeGridParameters']]],
   ['block_5fsize_5fy_18',['block_size_y',['../structmeshkernel_1_1_make_grid_parameters.html#ab956caf359f4ed225be733caf90b7373',1,'meshkernel::MakeGridParameters']]],
   ['boundary_5fiterations_19',['boundary_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#a0dd2f5e05b0e8b65e7a77d342d7ba7bd',1,'meshkernel::OrthogonalizationParameters']]],
-  ['buildtree_20',['BuildTree',['../classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2',1,'meshkernel::Mesh']]],
-  ['buildtriangulation_21',['BuildTriangulation',['../structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b',1,'meshkernel::TriangulationWrapper']]]
+  ['boundingbox_20',['BoundingBox',['../classmeshkernel_1_1_bounding_box.html',1,'meshkernel::BoundingBox'],['../classmeshkernel_1_1_bounding_box.html#a4810cc38b0497f87e4ea8aa8dd37ceeb',1,'meshkernel::BoundingBox::BoundingBox()'],['../classmeshkernel_1_1_bounding_box.html#a7ff1863cededb4eb12d31ce2c21bdd75',1,'meshkernel::BoundingBox::BoundingBox(const Point &amp;lowerLeft, const Point &amp;upperRight)'],['../classmeshkernel_1_1_bounding_box.html#a10ebe453e2d36a04a287a37f9fd93bc0',1,'meshkernel::BoundingBox::BoundingBox(const std::vector&lt; T &gt; &amp;points)']]],
+  ['buildtree_21',['BuildTree',['../classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2',1,'meshkernel::Mesh::BuildTree(Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#ad96928e361282ff2bd0a3a992cfbfcb1',1,'meshkernel::Mesh::BuildTree(Location meshLocation, const BoundingBox &amp;boundingBox)']]],
+  ['buildtriangulation_22',['BuildTriangulation',['../structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b',1,'meshkernel::TriangulationWrapper']]]
 ];

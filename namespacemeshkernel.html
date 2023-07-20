@@ -93,6 +93,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for performing bilinear interpolation on gridded samples.  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class defining a bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing the three coordinates in a cartesian projection.  <a href="structmeshkernel_1_1_cartesian3_d_point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -367,20 +370,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a60b5f4d4e7bf35bb934de88f52537e8a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a">LinearInterpolationInTriangle</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;interpolationPoint, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; double &gt; &amp;values, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a60b5f4d4e7bf35bb934de88f52537e8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a triangles with values on each node, computes the interpolated value inside the triangle, using linear interpolation.  <a href="namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a">More...</a><br /></td></tr>
 <tr class="separator:a60b5f4d4e7bf35bb934de88f52537e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0110cb34de6eada7abb0ef9d08793bd1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0110cb34de6eada7abb0ef9d08793bd1"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1">IsValueInBoundingBox</a> (T point, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;lowerLeft, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;upperRight)</td></tr>
-<tr class="memdesc:a0110cb34de6eada7abb0ef9d08793bd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if value is inside a bounding box.  <a href="namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1">More...</a><br /></td></tr>
-<tr class="separator:a0110cb34de6eada7abb0ef9d08793bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bc073bd31e9bf69d55fe68daf469adb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5bc073bd31e9bf69d55fe68daf469adb">ComputeAverageCoordinate</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;points, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a5bc073bd31e9bf69d55fe68daf469adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a series of point computes the average coordinate.  <a href="namespacemeshkernel.html#a5bc073bd31e9bf69d55fe68daf469adb">More...</a><br /></td></tr>
 <tr class="separator:a5bc073bd31e9bf69d55fe68daf469adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17b8986897c4bff8679ba8f205650450"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, double, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450">OrthogonalProjectionOnSegment</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;firstNode, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;secondNode, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;pointToProject)</td></tr>
 <tr class="memdesc:a17b8986897c4bff8679ba8f205650450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cartesian projection of a point on a segment defined by other two points.  <a href="namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450">More...</a><br /></td></tr>
 <tr class="separator:a17b8986897c4bff8679ba8f205650450"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a732234767e8f5cae9f50ea3cad683350"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a732234767e8f5cae9f50ea3cad683350"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a732234767e8f5cae9f50ea3cad683350">GetBoundingBox</a> (const std::vector&lt; T &gt; &amp;points)</td></tr>
-<tr class="memdesc:a732234767e8f5cae9f50ea3cad683350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a vector of coordinates, get the lowest upper and right points.  <a href="namespacemeshkernel.html#a732234767e8f5cae9f50ea3cad683350">More...</a><br /></td></tr>
-<tr class="separator:a732234767e8f5cae9f50ea3cad683350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a714f199ef8f1050bba09d5862fa4938d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a714f199ef8f1050bba09d5862fa4938d">AbsoluteDifference</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> number_1, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> number_2)</td></tr>
 <tr class="memdesc:a714f199ef8f1050bba09d5862fa4938d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the absolute difference between to <code>Index</code> numbers.  <a href="namespacemeshkernel.html#a714f199ef8f1050bba09d5862fa4938d">More...</a><br /></td></tr>
 <tr class="separator:a714f199ef8f1050bba09d5862fa4938d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1605,41 +1600,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a732234767e8f5cae9f50ea3cad683350"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a732234767e8f5cae9f50ea3cad683350">&#9670;&nbsp;</a></span>GetBoundingBox()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::tuple&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::GetBoundingBox </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>points</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Given a vector of coordinates, get the lowest upper and right points. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">T</td><td>Requires IsCoordinate&lt;T&gt; </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td>The point values </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A tuple with bottom left and upper right corners of the bounding box </dd></dl>
-
-</div>
-</div>
 <a id="ad844f35f613267b0de16948a5f2e5942"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad844f35f613267b0de16948a5f2e5942">&#9670;&nbsp;</a></span>GetDx()</h2>
 
@@ -1915,59 +1875,6 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>If the point is on the pole. </dd></dl>
-
-</div>
-</div>
-<a id="a0110cb34de6eada7abb0ef9d08793bd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0110cb34de6eada7abb0ef9d08793bd1">&#9670;&nbsp;</a></span>IsValueInBoundingBox()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool meshkernel::IsValueInBoundingBox </td>
-          <td>(</td>
-          <td class="paramtype">T&#160;</td>
-          <td class="paramname"><em>point</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>lowerLeft</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>upperRight</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Checks if value is inside a bounding box. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">T</td><td>Requires IsCoordinate&lt;T&gt; </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point to inquire </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">lowerLeft</td><td>The lower left corner of the bounding box </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">upperRight</td><td>The upper right corner of the bounding box </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>If the point is in the bounding box </dd></dl>
 
 </div>
 </div>
