@@ -88,7 +88,6 @@ namespace meshkernel
         ///
         /// @param [in] xf The x-coordinates
         /// @param [in] yf y-coordinates
-        /// @param [in] totalNumberOfPoints
         /// @param [in] projection
         /// @returns vector of the spline weights
         static lin_alg::ColumnVector<double> ComputeSplineWeights(const lin_alg::ColumnVector<double>& xf,
