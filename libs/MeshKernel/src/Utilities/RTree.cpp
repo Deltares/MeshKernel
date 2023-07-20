@@ -25,12 +25,18 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::RTree;
 
 void RTree::SearchPoints(Point const& node, double searchRadiusSquared)
 {
+    if (Empty())
+    {
+        throw AlgorithmError("RTree is empty, search cannot be performed");
+    }
+
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
     Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
@@ -54,6 +60,11 @@ void RTree::SearchPoints(Point const& node, double searchRadiusSquared)
 
 void RTree::SearchNearestPoint(Point const& node, double searchRadiusSquared)
 {
+    if (Empty())
+    {
+        throw AlgorithmError("RTree is empty, search cannot be performed");
+    }
+
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
     const Point2D nodeSought = Point2D(node.x, node.y);
@@ -75,6 +86,10 @@ void RTree::SearchNearestPoint(Point const& node, double searchRadiusSquared)
 
 void RTree::SearchNearestPoint(Point const& node)
 {
+    if (Empty())
+    {
+        throw AlgorithmError("RTree is empty, search cannot be performed");
+    }
 
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
@@ -90,6 +105,11 @@ void RTree::SearchNearestPoint(Point const& node)
 
 void RTree::DeleteNode(UInt position)
 {
+    if (Empty())
+    {
+        throw AlgorithmError("RTree is empty, deletion cannot performed");
+    }
+
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
     {

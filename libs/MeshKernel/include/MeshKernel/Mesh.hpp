@@ -27,8 +27,9 @@
 
 #pragma once
 
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -220,14 +221,14 @@ namespace meshkernel
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindNodeCloseToAPoint(Point const& point, double searchRadius);
 
-        /// @brief Deletes an edge
-        /// @param[in] edge The edge index
-        void DeleteEdge(UInt edge);
-
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
         /// @returns The index of the closest edge
         [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
+
+        /// @brief Deletes an edge
+        /// @param[in] edge The edge index
+        void DeleteEdge(UInt edge);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
@@ -261,9 +262,14 @@ namespace meshkernel
         /// @return The max edge length
         double ComputeMaxLengthSurroundingEdges(UInt node);
 
-        /// @brief Build the rtree for the corresponding location
+        /// @brief Build the rtree for the corresponding location, using all locations
         /// @param[in] meshLocation The mesh location for which the RTree is build
         void BuildTree(Location meshLocation);
+
+        /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
+        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] boundingBox The bounding box
+        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
 
         /// @brief Search all points sorted by proximity to another point.
         /// @param[in] point The reference point.
@@ -293,13 +299,13 @@ namespace meshkernel
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, Mesh::Location meshLocation);
+        [[nodiscard]] UInt GetLocationsIndices(UInt index, Location meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(Mesh::Location location) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
@@ -334,9 +340,11 @@ namespace meshkernel
         // counters
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
+        bool m_facesRTreeRequiresUpdate = true; ///< m_facesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
+        BoundingBox m_boundingBoxCache;         ///< Caches the last bounding box used for selecting the locations
 
         // constants
         static constexpr UInt m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node

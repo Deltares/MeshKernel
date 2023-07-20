@@ -90,12 +90,12 @@ void TriangulationInterpolation::Compute()
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
-    const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
+    const auto boundingBox = BoundingBox(m_samples);
 
     // loop over locations
     for (UInt n = 0; n < m_locations.size(); ++n)
     {
-        if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
+        if (!boundingBox.Contains(m_locations[n]) ||
             !IsEqual(m_results[n], constants::missing::doubleValue))
         {
             continue;
