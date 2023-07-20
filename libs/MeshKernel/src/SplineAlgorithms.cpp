@@ -7,7 +7,7 @@
 
 using meshkernel::SplineAlgorithms;
 
-std::vector<meshkernel::Point> SplineAlgorithms::SecondOrderDerivative(const std::vector<Point>& spline, UInt startIndex, UInt endIndex)
+std::vector<meshkernel::Point> SplineAlgorithms::SecondOrderDerivative(const std::vector<Point>& spline, size_t startIndex, size_t endIndex)
 {
     const auto numNodes = endIndex - startIndex + 1;
     std::vector<Point> u(numNodes, {0.0, 0.0});
@@ -34,7 +34,7 @@ std::vector<meshkernel::Point> SplineAlgorithms::SecondOrderDerivative(const std
     return coordinatesDerivative;
 }
 
-std::vector<double> SplineAlgorithms::SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex)
+std::vector<double> SplineAlgorithms::SecondOrderDerivative(const std::vector<double>& coordinates, size_t startIndex, size_t endIndex)
 {
     const auto numNodes = endIndex - startIndex + 1;
     std::vector<double> u(numNodes, 0.0);
@@ -141,10 +141,10 @@ lin_alg::ColumnVector<double> SplineAlgorithms::ComputeSplineWeights(const lin_a
     lin_alg::ColumnVector<double> weights(totalNumberOfPoints);
 
     // Compute weights
-    for (int i = 1; i <= totalNumberOfPoints; ++i)
+    for (EigenIndex i = 1; i <= totalNumberOfPoints; ++i)
     {
-        int il = std::max<EigenIndex>(1, i - 1);
-        int ir = std::min<EigenIndex>(totalNumberOfPoints, i + 1);
+        EigenIndex il = std::max<EigenIndex>(1, i - 1);
+        EigenIndex ir = std::min<EigenIndex>(totalNumberOfPoints, i + 1);
         Point p1{xf[il - 1], yf[il - 1]};
         Point p2{xf[ir - 1], yf[ir - 1]};
         weights(i - 1) = 1.0 / std::sqrt(ComputeDistance(p1, p2, projection) / static_cast<double>(ir - il));
