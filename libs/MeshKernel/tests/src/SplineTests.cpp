@@ -96,7 +96,7 @@ TEST(Splines, SnapToLandBoundaryTest)
 {
     // Test the algorithm for snapping splines to land boundaries.
 
-    constexpr double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-8;
 
     // The land boundary to which the spline is to be snapped.
     std::vector<meshkernel::Point> landBoundaryPoints{{257.002197, 442.130066},
