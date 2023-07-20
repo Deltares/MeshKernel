@@ -619,7 +619,6 @@ namespace meshkernel
         auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
         if (gridLineType == BoundaryGridLineType::Left && nodesAreValid)
         {
-            // m_gridNodes.conservativeResize
             m_gridNodes.emplace(m_gridNodes.begin(), std::vector<Point>(m_gridNodes[0].size()));
             gridSizeChanged = true;
         }

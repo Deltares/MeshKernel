@@ -156,8 +156,8 @@ namespace meshkernel
                                        blockSizeX,
                                        blockSizeY);
 
-        const auto numN = result.rows();
-        const auto numM = result.cols();
+        const auto numN = static_cast<UInt>(result.rows());
+        const auto numM = static_cast<UInt>(result.cols());
         bool onPoles = false;
         constexpr double latitudePoles = 90.0;
 
@@ -177,9 +177,8 @@ namespace meshkernel
             }
             if (onPoles)
             {
-                // result.erase(result.begin() + lastRowOnPole + 1, result.end());
                 // remove rows lastRowOnPole + 1 to numM
-                lin_alg::ResizeAndFillMatrix(result, lastRowOnPole, numM, true);
+                lin_alg::EraseRows(result, lastRowOnPole + 1, numM);
                 break;
             }
         }
