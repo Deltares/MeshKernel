@@ -96,6 +96,14 @@ namespace meshkernel
         {
         }
 
+        /// @brief Inplace divide by a scalar value.
+        Point& operator/=(double rhs)
+        {
+            x /= rhs;
+            y /= rhs;
+            return *this;
+        }
+
         /// @brief Inplace add point to point.
         Point& operator+=(const Point& p);
 

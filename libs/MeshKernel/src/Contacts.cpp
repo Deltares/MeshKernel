@@ -64,6 +64,22 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     }
 }
 
+void Contacts::Connect1dNodesWithCrossingFaces(size_t node,
+                                               double projectionFactor)
+{
+    const auto projectedNode = m_mesh1d->ComputeProjectedNode(node, projectionFactor);
+
+    const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
+    if (intersectedFace != constants::missing::sizetValue &&
+        intersectedEdge != constants::missing::sizetValue &&
+        !IsContactIntersectingMesh1d(node, intersectedFace) &&
+        !IsContactIntersectingContact(node, intersectedFace))
+    {
+        m_mesh1dIndices.emplace_back(node);
+        m_mesh2dIndices.emplace_back(intersectedFace);
+    }
+}
+
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
                                                double projectionFactor)
 {
