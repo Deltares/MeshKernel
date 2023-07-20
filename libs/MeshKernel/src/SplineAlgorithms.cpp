@@ -338,7 +338,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);
-    // Lagrange multipler values
+    // Lagrange multipiler values
     lin_alg::ColumnVector<double> constraintValues(numberOfConstraints);
 
     bMatrix.setZero();
