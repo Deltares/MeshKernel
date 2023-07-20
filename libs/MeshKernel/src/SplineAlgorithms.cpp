@@ -334,7 +334,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     // (a^t w a)^-1
     lin_alg::MatrixColMajor<double> leastSquaresMatrixInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));
 
-    // Matrix and vectors used in the Lagrange multipler method.
+    // Matrix and vectors used in the Lagrange multiplier method.
     lin_alg::MatrixColMajor<double> bMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::MatrixColMajor<double> cMatrix(numberOfConstraints, static_cast<EigenIndex>(splinePoints.size()));
     lin_alg::ColumnVector<double> dVector(numberOfConstraints);
