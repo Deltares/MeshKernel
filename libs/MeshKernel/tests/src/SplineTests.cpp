@@ -1,11 +1,5 @@
 #include <gtest/gtest.h>
 
-#if USE_LIBFMT
-#include <fmt/format.h>
-#else
-#include <format>
-#endif
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
@@ -139,20 +133,13 @@ TEST(Splines, SnapToLandBoundaryTest)
 
     // The number of points in the spline should be unchanged
     ASSERT_EQ(splinePoints.size(), expectedSplinePoints.size()) << ", expected the number of points to be unchanged.";
-    std::string message = "Expected points to be same using relative error for {}-component, position = {}, tolerance = " +
-                          std::to_string(tolerance) +
-                          ", expected = {}, actual = {}";
-
-#if USE_LIBFMT
-    namespace fmtns = fmt;
-#else
-    namespace fmtns = std;
-#endif
 
     // Now test the snapped spline points are close to the expected values
     for (size_t i = 0; i < splinePoints.size(); ++i)
     {
-        EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].x, splinePoints[i].x, tolerance)) << fmtns::vformat(message, fmtns::make_format_args('x', i, expectedSplinePoints[i].x, splinePoints[i].x));
-        EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].y, splinePoints[i].y, tolerance)) << fmtns::vformat(message, fmtns::make_format_args('y', i, expectedSplinePoints[i].y, splinePoints[i].y));
+        EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].x, splinePoints[i].x, tolerance))
+            << "Expected x-value: " << expectedSplinePoints[i].x << ", actual: " << splinePoints[i].x << ", relative tolerance: " << tolerance;
+        EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].y, splinePoints[i].y, tolerance))
+            << "Expected y-value: " << expectedSplinePoints[i].y << ", actual: " << splinePoints[i].y << ", relative tolerance: " << tolerance;
     }
 }
