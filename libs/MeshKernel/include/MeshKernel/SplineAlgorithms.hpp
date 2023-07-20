@@ -69,7 +69,7 @@ namespace meshkernel
 
         /// @brief Evaluate a spline function (splint)
         ///
-        /// @param [in] splinePoints     The spline points
+        /// @param [in] coordinates      The spline points
         /// @param [in] secondDerivative Second derivative of the spline
         /// @param [in] evaluationPoint  The point at which the spline is to be evaluated
         /// @returns the result of evaluating the spline at the point.
