@@ -4,6 +4,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 
 TEST(Splines, SetSpline)
@@ -30,7 +31,7 @@ TEST(Splines, CubicSplineInterpolation)
     splineNodes.push_back(meshkernel::Point{930.506469726562, 453.380187988281});
 
     int pointsBetweenNodes = 20;
-    auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes, 0, static_cast<meshkernel::UInt>(splineNodes.size()) - 1);
+    auto coordinatesDerivatives = meshkernel::SplineAlgorithms::SecondOrderDerivative(splineNodes, 0, static_cast<meshkernel::UInt>(splineNodes.size()) - 1);
     std::vector<meshkernel::Point> splineCoordinates;
 
     for (size_t n = 0; n < splineNodes.size() - 1; n++)
@@ -91,30 +92,52 @@ TEST(Splines, SplineIntersection)
     ASSERT_NEAR(-0.996215079635043, crossProductIntersection, tolerance);
 }
 
-
 TEST(Splines, SnapToLandBoundaryTest)
 {
+    // Test the algorithm for snapping splines to land boundaries.
+
+    constexpr double tolerance = 1.0e-10;
+
+    // The land boundary to which the spline is to be snapped.
     std::vector<meshkernel::Point> landBoundaryPoints{{257.002197, 442.130066},
                                                       {518.753845, 301.128662},
                                                       {938.006470, 416.629822}};
 
-    meshkernel::LandBoundary landBoundary (landBoundaryPoints);
+    meshkernel::LandBoundary landBoundary(landBoundaryPoints);
 
-    std::vector<meshkernel::Point> originalSpline {{ 2.810023E+02, 4.473801E+02},
-                                                   { 3.672529E+02, 4.016296E+02},
-                                                   { 4.617534E+02, 3.543792E+02},
-                                                   { 5.172538E+02, 3.183788E+02},
-                                                   { 6.140045E+02, 3.386290E+02},
-                                                   { 7.205051E+02, 3.776294E+02},
-                                                   { 8.277558E+02, 4.173798E+02},
-                                                   { 9.237563E+02, 4.241299E+02}};
+    // The original spline points.
+    std::vector<meshkernel::Point> splinePoints{{273.5672432582054, 434.2383076091101},
+                                                {359.6548957981992, 386.1728599111898},
+                                                {451.4052795711089, 338.3633644642345},
+                                                {518.1849344302889, 306.2266484130825},
+                                                {616.3211974729860, 327.9106439288055},
+                                                {726.2711974858472, 358.2033784419734},
+                                                {835.2979091605716, 388.3975645227832},
+                                                {928.4575298414425, 413.8906061332394}};
 
-   meshkernel::Splines splines(meshkernel::Projection::cartesian);
+    // The expected spline values after snapping to land boundary.
+    std::vector<meshkernel::Point> expectedSplinePoints{{273.5119494437623, 434.1435837538583},
+                                                        {359.7655366695215, 386.2035495200185},
+                                                        {451.1742359577196, 338.2869364276446},
+                                                        {519.3474550786948, 305.9966220813316},
+                                                        {615.5213343112947, 327.8518778073685},
+                                                        {726.6129733944903, 358.2163969838318},
+                                                        {835.1683981546083, 388.4022506888263},
+                                                        {928.4799307663998, 413.8403553975526}};
 
-   splines.AddSpline(originalSpline, 0, static_cast<meshkernel::UInt>(originalSpline.size()));
+    // Second derivative values of the spline at the spline points.
+    std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
 
-   splines.snapSpline (0, landBoundary);
+    // Snap the spline to the land boundary
+    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::cartesian);
 
+    // The number of points in the spline should be unchanged
+    ASSERT_EQ(splinePoints.size(), expectedSplinePoints.size()) << ", expected the number of points to be unchanged.";
 
-
+    // Now test the snapped spline points are close to the expected values
+    for (size_t i = 0; i < splinePoints.size(); ++i)
+    {
+        EXPECT_NEAR(expectedSplinePoints[i].x, splinePoints[i].x, tolerance);
+        EXPECT_NEAR(expectedSplinePoints[i].y, splinePoints[i].y, tolerance);
+    }
 }

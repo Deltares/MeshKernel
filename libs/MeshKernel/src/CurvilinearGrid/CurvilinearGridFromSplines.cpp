@@ -31,6 +31,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -1483,7 +1484,7 @@ void CurvilinearGridFromSplines::FindNearestCrossSplines(UInt s,
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
-    localSplineDerivatives = Splines::SecondOrderDerivative(localCornerPoints, 0, static_cast<UInt>(localCornerPoints.size()) - 1);
+    localSplineDerivatives = SplineAlgorithms::SecondOrderDerivative(localCornerPoints, 0, static_cast<UInt>(localCornerPoints.size()) - 1);
 
     crossingSplinesDimensionalCoordinates[0] = m_splines->ComputeSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
     for (UInt i = 0; i < numM; ++i)

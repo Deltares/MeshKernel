@@ -44,6 +44,7 @@ set(
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/Smoother.cpp
+  ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
@@ -108,6 +109,7 @@ set(
   ${DOMAIN_INC_DIR}/Parameters.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
+  ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp

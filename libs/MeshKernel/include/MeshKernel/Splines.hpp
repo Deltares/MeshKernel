@@ -27,10 +27,11 @@
 
 #pragma once
 
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/LandBoundary.hpp"
+#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/LandBoundary.hpp>
-#include <MeshKernel/Operations.hpp>
 
 namespace meshkernel
 {
@@ -63,53 +64,14 @@ namespace meshkernel
         /// @param[in] size The end index splines
         void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
 
-        /// @brief Second order derivative at spline corner points, from the start node to the end node of the spline (splint)
-        /// @param[in] splines The spline corner points
-        /// @param[in] startIndex The start spline node
-        /// @param[in] endIndex The end spline node
-        /// @returns coordinatesDerivatives The second order derivative at corner points
-        [[nodiscard]] static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, UInt startIndex, UInt endIndex);
-
-        /// @brief Second order derivative at spline corner point coordinates (splint)
-        /// @param[in] coordinates The spline corner point coordinate (x or y)
-        /// @param[in] startIndex The start spline node
-        /// @param[in] endIndex The end spline node
-        /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
-        [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex);
-
-        /// @brief Compute the spline weights.
-        static lin_alg::ColumnVector<double> ComputeSplineWeights(const std::vector<Point>& splinePoints,
-                                                                  const UInt totalNumberOfPoints,
-                                                                  const Projection projection);
-
-        /// @brief Compute the spline weights.
-        static lin_alg::ColumnVector<double> ComputeSplineWeights(const lin_alg::ColumnVector<double>& xf,
-                                                                  const lin_alg::ColumnVector<double>& yf,
-                                                                  const UInt totalNumberOfPoints,
-                                                                  const Projection projection);
-
-        /// @brief Evaluate a spline function (splint)
-        static Point evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
-
-        /// @brief Sample the spline. (sample_spline)
-        ///
-        /// Sample points can be at a high resolution that the control points.
-        static void sampleSpline(const std::vector<Point>& controlPoints,
-                                 const size_t intermediatePointCount,
-                                 std::vector<Point>& samplePoints);
-
-        /// @brief Compute the interpolation matrix (comp_afinespline)
-        static void ComputeInterpolationMatrix(const UInt n, const UInt numRef, UInt& count, lin_alg::MatrixColMajor<double>& mat);
-
-        /// @brief Compute the inverse of the least squares matrix
-        static lin_alg::MatrixColMajor<double> ComputeLeastSquaresMatrixInverse(const lin_alg::MatrixColMajor<double>& splineCoefficients,
-                                                                                const lin_alg::ColumnVector<double>& weights);
-
         /// @brief Snap the spline to the land boundary (snap_spline)
         ///
-        /// If the algorithm fails to converge exception AlgorithmError is thrown, and the spline is not updated.
+        /// @param[in] splineIndex The index of the spline to be snapped to boundary
+        /// @param[in] landBoundary The boundary to which the spline will be snapped
+        /// @param[in] numberOfIterations The maximum number of iterations that should be performed.
         void snapSpline(const size_t splineIndex,
-                        const LandBoundary& landBoundary);
+                        const LandBoundary& landBoundary,
+                        const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline
@@ -172,11 +134,6 @@ namespace meshkernel
         Projection m_projection = Projection::cartesian;     ///< The map projection
 
     private:
-        /// @brief Compute the spline sample points.
-        static std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> ComputeSamplePoints (const std::vector<Point>& splinePoints,
-                                                                                                             const lin_alg::MatrixColMajor<double>& aMatrix);
-
-
         /// @brief Adds a new corner point in an existing spline
         /// @param[in] splineIndex The spline index
         /// @param[in] point The point to add
