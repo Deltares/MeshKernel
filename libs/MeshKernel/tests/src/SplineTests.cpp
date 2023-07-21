@@ -98,6 +98,8 @@ TEST(Splines, SnapToLandBoundaryTest)
 
     constexpr double tolerance = 1.0e-8;
 
+    constexpr int iterationCountForTest = 5;
+
     // The land boundary to which the spline is to be snapped.
     std::vector<meshkernel::Point> landBoundaryPoints{{257.002197, 442.130066},
                                                       {518.753845, 301.128662},
@@ -129,7 +131,7 @@ TEST(Splines, SnapToLandBoundaryTest)
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
 
     // Snap the spline to the land boundary
-    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::cartesian);
+    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::cartesian, iterationCountForTest);
 
     // The number of points in the spline should be unchanged
     ASSERT_EQ(splinePoints.size(), expectedSplinePoints.size()) << ", expected the number of points to be unchanged.";
