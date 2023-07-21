@@ -115,7 +115,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     return {normalVector, tangentialVector, curvatureFactor};
 }
 
-meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint)
+meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& splinePoints, const std::vector<Point>& secondDerivative, const double evaluationPoint)
 {
     // Constant used in dflowfm code: splint.f90
     constexpr double splfac = 1.0;
@@ -128,15 +128,15 @@ meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinat
 
     if (std::abs(evaluationPoint - std::floor(evaluationPoint)) <= eps)
     {
-        result = coordinates.at(startIndex);
+        result = splinePoints[startIndex];
     }
     else
     {
         double a = static_cast<double>(startIndex + 1) - evaluationPoint;
         double b = evaluationPoint - static_cast<double>(startIndex);
 
-        result = a * coordinates.at(startIndex) + b * coordinates.at(startIndex + 1);
-        result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(startIndex) + (b * b * b - b) * secondDerivative.at(startIndex + 1));
+        result = a * splinePoints[startIndex] + b * splinePoints[startIndex + 1];
+        result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative[startIndex] + (b * b * b - b) * secondDerivative[startIndex + 1]);
     }
 
     return result;
@@ -330,7 +330,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
     // The tangent vector is unused
     auto [startNormal, startTangent, startCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, 0.0, projection);
-    auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, static_cast<double>(splinePoints.size() - 1), projection);
+    auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, static_cast<double>(splinePoints.size() - 2), projection);
 
     // (a^t w a)^-1
     lin_alg::MatrixColMajor<double> leastSquaresMatrixInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));

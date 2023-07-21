@@ -95,6 +95,7 @@ TEST(Splines, SplineIntersection)
 TEST(Splines, SnapToLandBoundaryTest)
 {
     // Test the algorithm for snapping splines to land boundaries.
+    std::cout.precision(16);
 
     constexpr double tolerance = 1.0e-8;
 
@@ -108,24 +109,24 @@ TEST(Splines, SnapToLandBoundaryTest)
     meshkernel::LandBoundary landBoundary(landBoundaryPoints);
 
     // The original spline points.
-    std::vector<meshkernel::Point> splinePoints{{273.5672432582054, 434.2383076091101},
-                                                {359.6548957981992, 386.1728599111898},
-                                                {451.4052795711089, 338.3633644642345},
-                                                {518.1849344302889, 306.2266484130825},
-                                                {616.3211974729860, 327.9106439288055},
-                                                {726.2711974858472, 358.2033784419734},
-                                                {835.2979091605716, 388.3975645227832},
-                                                {928.4575298414425, 413.8906061332394}};
+    std::vector<meshkernel::Point> splinePoints{{281.0023, 447.3801},
+                                                {367.2529, 401.6296},
+                                                {461.7534, 354.3792},
+                                                {517.2538, 318.3788},
+                                                {614.0045, 338.629},
+                                                {720.5051, 377.6294},
+                                                {827.7558, 417.3798},
+                                                {923.7563, 424.1299}};
 
     // The expected spline values after snapping to land boundary.
-    std::vector<meshkernel::Point> expectedSplinePoints{{273.5119494437623, 434.1435837538583},
-                                                        {359.7655366695215, 386.2035495200185},
-                                                        {451.1742359577196, 338.2869364276446},
-                                                        {519.3474550786948, 305.9966220813316},
-                                                        {615.5213343112947, 327.8518778073685},
-                                                        {726.6129733944903, 358.2163969838318},
-                                                        {835.1683981546083, 388.4022506888263},
-                                                        {928.4799307663998, 413.8403553975526}};
+    std::vector<meshkernel::Point> expectedSplinePoints{{273.5834262827929, 434.2669118224699},
+                                                        {359.6107681621177, 386.1706653063852},
+                                                        {451.5044152728593, 338.3599432599846},
+                                                        {517.8215605846689, 306.3085350045253},
+                                                        {616.6099656759136, 327.9376360335772},
+                                                        {725.9919988191206, 358.1548932566778},
+                                                        {835.7305710161469, 388.5008963717653},
+                                                        {926.3274162831042, 413.3364413550619}};
 
     // Second derivative values of the spline at the spline points.
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
