@@ -236,7 +236,7 @@ TEST(Splines, SnapToLandBoundarExceptionalCasesTest)
     splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
 
     // Add point to end of spline derivative, so number of points is not the same as spline
-    // The value of the point does not matter, the SnapSplineToBoundary should thro an exception
+    // The value of the point does not matter, the SnapSplineToBoundary should throw an exception
     splineDerivative.push_back({100.0, 100.0});
 
     //--------------------------------
