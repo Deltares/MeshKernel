@@ -399,7 +399,7 @@ meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
 }
 
-void Splines::snapSpline(const size_t splineIndex,
+void Splines::SnapSpline(const size_t splineIndex,
                          const LandBoundary& landBoundary,
                          const int numberOfIterations)
 {

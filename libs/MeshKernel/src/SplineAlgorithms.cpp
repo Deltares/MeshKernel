@@ -115,7 +115,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     return {normalVector, tangentialVector, curvatureFactor};
 }
 
-meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& splinePoints, const std::vector<Point>& secondDerivative, const double evaluationPoint)
+meshkernel::Point SplineAlgorithms::Evaluate(const std::vector<Point>& splinePoints, const std::vector<Point>& secondDerivative, const double evaluationPoint)
 {
     // Constant used in dflowfm code: splint.f90
     constexpr double splfac = 1.0;
@@ -214,13 +214,13 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
         for (size_t j = 0; j <= intermediatePointCount; ++j)
         {
             evaluationPoint = floatI + static_cast<double>(j) / intermediatePointCountFloat;
-            samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
+            samplePoints[count] = Evaluate(splinePoints, secondDerivative, evaluationPoint);
             ++count;
         }
     }
 
     evaluationPoint = static_cast<double>(splinePoints.size() - 1);
-    samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
+    samplePoints[count] = Evaluate(splinePoints, secondDerivative, evaluationPoint);
 }
 
 void SplineAlgorithms::ComputeInterpolationMatrix(const EigenIndex numberOfSplinePoints,

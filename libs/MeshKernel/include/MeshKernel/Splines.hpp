@@ -69,7 +69,7 @@ namespace meshkernel
         /// @param[in] splineIndex The index of the spline to be snapped to boundary
         /// @param[in] landBoundary The boundary to which the spline will be snapped
         /// @param[in] numberOfIterations The maximum number of iterations that should be performed.
-        void snapSpline(const size_t splineIndex,
+        void SnapSpline(const size_t splineIndex,
                         const LandBoundary& landBoundary,
                         const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 

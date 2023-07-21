@@ -73,7 +73,7 @@ namespace meshkernel
         /// @param [in] secondDerivative Second derivative of the spline
         /// @param [in] evaluationPoint  The point at which the spline is to be evaluated
         /// @returns the result of evaluating the spline at the point.
-        static Point evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
+        static Point Evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint);
 
         /// @brief Snap the spline to the land boundary (snap_spline)
         ///
