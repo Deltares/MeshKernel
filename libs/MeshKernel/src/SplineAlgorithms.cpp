@@ -115,27 +115,6 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     return {normalVector, tangentialVector, curvatureFactor};
 }
 
-// meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint)
-// {
-//     // Start and end index of interval containing evaluationPoint
-//     size_t startIndex = static_cast<size_t>(evaluationPoint);
-
-//     constexpr double splfac = 1.0;
-
-//     double a = static_cast<double>(startIndex + 1) - evaluationPoint;
-//     double b = evaluationPoint - static_cast<double>(startIndex);
-
-//     std::cout << "evaluate: " << evaluationPoint << "  " << startIndex << "   " << coordinates.size() << "  " << a << "  " << b << std::endl;
-
-//     // Point result = a * coordinates.at(startIndex) + b * coordinates.at(startIndex + 1);
-//     // result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(startIndex) + (b * b * b - b) * secondDerivative.at(startIndex + 1));
-
-//     Point result = a * coordinates[startIndex] + b * coordinates[startIndex + 1];
-//     result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative[startIndex] + (b * b * b - b) * secondDerivative[startIndex + 1]);
-
-//     return result;
-// }
-
 meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint)
 {
     // Constant used in dflowfm code: splint.f90
@@ -147,22 +126,17 @@ meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinat
 
     Point result;
 
-    if (evaluationPoint - static_cast<double>(startIndex) < eps)
+    if (std::abs(evaluationPoint - std::floor(evaluationPoint)) <= eps)
     {
         result = coordinates.at(startIndex);
     }
     else
     {
-        size_t klo = startIndex + 1;
-        size_t khi = klo + 1;
+        double a = static_cast<double>(startIndex + 1) - evaluationPoint;
+        double b = evaluationPoint - static_cast<double>(startIndex);
 
-        double a = static_cast<double>(khi - 1) - evaluationPoint;
-        double b = evaluationPoint - static_cast<double>(klo - 1);
-        // double a = static_cast<double>(startIndex + 1) - evaluationPoint;
-        // double b = evaluationPoint - static_cast<double>(startIndex);
-
-        result = a * coordinates.at(klo - 1) + b * coordinates.at(khi - 1);
-        result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(klo - 1) + (b * b * b - b) * secondDerivative.at(khi - 1));
+        result = a * coordinates.at(startIndex) + b * coordinates.at(startIndex + 1);
+        result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(startIndex) + (b * b * b - b) * secondDerivative.at(startIndex + 1));
     }
 
     return result;
@@ -226,26 +200,12 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
 
     samplePoints.resize(sampleCount);
 
-    std::vector<Point> evaluatedSpline(splinePoints.size());
-    // TODO Can I use the derivatives that are saved in the splines object?
     std::vector<Point> secondDerivative = SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
 
     double intermediatePointCountFloat = static_cast<double>(intermediatePointCount + 1);
     double evaluationPoint;
 
     size_t count = 0;
-
-    // for (size_t i = 1; i <= splinePoints.size() - 1; ++i)
-    // {
-    //     double floatI = static_cast<double>(i - 1);
-
-    //     for (size_t j = 1; j <= intermediatePointCount + 1; ++j)
-    //     {
-    //         evaluationPoint = floatI + static_cast<double>(j - 1) / intermediatePointCountFloat;
-    //         samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
-    //         ++count;
-    //     }
-    // }
 
     for (size_t i = 0; i < splinePoints.size() - 1; ++i)
     {
@@ -254,8 +214,7 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
         for (size_t j = 0; j <= intermediatePointCount; ++j)
         {
             evaluationPoint = floatI + static_cast<double>(j) / intermediatePointCountFloat;
-            samplePoints.at(count) = evaluate(splinePoints, secondDerivative, evaluationPoint);
-            // samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
+            samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
             ++count;
         }
     }
@@ -276,12 +235,6 @@ void SplineAlgorithms::ComputeInterpolationMatrix(const EigenIndex numberOfSplin
     }
 
     numberOfSamplePoints = numberOfSplinePoints + (numberOfSplinePoints - 1) * intervalRefinement;
-
-    // if ( Nr_in.lt.Nr ) then
-    //    ierror = 2
-    //    goto 1234
-    // end if
-
     interpolationMatrix.resize(numberOfSamplePoints, numberOfSplinePoints);
 
     Point p;
@@ -328,8 +281,6 @@ lin_alg::MatrixColMajor<double> SplineAlgorithms::ComputeLeastSquaresMatrixInver
 
     return atwa.inverse();
 }
-
-// TODO make the splinePoints constant and return (perhaps as parameter) the snbapped spline nodes.
 
 void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
                                             const std::vector<Point>& splineDerivative,
@@ -480,9 +431,9 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
         splineValuesX = interpolationMatrix * xVals;
         splineValuesY = interpolationMatrix * yVals;
 
-        // TODO is there a better check for convergence?
+        // is there a better check for convergence?
         // AND what should the tolerance be?
-        converged = (xVals - xValsOld).norm() + (yVals - yValsOld).norm() < tolerance;
+        converged = ((xVals - xValsOld).norm() + (yVals - yValsOld).norm()) < tolerance;
         ++iterationCount;
     }
 
