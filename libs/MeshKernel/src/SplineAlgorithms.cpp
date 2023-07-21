@@ -115,18 +115,55 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     return {normalVector, tangentialVector, curvatureFactor};
 }
 
+// meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint)
+// {
+//     // Start and end index of interval containing evaluationPoint
+//     size_t startIndex = static_cast<size_t>(evaluationPoint);
+
+//     constexpr double splfac = 1.0;
+
+//     double a = static_cast<double>(startIndex + 1) - evaluationPoint;
+//     double b = evaluationPoint - static_cast<double>(startIndex);
+
+//     std::cout << "evaluate: " << evaluationPoint << "  " << startIndex << "   " << coordinates.size() << "  " << a << "  " << b << std::endl;
+
+//     // Point result = a * coordinates.at(startIndex) + b * coordinates.at(startIndex + 1);
+//     // result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(startIndex) + (b * b * b - b) * secondDerivative.at(startIndex + 1));
+
+//     Point result = a * coordinates[startIndex] + b * coordinates[startIndex + 1];
+//     result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative[startIndex] + (b * b * b - b) * secondDerivative[startIndex + 1]);
+
+//     return result;
+// }
+
 meshkernel::Point SplineAlgorithms::evaluate(const std::vector<Point>& coordinates, const std::vector<Point>& secondDerivative, const double evaluationPoint)
 {
+    // Constant used in dflowfm code: splint.f90
+    constexpr double splfac = 1.0;
+    constexpr double eps = 1.0e-5;
+
     // Start and end index of interval containing evaluationPoint
     size_t startIndex = static_cast<size_t>(evaluationPoint);
 
-    constexpr double splfac = 1.0;
+    Point result;
 
-    double a = static_cast<double>(startIndex + 1) - evaluationPoint;
-    double b = evaluationPoint - static_cast<double>(startIndex);
+    if (evaluationPoint - static_cast<double>(startIndex) < eps)
+    {
+        result = coordinates.at(startIndex);
+    }
+    else
+    {
+        size_t klo = startIndex + 1;
+        size_t khi = klo + 1;
 
-    Point result = a * coordinates[startIndex] + b * coordinates[startIndex + 1];
-    result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative[startIndex] + (b * b * b - b) * secondDerivative[startIndex + 1]);
+        double a = static_cast<double>(khi - 1) - evaluationPoint;
+        double b = evaluationPoint - static_cast<double>(klo - 1);
+        // double a = static_cast<double>(startIndex + 1) - evaluationPoint;
+        // double b = evaluationPoint - static_cast<double>(startIndex);
+
+        result = a * coordinates.at(klo - 1) + b * coordinates.at(khi - 1);
+        result += (splfac / 6.0) * ((a * a * a - a) * secondDerivative.at(klo - 1) + (b * b * b - b) * secondDerivative.at(khi - 1));
+    }
 
     return result;
 }
@@ -198,6 +235,18 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
 
     size_t count = 0;
 
+    // for (size_t i = 1; i <= splinePoints.size() - 1; ++i)
+    // {
+    //     double floatI = static_cast<double>(i - 1);
+
+    //     for (size_t j = 1; j <= intermediatePointCount + 1; ++j)
+    //     {
+    //         evaluationPoint = floatI + static_cast<double>(j - 1) / intermediatePointCountFloat;
+    //         samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
+    //         ++count;
+    //     }
+    // }
+
     for (size_t i = 0; i < splinePoints.size() - 1; ++i)
     {
         double floatI = static_cast<double>(i);
@@ -205,7 +254,8 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
         for (size_t j = 0; j <= intermediatePointCount; ++j)
         {
             evaluationPoint = floatI + static_cast<double>(j) / intermediatePointCountFloat;
-            samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
+            samplePoints.at(count) = evaluate(splinePoints, secondDerivative, evaluationPoint);
+            // samplePoints[count] = evaluate(splinePoints, secondDerivative, evaluationPoint);
             ++count;
         }
     }
@@ -352,13 +402,18 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     cMatrix(1, splinePoints.size() - 1) = -endNormal.x;
     dVector(1) = endNormal.y * endPoint.x - endNormal.x * endPoint.y;
 
-    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * leastSquaresMatrixInverse * bMatrix.transpose() + cMatrix * leastSquaresMatrixInverse * cMatrix.transpose();
+    // lin_alg::MatrixColMajor<double> eMatrix = bMatrix * leastSquaresMatrixInverse * bMatrix.transpose() + cMatrix * leastSquaresMatrixInverse * cMatrix.transpose();
+
+    lin_alg::MatrixColMajor<double> temp1 = leastSquaresMatrixInverse * bMatrix.transpose();
+    lin_alg::MatrixColMajor<double> temp2 = leastSquaresMatrixInverse * cMatrix.transpose();
+
+    lin_alg::MatrixColMajor<double> eMatrix = bMatrix * temp1 + cMatrix * temp2;
 
     constraintValues.setZero();
     // Inplace inversion of the e-matrix.
     eMatrix = eMatrix.inverse();
 
-    std::vector<Point> nearestPoints(numberOfSamplePoints);
+    std::vector<Point> nearestPoints(numberOfSamplePoints, Point());
 
     // Weighted evaluation of spline at sample points
     lin_alg::ColumnVector<double> atwxb(splinePoints.size());
