@@ -73,7 +73,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     }
 
     const auto numNodesFirstSpline = static_cast<UInt>(splinePoints.size());
-    auto const leftCornerPoint = std::max(std::min(static_cast<UInt>(std::floor(adimensionalPointCoordinate)), numNodesFirstSpline - 1), 0U);
+    auto const leftCornerPoint = std::max(std::min(static_cast<UInt>(std::floor(adimensionalPointCoordinate)), numNodesFirstSpline - 2), 0U);
     auto const rightCornerPoint = std::max(leftCornerPoint + 1, 0U);
 
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
@@ -330,7 +330,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
     // The tangent vector is unused
     auto [startNormal, startTangent, startCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, 0.0, projection);
-    auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, static_cast<double>(splinePoints.size() - 2), projection);
+    auto [endNormal, endTangent, endCurvature] = ComputeCurvatureOnSplinePoint(splinePoints, splineDerivative, static_cast<double>(splinePoints.size() - 1), projection);
 
     // (a^t w a)^-1
     lin_alg::MatrixColMajor<double> leastSquaresMatrixInverse(ComputeLeastSquaresMatrixInverse(interpolationMatrix, weights));

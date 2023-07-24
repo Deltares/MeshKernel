@@ -119,14 +119,14 @@ TEST(Splines, SnapToLandBoundaryTest)
                                                 {923.7563, 424.1299}};
 
     // The expected spline values after snapping to land boundary.
-    std::vector<meshkernel::Point> expectedSplinePoints{{273.5834262827929, 434.2669118224699},
-                                                        {359.6107681621177, 386.1706653063852},
-                                                        {451.5044152728593, 338.3599432599846},
-                                                        {517.8215605846689, 306.3085350045253},
-                                                        {616.6099656759136, 327.9376360335772},
-                                                        {725.9919988191206, 358.1548932566778},
-                                                        {835.7305710161469, 388.5008963717653},
-                                                        {926.3274162831042, 413.3364413550619}};
+    std::vector<meshkernel::Point> expectedSplinePoints{{273.5868719643935, 434.2730022174478},
+                                                        {359.5998304717778, 386.1712239047134},
+                                                        {451.5303458337523, 338.3551703843473},
+                                                        {517.7962262926076, 306.3259738916997},
+                                                        {616.7325138813335, 327.9627689164845},
+                                                        {725.7358644094627, 358.0902879743862},
+                                                        {836.262785315633, 388.6415116416172},
+                                                        {923.500177844106, 412.5818685325169}};
 
     // Second derivative values of the spline at the spline points.
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
@@ -152,7 +152,6 @@ TEST(Splines, SnapToLandBoundaryTestMoreComplex)
     // Test the algorithm for snapping splines to land boundaries.
 
     constexpr double tolerance = 1.0e-8;
-    std::cout.precision(16);
 
     constexpr int iterationCountForTest = 5;
 
@@ -180,18 +179,18 @@ TEST(Splines, SnapToLandBoundaryTestMoreComplex)
                                                 {1210.3, 437.14}};
 
     // The expected spline values after snapping to land boundary.
-    std::vector<meshkernel::Point> expectedSplinePoints{{38.42192723012753, 424.806605628109},
-                                                        {149.4214312948018, 431.4280222213445},
-                                                        {243.4361972185592, 439.4247577974628},
-                                                        {363.3402879510205, 397.2883197379104},
-                                                        {463.5280719683782, 354.902558079283},
-                                                        {519.8144669870601, 334.4837897998606},
-                                                        {610.0772432347718, 349.4752558572702},
-                                                        {722.340309768069, 372.9120019664619},
-                                                        {831.9969308099151, 394.5979270893058},
-                                                        {925.9964143297707, 413.2599100078918},
-                                                        {1092.933155446308, 425.5473892107497},
-                                                        {1210.616231495038, 431.6150517322644}};
+    std::vector<meshkernel::Point> expectedSplinePoints{{38.42192722461485, 424.8066056739462},
+                                                        {149.4212294844463, 431.4279980793879},
+                                                        {243.4366472927346, 439.4248664919662},
+                                                        {363.3393876763865, 397.2884569516308},
+                                                        {463.52960329766, 354.9022144214105},
+                                                        {519.8125580315373, 334.4846251591024},
+                                                        {610.0830875529675, 349.4756505685123},
+                                                        {722.3285941717641, 372.9106676262226},
+                                                        {832.0186256015455, 394.6007897085619},
+                                                        {925.9583042672142, 413.2531703957142},
+                                                        {1093.033003418322, 425.553458360068},
+                                                        {1210.129613351779, 431.5895114864473}};
 
     // Second derivative values of the spline at the spline points.
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
@@ -204,7 +203,6 @@ TEST(Splines, SnapToLandBoundaryTestMoreComplex)
 
     for (size_t i = 0; i < splinePoints.size(); ++i)
     {
-
         EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].x, splinePoints[i].x, tolerance))
             << "Expected x-value: " << expectedSplinePoints[i].x << ", actual: " << splinePoints[i].x << ", relative tolerance: " << tolerance;
         EXPECT_TRUE(meshkernel::IsEqual(expectedSplinePoints[i].y, splinePoints[i].y, tolerance))
@@ -216,6 +214,9 @@ TEST(Splines, SnapToLandBoundarExceptionalCasesTest)
 {
     // Test the algorithm for snapping splines to land boundaries
     // Should fail with no spline or derivative points or different length vectors
+
+    // The values of the spline points and the land boundary do not really matter in this test,
+    // as they will not be used.
 
     // The land boundary to which the spline is to be snapped.
     std::vector<meshkernel::Point> landBoundaryPoints{{0.0, 0.0}, {1.0, 1.0}};
