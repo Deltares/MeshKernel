@@ -414,19 +414,19 @@ std::vector<meshkernel::Point> Splines::SecondOrderDerivative(const std::vector<
     std::vector<Point> coordinatesDerivative(numNodes, {0.0, 0.0});
 
     UInt index = 1;
-    for (auto i = startIndex + 1; i < numNodes - 1; i++)
+    for (auto i = startIndex + 1; i < endIndex; i++)
     {
         const Point p = coordinatesDerivative[index - 1] * 0.5 + 2.0;
         coordinatesDerivative[index].x = -0.5 / p.x;
         coordinatesDerivative[index].y = -0.5 / p.y;
 
         const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
-        u[index] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        u[index] = (delta * 6.0 / 2.0 - u[index - 1] * 0.5) / p;
         index++;
     }
-    // TODO: C++ 20 for(auto& i :  views::reverse(vec))
+
     coordinatesDerivative.back() = {0.0, 0.0};
-    for (auto i = numNodes - 2; i < numNodes; --i)
+    for (int i = static_cast<int>(coordinatesDerivative.size()) - 2; i >= 0; --i)
     {
         coordinatesDerivative[i] = coordinatesDerivative[i] * coordinatesDerivative[i + 1] + u[i];
     }
@@ -441,19 +441,18 @@ std::vector<double> Splines::SecondOrderDerivative(const std::vector<double>& co
     std::vector<double> coordinatesDerivatives(numNodes, 0.0);
 
     UInt index = 1;
-    for (auto i = startIndex + 1; i < numNodes - 1; i++)
+    for (auto i = startIndex + 1; i < endIndex; i++)
     {
         const double p = coordinatesDerivatives[index - 1] * 0.5 + 2.0;
         coordinatesDerivatives[index] = -0.5 / p;
 
         const double delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-        u[index] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        u[index] = (delta * 6.0 / 2.0 - u[index - 1] * 0.5) / p;
         index++;
     }
 
-    // TODO: C++ 20 for(auto& i :  views::reverse(vec))
     coordinatesDerivatives.back() = 0.0;
-    for (auto i = numNodes - 2; i < numNodes; --i)
+    for (int i = static_cast<int>(coordinatesDerivatives.size()) - 2; i >= 0; --i)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
     }
