@@ -76,6 +76,12 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     auto const leftCornerPoint = std::max(std::min(static_cast<UInt>(std::floor(adimensionalPointCoordinate)), numNodesFirstSpline - 2), 0U);
     auto const rightCornerPoint = std::max(leftCornerPoint + 1, 0U);
 
+    if (rightCornerPoint >= numNodesFirstSpline)
+    {
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Coordinate out of bounds, resulting in index out of bounds: coordinate = {}, end index = {}, size = {}",
+                                                               adimensionalPointCoordinate, rightCornerPoint, numNodesFirstSpline));
+    }
+
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
     const auto rightSegment = adimensionalPointCoordinate - static_cast<double>(leftCornerPoint);
 
