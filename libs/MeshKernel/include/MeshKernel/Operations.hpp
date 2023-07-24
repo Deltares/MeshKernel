@@ -468,20 +468,6 @@ namespace meshkernel
         return pointCoordinate;
     }
 
-    /// @brief Swap the elements of a vector, such as the last elements becomes the first elements
-    /// @tparam T A type
-    /// @param[in] v The vector
-    template <class T>
-    void SwapVectorElements(std::vector<T>& v)
-    {
-        for (UInt i = 0; i < v.size() / 2; ++i)
-        {
-            const auto a = v[i];
-            v[i] = v[i + 1];
-            v[i + 1] = a;
-        }
-    }
-
     /// @brief Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.
     /// @param[in] v          The vector of points
     /// @param[in] projection The projection to use.

@@ -346,7 +346,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                 {
                     throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: At least two splines are intersecting twice.");
                 }
-                else if (m_splineType[i] == 0 && m_splineType[j] == 0)
+                if (m_splineType[i] == 0 && m_splineType[j] == 0)
                 {
                     // both undefined
                 }
@@ -356,7 +356,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[i] < 0.0)
                     {
                         // switch j
-                        SwapVectorElements(m_splines->m_splineNodes[j]);
+                        std::ranges::reverse(m_splines->m_splineNodes[j]);
                         secondSplineRatio = static_cast<double>(numNodesJSpline) - 1.0 - secondSplineRatio;
                     }
                 }
@@ -366,7 +366,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[j] > 0.0)
                     {
                         // switch i
-                        SwapVectorElements(m_splines->m_splineNodes[i]);
+                        std::ranges::reverse(m_splines->m_splineNodes[i]);
                         firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
                     }
                 }
@@ -411,10 +411,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             {
                 break;
             }
-            else
-            {
-                nSplineSortingHasNotChanged = false;
-            }
+            nSplineSortingHasNotChanged = false;
         }
 
         if (nSplineSortingHasNotChanged)
@@ -541,7 +538,7 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                 const auto secondIntersectionRatio = m_splineIntersectionRatios[i][k];
 
                 // all fine nothing to do, they are already sorted
-                if (secondIntersectionRatio == 0 || firstIntersectionRatio <= secondIntersectionRatio)
+                if (IsEqual(secondIntersectionRatio, 0.0) || firstIntersectionRatio <= secondIntersectionRatio)
                 {
                     continue;
                 }
