@@ -78,8 +78,8 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
 
     if (rightCornerPoint >= numNodesFirstSpline)
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Coordinate out of bounds, resulting in index out of bounds: coordinate = {}, end index = {}, size = {}",
-                                                               adimensionalPointCoordinate, rightCornerPoint, numNodesFirstSpline));
+        throw ConstraintError(VariadicErrorMessage("Coordinate out of bounds, resulting in index out of bounds: coordinate = {}, end index = {}, size = {}",
+                                                   adimensionalPointCoordinate, rightCornerPoint, numNodesFirstSpline));
     }
 
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
@@ -197,25 +197,25 @@ void SplineAlgorithms::SampleSpline(const std::vector<Point>& splinePoints,
                                     std::vector<Point>& samplePoints)
 {
 
-    if (splinePoints.size() == 0)
+    if (splinePoints.empty())
     {
-        throw meshkernel::ConstraintError("Spline is empty");
+        throw ConstraintError("Spline is empty");
     }
 
-    size_t sampleCount = splinePoints.size() + (splinePoints.size() - 1) * intermediatePointCount;
+    const size_t sampleCount = splinePoints.size() + (splinePoints.size() - 1) * intermediatePointCount;
 
     samplePoints.resize(sampleCount);
 
-    std::vector<Point> secondDerivative = SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
+    const auto secondDerivative = SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
 
-    double intermediatePointCountFloat = static_cast<double>(intermediatePointCount + 1);
+    const double intermediatePointCountFloat = static_cast<double>(intermediatePointCount + 1);
     double evaluationPoint;
 
     size_t count = 0;
 
     for (size_t i = 0; i < splinePoints.size() - 1; ++i)
     {
-        double floatI = static_cast<double>(i);
+        const double floatI = static_cast<double>(i);
 
         for (size_t j = 0; j <= intermediatePointCount; ++j)
         {
@@ -237,15 +237,13 @@ void SplineAlgorithms::ComputeInterpolationMatrix(const EigenIndex numberOfSplin
 
     if (numberOfSplinePoints < 1)
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline point count: {}", numberOfSplinePoints));
+        throw ConstraintError(VariadicErrorMessage("Invalid spline point count: {}", numberOfSplinePoints));
     }
 
     numberOfSamplePoints = numberOfSplinePoints + (numberOfSplinePoints - 1) * intervalRefinement;
     interpolationMatrix.resize(numberOfSamplePoints, numberOfSplinePoints);
 
-    Point p;
-    p.x = 0.0;
-    p.y = 0.0;
+    Point p{0.0, 0.0};
     std::vector<Point> locations(static_cast<size_t>(numberOfSplinePoints), p);
     std::vector<Point> xf;
 
@@ -297,19 +295,19 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
     if (splinePoints.empty())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline"));
+        throw ConstraintError(VariadicErrorMessage("Empty spline"));
     }
 
     if (splineDerivative.empty())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline derivative"));
+        throw ConstraintError(VariadicErrorMessage("Empty spline derivative"));
     }
 
     if (splinePoints.size() != splineDerivative.size())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Spline and derivative are not the same size: {} /= {}",
-                                                               splinePoints.size(),
-                                                               splineDerivative.size()));
+        throw ConstraintError(VariadicErrorMessage("Spline and derivative are not the same size: {} /= {}",
+                                                   splinePoints.size(),
+                                                   splineDerivative.size()));
     }
 
     constexpr double tolerance = 1.0e-5;
@@ -327,7 +325,10 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
     // Compute spline coefficients.
     // Resizes the matrix to be numberOfSamplePoints by splinePoints.size()
-    ComputeInterpolationMatrix(splinePoints.size(), numberRefinements, numberOfSamplePoints, interpolationMatrix);
+    ComputeInterpolationMatrix(splinePoints.size(),
+                               numberRefinements,
+                               numberOfSamplePoints,
+                               interpolationMatrix);
 
     // Returns two Eigen vectors, for the x- and y-sample points.
     auto [splineValuesX, splineValuesY] = ComputeSamplePoints(splinePoints, interpolationMatrix);
@@ -439,7 +440,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
         // is there a better check for convergence?
         // AND what should the tolerance be?
-        converged = ((xVals - xValsOld).norm() + (yVals - yValsOld).norm()) < tolerance;
+        converged = (xVals - xValsOld).norm() + (yVals - yValsOld).norm() < tolerance;
         ++iterationCount;
     }
 
