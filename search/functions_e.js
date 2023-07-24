@@ -1,18 +1,17 @@
 var searchData=
 [
-  ['sample_887',['Sample',['../classmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../classmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
-  ['searchlocations_888',['SearchLocations',['../classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923',1,'meshkernel::Mesh']]],
-  ['searchnearestlocation_889',['SearchNearestLocation',['../classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70',1,'meshkernel::Mesh::SearchNearestLocation(Point point, Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b',1,'meshkernel::Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)']]],
-  ['secondorderderivative_890',['SecondOrderDerivative',['../classmeshkernel_1_1_splines.html#a11c1e48db0bc4d563e575270054d72c3',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; Point &gt; &amp;splines, UInt startIndex, UInt endIndex)'],['../classmeshkernel_1_1_splines.html#abaea587e6ed519114ed30522d4bdd816',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; double &gt; &amp;coordinates, UInt startIndex, UInt endIndex)']]],
-  ['setdimensionaldistance_891',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a465d832ec91e1c9275ae38bcf13ce64d',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline']]],
-  ['sgn_892',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
-  ['smoother_893',['Smoother',['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother']]],
-  ['snapmeshtolandboundaries_894',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
-  ['solve_895',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['sortedfacesaroundnode_896',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584',1,'meshkernel::Mesh2D']]],
-  ['sortedgesincounterclockwiseorder_897',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#accf79b4b9e80ce47284a4cb1d866790a',1,'meshkernel::Mesh']]],
-  ['sortedindices_898',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
-  ['sphericaltocartesian3d_899',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
-  ['splines_900',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['swapvectorelements_901',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
+  ['sample_886',['Sample',['../classmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../classmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
+  ['searchlocations_887',['SearchLocations',['../classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923',1,'meshkernel::Mesh']]],
+  ['searchnearestlocation_888',['SearchNearestLocation',['../classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70',1,'meshkernel::Mesh::SearchNearestLocation(Point point, Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b',1,'meshkernel::Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)']]],
+  ['secondorderderivative_889',['SecondOrderDerivative',['../classmeshkernel_1_1_splines.html#a11c1e48db0bc4d563e575270054d72c3',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; Point &gt; &amp;splines, UInt startIndex, UInt endIndex)'],['../classmeshkernel_1_1_splines.html#abaea587e6ed519114ed30522d4bdd816',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; double &gt; &amp;coordinates, UInt startIndex, UInt endIndex)']]],
+  ['setdimensionaldistance_890',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a465d832ec91e1c9275ae38bcf13ce64d',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline']]],
+  ['sgn_891',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
+  ['smoother_892',['Smoother',['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother']]],
+  ['snapmeshtolandboundaries_893',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
+  ['solve_894',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['sortedfacesaroundnode_895',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584',1,'meshkernel::Mesh2D']]],
+  ['sortedgesincounterclockwiseorder_896',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#accf79b4b9e80ce47284a4cb1d866790a',1,'meshkernel::Mesh']]],
+  ['sortedindices_897',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
+  ['sphericaltocartesian3d_898',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
+  ['splines_899',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]]
 ];

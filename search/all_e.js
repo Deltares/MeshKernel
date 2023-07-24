@@ -17,6 +17,5 @@ var searchData=
   ['sortedindices_489',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
   ['sphericaltocartesian3d_490',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
   ['splines_491',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['splinestocurvilinearparameters_492',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]],
-  ['swapvectorelements_493',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
+  ['splinestocurvilinearparameters_492',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]]
 ];

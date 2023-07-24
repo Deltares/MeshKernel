@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['network1d_846',['Network1D',['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
-  ['nextcircularbackwardindex_847',['NextCircularBackwardIndex',['../namespacemeshkernel.html#a6560021860904bb4568f5e214453822c',1,'meshkernel']]],
-  ['nextcircularforwardindex_848',['NextCircularForwardIndex',['../namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee',1,'meshkernel']]],
-  ['node_849',['Node',['../classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc',1,'meshkernel::Polygons']]],
-  ['nodeadministration_850',['NodeAdministration',['../classmeshkernel_1_1_mesh.html#ab38045736a55485cb9fe2ad078928c5b',1,'meshkernel::Mesh']]],
-  ['nodemaskfromedgemask_851',['NodeMaskFromEdgeMask',['../classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216',1,'meshkernel::Mesh2D']]],
-  ['nodemaskfrompolygon_852',['NodeMaskFromPolygon',['../classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91',1,'meshkernel::Mesh2D']]],
-  ['nodes_853',['Nodes',['../classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439',1,'meshkernel::Polygons']]],
-  ['normalizedinnerproducttwosegments_854',['NormalizedInnerProductTwoSegments',['../namespacemeshkernel.html#a753af36980a58942bff49dfd40f5edff',1,'meshkernel']]],
-  ['normalvector_855',['NormalVector',['../namespacemeshkernel.html#a7d6e1aab3f39437c400e8b41f2672655',1,'meshkernel']]],
-  ['normalvectorinside_856',['NormalVectorInside',['../namespacemeshkernel.html#ae04b6bc704df7891f149706c2bbd84e8',1,'meshkernel']]],
-  ['normalvectoroutside_857',['NormalVectorOutside',['../namespacemeshkernel.html#ae335ccbbc8c7587705691d226055a2d1',1,'meshkernel']]],
-  ['notimplemented_858',['NotImplemented',['../classmeshkernel_1_1_not_implemented.html#abda130873f7e128624bee765ea6aadaf',1,'meshkernel::NotImplemented::NotImplemented(VariadicErrorMessage const &amp;message, std::source_location const &amp;source_location=std::source_location::current())'],['../classmeshkernel_1_1_not_implemented.html#afa26c855fa6a84b5ebcc84aefa4909d1',1,'meshkernel::NotImplemented::NotImplemented(std::string_view message, std::source_location const &amp;source_location=std::source_location::current())']]]
+  ['network1d_845',['Network1D',['../classmeshkernel_1_1_network1_d.html#ab29497476d5c08fd0ea3cab0879f444f',1,'meshkernel::Network1D::Network1D()=default'],['../classmeshkernel_1_1_network1_d.html#a05059e711deb317e2e3c19429193f893',1,'meshkernel::Network1D::Network1D(Projection projection)'],['../classmeshkernel_1_1_network1_d.html#a78629437db6a9303f3e5d48657120e80',1,'meshkernel::Network1D::Network1D(std::vector&lt; std::vector&lt; Point &gt;&gt; const &amp;polyLines, Projection projection)']]],
+  ['nextcircularbackwardindex_846',['NextCircularBackwardIndex',['../namespacemeshkernel.html#a6560021860904bb4568f5e214453822c',1,'meshkernel']]],
+  ['nextcircularforwardindex_847',['NextCircularForwardIndex',['../namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee',1,'meshkernel']]],
+  ['node_848',['Node',['../classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc',1,'meshkernel::Polygons']]],
+  ['nodeadministration_849',['NodeAdministration',['../classmeshkernel_1_1_mesh.html#ab38045736a55485cb9fe2ad078928c5b',1,'meshkernel::Mesh']]],
+  ['nodemaskfromedgemask_850',['NodeMaskFromEdgeMask',['../classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216',1,'meshkernel::Mesh2D']]],
+  ['nodemaskfrompolygon_851',['NodeMaskFromPolygon',['../classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91',1,'meshkernel::Mesh2D']]],
+  ['nodes_852',['Nodes',['../classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439',1,'meshkernel::Polygons']]],
+  ['normalizedinnerproducttwosegments_853',['NormalizedInnerProductTwoSegments',['../namespacemeshkernel.html#a753af36980a58942bff49dfd40f5edff',1,'meshkernel']]],
+  ['normalvector_854',['NormalVector',['../namespacemeshkernel.html#a7d6e1aab3f39437c400e8b41f2672655',1,'meshkernel']]],
+  ['normalvectorinside_855',['NormalVectorInside',['../namespacemeshkernel.html#ae04b6bc704df7891f149706c2bbd84e8',1,'meshkernel']]],
+  ['normalvectoroutside_856',['NormalVectorOutside',['../namespacemeshkernel.html#ae335ccbbc8c7587705691d226055a2d1',1,'meshkernel']]],
+  ['notimplemented_857',['NotImplemented',['../classmeshkernel_1_1_not_implemented.html#abda130873f7e128624bee765ea6aadaf',1,'meshkernel::NotImplemented::NotImplemented(VariadicErrorMessage const &amp;message, std::source_location const &amp;source_location=std::source_location::current())'],['../classmeshkernel_1_1_not_implemented.html#afa26c855fa6a84b5ebcc84aefa4909d1',1,'meshkernel::NotImplemented::NotImplemented(std::string_view message, std::source_location const &amp;source_location=std::source_location::current())']]]
 ];
