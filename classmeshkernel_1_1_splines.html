@@ -75,7 +75,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_splines-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -103,6 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00">AddSpline</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> start, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> size)</td></tr>
 <tr class="memdesc:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new spline to m_splineCornerPoints.  <a href="classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00">More...</a><br /></td></tr>
 <tr class="separator:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc8d4728f45976a5a922599f4ccacca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">SnapSpline</a> (const size_t splineIndex, const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;landBoundary, const int numberOfIterations=constants::numeric::defaultSnappingIterations)</td></tr>
+<tr class="memdesc:a4dc8d4728f45976a5a922599f4ccacca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap the spline to the land boundary (snap_spline)  <a href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">More...</a><br /></td></tr>
+<tr class="separator:a4dc8d4728f45976a5a922599f4ccacca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82d896101f08ad12837ba4cecc9fed57"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a82d896101f08ad12837ba4cecc9fed57">GetSplinesIntersection</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> first, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> second, double &amp;crossProductIntersection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;firstSplineRatio, double &amp;secondSplineRatio)</td></tr>
 <tr class="memdesc:a82d896101f08ad12837ba4cecc9fed57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the intersection of two splines (sect3r)  <a href="classmeshkernel_1_1_splines.html#a82d896101f08ad12837ba4cecc9fed57">More...</a><br /></td></tr>
 <tr class="separator:a82d896101f08ad12837ba4cecc9fed57"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,15 +120,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a59b3a266adea9414d491c1313d07749b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a59b3a266adea9414d491c1313d07749b">GetNumSplines</a> () const</td></tr>
 <tr class="memdesc:a59b3a266adea9414d491c1313d07749b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of splines.  <a href="classmeshkernel_1_1_splines.html#a59b3a266adea9414d491c1313d07749b">More...</a><br /></td></tr>
 <tr class="separator:a59b3a266adea9414d491c1313d07749b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a11c1e48db0bc4d563e575270054d72c3"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a11c1e48db0bc4d563e575270054d72c3">SecondOrderDerivative</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex)</td></tr>
-<tr class="memdesc:a11c1e48db0bc4d563e575270054d72c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second order derivative at spline corner points, from the start node to the end node of the spline (splint)  <a href="classmeshkernel_1_1_splines.html#a11c1e48db0bc4d563e575270054d72c3">More...</a><br /></td></tr>
-<tr class="separator:a11c1e48db0bc4d563e575270054d72c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaea587e6ed519114ed30522d4bdd816"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#abaea587e6ed519114ed30522d4bdd816">SecondOrderDerivative</a> (const std::vector&lt; double &gt; &amp;coordinates, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex)</td></tr>
-<tr class="memdesc:abaea587e6ed519114ed30522d4bdd816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second order derivative at spline corner point coordinates (splint)  <a href="classmeshkernel_1_1_splines.html#abaea587e6ed519114ed30522d4bdd816">More...</a><br /></td></tr>
-<tr class="separator:abaea587e6ed519114ed30522d4bdd816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -205,7 +198,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines. </p>
-<p>[in] The curvilinear grid </p>
+<p>[in] grid The curvilinear grid </p>
 
 </div>
 </div>
@@ -525,32 +518,29 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 </div>
 </div>
-<a id="abaea587e6ed519114ed30522d4bdd816"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abaea587e6ed519114ed30522d4bdd816">&#9670;&nbsp;</a></span>SecondOrderDerivative() <span class="overload">[1/2]</span></h2>
+<a id="a4dc8d4728f45976a5a922599f4ccacca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc8d4728f45976a5a922599f4ccacca">&#9670;&nbsp;</a></span>SnapSpline()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::vector&lt;double&gt; meshkernel::Splines::SecondOrderDerivative </td>
+          <td class="memname">void meshkernel::Splines::SnapSpline </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
-          <td class="paramname"><em>coordinates</em>, </td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>splineIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>startIndex</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;&#160;</td>
+          <td class="paramname"><em>landBoundary</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>endIndex</em>&#160;</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>numberOfIterations</em> = <code>constants::numeric::defaultSnappingIterations</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -558,76 +548,17 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Second order derivative at spline corner point coordinates (splint) </p>
+<p>Snap the spline to the land boundary (snap_spline) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">coordinates</td><td>The spline corner point coordinate (x or y) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start spline node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end spline node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">splineIndex</td><td>The index of the spline to be snapped to boundary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>The boundary to which the spline will be snapped </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numberOfIterations</td><td>The maximum number of iterations that should be performed. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative) </dd></dl>
-
-</div>
-</div>
-<a id="a11c1e48db0bc4d563e575270054d72c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11c1e48db0bc4d563e575270054d72c3">&#9670;&nbsp;</a></span>SecondOrderDerivative() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Splines::SecondOrderDerivative </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>splines</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>startIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>endIndex</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Second order derivative at spline corner points, from the start node to the end node of the spline (splint) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">splines</td><td>The spline corner points </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start spline node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end spline node </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>coordinatesDerivatives The second order derivative at corner points </dd></dl>
 
 </div>
 </div>
