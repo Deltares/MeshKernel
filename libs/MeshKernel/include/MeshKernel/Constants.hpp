@@ -52,6 +52,7 @@ namespace meshkernel
         {
             static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
             constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
+            constexpr int defaultSnappingIterations = 5;            ///< Default number of iterations to take in the spline snapping algorithm
         }                                                           // namespace numeric
 
         // unit conversion constants

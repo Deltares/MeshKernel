@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 
 #include <memory>
 
@@ -84,7 +85,7 @@ namespace meshkernel
 
         /// @brief Gets the number of land boundary nodes.
         /// @return The number of land boundary nodes.
-        auto GetNumNodes() const { return m_nodes.size(); }
+        auto GetNumNodes() const { return m_landBoundary.GetNumNodes(); }
 
         std::vector<UInt> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
 
@@ -179,7 +180,7 @@ namespace meshkernel
 
         std::shared_ptr<Mesh2D> m_mesh;                           ///< A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;                     ///< A pointer to polygons
-        std::vector<Point> m_nodes;                               ///< XLAN, YLAN
+        LandBoundary m_landBoundary;                              ///< The nodes on the land boundary
         std::vector<Point> m_polygonNodesCache;                   ///< Array of points (e.g. points of a face)
         std::vector<std::pair<UInt, UInt>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
         std::vector<std::vector<double>> m_nodesLand;             ///< Node to land boundary segment mapping

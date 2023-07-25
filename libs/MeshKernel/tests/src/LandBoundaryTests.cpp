@@ -3,6 +3,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/Definitions.hpp>
@@ -142,4 +143,152 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
     EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
     EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+}
+
+TEST(LandBoundaries, LandBoundaryConstructorTestSinglePolyline)
+{
+    std::vector<meshkernel::Point> controlPoints{{235.561218, 290.571899},
+                                                 {265.953522, 436.515747},
+                                                 {429.349854, 450.959656},
+                                                 {535.271545, 386.262909}};
+
+    meshkernel::LandBoundary landBoundary(controlPoints);
+
+    EXPECT_EQ(landBoundary.GetNumNodes(), controlPoints.size());
+    EXPECT_FALSE(landBoundary.IsEmpty());
+
+    // Check the points are the same as those used during construction
+    for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
+    {
+        EXPECT_EQ(landBoundary.node(i).x, controlPoints[i].x);
+        EXPECT_EQ(landBoundary.node(i).y, controlPoints[i].y);
+    }
+
+    // Check the point array values are the same as those used during construction
+    const std::vector<meshkernel::Point>& points(landBoundary.GetNodes());
+
+    for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
+    {
+        EXPECT_EQ(points[i].x, controlPoints[i].x);
+        EXPECT_EQ(points[i].y, controlPoints[i].y);
+    }
+}
+
+TEST(LandBoundaries, LandBoundaryConstructorTestMultiPolyline)
+{
+    std::vector<meshkernel::Point> controlPoints{{235.561218, 290.571899},
+                                                 {265.953522, 436.515747},
+                                                 {429.349854, 450.959656},
+                                                 {535.271545, 386.262909},
+                                                 {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                 {246.995941, 262.285858},
+                                                 {351.112183, 237.309906},
+                                                 {443.191895, 262.285858},
+                                                 {553.627319, 327.283539},
+                                                 {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+
+    meshkernel::LandBoundary landBoundary(controlPoints);
+
+    std::vector<std::pair<meshkernel::UInt, meshkernel::UInt>> indices = landBoundary.FindPolylineIndices();
+
+    EXPECT_EQ(indices.size(), 2);
+
+    // Indices of the first polyline
+    EXPECT_EQ(indices[0].first, 0);
+    EXPECT_EQ(indices[0].second, 3);
+
+    // Indices of the second polyline
+    EXPECT_EQ(indices[1].first, 5);
+    EXPECT_EQ(indices[1].second, 8);
+}
+
+TEST(LandBoundaries, LandBoundaryConstructorTestFindClosestPoint)
+{
+    std::vector<meshkernel::Point> controlPoints{{0.0, 0.0},
+                                                 {10.0, 0.0},
+                                                 {10.0, 10.0}};
+
+    meshkernel::LandBoundary landBoundary(controlPoints);
+    meshkernel::Projection projection = meshkernel::Projection::cartesian;
+
+    // Expect  this point to be closest to the first point (0, 0)
+    meshkernel::Point samplePoint({1.0, 1.0});
+    meshkernel::Point closestPoint = landBoundary.ClosestPoint(samplePoint, 0, 1, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[0].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[0].y);
+
+    // Expect  this point to be closest to the first point (10, 0)
+    samplePoint = meshkernel::Point({11.0, 1.0});
+    closestPoint = landBoundary.ClosestPoint(samplePoint, 0, 1, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[1].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[1].y);
+
+    // Expect  this point to be closest to the first point (10, 0)
+    samplePoint = meshkernel::Point({11.0, 10.0});
+    closestPoint = landBoundary.ClosestPoint(samplePoint, 0, 1, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[1].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[1].y);
+
+    // Expect  this point to be closest to the first point (10, 0)
+    samplePoint = meshkernel::Point({11.0, 1.0});
+    closestPoint = landBoundary.ClosestPoint(samplePoint, 1, 2, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[1].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[1].y);
+
+    // Expect  this point to be closest to the first point (10, 10)
+    samplePoint = meshkernel::Point({9.0, 5.1});
+    closestPoint = landBoundary.ClosestPoint(samplePoint, 1, 2, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[2].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[2].y);
+
+    // Expect  this point to be closest to the first point (10, 10)
+    samplePoint = meshkernel::Point({11.0, 5.1});
+    closestPoint = landBoundary.ClosestPoint(samplePoint, 1, 2, projection);
+    EXPECT_EQ(closestPoint.x, controlPoints[2].x);
+    EXPECT_EQ(closestPoint.y, controlPoints[2].y);
+}
+
+TEST(LandBoundaries, LandBoundaryConstructorTestAddSegment)
+{
+    std::vector<meshkernel::Point> controlPoints{{235.561218, 290.571899},
+                                                 {265.953522, 436.515747},
+                                                 {429.349854, 450.959656},
+                                                 {535.271545, 386.262909}};
+
+    std::vector<meshkernel::Point> controlPointsAfterAddition{{235.561218, 290.571899},
+                                                              {265.953522, 436.515747},
+                                                              {429.349854, 450.959656},
+                                                              {535.271545, 386.262909},
+                                                              {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                              {246.995941, 262.285858},
+                                                              {351.112183, 237.309906},
+                                                              {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+
+    meshkernel::LandBoundary landBoundary(controlPoints);
+
+    EXPECT_EQ(landBoundary.GetNumNodes(), controlPoints.size());
+    EXPECT_FALSE(landBoundary.IsEmpty());
+
+    // Check the points are the same as those used during construction
+    for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
+    {
+        EXPECT_EQ(landBoundary.node(i).x, controlPoints[i].x);
+        EXPECT_EQ(landBoundary.node(i).y, controlPoints[i].y);
+    }
+
+    meshkernel::Point p1{246.995941, 262.285858};
+    meshkernel::Point p2{351.112183, 237.309906};
+
+    // Now add the new segment.
+    landBoundary.AddSegment(p1, p2);
+
+    EXPECT_EQ(landBoundary.GetNumNodes(), controlPointsAfterAddition.size());
+    EXPECT_FALSE(landBoundary.IsEmpty());
+
+    // Check the points are the same as those used during construction
+    for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
+    {
+        EXPECT_EQ(landBoundary.node(i).x, controlPointsAfterAddition[i].x);
+        EXPECT_EQ(landBoundary.node(i).y, controlPointsAfterAddition[i].y);
+    }
 }
