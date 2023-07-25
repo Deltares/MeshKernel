@@ -467,16 +467,37 @@ namespace meshkernelapi
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] xCoordinate    The x coordinate of the point
         /// @param[in] yCoordinate    The y coordinate of the point
+        /// @param[in]  xLowerLeftBoundingBox  The x coordinate of the lower left corner of the bounding box
+        /// @param[in]  yLowerLeftBoundingBox  The y coordinate of the lower left corner of the bounding box
+        /// @param[in]  xUpperRightBoundingBox The x coordinate of the upper right corner of the bounding box
+        /// @param[in]  yUpperRightBoundingBox The y coordinate of the upper right corner of the bounding box
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId, double xCoordinate, double yCoordinate);
+        MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId,
+                                                   double xCoordinate,
+                                                   double yCoordinate,
+                                                   double xLowerLeftBoundingBox,
+                                                   double yLowerLeftBoundingBox,
+                                                   double xUpperRightBoundingBox,
+                                                   double yUpperRightBoundingBox);
 
-        /// @brief Gets the closest mesh2d edge to a point.
+        /// @brief Gets the closest mesh2d edge to a point in a bounding box
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @param[in]  xCoordinate   The x coordinate of the point
         /// @param[in]  yCoordinate   The y coordinate of the point
-        /// @param[out] edgeIndex     The found edge index
+        /// @param[in]  xLowerLeftBoundingBox  The x coordinate of the lower left corner of the bounding box
+        /// @param[in]  yLowerLeftBoundingBox  The y coordinate of the lower left corner of the bounding box
+        /// @param[in]  xUpperRightBoundingBox The x coordinate of the upper right corner of the bounding box
+        /// @param[in]  yUpperRightBoundingBox The y coordinate of the upper right corner of the bounding box
+        /// @param[out] edgeIndex   The found edge index
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex);
+        MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId,
+                                                double xCoordinate,
+                                                double yCoordinate,
+                                                double xLowerLeftBoundingBox,
+                                                double yLowerLeftBoundingBox,
+                                                double xUpperRightBoundingBox,
+                                                double yUpperRightBoundingBox,
+                                                int& edgeIndex);
 
         /// @brief Generate a new polygon from an existing one by offsetting the perimeter by a given distance.
         ///
@@ -554,12 +575,20 @@ namespace meshkernelapi
         /// @param[in]  xCoordinate   The x coordinate of the point
         /// @param[in]  yCoordinate   The y coordinate of the point
         /// @param[in]  searchRadius  The search radius
+        /// @param[in]  xLowerLeftBoundingBox  The x coordinate of the lower left corner of the bounding box
+        /// @param[in]  yLowerLeftBoundingBox  The y coordinate of the lower left corner of the bounding box
+        /// @param[in]  xUpperRightBoundingBox The x coordinate of the upper right corner of the bounding box
+        /// @param[in]  yUpperRightBoundingBox The y coordinate of the upper right corner of the bounding box
         /// @param[out] nodeIndex     The index of the found node
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId,
                                                       double xCoordinate,
                                                       double yCoordinate,
                                                       double searchRadius,
+                                                      double xLowerLeftBoundingBox,
+                                                      double yLowerLeftBoundingBox,
+                                                      double xUpperRightBoundingBox,
+                                                      double yUpperRightBoundingBox,
                                                       int& nodeIndex);
 
         /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
@@ -567,6 +596,10 @@ namespace meshkernelapi
         /// @param[in]  xCoordinateIn   The x coordinate of the node to insert
         /// @param[in]  yCoordinateIn   The y coordinate of the node to insert
         /// @param[in]  searchRadius    The radii where to search for mesh nodes
+        /// @param[in]  xLowerLeftBoundingBox  The x coordinate of the lower left corner of the bounding box
+        /// @param[in]  yLowerLeftBoundingBox  The y coordinate of the lower left corner of the bounding box
+        /// @param[in]  xUpperRightBoundingBox The x coordinate of the upper right corner of the bounding box
+        /// @param[in]  yUpperRightBoundingBox The y coordinate of the upper right corner of the bounding box
         /// @param[out] xCoordinateOut  The x coordinate of the found Mesh2D node
         /// @param[out] yCoordinateOut  The y coordinate of the found Mesh2D node
         /// @returns Error code
@@ -574,6 +607,10 @@ namespace meshkernelapi
                                                         double xCoordinateIn,
                                                         double yCoordinateIn,
                                                         double searchRadius,
+                                                        double xLowerLeftBoundingBox,
+                                                        double yLowerLeftBoundingBox,
+                                                        double xUpperRightBoundingBox,
+                                                        double yUpperRightBoundingBox,
                                                         double& xCoordinateOut,
                                                         double& yCoordinateOut);
 

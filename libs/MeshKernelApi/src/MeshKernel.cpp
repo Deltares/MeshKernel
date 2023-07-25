@@ -1343,7 +1343,13 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId, double xCoordinate, double yCoordinate)
+    MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId,
+                                               double xCoordinate,
+                                               double yCoordinate,
+                                               double xLowerLeftBoundingBox,
+                                               double yLowerLeftBoundingBox,
+                                               double xUpperRightBoundingBox,
+                                               double yUpperRightBoundingBox)
     {
         int exitCode = Success;
         try
@@ -1355,6 +1361,9 @@ namespace meshkernelapi
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
 
+            meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
+
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Mesh::Location::Edges, boundingBox);
             const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point);
 
             meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex);
@@ -1366,7 +1375,14 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId, double xCoordinate, double yCoordinate, int& edgeIndex)
+    MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId,
+                                            double xCoordinate,
+                                            double yCoordinate,
+                                            double xLowerLeftBoundingBox,
+                                            double yLowerLeftBoundingBox,
+                                            double xUpperRightBoundingBox,
+                                            double yUpperRightBoundingBox,
+                                            int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1377,6 +1393,10 @@ namespace meshkernelapi
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
+
+            meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
+
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Mesh::Location::Edges, boundingBox);
 
             edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point));
         }
@@ -1596,6 +1616,10 @@ namespace meshkernelapi
                                                   double xCoordinate,
                                                   double yCoordinate,
                                                   double searchRadius,
+                                                  double xLowerLeftBoundingBox,
+                                                  double yLowerLeftBoundingBox,
+                                                  double xUpperRightBoundingBox,
+                                                  double yUpperRightBoundingBox,
                                                   int& nodeIndex)
     {
         int exitCode = Success;
@@ -1611,7 +1635,8 @@ namespace meshkernelapi
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
-
+            meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Mesh::Location::Nodes, boundingBox);
             nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius));
         }
         catch (...)
@@ -1625,6 +1650,10 @@ namespace meshkernelapi
                                                     double xCoordinateIn,
                                                     double yCoordinateIn,
                                                     double searchRadius,
+                                                    double xLowerLeftBoundingBox,
+                                                    double yLowerLeftBoundingBox,
+                                                    double xUpperRightBoundingBox,
+                                                    double yUpperRightBoundingBox,
                                                     double& xCoordinateOut,
                                                     double& yCoordinateOut)
     {
@@ -1636,10 +1665,14 @@ namespace meshkernelapi
                                                      xCoordinateIn,
                                                      yCoordinateIn,
                                                      searchRadius,
+                                                     xLowerLeftBoundingBox,
+                                                     yLowerLeftBoundingBox,
+                                                     xUpperRightBoundingBox,
+                                                     yUpperRightBoundingBox,
                                                      nodeIndex);
 
             // Set the node coordinate
-            auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
+            const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
             xCoordinateOut = foundNode.x;
             yCoordinateOut = foundNode.y;
         }

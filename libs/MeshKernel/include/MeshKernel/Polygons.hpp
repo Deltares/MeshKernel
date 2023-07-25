@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <unordered_map>
 
@@ -81,7 +82,7 @@ namespace meshkernel
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
-        bool IsEmpty() const;
+        [[nodiscard]] bool IsEmpty() const;
 
         /// @brief Gives the number of polygons
         /// @return Number of polygons

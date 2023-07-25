@@ -1561,6 +1561,7 @@ std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>&
     std::vector<UInt> result;
     result.resize(numPoints, constants::missing::uintValue);
     std::vector<Point> polygonNodesCache;
+    BuildTree(Location::Edges);
 
     for (UInt i = 0; i < numPoints; ++i)
     {

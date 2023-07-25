@@ -186,6 +186,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
     UInt numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
     // Approximate the number of nodes in the refined polygon.
     UInt totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+
     std::vector<Point> refinedPolygon;
 
     refinedPolygon.reserve(totalNumNodes);

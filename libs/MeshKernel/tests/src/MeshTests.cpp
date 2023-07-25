@@ -369,10 +369,11 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate();
 
-    ASSERT_EQ(5, mesh->m_nodesRTree.Size());
+    // builds edges RTree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(0, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(5, mesh->m_edgesRTree.Size());
 }
 
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
@@ -387,9 +388,13 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     mesh->DeleteNode(0);
 
-    // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    // when m_nodesRTreeRequiresUpdate
     mesh->Administrate();
 
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+
+    // After deleting a node, the nodes RTree is reduced
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
 }
 
@@ -397,7 +402,6 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     meshkernel::Point newPoint{10.0, 10.0};
 
@@ -406,16 +410,17 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
     mesh->ConnectNodes(0, newNodeIndex);
 
-    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    // re-do mesh adminstration
     mesh->Administrate();
 
-    // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(0, mesh->m_nodesRTree.Size());
+    // re-build tree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
+    // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(5, mesh->m_edgesRTree.Size());
 }
 
-TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
+TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
@@ -424,9 +429,13 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     mesh->DeleteEdge(0);
 
-    // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
+    // re-do mesh administration
     mesh->Administrate();
 
+    // re-build tree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+
+    // deleting an edge produces an edges rtree of size 3
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
 }
 
@@ -439,6 +448,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
     const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
 
@@ -455,6 +465,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
     const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
 

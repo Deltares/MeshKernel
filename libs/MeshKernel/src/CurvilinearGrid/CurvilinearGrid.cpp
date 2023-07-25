@@ -150,7 +150,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
-    std::vector<std::vector<meshkernel::UInt>> nodeIndices(m_gridNodes.size(), std::vector<meshkernel::UInt>(m_gridNodes[0].size(), constants::missing::uintValue));
+    std::vector<std::vector<UInt>> nodeIndices(m_gridNodes.size(), std::vector<UInt>(m_gridNodes[0].size(), constants::missing::uintValue));
     std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::uintValue, constants::missing::uintValue});
 
     UInt ind = 0;
@@ -220,25 +220,27 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    SearchNearestLocation(point, Mesh::Location::Nodes);
-    if (GetNumLocations(Mesh::Location::Nodes) == 0)
+    BuildTree(Location::Nodes);
+    SearchNearestLocation(point, Location::Nodes);
+    if (GetNumLocations(Location::Nodes) == 0)
     {
         return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Mesh::Location::Nodes);
+    const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
     return m_gridIndices[nodeIndex];
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
-    SearchNearestLocation(point, Mesh::Location::Edges);
-    if (GetNumLocations(Mesh::Location::Edges) == 0)
+    BuildTree(Location::Edges);
+    SearchNearestLocation(point, Location::Edges);
+    if (GetNumLocations(Location::Edges) == 0)
     {
         return {{}, {}};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Mesh::Location::Edges);
+    const auto nodeIndex = GetLocationsIndices(0, Location::Edges);
     auto const firstNode = m_edges[nodeIndex].first;
     auto const secondNode = m_edges[nodeIndex].second;
 

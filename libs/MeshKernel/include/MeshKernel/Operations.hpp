@@ -29,9 +29,10 @@
 
 #include <numeric>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
 namespace meshkernel
 {
@@ -528,20 +529,6 @@ namespace meshkernel
     /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection);
 
-    /// @brief Checks if value is inside a bounding box
-    /// @tparam    T          Requires IsCoordinate<T>
-    /// @param[in] point      The point to inquire
-    /// @param[in] lowerLeft  The lower left corner of the bounding box
-    /// @param[in] upperRight The upper right corner of the bounding box
-    /// @returns If the point is in the bounding box
-    template <typename T>
-    bool IsValueInBoundingBox(T point, const Point& lowerLeft, const Point& upperRight)
-    {
-
-        return point.x >= lowerLeft.x && point.x <= upperRight.x &&
-               point.y >= lowerLeft.y && point.y <= upperRight.y;
-    }
-
     /// @brief Given a series of point computes the average coordinate
     /// @param[in] points The point series.
     /// @param[in] projection The projection to use.
@@ -557,31 +544,6 @@ namespace meshkernel
     std::tuple<Point, double, bool> OrthogonalProjectionOnSegment(Point const& firstNode,
                                                                   Point const& secondNode,
                                                                   Point const& pointToProject);
-
-    /// @brief Given a vector of coordinates, get the lowest upper and right points
-    /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] points The point values
-    /// @returns A tuple with bottom left and upper right corners of the bounding box
-    template <typename T>
-    [[nodiscard]] std::tuple<Point, Point> GetBoundingBox(const std::vector<T>& points)
-    {
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::lowest();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::lowest();
-
-        for (const auto& point : points)
-        {
-            if (point.IsValid())
-            {
-                minx = std::min(minx, point.x);
-                maxx = std::max(maxx, point.x);
-                miny = std::min(miny, point.y);
-                maxy = std::max(maxy, point.y);
-            }
-        }
-        return {{minx, miny}, {maxx, maxy}};
-    }
 
     /// @brief Calculates the absolute difference between to `Index` numbers.
     ///
