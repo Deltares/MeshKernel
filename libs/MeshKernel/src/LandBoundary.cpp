@@ -15,10 +15,9 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
     segmentStartIndex = constants::missing::uintValue;
     scaledDistanceToStart = -1.0;
 
-    // TODO better value for initial value and move to constants namespace
     minimumDistance = 9.0e33;
 
-    if (nearestPoint.IsValid())
+    if (samplePoint.IsValid())
     {
 
         for (UInt i = 0; i < m_nodes.size() - 1; ++i)
@@ -47,6 +46,7 @@ meshkernel::Point meshkernel::LandBoundary::FindNearestPoint(const Point& sample
     [[maybe_unused]] UInt segmentStartIndex;
     [[maybe_unused]] double scaledDistanceToStart;
     FindNearestPoint(samplePoint, projection, nearestPoint, minimumDistance, segmentStartIndex, scaledDistanceToStart);
+
     return nearestPoint;
 }
 

@@ -589,7 +589,7 @@ TEST(Polygons, SnapSinglePolygonToSingleLandBoundary)
     // Snap the polygon to the land boundary
     polygon.SnapToLandBoundary(landBoundary);
 
-    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
     {
         // Use relative tolerance to compare expected with actual values.
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
@@ -648,7 +648,7 @@ TEST(Polygons, SnapMultiPolygonToSingleLandBoundary)
     // Snap the polygon to the land boundary
     polygon.SnapToLandBoundary(landBoundary);
 
-    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
     {
         // Use relative tolerance to compare expected with actual values.
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
@@ -720,7 +720,7 @@ TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
     // Snap the polygon to the land boundary
     polygon.SnapToLandBoundary(landBoundary);
 
-    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
     {
         // Use relative tolerance to compare expected with actual values.
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
