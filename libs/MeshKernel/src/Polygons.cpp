@@ -304,17 +304,16 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     return newPolygon;
 }
 
-void Polygons::SnapToLandBoundary (const LandBoundary& landBoundary)
+void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary)
 {
-    for (size_t i = 0; i < m_nodes.size (); ++i)
+    for (size_t i = 0; i < m_nodes.size(); ++i)
     {
-        if (m_nodes[i].IsValid ())
+        if (m_nodes[i].IsValid())
         {
             m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
         }
     }
 }
-
 
 bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
 {

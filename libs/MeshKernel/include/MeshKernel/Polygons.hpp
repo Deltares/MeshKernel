@@ -29,12 +29,12 @@
 
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
-// #include <MeshKernel/LandBoundary.hpp>
 #include <unordered_map>
 
 namespace meshkernel
 {
 
+    /// @brief Forward declaration of the LandBoundary
     class LandBoundary;
 
     /// @brief A class describing polygons
@@ -71,7 +71,7 @@ namespace meshkernel
         ///
         /// The polygon points are snapped to the closest point on the land boundary.
         /// @param[in] landBoundary The land boundary to which the polygon should be snapped.
-        void SnapToLandBoundary (const LandBoundary& landBoundary);
+        void SnapToLandBoundary(const LandBoundary& landBoundary);
 
         /// @brief Checks if a point is included in a given polygon.
         /// When the polygon is empty, the point is always included by default

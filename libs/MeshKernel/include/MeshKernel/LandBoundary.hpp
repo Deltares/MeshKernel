@@ -57,11 +57,11 @@ namespace meshkernel
         /// @brief Gets the number of land boundary nodes.
         size_t GetNumNodes() const;
 
-        ///@ Determine if the land boundary objct is empty
+        ///@ Determine if the land boundary object is empty
         bool IsEmpty() const;
 
         /// @brief Get the node at position i.
-        const Point& node(const size_t i) const;
+        const Point& Node(const size_t i) const;
 
         /// @brief Get vector containing all land boundary nodes.
         const std::vector<Point>& GetNodes() const;
@@ -95,7 +95,7 @@ inline bool meshkernel::LandBoundary::IsEmpty() const
     return m_nodes.empty();
 }
 
-inline const meshkernel::Point& meshkernel::LandBoundary::node(const size_t i) const
+inline const meshkernel::Point& meshkernel::LandBoundary::Node(const size_t i) const
 {
     return m_nodes[i];
 }
