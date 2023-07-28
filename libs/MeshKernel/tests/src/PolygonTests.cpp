@@ -665,6 +665,7 @@ TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
     constexpr double tolerance = 1.0e-8;
 
     // The land boundary to which the polygon is to be snapped.
+    // This land boundary is made up of two sections
     std::vector<meshkernel::Point> landBoundaryPoints{{0.0, 1.0},
                                                       {0.0, 0.0},
                                                       {1.0, 0.0},
@@ -676,6 +677,7 @@ TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
     meshkernel::LandBoundary landBoundary(landBoundaryPoints);
 
     // The original polygon points.
+    // The points make up two distinct polygons
     std::vector<meshkernel::Point> polygonPoints{{0.2, 1.1},
                                                  {-0.1, 0.8},
                                                  {0.1, 0.4},
