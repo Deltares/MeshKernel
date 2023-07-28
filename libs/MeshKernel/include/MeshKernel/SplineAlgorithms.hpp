@@ -88,7 +88,6 @@ namespace meshkernel
                                          const LandBoundary& landBoundary,
                                          const Projection projection,
                                          const int numberOfIterations = constants::numeric::defaultSnappingIterations);
-
     private:
         /// @typedef EigenIndex
         /// @brief Index used when accessing matrix and vector values

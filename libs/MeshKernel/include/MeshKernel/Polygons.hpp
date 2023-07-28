@@ -29,10 +29,14 @@
 
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
+// #include <MeshKernel/LandBoundary.hpp>
 #include <unordered_map>
 
 namespace meshkernel
 {
+
+    class LandBoundary;
+
     /// @brief A class describing polygons
     class Polygons
     {
@@ -62,6 +66,12 @@ namespace meshkernel
         /// @param[in] innerAndOuter Offset inwards or outward
         /// @return The new offset polygon
         [[nodiscard]] Polygons OffsetCopy(double distance, bool innerAndOuter) const;
+
+        /// @brief Snap the polygon to the land boundary
+        ///
+        /// The polygon points are snapped to the closest point on the land boundary.
+        /// @param[in] landBoundary The land boundary to which the polygon should be snapped.
+        void SnapToLandBoundary (const LandBoundary& landBoundary);
 
         /// @brief Checks if a point is included in a given polygon.
         /// When the polygon is empty, the point is always included by default

@@ -27,6 +27,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
@@ -302,6 +303,18 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     Polygons newPolygon{newPolygonPoints, m_projection};
     return newPolygon;
 }
+
+void Polygons::SnapToLandBoundary (const LandBoundary& landBoundary)
+{
+    for (size_t i = 0; i < m_nodes.size (); ++i)
+    {
+        if (m_nodes[i].IsValid ())
+        {
+            m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
+        }
+    }
+}
+
 
 bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
 {

@@ -40,7 +40,7 @@ namespace meshkernel
     {
     public:
         /// @brief Construct with vector of points defining the land boundary
-        LandBoundary(const std::vector<Point>& landBoundary);
+        explicit LandBoundary(const std::vector<Point>& landBoundary);
 
         /// @brief Find the nearest point on the land boundary (toland)
         void FindNearestPoint(const Point& samplePoint,
@@ -49,6 +49,10 @@ namespace meshkernel
                               double& minimumDistance,
                               UInt& segmentStartIndex,
                               double& scaledDistanceToStart) const;
+
+        /// @brief Find the nearest point on the land boundary (toland)
+        Point FindNearestPoint(const Point& samplePoint,
+                               const Projection& projection) const;
 
         /// @brief Gets the number of land boundary nodes.
         size_t GetNumNodes() const;
