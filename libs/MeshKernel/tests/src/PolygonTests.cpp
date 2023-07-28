@@ -542,7 +542,7 @@ TEST(Polygons, OffsetCopy)
     ASSERT_NEAR(newPolygon.Node(5).y, 407.87963900000000, tolerance);
 }
 
-TEST(Polygons, SnapSinglePolygonToLandBoundary)
+TEST(Polygons, SnapSinglePolygonToSingleLandBoundary)
 {
     // Test the algorithm for snapping single polygon to land boundaries.
 
@@ -593,13 +593,13 @@ TEST(Polygons, SnapSinglePolygonToLandBoundary)
     {
         // Use relative tolerance to compare expected with actual values.
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
-            << " Expected x-coordinate: " << expectedSnappedPoint[i].x << ", found: " << polygon.Node(i).x << ", tolerance: " << tolerance;
+            << " Expected x-coordinate: " << expectedSnappedPoint[i].x << ", actual: " << polygon.Node(i).x << ", tolerance: " << tolerance;
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].y, polygon.Node(i).y, tolerance))
-            << " Expected y-coordinate: " << expectedSnappedPoint[i].y << ", found: " << polygon.Node(i).y << ", tolerance: " << tolerance;
+            << " Expected y-coordinate: " << expectedSnappedPoint[i].y << ", actual: " << polygon.Node(i).y << ", tolerance: " << tolerance;
     }
 }
 
-TEST(Polygons, SnapMultiPolygonToLandBoundary)
+TEST(Polygons, SnapMultiPolygonToSingleLandBoundary)
 {
     // Test the algorithm for snapping multi-polygons to land boundaries.
 
@@ -652,8 +652,78 @@ TEST(Polygons, SnapMultiPolygonToLandBoundary)
     {
         // Use relative tolerance to compare expected with actual values.
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
-            << " Expected x-coordinate: " << expectedSnappedPoint[i].x << ", found: " << polygon.Node(i).x << ", tolerance: " << tolerance;
+            << " Expected x-coordinate: " << expectedSnappedPoint[i].x << ", actual: " << polygon.Node(i).x << ", tolerance: " << tolerance;
         EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].y, polygon.Node(i).y, tolerance))
-            << " Expected y-coordinate: " << expectedSnappedPoint[i].y << ", found: " << polygon.Node(i).y << ", tolerance: " << tolerance;
+            << " Expected y-coordinate: " << expectedSnappedPoint[i].y << ", actual: " << polygon.Node(i).y << ", tolerance: " << tolerance;
+    }
+}
+
+TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
+{
+    // Test the algorithm for snapping multi-polygons to land boundaries.
+
+    constexpr double tolerance = 1.0e-8;
+
+    // The land boundary to which the polygon is to be snapped.
+    std::vector<meshkernel::Point> landBoundaryPoints{{0.0, 1.0},
+                                                      {0.0, 0.0},
+                                                      {1.0, 0.0},
+                                                      {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                      {2.0, 0.0},
+                                                      {3.0, 0.0},
+                                                      {3.0, 1.0}};
+
+    meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+
+    // The original polygon points.
+    std::vector<meshkernel::Point> polygonPoints{{0.2, 1.1},
+                                                 {-0.1, 0.8},
+                                                 {0.1, 0.4},
+                                                 {0.01, 0.2},
+                                                 {0.2, 0.05},
+                                                 {0.4, -0.1},
+                                                 {0.5, -0.02},
+                                                 {1.1, 0.1},
+                                                 {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                 {1.9, -0.1},
+                                                 {2.1, 0.1},
+                                                 {2.5, 0.04},
+                                                 {3.1, -0.1},
+                                                 {2.95, 0.1},
+                                                 {2.9, 0.2},
+                                                 {3.1, 0.5},
+                                                 {2.95, 0.9}};
+
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+
+    // The expected polygon values after snapping to land boundary.
+    std::vector<meshkernel::Point> expectedSnappedPoint{{0.0, 1.0},
+                                                        {0.0, 0.8},
+                                                        {0.0, 0.4},
+                                                        {0.0, 0.2},
+                                                        {0.2, 0.0},
+                                                        {0.4, 0.0},
+                                                        {0.5, 0.0},
+                                                        {1.0, 0.0},
+                                                        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                        {2.0, 0.0},
+                                                        {2.1, 0.0},
+                                                        {2.5, 0.0},
+                                                        {3.0, 0.0},
+                                                        {3.0, 0.1},
+                                                        {3.0, 0.2},
+                                                        {3.0, 0.5},
+                                                        {3.0, 0.9}};
+
+    // Snap the polygon to the land boundary
+    polygon.SnapToLandBoundary(landBoundary);
+
+    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    {
+        // Use relative tolerance to compare expected with actual values.
+        EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].x, polygon.Node(i).x, tolerance))
+            << " Expected x-coordinate: " << expectedSnappedPoint[i].x << ", actual: " << polygon.Node(i).x << ", tolerance: " << tolerance;
+        EXPECT_TRUE(meshkernel::IsEqual(expectedSnappedPoint[i].y, polygon.Node(i).y, tolerance))
+            << " Expected y-coordinate: " << expectedSnappedPoint[i].y << ", actual: " << polygon.Node(i).y << ", tolerance: " << tolerance;
     }
 }

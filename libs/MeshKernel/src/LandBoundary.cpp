@@ -28,7 +28,7 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
 
             auto [distance, linePoint, distanceFromFirstNode] = DistanceFromLine(samplePoint, firstPoint, nextPoint, projection);
 
-            if (distance < minimumDistance)
+            if (distance != constants::missing::doubleValue && distance < minimumDistance)
             {
                 minimumDistance = distance;
                 nearestPoint = linePoint;
