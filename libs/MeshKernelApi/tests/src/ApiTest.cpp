@@ -3404,7 +3404,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldSnap)
     splineGeometry.coordinates_y = splinePointsY.data();
     splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
 
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size()));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     for (size_t i = 0; i < splinePointsX.size(); ++i)
@@ -3447,14 +3447,14 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
 
     //--------------------------------
     // The land boundary is not set
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     // First define the number of land boundary points
     landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
 
     // The land boundary points are null
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     //--------------------------------
@@ -3463,20 +3463,26 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
 
     // The number of spline points is 0
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     // define the number of spline points
     splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
 
     // The spline values are null
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     splineGeometry.coordinates_x = splinePointsX.data();
     splineGeometry.coordinates_y = splinePointsY.data();
 
-    // Attempt to snap non-existant spline
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 1);
-    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::MeshKernelError, errorCode);
+    // Start spline index is greater than the number of spline points
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
+                                                                    static_cast<int>(splinePointsX.size()) + 1, static_cast<int>(splinePointsX.size()) + 2);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    // End spline index is greater than the number of spline points
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
+                                                                    0, static_cast<int>(splinePointsX.size()) + 1);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 }
