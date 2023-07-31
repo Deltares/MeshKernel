@@ -1811,6 +1811,78 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_polygon_snap_to_landboundary(int meshKernelId,
+                                                         const GeometryList& land,
+                                                         GeometryList& polygon)
+    {
+        int exitCode = Success;
+
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (land.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Land boundary has no point values.");
+            }
+
+            if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Land boundary data is null.");
+            }
+
+            if (polygon.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Polygon has no point values.");
+            }
+
+            if (polygon.coordinates_x == nullptr || polygon.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Polygon data is null.");
+            }
+
+            std::vector<meshkernel::Point> landBoundaryPoints(land.num_coordinates);
+            std::vector<meshkernel::Point> polygonPoints(polygon.num_coordinates);
+
+            //--------------------------------
+            // Copy points from parameters to create land boundary and polygon
+
+            for (int i = 0; i < land.num_coordinates; ++i)
+            {
+                landBoundaryPoints[i] = meshkernel::Point({land.coordinates_x[i], land.coordinates_y[i]});
+            }
+
+            for (int i = 0; i < polygon.num_coordinates; ++i)
+            {
+                polygonPoints[i] = meshkernel::Point({polygon.coordinates_x[i], polygon.coordinates_y[i]});
+            }
+
+            meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+            meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            polygons.SnapToLandBoundary(landBoundary);
+
+            //--------------------------------
+            // Now copy back the polygon values
+
+            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Nodes();
+
+            for (size_t i = 0; i < snappedPolygonPoints.size(); ++i)
+            {
+                polygon.coordinates_x[i] = snappedPolygonPoints[i].x;
+                polygon.coordinates_y[i] = snappedPolygonPoints[i].y;
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_flip_edges(int meshKernelId,
                                               int isTriangulationRequired,
                                               int projectToLandBoundaryRequired,
