@@ -3367,3 +3367,116 @@ TEST(MeshState, MKernelGetProjection_ShouldGetProjection)
     // Assert
     ASSERT_EQ(setProjectionType, getProjectionType);
 }
+
+TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldSnap)
+{
+    const double tolerance = 1e-6;
+
+    // Setup
+    int meshKernelId = 0;
+    int setProjectionType = 0; // Cartesian
+    auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+
+    // The land boundary to which the spline is to be snapped.
+    std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
+    std::vector<double> landBoundaryPointsY{442.130066, 301.128662, 416.629822};
+
+    // The original spline points.
+    std::vector<double> splinePointsX{281.0023, 367.2529, 461.7534, 517.2538, 614.0045, 720.5051, 827.7558, 923.7563};
+    std::vector<double> splinePointsY{447.3801, 401.6296, 354.3792, 318.3788, 338.629, 377.6294, 417.3798, 424.1299};
+
+    // The expected spline values after snapping to land boundary.
+    std::vector<double> expectedSplinePointsX{273.5868719643935, 359.5998304717778, 451.5303458337523, 517.7962262926076,
+                                              616.7325138813335, 725.7358644094627, 836.2627853156330, 923.5001778441060};
+
+    std::vector<double> expectedSplinePointsY{434.2730022174478, 386.1712239047134, 338.3551703843473, 306.3259738916997,
+                                              327.9627689164845, 358.0902879743862, 388.6415116416172, 412.5818685325169};
+
+    meshkernelapi::GeometryList landBoundaryGeometry{};
+    landBoundaryGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+    landBoundaryGeometry.coordinates_x = landBoundaryPointsX.data();
+    landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
+    landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
+
+    meshkernelapi::GeometryList splineGeometry{};
+    splineGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+    splineGeometry.coordinates_x = splinePointsX.data();
+    splineGeometry.coordinates_y = splinePointsY.data();
+    splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
+
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    for (size_t i = 0; i < splinePointsX.size(); ++i)
+    {
+        EXPECT_NEAR(splineGeometry.coordinates_x[i], expectedSplinePointsX[i], tolerance);
+    }
+
+    for (size_t i = 0; i < splinePointsX.size(); ++i)
+    {
+        EXPECT_NEAR(splineGeometry.coordinates_y[i], expectedSplinePointsY[i], tolerance);
+    }
+}
+
+TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
+{
+
+    // Setup
+    int meshKernelId = 0;
+    int setProjectionType = 0; // Cartesian
+    auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+
+    // The land boundary to which the spline is to be snapped.
+    std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
+    std::vector<double> landBoundaryPointsY{442.130066, 301.128662, 416.629822};
+
+    // The original spline points.
+    std::vector<double> splinePointsX{281.0023, 367.2529, 461.7534, 517.2538, 614.0045, 720.5051, 827.7558, 923.7563};
+    std::vector<double> splinePointsY{447.3801, 401.6296, 354.3792, 318.3788, 338.629, 377.6294, 417.3798, 424.1299};
+
+    meshkernelapi::GeometryList landBoundaryGeometry{};
+    landBoundaryGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    meshkernelapi::GeometryList splineGeometry{};
+    splineGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    //--------------------------------
+    // Start index is greater than end index
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 2, 1);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    //--------------------------------
+    // The land boundary is not set
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    // First define the number of land boundary points
+    landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
+
+    // The land boundary points are null
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    //--------------------------------
+    // Now define the land boundary
+    landBoundaryGeometry.coordinates_x = landBoundaryPointsX.data();
+    landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
+
+    // The number of spline points is 0
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    // define the number of spline points
+    splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
+
+    // The spline values are null
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 0);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+
+    splineGeometry.coordinates_x = splinePointsX.data();
+    splineGeometry.coordinates_y = splinePointsY.data();
+
+    // Attempt to snap non-existant spline
+    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, 1);
+    EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::MeshKernelError, errorCode);
+}

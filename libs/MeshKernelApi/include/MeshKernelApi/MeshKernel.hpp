@@ -394,11 +394,19 @@ namespace meshkernelapi
                                                      double distance,
                                                      int& numberOfPolygonNodes);
 
+        /// @brief Snaps the spline (or splines) to the land boundary
+        ///
+        /// @param[in] meshKernelId     The id of the mesh state
+        /// @param[in] land             The land boundary
+        /// @param[in] splines          The spline values to be snapped
+        /// @param[in] startSplineIndex The start index of the splines to be snapped
+        /// @param[in] endSplineIndex   The end index of the splines to be snapped
+        /// @returns Error code
         MKERNEL_API int mkernel_splines_snap_to_landboundary(int meshKernelId,
                                                              const GeometryList& land,
                                                              GeometryList& splines,
-                                                             int firstSplineIndex,
-                                                             int secondSplineIndex);
+                                                             int startSplineIndex,
+                                                             int endSplineIndex);
 
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state

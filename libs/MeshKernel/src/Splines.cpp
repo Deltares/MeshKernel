@@ -417,8 +417,8 @@ void Splines::SnapSpline(const size_t splineIndex,
 
     for (auto index : indices)
     {
-        auto splinePoints = std::vector<Point>(m_splineNodes[splineIndex].begin() + index.first, m_splineNodes[splineIndex].begin() + index.second);
-        auto splineDerivative = std::vector<Point>(m_splineDerivatives[splineIndex].begin() + index.first, m_splineDerivatives[splineIndex].begin() + index.second);
+        std::vector<Point> splinePoints(m_splineNodes[splineIndex].begin() + index.first, m_splineNodes[splineIndex].begin() + index.second + 1);
+        std::vector<Point> splineDerivative(m_splineDerivatives[splineIndex].begin() + index.first, m_splineDerivatives[splineIndex].begin() + index.second + 1);
 
         SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, m_projection, numberOfIterations);
 
