@@ -93,7 +93,7 @@ TEST(Splines, SplineIntersection)
     ASSERT_NEAR(-0.996215079635043, crossProductIntersection, tolerance);
 }
 
-TEST(Spline, SnapToLandBoundaryTest)
+TEST(Splines, SnapToLandBoundaryTest)
 {
     // Test the algorithm for snapping splines to land boundaries.
 
@@ -150,7 +150,7 @@ TEST(Spline, SnapToLandBoundaryTest)
     }
 }
 
-TEST(Spline, SplineSnappingIndexOutOfRangeTest)
+TEST(Splines, SplineSnappingIndexOutOfRangeTest)
 {
     // Test the algorithm for snapping splines to land boundaries.
 
