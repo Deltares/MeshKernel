@@ -306,11 +306,11 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
 
 void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary)
 {
-    for (size_t i = 0; i < m_nodes.size(); ++i)
+    for (Point& p : m_nodes)
     {
-        if (m_nodes[i].IsValid())
+        if (p.IsValid())
         {
-            m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
+            p = landBoundary.FindNearestPoint(p, m_projection);
         }
     }
 }
