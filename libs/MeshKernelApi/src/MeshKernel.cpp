@@ -1770,7 +1770,7 @@ namespace meshkernelapi
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            splineValues.AddSpline(splinePoints, startSplineIndex, splinePoints.size());
+            splineValues.AddSpline(splinePoints, startSplineIndex, static_cast<meshkernel::UInt>(splinePoints.size()));
 
             //--------------------------------
             // Snap specified splines to the land boundary
@@ -1783,7 +1783,7 @@ namespace meshkernelapi
             //--------------------------------
             // Now copy back the snapped spline values
 
-            meshkernel::UInt splinePointIndex = 0;
+            size_t splinePointIndex = 0;
 
             // Find the index of the first spline node.
             for (int i = 0; i < startSplineIndex; ++i)
