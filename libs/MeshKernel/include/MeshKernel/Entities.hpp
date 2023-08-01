@@ -156,27 +156,27 @@ namespace meshkernel
 
     /// @brief Add two points
     ///
-    /// @returns \f$ (p1.x+p2.x, p1.y+p2.y)\f$
+    /// @returns \f$ (p1.x + p2.x, p1.y + p2.y)\f$
     Point operator+(const Point& p1, const Point& p2);
 
     /// @brief Add points and scalar
     ///
-    /// @returns \f$ (p.x+x, p.y+x)\f$
+    /// @returns \f$ (p.x + x, p.y + x)\f$
     Point operator+(const Point& p, const double x);
 
     /// @brief Add points and scalar
     ///
-    /// @returns \f$ (p.x+x, p.y+1)\f$
+    /// @returns \f$ (p.x + x, p.y + x)\f$
     Point operator+(const double x, const Point& p);
 
     /// @brief Subtract two points
     ///
-    /// @returns \f$ (p1.x-p2.x, p1.y-p2.y)\f$
+    /// @returns \f$ (p1.x - p2.x, p1.y - p2.y)\f$
     Point operator-(const Point& p1, const Point& p2);
 
     /// @brief Subtract scalar from point
     ///
-    /// @returns \f$ (p.x-x, p.y-x)\f$
+    /// @returns \f$ (p.x - x, p.y - x)\f$
     Point operator-(const Point& p, const double x);
 
     /// @brief Subtract point from scalar
@@ -211,7 +211,7 @@ namespace meshkernel
     Point operator/(const Point& p, const double x);
 
     /// @brief Test points for equality
-    /// @returns \f$ p1.x = p2.x and p1.y = p2.y)\f$
+    /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool operator==(const Point& p1, const Point& p2);
 
     /// @brief Describes an edge with two indices
