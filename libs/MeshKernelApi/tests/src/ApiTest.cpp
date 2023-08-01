@@ -3376,6 +3376,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldSnap)
     int meshKernelId = 0;
     int setProjectionType = 0; // Cartesian
     auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // The land boundary to which the spline is to be snapped.
     std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
@@ -3425,6 +3426,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     int meshKernelId = 0;
     int setProjectionType = 0; // Cartesian
     auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // The land boundary to which the spline is to be snapped.
     std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
@@ -3489,6 +3491,7 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     int meshKernelId = 0;
     int setProjectionType = 0; // Cartesian
     auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     std::vector<double> landBoundaryPointsX{139.251465, 527.753906, 580.254211, 194.001801};
     std::vector<double> landBoundaryPointsY{497.630615, 499.880676, 265.878296, 212.627762};
