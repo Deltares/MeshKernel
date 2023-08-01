@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 
 #include <stdexcept>
+#include <vector>
 
 namespace meshkernel
 {
@@ -16,21 +17,29 @@ namespace meshkernel
 
         /// @brief Column major dynamic matrix
         /// @tparam T Data type
-        template <class T>
+        template <typename T>
         using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
-        /// @brief Checks if a matrix is empty by inspecting its size
-        /// @tparam T      The type of the matrix elements
-        /// @param matrix  The matrix
-        /// @return        true if the matrix is empty, false otherwise
-        template <class T>
+        template <typename T>
+        using VectorRowMajor = Eigen::Matrix<T, 1, Eigen::Dynamic, Eigen::RowMajor>;
+
+        // // @brief Dynamic matrix
+        // /// @tparam T Data type
+        // template <typename T, Eigen::StorageOptions storage = Eigen::RowMajor>
+        // using Matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage>;
+
+        /// @brief     Checks if a matrix is empty by inspecting its size
+        /// @tparam    T       The type of the matrix elements
+        /// @param[in] matrix  The matrix
+        /// @return            true if the matrix is empty, false otherwise
+        template <typename T>
         [[nodiscard]] inline static bool MatrixIsEmpty(MatrixRowMajor<T> const& matrix)
         {
             return matrix.size() == 0;
         }
 
         /// @brief Resizes and fills a two dimensional vector
-        /// @tparam T               The type of the matrix elements
+        /// @tparam        T        The type of the matrix elements
         /// @param[in,out] matrix   The matrix
         /// @param[in]     rows     The number of rows
         /// @param[in]     cols     The number of columns
@@ -45,6 +54,11 @@ namespace meshkernel
                                                bool preserve = false,
                                                T const& fill_value = {})
         {
+            if (rows < 0 || cols < 0)
+            {
+                throw std::invalid_argument("Invalid range");
+            }
+
             Eigen::Index const rows_old = matrix.rows();
             Eigen::Index const cols_old = matrix.cols();
             bool const resize = (rows != rows_old) || (cols != cols_old);
@@ -79,10 +93,10 @@ namespace meshkernel
         }
 
         /// @brief Erases a range of rows from a matrix given the begin and end row indices
-        /// @tparam T The type of the matrix elements
-        /// @param matrix The matrix
-        /// @param col_begin The begin row index
-        /// @param col_end The end row index
+        /// @tparam        T         The type of the matrix elements
+        /// @param[in,out] matrix    The matrix
+        /// @param[in]     col_begin The begin row index
+        /// @param[in]     col_end   The end row index
         template <typename T>
         inline static void EraseRows(MatrixRowMajor<T>& matrix,
                                      Eigen::Index row_begin,
@@ -99,17 +113,6 @@ namespace meshkernel
             Eigen::Index const rows_new = matrix.rows() - rows_to_remove;
             Eigen::Index const rows_to_move_up = rows_new - row_begin;
             Eigen::Index const cols = matrix.cols();
-
-            // std::cout << "rows           " << matrix.rows() << '\n'
-            //           << "rows_to_remove " << rows_to_remove << '\n'
-            //           << "rows_new       " << rows_new << '\n'
-            //           << "rows_begin     " << row_begin << '\n'
-            //           << "rows_end       " << row_end << '\n'
-            //           << "rows_to_shift  " << rows_new - row_begin << '\n'
-            //           << "block to remove \n"
-            //           << matrix.block(row_begin, 0, rows_to_remove, cols) << '\n'
-            //           << "block to shift \n"
-            //           << matrix.block(row_end + 1, 0, rows_to_move_up, cols) << '\n';
 
             // move the block of rows to keep to the position of the block of rows to remove
             matrix.block(row_begin, 0, rows_to_move_up, cols) =
@@ -130,10 +133,10 @@ namespace meshkernel
         }
 
         /// @brief Erases a range of columns from a matrix given the begin and end column indices
-        /// @tparam T The type of the matrix elements
-        /// @param matrix The matrix
-        /// @param col_begin The begin column index
-        /// @param col_end The end column index
+        /// @tparam        T         The type of the matrix elements
+        /// @param[in,out] matrix    The matrix
+        /// @param[in]     col_begin The begin column index
+        /// @param[in]     col_end   The end column index
         template <typename T>
         inline static void EraseCols(MatrixRowMajor<T>& matrix,
                                      Eigen::Index col_begin,
@@ -151,17 +154,6 @@ namespace meshkernel
             Eigen::Index const cols_new = matrix.cols() - cols_to_remove;
             Eigen::Index const cols_to_move_left = cols_new - col_begin;
 
-            // std::cout << "col           " << matrix.cols() << '\n'
-            //           << "cols_to_remove " << cols_to_remove << '\n'
-            //           << "cols_new       " << cols_new << '\n'
-            //           << "cols_begin     " << col_begin << '\n'
-            //           << "cols_end       " << col_end << '\n'
-            //           << "cols_to_shift  " << cols_new - col_begin << '\n'
-            //           << "block to remove \n"
-            //           << matrix.block(0, col_begin, rows, cols_to_remove) << '\n'
-            //           << "block to shift \n"
-            //           << matrix.block(0, col_end + 1, rows, cols_to_move_left) << '\n';
-
             // move the block of columns to keep to the position of the block of columns to remove
             matrix.block(0, col_begin, rows, cols_to_move_left) =
                 matrix.block(0, col_end + 1, rows, cols_to_move_left);
@@ -171,13 +163,91 @@ namespace meshkernel
         }
 
         /// @brief Erases a column from a matrix given the column index
-        /// @tparam T The type of the matrix elements
+        /// @tparam        T      The type of the matrix elements
         /// @param[in,out] matrix The matrix
-        /// @param[in] row The column index
+        /// @param[in]     col    The column index
         template <typename T>
         inline static void EraseCol(MatrixRowMajor<T>& matrix, Eigen::Index col)
         {
             EraseCols(matrix, col, col);
+        }
+
+        /// @brief Inserts a vector in a matrix at a given row index
+        /// @tparam        T      The type of the matrix elements
+        /// @param[in,out] matrix The matrix
+        /// @param[in]     vector The vector to insert
+        /// @param[in]     row    The row index where the vector is to be inserted in the matrix
+        template <typename T>
+        inline static void InsertRow(MatrixRowMajor<T>& matrix,
+                                     VectorRowMajor<T> const& vector,
+                                     Eigen::Index row)
+        {
+            if (row < 0 || row > matrix.rows())
+            {
+                throw std::invalid_argument("Invalid range");
+            }
+
+            Eigen::Index const rows_new = matrix.rows() + 1;
+            Eigen::Index const rows_to_move_down = matrix.rows() - row;
+            Eigen::Index const cols = matrix.cols();
+
+            auto const block_to_move_down = matrix.block(row, 0, rows_to_move_down, cols).eval();
+            matrix.conservativeResize(rows_new, cols);
+            matrix.block(row, 0, 1, cols) = vector;
+            matrix.block(row + 1, 0, rows_to_move_down, cols) = block_to_move_down;
+        }
+
+        template <typename T>
+        inline static VectorRowMajor<T> StdVectorToVectorRowMajor(std::vector<T> const& vector)
+        {
+            VectorRowMajor<T> vector_row_major(1, vector.size());
+            for (Eigen::Index i = 0; i < vector_row_major.cols(); ++i)
+            {
+                vector_row_major(0, i) = vector[i];
+            }
+            return vector_row_major;
+        }
+
+        /// @brief Inserts a vector in a matrix at a given row index
+        /// @tparam        T      The type of the matrix elements
+        /// @param[in,out] matrix The matrix
+        /// @param[in]     vector The vector to insert
+        /// @param[in]     row    The row index where the vector is to be inserted in the matrix
+        template <typename T>
+        inline static void InsertRow(MatrixRowMajor<T>& matrix,
+                                     std::vector<T>& vector,
+                                     Eigen::Index row)
+        {
+            auto const vector_row_major = StdVectorToVectorRowMajor(vector);
+            InsertRow(matrix,
+                      // Eigen::Map<VectorRowMajor<T>>(vector.data(), 1, vector.size()),
+                      vector_row_major,
+                      row);
+        }
+
+        /// @brief Inserts a vector in a matrix at a given column index
+        /// @tparam        T      The type of the matrix elements
+        /// @param[in,out] matrix The matrix
+        /// @param[in]     vector The vector to insert
+        /// @param[in]     col    The column index where the vector is to be inserted in the matrix
+        template <typename T>
+        inline static void InsertCol(MatrixRowMajor<T>& matrix,
+                                     VectorRowMajor<T> const& vector,
+                                     Eigen::Index col)
+        {
+            if (col < 0 || col > matrix.cols())
+            {
+                throw std::invalid_argument("Invalid range");
+            }
+
+            Eigen::Index const rows = matrix.rows();
+            Eigen::Index const cols_new = matrix.cols() + 1;
+            Eigen::Index const cols_to_move_right = matrix.cols() - col;
+
+            auto const block_to_move_right = matrix.block(0, col, rows, cols_to_move_right).eval();
+            matrix.conservativeResize(rows, cols_new);
+            matrix.block(0, col, rows, 1) = vector.transpose();
+            matrix.block(0, col + 1, rows, cols_to_move_right) = block_to_move_right;
         }
 
     } // namespace lin_alg
