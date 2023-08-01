@@ -15,7 +15,6 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
     segmentStartIndex = constants::missing::intValue;
     scaledDistanceToStart = -1.0;
 
-    // TODO better value for initial value and move to constants namespace
     minimumDistance = 9.0e33;
 
     for (UInt i = 0; i < m_nodes.size() - 1; ++i)
