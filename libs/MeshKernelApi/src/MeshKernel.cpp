@@ -1726,6 +1726,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
+            if (startSplineIndex < 0)
+            {
+                throw std::invalid_argument("Start spline index is less than zero:" + std::to_string(startSplineIndex));
+            }
+
             if (startSplineIndex > endSplineIndex)
             {
                 throw std::invalid_argument("Invalid spline range: " + std::to_string(startSplineIndex) + " > " + std::to_string(endSplineIndex));
@@ -1751,6 +1756,18 @@ namespace meshkernelapi
                 throw std::invalid_argument("Spline data is null.");
             }
 
+            if (startSplineIndex > splines.num_coordinates)
+            {
+                throw std::invalid_argument("Invalid spline range: start greater than number of spline coordinates " +
+                                            std::to_string(startSplineIndex) + " > " + std::to_string(splines.num_coordinates));
+            }
+
+            if (endSplineIndex >= splines.num_coordinates)
+            {
+                throw std::invalid_argument("Invalid spline range: end greater than number of spline coordinates " +
+                                            std::to_string(endSplineIndex) + " >= " + std::to_string(splines.num_coordinates));
+            }
+
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
             std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(splines));
 
@@ -1761,34 +1778,20 @@ namespace meshkernelapi
 
             //--------------------------------
             // Snap specified splines to the land boundary
-
-            for (int i = startSplineIndex; i <= endSplineIndex; ++i)
-            {
-                splineValues.SnapSpline(i, landBoundary);
-            }
+            splineValues.SnapSpline(0, landBoundary);
 
             //--------------------------------
             // Now copy back the snapped spline values
 
-            size_t splinePointIndex = 0;
-
-            // Find the index of the first spline node.
-            for (int i = 0; i < startSplineIndex; ++i)
-            {
-                splinePointIndex += splineValues.m_splineNodes.size();
-            }
+            int splinePointIndex = startSplineIndex;
 
             // Now copy back to spline (geometry-list)
             for (int i = startSplineIndex; i <= endSplineIndex; ++i)
             {
-
-                for (meshkernel::UInt j = 0; j < splineValues.m_splineNodes[i].size(); ++j)
-                {
-                    const meshkernel::Point& splinePoint = splineValues.m_splineNodes[i][j];
-                    splines.coordinates_x[splinePointIndex] = splinePoint.x;
-                    splines.coordinates_y[splinePointIndex] = splinePoint.y;
-                    ++splinePointIndex;
-                }
+                const meshkernel::Point& splinePoint = splineValues.m_splineNodes[0][i];
+                splines.coordinates_x[splinePointIndex] = splinePoint.x;
+                splines.coordinates_y[splinePointIndex] = splinePoint.y;
+                ++splinePointIndex;
             }
         }
         catch (...)
