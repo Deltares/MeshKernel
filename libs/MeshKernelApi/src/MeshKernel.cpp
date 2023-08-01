@@ -1726,6 +1726,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
+            if (startSplineIndex < 0)
+            {
+                throw std::invalid_argument("Start spline index is less than zero:" + std::to_string(startSplineIndex));
+            }
+
             if (startSplineIndex > endSplineIndex)
             {
                 throw std::invalid_argument("Invalid spline range: " + std::to_string(startSplineIndex) + " > " + std::to_string(endSplineIndex));
@@ -1757,10 +1762,10 @@ namespace meshkernelapi
                                             std::to_string(startSplineIndex) + " > " + std::to_string(splines.num_coordinates));
             }
 
-            if (endSplineIndex > splines.num_coordinates)
+            if (endSplineIndex >= splines.num_coordinates)
             {
                 throw std::invalid_argument("Invalid spline range: end greater than number of spline coordinates " +
-                                            std::to_string(endSplineIndex) + " > " + std::to_string(splines.num_coordinates));
+                                            std::to_string(endSplineIndex) + " >= " + std::to_string(splines.num_coordinates));
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(land.num_coordinates);
