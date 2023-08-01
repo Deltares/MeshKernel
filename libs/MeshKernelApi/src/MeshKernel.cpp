@@ -1751,21 +1751,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("Spline data is null.");
             }
 
-            std::vector<meshkernel::Point> landBoundaryPoints(land.num_coordinates);
-            std::vector<meshkernel::Point> splinePoints(splines.num_coordinates);
-
-            //--------------------------------
-            // Copy points from parameters to create land boundary and splines
-
-            for (int i = 0; i < land.num_coordinates; ++i)
-            {
-                landBoundaryPoints[i] = meshkernel::Point({land.coordinates_x[i], land.coordinates_y[i]});
-            }
-
-            for (int i = 0; i < splines.num_coordinates; ++i)
-            {
-                splinePoints[i] = meshkernel::Point({splines.coordinates_x[i], splines.coordinates_y[i]});
-            }
+            std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
+            std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(splines));
 
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
@@ -1844,21 +1831,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("Polygon data is null.");
             }
 
-            std::vector<meshkernel::Point> landBoundaryPoints(land.num_coordinates);
-            std::vector<meshkernel::Point> polygonPoints(polygon.num_coordinates);
-
-            //--------------------------------
-            // Copy points from parameters to create land boundary and polygon
-
-            for (int i = 0; i < land.num_coordinates; ++i)
-            {
-                landBoundaryPoints[i] = meshkernel::Point({land.coordinates_x[i], land.coordinates_y[i]});
-            }
-
-            for (int i = 0; i < polygon.num_coordinates; ++i)
-            {
-                polygonPoints[i] = meshkernel::Point({polygon.coordinates_x[i], polygon.coordinates_y[i]});
-            }
+            std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
+            std::vector<meshkernel::Point> polygonPoints(ConvertGeometryListToPointVector(polygon));
 
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
