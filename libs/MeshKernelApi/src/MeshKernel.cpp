@@ -54,6 +54,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 
@@ -846,7 +847,7 @@ namespace meshkernelapi
                 const auto& [startIndex, endIndex] = indices[s];
                 std::vector<meshkernel::Point> coordinates(splines.begin() + startIndex, splines.begin() + static_cast<int>(endIndex) + 1);
                 const int numNodes = static_cast<int>(endIndex) - static_cast<int>(startIndex) + 1;
-                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, static_cast<meshkernel::UInt>(coordinates.size()) - 1);
+                const auto coordinatesDerivatives = meshkernel::SplineAlgorithms::SecondOrderDerivative(coordinates, 0, static_cast<meshkernel::UInt>(coordinates.size()) - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {

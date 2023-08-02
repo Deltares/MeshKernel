@@ -13,4 +13,10 @@ namespace lin_alg
     /// @tparam T Data type
     template <class T>
     using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+
+    /// @brief A dynamically sized column vector
+    /// @tparam T Data type
+    template <class T>
+    using ColumnVector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+
 } // namespace lin_alg
