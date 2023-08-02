@@ -2646,7 +2646,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
 
-            std::vector<std::vector<meshkernel::Point>> curviGridPoints;
+            std::vector curviGridPoints(grid.num_m, std::vector<meshkernel::Point>(grid.num_n));
             int nodeIndex = 0;
             for (int i = 0; i < grid.num_m; ++i)
             {
