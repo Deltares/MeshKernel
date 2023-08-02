@@ -336,7 +336,7 @@ namespace meshkernelapi
                                                          const meshkernel::MakeGridParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
-        /// @brief Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used
+        /// @brief Makes a new curvilinear grid.
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
@@ -395,6 +395,12 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId);
+
+        /// @brief Sets the curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] grid         The curvilinear grid
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid);
 
         /// @brief Defines a block on the curvilinear where the shifting is distributed
         /// @param[in] meshKernelId      The id of the mesh state
@@ -471,9 +477,9 @@ namespace meshkernelapi
         /// @param[in] xSecondGridLineNode           The x coordinate of the second curvilinear grid node
         /// @param[in] ySecondGridLineNode           The y coordinate of the second curvilinear grid node
         /// @param[in] xLowerLeftCornerSmoothingArea The x coordinate of the lower left corner of the smoothing area
-        /// @param[in] yLowerLeftCornerSmoothingArea The x coordinate of the lower left corner of the smoothing area
+        /// @param[in] yLowerLeftCornerSmoothingArea The y coordinate of the lower left corner of the smoothing area
         /// @param[in] xUpperRightCornerSmootingArea The x coordinate of the upper right corner of the smoothing area
-        /// @param[in] yUpperRightCornerSmootingArea The x coordinate of the upper right corner of the smoothing area
+        /// @param[in] yUpperRightCornerSmootingArea The y coordinate of the upper right corner of the smoothing area
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_smoothing_directional(int meshKernelId,
                                                                   int smoothingIterations,
@@ -582,7 +588,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_version(const char*& version);
 
-        /// @brief Gets the Mesh1D dimensions data
+        /// @brief Gets the Mesh1D data
         ///
         /// This function ought to be called after `mkernel_mesh1d_get_dimensions` has been called
         /// and the pointers have been set to correctly sized memory
@@ -591,7 +597,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId, Mesh1D& mesh1d);
 
-        /// @brief Gets the Mesh1D dimensions
+        /// @brief Gets the Mesh1D data dimensions
         ///
         /// The integer parameters of the Mesh1D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory

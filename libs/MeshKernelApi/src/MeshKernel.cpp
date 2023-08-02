@@ -2635,6 +2635,38 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            std::vector<std::vector<meshkernel::Point>> curviGridPoints;
+            int nodeIndex = 0;
+            for (int i = 0; i < grid.num_m; ++i)
+            {
+                for (int j = 0; j < grid.num_n; ++j)
+                {
+
+                    curviGridPoints[i][j] = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
+                    nodeIndex++;
+                }
+            }
+
+            const auto& projection = meshKernelState[meshKernelId].m_projection;
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curviGridPoints, projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_curvilinear_set_block_line_shift(int meshKernelId,
                                                              double xLowerLeftCorner,
                                                              double yLowerLeftCorner,
