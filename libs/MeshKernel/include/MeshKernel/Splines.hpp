@@ -27,8 +27,11 @@
 
 #pragma once
 
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.hpp>
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/LandBoundary.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 namespace meshkernel
 {
@@ -48,11 +51,11 @@ namespace meshkernel
         Splines() = default;
 
         /// @brief Ctor, set projection
-        /// @brief[in] projection The map projection
+        /// @brief[in] projection   The map projection
         explicit Splines(Projection projection);
 
         /// @brief Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines
-        /// @brief[in] The curvilinear grid
+        /// @brief[in] grid         The curvilinear grid
         explicit Splines(CurvilinearGrid const& grid);
 
         /// @brief Adds a new spline to m_splineCornerPoints
@@ -61,19 +64,14 @@ namespace meshkernel
         /// @param[in] size The end index splines
         void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
 
-        /// @brief Second order derivative at spline corner points, from the start node to the end node of the spline (splint)
-        /// @param[in] splines The spline corner points
-        /// @param[in] startIndex The start spline node
-        /// @param[in] endIndex The end spline node
-        /// @returns coordinatesDerivatives The second order derivative at corner points
-        [[nodiscard]] static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, UInt startIndex, UInt endIndex);
-
-        /// @brief Second order derivative at spline corner point coordinates (splint)
-        /// @param[in] coordinates The spline corner point coordinate (x or y)
-        /// @param[in] startIndex The start spline node
-        /// @param[in] endIndex The end spline node
-        /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
-        [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex);
+        /// @brief Snap the spline to the land boundary (snap_spline)
+        ///
+        /// @param[in] splineIndex The index of the spline to be snapped to boundary
+        /// @param[in] landBoundary The boundary to which the spline will be snapped
+        /// @param[in] numberOfIterations The maximum number of iterations that should be performed.
+        void SnapSpline(const size_t splineIndex,
+                        const LandBoundary& landBoundary,
+                        const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline

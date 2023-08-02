@@ -25,10 +25,14 @@
 //
 //------------------------------------------------------------------------------
 
+#include <iostream>
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 
 using meshkernel::Splines;
@@ -36,6 +40,7 @@ using meshkernel::Splines;
 Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
+
 {
     // first the m_n m_m-gridlines
     std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
@@ -82,7 +87,7 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
-        const auto derivatives = SecondOrderDerivative(splinesNodes, startIndex, endIndex);
+        const auto derivatives = SplineAlgorithms::SecondOrderDerivative(splinesNodes, startIndex, endIndex);
         for (auto j = startIndex; j <= endIndex; ++j)
         {
             splineDerivatives[j] = derivatives[j - startIndex];
@@ -359,105 +364,7 @@ double Splines::ComputeSplineLength(UInt index,
 std::tuple<meshkernel::Point, meshkernel::Point, double>
 Splines::ComputeCurvatureOnSplinePoint(UInt splineIndex, double adimensionalPointCoordinate) const
 {
-    if (m_splineNodes[splineIndex].empty())
-    {
-        return {};
-    }
-
-    const auto numNodesFirstSpline = static_cast<UInt>(m_splineNodes[splineIndex].size());
-    auto const leftCornerPoint = std::max(std::min(static_cast<UInt>(std::floor(adimensionalPointCoordinate)), numNodesFirstSpline - 1), 0U);
-    auto const rightCornerPoint = std::max(leftCornerPoint + 1, 0U);
-
-    const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
-    const auto rightSegment = adimensionalPointCoordinate - static_cast<double>(leftCornerPoint);
-
-    const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate);
-    if (!pointCoordinate.IsValid())
-    {
-        throw AlgorithmError("Splines::ComputeCurvatureOnSplinePoint: Could not interpolate spline points.");
-    }
-
-    Point p = m_splineNodes[splineIndex][rightCornerPoint] - m_splineNodes[splineIndex][leftCornerPoint] +
-              (m_splineDerivatives[splineIndex][leftCornerPoint] * (-3.0 * leftSegment * leftSegment + 1.0) +
-               m_splineDerivatives[splineIndex][rightCornerPoint] * (3.0 * rightSegment * rightSegment - 1.0)) /
-                  6.0;
-
-    Point pp = m_splineDerivatives[splineIndex][leftCornerPoint] * leftSegment +
-               m_splineDerivatives[splineIndex][rightCornerPoint] * rightSegment;
-
-    if (m_projection == Projection::spherical)
-    {
-        p.TransformSphericalToCartesian(pointCoordinate.y);
-        pp.TransformSphericalToCartesian(pointCoordinate.y);
-    }
-
-    double curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
-
-    const auto incrementedPointCoordinate = pointCoordinate + p * 1e-4;
-    const auto normalVector = NormalVectorOutside(pointCoordinate, incrementedPointCoordinate, m_projection);
-
-    const auto distance = ComputeDistance(pointCoordinate, incrementedPointCoordinate, m_projection);
-    const auto dx = GetDx(pointCoordinate, incrementedPointCoordinate, m_projection);
-    const auto dy = GetDy(pointCoordinate, incrementedPointCoordinate, m_projection);
-
-    Point tangentialVector;
-    tangentialVector.x = dx / distance;
-    tangentialVector.y = dy / distance;
-
-    return {normalVector, tangentialVector, curvatureFactor};
-}
-
-std::vector<meshkernel::Point> Splines::SecondOrderDerivative(const std::vector<Point>& spline, UInt startIndex, UInt endIndex)
-{
-    const auto numNodes = endIndex - startIndex + 1;
-    std::vector<Point> u(numNodes, {0.0, 0.0});
-    std::vector<Point> coordinatesDerivative(numNodes, {0.0, 0.0});
-
-    UInt index = 1;
-    for (auto i = startIndex + 1; i < endIndex; i++)
-    {
-        const Point p = coordinatesDerivative[index - 1] * 0.5 + 2.0;
-        coordinatesDerivative[index].x = -0.5 / p.x;
-        coordinatesDerivative[index].y = -0.5 / p.y;
-
-        const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
-        u[index] = (delta * 6.0 / 2.0 - u[index - 1] * 0.5) / p;
-        index++;
-    }
-
-    coordinatesDerivative.back() = {0.0, 0.0};
-    for (int i = static_cast<int>(coordinatesDerivative.size()) - 2; i >= 0; --i)
-    {
-        coordinatesDerivative[i] = coordinatesDerivative[i] * coordinatesDerivative[i + 1] + u[i];
-    }
-
-    return coordinatesDerivative;
-}
-
-std::vector<double> Splines::SecondOrderDerivative(const std::vector<double>& coordinates, UInt startIndex, UInt endIndex)
-{
-    const auto numNodes = endIndex - startIndex + 1;
-    std::vector<double> u(numNodes, 0.0);
-    std::vector<double> coordinatesDerivatives(numNodes, 0.0);
-
-    UInt index = 1;
-    for (auto i = startIndex + 1; i < endIndex; i++)
-    {
-        const double p = coordinatesDerivatives[index - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[index] = -0.5 / p;
-
-        const double delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-        u[index] = (delta * 6.0 / 2.0 - u[index - 1] * 0.5) / p;
-        index++;
-    }
-
-    coordinatesDerivatives.back() = 0.0;
-    for (int i = static_cast<int>(coordinatesDerivatives.size()) - 2; i >= 0; --i)
-    {
-        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
-    }
-
-    return coordinatesDerivatives;
+    return SplineAlgorithms::ComputeCurvatureOnSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, m_projection);
 }
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<double>>
@@ -490,4 +397,39 @@ meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double
     FuncDistanceFromAPoint func(this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
+}
+
+void Splines::SnapSpline(const size_t splineIndex,
+                         const LandBoundary& landBoundary,
+                         const int numberOfIterations)
+{
+    if (splineIndex >= GetNumSplines())
+    {
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
+    }
+
+    if (m_splineNodes[splineIndex].empty())
+    {
+        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline at index: {}", splineIndex));
+    }
+
+    const auto indices = FindIndices(m_splineNodes[splineIndex], 0, static_cast<UInt>(m_splineNodes[splineIndex].size()), constants::missing::doubleValue);
+
+    for (auto index : indices)
+    {
+        auto splinePoints = std::vector<Point>(m_splineNodes[splineIndex].begin() + index.first, m_splineNodes[splineIndex].begin() + index.second);
+        auto splineDerivative = std::vector<Point>(m_splineDerivatives[splineIndex].begin() + index.first, m_splineDerivatives[splineIndex].begin() + index.second);
+
+        SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, m_projection, numberOfIterations);
+
+        // Now that the spline has changed, need to update the second derivative.
+        splineDerivative = SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, splinePoints.size());
+
+        // Copy updated spline and derivative back.
+        for (auto j = index.first; j <= index.second; ++j)
+        {
+            m_splineNodes[splineIndex][j] = splinePoints[j - index.first];
+            m_splineDerivatives[splineIndex][j] = splineDerivative[j - index.first];
+        }
+    }
 }

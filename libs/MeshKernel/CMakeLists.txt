@@ -33,6 +33,7 @@ set(
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
+  ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
@@ -43,6 +44,7 @@ set(
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/Smoother.cpp
+  ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
@@ -74,7 +76,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineShift.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp  
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
 )
 
 set(
@@ -95,6 +97,7 @@ set(
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
+  ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
@@ -107,9 +110,10 @@ set(
   ${DOMAIN_INC_DIR}/Parameters.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
+  ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
-  ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp  
+  ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
 )
 
 set(
@@ -121,7 +125,7 @@ set(
   ${AVERAGING_STRATEGIES_INC_DIR}/MaxAveragingStrategy.hpp
   ${AVERAGING_STRATEGIES_INC_DIR}/MinAbsAveragingStrategy.hpp
   ${AVERAGING_STRATEGIES_INC_DIR}/MinAveragingStrategy.hpp
-  ${AVERAGING_STRATEGIES_INC_DIR}/SimpleAveragingStrategy.hpp 
+  ${AVERAGING_STRATEGIES_INC_DIR}/SimpleAveragingStrategy.hpp
 )
 
 set(
@@ -150,7 +154,7 @@ set(
 )
 
 set(
-  HEADERS 
+  HEADERS
   ${INC_LIST}
   ${AVERAGING_STRATEGIES_INC_LIST}
   ${CURVILINEAR_GRID_INC_LIST}
@@ -224,7 +228,7 @@ target_precompile_headers(
     <initializer_list>
     <limits>
     <map>
-    <memory> 
+    <memory>
     <numeric>
     <source_location>
     <stdexcept>
@@ -235,7 +239,7 @@ target_precompile_headers(
     <type_traits>
     <unordered_map>
     <utility>
-    <vector>   
+    <vector>
 )
 
 install(TARGETS ${TARGET_NAME} PUBLIC_HEADER DESTINATION "include/MeshKernel")
