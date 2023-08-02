@@ -1728,12 +1728,12 @@ namespace meshkernelapi
 
             if (startSplineIndex < 0)
             {
-                throw std::invalid_argument("Start spline index is less than zero:" + std::to_string(startSplineIndex));
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Start spline index is less than zero: {}", startSplineIndex).GetFormatted());
             }
 
             if (startSplineIndex > endSplineIndex)
             {
-                throw std::invalid_argument("Invalid spline range: " + std::to_string(startSplineIndex) + " > " + std::to_string(endSplineIndex));
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: {} > {}", startSplineIndex, endSplineIndex).GetFormatted());
             }
 
             if (land.num_coordinates == 0)
@@ -1758,14 +1758,16 @@ namespace meshkernelapi
 
             if (startSplineIndex > splines.num_coordinates)
             {
-                throw std::invalid_argument("Invalid spline range: start greater than number of spline coordinates " +
-                                            std::to_string(startSplineIndex) + " > " + std::to_string(splines.num_coordinates));
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: start greater than number of spline coordinates {} > {}",
+                                                                             startSplineIndex, splines.num_coordinates)
+                                                .GetFormatted());
             }
 
             if (endSplineIndex >= splines.num_coordinates)
             {
-                throw std::invalid_argument("Invalid spline range: end greater than number of spline coordinates " +
-                                            std::to_string(endSplineIndex) + " >= " + std::to_string(splines.num_coordinates));
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: end greater than number of spline coordinates {} >= {}",
+                                                                             endSplineIndex, splines.num_coordinates)
+                                                .GetFormatted());
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
