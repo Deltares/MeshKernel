@@ -17,23 +17,24 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
 
     minimumDistance = 9.0e33;
 
-    if (samplePoint.IsValid())
+    if (!samplePoint.IsValid())
     {
+        return;
+    }
 
-        for (UInt i = 0; i < m_nodes.size() - 1; ++i)
+    for (UInt i = 0; i < m_nodes.size() - 1; ++i)
+    {
+        Point firstPoint = m_nodes[i];
+        Point nextPoint = m_nodes[i + 1];
+
+        auto [distance, linePoint, distanceFromFirstNode] = DistanceFromLine(samplePoint, firstPoint, nextPoint, projection);
+
+        if (distance != constants::missing::doubleValue && distance < minimumDistance)
         {
-            Point firstPoint = m_nodes[i];
-            Point nextPoint = m_nodes[i + 1];
-
-            auto [distance, linePoint, distanceFromFirstNode] = DistanceFromLine(samplePoint, firstPoint, nextPoint, projection);
-
-            if (distance != constants::missing::doubleValue && distance < minimumDistance)
-            {
-                minimumDistance = distance;
-                nearestPoint = linePoint;
-                segmentStartIndex = i;
-                scaledDistanceToStart = distanceFromFirstNode;
-            }
+            minimumDistance = distance;
+            nearestPoint = linePoint;
+            segmentStartIndex = i;
+            scaledDistanceToStart = distanceFromFirstNode;
         }
     }
 }
