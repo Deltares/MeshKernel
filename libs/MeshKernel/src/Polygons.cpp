@@ -310,7 +310,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 {
     if (m_nodes.empty())
     {
-        throw ConstraintError("Polygons::SnapToLandBoundary: No nodes in polygon.");
+        throw ConstraintError(VariadicErrorMessage("No nodes in polygon."));
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -320,7 +320,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 
     if (startIndex >= endIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
     }
 
     for (size_t i = startIndex; i <= endIndex; ++i)
