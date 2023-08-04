@@ -206,5 +206,6 @@ var searchData=
   ['mkernel_5fpolygon_5fget_5fincluded_5fpoints_407',['mkernel_polygon_get_included_points',['../namespacemeshkernelapi.html#affe136285361f89d9d13b87f7a7f5a84',1,'meshkernelapi']]],
   ['mkernel_5fpolygon_5fget_5foffset_408',['mkernel_polygon_get_offset',['../namespacemeshkernelapi.html#a3833a1ecc2962cd39b9ea36a2982392e',1,'meshkernelapi']]],
   ['mkernel_5fpolygon_5frefine_409',['mkernel_polygon_refine',['../namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14',1,'meshkernelapi']]],
-  ['movenode_410',['MoveNode',['../classmeshkernel_1_1_mesh.html#a1250bd9e3a8451cbc273c1a76946c25a',1,'meshkernel::Mesh']]]
+  ['mkernel_5fsplines_5fsnap_5fto_5flandboundary_410',['mkernel_splines_snap_to_landboundary',['../namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11',1,'meshkernelapi']]],
+  ['movenode_411',['MoveNode',['../classmeshkernel_1_1_mesh.html#a1250bd9e3a8451cbc273c1a76946c25a',1,'meshkernel::Mesh']]]
 ];
