@@ -104,6 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a18b31cd6a49f8212bba9184547e36369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">OffsetCopy</a> (double distance, bool innerAndOuter) const</td></tr>
 <tr class="memdesc:a18b31cd6a49f8212bba9184547e36369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">More...</a><br /></td></tr>
 <tr class="separator:a18b31cd6a49f8212bba9184547e36369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600a90b79de0311eebf190a185a42868"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a600a90b79de0311eebf190a185a42868">SnapToLandBoundary</a> (const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;landBoundary, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex)</td></tr>
+<tr class="memdesc:a600a90b79de0311eebf190a185a42868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap the polygon to the land boundary.  <a href="classmeshkernel_1_1_polygons.html#a600a90b79de0311eebf190a185a42868">More...</a><br /></td></tr>
+<tr class="separator:a600a90b79de0311eebf190a185a42868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3183f33250c74aa4865857eb233b37a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3183f33250c74aa4865857eb233b37a5">IsPointInPolygon</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;point, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex) const</td></tr>
 <tr class="memdesc:a3183f33250c74aa4865857eb233b37a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon. When the polygon is empty, the point is always included by default.  <a href="classmeshkernel_1_1_polygons.html#a3183f33250c74aa4865857eb233b37a5">More...</a><br /></td></tr>
 <tr class="separator:a3183f33250c74aa4865857eb233b37a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -562,6 +565,50 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>refinedPolygon The computed polygon </dd></dl>
+
+</div>
+</div>
+<a id="a600a90b79de0311eebf190a185a42868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600a90b79de0311eebf190a185a42868">&#9670;&nbsp;</a></span>SnapToLandBoundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Polygons::SnapToLandBoundary </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;&#160;</td>
+          <td class="paramname"><em>landBoundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>endIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snap the polygon to the land boundary. </p>
+<p>The polygon points are snapped to the closest point on the land boundary. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>The land boundary to which the polygon should be snapped. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

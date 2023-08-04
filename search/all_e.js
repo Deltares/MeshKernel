@@ -13,12 +13,13 @@ var searchData=
   ['snapmeshtolandboundaries_493',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
   ['snapspline_494',['SnapSpline',['../classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca',1,'meshkernel::Splines']]],
   ['snapsplinetoboundary_495',['SnapSplineToBoundary',['../classmeshkernel_1_1_spline_algorithms.html#a7231ad03967ebeeda214c89a664d7051',1,'meshkernel::SplineAlgorithms']]],
-  ['solve_496',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['sortedfacesaroundnode_497',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584',1,'meshkernel::Mesh2D']]],
-  ['sortedgesincounterclockwiseorder_498',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#accf79b4b9e80ce47284a4cb1d866790a',1,'meshkernel::Mesh']]],
-  ['sortedindices_499',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
-  ['sphericaltocartesian3d_500',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
-  ['splinealgorithms_501',['SplineAlgorithms',['../classmeshkernel_1_1_spline_algorithms.html',1,'meshkernel']]],
-  ['splines_502',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['splinestocurvilinearparameters_503',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]]
+  ['snaptolandboundary_496',['SnapToLandBoundary',['../classmeshkernel_1_1_polygons.html#a600a90b79de0311eebf190a185a42868',1,'meshkernel::Polygons']]],
+  ['solve_497',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['sortedfacesaroundnode_498',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584',1,'meshkernel::Mesh2D']]],
+  ['sortedgesincounterclockwiseorder_499',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#accf79b4b9e80ce47284a4cb1d866790a',1,'meshkernel::Mesh']]],
+  ['sortedindices_500',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
+  ['sphericaltocartesian3d_501',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
+  ['splinealgorithms_502',['SplineAlgorithms',['../classmeshkernel_1_1_spline_algorithms.html',1,'meshkernel']]],
+  ['splines_503',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
+  ['splinestocurvilinearparameters_504',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]]
 ];
