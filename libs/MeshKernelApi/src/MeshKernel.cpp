@@ -45,6 +45,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -1701,6 +1702,109 @@ namespace meshkernelapi
             for (size_t i = 0; i < points.size(); ++i)
             {
                 selectionResults.values[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_splines_snap_to_landboundary(int meshKernelId,
+                                                         const GeometryList& land,
+                                                         GeometryList& splines,
+                                                         int startSplineIndex,
+                                                         int endSplineIndex)
+    {
+        int exitCode = Success;
+
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (startSplineIndex < 0)
+            {
+                throw std::invalid_argument("Start spline index is less than zero:" + std::to_string(startSplineIndex));
+            }
+
+            if (startSplineIndex > endSplineIndex)
+            {
+                throw std::invalid_argument("Invalid spline range: " + std::to_string(startSplineIndex) + " > " + std::to_string(endSplineIndex));
+            }
+
+            if (land.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Land boundary has no point values.");
+            }
+
+            if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Land boundary data is null.");
+            }
+
+            if (splines.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Spline has no point values.");
+            }
+
+            if (splines.coordinates_x == nullptr || splines.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Spline data is null.");
+            }
+
+            if (startSplineIndex > splines.num_coordinates)
+            {
+                throw std::invalid_argument("Invalid spline range: start greater than number of spline coordinates " +
+                                            std::to_string(startSplineIndex) + " > " + std::to_string(splines.num_coordinates));
+            }
+
+            if (endSplineIndex >= splines.num_coordinates)
+            {
+                throw std::invalid_argument("Invalid spline range: end greater than number of spline coordinates " +
+                                            std::to_string(endSplineIndex) + " >= " + std::to_string(splines.num_coordinates));
+            }
+
+            std::vector<meshkernel::Point> landBoundaryPoints(land.num_coordinates);
+            std::vector<meshkernel::Point> splinePoints(splines.num_coordinates);
+
+            //--------------------------------
+            // Copy points from parameters to create land boundary and splines
+
+            for (int i = 0; i < land.num_coordinates; ++i)
+            {
+                landBoundaryPoints[i] = meshkernel::Point({land.coordinates_x[i], land.coordinates_y[i]});
+            }
+
+            for (int i = 0; i < splines.num_coordinates; ++i)
+            {
+                splinePoints[i] = meshkernel::Point({splines.coordinates_x[i], splines.coordinates_y[i]});
+            }
+
+            meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+            meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            splineValues.AddSpline(splinePoints, startSplineIndex, static_cast<meshkernel::UInt>(splinePoints.size()));
+
+            //--------------------------------
+            // Snap specified splines to the land boundary
+            splineValues.SnapSpline(0, landBoundary);
+
+            //--------------------------------
+            // Now copy back the snapped spline values
+
+            int splinePointIndex = startSplineIndex;
+
+            // Now copy back to spline (geometry-list)
+            for (int i = startSplineIndex; i <= endSplineIndex; ++i)
+            {
+                const meshkernel::Point& splinePoint = splineValues.m_splineNodes[0][i];
+                splines.coordinates_x[splinePointIndex] = splinePoint.x;
+                splines.coordinates_y[splinePointIndex] = splinePoint.y;
+                ++splinePointIndex;
             }
         }
         catch (...)
