@@ -719,7 +719,6 @@ TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
 
     // Snap the polygon to the land boundary
     polygon.SnapToLandBoundary(landBoundary, 0, 0);
-    // polygon.SnapToLandBoundary(landBoundary, 0, static_cast<meshkernel::UInt>(polygonPoints.size() - 1));
 
     for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
     {
@@ -771,6 +770,7 @@ TEST(Polygons, SnapMultiPolygonPartToSingleLandBoundary)
                                                         {515.6804060372598, 499.8107507986815},
                                                         {541.5480568270806, 438.3979070214996},
                                                         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+                                                        // These points under should be the same as the original polygon.
                                                         {510.503754, 367.129333},
                                                         {557.754089, 297.378601},
                                                         {545.004028, 270.378357},
@@ -779,6 +779,8 @@ TEST(Polygons, SnapMultiPolygonPartToSingleLandBoundary)
                                                         {242.752106, 226.877884}};
 
     // Snap the polygon to the land boundary
+    // Only snap the first polygon defined in the point list, this has indices 0 to 5.
+    // The other polygon should remain untouched.
     polygon.SnapToLandBoundary(landBoundary, 0, 5);
 
     for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
