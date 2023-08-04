@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <tuple>
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundary.hpp>
@@ -304,9 +306,24 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     return newPolygon;
 }
 
-void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary)
+void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIndex, UInt endIndex)
 {
-    for (size_t i = 0; i < m_nodes.size(); ++i)
+    if (m_nodes.empty())
+    {
+        throw ConstraintError(VariadicErrorMessage("No nodes in polygon."));
+    }
+
+    if (startIndex == 0 && endIndex == 0)
+    {
+        endIndex = static_cast<UInt>(m_nodes.size()) - 1;
+    }
+
+    if (startIndex >= endIndex)
+    {
+        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+    }
+
+    for (size_t i = startIndex; i <= endIndex; ++i)
     {
         if (m_nodes[i].IsValid())
         {

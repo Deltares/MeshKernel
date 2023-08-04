@@ -1842,7 +1842,7 @@ namespace meshkernelapi
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            polygons.SnapToLandBoundary(landBoundary);
+            polygons.SnapToLandBoundary(landBoundary, 0, static_cast<meshkernel::UInt>(polygonPoints.size() - 1));
 
             //--------------------------------
             // Now copy back the polygon values

@@ -71,7 +71,9 @@ namespace meshkernel
         ///
         /// The polygon points are snapped to the closest point on the land boundary.
         /// @param[in] landBoundary The land boundary to which the polygon should be snapped.
-        void SnapToLandBoundary(const LandBoundary& landBoundary);
+        /// @param[in] startIndex The start index
+        /// @param[in] endIndex The end index
+        void SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIndex, UInt endIndex);
 
         /// @brief Checks if a point is included in a given polygon.
         /// When the polygon is empty, the point is always included by default

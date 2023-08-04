@@ -415,10 +415,10 @@ void Splines::SnapSpline(const size_t splineIndex,
 
     const auto indices = FindIndices(m_splineNodes[splineIndex], 0, static_cast<UInt>(m_splineNodes[splineIndex].size()), constants::missing::doubleValue);
 
-    for (auto index : indices)
+    for (auto [firstIndex, secondIndex] : indices)
     {
-        std::vector<Point> splinePoints(m_splineNodes[splineIndex].begin() + index.first, m_splineNodes[splineIndex].begin() + index.second + 1);
-        std::vector<Point> splineDerivative(m_splineDerivatives[splineIndex].begin() + index.first, m_splineDerivatives[splineIndex].begin() + index.second + 1);
+        std::vector<Point> splinePoints(m_splineNodes[splineIndex].begin() + firstIndex, m_splineNodes[splineIndex].begin() + secondIndex + 1);
+        std::vector<Point> splineDerivative(m_splineDerivatives[splineIndex].begin() + firstIndex, m_splineDerivatives[splineIndex].begin() + secondIndex + 1);
 
         SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, m_projection, numberOfIterations);
 
@@ -426,10 +426,10 @@ void Splines::SnapSpline(const size_t splineIndex,
         splineDerivative = SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, splinePoints.size());
 
         // Copy updated spline and derivative back.
-        for (auto j = index.first; j <= index.second; ++j)
+        for (auto j = firstIndex; j <= secondIndex; ++j)
         {
-            m_splineNodes[splineIndex][j] = splinePoints[j - index.first];
-            m_splineDerivatives[splineIndex][j] = splineDerivative[j - index.first];
+            m_splineNodes[splineIndex][j] = splinePoints[j - firstIndex];
+            m_splineDerivatives[splineIndex][j] = splineDerivative[j - firstIndex];
         }
     }
 }
