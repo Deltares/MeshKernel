@@ -12,10 +12,15 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
                                                 double& scaledDistanceToStart) const
 {
     nearestPoint = samplePoint;
-    segmentStartIndex = constants::missing::intValue;
+    segmentStartIndex = constants::missing::uintValue;
     scaledDistanceToStart = -1.0;
 
     minimumDistance = 9.0e33;
+
+    if (!samplePoint.IsValid())
+    {
+        return;
+    }
 
     for (UInt i = 0; i < m_nodes.size() - 1; ++i)
     {
@@ -24,7 +29,7 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
 
         auto [distance, linePoint, distanceFromFirstNode] = DistanceFromLine(samplePoint, firstPoint, nextPoint, projection);
 
-        if (distance < minimumDistance)
+        if (distance != constants::missing::doubleValue && distance < minimumDistance)
         {
             minimumDistance = distance;
             nearestPoint = linePoint;
@@ -32,6 +37,18 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
             scaledDistanceToStart = distanceFromFirstNode;
         }
     }
+}
+
+meshkernel::Point meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
+                                                             const Projection& projection) const
+{
+    Point nearestPoint;
+    [[maybe_unused]] double minimumDistance;
+    [[maybe_unused]] UInt segmentStartIndex;
+    [[maybe_unused]] double scaledDistanceToStart;
+    FindNearestPoint(samplePoint, projection, nearestPoint, minimumDistance, segmentStartIndex, scaledDistanceToStart);
+
+    return nearestPoint;
 }
 
 void meshkernel::LandBoundary::AddSegment(const Point& leftNode, const Point& rightNode)
