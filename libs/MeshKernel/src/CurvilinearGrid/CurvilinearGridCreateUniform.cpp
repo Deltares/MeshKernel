@@ -29,7 +29,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
-#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -74,6 +73,8 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
                                                 blockSizeY),
                                m_projection};
     }
+    const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+    throw NotImplemented(message);
 }
 
 std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -315,8 +316,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
 
     const double originX = referencePoint.x + xShift;
     const double originY = referencePoint.y + yShift;
-    const int numM = static_cast<int>(std::ceil(std::abs(xmax - xmin) / blockSizeX));
-    const int numColumns = std::max(numM, 1);
+    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(xmax - xmin) / blockSizeX)), 1);
     const int numRows = ComputeNumRows(originY + etamin, originY + etamax, blockSizeY, m_projection);
 
     CurvilinearGrid curvilinearGrid;
