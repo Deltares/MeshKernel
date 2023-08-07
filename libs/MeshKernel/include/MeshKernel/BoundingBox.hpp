@@ -76,6 +76,35 @@ namespace meshkernel
             m_upperRight = Point(maxx, maxy);
         }
 
+        // @brief Constructor taking a vector of coordinates types
+        // @tparam T Requires IsCoordinate<T>
+        // @param[in] points The point values
+        // @param[in] start The start index for the array slice
+        // @param[in] end The end index for the array slice
+        template <typename T>
+        BoundingBox(const std::vector<T>& points, size_t start, size_t end)
+        {
+            double minx = std::numeric_limits<double>::max();
+            double maxx = std::numeric_limits<double>::lowest();
+            double miny = std::numeric_limits<double>::max();
+            double maxy = std::numeric_limits<double>::lowest();
+
+            for (size_t i = start; i <= end; ++i)
+            {
+                const auto& point = points[i];
+
+                if (point.IsValid())
+                {
+                    minx = std::min(minx, point.x);
+                    maxx = std::max(maxx, point.x);
+                    miny = std::min(miny, point.y);
+                    maxy = std::max(maxy, point.y);
+                }
+            }
+            m_lowerLeft = Point(minx, miny);
+            m_upperRight = Point(maxx, maxy);
+        }
+
         /// @brief Not equal operator
         /// @param[in] other The other bounding box to compare
         /// @return True if the other bounding box is not equal
@@ -104,8 +133,36 @@ namespace meshkernel
         /// @return The upper right corner of the bounding box
         auto upperRight() const { return m_upperRight; }
 
+        /// @brief Return the centre of the bounding box.
+        Point centre() const;
+
+        /// @brief Return the delta of the bounding box.
+        Point delta() const;
+
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
         Point m_upperRight; ///< The upper right corner of the bounding box
     };
+
+    /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.
+    BoundingBox merge(const BoundingBox& b1, const BoundingBox& b2);
+
 } // namespace meshkernel
+
+inline meshkernel::BoundingBox meshkernel::merge(const BoundingBox& b1, const BoundingBox& b2)
+{
+    Point lowerLeft{std::min(b1.lowerLeft().x, b2.lowerLeft().x), std::min(b1.lowerLeft().y, b2.lowerLeft().y)};
+    Point upperRight{std::max(b1.upperRight().x, b2.upperRight().x), std::max(b1.upperRight().y, b2.upperRight().y)};
+
+    return BoundingBox(lowerLeft, upperRight);
+}
+
+inline meshkernel::Point meshkernel::BoundingBox::centre() const
+{
+    return Point{0.5 * (m_lowerLeft.x + m_upperRight.x), 0.5 * (m_lowerLeft.y + m_upperRight.y)};
+}
+
+inline meshkernel::Point meshkernel::BoundingBox::delta() const
+{
+    return Point{m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y};
+}

@@ -29,6 +29,7 @@
 
 #include <vector>
 
+#include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
@@ -177,6 +178,9 @@ namespace meshkernel
         /// @param[in] fromPoint The input position, the closest node will be used
         /// @param[in] toPoint The coordinates of the new position
         void MoveNode(Point const& fromPoint, Point const& toPoint);
+
+        /// @brief Get the mesh bounding box.
+        BoundingBox GetBoundingBox() const;
 
         UInt m_numM = 0;                                       ///< The number of m coordinates (vertical lines)
         UInt m_numN = 0;                                       ///< The number of n coordinates (horizontal lines)

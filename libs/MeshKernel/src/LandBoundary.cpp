@@ -98,3 +98,13 @@ meshkernel::Point meshkernel::LandBoundary::ClosestPoint(const Point& point, con
         return m_nodes[point2Index];
     }
 }
+
+meshkernel::BoundingBox meshkernel::LandBoundary::GetBoundingBox(const size_t startIndex, const size_t endIndex) const
+{
+    return BoundingBox(m_nodes, startIndex, endIndex);
+}
+
+meshkernel::BoundingBox meshkernel::LandBoundary::GetBoundingBox() const
+{
+    return GetBoundingBox(0, m_nodes.size() - 1);
+}
