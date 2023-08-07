@@ -37,6 +37,11 @@ using meshkernel::CurvilinearGridCreateUniform;
 
 CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection projection) : m_projection(projection)
 {
+    if (m_projection != Projection::cartesian || m_projection != Projection::spherical)
+    {
+        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+        throw NotImplemented(message);
+    }
 }
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
@@ -69,9 +74,6 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
                                                 blockSizeY),
                                m_projection};
     }
-
-    const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-    throw NotImplemented(message);
 }
 
 std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -340,7 +342,6 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
                                                            blockSizeY),
                                           m_projection};
         break;
-    case Projection::sphericalAccurate:
     default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);
