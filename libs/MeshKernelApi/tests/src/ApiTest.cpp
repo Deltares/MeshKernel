@@ -3533,7 +3533,7 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     polygonGeometry.coordinates_y = polygonPointsY.data();
     polygonGeometry.num_coordinates = static_cast<int>(polygonPointsX.size());
 
-    errorCode = meshkernelapi::mkernel_polygon_snap_to_landboundary(meshKernelId, landBoundaryGeometry, polygonGeometry);
+    errorCode = meshkernelapi::mkernel_polygon_snap_to_landboundary(meshKernelId, landBoundaryGeometry, polygonGeometry, 0, static_cast<int>(polygonPointsX.size()) - 1);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     for (size_t i = 0; i < polygonPointsX.size(); ++i)

@@ -1805,7 +1805,9 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_polygon_snap_to_landboundary(int meshKernelId,
                                                          const GeometryList& land,
-                                                         GeometryList& polygon)
+                                                         GeometryList& polygon,
+                                                         int startIndex,
+                                                         int endIndex)
     {
         int exitCode = Success;
 
@@ -1836,20 +1838,41 @@ namespace meshkernelapi
                 throw std::invalid_argument("Polygon data is null.");
             }
 
+            if (startIndex < 0 || endIndex < 0)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
+                                                                             startIndex, endIndex)
+                                                .GetFormatted());
+            }
+
+            if (startIndex > endIndex)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex greater than endIndex {} > {}",
+                                                                             startIndex, endIndex)
+                                                .GetFormatted());
+            }
+
+            if (endIndex >= polygon.num_coordinates)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
+                                                                             endIndex, polygon.num_coordinates)
+                                                .GetFormatted());
+            }
+
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
             std::vector<meshkernel::Point> polygonPoints(ConvertGeometryListToPointVector(polygon));
 
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            polygons.SnapToLandBoundary(landBoundary, 0, static_cast<meshkernel::UInt>(polygonPoints.size() - 1));
+            polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
 
             //--------------------------------
             // Now copy back the polygon values
 
             const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Nodes();
 
-            for (size_t i = 0; i < snappedPolygonPoints.size(); ++i)
+            for (int i = startIndex; i <= endIndex; ++i)
             {
                 polygon.coordinates_x[i] = snappedPolygonPoints[i].x;
                 polygon.coordinates_y[i] = snappedPolygonPoints[i].y;

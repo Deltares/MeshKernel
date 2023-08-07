@@ -410,13 +410,17 @@ namespace meshkernelapi
 
         /// @brief Snaps the polygon to the land boundary
         ///
-        /// @param[in] meshKernelId     The id of the mesh state
-        /// @param[in] land             The land boundary
-        /// @param[in] polygon          The polygon values to be snapped
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] land          The land boundary
+        /// @param[in] polygon       The polygon values to be snapped
+        /// @param[in] startIndex    The start index of the polygon points to be snapped
+        /// @param[in] endIndex      The end index of the polygon points to be snapped
         /// @returns Error code
         MKERNEL_API int mkernel_polygon_snap_to_landboundary(int meshKernelId,
                                                              const GeometryList& land,
-                                                             GeometryList& polygon);
+                                                             GeometryList& polygon,
+                                                             int startIndex,
+                                                             int endIndex);
 
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
