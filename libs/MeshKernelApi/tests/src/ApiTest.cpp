@@ -3208,7 +3208,7 @@ TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinat
     const auto makeGridParameters = GebcoMakeGridParameters();
 
     meshkernelapi::GeometryList geometryList{};
-    auto errorCode = meshkernelapi::mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -3257,7 +3257,7 @@ TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinat
     const auto makeGridParameters = GebcoMakeGridParameters();
 
     meshkernelapi::GeometryList geometryList{};
-    auto errorCode = meshkernelapi::mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -3323,6 +3323,51 @@ TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGr
     ASSERT_EQ(12, curvilinearGridResults.num_m);
     ASSERT_EQ(9, curvilinearGridResults.num_n);
 }
+TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
+{
+    // Setup
+    const double lonMin = -6.0;
+    const double lonMax = 2.0;
+
+    const double latMin = 48.5;
+    const double latMax = 51.2;
+
+    const double lonRes = 0.2;
+    const double latRes = 0.2;
+
+    meshkernel::MakeGridParameters makeGridParameters;
+    makeGridParameters.origin_x = -6;
+    makeGridParameters.origin_y = 15.5;
+    makeGridParameters.num_rows = static_cast<int>(std::ceil((latMax - latMin) / latRes));
+    makeGridParameters.num_columns = static_cast<int>(std::ceil((lonMax - lonMin) / lonRes));
+    makeGridParameters.block_size_x = lonRes;
+    makeGridParameters.block_size_y = latRes;
+
+    int meshKernelId = 0;
+    int projectionType = 1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Execute
+    meshkernelapi::GeometryList geometryList{};
+    auto coordinates_x = std::vector{-6.0, -4.0, 0.0, -6.0};
+    auto coordinates_y = std::vector{48.0, 51.0, 49.5, 48.0};
+    geometryList.coordinates_x = coordinates_x.data();
+    geometryList.coordinates_y = coordinates_y.data();
+    geometryList.num_coordinates = static_cast<int>(coordinates_x.size());
+
+    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(32, curvilinearGridResults.num_m);
+    ASSERT_EQ(31, curvilinearGridResults.num_n);
+}
+
 TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     // Setup
@@ -3404,7 +3449,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldSnap)
     splineGeometry.coordinates_y = splinePointsY.data();
     splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
 
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     for (size_t i = 0; i < splinePointsX.size(); ++i)
@@ -3442,24 +3487,24 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
 
     //--------------------------------
     // Start index is less than 0
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, -2, 1);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, -2, 1);
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     //--------------------------------
     // Start index is greater than end index
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 2, 1);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 2, 1);
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     //--------------------------------
     // The land boundary is not set
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     // First define the number of land boundary points
     landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
 
     // The land boundary points are null
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     //--------------------------------
@@ -3468,26 +3513,26 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
 
     // The number of spline points is 0
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     // define the number of spline points
     splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
 
     // The spline values are null
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     splineGeometry.coordinates_x = splinePointsX.data();
     splineGeometry.coordinates_y = splinePointsY.data();
 
     // Start spline index is greater than the number of spline points
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
-                                                                    static_cast<int>(splinePointsX.size()) + 1, static_cast<int>(splinePointsX.size()) + 2);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
+                                                     static_cast<int>(splinePointsX.size()) + 1, static_cast<int>(splinePointsX.size()) + 2);
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 
     // End spline index is greater than the number of spline points
-    errorCode = meshkernelapi::mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
-                                                                    0, static_cast<int>(splinePointsX.size()));
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
+                                                     0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
 }
