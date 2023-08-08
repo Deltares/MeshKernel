@@ -273,32 +273,26 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
     }
 
     // Compute the bounding box
-    auto boundingBox = polygons->GetBoundingBox(polygonIndex);
-    boundingBox.ExtendBoundingBox(0.2);
+    const auto boundingBox = polygons->GetBoundingBox(polygonIndex);
+    const auto referencePoint = boundingBox.MassCentre();
 
-    // Compute the bounding box properties
-    const auto boundingBoxLowerLeft = boundingBox.lowerLeft();
-    const auto boundingBoxUpperRight = boundingBox.upperRight();
-    const auto massCentre = boundingBox.MassCentre();
+    // Compute the max size
+    const auto maxSize = std::max(boundingBox.Width(), boundingBox.Height());
+
+    // Compute the lower left and upper right corners
+    const Point lowerLeft(referencePoint.x - maxSize, referencePoint.y - maxSize);
+    const Point upperRight(referencePoint.x + maxSize, referencePoint.y + maxSize);
 
     // Compute the number of rows and columns
-    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(boundingBoxUpperRight.x - boundingBoxLowerLeft.x) / blockSizeX)), 1);
-    const int numRows = ComputeNumRows(boundingBoxLowerLeft.y, boundingBoxUpperRight.y, blockSizeY, m_projection);
+    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(upperRight.x - lowerLeft.x) / blockSizeX)), 1);
+    const int numRows = ComputeNumRows(lowerLeft.y, upperRight.y, blockSizeY, m_projection);
 
-    // Translate the point to the origin
-    const double translatedX = boundingBoxLowerLeft.x - massCentre.x;
-    const double translatedY = boundingBoxLowerLeft.y - massCentre.y;
+    // Rotated the lower left corner
+    const auto lowerLeftMergedRotated = Rotate(lowerLeft, angle, referencePoint);
 
-    // Rotate the point
-    const auto angleInRad = angle * constants::conversion::degToRad;
-    const auto cosineAngle = std::cos(angleInRad);
-    const auto sinAngle = std::sin(angleInRad);
-    const double rotatedX = translatedX * cosineAngle - translatedY * sinAngle;
-    const double rotatedY = translatedX * sinAngle + translatedY * cosineAngle;
-
-    // Translate the rotated point back to the original position
-    const double originX = rotatedX + massCentre.x;
-    const double originY = rotatedY + massCentre.y;
+    // Set the origin
+    const double originX = lowerLeftMergedRotated.x;
+    const double originY = lowerLeftMergedRotated.y;
 
     CurvilinearGrid curvilinearGrid;
     switch (m_projection)

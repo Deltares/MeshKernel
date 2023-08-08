@@ -98,11 +98,11 @@ namespace meshkernel
 
         /// @brief Returns the lower left corner of the bounding box
         /// @return The lower left corner of the bounding box
-        auto lowerLeft() const { return m_lowerLeft; }
+        [[nodiscard]] auto& lowerLeft() const { return m_lowerLeft; }
 
         /// @brief Returns the upper right corner
         /// @return The upper right corner of the bounding box
-        auto upperRight() const { return m_upperRight; }
+        [[nodiscard]] auto& upperRight() const { return m_upperRight; }
 
         /// @brief Returns the mass centre
         /// @return The upper right corner of the bounding box
