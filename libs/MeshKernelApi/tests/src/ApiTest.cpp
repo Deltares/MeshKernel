@@ -3364,8 +3364,8 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(32, curvilinearGridResults.num_m);
-    ASSERT_EQ(31, curvilinearGridResults.num_n);
+    ASSERT_EQ(44, curvilinearGridResults.num_m);
+    ASSERT_EQ(43, curvilinearGridResults.num_n);
 }
 
 TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
