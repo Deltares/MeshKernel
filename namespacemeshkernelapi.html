@@ -240,6 +240,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af0a396a0ad56ec345564e4ae9db73e11"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11">mkernel_splines_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, int startSplineIndex, int endSplineIndex)</td></tr>
 <tr class="memdesc:af0a396a0ad56ec345564e4ae9db73e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps the spline (or splines) to the land boundary.  <a href="namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11">More...</a><br /></td></tr>
 <tr class="separator:af0a396a0ad56ec345564e4ae9db73e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab09fcdfed55040bf17cadff45647d1a6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab09fcdfed55040bf17cadff45647d1a6">mkernel_polygon_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, int startIndex, int endIndex)</td></tr>
+<tr class="memdesc:ab09fcdfed55040bf17cadff45647d1a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps the polygon to the land boundary.  <a href="namespacemeshkernelapi.html#ab09fcdfed55040bf17cadff45647d1a6">More...</a><br /></td></tr>
+<tr class="separator:ab09fcdfed55040bf17cadff45647d1a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a014ef0883dd95104bf8290f2ad0e78bc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a014ef0883dd95104bf8290f2ad0e78bc">mkernel_mesh2d_merge_nodes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double mergingDistance)</td></tr>
 <tr class="memdesc:a014ef0883dd95104bf8290f2ad0e78bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges.  <a href="namespacemeshkernelapi.html#a014ef0883dd95104bf8290f2ad0e78bc">More...</a><br /></td></tr>
 <tr class="separator:a014ef0883dd95104bf8290f2ad0e78bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5746,6 +5749,65 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNodeIndex</td><td>The second index of the refinement interval </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">targetEdgeLength</td><td>The target interval edge length </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">refinedPolygon</td><td>The refined polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ab09fcdfed55040bf17cadff45647d1a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab09fcdfed55040bf17cadff45647d1a6">&#9670;&nbsp;</a></span>mkernel_polygon_snap_to_landboundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_polygon_snap_to_landboundary </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>land</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>endIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snaps the polygon to the land boundary. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">land</td><td>The land boundary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon values to be snapped </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index of the polygon points to be snapped </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index of the polygon points to be snapped </td></tr>
   </table>
   </dd>
 </dl>

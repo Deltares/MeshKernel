@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['deletedegeneratedtriangles_645',['DeleteDegeneratedTriangles',['../classmeshkernel_1_1_mesh2_d.html#a9aadc845f5afa2319c01fb984288e3de',1,'meshkernel::Mesh2D']]],
-  ['deleteedge_646',['DeleteEdge',['../classmeshkernel_1_1_mesh.html#a10d2841a4812be93a2ce538358875e84',1,'meshkernel::Mesh']]],
-  ['deletehangingedges_647',['DeleteHangingEdges',['../classmeshkernel_1_1_mesh2_d.html#a61f04f13e20376dd7fccb5eb6c2c82ef',1,'meshkernel::Mesh2D']]],
-  ['deleteinvalidnodesandedges_648',['DeleteInvalidNodesAndEdges',['../classmeshkernel_1_1_mesh.html#adadf16bf95337fec05384a2dc07798fe',1,'meshkernel::Mesh']]],
-  ['deletemesh_649',['DeleteMesh',['../classmeshkernel_1_1_mesh2_d.html#a6cce62a059fa51a0c94b52f33a456eed',1,'meshkernel::Mesh2D']]],
-  ['deletenode_650',['DeleteNode',['../classmeshkernel_1_1_mesh.html#a4ed1d0180239dc2037cd07fe85902aef',1,'meshkernel::Mesh']]],
-  ['deletesmallflowedges_651',['DeleteSmallFlowEdges',['../classmeshkernel_1_1_mesh2_d.html#a6855534ffcff0ca5ac4ce4e1bc4ca229',1,'meshkernel::Mesh2D']]],
-  ['deletesmalltrianglesatboundaries_652',['DeleteSmallTrianglesAtBoundaries',['../classmeshkernel_1_1_mesh2_d.html#af03d80377cafe9fdfb22545423fb8fa6',1,'meshkernel::Mesh2D']]],
-  ['discretizetransfinite_653',['DiscretizeTransfinite',['../namespacemeshkernel.html#a96dbe86ccf8ddd38cfce268601eb5540',1,'meshkernel']]],
-  ['distancefromline_654',['DistanceFromLine',['../namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8',1,'meshkernel']]],
-  ['dotproduct_655',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]]
+  ['deletedegeneratedtriangles_646',['DeleteDegeneratedTriangles',['../classmeshkernel_1_1_mesh2_d.html#a9aadc845f5afa2319c01fb984288e3de',1,'meshkernel::Mesh2D']]],
+  ['deleteedge_647',['DeleteEdge',['../classmeshkernel_1_1_mesh.html#a10d2841a4812be93a2ce538358875e84',1,'meshkernel::Mesh']]],
+  ['deletehangingedges_648',['DeleteHangingEdges',['../classmeshkernel_1_1_mesh2_d.html#a61f04f13e20376dd7fccb5eb6c2c82ef',1,'meshkernel::Mesh2D']]],
+  ['deleteinvalidnodesandedges_649',['DeleteInvalidNodesAndEdges',['../classmeshkernel_1_1_mesh.html#adadf16bf95337fec05384a2dc07798fe',1,'meshkernel::Mesh']]],
+  ['deletemesh_650',['DeleteMesh',['../classmeshkernel_1_1_mesh2_d.html#a6cce62a059fa51a0c94b52f33a456eed',1,'meshkernel::Mesh2D']]],
+  ['deletenode_651',['DeleteNode',['../classmeshkernel_1_1_mesh.html#a4ed1d0180239dc2037cd07fe85902aef',1,'meshkernel::Mesh']]],
+  ['deletesmallflowedges_652',['DeleteSmallFlowEdges',['../classmeshkernel_1_1_mesh2_d.html#a6855534ffcff0ca5ac4ce4e1bc4ca229',1,'meshkernel::Mesh2D']]],
+  ['deletesmalltrianglesatboundaries_653',['DeleteSmallTrianglesAtBoundaries',['../classmeshkernel_1_1_mesh2_d.html#af03d80377cafe9fdfb22545423fb8fa6',1,'meshkernel::Mesh2D']]],
+  ['discretizetransfinite_654',['DiscretizeTransfinite',['../namespacemeshkernel.html#a96dbe86ccf8ddd38cfce268601eb5540',1,'meshkernel']]],
+  ['distancefromline_655',['DistanceFromLine',['../namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8',1,'meshkernel']]],
+  ['dotproduct_656',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]]
 ];
