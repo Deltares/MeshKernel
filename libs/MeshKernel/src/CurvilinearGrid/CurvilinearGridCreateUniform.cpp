@@ -264,7 +264,12 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
 
     if (polygons->GetProjection() != m_projection)
     {
-        throw std::invalid_argument("CurvilinearGridCreateUniform::Compute polygon projection is not equal to CurvilinearGridCreateUniform projection ");
+        throw std::invalid_argument("Polygon projection is not equal to CurvilinearGridCreateUniform projection ");
+    }
+
+    if (std::abs(angle) > 90.0)
+    {
+        throw std::invalid_argument("Angle must be larger that -90 and smaller than 90");
     }
 
     if (polygons->IsEmpty())
