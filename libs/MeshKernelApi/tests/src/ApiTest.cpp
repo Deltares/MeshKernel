@@ -3421,6 +3421,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldSnap)
     int meshKernelId = 0;
     int setProjectionType = 0; // Cartesian
     auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // The land boundary to which the spline is to be snapped.
     std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
@@ -3470,6 +3471,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     int meshKernelId = 0;
     int setProjectionType = 0; // Cartesian
     auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // The land boundary to which the spline is to be snapped.
     std::vector<double> landBoundaryPointsX{257.002197, 518.753845, 938.006470};
@@ -3535,4 +3537,57 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
                                                      0, static_cast<int>(splinePointsX.size()));
     EXPECT_EQ(meshkernelapi::MeshKernelApiErrors::StadardLibraryException, errorCode);
+}
+
+TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
+{
+    const double tolerance = 1e-6;
+
+    // Setup
+    int meshKernelId = 0;
+    int setProjectionType = 0; // Cartesian
+    auto errorCode = meshkernelapi::mkernel_allocate_state(setProjectionType, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::vector<double> landBoundaryPointsX{139.251465, 527.753906, 580.254211, 194.001801};
+    std::vector<double> landBoundaryPointsY{497.630615, 499.880676, 265.878296, 212.627762};
+
+    std::vector<double> polygonPointsX{170.001648, 263.002228, 344.002747, 458.753448, 515.753845, 524.753906, 510.503754, 557.754089, 545.004028, 446.003387, 340.252716, 242.752106};
+    std::vector<double> polygonPointsY{472.880371, 472.880371, 475.130432, 482.630493, 487.130554, 434.630005, 367.129333, 297.378601, 270.378357, 259.128235, 244.128067, 226.877884};
+
+    // The expected polygon values after snapping to land boundary.
+    std::vector<double> expectedSnappedPointX = {169.8572772242283, 262.8547378163090, 343.8655709877979,
+                                                 458.6558591358565, 515.6804060372598, 541.5480568270806,
+                                                 555.2836667233159, 572.4472626165707, 546.2703464583593,
+                                                 447.5942143903486, 341.7865993173012, 243.7707524316129};
+
+    std::vector<double> expectedSnappedPointY = {497.8078724305628, 498.3464789799546, 498.8156634613377,
+                                                 499.4804859264834, 499.8107507986815, 438.3979070214996,
+                                                 377.1760644727631, 300.6751319852315, 261.1931241088368,
+                                                 247.5891786326750, 233.0020541046851, 219.4891385810638};
+
+    meshkernelapi::GeometryList landBoundaryGeometry{};
+    landBoundaryGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+    landBoundaryGeometry.coordinates_x = landBoundaryPointsX.data();
+    landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
+    landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
+
+    meshkernelapi::GeometryList polygonGeometry{};
+    polygonGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
+    polygonGeometry.coordinates_x = polygonPointsX.data();
+    polygonGeometry.coordinates_y = polygonPointsY.data();
+    polygonGeometry.num_coordinates = static_cast<int>(polygonPointsX.size());
+
+    errorCode = meshkernelapi::mkernel_polygon_snap_to_landboundary(meshKernelId, landBoundaryGeometry, polygonGeometry, 0, static_cast<int>(polygonPointsX.size()) - 1);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    for (size_t i = 0; i < polygonPointsX.size(); ++i)
+    {
+        EXPECT_NEAR(polygonGeometry.coordinates_x[i], expectedSnappedPointX[i], tolerance);
+    }
+
+    for (size_t i = 0; i < polygonPointsX.size(); ++i)
+    {
+        EXPECT_NEAR(polygonGeometry.coordinates_y[i], expectedSnappedPointY[i], tolerance);
+    }
 }
