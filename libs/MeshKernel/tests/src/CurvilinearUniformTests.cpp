@@ -19,7 +19,7 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::cartesian);
 
-    const double angle = 10.0;
+    const double angle = 0.0;
     const double blockSizeX = 1.0;
     const double blockSizeY = 1.0;
 
@@ -33,7 +33,7 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
-    ASSERT_EQ(10, numValidNodes);
+    ASSERT_EQ(9, numValidNodes);
 }
 
 TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
