@@ -104,6 +104,29 @@ namespace meshkernel
         /// @return The upper right corner of the bounding box
         auto upperRight() const { return m_upperRight; }
 
+        /// @brief Returns the mass centre
+        /// @return The upper right corner of the bounding box
+        Point MassCentre() const { return (m_lowerLeft + m_upperRight) * 0.5; }
+
+        /// @brief Returns the bounding box width
+        /// @return The bounding box width
+        double Width() const { return m_upperRight.x - m_lowerLeft.x; }
+
+        /// @brief Returns the bounding box height
+        /// @return The bounding box height
+        double Height() const { return m_upperRight.y - m_lowerLeft.y; }
+
+        /// @brief Extends the bounding box by a factor
+        void ExtendBoundingBox(double factor)
+        {
+            const double width = Width();
+            const double height = Height();
+            m_lowerLeft.x = m_lowerLeft.x - width * factor;
+            m_lowerLeft.y = m_lowerLeft.y - height * factor;
+            m_upperRight.x = m_upperRight.x + width * factor;
+            m_upperRight.y = m_upperRight.y + height * factor;
+        }
+
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
         Point m_upperRight; ///< The upper right corner of the bounding box

@@ -36,7 +36,7 @@ using meshkernel::CurvilinearGridCreateUniform;
 
 CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection projection) : m_projection(projection)
 {
-    if (m_projection != Projection::cartesian || m_projection != Projection::spherical)
+    if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
     {
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);
@@ -272,52 +272,33 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
         return {};
     }
 
-    Point referencePoint;
-    auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
-    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
-    {
-        auto const& polygonNode = polygons->Node(i);
-        if (polygonNode.IsValid())
-        {
-            referencePoint = polygonNode;
-            break;
-        }
-    }
+    // Compute the bounding box
+    auto boundingBox = polygons->GetBoundingBox(polygonIndex);
+    boundingBox.ExtendBoundingBox(0.2);
 
-    // get polygon min/max in rotated (xi,eta) coordinates
-    double xmin = std::numeric_limits<double>::max();
-    double xmax = -xmin;
-    double etamin = std::numeric_limits<double>::max();
-    double etamax = -etamin;
+    // Compute the bounding box properties
+    const auto boundingBoxLowerLeft = boundingBox.lowerLeft();
+    const auto boundingBoxUpperRight = boundingBox.upperRight();
+    const auto massCentre = boundingBox.MassCentre();
 
+    // Compute the number of rows and columns
+    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(boundingBoxUpperRight.x - boundingBoxLowerLeft.x) / blockSizeX)), 1);
+    const int numRows = ComputeNumRows(boundingBoxLowerLeft.y, boundingBoxUpperRight.y, blockSizeY, m_projection);
+
+    // Translate the point to the origin
+    const double translatedX = boundingBoxLowerLeft.x - massCentre.x;
+    const double translatedY = boundingBoxLowerLeft.y - massCentre.y;
+
+    // Rotate the point
     const auto angleInRad = angle * constants::conversion::degToRad;
     const auto cosineAngle = std::cos(angleInRad);
     const auto sinAngle = std::sin(angleInRad);
-    Projection const polygonProjection = polygons->GetProjection();
+    const double rotatedX = translatedX * cosineAngle - translatedY * sinAngle;
+    const double rotatedY = translatedX * sinAngle + translatedY * cosineAngle;
 
-    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
-    {
-        auto const& polygonNode = polygons->Node(i);
-        if (polygonNode.IsValid())
-        {
-            const double dx = std::abs(referencePoint.x - polygonNode.x);
-            const double dy = std::abs(referencePoint.y - polygonNode.y);
-            double xi = dx * cosineAngle + dy * sinAngle;
-            double eta = -dx * sinAngle + dy * cosineAngle;
-            xmin = std::min(xmin, xi);
-            xmax = std::max(xmax, xi);
-            etamin = std::min(etamin, eta);
-            etamax = std::max(etamax, eta);
-        }
-    }
-
-    double xShift = xmin * cosineAngle - etamin * sinAngle;
-    double yShift = xmin * sinAngle + etamin * cosineAngle;
-
-    const double originX = referencePoint.x + xShift;
-    const double originY = referencePoint.y + yShift;
-    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(xmax - xmin) / blockSizeX)), 1);
-    const int numRows = ComputeNumRows(originY + etamin, originY + etamax, blockSizeY, m_projection);
+    // Translate the rotated point back to the original position
+    const double originX = rotatedX + massCentre.x;
+    const double originY = rotatedY + massCentre.y;
 
     CurvilinearGrid curvilinearGrid;
     switch (m_projection)
