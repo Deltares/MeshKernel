@@ -423,7 +423,7 @@ void Splines::SnapSpline(const size_t splineIndex,
         SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, m_projection, numberOfIterations);
 
         // Now that the spline has changed, need to update the second derivative.
-        splineDerivative = SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, splinePoints.size());
+        splineDerivative = SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, splinePoints.size() - 1);
 
         // Copy updated spline and derivative back.
         for (auto j = firstIndex; j <= secondIndex; ++j)
