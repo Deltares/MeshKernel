@@ -159,10 +159,10 @@ inline meshkernel::BoundingBox meshkernel::merge(const BoundingBox& b1, const Bo
 
 inline meshkernel::Point meshkernel::BoundingBox::centre() const
 {
-    return Point{0.5 * (m_lowerLeft.x + m_upperRight.x), 0.5 * (m_lowerLeft.y + m_upperRight.y)};
+    return 0.5 * (m_lowerLeft + m_upperRight);
 }
 
 inline meshkernel::Point meshkernel::BoundingBox::delta() const
 {
-    return Point{m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y};
+    return m_upperRight - m_lowerLeft;
 }
