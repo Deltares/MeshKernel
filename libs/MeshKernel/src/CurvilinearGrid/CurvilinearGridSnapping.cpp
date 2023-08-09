@@ -16,24 +16,12 @@ void meshkernel::CurvilinearGridSnapping::ModifyField(const UInt row, const UInt
     constexpr UInt nump = 80;
     constexpr double aspectRatio = 990.0 / 1600.0;
 
-    Point meshDelta = m_grid.m_gridNodes[column][row] - m_originalGrid.m_gridNodes[column][row];
+    Point meshDelta = m_grid.m_gridNodes[row][column] - m_originalGrid.m_gridNodes[row][column];
 
-    double dsix = 32.3232336076422; // 30.011936;
-
-    // This is not the real value for dsix.
-    double rsx = std::max(dsix, std::hypot(meshDelta.x, meshDelta.y));
-    // double rsx = std::max((m_originalGrid.m_gridNodes[0][0].x - m_originalGrid.m_gridNodes[1][0].x) / 6.0, std::hypot(meshDelta.x, meshDelta.y));
-    // double rsx = std::max(m_originalGrid.getDeltaX() / 6.0, std::hypot(meshDelta.x, meshDelta.y));
-
-    int m1 = std::max<int>(1, column + 1 - nump * in) - 1;
-    int m2 = std::min<int>(m_grid.m_gridNodes.size(), column + 1 + nump * in) - 1;
-    int n1 = std::max<int>(1, row + 1 - nump * jn) - 1;
-    int n2 = std::min<int>(m_grid.m_gridNodes[0].size(), row + 1 + nump * jn) - 1;
-
-    // UInt m1 = std::max<UInt>(1, row - nump * in) - 1;
-    // UInt m2 = std::min<UInt>(m_grid.m_gridNodes.size(), row + nump * in) - 1;
-    // UInt n1 = std::max<UInt>(1, column - nump * jn) - 1;
-    // UInt n2 = std::min<UInt>(m_grid.m_gridNodes[0].size(), column + nump * jn) - 1;
+    int m1 = std::max<int>(1, row + 1 - nump * in) - 1;
+    int m2 = std::min<int>(m_grid.m_gridNodes.size(), row + 1 + nump * in) - 1;
+    int n1 = std::max<int>(1, column + 1 - nump * jn) - 1;
+    int n2 = std::min<int>(m_grid.m_gridNodes[0].size(), column + 1 + nump * jn) - 1;
 
     BoundingBox gridBb = m_grid.GetBoundingBox();
     BoundingBox lbBb = m_landBoundary.GetBoundingBox();
@@ -49,15 +37,16 @@ void meshkernel::CurvilinearGridSnapping::ModifyField(const UInt row, const UInt
         delta.y = aspectRatio * delta.x;
     }
 
-    dsix = delta.y / (6.0 * aspectRatio);
+    double dsix = delta.y / (6.0 * aspectRatio);
+    double rsx = std::max(dsix, std::hypot(meshDelta.x, meshDelta.y));
 
-    for (int i = n1; i <= n2; ++i)
+    for (int i = m1; i <= m2; ++i)
     {
-        for (int j = m1; j <= m2; ++j)
+        for (int j = n1; j <= n2; ++j)
         {
-            Point pointDelta = m_originalGrid.m_gridNodes[j][i] - m_originalGrid.m_gridNodes[column][row];
+            Point pointDelta = m_originalGrid.m_gridNodes[i][j] - m_originalGrid.m_gridNodes[row][column];
 
-            if (m_originalGrid.m_gridNodes[j][i].IsValid())
+            if (m_originalGrid.m_gridNodes[i][j].IsValid())
             {
                 // m_grid.m_gridNodes[i][j] += ComputeDelta();
                 // m_grid.m_gridNodes[i][j] += meshDelta.Compute();
@@ -82,54 +71,35 @@ void meshkernel::CurvilinearGridSnapping::ModifyField(const UInt row, const UInt
                         double dx = meshDelta.x * fr;
                         double dy = meshDelta.y * fr;
 
-                        m_grid.m_gridNodes[j][i] = m_originalGrid.m_gridNodes[j][i] + Point(dx, dy);
+                        m_grid.m_gridNodes[i][j] = m_originalGrid.m_gridNodes[i][j] + Point(dx, dy);
                     }
                 }
             }
         }
     }
-
-    //
 }
 
 meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
 {
     constexpr double epsilon = 1.0e-5;
 
-    // How to get m_lowerLeft and m_upperRight
-    // This is just a grid line
-
     int in = std::min<int>(1, m_upperRight.m_n - m_lowerLeft.m_n);
     int jn = std::min<int>(1, m_upperRight.m_m - m_lowerLeft.m_m);
 
-    for (UInt i = m_lowerLeft.m_n; i <= m_upperRight.m_n; ++i)
+    for (UInt i = m_lowerLeft.m_m; i <= m_upperRight.m_m; ++i)
     {
-        for (UInt j = m_lowerLeft.m_m; j <= m_upperRight.m_m; ++j)
+        for (UInt j = m_lowerLeft.m_n; j <= m_upperRight.m_n; ++j)
         {
-            Point pnt = m_originalGrid.m_gridNodes[j][i];
+            Point pnt = m_originalGrid.m_gridNodes[i][j];
             Point snappedPoint = m_landBoundary.FindNearestPoint(pnt, m_grid.m_projection);
             // Point snappedPoint = GetSnappedPoint(m_originalGrid.m_gridNodes[i][j]);
-            m_grid.m_gridNodes[j][i] = snappedPoint;
+            m_grid.m_gridNodes[i][j] = snappedPoint;
 
-            if (!IsEqual(snappedPoint.x, m_originalGrid.m_gridNodes[j][i].x, epsilon) || !IsEqual(snappedPoint.y, m_originalGrid.m_gridNodes[j][i].y, epsilon))
+            if (!IsEqual(snappedPoint.x, m_originalGrid.m_gridNodes[i][j].x, epsilon) || !IsEqual(snappedPoint.y, m_originalGrid.m_gridNodes[i][j].y, epsilon))
             {
                 ModifyField(i, j, in, jn);
             }
         }
-    }
-
-    std::cout.precision(6);
-    std::cout.setf(std::ios::scientific);
-
-    for (int i = (int)m_grid.m_gridNodes.size() - 1; i >= 0; --i)
-    // for (UInt i = 0; i < m_grid.m_gridNodes.size(); ++i)
-    {
-        std::cout << "row -> ";
-        for (UInt j = 0; j < m_grid.m_gridNodes.size(); ++j)
-        {
-            std::cout << "{" << m_grid.m_gridNodes[j][i].x << ", " << m_grid.m_gridNodes[j][i].y << "} ";
-        }
-        std::cout << std::endl;
     }
 
     return m_grid;

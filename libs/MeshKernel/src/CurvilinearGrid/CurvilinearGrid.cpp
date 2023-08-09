@@ -905,7 +905,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     // First loop over left boundary (0,i)
-    for (size_t i = 0; i < m_gridNodes[last].size(); ++i)
+    for (size_t i = 0; i < m_gridNodes.size(); ++i)
     {
         lowerLeft.x = std::min(lowerLeft.x, m_gridNodes[0][i].x);
         lowerLeft.y = std::min(lowerLeft.y, m_gridNodes[0][i].y);
