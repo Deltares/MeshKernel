@@ -137,6 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0cd2837a1b1858dea482e38b42e334fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc">Node</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i) const</td></tr>
 <tr class="memdesc:a0cd2837a1b1858dea482e38b42e334fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of a node by index.  <a href="classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc">More...</a><br /></td></tr>
 <tr class="separator:a0cd2837a1b1858dea482e38b42e334fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb4c0ad29cee0017afda379be2353843"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#acb4c0ad29cee0017afda379be2353843">GetBoundingBox</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex) const</td></tr>
+<tr class="memdesc:acb4c0ad29cee0017afda379be2353843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding box for the polygon index i.  <a href="classmeshkernel_1_1_polygons.html#acb4c0ad29cee0017afda379be2353843">More...</a><br /></td></tr>
+<tr class="separator:acb4c0ad29cee0017afda379be2353843"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing polygons. </p>
@@ -196,6 +199,33 @@ Public Member Functions</h2></td></tr>
 
 <p>Creates points inside the polygon using triangulation (the edges size determines how many points will be generated) </p>
 <dl class="section return"><dt>Returns</dt><dd>The generated points </dd></dl>
+
+</div>
+</div>
+<a id="acb4c0ad29cee0017afda379be2353843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb4c0ad29cee0017afda379be2353843">&#9670;&nbsp;</a></span>GetBoundingBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> meshkernel::Polygons::GetBoundingBox </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>polygonIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the bounding box for the polygon index i. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndex</td><td>Outer polygon index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The bounding box </dd></dl>
 
 </div>
 </div>
@@ -419,7 +449,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the nodes of the polygon. </p>
-<dl class="section return"><dt>Returns</dt><dd>Vector of nodes of the polygon </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmeshkernel_1_1_vector.html" title="A class defining a vector.">Vector</a> of nodes of the polygon </dd></dl>
 
 </div>
 </div>

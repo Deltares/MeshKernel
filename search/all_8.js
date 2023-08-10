@@ -1,8 +1,23 @@
 var searchData=
 [
-  ['landboundaries_199',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; Polygons &gt; polygons)']]],
-  ['landboundary_200',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel::LandBoundary'],['../classmeshkernel_1_1_land_boundary.html#ad2e7d36dc35d8796461a33a0acb74cd6',1,'meshkernel::LandBoundary::LandBoundary()']]],
-  ['linearinterpolationintriangle_201',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],
-  ['location_202',['Location',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63',1,'meshkernel::Mesh']]],
-  ['lowerleft_203',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#acff98246f5bb6e5ef1c703102a9eab08',1,'meshkernel::BoundingBox']]]
+  ['inavlidindex_182',['InavlidIndex',['../classmeshkernel_1_1_mesh_geometry_error.html#a87d925853ccc3947993db1f7333333a2',1,'meshkernel::MeshGeometryError']]],
+  ['initialize_183',['Initialize',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#ac40b0272b753b40dd24a2d270b138991',1,'meshkernel::OrthogonalizationAndSmoothing']]],
+  ['inner_5fiterations_184',['inner_iterations',['../structmeshkernel_1_1_orthogonalization_parameters.html#a0157ecc1cdf621644d68bb0833d0b8f7',1,'meshkernel::OrthogonalizationParameters']]],
+  ['inner_5fouter_5fseparator_185',['inner_outer_separator',['../structmeshkernelapi_1_1_geometry_list.html#a71b4d4559df3af088ccb16150af8cb39',1,'meshkernelapi::GeometryList']]],
+  ['innerproduct_186',['InnerProduct',['../namespacemeshkernel.html#af6338c4df9b1a0680f013b9624776d91',1,'meshkernel']]],
+  ['innerproducttwosegments_187',['InnerProductTwoSegments',['../namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591',1,'meshkernel']]],
+  ['insertnode_188',['InsertNode',['../classmeshkernel_1_1_mesh.html#ac817e8abc712be8f0775644a5e7d876d',1,'meshkernel::Mesh']]],
+  ['interpolants_189',['Interpolants',['../namespacemeshkernel.html#a7aa68830167a8c801db4ecf626592888',1,'meshkernel']]],
+  ['introduction_190',['Introduction',['../_introduction.html',1,'']]],
+  ['inverseweighteddistance_191',['InverseWeightedDistance',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0ac1a25fb65a86efd8e6d402f860213eec',1,'meshkernel::AveragingInterpolation']]],
+  ['isedgeonboundary_192',['IsEdgeOnBoundary',['../classmeshkernel_1_1_mesh.html#a7569153beacd2187549c3cdf56141a41',1,'meshkernel::Mesh']]],
+  ['isempty_193',['IsEmpty',['../classmeshkernel_1_1_land_boundary.html#ad549ba1a78d403f57ce9496f9ab499fb',1,'meshkernel::LandBoundary::IsEmpty()'],['../classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f',1,'meshkernel::Polygons::IsEmpty()']]],
+  ['isfaceonboundary_194',['IsFaceOnBoundary',['../classmeshkernel_1_1_mesh.html#a59544d3cee42126f27bed0da80518051',1,'meshkernel::Mesh']]],
+  ['isnodeonboundary_195',['IsNodeOnBoundary',['../classmeshkernel_1_1_mesh.html#a557891a65132f1629578381c377fafb7',1,'meshkernel::Mesh::IsNodeOnBoundary()'],['../classmeshkernel_1_1_mesh1_d.html#ad7d867072d785f542e06882f6f480b73',1,'meshkernel::Mesh1D::IsNodeOnBoundary()']]],
+  ['ispointinpolygon_196',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3183f33250c74aa4865857eb233b37a5',1,'meshkernel::Polygons']]],
+  ['ispointinpolygonnodes_197',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a3356503d69b272a618842fd6653dfc00',1,'meshkernel']]],
+  ['ispointinpolygons_198',['IsPointInPolygons',['../classmeshkernel_1_1_polygons.html#a04c314b63fc7c0cebe84f556c341e263',1,'meshkernel::Polygons']]],
+  ['ispointonpole_199',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
+  ['issegmentcrossingaboundaryedge_200',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882',1,'meshkernel::Mesh2D']]],
+  ['isvalid_201',['IsValid',['../classmeshkernel_1_1_point.html#a5861eebe8cc2aaedca2eac8b8572d619',1,'meshkernel::Point::IsValid()'],['../classmeshkernel_1_1_sample.html#a98d86145f853c36a470c3818b5a0fda7',1,'meshkernel::Sample::IsValid()']]]
 ];

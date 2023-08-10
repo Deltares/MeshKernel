@@ -92,7 +92,7 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a4810cc38b0497f87e4ea8aa8dd37ceeb">BoundingBox</a> ()</td></tr>
 <tr class="memdesc:a4810cc38b0497f87e4ea8aa8dd37ceeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
 <tr class="separator:a4810cc38b0497f87e4ea8aa8dd37ceeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ff1863cededb4eb12d31ce2c21bdd75"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a7ff1863cededb4eb12d31ce2c21bdd75">BoundingBox</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;<a class="el" href="classmeshkernel_1_1_bounding_box.html#acff98246f5bb6e5ef1c703102a9eab08">lowerLeft</a>, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;<a class="el" href="classmeshkernel_1_1_bounding_box.html#aec137f8bf7b20bb4590d7ec2a0f4d6dd">upperRight</a>)</td></tr>
+<tr class="memitem:a7ff1863cededb4eb12d31ce2c21bdd75"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a7ff1863cededb4eb12d31ce2c21bdd75">BoundingBox</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;<a class="el" href="classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75">lowerLeft</a>, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;<a class="el" href="classmeshkernel_1_1_bounding_box.html#ac05aaea8216831b9d887d4ac5ebd79d0">upperRight</a>)</td></tr>
 <tr class="memdesc:a7ff1863cededb4eb12d31ce2c21bdd75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor taking the corner points of the bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#a7ff1863cededb4eb12d31ce2c21bdd75">More...</a><br /></td></tr>
 <tr class="separator:a7ff1863cededb4eb12d31ce2c21bdd75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10ebe453e2d36a04a287a37f9fd93bc0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -106,12 +106,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a63e16e992de07aef73dc83211cf91692"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a63e16e992de07aef73dc83211cf91692">Contains</a> (const T &amp;point) const</td></tr>
 <tr class="memdesc:a63e16e992de07aef73dc83211cf91692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#a63e16e992de07aef73dc83211cf91692">More...</a><br /></td></tr>
 <tr class="separator:a63e16e992de07aef73dc83211cf91692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acff98246f5bb6e5ef1c703102a9eab08"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#acff98246f5bb6e5ef1c703102a9eab08">lowerLeft</a> () const</td></tr>
-<tr class="memdesc:acff98246f5bb6e5ef1c703102a9eab08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lower left corner of the bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#acff98246f5bb6e5ef1c703102a9eab08">More...</a><br /></td></tr>
-<tr class="separator:acff98246f5bb6e5ef1c703102a9eab08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec137f8bf7b20bb4590d7ec2a0f4d6dd"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#aec137f8bf7b20bb4590d7ec2a0f4d6dd">upperRight</a> () const</td></tr>
-<tr class="memdesc:aec137f8bf7b20bb4590d7ec2a0f4d6dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the upper right corner.  <a href="classmeshkernel_1_1_bounding_box.html#aec137f8bf7b20bb4590d7ec2a0f4d6dd">More...</a><br /></td></tr>
-<tr class="separator:aec137f8bf7b20bb4590d7ec2a0f4d6dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4406fad61746c7fa34e8beb8acb85f75"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75">lowerLeft</a> () const</td></tr>
+<tr class="memdesc:a4406fad61746c7fa34e8beb8acb85f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lower left corner of the bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75">More...</a><br /></td></tr>
+<tr class="separator:a4406fad61746c7fa34e8beb8acb85f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac05aaea8216831b9d887d4ac5ebd79d0"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#ac05aaea8216831b9d887d4ac5ebd79d0">upperRight</a> () const</td></tr>
+<tr class="memdesc:ac05aaea8216831b9d887d4ac5ebd79d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the upper right corner.  <a href="classmeshkernel_1_1_bounding_box.html#ac05aaea8216831b9d887d4ac5ebd79d0">More...</a><br /></td></tr>
+<tr class="separator:ac05aaea8216831b9d887d4ac5ebd79d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeba20e16c2859e755611c196971869b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#aeeba20e16c2859e755611c196971869b">MassCentre</a> () const</td></tr>
+<tr class="memdesc:aeeba20e16c2859e755611c196971869b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mass centre.  <a href="classmeshkernel_1_1_bounding_box.html#aeeba20e16c2859e755611c196971869b">More...</a><br /></td></tr>
+<tr class="separator:aeeba20e16c2859e755611c196971869b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a582e92518f7ad17457176eb147ba9e42"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a582e92518f7ad17457176eb147ba9e42">Width</a> () const</td></tr>
+<tr class="memdesc:a582e92518f7ad17457176eb147ba9e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the bounding box width.  <a href="classmeshkernel_1_1_bounding_box.html#a582e92518f7ad17457176eb147ba9e42">More...</a><br /></td></tr>
+<tr class="separator:a582e92518f7ad17457176eb147ba9e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6538874f6a061e2ba26985949a205134"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a6538874f6a061e2ba26985949a205134">Height</a> () const</td></tr>
+<tr class="memdesc:a6538874f6a061e2ba26985949a205134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the bounding box height.  <a href="classmeshkernel_1_1_bounding_box.html#a6538874f6a061e2ba26985949a205134">More...</a><br /></td></tr>
+<tr class="separator:a6538874f6a061e2ba26985949a205134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c93795096639f092bb4be85b6168c8"><td class="memItemLeft" align="right" valign="top"><a id="a71c93795096639f092bb4be85b6168c8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a71c93795096639f092bb4be85b6168c8">ExtendBoundingBox</a> (double factor)</td></tr>
+<tr class="memdesc:a71c93795096639f092bb4be85b6168c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extends the bounding box by a factor. <br /></td></tr>
+<tr class="separator:a71c93795096639f092bb4be85b6168c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class defining a bounding box. </p>
@@ -247,8 +260,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="acff98246f5bb6e5ef1c703102a9eab08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acff98246f5bb6e5ef1c703102a9eab08">&#9670;&nbsp;</a></span>lowerLeft()</h2>
+<a id="a6538874f6a061e2ba26985949a205134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6538874f6a061e2ba26985949a205134">&#9670;&nbsp;</a></span>Height()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,7 +270,35 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto meshkernel::BoundingBox::lowerLeft </td>
+          <td class="memname">double meshkernel::BoundingBox::Height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the bounding box height. </p>
+<dl class="section return"><dt>Returns</dt><dd>The bounding box height </dd></dl>
+
+</div>
+</div>
+<a id="a4406fad61746c7fa34e8beb8acb85f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4406fad61746c7fa34e8beb8acb85f75">&#9670;&nbsp;</a></span>lowerLeft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto&amp; meshkernel::BoundingBox::lowerLeft </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -272,6 +313,34 @@ template&lt;typename T &gt; </div>
 
 <p>Returns the lower left corner of the bounding box. </p>
 <dl class="section return"><dt>Returns</dt><dd>The lower left corner of the bounding box </dd></dl>
+
+</div>
+</div>
+<a id="aeeba20e16c2859e755611c196971869b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeba20e16c2859e755611c196971869b">&#9670;&nbsp;</a></span>MassCentre()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::BoundingBox::MassCentre </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the mass centre. </p>
+<dl class="section return"><dt>Returns</dt><dd>The upper right corner of the bounding box </dd></dl>
 
 </div>
 </div>
@@ -310,8 +379,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="aec137f8bf7b20bb4590d7ec2a0f4d6dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec137f8bf7b20bb4590d7ec2a0f4d6dd">&#9670;&nbsp;</a></span>upperRight()</h2>
+<a id="ac05aaea8216831b9d887d4ac5ebd79d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac05aaea8216831b9d887d4ac5ebd79d0">&#9670;&nbsp;</a></span>upperRight()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,7 +389,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto meshkernel::BoundingBox::upperRight </td>
+          <td class="memname">auto&amp; meshkernel::BoundingBox::upperRight </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -335,6 +404,34 @@ template&lt;typename T &gt; </div>
 
 <p>Returns the upper right corner. </p>
 <dl class="section return"><dt>Returns</dt><dd>The upper right corner of the bounding box </dd></dl>
+
+</div>
+</div>
+<a id="a582e92518f7ad17457176eb147ba9e42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a582e92518f7ad17457176eb147ba9e42">&#9670;&nbsp;</a></span>Width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::BoundingBox::Width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the bounding box width. </p>
+<dl class="section return"><dt>Returns</dt><dd>The bounding box width </dd></dl>
 
 </div>
 </div>

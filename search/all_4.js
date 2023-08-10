@@ -13,5 +13,6 @@ var searchData=
   ['edges_107',['Edges',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9',1,'meshkernel::Mesh']]],
   ['edgesecondnode_108',['edgeSecondNode',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a2e1a15fb056dd134e013dc99eeb56fd9',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]],
   ['edgesmaskoffacesinpolygons_109',['EdgesMaskOfFacesInPolygons',['../classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd',1,'meshkernel::Mesh2D']]],
-  ['evaluate_110',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms']]]
+  ['evaluate_110',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms']]],
+  ['extendboundingbox_111',['ExtendBoundingBox',['../classmeshkernel_1_1_bounding_box.html#a71c93795096639f092bb4be85b6168c8',1,'meshkernel::BoundingBox']]]
 ];

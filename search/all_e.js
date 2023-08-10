@@ -1,25 +1,11 @@
 var searchData=
 [
-  ['sample_485',['Sample',['../classmeshkernel_1_1_sample.html',1,'meshkernel::Sample'],['../classmeshkernel_1_1_sample.html#a19679428d7bb8aeb48c0eade2e108bd4',1,'meshkernel::Sample::Sample()=default'],['../classmeshkernel_1_1_sample.html#a496c6607132f268a5ee8049a176bbb4f',1,'meshkernel::Sample::Sample(double x, double y, double value)']]],
-  ['searchlocations_486',['SearchLocations',['../classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923',1,'meshkernel::Mesh']]],
-  ['searchnearestlocation_487',['SearchNearestLocation',['../classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70',1,'meshkernel::Mesh::SearchNearestLocation(Point point, Location meshLocation)'],['../classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b',1,'meshkernel::Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)']]],
-  ['secondorderderivative_488',['SecondOrderDerivative',['../classmeshkernel_1_1_spline_algorithms.html#a81b2b203d7a2ec76131f66411a8138b1',1,'meshkernel::SplineAlgorithms::SecondOrderDerivative(const std::vector&lt; Point &gt; &amp;splines, size_t startIndex, size_t endIndex)'],['../classmeshkernel_1_1_spline_algorithms.html#aa23cfd417d9f3d2a66e88896ac6b123a',1,'meshkernel::SplineAlgorithms::SecondOrderDerivative(const std::vector&lt; double &gt; &amp;coordinates, size_t startIndex, size_t endIndex)']]],
-  ['setdimensionaldistance_489',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#a465d832ec91e1c9275ae38bcf13ce64d',1,'meshkernel::FuncAdimensionalToDimensionalDistanceOnSpline']]],
-  ['sgn_490',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
-  ['simpleaveraging_491',['SimpleAveraging',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08',1,'meshkernel::AveragingInterpolation']]],
-  ['smoother_492',['Smoother',['../classmeshkernel_1_1_smoother.html',1,'meshkernel::Smoother'],['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother::Smoother()']]],
-  ['smoothing_5fiterations_493',['smoothing_iterations',['../structmeshkernel_1_1_curvilinear_parameters.html#a8188a3e37a5bfc26ee7cb716d869eb0a',1,'meshkernel::CurvilinearParameters::smoothing_iterations()'],['../structmeshkernel_1_1_mesh_refinement_parameters.html#ad74f6967d8491b6fb385073deede6f05',1,'meshkernel::MeshRefinementParameters::smoothing_iterations()']]],
-  ['smoothing_5fparameter_494',['smoothing_parameter',['../structmeshkernel_1_1_curvilinear_parameters.html#ad198e0967eef861f150ab8dbb8214add',1,'meshkernel::CurvilinearParameters']]],
-  ['snapmeshtolandboundaries_495',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
-  ['snapspline_496',['SnapSpline',['../classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca',1,'meshkernel::Splines']]],
-  ['snapsplinetoboundary_497',['SnapSplineToBoundary',['../classmeshkernel_1_1_spline_algorithms.html#a7231ad03967ebeeda214c89a664d7051',1,'meshkernel::SplineAlgorithms']]],
-  ['snaptolandboundary_498',['SnapToLandBoundary',['../classmeshkernel_1_1_polygons.html#a600a90b79de0311eebf190a185a42868',1,'meshkernel::Polygons']]],
-  ['solve_499',['Solve',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['sortedfacesaroundnode_500',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584',1,'meshkernel::Mesh2D']]],
-  ['sortedgesincounterclockwiseorder_501',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#accf79b4b9e80ce47284a4cb1d866790a',1,'meshkernel::Mesh']]],
-  ['sortedindices_502',['SortedIndices',['../namespacemeshkernel.html#a301a46d54abd1e167d861f05cd835c1e',1,'meshkernel']]],
-  ['sphericaltocartesian3d_503',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
-  ['splinealgorithms_504',['SplineAlgorithms',['../classmeshkernel_1_1_spline_algorithms.html',1,'meshkernel']]],
-  ['splines_505',['Splines',['../classmeshkernel_1_1_splines.html',1,'meshkernel::Splines'],['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)'],['../classmeshkernel_1_1_splines.html#aeac9a8bfda09d60c3c768491814a4338',1,'meshkernel::Splines::Splines(CurvilinearGrid const &amp;grid)']]],
-  ['splinestocurvilinearparameters_506',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]]
+  ['referencepoint_481',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
+  ['refine_5fintersected_482',['refine_intersected',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa39ee6bd0a820b00f564fac00e06cc26',1,'meshkernel::MeshRefinementParameters']]],
+  ['refinefirstpolygon_483',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#aee0f08ce9602ace9b15f952fc6116800',1,'meshkernel::Polygons']]],
+  ['refinement_5ftype_484',['refinement_type',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a5c1fb9c41739362ff3d3db9ee48b8351',1,'meshkernel::MeshRefinementParameters']]],
+  ['remove_5fskinny_5ftriangles_485',['remove_skinny_triangles',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a15b853a211af2462adf0e4e3ecd440c3',1,'meshkernel::SplinesToCurvilinearParameters']]],
+  ['reordervector_486',['ReorderVector',['../namespacemeshkernel.html#ac07da2d1dde6a5c5b46059ebade118ee',1,'meshkernel']]],
+  ['resizeandfill2dvector_487',['ResizeAndFill2DVector',['../namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1',1,'meshkernel']]],
+  ['resizeandfill3dvector_488',['ResizeAndFill3DVector',['../namespacemeshkernel.html#a89261a6fac5e2d68ef03f863222967af',1,'meshkernel']]]
 ];

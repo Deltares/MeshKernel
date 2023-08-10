@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['walkboundaryfromnode_527',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh2_d.html#a16f25bd9ed676e12cf753f9275737fcb',1,'meshkernel::Mesh2D']]],
-  ['what_528',['what',['../classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e',1,'meshkernel::MeshKernelError']]]
+  ['value_527',['value',['../classmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
+  ['values_528',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList::values()'],['../structmeshkernelapi_1_1_gridded_samples.html#aab159ea4c8567ff71c93a22671f57e01',1,'meshkernelapi::GriddedSamples::values()']]],
+  ['variadicerrormessage_529',['VariadicErrorMessage',['../classmeshkernel_1_1_variadic_error_message.html',1,'meshkernel::VariadicErrorMessage'],['../classmeshkernel_1_1_variadic_error_message.html#ab0f66073acb49ce612021b74597c728b',1,'meshkernel::VariadicErrorMessage::VariadicErrorMessage()']]],
+  ['vector_530',['Vector',['../classmeshkernel_1_1_vector.html',1,'meshkernel::Vector'],['../classmeshkernel_1_1_vector.html#a17119ad36f152b6b0cb7bc48b47caf71',1,'meshkernel::Vector::Vector()']]],
+  ['vectorproduct_531',['VectorProduct',['../namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c',1,'meshkernel']]]
 ];
