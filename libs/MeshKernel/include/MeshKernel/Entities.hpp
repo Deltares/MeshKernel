@@ -210,9 +210,13 @@ namespace meshkernel
     /// @returns \f$ (p.x / x, p.y / x)\f$
     Point operator/(const Point& p, const double x);
 
-    /// @brief Test points for equality
+    /// @brief Test points for equality using a default tolerance
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool operator==(const Point& p1, const Point& p2);
+
+    /// @brief Test points for equality upto a tolerance
+    /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
+    bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
 
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;
@@ -463,4 +467,9 @@ inline meshkernel::Point meshkernel::operator/(const Point& p, const double x)
 inline bool meshkernel::operator==(const Point& p1, const Point& p2)
 {
     return IsEqual(p1.x, p2.x) && IsEqual(p1.y, p2.y);
+}
+
+inline bool meshkernel::IsEqual(const Point& p1, const Point& p2, const double epsilon)
+{
+    return IsEqual(p1.x, p2.x, epsilon) && IsEqual(p1.y, p2.y, epsilon);
 }

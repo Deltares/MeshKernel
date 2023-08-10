@@ -32,6 +32,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Splines.hpp>
@@ -39,13 +40,57 @@
 namespace meshkernel
 {
 
+    class MeshSnappingCalculator
+    {
+    public:
+        virtual ~MeshSnappingCalculator() = default;
+
+        virtual double compute(const CurvilinearGridNodeIndices& currentPointIndex,
+                               const CurvilinearGridNodeIndices& gridLineIndex) const = 0;
+    };
+
+    class SmeerFunctie : public MeshSnappingCalculator
+    {
+    public:
+        SmeerFunctie(const CurvilinearGrid& grid,
+                     const CurvilinearGridNodeIndices& lowerLeft,
+                     const CurvilinearGridNodeIndices& upperRight,
+                     const CurvilinearGridNodeIndices& regionSize);
+
+        double compute(const CurvilinearGridNodeIndices& currentPointIndex,
+                       const CurvilinearGridNodeIndices& gridLineIndex) const override;
+
+    private:
+        const CurvilinearGrid& m_grid;
+        CurvilinearGridNodeIndices m_indexBoxLowerLeft;
+        CurvilinearGridNodeIndices m_indexBoxUpperRight;
+        CurvilinearGridNodeIndices m_snappedRegionSize;
+    };
+
+    class NotSmeerFunctie : public MeshSnappingCalculator
+    {
+    public:
+        NotSmeerFunctie(const CurvilinearGrid& originalGrid,
+                        const CurvilinearGrid& snappedGrid,
+                        const LandBoundary& landBoundary);
+
+        double compute(const CurvilinearGridNodeIndices& currentPointIndex,
+                       const CurvilinearGridNodeIndices& gridLineIndex) const override;
+
+    private:
+        const CurvilinearGrid& m_originalGrid;
+        const CurvilinearGrid& m_snappedGrid;
+        double m_dsix;
+    };
+
     class CurvilinearGridSnapping : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         CurvilinearGridSnapping(std::shared_ptr<CurvilinearGrid> grid,
-                                const LandBoundary& lb);
+                                const LandBoundary& lb,
+                                const std::vector<Point>& points);
 
         /// @brief Executes the snapping algorithm
         CurvilinearGrid Compute() override;
@@ -67,11 +112,27 @@ namespace meshkernel
         // virtual Point SnapPoint(const Point& pnt) const = 0;
 
     private:
-        void ModifyField(const UInt row, const UInt column, const int in, const int jn);
+        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeLoopBounds(const CurvilinearGridNodeIndices& currentNodeIndex,
+                                                                                             const CurvilinearGridNodeIndices& snappedRegionSize) const;
+
+        void ModifyField(const CurvilinearGridNodeIndices& currentNodeIndex,
+                         const CurvilinearGridNodeIndices& snappedRegionSize,
+                         const MeshSnappingCalculator& updateFactor);
+
+        void Initialise();
 
         // SHould this be a shared or raw poitner or a reference.
         const CurvilinearGrid& m_originalGrid;
         const LandBoundary& m_landBoundary;
+        const std::vector<Point> m_points;
+
+        // TODO change names, especially m_snappedRegionSize.
+        CurvilinearGridNodeIndices m_lineStartIndex;
+        CurvilinearGridNodeIndices m_lineEndIndex;
+        CurvilinearGridNodeIndices m_snappedRegionSize;
+        // is this the snapping region?
+        CurvilinearGridNodeIndices m_indexBoxLowerLeft;
+        CurvilinearGridNodeIndices m_indexBoxUpperRight;
     };
 
 } // namespace meshkernel

@@ -34,6 +34,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
 
 namespace meshkernel
@@ -97,6 +98,14 @@ namespace meshkernel
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
+
+        Point& GetNode(const UInt i, const UInt j);
+
+        Point GetNode(const UInt i, const UInt j) const;
+
+        Point& GetNode(const CurvilinearGridNodeIndices& index);
+
+        Point GetNode(const CurvilinearGridNodeIndices& index) const;
 
         /// @brief From a point gets the node indices of the closest edges
         /// @param[in] point The input point
@@ -213,3 +222,35 @@ namespace meshkernel
                      CurvilinearGridNodeIndices const& secondNode);
     };
 } // namespace meshkernel
+
+inline meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const UInt i, const UInt j)
+{
+    return m_gridNodes[i][j];
+}
+
+inline meshkernel::Point meshkernel::CurvilinearGrid::GetNode(const UInt i, const UInt j) const
+{
+    return m_gridNodes[i][j];
+}
+
+inline meshkernel::Point meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index) const
+{
+
+    if (!index.IsValid())
+    {
+        throw ConstraintError("Invalid node index");
+    }
+
+    return m_gridNodes[index.m_m][index.m_n];
+}
+
+inline meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index)
+{
+
+    if (!index.IsValid())
+    {
+        throw ConstraintError("Invalid node index");
+    }
+
+    return m_gridNodes[index.m_m][index.m_n];
+}

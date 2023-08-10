@@ -736,8 +736,11 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
                                                     const CurvilinearGridNodeIndices& upperRightIndices)
 {
     // horizontal smoothing factor
+    // integer
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
+    // integer
     const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
+    // double
     const auto mSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor

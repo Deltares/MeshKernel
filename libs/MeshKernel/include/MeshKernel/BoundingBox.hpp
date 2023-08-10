@@ -34,6 +34,7 @@
 
 namespace meshkernel
 {
+
     /// @brief A class defining a bounding box
     class BoundingBox
     {
@@ -55,26 +56,7 @@ namespace meshkernel
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
         template <typename T>
-        BoundingBox(const std::vector<T>& points)
-        {
-            double minx = std::numeric_limits<double>::max();
-            double maxx = std::numeric_limits<double>::lowest();
-            double miny = std::numeric_limits<double>::max();
-            double maxy = std::numeric_limits<double>::lowest();
-
-            for (const auto& point : points)
-            {
-                if (point.IsValid())
-                {
-                    minx = std::min(minx, point.x);
-                    maxx = std::max(maxx, point.x);
-                    miny = std::min(miny, point.y);
-                    maxy = std::max(maxy, point.y);
-                }
-            }
-            m_lowerLeft = Point(minx, miny);
-            m_upperRight = Point(maxx, maxy);
-        }
+        BoundingBox(const std::vector<T>& points) : BoundingBox(points, 0, points.size() - 1) {}
 
         // @brief Constructor taking a vector of coordinates types
         // @tparam T Requires IsCoordinate<T>
