@@ -1790,15 +1790,15 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_error(const char*& error_message)
+    MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
-        error_message = exceptionMessage;
+        std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
         return Success;
     }
 
-    MKERNEL_API int mkernel_get_version(const char*& version)
+    MKERNEL_API int mkernel_get_version(char* version)
     {
-        version = versionString;
+        std::memcpy(version, versionString, sizeof versionString);
         return Success;
     }
 

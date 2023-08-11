@@ -535,7 +535,7 @@ namespace meshkernelapi
         /// @brief Gets pointer to error message.
         /// @param[out] error_message The pointer to the latest error message
         /// @returns Error code
-        MKERNEL_API int mkernel_get_error(const char*& error_message);
+        MKERNEL_API int mkernel_get_error(char* error_message);
 
         /// @brief Gets an int indicating the faces location type
         /// @param[out] type The int indicating the face location type
@@ -586,7 +586,7 @@ namespace meshkernelapi
         /// @brief Gets pointer to version string.
         /// @param[out] version Version string
         /// @returns Error code
-        MKERNEL_API int mkernel_get_version(const char*& version);
+        MKERNEL_API int mkernel_get_version(char* version);
 
         /// @brief Gets the Mesh1D data
         ///
