@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2022.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,98 +40,139 @@
 namespace meshkernel
 {
 
-    class MeshSnappingCalculator
+    /// @brief Computes smoothing factor for a point in the grid.
+    class MeshSmoothingCalculator
     {
     public:
-        virtual ~MeshSnappingCalculator() = default;
+        /// @brief Default destructor
+        virtual ~MeshSmoothingCalculator() = default;
 
-        virtual double compute(const CurvilinearGridNodeIndices& currentPointIndex,
-                               const CurvilinearGridNodeIndices& gridLineIndex) const = 0;
+        /// @brief Compute the mesh smoothing factor.
+        ///
+        /// @param [in] snappedNodeIndex Index of the snapped grid point
+        /// @param [in] gridLinePointIndex Current point on the smoothing grid line.
+        virtual double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                               const CurvilinearGridNodeIndices& gridLinePointIndex) const = 0;
     };
 
-    class SmeerFunctie : public MeshSnappingCalculator
+    /// @brief Computes the directional smoothing factor for a point in the grid.
+    class DirectionalSmoothingCalculator : public MeshSmoothingCalculator
     {
     public:
-        SmeerFunctie(const CurvilinearGrid& grid,
-                     const CurvilinearGridNodeIndices& lowerLeft,
-                     const CurvilinearGridNodeIndices& upperRight,
-                     const CurvilinearGridNodeIndices& regionSize);
+        /// @brief Constructor
+        /// @param [in] grid The starting (before smoothing) grid
+        /// @param [in] lowerLeft       Index of lower left point of smoothing region
+        /// @param [in] upperRight      Index of upper right point of smoothing region
+        /// @param [in] regionIndicator
+        DirectionalSmoothingCalculator(const CurvilinearGrid& grid,
+                                       const CurvilinearGridNodeIndices& lowerLeft,
+                                       const CurvilinearGridNodeIndices& upperRight,
+                                       const CurvilinearGridNodeIndices& regionIndicator);
 
-        double compute(const CurvilinearGridNodeIndices& currentPointIndex,
-                       const CurvilinearGridNodeIndices& gridLineIndex) const override;
+        /// @brief Compute the directional smoothing factor.
+        /// @param [in] snappedNodeIndex Index of the snapped grid point
+        double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                       const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
 
     private:
+        /// @brief The original grid before smoothing
         const CurvilinearGrid& m_grid;
+
+        /// @brief Index of lower left point of smoothing region
         CurvilinearGridNodeIndices m_indexBoxLowerLeft;
+
+        /// @brief Index of upper right point of smoothing region
         CurvilinearGridNodeIndices m_indexBoxUpperRight;
-        CurvilinearGridNodeIndices m_snappedRegionSize;
+
+        /// @brief
+        CurvilinearGridNodeIndices m_smoothingRegionIndicator;
     };
 
-    class NotSmeerFunctie : public MeshSnappingCalculator
+    /// @brief Computes the non-directional smoothing factor for a point in the grid.
+    class NonDirectionalSmoothingCalculator : public MeshSmoothingCalculator
     {
     public:
-        NotSmeerFunctie(const CurvilinearGrid& originalGrid,
-                        const CurvilinearGrid& snappedGrid,
-                        const LandBoundary& landBoundary);
+        /// @brief Constructor
+        /// @param [in] The starting (before smoothing) grid
+        /// @param [in] The grid to which smoothing is to be applied
+        /// @param [in] The landboundary
+        NonDirectionalSmoothingCalculator(const CurvilinearGrid& originalGrid,
+                                          const CurvilinearGrid& snappedGrid,
+                                          const LandBoundary& landBoundary);
 
-        double compute(const CurvilinearGridNodeIndices& currentPointIndex,
-                       const CurvilinearGridNodeIndices& gridLineIndex) const override;
+        /// @brief Compute the non-direcitonal smoothing factor.
+        /// @param [in] snappedNodeIndex Index of the snapped grid point
+        double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                       const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
 
     private:
+        /// @brief Compute the minimum smoothing region radius.
+        ///
+        /// Used to set the m_smoothingRegionMinimum member.
+        static double CalculateSmoothingRegion(const CurvilinearGrid& grid,
+                                               const LandBoundary& landBoundary);
+
+        /// @brief The original grid before smoothing
         const CurvilinearGrid& m_originalGrid;
+
+        /// @brief The grid to which the smoothing is to be applied.
         const CurvilinearGrid& m_snappedGrid;
-        double m_dsix;
+
+        /// @brief The minimum smoothing region radius
+        double m_smoothingRegionMinimum{0.0};
     };
 
+    /// @brief Smoothly snap the grid to a land boundary or spline.
     class CurvilinearGridSnapping : public CurvilinearGridAlgorithm
     {
     public:
-        /// @brief Class constructor
-        /// @param[in] grid                        The input curvilinear grid
+        /// @brief constructor
+        /// @param [in] grid         The input curvilinear grid
+        /// @param [in] landBoundary The land boundary to which the grid is to be snapped.
+        /// @param [in] points       The points used to control the snapping and smoothing.
         CurvilinearGridSnapping(std::shared_ptr<CurvilinearGrid> grid,
-                                const LandBoundary& lb,
+                                const LandBoundary& landBoundary,
                                 const std::vector<Point>& points);
 
-        /// @brief Executes the snapping algorithm
+        /// @brief Executes the snapping and smooting algorithm
         CurvilinearGrid Compute() override;
 
-        // TODO How to add this?
-        // 1. two different classes, constructed with land bondary or spline
-        // 2. two constructors (or snap to functions) that create an adaptor.
-
-        // void SnapTo(const LandBoundary& landboundary);
-
-        // void SnapTo(const Splines& splines,
-        //             const UInt whichSpline);
-
-    protected:
-        /// @brief Snap the point to the object.
-        // TODO what is best to do here?
-        // 1. virtual function
-        // 2. Adaptor for LandBoundary and Splines
-        // virtual Point SnapPoint(const Point& pnt) const = 0;
-
     private:
-        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeLoopBounds(const CurvilinearGridNodeIndices& currentNodeIndex,
-                                                                                             const CurvilinearGridNodeIndices& snappedRegionSize) const;
+        /// @brief Compute the loop bounds for the smoothing.
+        /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
+        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeLoopBounds(const CurvilinearGridNodeIndices& snappedNodeIndex) const;
 
-        void ModifyField(const CurvilinearGridNodeIndices& currentNodeIndex,
-                         const CurvilinearGridNodeIndices& snappedRegionSize,
-                         const MeshSnappingCalculator& updateFactor);
+        /// @brief Apply the smoothing to the grid
+        /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
+        /// @param [in] smoothingFactor   Calculator to compute the amount of smoothing to be applied at a particular point in the grid
+        void ApplySmoothingToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                                  const MeshSmoothingCalculator& smoothingFactor);
 
+        /// @brief Initialise member variables
         void Initialise();
 
-        // SHould this be a shared or raw poitner or a reference.
+        /// @brief The grid to be smoothed
         const CurvilinearGrid& m_originalGrid;
+
+        /// @brief The land boundary to which the grid is to be snapped.
         const LandBoundary& m_landBoundary;
+
+        /// @brief The control points for the snapping.
         const std::vector<Point> m_points;
 
-        // TODO change names, especially m_snappedRegionSize.
+        /// @brief The start point index of the grid line to be snapped
         CurvilinearGridNodeIndices m_lineStartIndex;
+
+        /// @brief The end point index of the grid line to be snapped
         CurvilinearGridNodeIndices m_lineEndIndex;
-        CurvilinearGridNodeIndices m_snappedRegionSize;
-        // is this the snapping region?
+
+        /// @brief The start points index of the grid line to be snapped
+        CurvilinearGridNodeIndices m_smoothingRegionIndicator;
+
+        /// @brief Index of lower left point for smoothing region
         CurvilinearGridNodeIndices m_indexBoxLowerLeft;
+
+        /// @brief Index of upper right point for smoothing region
         CurvilinearGridNodeIndices m_indexBoxUpperRight;
     };
 
