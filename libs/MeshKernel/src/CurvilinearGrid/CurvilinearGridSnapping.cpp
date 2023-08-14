@@ -90,15 +90,9 @@ meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(std::shared_ptr<Cur
         throw ConstraintError(VariadicErrorMessage("Snapping line or region has not been defined, number of points: {}", m_points.size()));
     }
 
-    // Check that all the points are valid.
-    struct AllValid
-    {
-        void operator()(const Point& p) { allValid = allValid && p.IsValid(); }
-        operator bool() const { return allValid; }
-        bool allValid{true};
-    };
-
-    if (auto allValid = std::for_each(m_points.begin(), m_points.end(), AllValid()); !allValid)
+    if (bool allValid = std::accumulate(m_points.begin(), m_points.end(), true, [](bool val, const Point& p)
+                                        { return val && p.IsValid(); });
+        !allValid)
     {
         throw ConstraintError("1 or more of the selected points is invalid");
     }
