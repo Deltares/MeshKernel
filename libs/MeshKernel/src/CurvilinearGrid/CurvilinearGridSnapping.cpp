@@ -68,9 +68,8 @@ double meshkernel::NonDirectionalSmoothingCalculator::compute(const CurvilinearG
     double factor = 0.0;
 
     double rsx = std::max(m_smoothingRegionMinimum, std::hypot(meshDelta.x, meshDelta.y));
-    double rn = std::hypot(pointDelta.x, pointDelta.y);
 
-    if (rn < rsx)
+    if (double rn = std::hypot(pointDelta.x, pointDelta.y); rn < rsx)
     {
         rn = 0.5 * std::numbers::pi * rn / rsx;
         factor = 0.5 * (1.0 + std::cos(2.0 * rn));
@@ -127,7 +126,6 @@ void meshkernel::CurvilinearGridSnapping::Initialise()
         {
             CurvilinearGridNodeIndices extentIndex = m_grid.GetNodeIndices(m_points[2]);
 
-            // TODO check the indices for a second line that is both shorter and longer than the first.
             m_indexBoxLowerLeft = CurvilinearGridNodeIndices(std::min({m_lineStartIndex.m_m, m_lineEndIndex.m_m, extentIndex.m_m}),
                                                              std::min({m_lineStartIndex.m_n, m_lineEndIndex.m_n, extentIndex.m_n}));
             m_indexBoxUpperRight = CurvilinearGridNodeIndices(std::max({m_lineStartIndex.m_m, m_lineEndIndex.m_m, extentIndex.m_m}),
@@ -137,7 +135,6 @@ void meshkernel::CurvilinearGridSnapping::Initialise()
         {
             auto [lowerExtentIndex, upperExtentIndex] = m_grid.ComputeBlockFromCornerPoints(m_points[2], m_points[3]);
 
-            // TODO probably need to take the mininum of the line start and end indices too.
             m_indexBoxLowerLeft = CurvilinearGridNodeIndices(std::min(m_lineStartIndex.m_m, lowerExtentIndex.m_m), std::min(m_lineStartIndex.m_n, lowerExtentIndex.m_n));
             m_indexBoxUpperRight = CurvilinearGridNodeIndices(std::max(m_lineEndIndex.m_m, upperExtentIndex.m_m), std::max(m_lineEndIndex.m_n, upperExtentIndex.m_n));
         }
@@ -153,21 +150,20 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
 
     if (m_points.size() == 2)
     {
-        // TODO Add comment
-        // TODO Why is this variable called nump?
+        // Name from modgr4.f90
         constexpr UInt nump = 80;
-        UInt m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - nump * m_smoothingRegionIndicator.m_m) - 1);
-        UInt m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + nump * m_smoothingRegionIndicator.m_m) - 1);
-        UInt n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - nump * m_smoothingRegionIndicator.m_n) - 1);
-        UInt n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + nump * m_smoothingRegionIndicator.m_n) - 1);
+        auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - nump * m_smoothingRegionIndicator.m_m) - 1);
+        auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + nump * m_smoothingRegionIndicator.m_m) - 1);
+        auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - nump * m_smoothingRegionIndicator.m_n) - 1);
+        auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + nump * m_smoothingRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
     else
     {
-        UInt m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - 10000 * m_smoothingRegionIndicator.m_m - 1));
-        UInt m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + 10000 * m_smoothingRegionIndicator.m_m - 1));
-        UInt n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - 10000 * m_smoothingRegionIndicator.m_n - 1));
-        UInt n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + 10000 * m_smoothingRegionIndicator.m_n - 1));
+        auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - 10000 * m_smoothingRegionIndicator.m_m - 1));
+        auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + 10000 * m_smoothingRegionIndicator.m_m - 1));
+        auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - 10000 * m_smoothingRegionIndicator.m_n - 1));
+        auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + 10000 * m_smoothingRegionIndicator.m_n - 1));
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
 }
@@ -193,7 +189,6 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
             {
                 double factor = smoothingFactor.compute(snappedNodeIndex, gridLinePointIndex);
 
-                // TODO CHeck this is correct. Can the factor be negative
                 if (factor > 0.0)
                 {
                     m_grid.GetNode(gridLinePointIndex) = m_originalGrid.GetNode(gridLinePointIndex) + factor * meshDelta;
