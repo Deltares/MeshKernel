@@ -218,6 +218,24 @@ namespace meshkernel
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
 
+    /// @brief Rotate a point around a reference
+    /// @param[in] point The point to rotate
+    /// @param[in] angle The rotation angle
+    /// @param[in] reference The reference point where rotation should be performed
+    /// @returns The rotated point
+    static Point Rotate(const Point& point, const double angle, const Point& reference)
+    {
+        const auto translatedPoint = point - reference;
+
+        const auto angleInRad = angle * constants::conversion::degToRad;
+        const auto cosineAngle = std::cos(angleInRad);
+        const auto sinAngle = std::sin(angleInRad);
+        Point result(translatedPoint.x * cosineAngle - translatedPoint.y * sinAngle,
+                     translatedPoint.x * sinAngle + translatedPoint.y * cosineAngle);
+
+        return result + reference;
+    }
+
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;
 

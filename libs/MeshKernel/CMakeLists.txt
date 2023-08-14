@@ -115,6 +115,7 @@ set(
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
+  ${DOMAIN_INC_DIR}/Vector.hpp
 )
 
 set(

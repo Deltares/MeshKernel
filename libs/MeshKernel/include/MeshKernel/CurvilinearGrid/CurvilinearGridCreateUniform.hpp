@@ -133,13 +133,15 @@ namespace meshkernel
         /// @returns[in] The adjusted latitude
         static double ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude);
 
-        /// @brief Compute the number of rows required to generate a grid from minY to maxY in spherical coordinates
+        /// @brief Compute the number of rows required to generate a grid from minY to maxY
         /// @param[in] minY The min latitude
         /// @param[in] maxY The max latitude
+        /// @param[in] projection The projection to use
         /// @returns[in] The number of rows
-        static int ComputeNumRowsSpherical(double minY,
-                                           double maxY,
-                                           double blockSizeY);
+        static int ComputeNumRows(double minY,
+                                  double maxY,
+                                  double blockSizeY,
+                                  Projection projection);
 
         Projection m_projection; ///< The projection to use
     };

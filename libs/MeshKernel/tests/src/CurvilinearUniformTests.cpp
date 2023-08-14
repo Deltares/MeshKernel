@@ -33,7 +33,7 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
-    ASSERT_EQ(10, numValidNodes);
+    ASSERT_EQ(9, numValidNodes);
 }
 
 TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
@@ -49,10 +49,10 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
     const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::spherical);
 
     const double angle = 0.0;
-    const double blockSizeX = 5000000.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
-    const double blockSizeY = 5000000.0;
+    const double blockSizeX = 500.0; // resolution in degree
+    const double blockSizeY = 500.0;
 
-    // Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
+    // Execution: function not producing grid points because too large block size
     CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
     const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
                                                                                                         blockSizeX,

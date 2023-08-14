@@ -462,3 +462,18 @@ double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
     }
     return maximumEdgeLength;
 }
+
+meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const
+{
+    std::vector<Point> points;
+    auto const& [startPolygonIndex, endPolygonIndex] = OuterIndices(polygonIndex);
+    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
+    {
+        auto const& polygonNode = m_nodes[i];
+        if (polygonNode.IsValid())
+        {
+            points.emplace_back(polygonNode);
+        }
+    }
+    return {points};
+}
