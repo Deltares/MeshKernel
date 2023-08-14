@@ -17,7 +17,7 @@ meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const
 double meshkernel::DirectionalSmoothingCalculator::compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
                                                            const CurvilinearGridNodeIndices& gridLinePointIndex) const
 {
-    auto [scalingH, scalingV, scalingMixed] = m_grid.ComputeDirectionalSmoothingFactors(gridLinePointIndex, snappedNodeIndex, m_indexBoxLowerLeft, m_indexBoxUpperRight);
+    auto [scalingH, scalingV, scalingMixed] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(gridLinePointIndex, snappedNodeIndex, m_indexBoxLowerLeft, m_indexBoxUpperRight);
 
     double factor = 0.0;
 
@@ -46,7 +46,7 @@ double meshkernel::NonDirectionalSmoothingCalculator::CalculateSmoothingRegion(c
     BoundingBox gridBb = grid.GetBoundingBox();
     BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
 
-    Point delta = meshkernel::merge(gridBb, landBoundaryBb).delta();
+    Point delta = meshkernel::Merge(gridBb, landBoundaryBb).Delta();
 
     delta *= 1.2;
 
@@ -71,8 +71,7 @@ double meshkernel::NonDirectionalSmoothingCalculator::compute(const CurvilinearG
 
     if (double rn = std::hypot(pointDelta.x, pointDelta.y); rn < rsx)
     {
-        rn = 0.5 * std::numbers::pi * rn / rsx;
-        factor = 0.5 * (1.0 + std::cos(2.0 * rn));
+        factor = 0.5 * (1.0 + std::cos(std::numbers::pi * rn / rsx));
     }
 
     return factor;
