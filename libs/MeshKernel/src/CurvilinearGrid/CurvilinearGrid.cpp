@@ -895,7 +895,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
         upperRight.y = std::max(upperRight.y, m_gridNodes[last][i].y);
     }
 
-    // This assumes that each colum has the same number of points
+    // This assumes that each column has the same number of points
     last = m_gridNodes[0].size() - 1;
 
     // First loop over upper boundary (i,last)

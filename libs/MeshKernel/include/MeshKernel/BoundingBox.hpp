@@ -58,11 +58,11 @@ namespace meshkernel
         template <typename T>
         explicit BoundingBox(const std::vector<T>& points) : BoundingBox(points, 0, points.size() - 1) {}
 
-        // @brief Constructor taking a vector of coordinates types
-        // @tparam T Requires IsCoordinate<T>
-        // @param[in] points The point values
-        // @param[in] start The start index for the array slice
-        // @param[in] end The end index for the array slice
+        /// @brief Constructor taking a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
         template <typename T>
         BoundingBox(const std::vector<T>& points, size_t start, size_t end)
         {

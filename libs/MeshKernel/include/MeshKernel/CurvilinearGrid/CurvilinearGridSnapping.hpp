@@ -134,7 +134,7 @@ namespace meshkernel
                                 const LandBoundary& landBoundary,
                                 const std::vector<Point>& points);
 
-        /// @brief Executes the snapping and smooting algorithm
+        /// @brief Executes the snapping and smoothing algorithm
         CurvilinearGrid Compute() override;
 
     private:
