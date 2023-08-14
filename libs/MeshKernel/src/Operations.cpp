@@ -1489,6 +1489,11 @@ namespace meshkernel
     std::vector<double> ComputePolyLineEdgesLengths(const std::vector<Point>& polyline, Projection projection)
     {
         std::vector<double> edgeLengths;
+        if (polyline.empty())
+        {
+            return edgeLengths;
+        }
+
         edgeLengths.reserve(polyline.size());
 
         for (UInt p = 0; p < polyline.size() - 1; ++p)
@@ -1504,6 +1509,11 @@ namespace meshkernel
     {
         // Compute the edge lengths and the edge coordinates
         auto const edgeLengths = ComputePolyLineEdgesLengths(polyline, projection);
+        if (edgeLengths.empty())
+        {
+            return edgeLengths;
+        }
+
         std::vector<double> chainages(polyline.size());
         chainages[0] = 0.0;
         for (UInt i = 0; i < edgeLengths.size(); ++i)

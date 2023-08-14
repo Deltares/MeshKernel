@@ -2801,7 +2801,6 @@ TEST_F(CartesianApiTests, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
 
     // Execute, compute offsetted chainages
     double const offset = 1.0;
-    std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_offsetted_chainages(meshKernelId, offset);
 
     // Convert network 1d to mesh1d
