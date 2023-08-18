@@ -31,6 +31,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>
@@ -1324,6 +1325,8 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygon)
 {
 
+    Polygon polygonObj(polygon, m_projection);
+
     // Find faces
     Administrate();
     std::vector<bool> isVisited(GetNumEdges(), false);
@@ -1342,8 +1345,8 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygon, m_projection);
-        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygon, m_projection);
+        bool firstNodeInPolygon = polygonObj.Contains(m_nodes[firstNodeIndex]);
+        bool secondNodeInPolygon = polygonObj.Contains(m_nodes[secondNodeIndex]);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -1364,7 +1367,8 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(polygonObj, isVisited, currentNode, meshBoundaryPolygon);
+        // WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = static_cast<UInt>(meshBoundaryPolygon.size());
 
@@ -1373,7 +1377,8 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(polygonObj, isVisited, currentNode, meshBoundaryPolygon);
+            // WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -1404,6 +1409,41 @@ void Mesh2D::WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
         if (!currentNodeInPolygon)
         {
             currentNodeInPolygon = IsPointInPolygonNodes(m_nodes[currentNode], polygonNodes, m_projection);
+        }
+
+        if (!currentNodeInPolygon)
+        {
+            break;
+        }
+
+        const auto currentEdge = m_nodesEdges[currentNode][e];
+        if (isVisited[currentEdge] || !IsEdgeOnBoundary(currentEdge))
+        {
+            e++;
+            continue;
+        }
+
+        currentNode = OtherNodeOfEdge(m_edges[currentEdge], currentNode);
+        e = 0;
+        currentNodeInPolygon = false;
+
+        meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
+        isVisited[currentEdge] = true;
+    }
+}
+
+void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
+                                  std::vector<bool>& isVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon) const
+{
+    UInt e = 0;
+    bool currentNodeInPolygon = false;
+    while (e < m_nodesNumEdges[currentNode])
+    {
+        if (!currentNodeInPolygon)
+        {
+            currentNodeInPolygon = polygon.Contains(m_nodes[currentNode]);
         }
 
         if (!currentNodeInPolygon)

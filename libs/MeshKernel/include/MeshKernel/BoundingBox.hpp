@@ -57,24 +57,14 @@ namespace meshkernel
         template <typename T>
         BoundingBox(const std::vector<T>& points)
         {
-            double minx = std::numeric_limits<double>::max();
-            double maxx = std::numeric_limits<double>::lowest();
-            double miny = std::numeric_limits<double>::max();
-            double maxy = std::numeric_limits<double>::lowest();
-
-            for (const auto& point : points)
-            {
-                if (point.IsValid())
-                {
-                    minx = std::min(minx, point.x);
-                    maxx = std::max(maxx, point.x);
-                    miny = std::min(miny, point.y);
-                    maxy = std::max(maxy, point.y);
-                }
-            }
-            m_lowerLeft = Point(minx, miny);
-            m_upperRight = Point(maxx, maxy);
+            Reset(points);
         }
+
+        /// @brief Reset bounding box with a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        template <typename T>
+        void Reset(const std::vector<T>& points);
 
         /// @brief Not equal operator
         /// @param[in] other The other bounding box to compare
@@ -132,3 +122,25 @@ namespace meshkernel
         Point m_upperRight; ///< The upper right corner of the bounding box
     };
 } // namespace meshkernel
+
+template <typename T>
+void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
+{
+    double minx = std::numeric_limits<double>::max();
+    double maxx = std::numeric_limits<double>::lowest();
+    double miny = std::numeric_limits<double>::max();
+    double maxy = std::numeric_limits<double>::lowest();
+
+    for (const auto& point : points)
+    {
+        if (point.IsValid())
+        {
+            minx = std::min(minx, point.x);
+            maxx = std::max(maxx, point.x);
+            miny = std::min(miny, point.y);
+            maxy = std::max(maxy, point.y);
+        }
+    }
+    m_lowerLeft = Point(minx, miny);
+    m_upperRight = Point(maxx, maxy);
+}

@@ -349,11 +349,16 @@ namespace meshkernel
     /// @param[in,out] point The point to be incremented.
     void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point);
 
-    /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
+    /// @brief For a given polygon the function may shift the input coordinates
     /// @param[in,out] polygon    The input polygon.
+    /// @note To be called for spherical coordinate system only
+    void TranslateSphericalCoordinates(std::vector<Point>& polygon);
+
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] polygon    The input polygon.
     /// @param[in]     projection The coordinate system projection.
     /// @return The reference point
-    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection);
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection);
 
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root

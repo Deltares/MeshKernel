@@ -148,6 +148,7 @@ namespace meshkernel
                                UInt startNode,
                                UInt endNode)
     {
+
         if (polygonNodes.empty())
         {
             return true;
@@ -734,14 +735,44 @@ namespace meshkernel
         }
     }
 
-    Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection)
+    void TranslateSphericalCoordinates(std::vector<Point>& polygon)
     {
-        auto minX = std::numeric_limits<double>::max();
-        auto minY = std::numeric_limits<double>::max();
+        double minX = std::numeric_limits<double>::max();
+        double maxX = std::numeric_limits<double>::lowest();
+
+        for (UInt i = 0; i < polygon.size(); ++i)
+        {
+            minX = std::min(polygon[i].x, minX);
+            maxX = std::max(polygon[i].x, maxX);
+        }
+
+        if (maxX - minX > 180.0)
+        {
+            const double deltaX = maxX - 180.0;
+
+            for (UInt i = 0; i < polygon.size(); ++i)
+            {
+                if (polygon[i].x < deltaX)
+                {
+                    polygon[i].x = polygon[i].x + 360.0;
+                }
+            }
+        }
+    }
+
+    Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection)
+    {
+        double minX = std::numeric_limits<double>::max();
+        // Used only in spherical coordinate system, but quicker to compute at the same time as the minX
+        double maxX = std::numeric_limits<double>::lowest();
+        double minY = std::numeric_limits<double>::max();
         const auto numPoints = static_cast<UInt>(polygon.size());
+
         for (UInt i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
+            maxX = std::max(polygon[i].x, maxX);
+
             if (abs(polygon[i].y) < abs(minY))
             {
                 minY = polygon[i].y;
@@ -750,23 +781,9 @@ namespace meshkernel
 
         if (projection == Projection::spherical)
         {
-            double maxX = std::numeric_limits<double>::lowest();
-            for (UInt i = 0; i < numPoints; ++i)
-            {
-                maxX = std::max(polygon[i].x, maxX);
-            }
-
             if (maxX - minX > 180.0)
             {
-                const double deltaX = maxX - 180.0;
-                for (UInt i = 0; i < numPoints; ++i)
-                {
-                    if (polygon[i].x < deltaX)
-                    {
-                        polygon[i].x = polygon[i].x + 360.0;
-                    }
-                }
-                minX = minX + 360.0;
+                minX += 360.0;
             }
         }
 
@@ -1167,6 +1184,13 @@ namespace meshkernel
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
+
+        if (projection == Projection::spherical)
+        {
+            // TODO SHould this be called for spherical accurate too?
+            TranslateSphericalCoordinates(polygon);
+        }
+
         const Point reference = ReferencePoint(polygon, projection);
         const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
         for (UInt n = 0; n < numberOfPointsOpenedPolygon; n++)

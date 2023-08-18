@@ -31,6 +31,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 
@@ -74,7 +75,6 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
-
     std::vector generatedPoints(GetNumPolygons(), std::vector<Point>());
     std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
@@ -96,9 +96,10 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             continue;
         }
 
-        const auto [localPolygonArea, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(localPolygon, m_projection);
+        Polygon polygon(std::move(localPolygon), m_projection);
 
-        const auto perimeter = PerimeterClosedPolygon(localPolygon);
+        const auto [localPolygonArea, centerOfMass, isCounterClockWise] = polygon.FaceAreaAndCenterOfMass();
+        const auto perimeter = polygon.ClosedPerimeterLength();
 
         // average triangle size
         const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints);
@@ -112,7 +113,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
         }
 
-        triangulationWrapper.Compute(localPolygon,
+        triangulationWrapper.Compute(polygon.Points(),
                                      TriangulationWrapper::TriangulationOptions::GeneratePoints,
                                      averageTriangleArea,
                                      numberOfTriangles);

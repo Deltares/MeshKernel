@@ -30,6 +30,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Polygon.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -238,6 +239,11 @@ namespace meshkernel
         /// @param[in] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
+                                  std::vector<bool>& isVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon) const;
+
+        void WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
