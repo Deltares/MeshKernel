@@ -32,8 +32,14 @@ namespace meshkernelapi
     /// @brief A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manner
     struct Mesh2D
     {
+        /// @brief For each edge the indices of the faces
+        int* edge_faces = nullptr;
+
         /// @brief The nodes composing each mesh 2d edge
         int* edge_nodes = nullptr;
+
+        /// @brief For each face the indices of the edges
+        int* face_edges = nullptr;
 
         /// @brief The nodes composing each mesh 2d face
         int* face_nodes = nullptr;
@@ -60,16 +66,16 @@ namespace meshkernelapi
         double* face_y = nullptr;
 
         /// @brief The number of mesh nodes
-        int num_nodes;
+        int num_nodes = 0;
 
         /// @brief The number of edges
-        int num_edges;
+        int num_edges = 0;
 
         /// @brief The number of faces
-        int num_faces;
+        int num_faces = 0;
 
         /// @brief The total number of nodes composing the mesh 2d faces
-        int num_face_nodes;
+        int num_face_nodes = 0;
     };
 
 } // namespace meshkernelapi
