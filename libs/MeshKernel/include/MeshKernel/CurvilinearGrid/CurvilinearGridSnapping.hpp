@@ -56,6 +56,8 @@ namespace meshkernel
     };
 
     /// @brief Computes the directional smoothing factor for a point in the grid.
+    ///
+    /// The size of the smoothing region is determine by the user selected points.
     class DirectionalSmoothingCalculator : public MeshSmoothingCalculator
     {
     public:
@@ -84,11 +86,13 @@ namespace meshkernel
         /// @brief Index of upper right point of smoothing region
         CurvilinearGridNodeIndices m_indexBoxUpperRight;
 
-        /// @brief
+        /// @brief Indicator for the smoothing direction.
         CurvilinearGridNodeIndices m_smoothingRegionIndicator;
     };
 
     /// @brief Computes the non-directional smoothing factor for a point in the grid.
+    ///
+    /// The size of the smoothing region is pre-determined.
     class NonDirectionalSmoothingCalculator : public MeshSmoothingCalculator
     {
     public:
@@ -106,6 +110,14 @@ namespace meshkernel
                        const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
 
     private:
+        /// @brief Viewing windows aspect ratio, value is used for the snapping.
+        ///
+        /// Value from editgridlineblok.f90
+        static constexpr double aspectRatio = 990.0 / 1600.0;
+
+        /// @brief How much to enlarge the size of the smoothing region bounding box dimensions.
+        static constexpr double smoothingRegionEnlargementFactor = 1.2;
+
         /// @brief Compute the minimum smoothing region radius.
         ///
         /// Used to set the m_smoothingRegionMinimum member.
@@ -138,6 +150,21 @@ namespace meshkernel
         CurvilinearGrid Compute() override;
 
     private:
+        /// @brief Tolerance to determine if point is on (close to) boundary
+        static constexpr double epsilon = 1.0e-5;
+
+        /// @brief Smoothing region scaling.
+        ///
+        /// Used when there are exactly 2 domain boundary points selected, to include a predefined smoothing region.
+        /// Value for nump from modgr4.f90
+        static constexpr UInt predefinedSmootingRegionFactor = 80;
+
+        /// @brief Smoothing region scaling.
+        ///
+        /// Used when there are more than 2 domain boundary points selected, to include a user defined smoothing region.
+        /// Value from modgr4.f90
+        static constexpr UInt userDefinedSmootingRegionFactor = 10000;
+
         /// @brief Compute the loop bounds for the smoothing.
         /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
         std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeLoopBounds(const CurvilinearGridNodeIndices& snappedNodeIndex) const;

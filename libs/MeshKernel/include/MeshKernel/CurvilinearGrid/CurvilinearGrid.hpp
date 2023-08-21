@@ -99,12 +99,22 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
 
+        /// @brief Get the grid node at the (i,j) location
         Point& GetNode(const UInt i, const UInt j);
 
+        /// @brief Get the grid node at the (i,j) location
         Point GetNode(const UInt i, const UInt j) const;
 
+        /// @brief Get the grid node at the location specified by the index.
+        ///
+        /// @note Exception will be raised for a non-valid index
+        /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
         Point& GetNode(const CurvilinearGridNodeIndices& index);
 
+        /// @brief Get the grid node at the location specified by the index.
+        ///
+        /// @note Exception will be raised for a non-valid index
+        /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
         Point GetNode(const CurvilinearGridNodeIndices& index) const;
 
         /// @brief From a point gets the node indices of the closest edges

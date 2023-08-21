@@ -40,15 +40,13 @@ double meshkernel::DirectionalSmoothingCalculator::compute(const CurvilinearGrid
 double meshkernel::NonDirectionalSmoothingCalculator::CalculateSmoothingRegion(const CurvilinearGrid& grid,
                                                                                const LandBoundary& landBoundary)
 {
-    // Value from editgridlineblok.f90
-    constexpr double aspectRatio = 990.0 / 1600.0;
 
     BoundingBox gridBb = grid.GetBoundingBox();
     BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
 
     Point delta = meshkernel::Merge(gridBb, landBoundaryBb).Delta();
 
-    delta *= 1.2;
+    delta *= smoothingRegionEnlargementFactor;
 
     delta.y = std::max(delta.y, aspectRatio * delta.x);
     return delta.y / (6.0 * aspectRatio);
@@ -143,20 +141,18 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
 
     if (m_points.size() == 2)
     {
-        // Name from modgr4.f90
-        constexpr UInt nump = 80;
-        auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - nump * m_smoothingRegionIndicator.m_m) - 1);
-        auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + nump * m_smoothingRegionIndicator.m_m) - 1);
-        auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - nump * m_smoothingRegionIndicator.m_n) - 1);
-        auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + nump * m_smoothingRegionIndicator.m_n) - 1);
+        auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
     else
     {
-        auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - 10000 * m_smoothingRegionIndicator.m_m - 1));
-        auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + 10000 * m_smoothingRegionIndicator.m_m - 1));
-        auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - 10000 * m_smoothingRegionIndicator.m_n - 1));
-        auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + 10000 * m_smoothingRegionIndicator.m_n - 1));
+        auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+        auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+        auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
+        auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
 }
@@ -193,17 +189,17 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
 
 meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
 {
-    constexpr double epsilon = 1.0e-5;
 
     std::unique_ptr<MeshSmoothingCalculator> smoothingFactorCalculator;
 
-    // Move to allocate function?
     if (m_points.size() > 2)
     {
+        // User defined smoothing region
         smoothingFactorCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_originalGrid, m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
     }
     else
     {
+        // Predefined smoothing region
         smoothingFactorCalculator = std::make_unique<NonDirectionalSmoothingCalculator>(m_originalGrid, m_grid, m_landBoundary);
     }
 

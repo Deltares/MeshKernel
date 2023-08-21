@@ -138,9 +138,6 @@ namespace meshkernel
             m_upperRight.y += height * factor;
         }
 
-        /// @brief Return the centre of the bounding box.
-        Point Centre() const;
-
         /// @brief Return the delta of the bounding box.
         Point Delta() const;
 
@@ -160,11 +157,6 @@ inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const Bo
     Point upperRight{std::max(b1.upperRight().x, b2.upperRight().x), std::max(b1.upperRight().y, b2.upperRight().y)};
 
     return BoundingBox(lowerLeft, upperRight);
-}
-
-inline meshkernel::Point meshkernel::BoundingBox::Centre() const
-{
-    return 0.5 * (m_lowerLeft + m_upperRight);
 }
 
 inline meshkernel::Point meshkernel::BoundingBox::Delta() const
