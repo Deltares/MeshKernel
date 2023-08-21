@@ -45,6 +45,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -140,7 +141,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -158,7 +159,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -185,7 +186,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -237,7 +238,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -262,7 +263,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -284,7 +285,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -311,7 +312,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -331,7 +332,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -351,7 +352,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -370,7 +371,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -389,7 +390,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -410,7 +411,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -429,7 +430,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -449,7 +450,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -468,7 +469,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -486,7 +487,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -511,7 +512,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -531,7 +532,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -553,7 +554,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -575,7 +576,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -622,7 +623,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -665,7 +666,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -689,7 +690,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -713,7 +714,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -737,7 +738,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -761,7 +762,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -795,7 +796,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -897,7 +898,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -924,7 +925,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -948,7 +949,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -972,7 +973,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -995,7 +996,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1017,7 +1018,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1047,7 +1048,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1102,7 +1103,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1130,7 +1131,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1155,7 +1156,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1178,7 +1179,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1199,7 +1200,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1236,7 +1237,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1268,7 +1269,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1287,7 +1288,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1308,7 +1309,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1327,7 +1328,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1354,7 +1355,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1387,7 +1388,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1412,7 +1413,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1438,7 +1439,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1466,7 +1467,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1517,7 +1518,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1589,7 +1590,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1625,7 +1626,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1688,7 +1689,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1710,6 +1711,180 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_splines_snap_to_landboundary(int meshKernelId,
+                                                         const GeometryList& land,
+                                                         GeometryList& splines,
+                                                         int startSplineIndex,
+                                                         int endSplineIndex)
+    {
+        int exitCode = Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (startSplineIndex < 0)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Start spline index is less than zero: {}", startSplineIndex).GetFormatted());
+            }
+
+            if (startSplineIndex > endSplineIndex)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: {} > {}", startSplineIndex, endSplineIndex).GetFormatted());
+            }
+
+            if (land.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Land boundary has no point values.");
+            }
+
+            if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Land boundary data is null.");
+            }
+
+            if (splines.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Spline has no point values.");
+            }
+
+            if (splines.coordinates_x == nullptr || splines.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Spline data is null.");
+            }
+
+            if (startSplineIndex > splines.num_coordinates)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: start greater than number of spline coordinates {} > {}",
+                                                                             startSplineIndex, splines.num_coordinates)
+                                                .GetFormatted());
+            }
+
+            if (endSplineIndex >= splines.num_coordinates)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: end greater than number of spline coordinates {} >= {}",
+                                                                             endSplineIndex, splines.num_coordinates)
+                                                .GetFormatted());
+            }
+
+            std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
+            std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(splines));
+
+            meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+            meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            splineValues.AddSpline(splinePoints, startSplineIndex, static_cast<meshkernel::UInt>(splinePoints.size()));
+
+            //--------------------------------
+            // Snap specified splines to the land boundary
+            splineValues.SnapSpline(0, landBoundary);
+
+            //--------------------------------
+            // Now copy back the snapped spline values
+
+            int splinePointIndex = startSplineIndex;
+
+            // Now copy back to spline (geometry-list)
+            for (int i = startSplineIndex; i <= endSplineIndex; ++i)
+            {
+                const meshkernel::Point& splinePoint = splineValues.m_splineNodes[0][i];
+                splines.coordinates_x[splinePointIndex] = splinePoint.x;
+                splines.coordinates_y[splinePointIndex] = splinePoint.y;
+                ++splinePointIndex;
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_polygon_snap_to_landboundary(int meshKernelId,
+                                                         const GeometryList& land,
+                                                         GeometryList& polygon,
+                                                         int startIndex,
+                                                         int endIndex)
+    {
+        int exitCode = Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (land.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Land boundary has no point values.");
+            }
+
+            if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Land boundary data is null.");
+            }
+
+            if (polygon.num_coordinates == 0)
+            {
+                throw std::invalid_argument("Polygon has no point values.");
+            }
+
+            if (polygon.coordinates_x == nullptr || polygon.coordinates_y == nullptr)
+            {
+                throw std::invalid_argument("Polygon data is null.");
+            }
+
+            if (startIndex < 0 || endIndex < 0)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
+                                                                             startIndex, endIndex)
+                                                .GetFormatted());
+            }
+
+            if (startIndex > endIndex)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex greater than endIndex {} > {}",
+                                                                             startIndex, endIndex)
+                                                .GetFormatted());
+            }
+
+            if (endIndex >= polygon.num_coordinates)
+            {
+                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
+                                                                             endIndex, polygon.num_coordinates)
+                                                .GetFormatted());
+            }
+
+            std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
+            std::vector<meshkernel::Point> polygonPoints(ConvertGeometryListToPointVector(polygon));
+
+            meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+            meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
+
+            //--------------------------------
+            // Now copy back the polygon values
+
+            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Nodes();
+
+            for (int i = startIndex; i <= endIndex; ++i)
+            {
+                polygon.coordinates_x[i] = snappedPolygonPoints[i].x;
+                polygon.coordinates_y[i] = snappedPolygonPoints[i].y;
+            }
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_flip_edges(int meshKernelId,
                                               int isTriangulationRequired,
                                               int projectToLandBoundaryRequired,
@@ -1719,7 +1894,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1752,7 +1927,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1773,7 +1948,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1814,7 +1989,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1835,7 +2010,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1856,7 +2031,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1879,7 +2054,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1910,7 +2085,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1937,7 +2112,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1969,7 +2144,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -1999,7 +2174,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2032,7 +2207,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2060,7 +2235,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2089,7 +2264,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2124,7 +2299,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2157,7 +2332,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2188,7 +2363,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2217,7 +2392,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2241,7 +2416,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2264,7 +2439,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2290,7 +2465,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2316,7 +2491,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2339,7 +2514,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2360,7 +2535,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2384,7 +2559,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2417,7 +2592,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2445,7 +2620,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2470,7 +2645,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2500,7 +2675,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2546,7 +2721,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2587,7 +2762,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2620,7 +2795,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2678,7 +2853,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2704,7 +2879,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2724,7 +2899,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2748,7 +2923,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2767,7 +2942,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2798,7 +2973,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2836,7 +3011,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
@@ -2870,7 +3045,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2905,7 +3080,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2938,7 +3113,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -2981,7 +3156,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
@@ -3039,7 +3214,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }

@@ -29,7 +29,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
-#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -37,6 +36,11 @@ using meshkernel::CurvilinearGridCreateUniform;
 
 CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection projection) : m_projection(projection)
 {
+    if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
+    {
+        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
+        throw NotImplemented(message);
+    }
 }
 
 CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
@@ -69,7 +73,6 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
                                                 blockSizeY),
                                m_projection};
     }
-
     const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
     throw NotImplemented(message);
 }
@@ -206,9 +209,10 @@ double CurvilinearGridCreateUniform::ComputeLatitudeIncrementWithAdjustment(doub
     return result;
 }
 
-int CurvilinearGridCreateUniform::ComputeNumRowsSpherical(double minY,
-                                                          double maxY,
-                                                          double blockSizeY)
+int CurvilinearGridCreateUniform::ComputeNumRows(double minY,
+                                                 double maxY,
+                                                 double blockSizeY,
+                                                 Projection projection)
 {
     if (blockSizeY <= 0.0)
     {
@@ -217,6 +221,12 @@ int CurvilinearGridCreateUniform::ComputeNumRowsSpherical(double minY,
     if (blockSizeY > std::abs(maxY - minY))
     {
         throw AlgorithmError("blockSizeY cannot be larger than mesh height");
+    }
+
+    if (projection == Projection::cartesian)
+    {
+        const int numM = static_cast<int>(std::ceil(std::abs(maxY - minY) / blockSizeY));
+        return std::max(numM, 1);
     }
 
     double currentLatitude = minY;
@@ -254,7 +264,12 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
 
     if (polygons->GetProjection() != m_projection)
     {
-        throw std::invalid_argument("CurvilinearGridCreateUniform::Compute polygon projection is not equal to CurvilinearGridCreateUniform projection ");
+        throw std::invalid_argument("Polygon projection is not equal to CurvilinearGridCreateUniform projection ");
+    }
+
+    if (std::abs(angle) > 90.0)
+    {
+        throw std::invalid_argument("Angle must be larger that -90 and smaller than 90");
     }
 
     if (polygons->IsEmpty())
@@ -262,59 +277,27 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
         return {};
     }
 
-    Point referencePoint;
-    auto const& [startPolygonIndex, endPolygonIndex] = polygons->OuterIndices(polygonIndex);
-    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
-    {
-        auto const& polygonNode = polygons->Node(i);
-        if (polygonNode.IsValid())
-        {
-            referencePoint = polygonNode;
-            break;
-        }
-    }
+    // Compute the bounding box
+    const auto boundingBox = polygons->GetBoundingBox(polygonIndex);
+    const auto referencePoint = boundingBox.MassCentre();
 
-    // get polygon min/max in rotated (xi,eta) coordinates
-    double xmin = std::numeric_limits<double>::max();
-    double xmax = -xmin;
-    double etamin = std::numeric_limits<double>::max();
-    double etamax = -etamin;
+    // Compute the max size
+    const auto maxSize = std::max(boundingBox.Width(), boundingBox.Height());
 
-    const auto angleInRad = angle * constants::conversion::degToRad;
-    const auto cosineAngle = std::cos(angleInRad);
-    const auto sinAngle = std::sin(angleInRad);
-    Projection const polygonProjection = polygons->GetProjection();
+    // Compute the lower left and upper right corners
+    const Point lowerLeft(referencePoint.x - maxSize, referencePoint.y - maxSize);
+    const Point upperRight(referencePoint.x + maxSize, referencePoint.y + maxSize);
 
-    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
-    {
-        auto const& polygonNode = polygons->Node(i);
-        if (polygonNode.IsValid())
-        {
-            const double dx = GetDx(referencePoint, polygonNode, polygonProjection);
-            const double dy = GetDy(referencePoint, polygonNode, polygonProjection);
-            double xi = dx * cosineAngle + dy * sinAngle;
-            double eta = -dx * sinAngle + dy * cosineAngle;
-            xmin = std::min(xmin, xi);
-            xmax = std::max(xmax, xi);
-            etamin = std::min(etamin, eta);
-            etamax = std::max(etamax, eta);
-        }
-    }
+    // Compute the number of rows and columns
+    const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(upperRight.x - lowerLeft.x) / blockSizeX)), 1);
+    const int numRows = ComputeNumRows(lowerLeft.y, upperRight.y, blockSizeY, m_projection);
 
-    double xShift = xmin * cosineAngle - etamin * sinAngle;
-    double yShift = xmin * sinAngle + etamin * cosineAngle;
-    if (polygonProjection == Projection::spherical)
-    {
-        xShift = xShift / constants::geometric::earth_radius * constants::conversion::radToDeg;
-        yShift = yShift / (constants::geometric::earth_radius * std::cos(referencePoint.y * constants::conversion::degToRad)) * constants::conversion::radToDeg;
-    }
+    // Rotated the lower left corner
+    const auto lowerLeftMergedRotated = Rotate(lowerLeft, angle, referencePoint);
 
-    const double originX = referencePoint.x + xShift;
-    const double originY = referencePoint.y + yShift;
-    const int numM = static_cast<int>(std::ceil((etamax - etamin) / blockSizeX) + 1);
-    const int numColumns = numM > 0 ? numM - 1 : 0;
-    const int numN = static_cast<int>(std::ceil((xmax - xmin) / blockSizeY) + 1);
-    const int numRows = numN > 0 ? numN - 1 : 0;
+    // Set the origin
+    const double originX = lowerLeftMergedRotated.x;
+    const double originY = lowerLeftMergedRotated.y;
 
     CurvilinearGrid curvilinearGrid;
     switch (m_projection)
@@ -339,7 +322,6 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
                                                            blockSizeY),
                                           m_projection};
         break;
-    case Projection::sphericalAccurate:
     default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);
@@ -374,13 +356,13 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
     }
 
     const double angle = 0.0;
-    int numRows;
+    const int numRows = ComputeNumRows(originY, upperRightY, blockSizeY, m_projection);
+
     CurvilinearGrid curvilinearGrid;
     switch (m_projection)
     {
     case Projection::spherical:
 
-        numRows = ComputeNumRowsSpherical(originY, upperRightY, blockSizeY);
         curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
                                                            numRows,
                                                            originX,
@@ -391,7 +373,6 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                           m_projection};
         break;
     case Projection::cartesian:
-        numRows = static_cast<int>(std::ceil((upperRightY - originY) / blockSizeY));
         curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
                                                            numRows,
                                                            originX,
@@ -401,6 +382,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
                                                            blockSizeY),
                                           m_projection};
         break;
+    case Projection::sphericalAccurate:
     default:
         const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
         throw NotImplemented(message);

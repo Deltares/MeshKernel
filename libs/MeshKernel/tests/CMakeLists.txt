@@ -36,6 +36,7 @@ set(
   ${SRC_DIR}/PointTests.cpp
   ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
+  ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp
   ${SRC_DIR}/TriangleInterpolationTests.cpp
 )

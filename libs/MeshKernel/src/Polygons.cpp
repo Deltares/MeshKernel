@@ -25,8 +25,11 @@
 //
 //------------------------------------------------------------------------------
 
+#include <tuple>
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
@@ -303,6 +306,32 @@ Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     return newPolygon;
 }
 
+void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIndex, UInt endIndex)
+{
+    if (m_nodes.empty())
+    {
+        throw ConstraintError(VariadicErrorMessage("No nodes in polygon."));
+    }
+
+    if (startIndex == 0 && endIndex == 0)
+    {
+        endIndex = static_cast<UInt>(m_nodes.size()) - 1;
+    }
+
+    if (startIndex >= endIndex)
+    {
+        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+    }
+
+    for (size_t i = startIndex; i <= endIndex; ++i)
+    {
+        if (m_nodes[i].IsValid())
+        {
+            m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
+        }
+    }
+}
+
 bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
 {
     if (IsEmpty())
@@ -432,4 +461,19 @@ double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
         maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
     }
     return maximumEdgeLength;
+}
+
+meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const
+{
+    std::vector<Point> points;
+    auto const& [startPolygonIndex, endPolygonIndex] = OuterIndices(polygonIndex);
+    for (auto i = startPolygonIndex; i <= endPolygonIndex; ++i)
+    {
+        auto const& polygonNode = m_nodes[i];
+        if (polygonNode.IsValid())
+        {
+            points.emplace_back(polygonNode);
+        }
+    }
+    return {points};
 }

@@ -359,7 +359,7 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
     cMatrix(1, splinePoints.size() - 1) = -endNormal.x;
     dVector(1) = endNormal.y * endPoint.x - endNormal.x * endPoint.y;
 
-    // lin_alg::MatrixColMajor<double> eMatrix = bMatrix * leastSquaresMatrixInverse * bMatrix.transpose() + cMatrix * leastSquaresMatrixInverse * cMatrix.transpose();
+    // eMatrix = bMatrix * leastSquaresMatrixInverse * bMatrix.transpose() + cMatrix * leastSquaresMatrixInverse * cMatrix.transpose()
 
     lin_alg::MatrixColMajor<double> temp1 = leastSquaresMatrixInverse * bMatrix.transpose();
     lin_alg::MatrixColMajor<double> temp2 = leastSquaresMatrixInverse * cMatrix.transpose();

@@ -155,46 +155,82 @@ namespace meshkernel
     };
 
     /// @brief Add two points
+    ///
+    /// @returns \f$ (p1.x + p2.x, p1.y + p2.y)\f$
     Point operator+(const Point& p1, const Point& p2);
 
     /// @brief Add points and scalar
+    ///
+    /// @returns \f$ (p.x + x, p.y + x)\f$
     Point operator+(const Point& p, const double x);
 
     /// @brief Add points and scalar
+    ///
+    /// @returns \f$ (p.x + x, p.y + x)\f$
     Point operator+(const double x, const Point& p);
 
     /// @brief Subtract two points
+    ///
+    /// @returns \f$ (p1.x - p2.x, p1.y - p2.y)\f$
     Point operator-(const Point& p1, const Point& p2);
 
     /// @brief Subtract scalar from point
+    ///
+    /// @returns \f$ (p.x - x, p.y - x)\f$
     Point operator-(const Point& p, const double x);
 
     /// @brief Subtract point from scalar
+    ///
+    /// @returns \f$ (x - p.x, x - p.y)\f$
     Point operator-(const double x, const Point& p);
 
     /// @brief Multiply point by a point
     ///
     /// Computes a point-wise product.
+    /// @returns \f$ (p1.x * p2.x, p1.y * p2.y)\f$
     Point operator*(const Point& p1, const Point& p2);
 
     /// @brief Multiply point by a scalar
+    /// @returns \f$ (p.x * x, p.y * x)\f$
     Point operator*(const double x, const Point& p);
 
     /// @brief Multiply point by a scalar
+    /// @returns \f$ (p.x * x, p.y * x)\f$
     Point operator*(const Point& p, const double x);
 
     /// @brief Divide point by a point
     ///
     /// Computes a point-wise division.
+    /// @returns \f$ (p1.x / p2.x, p1.y / p2.y)\f$
     /// \note No check is made to determine is divisors are zero.
     Point operator/(const Point& p1, const Point& p2);
 
     /// @brief Divide point by a scalar
     /// \note No check is made to determine is divisor is zero.
+    /// @returns \f$ (p.x / x, p.y / x)\f$
     Point operator/(const Point& p, const double x);
 
     /// @brief Test points for equality
+    /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool operator==(const Point& p1, const Point& p2);
+
+    /// @brief Rotate a point around a reference
+    /// @param[in] point The point to rotate
+    /// @param[in] angle The rotation angle
+    /// @param[in] reference The reference point where rotation should be performed
+    /// @returns The rotated point
+    static Point Rotate(const Point& point, const double angle, const Point& reference)
+    {
+        const auto translatedPoint = point - reference;
+
+        const auto angleInRad = angle * constants::conversion::degToRad;
+        const auto cosineAngle = std::cos(angleInRad);
+        const auto sinAngle = std::sin(angleInRad);
+        Point result(translatedPoint.x * cosineAngle - translatedPoint.y * sinAngle,
+                     translatedPoint.x * sinAngle + translatedPoint.y * cosineAngle);
+
+        return result + reference;
+    }
 
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;

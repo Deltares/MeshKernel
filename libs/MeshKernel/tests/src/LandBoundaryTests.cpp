@@ -160,8 +160,8 @@ TEST(LandBoundaries, LandBoundaryConstructorTestSinglePolyline)
     // Check the points are the same as those used during construction
     for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
     {
-        EXPECT_EQ(landBoundary.node(i).x, controlPoints[i].x);
-        EXPECT_EQ(landBoundary.node(i).y, controlPoints[i].y);
+        EXPECT_EQ(landBoundary.Node(i).x, controlPoints[i].x);
+        EXPECT_EQ(landBoundary.Node(i).y, controlPoints[i].y);
     }
 
     // Check the point array values are the same as those used during construction
@@ -272,8 +272,8 @@ TEST(LandBoundaries, LandBoundaryConstructorTestAddSegment)
     // Check the points are the same as those used during construction
     for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
     {
-        EXPECT_EQ(landBoundary.node(i).x, controlPoints[i].x);
-        EXPECT_EQ(landBoundary.node(i).y, controlPoints[i].y);
+        EXPECT_EQ(landBoundary.Node(i).x, controlPoints[i].x);
+        EXPECT_EQ(landBoundary.Node(i).y, controlPoints[i].y);
     }
 
     meshkernel::Point p1{246.995941, 262.285858};
@@ -288,7 +288,7 @@ TEST(LandBoundaries, LandBoundaryConstructorTestAddSegment)
     // Check the points are the same as those used during construction
     for (size_t i = 0; i < landBoundary.GetNumNodes(); ++i)
     {
-        EXPECT_EQ(landBoundary.node(i).x, controlPointsAfterAddition[i].x);
-        EXPECT_EQ(landBoundary.node(i).y, controlPointsAfterAddition[i].y);
+        EXPECT_EQ(landBoundary.Node(i).x, controlPointsAfterAddition[i].x);
+        EXPECT_EQ(landBoundary.Node(i).y, controlPointsAfterAddition[i].y);
     }
 }

@@ -852,9 +852,14 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
 
 Mesh& Mesh::operator+=(Mesh const& rhs)
 {
-    if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
+    if (m_projection != rhs.m_projection)
     {
-        throw std::invalid_argument("Mesh2D::operator+=: The two meshes cannot be added.");
+        throw std::invalid_argument("Mesh2D::operator+=: The two meshes cannot be added because they have different projections");
+    }
+
+    if (rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
+    {
+        return *this;
     }
 
     const auto rhsNumNodes = rhs.GetNumNodes();
