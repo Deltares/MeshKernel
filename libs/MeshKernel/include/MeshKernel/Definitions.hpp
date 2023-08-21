@@ -33,4 +33,13 @@ namespace meshkernel
 {
     /// @brief Integer type used when indexing mesh graph entities.
     using UInt = std::uint32_t;
+
+    /// @brief Indicator for traversal direction of the points specifying a polygon
+    // PolygonTraversalDirection? too long
+    enum class TraversalDirection
+    {
+        Clockwise,    ///< Points define a clockwise traversal of the polygon
+        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
+    };
+
 } // namespace meshkernel

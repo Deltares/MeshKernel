@@ -27,9 +27,12 @@
 
 #pragma once
 
+#include <unordered_map>
+#include <vector>
+
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <unordered_map>
+#include <MeshKernel/Polygon.hpp>
 
 namespace meshkernel
 {
@@ -131,6 +134,7 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
+        std::vector<Polygon> m_polygons;                                                       ///< List of polygons
         std::vector<Point> m_nodes;                                                            ///< The polygon nodes
         Projection m_projection;                                                               ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices;                           ///< Start-end indices of each outer polygon in m_nodes

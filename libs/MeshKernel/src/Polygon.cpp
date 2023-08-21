@@ -102,11 +102,11 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
     // loop over the polygon nodes
     for (UInt i = 0; i < m_points.size() - 1; ++i)
     {
-        const auto nextNode = NextCircularForwardIndex(i, m_points.size());
+        const auto nextNode = NextCircularForwardIndex(i, static_cast<UInt>(m_points.size()));
         const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
         const auto xpXe = VectorProduct(pointCartesian3D, ee);
 
-        const auto D = InnerProduct(xiXxip1, ee);
+        const double D = InnerProduct(xiXxip1, ee);
         double zeta = 0.0;
         double xi = 0.0;
         double eta = 0.0;
@@ -364,7 +364,8 @@ double meshkernel::Polygon::ClosedPerimeterLength() const
     }
 
     // TODO m_points.front, m_points.back
-    double perimeter = ComputeDistance(m_points[0], m_points[m_points.size() - 1], m_projection);
+    // TOOD are all polygons closed?
+    double perimeter = IsClosed() ? 0.0 : ComputeDistance(m_points[0], m_points[m_points.size() - 1], m_projection);
 
     for (size_t i = 1; i < m_points.size(); ++i)
     {

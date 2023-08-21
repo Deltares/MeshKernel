@@ -44,17 +44,17 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor
-        explicit Polygon(const std::vector<Point>& points,
-                         Projection projection);
+        Polygon(const std::vector<Point>& points,
+                Projection projection);
 
         /// @brief Constructor
         /// @note Points are moved to the polygon
-        explicit Polygon(std::vector<Point>&& points,
-                         Projection projection);
+        Polygon(std::vector<Point>&& points,
+                Projection projection);
 
+        // From here
         // Could be PointSequence?
         // Then polygon, spline and land boundary could use this.
-        // From here
 
         /// @brief Return the number of points in the polygon
         size_t Size() const;
@@ -79,16 +79,16 @@ namespace meshkernel
         /// @brief Determine if the polygon contains the point
         bool Contains(const Point& point) const;
 
+        /// @brief Snap the section of the polygon defined by start- and end-index to the land boundary
         ///
-        ///
-        /// Since the bounding box may be changed, any copy of the bounding box will be out of date.
+        /// @note The bounding box may be changed
         void SnapToLandBoundary(const size_t startIndex, const size_t endIndex, const LandBoundary& boundary);
 
         /// @brief Refine the polygon
         /// @return The points for the refined polygon
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
-        /// @brief
+        /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
         std::tuple<double, Point, bool> FaceAreaAndCenterOfMass() const;
 
         // PerimeterClosed
