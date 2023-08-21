@@ -41,10 +41,6 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
     {
         throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
-    if (m_gridNodes.empty())
-    {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: The grid cannot be constructed from an empty vector of points");
-    }
 
     m_projection = projection;
     m_numM = static_cast<UInt>(m_gridNodes.size());
