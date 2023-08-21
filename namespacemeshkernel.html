@@ -226,6 +226,10 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a4285279848fabaee72bd145770a53af6"><td class="memItemLeft" align="right" valign="top"><a id="a4285279848fabaee72bd145770a53af6"></a>
+<a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4285279848fabaee72bd145770a53af6">Merge</a> (const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;b1, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;b2)</td></tr>
+<tr class="memdesc:a4285279848fabaee72bd145770a53af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge two bounding boxes into a single bounding box that will contain both of the original. <br /></td></tr>
+<tr class="separator:a4285279848fabaee72bd145770a53af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23fa6f0389c192287f664b22ab398062"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a23fa6f0389c192287f664b22ab398062">operator+</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p2)</td></tr>
 <tr class="memdesc:a23fa6f0389c192287f664b22ab398062"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two points.  <a href="namespacemeshkernel.html#a23fa6f0389c192287f664b22ab398062">More...</a><br /></td></tr>
 <tr class="separator:a23fa6f0389c192287f664b22ab398062"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,8 +264,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:afa12e5f968fe09d8bdca455d14f70013"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide point by a scalar.  <a href="namespacemeshkernel.html#afa12e5f968fe09d8bdca455d14f70013">More...</a><br /></td></tr>
 <tr class="separator:afa12e5f968fe09d8bdca455d14f70013"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43d12a73d16ab42e496380606b1cb609"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a43d12a73d16ab42e496380606b1cb609">operator==</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p2)</td></tr>
-<tr class="memdesc:a43d12a73d16ab42e496380606b1cb609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test points for equality.  <a href="namespacemeshkernel.html#a43d12a73d16ab42e496380606b1cb609">More...</a><br /></td></tr>
+<tr class="memdesc:a43d12a73d16ab42e496380606b1cb609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test points for equality using a default tolerance.  <a href="namespacemeshkernel.html#a43d12a73d16ab42e496380606b1cb609">More...</a><br /></td></tr>
 <tr class="separator:a43d12a73d16ab42e496380606b1cb609"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f5895fbc1e957e83f917a57af5f3126"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4f5895fbc1e957e83f917a57af5f3126">IsEqual</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p2, const double epsilon)</td></tr>
+<tr class="memdesc:a4f5895fbc1e957e83f917a57af5f3126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test points for equality upto a tolerance.  <a href="namespacemeshkernel.html#a4f5895fbc1e957e83f917a57af5f3126">More...</a><br /></td></tr>
+<tr class="separator:a4f5895fbc1e957e83f917a57af5f3126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">ResizeAndFill2DVector</a> (std::vector&lt; std::vector&lt; T &gt;&gt; &amp;v, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;firstDimension, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;secondDimension, bool fill=false, const T &amp;fillValue={})</td></tr>
 <tr class="memdesc:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a two dimensional vector.  <a href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">More...</a><br /></td></tr>
@@ -1826,6 +1833,51 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a4f5895fbc1e957e83f917a57af5f3126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f5895fbc1e957e83f917a57af5f3126">&#9670;&nbsp;</a></span>IsEqual()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::IsEqual </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>epsilon</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Test points for equality upto a tolerance. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( p1.x = p2.x \wedge p1.y = p2.y)\) </dd></dl>
+
+</div>
+</div>
 <a id="a3356503d69b272a618842fd6653dfc00"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3356503d69b272a618842fd6653dfc00">&#9670;&nbsp;</a></span>IsPointInPolygonNodes()</h2>
 
@@ -2754,7 +2806,7 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Test points for equality. </p>
+<p>Test points for equality using a default tolerance. </p>
 <dl class="section return"><dt>Returns</dt><dd>\( p1.x = p2.x \wedge p1.y = p2.y)\) </dd></dl>
 
 </div>
