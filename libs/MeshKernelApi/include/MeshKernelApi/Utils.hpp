@@ -274,10 +274,10 @@ namespace meshkernelapi
             mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d->m_edges[edgeIndex].first);
             mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d->m_edges[edgeIndex].second);
 
-            auto& edgeFace = mesh2d->m_edgesFaces[edgeIndex][0];
-            mesh2dApi.edge_faces[edgeIndex * 2] = edgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(edgeFace);
-            edgeFace = mesh2d->m_edgesFaces[edgeIndex][1];
-            mesh2dApi.edge_faces[edgeIndex * 2 + 1] = edgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(edgeFace);
+            const auto& firstEdgeFace = mesh2d->m_edgesFaces[edgeIndex][0];
+            mesh2dApi.edge_faces[edgeIndex * 2] = firstEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(firstEdgeFace);
+            const auto& secondEdgeFace = mesh2d->m_edgesFaces[edgeIndex][1];
+            mesh2dApi.edge_faces[edgeIndex * 2 + 1] = secondEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(secondEdgeFace);
         }
 
         int faceIndex = 0;

@@ -2385,10 +2385,6 @@ TEST_F(CartesianApiTests, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWi
     mesh2d.num_nodes = static_cast<int>(coordinatesX.size());
     mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
 
-    //    mesh2d.edge_faces = edge_faces.data();
-    // mesh2d.face_nodes = face_nodes.data();
-    // mesh2d.face_edges = face_edges.data();
-
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute, with large length threshold
