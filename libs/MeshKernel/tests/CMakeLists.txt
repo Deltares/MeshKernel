@@ -28,6 +28,7 @@ set(
   ${SRC_DIR}/FlipEdgesTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
   ${SRC_DIR}/LandBoundaryTests.cpp
+  ${SRC_DIR}/LinearAlgebraTests.cpp
   ${SRC_DIR}/Mesh1DTest.cpp
   ${SRC_DIR}/Mesh2DTest.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
