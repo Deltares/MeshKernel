@@ -34,6 +34,7 @@
 
 namespace meshkernel
 {
+
     /// @brief A class defining a bounding box
     class BoundingBox
     {
@@ -55,15 +56,25 @@ namespace meshkernel
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
         template <typename T>
-        BoundingBox(const std::vector<T>& points)
+        explicit BoundingBox(const std::vector<T>& points) : BoundingBox(points, 0, points.size() - 1) {}
+
+        /// @brief Constructor taking a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
+        template <typename T>
+        BoundingBox(const std::vector<T>& points, size_t start, size_t end)
         {
             double minx = std::numeric_limits<double>::max();
             double maxx = std::numeric_limits<double>::lowest();
             double miny = std::numeric_limits<double>::max();
             double maxy = std::numeric_limits<double>::lowest();
 
-            for (const auto& point : points)
+            for (size_t i = start; i <= end; ++i)
             {
+                const auto& point = points[i];
+
                 if (point.IsValid())
                 {
                     minx = std::min(minx, point.x);
@@ -105,7 +116,7 @@ namespace meshkernel
         [[nodiscard]] auto& upperRight() const { return m_upperRight; }
 
         /// @brief Returns the mass centre
-        /// @return The upper right corner of the bounding box
+        /// @return The mass centre of the bounding box.
         Point MassCentre() const { return (m_lowerLeft + m_upperRight) * 0.5; }
 
         /// @brief Returns the bounding box width
@@ -117,18 +128,38 @@ namespace meshkernel
         double Height() const { return m_upperRight.y - m_lowerLeft.y; }
 
         /// @brief Extends the bounding box by a factor
-        void ExtendBoundingBox(double factor)
+        void Extend(double factor)
         {
             const double width = Width();
             const double height = Height();
-            m_lowerLeft.x = m_lowerLeft.x - width * factor;
-            m_lowerLeft.y = m_lowerLeft.y - height * factor;
-            m_upperRight.x = m_upperRight.x + width * factor;
-            m_upperRight.y = m_upperRight.y + height * factor;
+            m_lowerLeft.x -= width * factor;
+            m_lowerLeft.y -= height * factor;
+            m_upperRight.x += width * factor;
+            m_upperRight.y += height * factor;
         }
+
+        /// @brief Return the delta of the bounding box.
+        Point Delta() const;
 
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
         Point m_upperRight; ///< The upper right corner of the bounding box
     };
+
+    /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.
+    BoundingBox Merge(const BoundingBox& b1, const BoundingBox& b2);
+
 } // namespace meshkernel
+
+inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const BoundingBox& b2)
+{
+    Point lowerLeft{std::min(b1.lowerLeft().x, b2.lowerLeft().x), std::min(b1.lowerLeft().y, b2.lowerLeft().y)};
+    Point upperRight{std::max(b1.upperRight().x, b2.upperRight().x), std::max(b1.upperRight().y, b2.upperRight().y)};
+
+    return BoundingBox(lowerLeft, upperRight);
+}
+
+inline meshkernel::Point meshkernel::BoundingBox::Delta() const
+{
+    return m_upperRight - m_lowerLeft;
+}

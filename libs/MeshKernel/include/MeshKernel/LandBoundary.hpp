@@ -29,6 +29,7 @@
 
 #include <vector>
 
+#include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Polygons.hpp"
 
@@ -71,6 +72,12 @@ namespace meshkernel
 
         /// @brief Find the closest of two points to a given point.
         Point ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const;
+
+        /// @brief Get the bounding box for the section of the land boundary.
+        BoundingBox GetBoundingBox(const size_t startIndex, const size_t endIndex) const;
+
+        /// @brief Get the bounding box for the whole land boundary.
+        BoundingBox GetBoundingBox() const;
 
         /// @brief Find all start-end positions of the individual poly-lines that make up the land boundary
         std::vector<std::pair<UInt, UInt>> FindPolylineIndices() const;

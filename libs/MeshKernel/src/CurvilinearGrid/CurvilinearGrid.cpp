@@ -736,8 +736,11 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
                                                     const CurvilinearGridNodeIndices& upperRightIndices)
 {
     // horizontal smoothing factor
+    // integer
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
+    // integer
     const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
+    // double
     const auto mSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor
@@ -863,4 +866,55 @@ void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
 
     // move fromPoint to toPoint
     m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+}
+
+meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
+{
+
+    Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
+    size_t last = m_gridNodes.size() - 1;
+
+    // Only need to loop over boundary nodes
+
+    // First loop over lower boundary (i,0)
+    for (size_t i = 0; i < m_gridNodes.size(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes[i][0].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes[i][0].y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes[i][0].x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes[i][0].y);
+    }
+
+    // First loop over right boundary (last,i)
+    for (size_t i = 0; i < m_gridNodes[last].size(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes[last][i].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes[last][i].y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes[last][i].x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes[last][i].y);
+    }
+
+    // This assumes that each column has the same number of points
+    last = m_gridNodes[0].size() - 1;
+
+    // First loop over upper boundary (i,last)
+    for (size_t i = 0; i < m_gridNodes.size(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes[i][last].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes[i][last].y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes[i][last].x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes[i][last].y);
+    }
+
+    // First loop over left boundary (0,i)
+    for (size_t i = 0; i < m_gridNodes[0].size(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes[0][i].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes[0][i].y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes[0][i].x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes[0][i].y);
+    }
+
+    return BoundingBox(lowerLeft, upperRight);
 }
