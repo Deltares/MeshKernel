@@ -41,10 +41,10 @@ double meshkernel::NonDirectionalSmoothingCalculator::CalculateSmoothingRegion(c
                                                                                const LandBoundary& landBoundary)
 {
 
-    BoundingBox gridBb = grid.GetBoundingBox();
-    BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
+    const BoundingBox gridBb = grid.GetBoundingBox();
+    const BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
 
-    Point delta = meshkernel::Merge(gridBb, landBoundaryBb).Delta();
+    Point delta = Merge(gridBb, landBoundaryBb).Delta();
 
     delta *= smoothingRegionEnlargementFactor;
 
@@ -61,8 +61,8 @@ meshkernel::NonDirectionalSmoothingCalculator::NonDirectionalSmoothingCalculator
 double meshkernel::NonDirectionalSmoothingCalculator::compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
                                                               const CurvilinearGridNodeIndices& gridLinePointIndex) const
 {
-    Point meshDelta = m_snappedGrid.GetNode(snappedNodeIndex) - m_originalGrid.GetNode(snappedNodeIndex);
-    Point pointDelta = m_originalGrid.GetNode(gridLinePointIndex) - m_originalGrid.GetNode(snappedNodeIndex);
+    const Point meshDelta = m_snappedGrid.GetNode(snappedNodeIndex) - m_originalGrid.GetNode(snappedNodeIndex);
+    const Point pointDelta = m_originalGrid.GetNode(gridLinePointIndex) - m_originalGrid.GetNode(snappedNodeIndex);
     double factor = 0.0;
 
     double rsx = std::max(m_smoothingRegionMinimum, std::hypot(meshDelta.x, meshDelta.y));
@@ -87,8 +87,8 @@ meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(std::shared_ptr<Cur
         throw ConstraintError(VariadicErrorMessage("Snapping line or region has not been defined, number of points: {}", m_points.size()));
     }
 
-    if (bool allValid = std::accumulate(m_points.begin(), m_points.end(), true, [](bool val, const Point& p)
-                                        { return val && p.IsValid(); });
+    if (const bool allValid = std::accumulate(m_points.begin(), m_points.end(), true, [](const bool val, const Point& p)
+                                              { return val && p.IsValid(); });
         !allValid)
     {
         throw ConstraintError("1 or more of the selected points is invalid");
@@ -141,20 +141,18 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
 
     if (m_points.size() == 2)
     {
-        auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
-        auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
-    else
-    {
-        auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
-        auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
-        auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-        auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-        return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
-    }
+
+    const auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
+    const auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
+    return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
 }
 
 void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
@@ -162,7 +160,7 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
 {
     auto [lowerBound, upperBound] = ComputeLoopBounds(snappedNodeIndex);
 
-    Point meshDelta = m_grid.GetNode(snappedNodeIndex) - m_originalGrid.GetNode(snappedNodeIndex);
+    const Point meshDelta = m_grid.GetNode(snappedNodeIndex) - m_originalGrid.GetNode(snappedNodeIndex);
 
     CurvilinearGridNodeIndices gridLinePointIndex;
 
@@ -176,7 +174,7 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
 
             if (m_originalGrid.GetNode(gridLinePointIndex).IsValid())
             {
-                double factor = smoothingFactor.compute(snappedNodeIndex, gridLinePointIndex);
+                const double factor = smoothingFactor.compute(snappedNodeIndex, gridLinePointIndex);
 
                 if (factor > 0.0)
                 {
