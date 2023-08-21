@@ -32,13 +32,13 @@ namespace meshkernelapi
     /// @brief A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manner
     struct Mesh2D
     {
-        /// @brief For each edge the indices of the faces
+        /// @brief For each edge the faces indices
         int* edge_faces = nullptr;
 
         /// @brief The nodes composing each mesh 2d edge
         int* edge_nodes = nullptr;
 
-        /// @brief For each face the indices of the edges
+        /// @brief For each face the edges indices
         int* face_edges = nullptr;
 
         /// @brief The nodes composing each mesh 2d face
