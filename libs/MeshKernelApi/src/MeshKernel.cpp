@@ -2817,7 +2817,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelState.count(meshKernelId) == 0)
+            if (!meshKernelState.contains(meshKernelId))
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }

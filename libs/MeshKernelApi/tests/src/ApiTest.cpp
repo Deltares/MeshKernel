@@ -1312,8 +1312,9 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the message
-    auto exceptionMessage = std::make_unique<char[]>(512);
-    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage.get());
+    auto exceptionMessage = std::string(" ", 512);
+    auto exceptionMessagePtr = const_cast<char*>(exceptionMessage.c_str());
+    errorCode = meshkernelapi::mkernel_get_error(exceptionMessagePtr);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the index of the invalid location
@@ -1326,9 +1327,10 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
 
 TEST(ApiStatelessTests, TestGettingVersionThroughApi)
 {
-    auto versionFromApi = std::make_unique<char[]>(64);
-    meshkernelapi::mkernel_get_version(versionFromApi.get());
-    ASSERT_EQ(strcmp(versionFromApi.get(), versionString), 0);
+    auto versionFromApi = std::string(" ", 64);
+    auto versionFromApiPtr = const_cast<char*>(versionFromApi.c_str());
+    meshkernelapi::mkernel_get_version(versionFromApiPtr);
+    ASSERT_EQ(versionString, versionFromApi);
 }
 
 TEST_F(CartesianApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
