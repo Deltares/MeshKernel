@@ -1965,15 +1965,15 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_error(const char*& error_message)
+    MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
-        error_message = exceptionMessage;
+        std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
         return Success;
     }
 
-    MKERNEL_API int mkernel_get_version(const char*& version)
+    MKERNEL_API int mkernel_get_version(char* version)
     {
-        version = versionString;
+        std::memcpy(version, versionString, sizeof versionString);
         return Success;
     }
 
@@ -2239,6 +2239,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
@@ -2803,6 +2804,38 @@ namespace meshkernelapi
             meshkernel::Point const secondNode{xSecondGridLineNode, ySecondGridLineNode};
 
             meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetLine(firstNode, secondNode);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            std::vector curviGridPoints(grid.num_m, std::vector<meshkernel::Point>(grid.num_n));
+            int nodeIndex = 0;
+            for (int i = 0; i < grid.num_m; ++i)
+            {
+                for (int j = 0; j < grid.num_n; ++j)
+                {
+
+                    curviGridPoints[i][j] = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
+                    nodeIndex++;
+                }
+            }
+
+            const auto& projection = meshKernelState[meshKernelId].m_projection;
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curviGridPoints, projection);
         }
         catch (...)
         {

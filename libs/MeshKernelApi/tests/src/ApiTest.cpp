@@ -1323,8 +1323,8 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the message
-    const char* exceptionMessage;
-    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
+    auto exceptionMessage = std::make_unique<char[]>(512);
+    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage.get());
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the index of the invalid location
@@ -1337,9 +1337,9 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
 
 TEST(ApiStatelessTests, TestGettingVersionThroughApi)
 {
-    const char* versionFromApi;
-    meshkernelapi::mkernel_get_version(versionFromApi);
-    ASSERT_EQ(strcmp(versionFromApi, versionString), 0);
+    auto versionFromApi = std::make_unique<char[]>(64);
+    meshkernelapi::mkernel_get_version(versionFromApi.get());
+    ASSERT_EQ(strcmp(versionFromApi.get(), versionString), 0);
 }
 
 TEST_F(CartesianApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
@@ -2818,7 +2818,6 @@ TEST_F(CartesianApiTests, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
 
     // Execute, compute offsetted chainages
     double const offset = 1.0;
-    std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_offsetted_chainages(meshKernelId, offset);
 
     // Convert network 1d to mesh1d

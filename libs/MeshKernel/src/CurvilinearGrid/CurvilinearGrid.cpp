@@ -39,7 +39,7 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Pr
 {
     if (!IsValid())
     {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid ");
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
 
     m_projection = projection;
