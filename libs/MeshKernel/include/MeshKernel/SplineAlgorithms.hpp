@@ -90,10 +90,6 @@ namespace meshkernel
                                          const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 
     private:
-        /// @typedef EigenIndex
-        /// @brief Index used when accessing matrix and vector values
-        using EigenIndex = lin_alg::Matrix<double, Eigen::ColMajor>::Index;
-
         /// @brief Compute the spline weights (from snap_spline)
         ///
         /// @param [in] xf The x-coordinates
@@ -127,9 +123,9 @@ namespace meshkernel
         /// @param [in] intervalRefinement
         /// @param [out] numberOfSamplePoints Number of sample points
         /// @param [out] interpolationMatrix Matrix containing the spline coefficients at the sample points.
-        static void ComputeInterpolationMatrix(const EigenIndex numberOfSplinePoints,
-                                               const EigenIndex intervalRefinement,
-                                               EigenIndex& numberOfSamplePoints,
+        static void ComputeInterpolationMatrix(const Eigen::Index numberOfSplinePoints,
+                                               const Eigen::Index intervalRefinement,
+                                               Eigen::Index& numberOfSamplePoints,
                                                lin_alg::Matrix<double, Eigen::ColMajor>& interpolationMatrix);
 
         /// @brief Compute the inverse of the least squares matrix (from snap_spline)
