@@ -92,7 +92,7 @@ namespace meshkernel
     private:
         /// @typedef EigenIndex
         /// @brief Index used when accessing matrix and vector values
-        using EigenIndex = lin_alg::MatrixColMajor<double>::Index;
+        using EigenIndex = lin_alg::Matrix<double, Eigen::ColMajor>::Index;
 
         /// @brief Compute the spline weights (from snap_spline)
         ///
@@ -100,16 +100,16 @@ namespace meshkernel
         /// @param [in] yf y-coordinates
         /// @param [in] projection
         /// @returns vector of the spline weights
-        static lin_alg::ColumnVector<double> ComputeSplineWeights(const lin_alg::ColumnVector<double>& xf,
-                                                                  const lin_alg::ColumnVector<double>& yf,
-                                                                  const Projection projection);
+        static lin_alg::ColVector<double> ComputeSplineWeights(const lin_alg::ColVector<double>& xf,
+                                                               const lin_alg::ColVector<double>& yf,
+                                                               const Projection projection);
         /// @brief Compute the spline sample points.
         ///
         /// @param [in] splinePoints The spline points
         /// @param [in] aMatrix Matrix expressing the approximation of the spline evaluated at the sample points.
         /// @returns the matrix product with the spline points.
-        static std::tuple<lin_alg::ColumnVector<double>, lin_alg::ColumnVector<double>> ComputeSamplePoints(const std::vector<Point>& splinePoints,
-                                                                                                            const lin_alg::MatrixColMajor<double>& aMatrix);
+        static std::tuple<lin_alg::ColVector<double>, lin_alg::ColVector<double>> ComputeSamplePoints(const std::vector<Point>& splinePoints,
+                                                                                                      const lin_alg::Matrix<double, Eigen::ColMajor>& aMatrix);
 
         /// @brief Sample the spline. (sample_spline)
         ///
@@ -130,7 +130,7 @@ namespace meshkernel
         static void ComputeInterpolationMatrix(const EigenIndex numberOfSplinePoints,
                                                const EigenIndex intervalRefinement,
                                                EigenIndex& numberOfSamplePoints,
-                                               lin_alg::MatrixColMajor<double>& interpolationMatrix);
+                                               lin_alg::Matrix<double, Eigen::ColMajor>& interpolationMatrix);
 
         /// @brief Compute the inverse of the least squares matrix (from snap_spline)
         ///
@@ -138,8 +138,8 @@ namespace meshkernel
         /// The vector \f$w\f$, should be considered as a matrix with the weight values along the main diagonal.
         /// @param [in] splineCoefficients The spline coefficients
         /// @param [in] weights The slpine weights
-        static lin_alg::MatrixColMajor<double> ComputeLeastSquaresMatrixInverse(const lin_alg::MatrixColMajor<double>& splineCoefficients,
-                                                                                const lin_alg::ColumnVector<double>& weights);
+        static lin_alg::Matrix<double, Eigen::ColMajor> ComputeLeastSquaresMatrixInverse(const lin_alg::Matrix<double, Eigen::ColMajor>& splineCoefficients,
+                                                                                         const lin_alg::ColVector<double>& weights);
     };
 
 } // namespace meshkernel

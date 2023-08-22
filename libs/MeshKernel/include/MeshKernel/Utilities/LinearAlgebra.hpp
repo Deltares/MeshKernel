@@ -7,38 +7,37 @@
 
 namespace lin_alg
 {
-    /// @brief Row major dynamic matrix
-    /// @tparam T Data type
-    template <class T>
-    using MatrixRowMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
-    /// @brief Column major dynamic matrix
-    /// @tparam T Data type
-    template <class T>
-    using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+    /// @brief  Dynamic matrix
+    /// @tparam T       Matrix data type
+    /// @tparam storage Matrix storage option
+    template <typename T, int storage = Eigen::RowMajor>
+    using Matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage>;
 
-    /// @brief A dynamically sized column vector
-    /// @tparam T Data type
-    template <class T>
-    using ColumnVector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
-
-    /// @brief  Dynamic vector
+    /// @brief  Dynamic column vector
     /// @tparam T Data type
     template <typename T>
-    using Vector = Eigen::Matrix<T, 1, Eigen::Dynamic, Eigen::RowMajor>;
+    using ColVector = Eigen::Matrix<T, Eigen::Dynamic, 1, Eigen::ColMajor>;
+
+    /// @brief  Dynamic row vector
+    /// @tparam T Data type
+    template <typename T>
+    using RowVector = Eigen::Matrix<T, 1, Eigen::Dynamic, Eigen::RowMajor>;
 
     /// @brief     Checks if a matrix is empty by inspecting its size
-    /// @tparam    T      The type of the matrix elements
-    /// @param[in] matrix The matrix
+    /// @tparam    T       Matrix data type
+    /// @tparam    storage Matrix storage option
+    /// @param[in] matrix  The matrix
     /// @return    True if the matrix is empty, false otherwise
-    template <typename T>
-    [[nodiscard]] inline static bool MatrixIsEmpty(MatrixRowMajor<T> const& matrix)
+    template <typename T, int storage>
+    [[nodiscard]] inline static bool MatrixIsEmpty(Matrix<T, storage> const& matrix)
     {
         return matrix.size() == 0;
     }
 
     /// @brief         Resizes and fills a matrix
     /// @tparam        T        The data type of the matrix elements
+    /// @tparam        storage  Matrix storage option
     /// @param[in,out] matrix   The matrix
     /// @param[in]     rows     The number of rows
     /// @param[in]     cols     The number of columns
@@ -47,8 +46,8 @@ namespace lin_alg
     ///                         or default (if not provided) fill value
     /// @param[in]     fill_value The optional fill value (defaults to the template class constructor)
     /// @return        True if the input matrix has been resized, false otherwise
-    template <typename T>
-    inline static bool ResizeAndFillMatrix(MatrixRowMajor<T>& matrix,
+    template <typename T, int storage>
+    inline static bool ResizeAndFillMatrix(Matrix<T, storage>& matrix,
                                            Eigen::Index rows,
                                            Eigen::Index cols,
                                            bool preserve = false,
@@ -93,12 +92,13 @@ namespace lin_alg
     }
 
     /// @brief         Erases a range of rows from a matrix given the begin and end row indices
-    /// @tparam        T         The type of the matrix elements
+    /// @tparam        T         Matrix data type
+    /// @tparam        storage   Matrix storage option
     /// @param[in,out] matrix    The matrix
     /// @param[in]     col_begin The begin row index
     /// @param[in]     col_end   The end row index
-    template <typename T>
-    inline static void EraseRows(MatrixRowMajor<T>& matrix,
+    template <typename T, int storage>
+    inline static void EraseRows(Matrix<T, storage>& matrix,
                                  Eigen::Index row_begin,
                                  Eigen::Index row_end)
     {
@@ -123,22 +123,24 @@ namespace lin_alg
     }
 
     /// @brief        Erases a row from a matrix given the row index
-    /// @tparam        T      The type of the matrix elements
+    /// @tparam        T       Matrix data type
+    /// @tparam        storage Matrix storage option
     /// @param[in,out] matrix The matrix
     /// @param[in]     row    The row index
-    template <typename T>
-    inline static void EraseRow(MatrixRowMajor<T>& matrix, Eigen::Index row)
+    template <typename T, int storage>
+    inline static void EraseRow(Matrix<T, storage>& matrix, Eigen::Index row)
     {
         EraseRows(matrix, row, row);
     }
 
     /// @brief         Erases a range of columns from a matrix given the begin and end column indices
-    /// @tparam        T         The type of the matrix elements
+    /// @tparam        T         Matrix data type
+    /// @tparam        storage   Matrix storage option
     /// @param[in,out] matrix    The matrix
     /// @param[in]     col_begin The begin column index
     /// @param[in]     col_end   The end column index
-    template <typename T>
-    inline static void EraseCols(MatrixRowMajor<T>& matrix,
+    template <typename T, int storage>
+    inline static void EraseCols(Matrix<T, storage>& matrix,
                                  Eigen::Index col_begin,
                                  Eigen::Index col_end)
     {
@@ -163,23 +165,25 @@ namespace lin_alg
     }
 
     /// @brief         Erases a column from a matrix given the column index
-    /// @tparam        T      The type of the matrix elements
-    /// @param[in,out] matrix The matrix
-    /// @param[in]     col    The column index
-    template <typename T>
-    inline static void EraseCol(MatrixRowMajor<T>& matrix, Eigen::Index col)
+    /// @tparam        T       Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] matrix  The matrix
+    /// @param[in]     col     The column index
+    template <typename T, int storage>
+    inline static void EraseCol(Matrix<T, storage>& matrix, Eigen::Index col)
     {
         EraseCols(matrix, col, col);
     }
 
     /// @brief         Inserts an Eigen vector in a matrix at a given row index
-    /// @tparam        T      The type of the matrix elements
-    /// @param[in,out] matrix The matrix
-    /// @param[in]     vector The vector to insert
-    /// @param[in]     row    The row index where the vector is to be inserted in the matrix
-    template <typename T>
-    inline static void InsertRow(MatrixRowMajor<T>& matrix,
-                                 Vector<T> const& vector,
+    /// @tparam        T       Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] matrix  The matrix
+    /// @param[in]     vector  The vector to insert
+    /// @param[in]     row     The row index where the vector is to be inserted in the matrix
+    template <typename T, int storage>
+    inline static void InsertRow(Matrix<T, storage>& matrix,
+                                 RowVector<T> const& vector,
                                  Eigen::Index row)
     {
         if (row < 0 || row > matrix.rows())
@@ -198,43 +202,39 @@ namespace lin_alg
     }
 
     /// @brief     Transforms a STL vector to an Eigen row-major vector
-    /// @tparam    T      The type of the matrix elements
-    /// @param[in] vector The STL vector
+    /// @tparam    T       Matrix data type
+    /// @tparam    storage Matrix storage option
+    /// @param[in] vector  The STL vector
     /// @return    The Eigen row-major vector
     template <typename T>
-    inline static Vector<T> STLVectorToVector(std::vector<T> const& stl_vector)
+    inline static RowVector<T> STLVectorToRowVector(std::vector<T> const& stl_vector)
     {
-        // Vector<T> vector(1, stl_vector.size());
-        // for (Eigen::Index i = 0; i < vector.cols(); ++i)
-        // {
-        //     vector(0, i) = stl_vector[i];
-        // }
-        // return vector;
-
-        return Eigen::Map<Vector<T> const>(stl_vector.data(), 1, stl_vector.size());
+        return Eigen::Map<RowVector<T> const>(stl_vector.data(), 1, stl_vector.size());
     }
 
     /// @brief         Inserts a STL vector in a matrix at a given row index
-    /// @tparam        T      The type of the matrix elements
+    /// @tparam        T          Matrix data type
+    /// @tparam        storage    Matrix storage option
     /// @param[in,out] matrix     The matrix
     /// @param[in]     stl_vector The STL vector to insert
-    /// @param[in]     row    The row index where the vector is to be inserted in the matrix
-    template <typename T>
-    inline static void InsertRow(MatrixRowMajor<T>& matrix,
+    /// @param[in]     row        The row index where the vector is to be inserted in the matrix
+    template <typename T, int storage>
+    inline static void InsertRow(Matrix<T, storage>& matrix,
                                  std::vector<T> const& stl_vector,
                                  Eigen::Index row)
     {
-        InsertRow(matrix, STLVectorToVector(stl_vector), row);
+        InsertRow(matrix, STLVectorToRowVector(stl_vector), row);
     }
 
     /// @brief         Inserts an Eigen vector in a matrix at a given column index
-    /// @tparam        T      The type of the matrix elements
-    /// @param[in,out] matrix The matrix
-    /// @param[in]     vector The vector to insert
-    /// @param[in]     col    The column index where the vector is to be inserted in the matrix
-    template <typename T>
-    inline static void InsertCol(MatrixRowMajor<T>& matrix,
-                                 Vector<T> const& vector,
+    /// @tparam        T       Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] matrix  The matrix
+    /// @param[in]     vector  The vector to insert
+    /// @param[in]     col     The column index where the vector is to be inserted in the matrix
+    template <typename T, int storage>
+    inline static void InsertCol(Matrix<T, storage>& matrix,
+                                 ColVector<T> const& vector,
                                  Eigen::Index col)
     {
         if (col < 0 || col > matrix.cols())
@@ -248,21 +248,33 @@ namespace lin_alg
 
         auto const block_to_move_right = matrix.block(0, col, rows, cols_to_move_right).eval();
         matrix.conservativeResize(rows, cols_new);
-        matrix.block(0, col, rows, 1) = vector.transpose();
+        matrix.block(0, col, rows, 1) = vector;
         matrix.block(0, col + 1, rows, cols_to_move_right) = block_to_move_right;
     }
 
+    /// @brief     Transforms a STL vector to an Eigen column-major vector
+    /// @tparam    T       Matrix data type
+    /// @tparam    storage Matrix storage option
+    /// @param[in] vector  The STL vector
+    /// @return    The Eigen row-major vector
+    template <typename T>
+    inline static ColVector<T> STLVectorToColVector(std::vector<T> const& stl_vector)
+    {
+        return Eigen::Map<ColVector<T> const>(stl_vector.data(), stl_vector.size(), 1);
+    }
+
     /// @brief         Inserts a STL vector in a matrix at a given column index
-    /// @tparam        T      The type of the matrix elements
+    /// @tparam        T          Matrix data type
+    /// @tparam        storage    Matrix storage option
     /// @param[in,out] matrix     The matrix
     /// @param[in]     stl_vector The STL vector to insert
-    /// @param[in]     col    The column index where the vector is to be inserted in the matrix
-    template <typename T>
-    inline static void InsertCol(MatrixRowMajor<T>& matrix,
+    /// @param[in]     col        The column index where the vector is to be inserted in the matrix
+    template <typename T, int storage>
+    inline static void InsertCol(Matrix<T, storage>& matrix,
                                  std::vector<T> const& stl_vector,
                                  Eigen::Index col)
     {
-        InsertCol(matrix, STLVectorToVector(stl_vector), col);
+        InsertCol(matrix, STLVectorToColVector(stl_vector), col);
     }
 
 } // namespace lin_alg
