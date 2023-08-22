@@ -533,5 +533,5 @@ meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const
             points.emplace_back(polygonNode);
         }
     }
-    return {points};
+    return BoundingBox(points);
 }

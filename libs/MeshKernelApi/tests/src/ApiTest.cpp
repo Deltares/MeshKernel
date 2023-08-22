@@ -137,8 +137,10 @@ TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_EQ(15, mesh2d.num_edges);
 
     // Allocate memory and get data
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
     std::vector<int> edge_nodes(mesh2d.num_edges * 2);
     std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> face_edges(mesh2d.num_face_nodes);
     std::vector<int> nodes_per_face(mesh2d.num_faces);
     std::vector<double> node_x(mesh2d.num_nodes);
     std::vector<double> node_y(mesh2d.num_nodes);
@@ -147,8 +149,10 @@ TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
     std::vector<double> face_x(mesh2d.num_faces);
     std::vector<double> face_y(mesh2d.num_faces);
 
+    mesh2d.edge_faces = edge_faces.data();
     mesh2d.edge_nodes = edge_nodes.data();
     mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
     mesh2d.nodes_per_face = nodes_per_face.data();
     mesh2d.node_x = node_x.data();
     mesh2d.node_y = node_y.data();
@@ -176,10 +180,16 @@ TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
     ASSERT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
     // First face
-    ASSERT_EQ(0, mesh2d.face_nodes[0]);
-    ASSERT_EQ(3, mesh2d.face_nodes[1]);
-    ASSERT_EQ(4, mesh2d.face_nodes[2]);
-    ASSERT_EQ(1, mesh2d.face_nodes[3]);
+    ASSERT_EQ(0, mesh2d.edge_faces[0]);
+    ASSERT_EQ(-1, mesh2d.edge_faces[1]);
+    ASSERT_EQ(0, mesh2d.edge_faces[2]);
+    ASSERT_EQ(-1, mesh2d.edge_faces[3]);
+
+    ASSERT_EQ(0, mesh2d.face_edges[0]);
+    ASSERT_EQ(10, mesh2d.face_edges[1]);
+    ASSERT_EQ(1, mesh2d.face_edges[2]);
+    ASSERT_EQ(8, mesh2d.face_edges[3]);
+
     ASSERT_EQ(4, mesh2d.nodes_per_face[0]);
     ASSERT_NEAR(0.5, mesh2d.face_x[0], tolerance);
     ASSERT_NEAR(1.5, mesh2d.face_y[0], tolerance);
@@ -189,6 +199,7 @@ TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_EQ(6, mesh2d.face_nodes[6]);
     ASSERT_EQ(3, mesh2d.face_nodes[7]);
     ASSERT_EQ(4, mesh2d.nodes_per_face[1]);
+
     ASSERT_NEAR(1.5, mesh2d.face_x[1], tolerance);
     ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
@@ -1312,8 +1323,8 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the message
-    const char* exceptionMessage;
-    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
+    auto exceptionMessage = std::make_unique<char[]>(512);
+    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage.get());
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the index of the invalid location
@@ -1326,9 +1337,9 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
 
 TEST(ApiStatelessTests, TestGettingVersionThroughApi)
 {
-    const char* versionFromApi;
-    meshkernelapi::mkernel_get_version(versionFromApi);
-    ASSERT_EQ(strcmp(versionFromApi, versionString), 0);
+    auto versionFromApi = std::make_unique<char[]>(64);
+    meshkernelapi::mkernel_get_version(versionFromApi.get());
+    ASSERT_EQ(strcmp(versionFromApi.get(), versionString), 0);
 }
 
 TEST_F(CartesianApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
@@ -2163,8 +2174,13 @@ TEST_F(CartesianApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     std::vector<double> face_x(mesh2d.num_faces);
     std::vector<double> face_y(mesh2d.num_faces);
 
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> face_edges(mesh2d.num_face_nodes * 2);
+
+    mesh2d.edge_faces = edge_faces.data();
     mesh2d.edge_nodes = edge_nodes.data();
     mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
     mesh2d.nodes_per_face = nodes_per_face.data();
     mesh2d.node_x = node_x.data();
     mesh2d.node_y = node_y.data();
@@ -2368,6 +2384,7 @@ TEST_F(CartesianApiTests, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWi
     mesh2d.edge_nodes = edge_nodes.data();
     mesh2d.num_nodes = static_cast<int>(coordinatesX.size());
     mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute, with large length threshold
@@ -2801,7 +2818,6 @@ TEST_F(CartesianApiTests, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
 
     // Execute, compute offsetted chainages
     double const offset = 1.0;
-    std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_offsetted_chainages(meshKernelId, offset);
 
     // Convert network 1d to mesh1d
