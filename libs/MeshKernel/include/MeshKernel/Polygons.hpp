@@ -131,7 +131,8 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        std::vector<Point> m_nodes;                                                            ///< The polygon nodes
+        std::vector<Point> m_nodes; ///< The polygon nodes
+
         Projection m_projection;                                                               ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices;                           ///< Start-end indices of each outer polygon in m_nodes
         std::unordered_map<UInt, std::vector<std::pair<UInt, UInt>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon

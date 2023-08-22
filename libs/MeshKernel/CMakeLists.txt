@@ -77,6 +77,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
 )
 
 set(
@@ -146,6 +147,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
 )
 
 set(
