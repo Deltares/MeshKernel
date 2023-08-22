@@ -530,3 +530,22 @@ TEST(LinearAlgebra, InsertColFromSTLVector)
         EXPECT_THROW(lin_alg::InsertCol(matrix, vector, -1), std::invalid_argument);
     }
 }
+
+TEST(LinearAlgebra, STLVectorToEigenVector)
+{
+    std::vector<int> stl_vec{1, 2, 3, 4, 5};
+
+    auto const row_vec = lin_alg::STLVectorToRowVector(stl_vec);
+    for (Eigen::Index i = 0; i < row_vec.size(); ++i)
+    {
+        EXPECT_EQ(row_vec(i), stl_vec[i]);
+    }
+
+    auto const col_vec = lin_alg::STLVectorToColVector(stl_vec);
+    for (Eigen::Index i = 0; i < col_vec.size(); ++i)
+    {
+        EXPECT_EQ(col_vec(i), stl_vec[i]);
+    }
+
+    EXPECT_EQ(row_vec, col_vec.transpose());
+}
