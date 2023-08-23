@@ -63,7 +63,7 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
                   << m_nodes.size()
                   << std::endl;
 
-        m_polygonGroups.emplace_back(PolygonGroup(std::move(polygonPoints), m_projection));
+        m_polygonGroups.emplace_back(PolygonalEnclosure(std::move(polygonPoints), m_projection));
 
         // No inner polygon found
         if (inner_polygons_indices.size() <= 1)
@@ -116,8 +116,8 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             continue;
         }
 
-        const PolygonGroup& group = m_polygonGroups[polygonIndex];
-        const Polygon& polygon = group.Outer ();
+        const PolygonalEnclosure& group = m_polygonGroups[polygonIndex];
+        const Polygon& polygon = group.Outer();
 
         const auto [localPolygonArea, centerOfMass, isCounterClockWise] = polygon.FaceAreaAndCenterOfMass();
         const auto perimeter = polygon.ClosedPerimeterLength();
@@ -370,7 +370,7 @@ bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
         throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
     }
 
-    return m_polygonGroups[polygonIndex].Contains (point);
+    return m_polygonGroups[polygonIndex].Contains(point);
 
     // const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
     // const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), outerStart, outerEnd);
@@ -390,21 +390,19 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(Point point) cons
         return {true, constants::missing::uintValue};
     }
 
-
-    for (size_t i = 0; i < m_polygonGroups.size (); ++i)
+    for (size_t i = 0; i < m_polygonGroups.size(); ++i)
     {
-        const PolygonGroup& group = m_polygonGroups [i];
+        const PolygonalEnclosure& group = m_polygonGroups[i];
 
-        if (group.ContainsRegion (point) == 1)
+        if (group.ContainsRegion(point) == 1)
         {
             return {true, i};
         }
-        else if (group.ContainsRegion (point) == 2)
+        else if (group.ContainsRegion(point) == 2)
         {
             // Can we just break here? It feels a bit like a goto
             return {false, constants::missing::uintValue};
         }
-
     }
 
     return {false, constants::missing::uintValue};

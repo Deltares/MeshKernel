@@ -33,7 +33,7 @@
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygon.hpp>
-#include <MeshKernel/PolygonGroup.hpp>
+#include <MeshKernel/PolygonalEnclosure.hpp>
 
 namespace meshkernel
 {
@@ -137,7 +137,7 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        std::vector<PolygonGroup> m_polygonGroups;                                             ///< List of polygons
+        std::vector<PolygonalEnclosure> m_polygonGroups;                                       ///< List of polygons
         std::vector<Point> m_nodes;                                                            ///< The polygon nodes
         Projection m_projection;                                                               ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices;                           ///< Start-end indices of each outer polygon in m_nodes

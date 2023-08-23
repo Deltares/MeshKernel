@@ -36,74 +36,70 @@
 namespace meshkernel
 {
 
-    class PolygonGroup {
-    public :
-
-
+    class PolygonalEnclosure
+    {
+    public:
         // TODO which constructor is better?
-        PolygonGroup (const std::vector<Point>& points,
-                      Projection projection);
+        PolygonalEnclosure(const std::vector<Point>& points,
+                           Projection projection);
 
-        PolygonGroup (const std::vector<Point>& points,
-                      size_t start, size_t end,
-                      Projection projection);
+        PolygonalEnclosure(const std::vector<Point>& points,
+                           size_t start, size_t end,
+                           Projection projection);
 
-        const Polygon& Outer () const;
+        const Polygon& Outer() const;
 
-        size_t NumberOfInner () const;
+        size_t NumberOfInner() const;
 
-        const Polygon& Inner (size_t i) const;
+        const Polygon& Inner(size_t i) const;
 
         /// @brief Determine if the point lies in the polygon
         ///
         /// If the point lies within the outer polygon but outside any inner polygons
-        bool Contains (const Point& pnt) const;
+        bool Contains(const Point& pnt) const;
 
         // TODO
         // 0 none, 1 in exterior, 2 in interior
-        int ContainsRegion (const Point& pnt) const;
+        int ContainsRegion(const Point& pnt) const;
 
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);
 
-    private :
-
+    private:
         using IndexRange = std::pair<UInt, UInt>;
 
         using IndexRangeArray = std::vector<IndexRange>;
 
-        static Polygon ConstructPolygon (const std::vector<Point>& points,
-                                         size_t start, size_t end,
-                                         Projection projection);
+        static Polygon ConstructPolygon(const std::vector<Point>& points,
+                                        size_t start, size_t end,
+                                        Projection projection);
 
-        void ConstructOuterPolygon ( const std::vector<Point>& points,
-                                     size_t start, size_t end,
-                                     const IndexRangeArray& innerIndices,
-                                     Projection projection);
+        void ConstructOuterPolygon(const std::vector<Point>& points,
+                                   size_t start, size_t end,
+                                   const IndexRangeArray& innerIndices,
+                                   Projection projection);
 
-        void ConstructInnerPolygons ( const std::vector<Point>& points,
-                                      const IndexRangeArray& innerIndices,
-                                      Projection projection);
-
+        void ConstructInnerPolygons(const std::vector<Point>& points,
+                                    const IndexRangeArray& innerIndices,
+                                    Projection projection);
 
         Polygon m_outer;
 
         std::vector<Polygon> m_inner;
-
     };
 
 } // namespace meshkernel
 
-inline const meshkernel::Polygon& meshkernel::PolygonGroup::Outer () const
+inline const meshkernel::Polygon& meshkernel::PolygonalEnclosure::Outer() const
 {
     return m_outer;
 }
 
-inline size_t meshkernel::PolygonGroup::NumberOfInner () const
+inline size_t meshkernel::PolygonalEnclosure::NumberOfInner() const
 {
-    return m_inner.size ();
+    return m_inner.size();
 }
 
-inline const meshkernel::Polygon& meshkernel::PolygonGroup::Inner (const size_t i) const
+inline const meshkernel::Polygon& meshkernel::PolygonalEnclosure::Inner(const size_t i) const
 {
-    return m_inner [i];
+    return m_inner[i];
 }
