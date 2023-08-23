@@ -253,7 +253,7 @@ TEST(LinearAlgebra, InsertRowFromRowVector)
         EXPECT_EQ(matrix, expected_matrix);
     }
 
-    // insert at first row
+    // insert at second row
     {
         lin_alg::RowVector<int> vector(cols);
         vector << 4, 5, 6;
@@ -548,4 +548,64 @@ TEST(LinearAlgebra, STLVectorToEigenVector)
     }
 
     EXPECT_EQ(row_vec, col_vec.transpose());
+}
+
+TEST(LinearAlgebra, SwapRows)
+{
+    lin_alg::Matrix<int> matrix(4, 3);
+    matrix << 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9,
+        10, 11, 12;
+
+    lin_alg::SwapRows(matrix, 1, 2);
+
+    lin_alg::Matrix<int> expected_matrix(4, 3);
+    expected_matrix << 1, 2, 3,
+        7, 8, 9,
+        4, 5, 6,
+        10, 11, 12;
+
+    EXPECT_EQ(matrix, expected_matrix);
+
+    // nothing happens if indices are identical
+    lin_alg::SwapRows(matrix, 0, 0);
+    EXPECT_EQ(matrix, expected_matrix);
+    lin_alg::SwapRows(matrix, 3, 3);
+    EXPECT_EQ(matrix, expected_matrix);
+
+    // go out of range
+    EXPECT_THROW(lin_alg::SwapRows(matrix, 0, 4), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 3), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 4), std::invalid_argument);
+}
+
+TEST(LinearAlgebra, SwapColumns)
+{
+    lin_alg::Matrix<int> matrix(4, 3);
+    matrix << 1, 2, 3,
+        4, 5, 6,
+        7, 8, 9,
+        10, 11, 12;
+
+    lin_alg::SwapColumns(matrix, 1, 2);
+
+    lin_alg::Matrix<int> expected_matrix(4, 3);
+    expected_matrix << 1, 3, 2,
+        4, 6, 5,
+        7, 9, 8,
+        10, 12, 11;
+
+    EXPECT_EQ(matrix, expected_matrix);
+
+    // nothing happens if indices are identical
+    lin_alg::SwapColumns(matrix, 0, 0);
+    EXPECT_EQ(matrix, expected_matrix);
+    lin_alg::SwapColumns(matrix, 2, 2);
+    EXPECT_EQ(matrix, expected_matrix);
+
+    // go out of range
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, 0, 3), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 2), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 3), std::invalid_argument);
 }

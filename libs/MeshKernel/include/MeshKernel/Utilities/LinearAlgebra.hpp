@@ -277,4 +277,62 @@ namespace lin_alg
         InsertCol(matrix, STLVectorToColVector(stl_vector), col);
     }
 
+    /// @brief         Swaps two columns of a matrix
+    /// @tparam        T Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] matrix The matrix
+    /// @param[in]     col_1 Index of first column to swap
+    /// @param[in]     col_2 Index of second column to swap
+    template <typename T, int storage>
+    void SwapColumns(Matrix<T, storage>& matrix,
+                     Eigen::Index col_1,
+                     Eigen::Index col_2)
+    {
+        if (col_1 < 0 ||
+            col_1 > matrix.cols() - 1 ||
+            col_2 < 0 ||
+            col_2 > matrix.cols() - 1)
+        {
+            throw std::invalid_argument("Invalid range");
+        }
+
+        // do nothing if column indices are identical
+        if (col_1 == col_2)
+        {
+            return;
+        }
+
+        // swap
+        matrix.col(col_1).swap(matrix.col(col_2));
+    }
+
+    /// @brief         Swaps two rows of a matrix
+    /// @tparam        T Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] matrix The matrix
+    /// @param[in]     row_1 Index of first row to swap
+    /// @param[in]     row_2 Index of second row to swap
+    template <typename T, int storage>
+    void SwapRows(Matrix<T, storage>& matrix,
+                  Eigen::Index row_1,
+                  Eigen::Index row_2)
+    {
+        if (row_1 < 0 ||
+            row_1 > matrix.rows() - 1 ||
+            row_2 < 0 ||
+            row_2 > matrix.rows() - 1)
+        {
+            throw std::invalid_argument("Invalid range");
+        }
+
+        // do nothing if row indices are identical
+        if (row_1 == row_2)
+        {
+            return;
+        }
+
+        // swap
+        matrix.row(row_1).swap(matrix.row(row_2));
+    }
+
 } // namespace lin_alg
