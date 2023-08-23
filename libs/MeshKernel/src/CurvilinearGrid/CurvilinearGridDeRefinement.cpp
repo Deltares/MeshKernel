@@ -77,5 +77,5 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
     }
 
     // substitute original grid with the derefined one
-    return CurvilinearGrid(std::move(deRefinedGrid), m_grid.m_projection);
+    return CurvilinearGrid(deRefinedGrid, m_grid.m_projection);
 }

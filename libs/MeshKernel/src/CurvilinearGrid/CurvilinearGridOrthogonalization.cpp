@@ -106,7 +106,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
         int nextVertical = 0;
         for (UInt m = 0; m < m_grid.m_numM; ++m)
         {
-            const auto nodeType = m_grid.m_gridNodesTypes[m][n];
+            const auto nodeType = m_grid.m_gridNodesTypes(m, n);
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)
             {
                 startM = m;
@@ -136,14 +136,14 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                     {
                         continue;
                     }
-                    if (m_grid.m_gridNodesTypes[mm][n] == CurvilinearGrid::NodeType::Invalid)
+                    if (m_grid.m_gridNodesTypes(mm, n) == CurvilinearGrid::NodeType::Invalid)
                     {
                         continue;
                     }
 
-                    const auto leftNode = m_grid.m_gridNodes[mm - 1][n];
-                    const auto verticalNode = m_grid.m_gridNodes[mm][n + nextVertical];
-                    const auto rightNode = m_grid.m_gridNodes[mm + 1][n];
+                    const auto leftNode = m_grid.m_gridNodes(mm - 1, n);
+                    const auto verticalNode = m_grid.m_gridNodes(mm, n + nextVertical);
+                    const auto rightNode = m_grid.m_gridNodes(mm + 1, n);
 
                     Point boundaryNode;
                     if (nextVertical == 1)
@@ -166,7 +166,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                         boundaryNode.y = (leftNode.y * qb + verticalNode.y * qbc + rightNode.y * qc + rightNode.x - leftNode.x) / rn;
                     }
 
-                    m_grid.m_gridNodes[mm][n] = m_splines.ComputeClosestPointOnSplineSegment(n,
+                    m_grid.m_gridNodes(mm, n) = m_splines.ComputeClosestPointOnSplineSegment(n,
                                                                                              static_cast<double>(startM),
                                                                                              static_cast<double>(m),
                                                                                              boundaryNode);
@@ -185,7 +185,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
         int nextHorizontal = 0;
         for (UInt n = 0; n < m_grid.m_numN; ++n)
         {
-            const auto nodeType = m_grid.m_gridNodesTypes[m][n];
+            const auto nodeType = m_grid.m_gridNodesTypes(m, n);
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::BottomRight)
             {
                 startN = n;
@@ -215,13 +215,13 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                     {
                         continue;
                     }
-                    if (m_grid.m_gridNodesTypes[m][nn] == CurvilinearGrid::NodeType::Invalid)
+                    if (m_grid.m_gridNodesTypes(m, nn) == CurvilinearGrid::NodeType::Invalid)
                     {
                         continue;
                     }
-                    const auto bottomNode = m_grid.m_gridNodes[m][nn - 1];
-                    const auto horizontalNode = m_grid.m_gridNodes[m + nextHorizontal][nn];
-                    const auto upperNode = m_grid.m_gridNodes[m][nn + 1];
+                    const auto bottomNode = m_grid.m_gridNodes(m, nn - 1);
+                    const auto horizontalNode = m_grid.m_gridNodes(m + nextHorizontal, nn);
+                    const auto upperNode = m_grid.m_gridNodes(m, nn + 1);
 
                     Point boundaryNode;
                     if (nextHorizontal == 1)
@@ -246,7 +246,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 
                     // Vertical spline index
                     const auto splineIndex = m_grid.m_numN + m;
-                    m_grid.m_gridNodes[m][nn] = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
+                    m_grid.m_gridNodes(m, nn) = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
                                                                                              static_cast<double>(startN),
                                                                                              static_cast<double>(n),
                                                                                              boundaryNode);
@@ -275,7 +275,7 @@ void CurvilinearGridOrthogonalization::Solve()
         {
             for (auto n = minNInternal; n < maxNInternal; ++n)
             {
-                if (m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::InternalValid)
+                if (m_grid.m_gridNodesTypes(m, n) != CurvilinearGrid::NodeType::InternalValid)
                 {
                     continue;
                 }
@@ -286,13 +286,13 @@ void CurvilinearGridOrthogonalization::Solve()
                 }
 
                 const auto residual =
-                    m_grid.m_gridNodes[m + 1][n] * m_a[m][n] +
-                    m_grid.m_gridNodes[m - 1][n] * m_b[m][n] +
-                    m_grid.m_gridNodes[m][n + 1] * m_c[m][n] +
-                    m_grid.m_gridNodes[m][n - 1] * m_d[m][n] +
-                    m_grid.m_gridNodes[m][n] * m_e[m][n];
+                    m_grid.m_gridNodes(m + 1, n) * m_a[m][n] +
+                    m_grid.m_gridNodes(m - 1, n) * m_b[m][n] +
+                    m_grid.m_gridNodes(m, n + 1) * m_c[m][n] +
+                    m_grid.m_gridNodes(m, n - 1) * m_d[m][n] +
+                    m_grid.m_gridNodes(m, n) * m_e[m][n];
 
-                m_grid.m_gridNodes[m][n] = m_grid.m_gridNodes[m][n] - residual / m_e[m][n] * omega;
+                m_grid.m_gridNodes(m, n) = m_grid.m_gridNodes(m, n) - residual / m_e[m][n] * omega;
             }
         }
 
@@ -321,15 +321,15 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask[m][n])
+            if (!m_grid.m_gridFacesMask(m, n))
             {
                 continue;
             }
 
-            const auto bottom = ComputeDistance(m_grid.m_gridNodes[m][n], m_grid.m_gridNodes[m + 1][n], Projection::cartesian);
-            const auto upper = ComputeDistance(m_grid.m_gridNodes[m][n + 1], m_grid.m_gridNodes[m + 1][n + 1], Projection::cartesian);
-            const auto left = ComputeDistance(m_grid.m_gridNodes[m][n], m_grid.m_gridNodes[m][n + 1], Projection::cartesian);
-            const auto right = ComputeDistance(m_grid.m_gridNodes[m + 1][n], m_grid.m_gridNodes[m + 1][n + 1], Projection::cartesian);
+            const auto bottom = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m + 1, n), Projection::cartesian);
+            const auto upper = ComputeDistance(m_grid.m_gridNodes(m, n + 1), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
+            const auto left = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m, n + 1), Projection::cartesian);
+            const auto right = ComputeDistance(m_grid.m_gridNodes(m + 1, n), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
 
             m_a[m][n] = (bottom + upper) * 0.5;
             m_b[m][n] = (left + right) * 0.5;
@@ -351,7 +351,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask[m][n])
+            if (!m_grid.m_gridFacesMask(m, n))
             {
                 continue;
             }
@@ -370,7 +370,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask[m][n])
+            if (!m_grid.m_gridFacesMask(m, n))
             {
                 m_atp[m][n] = constants::missing::doubleValue;
                 continue;
@@ -390,7 +390,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
-            if (m_grid.m_gridNodesTypes[m][n] != CurvilinearGrid::NodeType::InternalValid)
+            if (m_grid.m_gridNodesTypes(m, n) != CurvilinearGrid::NodeType::InternalValid)
             {
                 continue;
             }
@@ -520,19 +520,19 @@ CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
         for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             int step = 0;
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomLeft)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::BottomLeft)
             {
                 step = -1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomRight)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::BottomRight)
             {
                 step = 1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperRight)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::UpperRight)
             {
                 step = 1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperLeft)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::UpperLeft)
             {
                 step = -1;
             }
@@ -544,7 +544,7 @@ CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
             auto lastValidM = m + step;
             while (lastValidM > 0 &&
                    lastValidM < m_grid.m_numM &&
-                   m_grid.m_gridNodesTypes[lastValidM][n] == CurvilinearGrid::NodeType::InternalValid)
+                   m_grid.m_gridNodesTypes(lastValidM, n) == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidM += step;
             }
@@ -569,19 +569,19 @@ CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
         for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             int step = 0;
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomLeft)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::BottomLeft)
             {
                 step = -1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::BottomRight)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::BottomRight)
             {
                 step = -1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperRight)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::UpperRight)
             {
                 step = 1;
             }
-            if (m_grid.m_gridNodesTypes[m][n] == CurvilinearGrid::NodeType::UpperLeft)
+            if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::UpperLeft)
             {
                 step = 1;
             }
@@ -592,7 +592,7 @@ CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
             auto lastValidN = n + step;
             while (lastValidN > 0 &&
                    lastValidN < m_grid.m_numN &&
-                   m_grid.m_gridNodesTypes[m][lastValidN] == CurvilinearGrid::NodeType::InternalValid)
+                   m_grid.m_gridNodesTypes(m, lastValidN) == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidN += step;
             }

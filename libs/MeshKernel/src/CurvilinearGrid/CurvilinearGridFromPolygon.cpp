@@ -222,7 +222,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
             gridNodes[i][j] = result[i][j];
         }
     }
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(gridNodes, polygonProjection);
 }
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
@@ -437,5 +437,5 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         }
     }
 
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(gridNodes, polygonProjection);
 }

@@ -36,6 +36,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
 {
@@ -82,7 +83,7 @@ namespace meshkernel
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection);
+        CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise
@@ -99,23 +100,35 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
 
-        /// @brief Get the grid node at the (i,j) location
-        Point& GetNode(const UInt i, const UInt j);
+        /// @brief Gets a constant reference to the grid node at the (i,j) location
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt i, const UInt j) { return m_gridNodes(i, j); }
 
-        /// @brief Get the grid node at the (i,j) location
-        Point GetNode(const UInt i, const UInt j) const;
+        /// @brief Gets a reference to the grid node at the (i,j) location
+        [[nodiscard]] meshkernel::Point GetNode(const UInt i, const UInt j) const { return m_gridNodes(i, j); }
 
-        /// @brief Get the grid node at the location specified by the index.
-        ///
+        /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
-        Point& GetNode(const CurvilinearGridNodeIndices& index);
+        [[nodiscard]] meshkernel::Point& GetNode(const CurvilinearGridNodeIndices& index)
+        {
+            if (!index.IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+            return m_gridNodes(index.m_m, index.m_n);
+        }
 
-        /// @brief Get the grid node at the location specified by the index.
-        ///
+        /// @brief Get a constant reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
-        Point GetNode(const CurvilinearGridNodeIndices& index) const;
+        [[nodiscard]] meshkernel::Point GetNode(const CurvilinearGridNodeIndices& index) const
+        {
+            if (!index.IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+            return m_gridNodes(index.m_m, index.m_n);
+        }
 
         /// @brief From a point gets the node indices of the closest edges
         /// @param[in] point The input point
@@ -203,9 +216,9 @@ namespace meshkernel
 
         UInt m_numM = 0;                                       ///< The number of m coordinates (vertical lines)
         UInt m_numN = 0;                                       ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;           ///< Member variable storing the grid
-        std::vector<std::vector<bool>> m_gridFacesMask;        ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesTypes;   ///< The grid node types
+        lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
+        lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
+        lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:
@@ -232,35 +245,3 @@ namespace meshkernel
                      CurvilinearGridNodeIndices const& secondNode);
     };
 } // namespace meshkernel
-
-inline meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const UInt i, const UInt j)
-{
-    return m_gridNodes[i][j];
-}
-
-inline meshkernel::Point meshkernel::CurvilinearGrid::GetNode(const UInt i, const UInt j) const
-{
-    return m_gridNodes[i][j];
-}
-
-inline meshkernel::Point meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index) const
-{
-
-    if (!index.IsValid())
-    {
-        throw ConstraintError("Invalid node index");
-    }
-
-    return m_gridNodes[index.m_m][index.m_n];
-}
-
-inline meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index)
-{
-
-    if (!index.IsValid())
-    {
-        throw ConstraintError("Invalid node index");
-    }
-
-    return m_gridNodes[index.m_m][index.m_n];
-}

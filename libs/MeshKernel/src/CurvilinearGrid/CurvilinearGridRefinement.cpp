@@ -90,10 +90,10 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid.m_gridNodes[currentM][currentN].IsValid() &&
-                m_grid.m_gridNodes[currentM + 1][currentN].IsValid() &&
-                m_grid.m_gridNodes[currentM][currentN + 1].IsValid() &&
-                m_grid.m_gridNodes[currentM + 1][currentN + 1].IsValid())
+            if (m_grid.m_gridNodes(currentM, currentN).IsValid() &&
+                m_grid.m_gridNodes(currentM + 1, currentN).IsValid() &&
+                m_grid.m_gridNodes(currentM, currentN + 1).IsValid() &&
+                m_grid.m_gridNodes(currentM + 1, currentN + 1).IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
@@ -140,5 +140,5 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     }
 
     // Substitute original grid with the refined one
-    return CurvilinearGrid(std::move(refinedGrid), m_grid.m_projection);
+    return CurvilinearGrid(refinedGrid, m_grid.m_projection);
 }
