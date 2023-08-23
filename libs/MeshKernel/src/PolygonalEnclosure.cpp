@@ -1,25 +1,28 @@
 #include "MeshKernel/PolygonalEnclosure.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
-                                                   Projection projection)
-{
-    // The inner polygon indices, the first interval corresponds to the outer polygon
-    IndexRangeArray innerIndices = FindIndices(points, 0, points.size() - 1, constants::missing::innerOuterSeparator);
-
-    ConstructOuterPolygon(points, 0, points.size() - 1, innerIndices, projection);
-
-    if (innerIndices.size() >= 1)
-    {
-        ConstructInnerPolygons(points, innerIndices, projection);
-    }
-}
+                                                   Projection projection) : PolygonalEnclosure(points, 0, points.size() - 1, projection) {}
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
                                                    size_t start, size_t end,
                                                    Projection projection)
 {
+    double tolerance = 1.0e-10;
+
+    // TODO check last point is equal to first
+
+    std::cout << "Number of points: " << points.size() << "  " << std::boolalpha << IsEqual(points[0], points[points.size() - 1], tolerance) << std::endl;
+
+    std::cout << points[0].x << "  " << points[0].y << "  " << points[points.size() - 1].x << "  " << points[points.size() - 1].y << std::endl;
+
+    // if (points.size() < 4 || end - start + 1 < 4)
+    // {
+    //     throw ConstraintError(VariadicErrorMessage("Insufficient points"));
+    // }
+
     // The inner polygon indices, the first interval corresponds to the outer polygon
     IndexRangeArray innerIndices = FindIndices(points, start, end, constants::missing::innerOuterSeparator);
 
@@ -137,7 +140,28 @@ int meshkernel::PolygonalEnclosure::ContainsRegion(const Point& pnt) const
     return result;
 }
 
+meshkernel::UInt meshkernel::PolygonalEnclosure::NumberOfPoints(const bool includeInterior) const
+{
+    UInt pointCount = m_outer.Size();
+
+    if (includeInterior)
+    {
+        for (size_t i = 0; i < m_inner.size(); ++i)
+        {
+            pointCount += m_inner[i].Size();
+        }
+    }
+
+    return pointCount;
+}
+
 void meshkernel::PolygonalEnclosure::SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary)
 {
     m_outer.SnapToLandBoundary(startIndex, endIndex, landBoundary);
 }
+
+// meshkernel::PolygonalEnclosure meshkernel::PolygonalEnclosure::Displace(double displacement) const
+// {
+
+//     return PolygonalEnclosure();
+// }

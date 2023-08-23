@@ -552,9 +552,9 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
-    std::vector xCoordinatesIn{0.0, 1.0, 1.0, 0.0};
-    std::vector yCoordinatesIn{0.0, 0.0, 1.0, 1.0};
-    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
+    std::vector xCoordinatesIn{0.0, 1.0, 1.0, 0.0, 0.0};
+    std::vector yCoordinatesIn{0.0, 0.0, 1.0, 1.0, 0.0};
+    std::vector valuesIn{0.0, 0.0, 0.0, 0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinatesIn.data();
     geometryListIn.coordinates_y = yCoordinatesIn.data();
@@ -565,7 +565,7 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
     int numberOfpolygonNodes;
     auto errorCode = mkernel_polygon_count_offset(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(4, numberOfpolygonNodes);
+    ASSERT_EQ(5, numberOfpolygonNodes);
 
     meshkernelapi::GeometryList geometryListOut;
 

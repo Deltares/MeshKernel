@@ -32,6 +32,7 @@
 
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/PolygonalEnclosure.hpp>
 
@@ -41,7 +42,7 @@ namespace meshkernel
     /// @brief Forward declaration of the LandBoundary
     class LandBoundary;
 
-    /// @brief A class describing polygons
+    /// @brief A class containing a list of polygonaly enclosed regions
     class Polygons
     {
     public:
@@ -54,6 +55,15 @@ namespace meshkernel
         Polygons(const std::vector<Point>& polygon,
                  Projection projection);
 
+        /// @brief Get index of the polygon, and map the start- and end-index to the start- and end-index of the local polygon nodes
+        // This is bollocks
+        // what about nodes for the interior polygons
+        std::tuple<UInt, UInt, UInt> PolygonIndex(UInt startIndex, UInt endIndex) const;
+
+        /// @brief Get the polygonal enclosure at the index
+        /// @note Will throw ConstraintError exception if polygons.IsEmpty = true or index is out of range
+        const PolygonalEnclosure& Enclosure(const UInt index) const;
+
         /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
         /// @returns The generated points
         [[nodiscard]] std::vector<std::vector<Point>> ComputePointsInPolygons() const;
@@ -64,6 +74,14 @@ namespace meshkernel
         /// @param[in] refinementDistance The chosen refinement distance
         /// @return refinedPolygon The computed polygon
         [[nodiscard]] std::vector<Point> RefineFirstPolygon(UInt startIndex, UInt endIndex, double refinementDistance) const;
+
+        /// @brief Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)
+        /// @param[in] polygonIndex The polygon index
+        /// @param[in] startIndex The start index for the node array for the polygon
+        /// @param[in] endIndex The end index for the node array for the polygon
+        /// @param[in] refinementDistance The chosen refinement distance
+        /// @return refinedPolygon The computed polygon
+        [[nodiscard]] std::vector<Point> RefinePolygon(UInt polygonIndex, UInt startIndex, UInt endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
@@ -90,7 +108,7 @@ namespace meshkernel
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
         /// @return The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue
-        [[nodiscard]] std::tuple<bool, UInt> IsPointInPolygons(Point point) const;
+        [[nodiscard]] std::tuple<bool, UInt> IsPointInPolygons(const Point& point) const;
 
         /// @brief For each point, compute the index of the polygon including it
         /// @param[in] point The vector of points
@@ -105,10 +123,9 @@ namespace meshkernel
         /// @return Number of polygons
         [[nodiscard]] UInt GetNumPolygons() const;
 
-        // TODO is this needed?
         /// @brief Gets the number of polygon nodes
         /// @return The number of polygon nodes
-        [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
+        [[nodiscard]] size_t GetNumNodes() const;
 
         /// @brief Gets the projection
         /// @return The projection
@@ -137,11 +154,10 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        std::vector<PolygonalEnclosure> m_polygonGroups;                                       ///< List of polygons
-        std::vector<Point> m_nodes;                                                            ///< The polygon nodes
-        Projection m_projection;                                                               ///< The current projection
-        std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices;                           ///< Start-end indices of each outer polygon in m_nodes
-        std::unordered_map<UInt, std::vector<std::pair<UInt, UInt>>> m_inner_polygons_indices; ///< For each outer polygon, the indices of each inner polygon
+        std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
+        std::vector<Point> m_nodes;                                  ///< The polygon nodes
+        Projection m_projection;                                     ///< The current projection
+        std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
 
         /// @brief Computes the perimeter of a closed polygon
         /// @param[in] polygonNodes The polygon nodes to use in the computation
@@ -152,10 +168,21 @@ namespace meshkernel
         /// @param[in] polygonNodes The polygon nodes to use in the computation
         /// @return edgeLengths The length of each polygon edge
         std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
-
-        /// @brief Computes the maximum edge length
-        /// @param[in] polygonNodes The polygon to use in the computation
-        /// @return maximumEdgeLength The maximum edge length of the polygon
-        double MaximumEdgeLength(const std::vector<Point>& polygonNodes) const;
     };
 } // namespace meshkernel
+
+inline const meshkernel::PolygonalEnclosure& meshkernel::Polygons::Enclosure(const UInt index) const
+{
+    if (IsEmpty())
+    {
+        throw ConstraintError(VariadicErrorMessage("Enclosures list is empty."));
+    }
+
+    if (index >= m_enclosures.size())
+    {
+        throw ConstraintError(VariadicErrorMessage("Invalid enclosure index: {}, maximum index: {}",
+                                                   index, m_enclosures.size() - 1));
+    }
+
+    return m_enclosures[index];
+}

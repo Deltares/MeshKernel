@@ -42,15 +42,14 @@ namespace meshkernel
     class Polygon
     {
     public:
-
         /// @brief Default constructor.
-        Polygon () = default;
+        Polygon() = default;
 
         /// @brief Default copy constructor.
-        Polygon (const Polygon& copy) = default;
+        Polygon(const Polygon& copy) = default;
 
         /// @brief Default move constructor.
-        Polygon (Polygon&& copy) = default;
+        Polygon(Polygon&& copy) = default;
 
         /// @brief Constructor
         Polygon(const std::vector<Point>& points,
@@ -62,8 +61,8 @@ namespace meshkernel
                 Projection projection);
 
         ///  @brief Reset the polygon
-        void Reset (const std::vector<Point>& points,
-                    Projection projection);
+        void Reset(const std::vector<Point>& points,
+                   Projection projection);
 
         Polygon& operator=(const Polygon& copy);
 
@@ -76,6 +75,7 @@ namespace meshkernel
         /// @brief Return the number of points in the polygon
         size_t Size() const;
 
+        // TODO be consistent in naming
         /// @brief Return vector of points of the polygon
         const std::vector<Point>& Points() const;
 
@@ -115,6 +115,9 @@ namespace meshkernel
         /// @brief Computes the edge lengths of the polygon
         /// @return edgeLengths The length of each polygon edge
         std::vector<double> EdgeLengths() const;
+
+        /// @brief Compute the displaced poygon
+        Polygon Displace(double displacement) const;
 
     private:
         /// @brief Determine if the polygon contains the point for Cartesian coordinate system

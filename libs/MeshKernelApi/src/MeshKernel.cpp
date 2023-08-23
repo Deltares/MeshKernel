@@ -1866,11 +1866,12 @@ namespace meshkernelapi
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
+            const auto [enclosureIndex, polygonStartNode, polygonEndNode] = polygons.PolygonIndex(startIndex, endIndex);
 
             //--------------------------------
             // Now copy back the polygon values
 
-            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Nodes();
+            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Points();
 
             for (int i = startIndex; i <= endIndex; ++i)
             {

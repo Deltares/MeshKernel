@@ -62,8 +62,8 @@ meshkernel::Polygon& meshkernel::Polygon::operator=(Polygon&& copy)
     return *this;
 }
 
-void meshkernel::Polygon::Reset (const std::vector<Point>& points,
-                                 Projection projection)
+void meshkernel::Polygon::Reset(const std::vector<Point>& points,
+                                Projection projection)
 {
     m_projection = projection;
     m_points = points;
@@ -235,17 +235,16 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
     // snap polygon section to land boundary
     for (size_t i = startIndex; i <= endIndex; ++i)
     {
-        Point& pnt = m_points[i];
-
-        if (pnt.IsValid())
+        if (m_points[i].IsValid())
         {
-            pnt = landBoundary.FindNearestPoint(pnt, m_projection);
+            m_points[i] = landBoundary.FindNearestPoint(m_points[i], m_projection);
         }
     }
 
     if (m_projection == Projection::spherical)
     {
         // TODO Should this be called for spherical accurate too?
+        // TODO WHere did I find this? Is it correct?
         TranslateSphericalCoordinates(m_points);
     }
 
@@ -281,7 +280,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 
     if (startIndex > endIndex || endIndex >= m_points.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Polygon::Refine: The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError(VariadicErrorMessage("The indices are not valid: {}, {}.", startIndex, endIndex));
     }
 
     //--------------------------------
@@ -306,7 +305,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     refinedPolygon.reserve(m_points.size());
 
     // Add nodes before the section to be refined
-    for (size_t i = 0; i < startIndex; ++i)
+    for (size_t i = 0; i <= startIndex; ++i)
     {
         refinedPolygon.emplace_back(m_points[i]);
     }
@@ -422,3 +421,8 @@ double meshkernel::Polygon::ClosedPerimeterLength() const
 
     return perimeter;
 }
+
+// meshkernel::Polygon meshkernel::Polygon::Displace(double displacement) const
+// {
+//     PointArray
+// }

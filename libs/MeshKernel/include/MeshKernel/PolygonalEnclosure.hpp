@@ -36,6 +36,10 @@
 namespace meshkernel
 {
 
+    /// @brief A region enclosed by a polygonal permieter.
+    ///
+    /// Each region is described by an outer perimeter polygon.
+    /// It may contain 0 or more holes, each described by an inner polygon.
     class PolygonalEnclosure
     {
     public:
@@ -47,10 +51,13 @@ namespace meshkernel
                            size_t start, size_t end,
                            Projection projection);
 
+        /// @brief The outer perimeter polygon
         const Polygon& Outer() const;
 
+        /// @brief The number of inner hole regions
         size_t NumberOfInner() const;
 
+        /// @brief Get an inner polygon
         const Polygon& Inner(size_t i) const;
 
         /// @brief Determine if the point lies in the polygon
@@ -58,32 +65,45 @@ namespace meshkernel
         /// If the point lies within the outer polygon but outside any inner polygons
         bool Contains(const Point& pnt) const;
 
+        /// @brief Get the number of points making up the polygon, including interior if requested
+        UInt NumberOfPoints(const bool includeInterior) const;
+
         // TODO
         // 0 none, 1 in exterior, 2 in interior
         int ContainsRegion(const Point& pnt) const;
 
+        /// @brief Snap all or part of the outer perimeter polygon to the land boundary
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);
 
     private:
+        /// @typedef IndexRange
+        /// @brief Contains the start and end of a section from the point array
         using IndexRange = std::pair<UInt, UInt>;
 
+        /// @typedef IndexRangeArray
+        /// @brief An array of IndexRange
         using IndexRangeArray = std::vector<IndexRange>;
 
+        /// @brief Construct a polygon from a (sub) range of points.
         static Polygon ConstructPolygon(const std::vector<Point>& points,
                                         size_t start, size_t end,
                                         Projection projection);
 
+        /// @brief Construct the outer perimiter polygon from the points.
         void ConstructOuterPolygon(const std::vector<Point>& points,
                                    size_t start, size_t end,
                                    const IndexRangeArray& innerIndices,
                                    Projection projection);
 
+        /// @brief Construct all, if any, inner polygons from the points.
         void ConstructInnerPolygons(const std::vector<Point>& points,
                                     const IndexRangeArray& innerIndices,
                                     Projection projection);
 
+        /// @brief The outer perimeter polygon of the enclosure
         Polygon m_outer;
 
+        /// @brief The set of inner, island, polygons for the enclosure.
         std::vector<Polygon> m_inner;
     };
 

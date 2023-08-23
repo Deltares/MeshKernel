@@ -29,6 +29,8 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/PolygonalEnclosure.hpp"
 
 #include <concepts>
 
@@ -141,6 +143,9 @@ namespace meshkernel
             }
         }
 
+        /// @brief From the set of computed points, select those that are contained within the enclosure
+        std::vector<Point> SelectNodes(const PolygonalEnclosure& enclosure) const;
+
         /// @brief Build the internal triangulation from the flat triangulation
         void BuildTriangulation();
 
@@ -232,7 +237,8 @@ namespace meshkernel
             return m_yCoordFlat[nodeIndex];
         }
 
-        Point GetCoord (const UInt nodeIndex) const
+        // TODO be consistent in naming function like this (also in Polygon, perhaps other places too)
+        Point GetCoord(const UInt nodeIndex) const
         {
             return Point(m_xCoordFlat[nodeIndex], m_yCoordFlat[nodeIndex]);
         }
