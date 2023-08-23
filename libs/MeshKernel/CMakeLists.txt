@@ -43,6 +43,7 @@ set(
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygon.cpp
+  ${SRC_DIR}/PolygonGroup.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
@@ -110,7 +111,9 @@ set(
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
   ${DOMAIN_INC_DIR}/Orthogonalizer.hpp
   ${DOMAIN_INC_DIR}/Parameters.hpp
+  ${DOMAIN_INC_DIR}/Point.hpp
   ${DOMAIN_INC_DIR}/Polygon.hpp
+  ${DOMAIN_INC_DIR}/PolygonGroup.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp

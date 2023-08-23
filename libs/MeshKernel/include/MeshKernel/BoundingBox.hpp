@@ -129,6 +129,7 @@ namespace meshkernel
         /// @brief Extends the bounding box by a factor
         void Extend(double factor)
         {
+            // TODO should check that the BB does not cover the entire fp space.
             const double width = Width();
             const double height = Height();
             m_lowerLeft.x -= width * factor;
@@ -154,7 +155,17 @@ namespace meshkernel
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 {
-    Reset (points, 0, points.size () - 1);
+
+    if (points.size () > 0)
+    {
+        Reset (points, 0, points.size () - 1);
+    }
+    else
+    {
+        m_lowerLeft = Point(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+        m_upperRight = Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    }
+
 } // namespace meshkernel
 
 template <typename T>

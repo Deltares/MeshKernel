@@ -50,25 +50,20 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
         // The inner polygon indices, the first interval corresponds to the outer polygon
         const auto inner_polygons_indices = FindIndices(polygon, outer_start, outer_end, constants::missing::innerOuterSeparator);
 
-        // for (auto [innerStart, innerEnd] : inner_polygons_indices)
+        std::vector<Point> polygonPoints;
+        polygonPoints.reserve(outer_end - outer_start + 1);
+
+        for (size_t i = outer_start; i <= outer_end; ++i)
         {
-            std::vector<Point> polygonPoints;
-            polygonPoints.reserve(outer_end - outer_start + 1);
-            // polygonPoints.reserve(innerEnd - innerStart + 1);
-
-            for (size_t i = outer_start; i <= outer_end; ++i)
-            // for (size_t i = innerStart; i <= innerEnd; ++i)
-            {
-                polygonPoints.emplace_back(m_nodes[i]);
-            }
-
-            std::cout << "Constructing polygon " << std::boolalpha << (inner_polygons_indices.size() == 1) << "  "
-                      << polygonPoints.size() << "  " << outer_start << "  " << outer_end << "  " << inner_polygons_indices.size() << "  "
-                      // std::cout << "Constructing polygon " << polygonPoints.size() << "  " << innerStart << "  " << innerEnd << "  " << inner_polygons_indices.size() << "  "
-                      << m_nodes.size()
-                      << std::endl;
-            m_polygons.emplace_back(Polygon(std::move(polygonPoints), m_projection));
+            polygonPoints.emplace_back(m_nodes[i]);
         }
+
+        std::cout << "Constructing polygon " << std::boolalpha << (inner_polygons_indices.size() == 1) << "  "
+                  << polygonPoints.size() << "  " << outer_start << "  " << outer_end << "  " << inner_polygons_indices.size() << "  "
+                  << m_nodes.size()
+                  << std::endl;
+
+        m_polygonGroups.emplace_back(PolygonGroup(std::move(polygonPoints), m_projection));
 
         // No inner polygon found
         if (inner_polygons_indices.size() <= 1)
@@ -100,18 +95,9 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
-    std::vector generatedPoints(GetNumPolygons(), std::vector<Point>());
+    std::vector<std::vector<Point>> generatedPoints(GetNumPolygons(), std::vector<Point>());
     std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
-
-    // for (size_t i = 0; i < m_polygons.size())
-    // {
-    //     if (!m_polygons[i].IsClosed())
-    //     {
-    //         continue;
-    //     }
-
-    // }
 
     for (UInt polygonIndex = 0; polygonIndex < m_outer_polygons_indices.size(); ++polygonIndex)
     {
@@ -130,8 +116,8 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             continue;
         }
 
-        // Polygon polygon(std::move(localPolygon), m_projection);
-        const Polygon& polygon = m_polygons[polygonIndex];
+        const PolygonGroup& group = m_polygonGroups[polygonIndex];
+        const Polygon& polygon = group.Outer ();
 
         const auto [localPolygonArea, centerOfMass, isCounterClockWise] = polygon.FaceAreaAndCenterOfMass();
         const auto perimeter = polygon.ClosedPerimeterLength();
@@ -143,6 +129,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         // estimated number of triangles
         constexpr UInt SafetySize = 11;
         const auto numberOfTriangles = static_cast<UInt>(SafetySize * localPolygonArea / averageTriangleArea);
+
         if (numberOfTriangles == 0)
         {
             throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
@@ -154,9 +141,10 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
                                      numberOfTriangles);
 
         generatedPoints[polygonIndex].reserve(triangulationWrapper.GetNumNodes());
-        for (auto i = 0; i < triangulationWrapper.GetNumNodes(); ++i)
+
+        for (int i = 0; i < triangulationWrapper.GetNumNodes(); ++i)
         {
-            if (Point p(triangulationWrapper.GetXCoord(i), triangulationWrapper.GetYCoord(i)); IsPointInPolygon(p, polygonIndex))
+            if (Point p(triangulationWrapper.GetCoord(i)); group.Contains(p))
             {
                 generatedPoints[polygonIndex].emplace_back(p);
             }
@@ -381,9 +369,12 @@ bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
     {
         throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
     }
-    const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
-    const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), outerStart, outerEnd);
-    return inPolygon;
+
+    return m_polygonGroups[polygonIndex].Contains (point);
+
+    // const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
+    // const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), outerStart, outerEnd);
+    // return inPolygon;
 }
 
 meshkernel::UInt Polygons::GetNumPolygons() const
@@ -399,18 +390,24 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(Point point) cons
         return {true, constants::missing::uintValue};
     }
 
-    size_t polygonIndex2 = 0;
 
-    for (size_t i = 0; i < m_polygons.size(); ++i)
+    for (size_t i = 0; i < m_polygonGroups.size (); ++i)
     {
+        const PolygonGroup& group = m_polygonGroups [i];
 
-        if (m_polygons[i].Contains(point))
+        if (group.ContainsRegion (point) == 1)
         {
-            polygonIndex2 = i;
-            break;
-            // return {true, i};
+            return {true, i};
         }
+        else if (group.ContainsRegion (point) == 2)
+        {
+            // Can we just break here? It feels a bit like a goto
+            return {false, constants::missing::uintValue};
+        }
+
     }
+
+    return {false, constants::missing::uintValue};
 
     bool inPolygon = false;
     for (UInt polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
@@ -446,7 +443,6 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(Point point) cons
                 }
             }
 
-            std::cout << "IspointInPolygons: " << m_polygons.size() << "  " << polygonIndex2 << "  " << polygonIndex << "  " << (int)m_projection << std::endl;
             return {true, polygonIndex};
         }
     }

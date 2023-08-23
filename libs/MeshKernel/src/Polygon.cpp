@@ -7,6 +7,9 @@
 meshkernel::Polygon::Polygon(const std::vector<Point>& points,
                              Projection projection) : m_points(points), m_projection(projection)
 {
+    // TODO check number of points >= 3 (probably 4 to include the closure)
+    // Polygon should not contain invalid points
+
     if (m_projection == Projection::spherical)
     {
         // TODO SHould this be called for spherical accurate too?
@@ -19,6 +22,52 @@ meshkernel::Polygon::Polygon(const std::vector<Point>& points,
 meshkernel::Polygon::Polygon(std::vector<Point>&& points,
                              Projection projection) : m_points(points), m_projection(projection)
 {
+    // TODO check number of points >= 3 (probably 4 to include the closure)
+    // Polygon should not contain invalid points
+
+    if (m_projection == Projection::spherical)
+    {
+        // TODO SHould this be called for spherical accurate too?
+        TranslateSphericalCoordinates(m_points);
+    }
+
+    m_boundingBox.Reset(m_points);
+}
+
+meshkernel::Polygon& meshkernel::Polygon::operator=(const Polygon& copy)
+{
+
+    if (this != &copy)
+    {
+        m_points = copy.m_points;
+        m_projection = copy.m_projection;
+        m_boundingBox = copy.m_boundingBox;
+    }
+
+    return *this;
+}
+
+meshkernel::Polygon& meshkernel::Polygon::operator=(Polygon&& copy)
+{
+
+    if (this != &copy)
+    {
+        m_points = std::move(copy.m_points);
+        // TODO add undefined enum for Projection
+        m_projection = copy.m_projection;
+        // TODO should the BB be invalidated.
+        m_boundingBox = copy.m_boundingBox;
+    }
+
+    return *this;
+}
+
+void meshkernel::Polygon::Reset (const std::vector<Point>& points,
+                                 Projection projection)
+{
+    m_projection = projection;
+    m_points = points;
+
     if (m_projection == Projection::spherical)
     {
         // TODO SHould this be called for spherical accurate too?
@@ -35,7 +84,9 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 
     for (size_t n = 0; n < m_points.size() - 1; n++)
     {
-
+        // TODO always Cartesian
+        // So Dx and Dy can be simplified (no branching)
+        // Then for 2 or more points, return multiple cross product values
         const auto crossProductValue = crossProduct(m_points[n], m_points[n + 1], m_points[n], point, Projection::cartesian);
 
         if (IsEqual(crossProductValue, 0.0))
@@ -61,8 +112,7 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
         }
     }
 
-    // isInPolygon = windingNumber == 0 ? false : true;
-    // isInPolygon = windingNumber != 0;
+    // If winding number is not zero then the point is contained within the polygon
     return windingNumber != 0;
 }
 
@@ -81,6 +131,7 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
 
     // enlarge around polygon
     const double enlargementFactor = 1.000001;
+
     // TODO set to centre?
     Point polygonCenter;
     const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
@@ -155,11 +206,6 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
     {
         return false;
     }
-
-    // if (!IsClosed())
-    // {
-    //     return false;
-    // }
 
     if (!m_boundingBox.Contains(pnt))
     {
@@ -326,6 +372,8 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
 
         dx0 = GetDx(m_points[n], m_points[nextNode], m_projection);
         dy0 = GetDy(m_points[n], m_points[nextNode], m_projection);
+
+        // Rotate by pi/2
         const double dsx = dy0;
         const double dsy = -dx0;
         const double xds = xc * dsx + yc * dsy;

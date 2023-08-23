@@ -36,6 +36,7 @@ namespace meshkernel
 
     /// @brief Indicator for traversal direction of the points specifying a polygon
     // PolygonTraversalDirection? too long
+    // PolygonOrientation
     enum class TraversalDirection
     {
         Clockwise,    ///< Points define a clockwise traversal of the polygon

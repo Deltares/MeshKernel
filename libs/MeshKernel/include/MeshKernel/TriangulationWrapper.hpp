@@ -28,6 +28,7 @@
 #pragma once
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
 
 #include <concepts>
 
@@ -53,7 +54,6 @@ namespace meshkernel
                            double trisize);
     }
 
-    class Point;
     class Sample;
 
     /// @brief Wrapper around the Triangle library
@@ -230,6 +230,11 @@ namespace meshkernel
         [[nodiscard]] double GetYCoord(const UInt nodeIndex) const
         {
             return m_yCoordFlat[nodeIndex];
+        }
+
+        Point GetCoord (const UInt nodeIndex) const
+        {
+            return Point(m_xCoordFlat[nodeIndex], m_yCoordFlat[nodeIndex]);
         }
 
     private:

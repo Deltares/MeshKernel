@@ -39,10 +39,19 @@ namespace meshkernel
     class LandBoundary;
 
     /// @brief A Polygon
-    // TODO Question: can this represent both open and closed polygons?
     class Polygon
     {
     public:
+
+        /// @brief Default constructor.
+        Polygon () = default;
+
+        /// @brief Default copy constructor.
+        Polygon (const Polygon& copy) = default;
+
+        /// @brief Default move constructor.
+        Polygon (Polygon&& copy) = default;
+
         /// @brief Constructor
         Polygon(const std::vector<Point>& points,
                 Projection projection);
@@ -51,6 +60,14 @@ namespace meshkernel
         /// @note Points are moved to the polygon
         Polygon(std::vector<Point>&& points,
                 Projection projection);
+
+        ///  @brief Reset the polygon
+        void Reset (const std::vector<Point>& points,
+                    Projection projection);
+
+        Polygon& operator=(const Polygon& copy);
+
+        Polygon& operator=(Polygon&& copy);
 
         // From here
         // Could be PointSequence?
@@ -112,7 +129,7 @@ namespace meshkernel
         std::vector<Point> m_points;
 
         /// @brief The current projection
-        Projection m_projection;
+        Projection m_projection = Projection::cartesian;
 
         /// @brief The bounding box containing the polygon
         BoundingBox m_boundingBox;

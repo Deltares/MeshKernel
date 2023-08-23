@@ -33,6 +33,7 @@
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygon.hpp>
+#include <MeshKernel/PolygonGroup.hpp>
 
 namespace meshkernel
 {
@@ -85,6 +86,7 @@ namespace meshkernel
         /// @return True if it is included, false otherwise
         [[nodiscard]] bool IsPointInPolygon(Point const& point, UInt polygonIndex) const;
 
+        // TODO can reduce the result of this function to only a UInt (valid value => found, invalid => not found)
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
         /// @return The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue
@@ -103,6 +105,7 @@ namespace meshkernel
         /// @return Number of polygons
         [[nodiscard]] UInt GetNumPolygons() const;
 
+        // TODO is this needed?
         /// @brief Gets the number of polygon nodes
         /// @return The number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
@@ -134,7 +137,7 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        std::vector<Polygon> m_polygons;                                                       ///< List of polygons
+        std::vector<PolygonGroup> m_polygonGroups;                                             ///< List of polygons
         std::vector<Point> m_nodes;                                                            ///< The polygon nodes
         Projection m_projection;                                                               ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices;                           ///< Start-end indices of each outer polygon in m_nodes
