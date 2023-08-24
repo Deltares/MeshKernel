@@ -95,6 +95,7 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
     }
 }
 
+// TOOD what to do with this?
 size_t Polygons::GetNumNodes() const
 {
     return m_nodes.size();
@@ -123,10 +124,9 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         const Polygon& polygon = enclosure.Outer();
 
         const auto [localPolygonArea, centerOfMass, isCounterClockWise] = polygon.FaceAreaAndCenterOfMass();
-        const auto perimeter = polygon.ClosedPerimeterLength();
 
         // average triangle size
-        const auto averageEdgeLength = perimeter / static_cast<double>(polygon.Size());
+        const auto averageEdgeLength = polygon.ClosedPerimeterLength() / static_cast<double>(polygon.Size());
         const double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles
@@ -137,8 +137,6 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         {
             throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles = 0.");
         }
-
-        // TODO can this loop be replaced by a function in triangulation wrapper?
 
         triangulationWrapper.Compute(polygon.Points(),
                                      TriangulationWrapper::TriangulationOptions::GeneratePoints,
@@ -198,80 +196,37 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
 
 meshkernel::Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
 {
-    auto sizenewPolygon = GetNumNodes();
+    UInt totalNumberOfPoints = GetNumNodes();
+    // TODO Should the invalid points between enclosures be added too.
+    // TODO use the correct separators between enclosures and inner polygons.
+    std::vector<Point> newPolygonPoints(totalNumberOfPoints + (innerAndOuter ? totalNumberOfPoints + 1 : 0), Point());
 
-    if (innerAndOuter)
+    UInt innerCount = 0;
+    UInt outerCount = totalNumberOfPoints;
+
+    for (const PolygonalEnclosure& enclosure : m_enclosures)
     {
-        sizenewPolygon += GetNumNodes() + 1;
-    }
+        std::vector<Point> outerOffsetPoints(enclosure.Outer().ComputeOffset(distance, innerAndOuter));
 
-    std::vector<Point> normalVectors(sizenewPolygon);
-    double dxNormalPreviousEdge = 0.0;
-    double dyNormalPreviousEdge = 0.0;
-    double dxNormal = 0.0;
-    double dyNormal = 0.0;
-
-    for (UInt n = 0; n < GetNumNodes(); n++)
-    {
-        if (n < GetNumNodes() - 1)
+        for (size_t i = 0; i < outerOffsetPoints.size(); ++i)
         {
-            const auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
-            const auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
-            const auto nodeDistance = std::sqrt(dx * dx + dy * dy);
-            dxNormal = -dy / nodeDistance;
-            dyNormal = dx / nodeDistance;
-        }
-        else
-        {
-            dxNormal = dxNormalPreviousEdge;
-            dyNormal = dyNormalPreviousEdge;
+            newPolygonPoints[innerCount] = outerOffsetPoints[i];
+            ++innerCount;
         }
 
-        if (n == 0)
+        for (size_t i = 0; i < enclosure.NumberOfInner(); ++i)
         {
-            dxNormalPreviousEdge = dxNormal;
-            dyNormalPreviousEdge = dyNormal;
+            std::vector<Point> innerOffsetPoints(enclosure.Inner(i).ComputeOffset(distance, innerAndOuter));
+            // Probably add inner separator here (if not the last)
+
+            for (size_t j = 0; j < outerOffsetPoints.size(); ++j)
+            {
+                newPolygonPoints[outerCount] = outerOffsetPoints[j];
+                ++outerCount;
+            }
         }
 
-        const double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
-        normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
-        normalVectors[n].y = factor * (dyNormalPreviousEdge + dyNormal);
-
-        dxNormalPreviousEdge = dxNormal;
-        dyNormalPreviousEdge = dyNormal;
-    }
-
-    // negative sign introduced because normal vector pointing inward
-    distance = -distance;
-    if (m_projection == Projection::spherical)
-    {
-        distance = distance / (constants::geometric::earth_radius * constants::conversion::degToRad);
-    }
-
-    std::vector<Point> newPolygonPoints(sizenewPolygon, {constants::missing::doubleValue, constants::missing::doubleValue});
-    for (UInt i = 0; i < GetNumNodes(); ++i)
-    {
-        auto dx = normalVectors[i].x * distance;
-        const auto dy = normalVectors[i].y * distance;
-        if (m_projection == Projection::spherical)
-        {
-            dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * constants::conversion::degToRad);
-        }
-        newPolygonPoints[i].x = m_nodes[i].x + dx;
-        newPolygonPoints[i].y = m_nodes[i].y + dy;
-
-        if (innerAndOuter)
-        {
-            newPolygonPoints[i + GetNumNodes() + 1].x = m_nodes[i].x - dx;
-            newPolygonPoints[i + GetNumNodes() + 1].y = m_nodes[i].y - dy;
-        }
-    }
-
-    std::cout << " innerAndOuter " << std::boolalpha << innerAndOuter << std::endl;
-
-    for (size_t i = 0; i < newPolygonPoints.size(); ++i)
-    {
-        std::cout << "newPolygonPoints " << newPolygonPoints[i].x << ", " << newPolygonPoints[i].y << std::endl;
+        // Probably add outer separator here (if not the last)
     }
 
     // set the new polygon
@@ -289,7 +244,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary [[maybe_unuse
     if (startIndex == 0 && endIndex == 0)
     {
         std::cout << "################################" << std::endl;
-        // Does this mean all enclosures?
+        // TODO Does this mean all enclosures?
         endIndex = static_cast<UInt>(m_nodes.size()) - 1;
     }
 
@@ -380,11 +335,11 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
     {
         const PolygonalEnclosure& enclosure = m_enclosures[i];
 
-        if (enclosure.ContainsRegion(point) == 1)
+        if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Exterior)
         {
             return {true, i};
         }
-        else if (enclosure.ContainsRegion(point) == 2)
+        else if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
         {
             // Point can be found in an hole in the polygon
             break;
@@ -410,6 +365,7 @@ std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) c
     return result;
 }
 
+// TODO put in header.
 bool Polygons::IsEmpty() const
 {
     return m_enclosures.empty();

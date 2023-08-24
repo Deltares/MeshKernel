@@ -1,37 +1,49 @@
-#include "MeshKernel/Polygon.hpp"
+#include <cmath>
+
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygon.hpp"
+#include "MeshKernel/Vector.hpp"
 
 meshkernel::Polygon::Polygon(const std::vector<Point>& points,
-                             Projection projection) : m_points(points), m_projection(projection)
+                             Projection projection) : m_nodes(points), m_projection(projection)
 {
-    // TODO check number of points >= 3 (probably 4 to include the closure)
-    // Polygon should not contain invalid points
-
-    if (m_projection == Projection::spherical)
-    {
-        // TODO SHould this be called for spherical accurate too?
-        TranslateSphericalCoordinates(m_points);
-    }
-
-    m_boundingBox.Reset(m_points);
+    Initialise();
 }
 
 meshkernel::Polygon::Polygon(std::vector<Point>&& points,
-                             Projection projection) : m_points(points), m_projection(projection)
+                             Projection projection) : m_nodes(points), m_projection(projection)
 {
-    // TODO check number of points >= 3 (probably 4 to include the closure)
-    // Polygon should not contain invalid points
+    Initialise();
+}
+
+void meshkernel::Polygon::Initialise()
+{
+    if (0 < m_nodes.size() && m_nodes.size() < 4)
+    {
+        throw ConstraintError(VariadicErrorMessage("Insufficient nodes in the polygon: {}, require at least 3 (+1, making 4, to close)",
+                                                   m_nodes.size()));
+    }
+
+    if (m_nodes.size() > 0 && m_nodes[0] != m_nodes[m_nodes.size() - 1])
+    {
+        throw ConstraintError("Polygon is not closed");
+    }
+
+    if (InvalidPointCount(m_nodes) > 0)
+    {
+        throw ConstraintError("Polygon nodes contains invalid nodes");
+    }
 
     if (m_projection == Projection::spherical)
     {
         // TODO SHould this be called for spherical accurate too?
-        TranslateSphericalCoordinates(m_points);
+        TranslateSphericalCoordinates(m_nodes);
     }
 
-    m_boundingBox.Reset(m_points);
+    m_boundingBox.Reset(m_nodes);
 }
 
 meshkernel::Polygon& meshkernel::Polygon::operator=(const Polygon& copy)
@@ -39,7 +51,7 @@ meshkernel::Polygon& meshkernel::Polygon::operator=(const Polygon& copy)
 
     if (this != &copy)
     {
-        m_points = copy.m_points;
+        m_nodes = copy.m_nodes;
         m_projection = copy.m_projection;
         m_boundingBox = copy.m_boundingBox;
     }
@@ -52,7 +64,7 @@ meshkernel::Polygon& meshkernel::Polygon::operator=(Polygon&& copy)
 
     if (this != &copy)
     {
-        m_points = std::move(copy.m_points);
+        m_nodes = std::move(copy.m_nodes);
         // TODO add undefined enum for Projection
         m_projection = copy.m_projection;
         // TODO should the BB be invalidated.
@@ -66,28 +78,20 @@ void meshkernel::Polygon::Reset(const std::vector<Point>& points,
                                 Projection projection)
 {
     m_projection = projection;
-    m_points = points;
-
-    if (m_projection == Projection::spherical)
-    {
-        // TODO SHould this be called for spherical accurate too?
-        TranslateSphericalCoordinates(m_points);
-    }
-
-    m_boundingBox.Reset(m_points);
+    m_nodes = points;
+    Initialise();
 }
 
 bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 {
-
     int windingNumber = 0;
 
-    for (size_t n = 0; n < m_points.size() - 1; n++)
+    for (size_t n = 0; n < m_nodes.size() - 1; n++)
     {
         // TODO always Cartesian
         // So Dx and Dy can be simplified (no branching)
         // Then for 2 or more points, return multiple cross product values
-        const auto crossProductValue = crossProduct(m_points[n], m_points[n + 1], m_points[n], point, Projection::cartesian);
+        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::cartesian);
 
         if (IsEqual(crossProductValue, 0.0))
         {
@@ -95,9 +99,9 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
             return true;
         }
 
-        if (m_points[n].y <= point.y) // an upward crossing
+        if (m_nodes[n].y <= point.y) // an upward crossing
         {
-            if (m_points[n + 1].y > point.y && crossProductValue > 0.0)
+            if (m_nodes[n + 1].y > point.y && crossProductValue > 0.0)
 
             {
                 ++windingNumber; // have  a valid up intersect
@@ -105,7 +109,7 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
         }
         else
         {
-            if (m_points[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
+            if (m_nodes[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
             {
                 --windingNumber; // have  a valid down intersect
             }
@@ -113,6 +117,7 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
     }
 
     // If winding number is not zero then the point is contained within the polygon
+    // TODO what about the case of m_nodes.size = 0
     return windingNumber != 0;
 }
 
@@ -124,9 +129,9 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
     std::vector<Cartesian3DPoint> cartesian3DPoints;
     cartesian3DPoints.reserve(Size());
 
-    for (UInt i = 0; i < m_points.size(); ++i)
+    for (UInt i = 0; i < m_nodes.size(); ++i)
     {
-        cartesian3DPoints.emplace_back(SphericalToCartesian3D(m_points[i]));
+        cartesian3DPoints.emplace_back(SphericalToCartesian3D(m_nodes[i]));
     }
 
     // enlarge around polygon
@@ -135,7 +140,7 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
     // TODO set to centre?
     Point polygonCenter;
     const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-    for (UInt i = 0; i < m_points.size(); ++i)
+    for (UInt i = 0; i < m_nodes.size(); ++i)
     {
         cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
         cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
@@ -151,9 +156,9 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
     int inside = 0;
 
     // loop over the polygon nodes
-    for (UInt i = 0; i < m_points.size() - 1; ++i)
+    for (UInt i = 0; i < m_nodes.size() - 1; ++i)
     {
-        const auto nextNode = NextCircularForwardIndex(i, static_cast<UInt>(m_points.size()));
+        const auto nextNode = NextCircularForwardIndex(i, static_cast<UInt>(m_nodes.size()));
         const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
         const auto xpXe = VectorProduct(pointCartesian3D, ee);
 
@@ -197,12 +202,12 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
         throw ConstraintError("Point is not valid");
     }
 
-    if (m_points.empty())
+    if (m_nodes.empty())
     {
         return true;
     }
 
-    if (m_points.size() < Mesh::m_numNodesInTriangle)
+    if (m_nodes.size() < Mesh::m_numNodesInTriangle)
     {
         return false;
     }
@@ -227,7 +232,7 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
 void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size_t endIndex, const LandBoundary& landBoundary)
 {
 
-    if (startIndex > endIndex || endIndex >= m_points.size())
+    if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
         throw ConstraintError(VariadicErrorMessage("Polygon::SnapToLandBoundary: The indices are not valid: {}, {}.", startIndex, endIndex));
     }
@@ -235,9 +240,9 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
     // snap polygon section to land boundary
     for (size_t i = startIndex; i <= endIndex; ++i)
     {
-        if (m_points[i].IsValid())
+        if (m_nodes[i].IsValid())
         {
-            m_points[i] = landBoundary.FindNearestPoint(m_points[i], m_projection);
+            m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
         }
     }
 
@@ -245,29 +250,29 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
     {
         // TODO Should this be called for spherical accurate too?
         // TODO WHere did I find this? Is it correct?
-        TranslateSphericalCoordinates(m_points);
+        TranslateSphericalCoordinates(m_nodes);
     }
 
     // Now update the bounding box
-    m_boundingBox.Reset(m_points);
+    m_boundingBox.Reset(m_nodes);
 }
 
 std::vector<double> meshkernel::Polygon::EdgeLengths() const
 {
     std::vector<double> edgeLengths;
-    edgeLengths.reserve(m_points.size());
+    edgeLengths.reserve(m_nodes.size());
 
-    for (size_t p = 0; p < m_points.size(); ++p)
+    for (size_t p = 0; p < m_nodes.size(); ++p)
     {
         size_t firstNode = p;
         size_t secondNode = p + 1;
 
-        if (secondNode == m_points.size())
+        if (secondNode == m_nodes.size())
         {
             secondNode = 0;
         }
 
-        edgeLengths.emplace_back(ComputeDistance(m_points[firstNode], m_points[secondNode], m_projection));
+        edgeLengths.emplace_back(ComputeDistance(m_nodes[firstNode], m_nodes[secondNode], m_projection));
     }
 
     return edgeLengths;
@@ -278,7 +283,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 
     // UInt polygonIndex;
 
-    if (startIndex > endIndex || endIndex >= m_points.size())
+    if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
         throw ConstraintError(VariadicErrorMessage("The indices are not valid: {}, {}.", startIndex, endIndex));
     }
@@ -302,22 +307,22 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     // Approximate the number of nodes in the refined polygon.
 
     std::vector<Point> refinedPolygon;
-    refinedPolygon.reserve(m_points.size());
+    refinedPolygon.reserve(m_nodes.size());
 
     // Add nodes before the section to be refined
     for (size_t i = 0; i <= startIndex; ++i)
     {
-        refinedPolygon.emplace_back(m_points[i]);
+        refinedPolygon.emplace_back(m_nodes[i]);
     }
 
     // Refine each line segment.
     for (size_t i = startIndex; i < endIndex; ++i)
     {
         // Line segment starting point.
-        Point p = m_points[i];
-        const double segmentLength = ComputeDistance(m_points[i], m_points[i + 1], m_projection);
+        Point p = m_nodes[i];
+        const double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
         // Refined segment step size.
-        const Point delta = (m_points[i + 1] - m_points[i]) * refinementDistance / segmentLength;
+        const Point delta = (m_nodes[i + 1] - m_nodes[i]) * refinementDistance / segmentLength;
         double lengthAlongInterval = refinementDistance;
 
         // Exit when the lengthAlongInterval is greater or equal than segmentLength
@@ -330,13 +335,13 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
         }
 
         // Add last node to the refined polygon point sequence.
-        refinedPolygon.emplace_back(m_points[i + 1]);
+        refinedPolygon.emplace_back(m_nodes[i + 1]);
     }
 
     // Add nodes after the section to be refined
-    for (size_t i = endIndex + 1; i < m_points.size(); ++i)
+    for (size_t i = endIndex + 1; i < m_nodes.size(); ++i)
     {
-        refinedPolygon.emplace_back(m_points[i]);
+        refinedPolygon.emplace_back(m_nodes[i]);
     }
 
     return refinedPolygon;
@@ -346,7 +351,7 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
 {
 
     // TODO why size - 1? If open polygon?
-    if (m_points.size() - 1 < Mesh::m_numNodesInTriangle)
+    if (m_nodes.size() - 1 < Mesh::m_numNodesInTriangle)
     {
         throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
     }
@@ -355,22 +360,22 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
     double xCenterOfMass = 0.0;
     double yCenterOfMass = 0.0;
     const double minArea = 1e-8;
-    const Point reference = ReferencePoint(m_points, m_projection);
-    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(m_points.size()) - 1;
+    const Point reference = ReferencePoint(m_nodes, m_projection);
+    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(m_nodes.size()) - 1;
 
     for (UInt n = 0; n < numberOfPointsOpenedPolygon; n++)
     {
         const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
-        double dx0 = GetDx(reference, m_points[n], m_projection);
-        double dy0 = GetDy(reference, m_points[n], m_projection);
-        const double dx1 = GetDx(reference, m_points[nextNode], m_projection);
-        const double dy1 = GetDy(reference, m_points[nextNode], m_projection);
+        double dx0 = GetDx(reference, m_nodes[n], m_projection);
+        double dy0 = GetDy(reference, m_nodes[n], m_projection);
+        const double dx1 = GetDx(reference, m_nodes[nextNode], m_projection);
+        const double dy1 = GetDy(reference, m_nodes[nextNode], m_projection);
 
         const double xc = 0.5 * (dx0 + dx1);
         const double yc = 0.5 * (dy0 + dy1);
 
-        dx0 = GetDx(m_points[n], m_points[nextNode], m_projection);
-        dy0 = GetDy(m_points[n], m_points[nextNode], m_projection);
+        dx0 = GetDx(m_nodes[n], m_nodes[nextNode], m_projection);
+        dy0 = GetDy(m_nodes[n], m_nodes[nextNode], m_projection);
 
         // Rotate by pi/2
         const double dsx = dy0;
@@ -405,24 +410,88 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
 
 double meshkernel::Polygon::ClosedPerimeterLength() const
 {
-    if (m_points.size() <= 1)
+    if (m_nodes.size() <= 1)
     {
         return 0.0;
     }
 
-    // TODO m_points.front, m_points.back
+    // TODO m_nodes.front, m_nodes.back
     // TOOD are all polygons closed?
-    double perimeter = IsClosed() ? 0.0 : ComputeDistance(m_points[0], m_points[m_points.size() - 1], m_projection);
+    double perimeter = IsClosed() ? 0.0 : ComputeDistance(m_nodes[0], m_nodes[m_nodes.size() - 1], m_projection);
 
-    for (size_t i = 1; i < m_points.size(); ++i)
+    for (size_t i = 1; i < m_nodes.size(); ++i)
     {
-        perimeter += ComputeDistance(m_points[i - 1], m_points[i], m_projection);
+        perimeter += ComputeDistance(m_nodes[i - 1], m_nodes[i], m_projection);
     }
 
     return perimeter;
 }
 
-// meshkernel::Polygon meshkernel::Polygon::Displace(double displacement) const
-// {
-//     PointArray
-// }
+std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distance, const bool innerAndOuter) const
+{
+    std::vector<Vector> normalVectors(m_nodes.size());
+
+    Vector normal;
+    Vector firstNormal;
+    // Initialise the previous normal with the normal from the last segment of the polygon
+    // The last segment consistes of the second to last point and the first point.
+    // Second to last because the polygon is closed, so the last point is equal to the first.
+    Vector previousNormal = ComputeNormalToline(m_nodes[m_nodes.size() - 2], m_nodes[0], m_projection);
+
+    for (size_t i = 0; i < m_nodes.size(); ++i)
+    {
+
+        if (i < m_nodes.size() - 1)
+        {
+            normal = ComputeNormalToline(m_nodes[i], m_nodes[i + 1], m_projection);
+        }
+        else
+        {
+            normal = firstNormal;
+        }
+
+        if (i == 0)
+        {
+            firstNormal = normal;
+        }
+
+        const double factor = 1.0 / (1.0 + dot(previousNormal, normal));
+        normalVectors[i] = factor * (previousNormal + normal);
+
+        previousNormal = normal;
+    }
+
+    std::vector<Point> offsetPoints(m_nodes.size() + (innerAndOuter ? m_nodes.size() + 1 : 0), Point());
+
+    // negative sign introduced because normal vector pointing inward
+    distance = -distance;
+
+    // TODO should this be for spherical accurate too.
+    // The perhaps should either:
+    // 1. a function to determine if m_projection is a spherical kind (either spherical or spherical-accurate, or any other spherical type)
+    // 2. IFF projection will only include the current 3 types (check it is not cartesian) (should really add an uninitialised value)
+    if (m_projection == Projection::spherical)
+    {
+        distance = distance / (constants::geometric::earth_radius * constants::conversion::degToRad);
+    }
+
+    for (UInt i = 0; i < m_nodes.size(); ++i)
+    {
+        Vector normal = distance * normalVectors[i];
+
+        // TODO should this be for spherical accurate too.
+        if (m_projection == Projection::spherical)
+        {
+            normal.x() /= std::cos((m_nodes[i].y + 0.5 * normal.y()) * constants::conversion::degToRad);
+        }
+
+        offsetPoints[i] = m_nodes[i] + normal;
+
+        if (innerAndOuter)
+        {
+            offsetPoints[i + m_nodes.size() + 1] = m_nodes[i] - normal;
+        }
+    }
+
+    return offsetPoints;
+}

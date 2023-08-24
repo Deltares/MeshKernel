@@ -43,6 +43,13 @@ namespace meshkernel
     class PolygonalEnclosure
     {
     public:
+        enum class Region
+        {
+            None,
+            Exterior,
+            Interior
+        };
+
         // TODO which constructor is better?
         PolygonalEnclosure(const std::vector<Point>& points,
                            Projection projection);
@@ -70,7 +77,7 @@ namespace meshkernel
 
         // TODO
         // 0 none, 1 in exterior, 2 in interior
-        int ContainsRegion(const Point& pnt) const;
+        Region ContainsRegion(const Point& pnt) const;
 
         /// @brief Snap all or part of the outer perimeter polygon to the land boundary
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);

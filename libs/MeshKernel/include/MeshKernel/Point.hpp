@@ -30,11 +30,12 @@
 #include <cmath>
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
 
-    // TODO move to utilities or similar
+    // TODO move IsEquatl function to utilities or similar
     /// @brief Generic function for determining if two floating point values are equal
     /// @param[value] The value to compare
     /// @param[ref_value] The reference value to compare to
@@ -79,12 +80,17 @@ namespace meshkernel
         {
         }
 
-
         /// @brief Inplace add point to point.
         Point& operator+=(const Point& p);
 
         /// @brief Inplace subtract point from point.
         Point& operator-=(const Point& p);
+
+        /// @brief Inplace add vector to a point.
+        Point& operator+=(const Vector& vec);
+
+        /// @brief Inplace subtract vector from a point.
+        Point& operator-=(const Vector& vec);
 
         /// @brief Inplace divide point by point.
         ///
@@ -129,18 +135,21 @@ namespace meshkernel
             return !isInvalid;
         }
 
-
     private:
         static double constexpr m_trans_factor =
             constants::conversion::degToRad *
             constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
 
-
     /// @brief Add two points
     ///
     /// @returns \f$ (p1.x + p2.x, p1.y + p2.y)\f$
     Point operator+(const Point& p1, const Point& p2);
+
+    /// @brief Add vector to a point
+    ///
+    /// @returns \f$ (p.x + v.x, p.y + v.y)\f$
+    Point operator+(const Point& pnt, const Vector& vec);
 
     /// @brief Add points and scalar
     ///
@@ -156,6 +165,11 @@ namespace meshkernel
     ///
     /// @returns \f$ (p1.x - p2.x, p1.y - p2.y)\f$
     Point operator-(const Point& p1, const Point& p2);
+
+    /// @brief Subtract vector from a point
+    ///
+    /// @returns \f$ (p.x - v.x, p.y - v.y)\f$
+    Point operator-(const Point& pnt, const Vector& vec);
 
     /// @brief Subtract scalar from point
     ///
@@ -197,12 +211,15 @@ namespace meshkernel
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool operator==(const Point& p1, const Point& p2);
 
+    /// @brief Test points for equality using a default tolerance
+    /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
+    bool operator!=(const Point& p1, const Point& p2);
+
     /// @brief Test points for equality upto a tolerance
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
 
-}
-
+} // namespace meshkernel
 
 inline meshkernel::Point& meshkernel::Point::operator+=(const Point& p)
 {
@@ -215,6 +232,20 @@ inline meshkernel::Point& meshkernel::Point::operator-=(const Point& p)
 {
     x -= p.x;
     y -= p.y;
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator+=(const Vector& vec)
+{
+    x += vec.x();
+    y += vec.y();
+    return *this;
+}
+
+inline meshkernel::Point& meshkernel::Point::operator-=(const Vector& vec)
+{
+    x -= vec.x();
+    y -= vec.y();
     return *this;
 }
 
@@ -265,6 +296,11 @@ inline meshkernel::Point meshkernel::operator+(const Point& p1, const Point& p2)
     return Point(p1.x + p2.x, p1.y + p2.y);
 }
 
+inline meshkernel::Point meshkernel::operator+(const Point& pnt, const Vector& vec)
+{
+    return Point(pnt.x + vec.x(), pnt.y + vec.y());
+}
+
 inline meshkernel::Point meshkernel::operator+(const Point& p, const double x)
 {
     return Point(p.x + x, p.y + x);
@@ -278,6 +314,11 @@ inline meshkernel::Point meshkernel::operator+(const double x, const Point& p)
 inline meshkernel::Point meshkernel::operator-(const Point& p1, const Point& p2)
 {
     return Point(p1.x - p2.x, p1.y - p2.y);
+}
+
+inline meshkernel::Point meshkernel::operator-(const Point& pnt, const Vector& vec)
+{
+    return Point(pnt.x - vec.x(), pnt.y - vec.y());
 }
 
 inline meshkernel::Point meshkernel::operator-(const Point& p, const double x)
@@ -318,6 +359,11 @@ inline meshkernel::Point meshkernel::operator/(const Point& p, const double x)
 inline bool meshkernel::operator==(const Point& p1, const Point& p2)
 {
     return IsEqual(p1.x, p2.x) && IsEqual(p1.y, p2.y);
+}
+
+inline bool meshkernel::operator!=(const Point& p1, const Point& p2)
+{
+    return !(p1 == p2);
 }
 
 inline bool meshkernel::IsEqual(const Point& p1, const Point& p2, const double epsilon)

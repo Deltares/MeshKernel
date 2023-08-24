@@ -32,7 +32,9 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
@@ -144,6 +146,15 @@ namespace meshkernel
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
     std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, UInt start, UInt end, double separator);
+
+    /// @brief Determine if the number of invalid points in the point array.
+    UInt InvalidPointCount(const std::vector<Point>& points);
+
+    /// @brief Determine if the number of invalid points in the section of the point array.
+    /// @param[in] points The array of points
+    /// @param[in] start The start of the range in which to search
+    /// @param[in] end The end of the range in which to search
+    UInt InvalidPointCount(const std::vector<Point>& points, UInt start, UInt end);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
@@ -292,6 +303,20 @@ namespace meshkernel
     /// @param[in] secondPoint
     /// @param[in] projection The coordinate system projection.
     [[nodiscard]] double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the delta (dx, dy) for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection The coordinate system projection.
+    Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the normal to the line described by the two points.
+    ///
+    /// The vector is normalised.
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection The coordinate system projection.
+    Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection);
 
     /// @brief Gets dy for the given projection
     /// @param[in] firstPoint

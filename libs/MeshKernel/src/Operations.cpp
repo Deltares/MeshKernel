@@ -89,6 +89,33 @@ namespace meshkernel
         return result;
     }
 
+    UInt InvalidPointCount(const std::vector<Point>& points)
+    {
+        if (points.size() > 0)
+        {
+            return InvalidPointCount(points, 0, points.size() - 1);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    UInt InvalidPointCount(const std::vector<Point>& points, UInt start, UInt end)
+    {
+        UInt count = 0;
+
+        for (UInt i = start; i <= end; ++i)
+        {
+            if (!points[i].IsValid())
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
     UInt NextCircularForwardIndex(UInt currentIndex, UInt size)
     {
         UInt index = currentIndex + 1;
@@ -314,6 +341,21 @@ namespace meshkernel
         ephi[0] = -sin(phi0) * cos(lambda0);
         ephi[1] = -sin(phi0) * sin(lambda0);
         ephi[2] = cos(phi0);
+    }
+
+    Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
+    {
+        // TODO some performance can be gained here, by combining the computing of dx and dy
+        Vector delta(GetDx(firstPoint, secondPoint, projection), GetDy(firstPoint, secondPoint, projection));
+        return delta;
+    }
+
+    Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection)
+    {
+        Vector direction = GetDelta(start, end, projection);
+        direction.normalise();
+        Vector normal(-direction.y(), direction.x());
+        return normal;
     }
 
     double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)

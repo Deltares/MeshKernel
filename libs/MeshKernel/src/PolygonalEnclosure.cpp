@@ -10,19 +10,6 @@ meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& poi
                                                    size_t start, size_t end,
                                                    Projection projection)
 {
-    double tolerance = 1.0e-10;
-
-    // TODO check last point is equal to first
-
-    std::cout << "Number of points: " << points.size() << "  " << std::boolalpha << IsEqual(points[0], points[points.size() - 1], tolerance) << std::endl;
-
-    std::cout << points[0].x << "  " << points[0].y << "  " << points[points.size() - 1].x << "  " << points[points.size() - 1].y << std::endl;
-
-    // if (points.size() < 4 || end - start + 1 < 4)
-    // {
-    //     throw ConstraintError(VariadicErrorMessage("Insufficient points"));
-    // }
-
     // The inner polygon indices, the first interval corresponds to the outer polygon
     IndexRangeArray innerIndices = FindIndices(points, start, end, constants::missing::innerOuterSeparator);
 
@@ -40,12 +27,14 @@ meshkernel::Polygon meshkernel::PolygonalEnclosure::ConstructPolygon(const std::
 {
     if (start > end)
     {
-        // Error
+        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} > {}.",
+                                                   start, end));
     }
 
     if (end >= points.size())
     {
-        // Error
+        throw ConstraintError(VariadicErrorMessage("The end index is greater than the number of points: {} >= {}.",
+                                                   end, points.size()));
     }
 
     std::vector<Point> polygonPoints;
@@ -85,7 +74,6 @@ void meshkernel::PolygonalEnclosure::ConstructInnerPolygons(const std::vector<Po
     if (innerIndices.size() <= 1)
     {
         // Nothing to do
-        // Comment on why
         return;
     }
 
@@ -100,44 +88,33 @@ void meshkernel::PolygonalEnclosure::ConstructInnerPolygons(const std::vector<Po
 
 bool meshkernel::PolygonalEnclosure::Contains(const Point& pnt) const
 {
-
-    bool pointIsContained = m_outer.Contains(pnt);
-
-    for (const Polygon& innerPolygon : m_inner)
-    {
-        if (innerPolygon.Contains(pnt))
-        {
-            // If the point is contained in any of the inner polygons then
-            // it is considered outside the outer polygon.
-            pointIsContained = false;
-            break;
-        }
-    }
-
-    return pointIsContained;
+    // If the point is in one of the inner (island) polygons, then it is considered to be outside the enclosure.
+    return ContainsRegion(pnt) == Region::Exterior;
 }
 
-int meshkernel::PolygonalEnclosure::ContainsRegion(const Point& pnt) const
+meshkernel::PolygonalEnclosure::Region meshkernel::PolygonalEnclosure::ContainsRegion(const Point& pnt) const
 {
-    int result = 0;
+    Region region = Region::None;
 
     if (m_outer.Contains(pnt))
     {
-        result = 1;
-    }
+        // The point is contained withing the perimeter of the enclosure.
+        region = Region::Exterior;
 
-    for (const Polygon& innerPolygon : m_inner)
-    {
-        if (innerPolygon.Contains(pnt))
+        // Now check if the point is contained within any of the inner polygons.
+        for (const Polygon& innerPolygon : m_inner)
         {
-            // If the point is contained in any of the inner polygons then
-            // it is considered outside the outer polygon.
-            result = 2;
-            break;
+            if (innerPolygon.Contains(pnt))
+            {
+                // If the point is contained in any of the inner polygons then
+                // it is considered outside the outer polygon enclosure.
+                region = Region::Interior;
+                break;
+            }
         }
     }
 
-    return result;
+    return region;
 }
 
 meshkernel::UInt meshkernel::PolygonalEnclosure::NumberOfPoints(const bool includeInterior) const
@@ -159,9 +136,3 @@ void meshkernel::PolygonalEnclosure::SnapToLandBoundary(size_t startIndex, size_
 {
     m_outer.SnapToLandBoundary(startIndex, endIndex, landBoundary);
 }
-
-// meshkernel::PolygonalEnclosure meshkernel::PolygonalEnclosure::Displace(double displacement) const
-// {
-
-//     return PolygonalEnclosure();
-// }

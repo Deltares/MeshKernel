@@ -116,10 +116,13 @@ namespace meshkernel
         /// @return edgeLengths The length of each polygon edge
         std::vector<double> EdgeLengths() const;
 
-        /// @brief Compute the displaced poygon
-        Polygon Displace(double displacement) const;
+        /// @brief Compute the poygon offset.
+        std::vector<Point> ComputeOffset(double displacement, const bool innerAndOuter) const;
 
     private:
+        /// @brief Check polygon has a valid state and initialise it.
+        void Initialise();
+
         /// @brief Determine if the polygon contains the point for Cartesian coordinate system
         ///
         /// Also for spherical coordinates
@@ -129,7 +132,7 @@ namespace meshkernel
         bool ContainsSphericalAccurate(const Point& point) const;
 
         /// @brief The point sequence making up the corners of the polygon
-        std::vector<Point> m_points;
+        std::vector<Point> m_nodes;
 
         /// @brief The current projection
         Projection m_projection = Projection::cartesian;
@@ -142,28 +145,28 @@ namespace meshkernel
 
 inline size_t meshkernel::Polygon::Size() const
 {
-    return m_points.size();
+    return m_nodes.size();
 }
 
 inline const std::vector<meshkernel::Point>& meshkernel::Polygon::Points() const
 {
-    return m_points;
+    return m_nodes;
 }
 
 inline meshkernel::Point& meshkernel::Polygon::GetPoint(const size_t i)
 {
-    return m_points[i];
+    return m_nodes[i];
 }
 
 inline const meshkernel::Point& meshkernel::Polygon::GetPoint(const size_t i) const
 {
-    return m_points[i];
+    return m_nodes[i];
 }
 
 inline bool meshkernel::Polygon::IsClosed() const
 {
-    // m_points.back?
-    return m_points[0] == m_points[m_points.size() - 1];
+    // m_nodes.back?
+    return m_nodes[0] == m_nodes[m_nodes.size() - 1];
 }
 
 inline const meshkernel::BoundingBox& meshkernel::Polygon::GetBoundingBox() const
