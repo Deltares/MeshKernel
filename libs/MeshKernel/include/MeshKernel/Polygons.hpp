@@ -131,14 +131,6 @@ namespace meshkernel
         /// @return The projection
         [[nodiscard]] Projection GetProjection() const { return m_projection; }
 
-        /// @brief Gets the start-end indices of each outer polygon
-        /// @param[in] i Outer polygon index
-        /// @return Pair of start and end indices
-        [[nodiscard]] std::pair<UInt, UInt> const& OuterIndices(UInt i) const
-        {
-            return m_outer_polygons_indices[i];
-        }
-
         /// @brief Gets the nodes of the polygon
         /// @return Vector of nodes of the polygon
         [[nodiscard]] std::vector<Point> const& Nodes() const { return m_nodes; }

@@ -116,7 +116,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
         local_nodes.emplace_back(local_nodes.front());
 
-        auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(local_nodes, m_projection);
+        auto [face_area, center_of_mass, is_counter_clock_wise] = Polygon::FaceAreaAndCenterOfMass(local_nodes, m_projection);
 
         m_faceArea.emplace_back(face_area);
         m_facesMassCenters.emplace_back(center_of_mass);
@@ -387,7 +387,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         }
         nodalValues.emplace_back(nodalValues.front());
 
-        auto const [area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodalValues, m_projection);
+        auto const [area, center_of_mass, is_counter_clock_wise] = Polygon::FaceAreaAndCenterOfMass(nodalValues, m_projection);
         if (!is_counter_clock_wise)
         {
             return;
@@ -485,7 +485,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 
         if (computeMassCenters)
         {
-            const auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
+            const auto [area, centerOfMass, isCounterClockWise] = Polygon::FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
             m_faceArea[f] = area;
             m_facesMassCenters[f] = centerOfMass;
         }
@@ -1250,7 +1250,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
     dualFace.emplace_back(dualFace[0]);
 
     // now we can compute the mass center of the dual face
-    auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(dualFace, m_projection);
+    auto [area, centerOfMass, isCounterClockWise] = Polygon::FaceAreaAndCenterOfMass(dualFace, m_projection);
 
     if (m_projection == Projection::spherical)
     {

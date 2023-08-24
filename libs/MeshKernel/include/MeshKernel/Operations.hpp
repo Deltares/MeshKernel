@@ -457,12 +457,6 @@ namespace meshkernel
                                            double& ratioFirstSegment,
                                            double& ratioSecondSegment);
 
-    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
-    /// @param[in]  polygon            The input vector containing the nodes of the polygon (must be closed)
-    /// @param[in]  projection         The projection to use.
-    /// @return A tuple containing the resulting area, the resulting center of mass, and the orientation of the edges (counterclockwise/clockwise)
-    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection);
-
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates
     /// @param[in] coordinatesDerivatives      The spline nodal derivatives

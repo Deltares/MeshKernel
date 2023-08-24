@@ -48,7 +48,6 @@ void meshkernel::Polygon::Initialise()
 
 meshkernel::Polygon& meshkernel::Polygon::operator=(const Polygon& copy)
 {
-
     if (this != &copy)
     {
         m_nodes = copy.m_nodes;
@@ -61,13 +60,10 @@ meshkernel::Polygon& meshkernel::Polygon::operator=(const Polygon& copy)
 
 meshkernel::Polygon& meshkernel::Polygon::operator=(Polygon&& copy)
 {
-
     if (this != &copy)
     {
         m_nodes = std::move(copy.m_nodes);
-        // TODO add undefined enum for Projection
         m_projection = copy.m_projection;
-        // TODO should the BB be invalidated.
         m_boundingBox = copy.m_boundingBox;
     }
 
@@ -347,65 +343,61 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCenterOfMass() const
+std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection& projection)
 {
 
     // TODO why size - 1? If open polygon?
-    if (m_nodes.size() - 1 < Mesh::m_numNodesInTriangle)
+    if (polygon.size() - 1 < Mesh::m_numNodesInTriangle)
     {
         throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
     }
 
+    Point centreOfMass(0.0, 0.0);
     double area = 0.0;
-    double xCenterOfMass = 0.0;
-    double yCenterOfMass = 0.0;
-    const double minArea = 1e-8;
-    const Point reference = ReferencePoint(m_nodes, m_projection);
-    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(m_nodes.size()) - 1;
 
-    for (UInt n = 0; n < numberOfPointsOpenedPolygon; n++)
+    const double minArea = 1e-8;
+    const Point reference = ReferencePoint(polygon, projection);
+    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
+
+    for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
     {
         const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
-        double dx0 = GetDx(reference, m_nodes[n], m_projection);
-        double dy0 = GetDy(reference, m_nodes[n], m_projection);
-        const double dx1 = GetDx(reference, m_nodes[nextNode], m_projection);
-        const double dy1 = GetDy(reference, m_nodes[nextNode], m_projection);
 
-        const double xc = 0.5 * (dx0 + dx1);
-        const double yc = 0.5 * (dy0 + dy1);
+        Vector delta = GetDelta(reference, polygon[n], projection);
+        Vector deltaNext = GetDelta(reference, polygon[nextNode], projection);
+        Vector middle = 0.5 * (delta + deltaNext);
+        delta = GetDelta(polygon[n], polygon[nextNode], projection);
 
-        dx0 = GetDx(m_nodes[n], m_nodes[nextNode], m_projection);
-        dy0 = GetDy(m_nodes[n], m_nodes[nextNode], m_projection);
-
+        // TODO Comment is incorrect, rotation is by 3pi/2
         // Rotate by pi/2
-        const double dsx = dy0;
-        const double dsy = -dx0;
-        const double xds = xc * dsx + yc * dsy;
-        area = area + 0.5 * xds;
+        Vector normal(delta.y(), -delta.x());
+        double xds = dot(normal, middle);
+        area += 0.5 * xds;
 
-        xCenterOfMass = xCenterOfMass + xds * xc;
-        yCenterOfMass = yCenterOfMass + xds * yc;
+        centreOfMass += xds * middle;
     }
 
     bool isCounterClockWise = area > 0.0;
+    [[maybe_unused]] TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
 
     area = std::abs(area) < minArea ? minArea : area;
-
-    const double fac = 1.0 / (3.0 * area);
-    xCenterOfMass = fac * xCenterOfMass;
-    yCenterOfMass = fac * yCenterOfMass;
+    centreOfMass *= 1.0 / (3.0 * area);
 
     // TODO SHould this also apply to spheciral accurate?
-    if (m_projection == Projection::spherical)
+    if (projection == Projection::spherical)
     {
-        yCenterOfMass = yCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad);
-        xCenterOfMass = xCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((yCenterOfMass + reference.y) * constants::conversion::degToRad));
+        centreOfMass.y /= (constants::geometric::earth_radius * constants::conversion::degToRad);
+        centreOfMass.x /= (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((centreOfMass.y + reference.y) * constants::conversion::degToRad));
     }
 
-    Point centreOfMass(xCenterOfMass, yCenterOfMass);
     centreOfMass += reference;
 
     return {area, centreOfMass, isCounterClockWise};
+}
+
+std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCenterOfMass() const
+{
+    return FaceAreaAndCenterOfMass(m_nodes, m_projection);
 }
 
 double meshkernel::Polygon::ClosedPerimeterLength() const
@@ -415,9 +407,7 @@ double meshkernel::Polygon::ClosedPerimeterLength() const
         return 0.0;
     }
 
-    // TODO m_nodes.front, m_nodes.back
-    // TOOD are all polygons closed?
-    double perimeter = IsClosed() ? 0.0 : ComputeDistance(m_nodes[0], m_nodes[m_nodes.size() - 1], m_projection);
+    double perimeter = 0.0;
 
     for (size_t i = 1; i < m_nodes.size(); ++i)
     {

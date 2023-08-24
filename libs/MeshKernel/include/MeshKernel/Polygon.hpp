@@ -39,7 +39,9 @@ namespace meshkernel
     /// @brief Forward declaration of the LandBoundary
     class LandBoundary;
 
-    /// @brief A Polygon
+    /// @brief A closed polygon.
+    ///
+    /// A polygon consists of at least 3 distinct points, and 1 point to close the polygon.
     class Polygon
     {
     public:
@@ -65,8 +67,10 @@ namespace meshkernel
         void Reset(const std::vector<Point>& points,
                    Projection projection);
 
+        /// @brief Copy assignment operator
         Polygon& operator=(const Polygon& copy);
 
+        /// @brief Move assignment operator
         Polygon& operator=(Polygon&& copy);
 
         // From here
@@ -85,9 +89,6 @@ namespace meshkernel
 
         /// @brief Return single point at position
         const Point& Node(const size_t i) const;
-
-        /// @brief Determine if the polygon is closed or not.
-        bool IsClosed() const;
 
         /// @brief Get the bounding box of the polygon
         const BoundingBox& GetBoundingBox() const;
@@ -108,6 +109,9 @@ namespace meshkernel
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
         std::tuple<double, Point, bool> FaceAreaAndCenterOfMass() const;
+
+        /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
+        static std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection& projection);
 
         // PerimeterClosed
         /// @brief Compute the perimiter length of the closed polygon
@@ -165,12 +169,6 @@ inline meshkernel::Point& meshkernel::Polygon::Node(const size_t i)
 inline const meshkernel::Point& meshkernel::Polygon::Node(const size_t i) const
 {
     return m_nodes[i];
-}
-
-inline bool meshkernel::Polygon::IsClosed() const
-{
-    // m_nodes.back?
-    return m_nodes[0] == m_nodes[m_nodes.size() - 1];
 }
 
 inline const meshkernel::BoundingBox& meshkernel::Polygon::GetBoundingBox() const
