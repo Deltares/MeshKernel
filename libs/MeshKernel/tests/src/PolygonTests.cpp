@@ -642,7 +642,7 @@ TEST(Polygons, SnapSinglePolygonToSingleLandBoundary)
     polygon.SnapToLandBoundary(landBoundary, 0, static_cast<meshkernel::UInt>(polygonPoints.size() - 1));
 
     // Get the first enclosure, there is only 1.
-    const std::vector<meshkernel::Point>& outerPoints = polygon.Enclosure(0).Outer().Points();
+    const std::vector<meshkernel::Point>& outerPoints = polygon.Enclosure(0).Outer().Nodes();
 
     for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
     {

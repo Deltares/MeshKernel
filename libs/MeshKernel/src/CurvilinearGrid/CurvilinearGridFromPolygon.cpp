@@ -30,38 +30,36 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Polygon.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridFromPolygon;
 
-CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon) {}
+CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(const Polygon& polygon) : m_polygon(polygon) {}
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
                                                     UInt secondNode,
                                                     UInt thirdNode,
                                                     bool useFourthSide) const
 {
-    if (m_polygon->IsEmpty())
+    if (m_polygon.Size() < 4)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: The polygon contains no nodes.");
+        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
     }
 
     const auto areNodesValid = firstNode != secondNode &&
                                secondNode != thirdNode &&
                                firstNode != thirdNode;
+
     if (!areNodesValid)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Invalid nodes.");
+        throw ConstraintError(VariadicErrorMessage("Invalid node selection, duplicate values found: first = {}, second = {}, third = {}",
+                                                   firstNode, secondNode, thirdNode));
     }
 
     // for the current polygon find the number of nodes
-    auto const& [start, end] = m_polygon->OuterIndices(0);
-
-    if (end <= start)
-    {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Not enough points in polygon.");
-    }
+    UInt start = 0;
+    UInt end = m_polygon.Size() - 1;
 
     // This does not include the last, closing, node of the polygon
     const UInt numPolygonNodes = end - start;
@@ -132,10 +130,13 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     // get the fourth node
     auto fourthNode = thirdNode + direction * (numMNodes - 1);
+
+    // This can never be true now
     if (fourthNode < start)
     {
         fourthNode += numPolygonNodes;
     }
+
     if (fourthNode >= numPolygonNodes)
     {
         fourthNode -= numPolygonNodes;
@@ -163,7 +164,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon->Nodes()),
+    auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon.Nodes()),
                                          startIndex = start,
                                          endIndex = end,
                                          numPolygonNodes](UInt nodeIndex,
@@ -200,8 +201,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         for (UInt i = 0; i < numNNodes; i++)
         {
             const double fac = static_cast<double>(i) / static_cast<double>(numNNodes - 1);
-            sideOne[i] = m_polygon->Node(firstNode) * (1.0 - fac) +
-                         m_polygon->Node(fourthNode) * fac;
+            sideOne[i] = m_polygon.Node(firstNode) * (1.0 - fac) +
+                         m_polygon.Node(fourthNode) * fac;
         }
     }
 
@@ -209,7 +210,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    Projection const polygonProjection = m_polygon->GetProjection();
+    Projection const polygonProjection = m_polygon.GetProjection();
 
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
                                               polygonProjection, numMNodes - 1, numNNodes - 1);
@@ -230,9 +231,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
                                                     UInt secondNode,
                                                     UInt thirdNode) const
 {
-    if (m_polygon->IsEmpty())
+    if (m_polygon.Size() < 4)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The polygon contains no nodes.");
+        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -245,17 +246,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto& [start, end] = m_polygon->OuterIndices(0);
-
-    if (end <= start)
-    {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: Not enough points in polygon.");
-    }
-
-    if (end - start < 3)
-    {
-        throw ConstraintError("Not enough points in polygon.");
-    }
+    UInt start = 0;
+    UInt end = m_polygon.Size() - 1;
 
     // This does not include the last, closing, node of the polygon
     const auto numPolygonNodes = end - start;
@@ -326,7 +318,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     const auto xib = static_cast<double>(n2) / static_cast<double>(numPointsSecondSide);
     const auto xic = static_cast<double>(n3) / static_cast<double>(numPointsThirdSide);
 
-    auto const& polygonNodes = m_polygon->Nodes();
+    auto const& polygonNodes = m_polygon.Nodes();
 
     const auto triangleCenter = ((polygonNodes[firstNode] * (1.0 - xia) + polygonNodes[secondNode] * xia) * xic + polygonNodes[thirdNode] * (1.0 - xic) +
                                  (polygonNodes[secondNode] * (1.0 - xib) + polygonNodes[thirdNode] * xib) * xia + polygonNodes[firstNode] * (1.0 - xia) +
@@ -343,7 +335,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     std::vector gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
 
-    Projection const polygonProjection = m_polygon->GetProjection();
+    Projection const polygonProjection = m_polygon.GetProjection();
 
     for (UInt t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {

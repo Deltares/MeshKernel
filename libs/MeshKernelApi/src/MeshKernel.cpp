@@ -1871,7 +1871,7 @@ namespace meshkernelapi
             //--------------------------------
             // Now copy back the polygon values
 
-            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Points();
+            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
             for (int i = startIndex; i <= endIndex; ++i)
             {
@@ -2307,7 +2307,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
+            meshkernel::Polygon localPolygon(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 
@@ -2340,7 +2340,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
+            meshkernel::Polygon localPolygon(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 

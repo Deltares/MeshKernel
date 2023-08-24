@@ -31,6 +31,7 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
@@ -76,14 +77,14 @@ namespace meshkernel
         size_t Size() const;
 
         // TODO be consistent in naming
-        /// @brief Return vector of points of the polygon
-        const std::vector<Point>& Points() const;
+        /// @brief Return vector of nodes of the polygon
+        const std::vector<Point>& Nodes() const;
 
         /// @brief Return single point at position
-        Point& GetPoint(const size_t i);
+        Point& Node(const size_t i);
 
         /// @brief Return single point at position
-        const Point& GetPoint(const size_t i) const;
+        const Point& Node(const size_t i) const;
 
         /// @brief Determine if the polygon is closed or not.
         bool IsClosed() const;
@@ -119,6 +120,9 @@ namespace meshkernel
         /// @brief Compute the poygon offset.
         std::vector<Point> ComputeOffset(double displacement, const bool innerAndOuter) const;
 
+        /// @brief Get the projection used.
+        Projection GetProjection() const;
+
     private:
         /// @brief Check polygon has a valid state and initialise it.
         void Initialise();
@@ -148,17 +152,17 @@ inline size_t meshkernel::Polygon::Size() const
     return m_nodes.size();
 }
 
-inline const std::vector<meshkernel::Point>& meshkernel::Polygon::Points() const
+inline const std::vector<meshkernel::Point>& meshkernel::Polygon::Nodes() const
 {
     return m_nodes;
 }
 
-inline meshkernel::Point& meshkernel::Polygon::GetPoint(const size_t i)
+inline meshkernel::Point& meshkernel::Polygon::Node(const size_t i)
 {
     return m_nodes[i];
 }
 
-inline const meshkernel::Point& meshkernel::Polygon::GetPoint(const size_t i) const
+inline const meshkernel::Point& meshkernel::Polygon::Node(const size_t i) const
 {
     return m_nodes[i];
 }
@@ -172,4 +176,9 @@ inline bool meshkernel::Polygon::IsClosed() const
 inline const meshkernel::BoundingBox& meshkernel::Polygon::GetBoundingBox() const
 {
     return m_boundingBox;
+}
+
+inline meshkernel::Projection meshkernel::Polygon::GetProjection() const
+{
+    return m_projection;
 }

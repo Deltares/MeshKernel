@@ -33,7 +33,7 @@ namespace meshkernel
 {
     // Forward declarations
     class Mesh2D;
-    class Polygons;
+    class Polygon;
     class CurvilinearGrid;
 
     /// @brief A class used to compute a CurvilinearGrid from a polygon
@@ -41,7 +41,7 @@ namespace meshkernel
     {
     public:
         /// @param polygon The input polygon
-        CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
+        CurvilinearGridFromPolygon(const Polygon& polygon);
 
         /// @brief Compute curvilinear in a polygon (pol2curvi)
         /// @returns The computed curvilinear grid
@@ -52,7 +52,7 @@ namespace meshkernel
         CurvilinearGrid Compute(UInt firstNode, UInt secondNode, UInt thirdNode) const;
 
     private:
-        std::shared_ptr<Polygons> m_polygon; ///< A pointer to Polygons
+        const Polygon& m_polygon; /// Reference to a polygon
     };
 
 } // namespace meshkernel

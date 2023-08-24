@@ -138,7 +138,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
             throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles = 0.");
         }
 
-        triangulationWrapper.Compute(polygon.Points(),
+        triangulationWrapper.Compute(polygon.Nodes(),
                                      TriangulationWrapper::TriangulationOptions::GeneratePoints,
                                      averageTriangleArea,
                                      numberOfTriangles);
