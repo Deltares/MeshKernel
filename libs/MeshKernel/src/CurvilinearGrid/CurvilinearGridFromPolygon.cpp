@@ -63,7 +63,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Not enough points in polygon.");
     }
 
-    const UInt numPolygonNodes = end - start + 1;
+    // This does not include the last, closing, node of the polygon
+    const UInt numPolygonNodes = end - start;
 
     // get rid of size and orientation first part
     UInt diffForward;
@@ -251,7 +252,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: Not enough points in polygon.");
     }
 
-    const auto numPolygonNodes = end - start + 1;
+    // This does not include the last, closing, node of the polygon
+    const auto numPolygonNodes = end - start;
 
     // get rid of size and orientation first part
     UInt numPointsFirstSide;
