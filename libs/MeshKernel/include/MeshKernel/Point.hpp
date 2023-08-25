@@ -120,6 +120,10 @@ namespace meshkernel
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
+            static double constexpr m_trans_factor =
+                constants::conversion::degToRad *
+                constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
+
             x = x * m_trans_factor * std::cos(constants::conversion::degToRad * referenceLatitude);
             y = y * m_trans_factor;
         }
@@ -134,11 +138,6 @@ namespace meshkernel
 
             return !isInvalid;
         }
-
-    private:
-        static double constexpr m_trans_factor =
-            constants::conversion::degToRad *
-            constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
 
     /// @brief Unary minus
@@ -223,6 +222,33 @@ namespace meshkernel
     /// @brief Test points for equality upto a tolerance
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
+
+    /// @brief Rotate a point around a reference
+    /// @param[in] point The point to rotate
+    /// @param[in] angle The rotation angle
+    /// @param[in] reference The reference point where rotation should be performed
+    /// @returns The rotated point
+    static Point Rotate(const Point& point, const double angle, const Point& reference)
+    {
+        const auto translatedPoint = point - reference;
+
+        const auto angleInRad = angle * constants::conversion::degToRad;
+        const auto cosineAngle = std::cos(angleInRad);
+        const auto sinAngle = std::sin(angleInRad);
+        Point result(translatedPoint.x * cosineAngle - translatedPoint.y * sinAngle,
+                     translatedPoint.x * sinAngle + translatedPoint.y * cosineAngle);
+
+        return result + reference;
+    }
+
+    /// @brief Get the delta-x in Cartesian coordinate system
+    double GetDeltaXCartesian(const Point& p1, const Point& p2);
+
+    /// @brief Get the delta-y in Cartesian coordinate system
+    double GetDeltaYCartesian(const Point& p1, const Point& p2);
+
+    /// @brief Get the delta-x and -y in Cartesian coordinate system
+    Vector GetDeltaCartesian(const Point& p1, const Point& p2);
 
 } // namespace meshkernel
 
@@ -379,4 +405,19 @@ inline bool meshkernel::operator!=(const Point& p1, const Point& p2)
 inline bool meshkernel::IsEqual(const Point& p1, const Point& p2, const double epsilon)
 {
     return IsEqual(p1.x, p2.x, epsilon) && IsEqual(p1.y, p2.y, epsilon);
+}
+
+inline double meshkernel::GetDeltaXCartesian(const Point& p1, const Point& p2)
+{
+    return p2.x - p1.x;
+}
+
+inline double meshkernel::GetDeltaYCartesian(const Point& p1, const Point& p2)
+{
+    return p2.y - p1.y;
+}
+
+inline meshkernel::Vector meshkernel::GetDeltaCartesian(const Point& p1, const Point& p2)
+{
+    return Vector(GetDeltaXCartesian(p1, p2), GetDeltaYCartesian(p1, p2));
 }

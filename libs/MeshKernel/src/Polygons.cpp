@@ -59,10 +59,6 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
             polygonPoints.emplace_back(polygon[i]);
         }
 
-        std::cout << "Constructing polygon " << std::boolalpha << (inner_polygons_indices.size() == 1) << "  "
-                  << polygonPoints.size() << "  " << outer_start << "  " << outer_end << "  " << inner_polygons_indices.size() << "  "
-                  << std::endl;
-
         m_enclosures.emplace_back(PolygonalEnclosure(std::move(polygonPoints), m_projection));
 
         // No inner polygon found
@@ -70,11 +66,6 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
         {
             continue;
         }
-
-        std::cout << " inner indices: "
-                  << inner_polygons_indices[0].first << "  " << inner_polygons_indices[0].second << "  "
-                  << inner_polygons_indices[1].first << "  " << inner_polygons_indices[1].second << "  "
-                  << std::endl;
 
         // The first inner
         const auto inner_start = inner_polygons_indices[1].first;
@@ -122,7 +113,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         const PolygonalEnclosure& enclosure = m_enclosures[polygonIndex];
         const Polygon& polygon = enclosure.Outer();
 
-        const auto [localPolygonArea, centerOfMass, isCounterClockWise] = polygon.FaceAreaAndCenterOfMass();
+        const auto [localPolygonArea, centerOfMass, direction] = polygon.FaceAreaAndCenterOfMass();
 
         // average triangle size
         const auto averageEdgeLength = polygon.ClosedPerimeterLength() / static_cast<double>(polygon.Size());
@@ -163,12 +154,11 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (startIndex == 0 && endIndex == 0)
     {
-        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[0];
-        startIndex = outerStart;
-        endIndex = outerEnd;
+        startIndex = 0;
+        endIndex = m_enclosures[0].Outer().Size() - 1;
         polygonIndex = 0;
-        polygonStartNode = outerStart;
-        polygonEndNode = outerEnd;
+        polygonStartNode = 0;
+        polygonEndNode = m_enclosures[0].Outer().Size() - 1;
     }
 
     if (endIndex <= startIndex)
@@ -270,12 +260,11 @@ std::tuple<meshkernel::UInt, meshkernel::UInt, meshkernel::UInt> Polygons::Polyg
 
     if (startIndex == 0 && endIndex == 0)
     {
-        const auto& [outerStart, outerEnd] = m_outer_polygons_indices[0];
-        startIndex = outerStart;
-        endIndex = outerEnd;
+        startIndex = 0;
+        endIndex = m_enclosures[0].Outer().Size() - 1;
         polygonIndex = 0;
-        polygonStartNode = outerStart;
-        polygonEndNode = outerEnd;
+        polygonStartNode = 0;
+        polygonEndNode = m_enclosures[0].Outer().Size() - 1;
     }
 
     for (UInt i = 0; i < GetNumPolygons(); ++i)

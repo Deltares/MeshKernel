@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
 
@@ -108,10 +109,10 @@ namespace meshkernel
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
-        std::tuple<double, Point, bool> FaceAreaAndCenterOfMass() const;
+        std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass() const;
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
-        static std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection& projection);
+        static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection);
 
         // PerimeterClosed
         /// @brief Compute the perimiter length of the closed polygon

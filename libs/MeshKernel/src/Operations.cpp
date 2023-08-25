@@ -345,9 +345,13 @@ namespace meshkernel
 
     Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
+        if (projection == Projection::cartesian)
+        {
+            return GetDeltaCartesian(firstPoint, secondPoint);
+        }
+
         // TODO some performance can be gained here, by combining the computing of dx and dy
-        Vector delta(GetDx(firstPoint, secondPoint, projection), GetDy(firstPoint, secondPoint, projection));
-        return delta;
+        return Vector(GetDx(firstPoint, secondPoint, projection), GetDy(firstPoint, secondPoint, projection));
     }
 
     Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection)

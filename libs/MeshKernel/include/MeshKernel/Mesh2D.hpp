@@ -234,15 +234,10 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygon);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygonNodes The input mesh
-        /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] currentNode the current node
+        /// @param[in] polygon The input polygon
+        /// @param[in,out] isVisited the visited mesh nodes
+        /// @param[in,out] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
-                                  std::vector<bool>& isVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
-
         void WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,

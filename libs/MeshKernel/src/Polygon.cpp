@@ -343,7 +343,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection& projection)
+std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection)
 {
 
     // TODO why size - 1? If open polygon?
@@ -377,8 +377,7 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
         centreOfMass += xds * middle;
     }
 
-    bool isCounterClockWise = area > 0.0;
-    [[maybe_unused]] TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
+    TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
 
     area = std::abs(area) < minArea ? minArea : area;
     centreOfMass *= 1.0 / (3.0 * area);
@@ -392,10 +391,10 @@ std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCent
 
     centreOfMass += reference;
 
-    return {area, centreOfMass, isCounterClockWise};
+    return {area, centreOfMass, direction};
 }
 
-std::tuple<double, meshkernel::Point, bool> meshkernel::Polygon::FaceAreaAndCenterOfMass() const
+std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass() const
 {
     return FaceAreaAndCenterOfMass(m_nodes, m_projection);
 }
