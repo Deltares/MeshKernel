@@ -1422,10 +1422,10 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const bool inWardBool = inWard == 1 ? true : false;
+            const bool inWardBool = inWard == 1;
             const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
 
-            ConvertPointVectorToGeometryList(newPolygon.Nodes(), geometryListOut);
+            ConvertPointVectorToGeometryList(newPolygon.GatherAllEnclosureNodes(), geometryListOut);
         }
         catch (...)
         {
@@ -1445,7 +1445,7 @@ namespace meshkernelapi
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const bool innerPolygonBool = innerPolygon == 1 ? true : false;
+            const bool innerPolygonBool = innerPolygon == 1;
             const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygonBool);
 

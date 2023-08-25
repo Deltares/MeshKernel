@@ -38,10 +38,8 @@
 
 using meshkernel::Polygons;
 
-Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
+Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_projection(projection)
 {
-
-    std::cout << "Polygons::Polygons: Number of points: " << polygon.size() << std::endl;
 
     // Find the polygons in the current list of points
     m_outer_polygons_indices = FindIndices(polygon, 0, static_cast<UInt>(polygon.size()), constants::missing::doubleValue);
@@ -58,12 +56,11 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 
         for (size_t i = outer_start; i <= outer_end; ++i)
         {
-            polygonPoints.emplace_back(m_nodes[i]);
+            polygonPoints.emplace_back(polygon[i]);
         }
 
         std::cout << "Constructing polygon " << std::boolalpha << (inner_polygons_indices.size() == 1) << "  "
                   << polygonPoints.size() << "  " << outer_start << "  " << outer_end << "  " << inner_polygons_indices.size() << "  "
-                  << m_nodes.size()
                   << std::endl;
 
         m_enclosures.emplace_back(PolygonalEnclosure(std::move(polygonPoints), m_projection));
@@ -93,23 +90,25 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
         // shift the index of the outer polygon, the
         m_outer_polygons_indices[i].second = inner_start - 2;
     }
-}
 
-// TOOD what to do with this?
-size_t Polygons::GetNumNodes() const
-{
-    return m_nodes.size();
+    // Why recalculate this number?
+    // There may be a number of invalid points at the start or end of the node array, or in between
+    // that should not be counted.
+    m_numberOfNodes = 0;
 
-#if 0
-    size_t nodeCount = 0;
-
-    for (size_t i = 0; i < m_enclosures.size(); ++i)
+    // Move this to a separate function
+    for (UInt i = 0; i < m_enclosures.size(); ++i)
     {
-        nodeCount += m_enclosures[i].Outer().Size();
-    }
+        m_numberOfNodes += m_enclosures[i].NumberOfPoints(true);
+        // Need to include the inner separator point
+        m_numberOfNodes += m_enclosures[i].NumberOfInner();
 
-    return nodeCount;
-#endif
+        if (i < m_enclosures.size() - 1)
+        {
+            // Need to include the separator between enclosures
+            ++m_numberOfNodes;
+        }
+    }
 }
 
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
@@ -234,7 +233,7 @@ meshkernel::Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) c
     return newPolygon;
 }
 
-void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary [[maybe_unused]], UInt startIndex, UInt endIndex)
+void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIndex, UInt endIndex)
 {
     if (IsEmpty())
     {
@@ -243,9 +242,8 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary [[maybe_unuse
 
     if (startIndex == 0 && endIndex == 0)
     {
-        std::cout << "################################" << std::endl;
-        // TODO Does this mean all enclosures?
-        endIndex = static_cast<UInt>(m_nodes.size()) - 1;
+        // TODO Does this mean all enclosures or only the first?
+        endIndex = static_cast<UInt>(m_enclosures[0].Outer().Size()) - 1;
     }
 
     // TODO is it valid to snap a single point to the land boundary?
@@ -255,7 +253,6 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary [[maybe_unuse
     }
 
     const auto [polygonIndex, polygonStartNode, polygonEndNode] = PolygonIndex(startIndex, endIndex);
-    std::cout << " indices: " << polygonIndex << "  " << polygonStartNode << "  " << polygonEndNode << "  " << std::endl;
     m_enclosures[polygonIndex].SnapToLandBoundary(polygonStartNode, polygonEndNode, landBoundary);
 }
 
@@ -318,11 +315,6 @@ bool Polygons::IsPointInPolygon(Point const& point, UInt polygonIndex) const
     return m_enclosures[polygonIndex].Contains(point);
 }
 
-meshkernel::UInt Polygons::GetNumPolygons() const
-{
-    return static_cast<UInt>(m_enclosures.size());
-}
-
 std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& point) const
 {
     // empty polygon means everything is included
@@ -369,6 +361,35 @@ std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) c
 bool Polygons::IsEmpty() const
 {
     return m_enclosures.empty();
+}
+
+std::vector<meshkernel::Point> Polygons::GatherAllEnclosureNodes() const
+{
+    const Point outerSeparator{constants::missing::doubleValue, constants::missing::doubleValue};
+    const Point innerSeparator{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator};
+
+    std::vector<meshkernel::Point> allPoints;
+    allPoints.reserve(m_numberOfNodes);
+
+    for (size_t i = 0; i < m_enclosures.size(); ++i)
+    {
+        const Polygon& outerPolygon = m_enclosures[i].Outer();
+        allPoints.insert(allPoints.end(), outerPolygon.Nodes().begin(), outerPolygon.Nodes().end());
+
+        for (UInt j = 0; j < m_enclosures[i].NumberOfInner(); ++j)
+        {
+            allPoints.emplace_back(innerSeparator);
+            const Polygon& innerPolygon = m_enclosures[i].Inner(j);
+            allPoints.insert(allPoints.end(), innerPolygon.Nodes().begin(), innerPolygon.Nodes().end());
+        }
+
+        if (i < m_enclosures.size() - 1)
+        {
+            allPoints.emplace_back(outerSeparator);
+        }
+    }
+
+    return allPoints;
 }
 
 meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const

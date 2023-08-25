@@ -119,26 +119,21 @@ namespace meshkernel
         /// @return True if it is empty, false otherwise
         [[nodiscard]] bool IsEmpty() const;
 
+        // TODO rename to NumberOfEnclosures or something like that
         /// @brief Gives the number of polygons
         /// @return Number of polygons
         [[nodiscard]] UInt GetNumPolygons() const;
 
         /// @brief Gets the number of polygon nodes
         /// @return The number of polygon nodes
-        [[nodiscard]] size_t GetNumNodes() const;
+        [[nodiscard]] UInt GetNumNodes() const;
 
         /// @brief Gets the projection
         /// @return The projection
         [[nodiscard]] Projection GetProjection() const { return m_projection; }
 
-        /// @brief Gets the nodes of the polygon
-        /// @return Vector of nodes of the polygon
-        [[nodiscard]] std::vector<Point> const& Nodes() const { return m_nodes; }
-
-        /// @brief Gets the coordinates of a node by index
-        /// @param[in] i Node index
-        /// @return Node coordinates
-        [[nodiscard]] Point const& Node(UInt i) const { return m_nodes[i]; }
+        /// @brief Gets the nodes of all enclosures.
+        [[nodiscard]] std::vector<Point> GatherAllEnclosureNodes() const;
 
         /// @brief Gets the bounding box for the polygon index i
         /// @param[in] polygonIndex Outer polygon index
@@ -146,11 +141,6 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
-        std::vector<Point> m_nodes;                                  ///< The polygon nodes
-        Projection m_projection;                                     ///< The current projection
-        std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
-
         /// @brief Computes the perimeter of a closed polygon
         /// @param[in] polygonNodes The polygon nodes to use in the computation
         /// @return perimeter The computed polygon perimeter
@@ -160,6 +150,11 @@ namespace meshkernel
         /// @param[in] polygonNodes The polygon nodes to use in the computation
         /// @return edgeLengths The length of each polygon edge
         std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
+
+        std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
+        Projection m_projection;                                     ///< The current projection
+        std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
+        UInt m_numberOfNodes = 0;
     };
 } // namespace meshkernel
 
@@ -177,4 +172,14 @@ inline const meshkernel::PolygonalEnclosure& meshkernel::Polygons::Enclosure(con
     }
 
     return m_enclosures[index];
+}
+
+inline meshkernel::UInt meshkernel::Polygons::GetNumPolygons() const
+{
+    return static_cast<UInt>(m_enclosures.size());
+}
+
+inline meshkernel::UInt meshkernel::Polygons::GetNumNodes() const
+{
+    return m_numberOfNodes;
 }

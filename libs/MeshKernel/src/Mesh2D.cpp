@@ -1322,10 +1322,10 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
     return result;
 }
 
-std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygon)
+std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
 {
 
-    Polygon polygonObj(polygon, m_projection);
+    Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
     Administrate();
@@ -1345,8 +1345,8 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        bool firstNodeInPolygon = polygonObj.Contains(m_nodes[firstNodeIndex]);
-        bool secondNodeInPolygon = polygonObj.Contains(m_nodes[secondNodeIndex]);
+        bool firstNodeInPolygon = polygon.Contains(m_nodes[firstNodeIndex]);
+        bool secondNodeInPolygon = polygon.Contains(m_nodes[secondNodeIndex]);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -1367,8 +1367,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygonObj, isVisited, currentNode, meshBoundaryPolygon);
-        // WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = static_cast<UInt>(meshBoundaryPolygon.size());
 
@@ -1377,8 +1376,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygonObj, isVisited, currentNode, meshBoundaryPolygon);
-            // WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.

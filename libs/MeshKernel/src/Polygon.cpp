@@ -471,7 +471,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distanc
         // TODO should this be for spherical accurate too.
         if (m_projection == Projection::spherical)
         {
-            // TOOD is it worth having a special function for this, it must be elsewhere in the code too.
+            // TODO is it worth having a special function for this, it must be elsewhere in the code too.
             normal.x() /= std::cos((m_nodes[i].y + 0.5 * normal.y()) * constants::conversion::degToRad);
         }
 
