@@ -2,6 +2,7 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Vector.hpp"
 
 #include <cmath>
 #include <numbers>
@@ -44,12 +45,12 @@ double meshkernel::NonDirectionalSmoothingCalculator::CalculateSmoothingRegion(c
     const BoundingBox gridBb = grid.GetBoundingBox();
     const BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
 
-    Point delta = Merge(gridBb, landBoundaryBb).Delta();
+    Vector delta = Merge(gridBb, landBoundaryBb).Delta();
 
     delta *= smoothingRegionEnlargementFactor;
 
-    delta.y = std::max(delta.y, aspectRatio * delta.x);
-    return delta.y / (6.0 * aspectRatio);
+    delta.y() = std::max(delta.y(), aspectRatio * delta.x());
+    return delta.y() / (6.0 * aspectRatio);
 }
 
 meshkernel::NonDirectionalSmoothingCalculator::NonDirectionalSmoothingCalculator(const CurvilinearGrid& originalGrid,

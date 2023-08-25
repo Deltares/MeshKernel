@@ -141,6 +141,11 @@ namespace meshkernel
             constants::geometric::earth_radius; ///< Factor used in the transformation from spherical to Cartesian coordinates
     };
 
+    /// @brief Unary minus
+    ///
+    /// @returns \f$ (-p1.x, -p1.y)\f$
+    Point operator-(const Point& pnt);
+
     /// @brief Add two points
     ///
     /// @returns \f$ (p1.x + p2.x, p1.y + p2.y)\f$
@@ -289,6 +294,11 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     x *= p;
     y *= p;
     return *this;
+}
+
+inline meshkernel::Point meshkernel::operator-(const Point& pnt)
+{
+    return Point(-pnt.x, -pnt.y);
 }
 
 inline meshkernel::Point meshkernel::operator+(const Point& p1, const Point& p2)

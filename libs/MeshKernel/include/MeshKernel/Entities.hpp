@@ -30,7 +30,7 @@
 #include <cmath>
 #include <vector>
 
-#include <MeshKernel/Constants.hpp>
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel

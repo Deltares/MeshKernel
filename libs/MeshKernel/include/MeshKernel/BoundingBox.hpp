@@ -27,7 +27,9 @@
 
 #pragma once
 
-#include "Entities.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -83,7 +85,7 @@ namespace meshkernel
         template <typename T>
         BoundingBox(const std::vector<T>& points, size_t start, size_t end)
         {
-            Reset (points, start, end);
+            Reset(points, start, end);
         }
 
         /// @brief Not equal operator
@@ -139,8 +141,7 @@ namespace meshkernel
         }
 
         /// @brief Return the delta of the bounding box.
-        Point Delta() const;
-
+        Vector Delta() const;
 
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
@@ -156,9 +157,9 @@ template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 {
 
-    if (points.size () > 0)
+    if (points.size() > 0)
     {
-        Reset (points, 0, points.size () - 1);
+        Reset(points, 0, points.size() - 1);
     }
     else
     {
@@ -200,7 +201,7 @@ inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const Bo
     return BoundingBox(lowerLeft, upperRight);
 }
 
-inline meshkernel::Point meshkernel::BoundingBox::Delta() const
+inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 {
-    return m_upperRight - m_lowerLeft;
+    return Vector(m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y);
 }

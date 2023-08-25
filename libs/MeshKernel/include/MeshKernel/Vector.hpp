@@ -71,6 +71,20 @@ namespace meshkernel
             return m_y;
         }
 
+        /// @brief Inplace add vector to vector.
+        Vector& operator+=(const Vector& vec);
+
+        /// @brief Inplace subtract vector from vector.
+        Vector& operator-=(const Vector& vec);
+
+        /// @brief Inplace divide vector by scalar.
+        ///
+        /// \note No check is made that the divisor is 0
+        Vector& operator/=(const double alpha);
+
+        /// @brief Inplace multiply vector by scalar.
+        Vector& operator*=(const double alpha);
+
         /// @brief Normalise the vector in place.
         ///
         /// \note No check is made that the length is 0
@@ -110,6 +124,34 @@ namespace meshkernel
     Vector operator/(const Vector& vec, const double alpha);
 
 } // namespace meshkernel
+
+inline meshkernel::Vector& meshkernel::Vector::operator+=(const Vector& vec)
+{
+    m_x += vec.m_x;
+    m_y += vec.m_y;
+    return *this;
+}
+
+inline meshkernel::Vector& meshkernel::Vector::operator-=(const Vector& vec)
+{
+    m_x -= vec.m_x;
+    m_y -= vec.m_y;
+    return *this;
+}
+
+inline meshkernel::Vector& meshkernel::Vector::operator/=(const double alpha)
+{
+    m_x /= alpha;
+    m_y /= alpha;
+    return *this;
+}
+
+inline meshkernel::Vector& meshkernel::Vector::operator*=(const double alpha)
+{
+    m_x *= alpha;
+    m_y *= alpha;
+    return *this;
+}
 
 inline void meshkernel::Vector::normalise()
 {
