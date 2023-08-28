@@ -177,3 +177,140 @@ TEST(PolygonalEnclosureTests, MultipleInnerPolygonsContainsTest)
         y += delta;
     }
 }
+
+TEST(PolygonalEnclosureTests, RefineTest)
+{
+
+    constexpr double outerMin = 0.0;
+    constexpr double outerMax = 100.0;
+
+    constexpr double innerMin = 40.0;
+    constexpr double innerMax = 60.0;
+
+    std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+    // Inner polygon needs to be reversed.
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+
+    std::vector<mk::Point> polygonPoints;
+
+    polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
+    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
+
+    // Start test.
+
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+
+    double delta = 25.0;
+
+    std::vector<mk::Point> refinedPoints = enclosure.Refine(0, 1, delta);
+    std::vector<mk::Point> expectedPoints{{outerMin, outerMin}, {outerMin + delta, outerMin}, {outerMin + 2 * delta, outerMin}, {outerMin + 3 * delta, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+
+    ASSERT_EQ(refinedPoints.size(), expectedPoints.size());
+    constexpr double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < refinedPoints.size(); ++i)
+    {
+        EXPECT_NEAR(refinedPoints[i].x, expectedPoints[i].x, tolerance);
+        EXPECT_NEAR(refinedPoints[i].y, expectedPoints[i].y, tolerance);
+    }
+}
+
+TEST(PolygonalEnclosureTests, RefineFailureTest)
+{
+
+    constexpr double outerMin = 0.0;
+    constexpr double outerMax = 100.0;
+
+    constexpr double innerMin = 40.0;
+    constexpr double innerMax = 60.0;
+
+    std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+    // Inner polygon needs to be reversed.
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+
+    std::vector<mk::Point> polygonPoints;
+
+    polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
+    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
+
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+
+    // End point lies in inner polygon, so outside the outer polygon
+    EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(0, 6, 25.0), mk::ConstraintError);
+    // All point indices are in inner polygon
+    EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(6, 10, 25.0), mk::ConstraintError);
+    // All point indices are in outer polygon, but in wrong order
+    EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(4, 0, 25.0), mk::ConstraintError);
+}
+
+TEST(PolygonalEnclosureTests, SnapToLandBoundaryTest)
+{
+    constexpr double tolerance = 1.0e-10;
+
+    constexpr double outerMin = 0.0;
+    constexpr double outerMax = 100.0;
+
+    constexpr double innerMin = 40.0;
+    constexpr double innerMax = 60.0;
+    constexpr double delta = 10.0;
+
+    std::vector<mk::Point> landBoundaryNodes{{outerMin, outerMax + delta}, {outerMax, outerMax + delta}};
+    mk::LandBoundary landBoundary(landBoundaryNodes);
+
+    std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+    // Inner polygon needs to be reversed.
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+
+    std::vector<mk::Point> polygonPoints;
+
+    polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
+    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
+
+    // Start test.
+
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+
+    enclosure.SnapToLandBoundary(2, 3, landBoundary);
+
+    ASSERT_EQ(enclosure.Outer().Size(), outerPolygon.size());
+
+    std::vector<mk::Point> expectedOuterPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax + delta}, {outerMin, outerMax + delta}, {outerMin, outerMin}};
+
+    for (size_t i = 0; i < enclosure.Outer().Size(); ++i)
+    {
+        EXPECT_NEAR(enclosure.Outer().Node(i).x, expectedOuterPolygon[i].x, tolerance);
+        EXPECT_NEAR(enclosure.Outer().Node(i).y, expectedOuterPolygon[i].y, tolerance);
+    }
+}
+
+TEST(PolygonalEnclosureTests, SnappingFailureTest)
+{
+
+    constexpr double outerMin = 0.0;
+    constexpr double outerMax = 100.0;
+
+    constexpr double innerMin = 40.0;
+    constexpr double innerMax = 60.0;
+    constexpr double delta = 10.0;
+
+    std::vector<mk::Point> landBoundaryNodes{{outerMin, outerMax + delta}, {outerMax, outerMax + delta}};
+    mk::LandBoundary landBoundary(landBoundaryNodes);
+
+    std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+    // Inner polygon needs to be reversed.
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+
+    std::vector<mk::Point> polygonPoints;
+
+    polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
+    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
+
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+
+    EXPECT_THROW(enclosure.SnapToLandBoundary(3, 2, landBoundary), mk::ConstraintError);
+    EXPECT_THROW(enclosure.SnapToLandBoundary(0, 6, landBoundary), mk::ConstraintError);
+}

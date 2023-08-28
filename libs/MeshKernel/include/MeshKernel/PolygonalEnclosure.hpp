@@ -51,12 +51,8 @@ namespace meshkernel
             Interior  ///< The point is contained within one of the island, interior perimeters of the enclosure
         };
 
-        // TODO which constructor is better?
+        /// @brief Constructor
         PolygonalEnclosure(const std::vector<Point>& points,
-                           Projection projection);
-
-        PolygonalEnclosure(const std::vector<Point>& points,
-                           size_t start, size_t end,
                            Projection projection);
 
         /// @brief The outer perimeter polygon
@@ -81,6 +77,9 @@ namespace meshkernel
 
         /// @brief Snap all or part of the outer perimeter polygon to the land boundary
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);
+
+        /// @brief Refine the polygon.
+        std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance);
 
     private:
         /// @typedef IndexRange
