@@ -1,7 +1,11 @@
 #pragma once
 
+#include "MeshKernel/Definitions.hpp"
+
 #include <Eigen/Core>
 
+#include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <vector>
 
@@ -13,6 +17,9 @@ namespace lin_alg
     /// @tparam storage Matrix storage option
     template <typename T, int storage = Eigen::RowMajor>
     using Matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage>;
+
+    template <typename T, int storage = Eigen::RowMajor>
+    using MatrixRow = Eigen::Block<Matrix<T, storage>, 1, Eigen::Dynamic, true>;
 
     /// @brief  Dynamic column vector
     /// @tparam T Data type
@@ -333,6 +340,52 @@ namespace lin_alg
 
         // swap
         matrix.row(row_1).swap(matrix.row(row_2));
+    }
+
+    /// @brief Returns the indices of a sorted matrix row without modifying the row
+    /// @tparam        T Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] row The matrix row
+    /// @return        The indices of the sorted matrix row
+    template <typename T, int storage>
+    [[nodiscard]] RowVector<Eigen::Index> SortRow(MatrixRow<T, storage> const row)
+    {
+        RowVector<Eigen::Index> indices(row.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        std::ranges::stable_sort(indices.begin(),
+                                 indices.end(),
+                                 [&row](Eigen::Index row_index_1, Eigen::Index row_index_2)
+                                 { return row[row_index_1] < row[row_index_2]; });
+        return indices;
+    }
+
+    template <typename T, int storage>
+    void ReorderRow(MatrixRow<T, storage> row,
+                    RowVector<Eigen::Index> const& order)
+    {
+        if (order.size() != row.size())
+        {
+            std::invalid_argument("The matrix row and the order vector are not of the same size.");
+        }
+
+        std::vector<bool> swapped(row.size(), false);
+        for (Eigen::Index i = 0; i < row.size(); ++i)
+        {
+            if (swapped[i])
+            {
+                continue;
+            }
+            swapped[i] = true;
+            Eigen::Index last_j = i;
+            Eigen::Index j = order[i];
+            while (i != j)
+            {
+                std::swap(row[last_j], row[j]);
+                swapped[j] = true;
+                last_j = j;
+                j = order[j];
+            }
+        }
     }
 
 } // namespace lin_alg

@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
+
+#include <gtest/gtest.h>
 
 TEST(LinearAlgebra, Empty)
 {
@@ -608,4 +608,27 @@ TEST(LinearAlgebra, SwapColumns)
     EXPECT_THROW(lin_alg::SwapColumns(matrix, 0, 3), std::invalid_argument);
     EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 2), std::invalid_argument);
     EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 3), std::invalid_argument);
+}
+
+TEST(LinearAlgebra, SortAndReorderRow)
+{
+    lin_alg::Matrix<int> matrix(3, 3);
+    matrix << 1, 2, 3,
+        6, 4, 5,
+        7, 8, 9;
+
+    Eigen::Index const row_index = 1;
+
+    lin_alg::RowVector<Eigen::Index> const indices = lin_alg::SortRow(matrix.row(row_index));
+    lin_alg::RowVector<Eigen::Index> expected_indices(3);
+    expected_indices << 1, 2, 0;
+    EXPECT_EQ(expected_indices, indices);
+
+    lin_alg::ReorderRow(matrix.row(row_index), indices);
+    lin_alg::RowVector<int> expected_row(3);
+    expected_row << 4, 5, 6;
+    for (Eigen::Index i = 0; i < expected_row.size(); ++i)
+    {
+        matrix.row(row_index)[i] = expected_row[i];
+    }
 }
