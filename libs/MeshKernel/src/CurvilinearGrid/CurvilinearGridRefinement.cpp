@@ -68,7 +68,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     std::vector<Point> rightRefinement(m_refinement);
 
     // The refined grid
-    std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
+    lin_alg::Matrix<Point> refinedGrid(maxM, maxN);
 
     UInt refinedM = 0;
     for (UInt currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
@@ -126,11 +126,11 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
-                for (UInt m = 0; m < localMRefinement + 1; ++m)
+                for (Eigen::Index m = 0; m < localMRefinement + 1; ++m)
                 {
-                    for (UInt n = 0; n < localNRefinement + 1; ++n)
+                    for (Eigen::Index n = 0; n < localNRefinement + 1; ++n)
                     {
-                        refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
+                        refinedGrid(refinedM + m, refinedN + n) = localGrid(m, n);
                     }
                 }
             }

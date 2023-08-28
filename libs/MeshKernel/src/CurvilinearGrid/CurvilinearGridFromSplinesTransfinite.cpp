@@ -85,7 +85,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
     const auto TotalNRows = (m_numMSplines - 1) * m_numN;
-    lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, std::vector<Point>(TotalNRows + 1));
+    lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, TotalNRows + 1);
 
     UInt numMSplines = 0;
     UInt numNSplines = 0;
@@ -225,7 +225,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                         continue;
                     }
 
-                    gridNodes(m, n) = interpolationResult[k][l];
+                    gridNodes(m, n) = interpolationResult(k, l);
                 }
             }
         }

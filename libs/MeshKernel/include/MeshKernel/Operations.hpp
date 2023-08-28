@@ -32,6 +32,7 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
 namespace meshkernel
@@ -493,13 +494,13 @@ namespace meshkernel
     /// @param[in] numM                 The number of columns to generate (horizontal direction).
     /// @param[in] numN                 The number of rows to generate (vertical direction).
     /// @returns The resulting dicretization (expressed as number of points).
-    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
-                                                                        const std::vector<Point>& rightDiscretization,
-                                                                        const std::vector<Point>& bottomDiscretization,
-                                                                        const std::vector<Point>& upperDiscretization,
-                                                                        const Projection& projection,
-                                                                        UInt numM,
-                                                                        UInt numN);
+    [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
+                                                               const std::vector<Point>& rightDiscretization,
+                                                               const std::vector<Point>& bottomDiscretization,
+                                                               const std::vector<Point>& upperDiscretization,
+                                                               const Projection& projection,
+                                                               UInt numM,
+                                                               UInt numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.

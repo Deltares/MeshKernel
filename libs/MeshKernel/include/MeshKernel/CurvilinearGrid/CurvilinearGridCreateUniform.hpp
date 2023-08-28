@@ -29,6 +29,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <memory>
 
@@ -99,13 +100,13 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
-        static std::vector<std::vector<Point>> ComputeCartesian(const int numColumns,
-                                                                const int numRows,
-                                                                const double originX,
-                                                                const double originY,
-                                                                const double angle,
-                                                                const double blockSizeX,
-                                                                const double blockSizeY);
+        static lin_alg::Matrix<Point> ComputeCartesian(const int numColumns,
+                                                       const int numRows,
+                                                       const double originX,
+                                                       const double originY,
+                                                       const double angle,
+                                                       const double blockSizeX,
+                                                       const double blockSizeY);
 
         /// @brief Compute an uniform curvilinear grid on spherical coordinates.
         /// A correction to the longitudinal discretization is applied to preserve an aspect ratio ds/dy = 1 on real distances.
@@ -119,13 +120,13 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
-        static std::vector<std::vector<Point>> ComputeSpherical(const int numColumns,
-                                                                const int numRows,
-                                                                const double originX,
-                                                                const double originY,
-                                                                const double angle,
-                                                                const double blockSizeX,
-                                                                const double blockSizeY);
+        static lin_alg::Matrix<Point> ComputeSpherical(const int numColumns,
+                                                       const int numRows,
+                                                       const double originX,
+                                                       const double originY,
+                                                       const double angle,
+                                                       const double blockSizeX,
+                                                       const double blockSizeY);
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension

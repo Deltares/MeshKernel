@@ -28,7 +28,7 @@ size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGri
     {
         for (size_t n = 0; n < curvilinearGrid->m_numN; ++n)
         {
-            if (curvilinearGrid->m_gridNodes[m][n].IsValid())
+            if (curvilinearGrid->m_gridNodes(m, n).IsValid())
             {
                 validNodes++;
             }
