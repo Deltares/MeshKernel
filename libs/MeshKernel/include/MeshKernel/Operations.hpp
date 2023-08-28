@@ -313,8 +313,8 @@ namespace meshkernel
     /// @brief Get the normal to the line described by the two points.
     ///
     /// The vector is normalised.
-    /// @param[in] firstPoint
-    /// @param[in] secondPoint
+    /// @param[in] start Point at the start of the line
+    /// @param[in] end Point at the end of the line
     /// @param[in] projection The coordinate system projection.
     Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection);
 

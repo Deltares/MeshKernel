@@ -422,7 +422,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distanc
     Vector normal;
     Vector firstNormal;
     // Initialise the previous normal with the normal from the last segment of the polygon
-    // The last segment consistes of the second to last point and the first point.
+    // The last segment consists of the second to last point and the first point.
     // Second to last because the polygon is closed, so the last point is equal to the first.
     Vector previousNormal = ComputeNormalToline(m_nodes[m_nodes.size() - 2], m_nodes[0], m_projection);
 

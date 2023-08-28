@@ -109,8 +109,8 @@ namespace meshkernel
         /// @param [in] source The source points, to be copied
         /// @param [in] start The start index of the points to be copied
         /// @param [in] end The (one past) end index of the points to be copied
-        /// @brief [in,out] count The current index in the target array
-        /// @brief [in,out] target The array to whicih the source points are copied
+        /// @param [in,out] count The current index in the target array
+        /// @param [in,out] target The array to whicih the source points are copied
         static void CopyPoints(const std::vector<Point>& source,
                                const UInt start,
                                const UInt end,

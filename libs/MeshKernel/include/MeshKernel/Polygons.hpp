@@ -154,7 +154,7 @@ namespace meshkernel
         std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
         Projection m_projection;                                     ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
-        UInt m_numberOfNodes = 0;
+        UInt m_numberOfNodes = 0;                                    ///< The number of nodes when constructing the Polygons
     };
 } // namespace meshkernel
 
