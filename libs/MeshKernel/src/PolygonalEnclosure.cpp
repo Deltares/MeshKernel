@@ -106,7 +106,7 @@ meshkernel::PolygonalEnclosure::Region meshkernel::PolygonalEnclosure::ContainsR
 
     if (m_outer.Contains(pnt))
     {
-        // The point is contained withing the perimeter of the enclosure.
+        // The point is contained within the perimeter of the enclosure.
         region = Region::Exterior;
 
         // Now check if the point is contained within any of the inner polygons.
