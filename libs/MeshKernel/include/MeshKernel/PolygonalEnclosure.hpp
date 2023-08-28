@@ -43,11 +43,12 @@ namespace meshkernel
     class PolygonalEnclosure
     {
     public:
+        /// @brief The part of the enclosure a point is found
         enum class Region
         {
-            None,
-            Exterior,
-            Interior
+            None,     ///< The point is not contained with the enclosure
+            Exterior, ///< The point is contained within the outer perimeter of the enclosure
+            Interior  ///< The point is contained within one of the island, interior perimeters of the enclosure
         };
 
         // TODO which constructor is better?
@@ -72,12 +73,11 @@ namespace meshkernel
         /// If the point lies within the outer polygon but outside any inner polygons
         bool Contains(const Point& pnt) const;
 
+        /// @brief Determine in which part of the enclosure the point is.
+        Region ContainsRegion(const Point& pnt) const;
+
         /// @brief Get the number of points making up the polygon, including interior if requested
         UInt NumberOfPoints(const bool includeInterior) const;
-
-        // TODO
-        // 0 none, 1 in exterior, 2 in interior
-        Region ContainsRegion(const Point& pnt) const;
 
         /// @brief Snap all or part of the outer perimeter polygon to the land boundary
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);

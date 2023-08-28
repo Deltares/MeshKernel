@@ -346,8 +346,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection)
 {
 
-    // TODO why size - 1? If open polygon?
-    if (polygon.size() - 1 < Mesh::m_numNodesInTriangle)
+    if (polygon.size() < Mesh::m_numNodesInTriangle)
     {
         throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
     }
