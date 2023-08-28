@@ -82,6 +82,18 @@ void meshkernel::PolygonalEnclosure::ConstructInnerPolygons(const std::vector<Po
     }
 }
 
+meshkernel::UInt meshkernel::PolygonalEnclosure::GetNumberOfNodes() const
+{
+    UInt nodeCount = Outer().Size();
+
+    for (size_t i = 0; i < m_inner.size(); ++i)
+    {
+        nodeCount += m_inner[i].Size();
+    }
+
+    return nodeCount;
+}
+
 bool meshkernel::PolygonalEnclosure::Contains(const Point& pnt) const
 {
     // If the point is in one of the inner (island) polygons, then it is considered to be outside the enclosure.
@@ -148,4 +160,71 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
     }
 
     return m_outer.Refine(startIndex, endIndex, refinementDistance);
+}
+
+void meshkernel::PolygonalEnclosure::CopyPoints(const std::vector<Point>& source,
+                                                const UInt start,
+                                                const UInt end,
+                                                UInt& count,
+                                                std::vector<Point>& target)
+{
+
+    for (size_t i = start; i < end; ++i)
+    {
+        target[count] = source[i];
+        ++count;
+    }
+}
+
+std::tuple<std::unique_ptr<meshkernel::PolygonalEnclosure>, std::unique_ptr<meshkernel::PolygonalEnclosure>>
+meshkernel::PolygonalEnclosure::OffsetCopy(const double distance, const bool outwardsAndInwards) const
+{
+    std::vector<Point> outerOffsetPoints(GetNumberOfNodes() + NumberOfInner(), Point());
+    std::vector<Point> innerOffsetPoints;
+
+    // Get offset for the outer perimeter polygon
+
+    std::vector<Point> outerOffsetPolygon(Outer().ComputeOffset(distance, outwardsAndInwards));
+
+    UInt outerCount = 0;
+    UInt innerCount = 0;
+
+    CopyPoints(outerOffsetPolygon, 0, Outer().Size(), outerCount, outerOffsetPoints);
+
+    if (outwardsAndInwards)
+    {
+        innerOffsetPoints.resize(outerOffsetPoints.size(), Point());
+        CopyPoints(outerOffsetPolygon, Outer().Size() + 1, 2 * Outer().Size() + 1, innerCount, innerOffsetPoints);
+    }
+
+    // Now compute offset for all inner polygons
+    for (size_t i = 0; i < m_inner.size(); ++i)
+    {
+        const Polygon& innerPolygon = Inner(i);
+
+        std::vector<Point> innerOffsetPolygon(innerPolygon.ComputeOffset(distance, outwardsAndInwards));
+
+        outerOffsetPoints[outerCount] = Point(constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator);
+        ++outerCount;
+
+        CopyPoints(innerOffsetPolygon, 0, innerPolygon.Size(), outerCount, outerOffsetPoints);
+
+        if (outwardsAndInwards)
+        {
+            innerOffsetPoints[innerCount] = Point(constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator);
+            ++innerCount;
+
+            CopyPoints(innerOffsetPolygon, innerPolygon.Size() + 1, 2 * innerPolygon.Size() + 1, innerCount, innerOffsetPoints);
+        }
+    }
+
+    std::unique_ptr<PolygonalEnclosure> outwardOffset(std::make_unique<PolygonalEnclosure>(outerOffsetPoints, Outer().GetProjection()));
+    std::unique_ptr<PolygonalEnclosure> inwardOffset;
+
+    if (outwardsAndInwards)
+    {
+        inwardOffset = std::make_unique<PolygonalEnclosure>(innerOffsetPoints, Outer().GetProjection());
+    }
+
+    return {std::move(outwardOffset), std::move(inwardOffset)};
 }

@@ -64,6 +64,10 @@ namespace meshkernel
         /// @brief Get an inner polygon
         const Polygon& Inner(size_t i) const;
 
+        /// @brief Get the number of nodes in the enclosure, both outer and all inner polygons
+        /// @note Does not include any separator nodes
+        UInt GetNumberOfNodes() const;
+
         /// @brief Determine if the point lies in the polygon
         ///
         /// If the point lies within the outer polygon but outside any inner polygons
@@ -81,6 +85,12 @@ namespace meshkernel
         /// @brief Refine the polygon.
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance);
 
+        /// @brief Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)
+        /// @param[in] distance The offset distance
+        /// @param[in] outwardsAndInwards Offset outwards only or outwards and inwards
+        /// @return The new offset polygon(s), may be nullptr if outwardsAndInwards is false, i.e. only outwards required
+        std::tuple<std::unique_ptr<PolygonalEnclosure>, std::unique_ptr<PolygonalEnclosure>> OffsetCopy(double distance, bool outwardsAndInwards) const;
+
     private:
         /// @typedef IndexRange
         /// @brief Contains the start and end of a section from the point array
@@ -94,6 +104,18 @@ namespace meshkernel
         static Polygon ConstructPolygon(const std::vector<Point>& points,
                                         size_t start, size_t end,
                                         Projection projection);
+
+        /// @brief Copy selected points from source vector to end of target vector
+        /// @param [in] source The source points, to be copied
+        /// @param [in] start The start index of the points to be copied
+        /// @param [in] end The (one past) end index of the points to be copied
+        /// @brief [in,out] count The current index in the target array
+        /// @brief [in,out] target The array to whicih the source points are copied
+        static void CopyPoints(const std::vector<Point>& source,
+                               const UInt start,
+                               const UInt end,
+                               UInt& count,
+                               std::vector<Point>& target);
 
         /// @brief Construct the outer perimiter polygon from the points.
         void ConstructOuterPolygon(const std::vector<Point>& points,

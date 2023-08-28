@@ -21,10 +21,12 @@ TEST(PolygonalEnclosureTests, BasicConstruction)
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
+    //--------------------------------
     // Start test.
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
@@ -61,15 +63,16 @@ TEST(PolygonalEnclosureTests, ContainsTest)
     constexpr double extension = 2.0;
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
+    //--------------------------------
     // Start test.
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
@@ -123,18 +126,19 @@ TEST(PolygonalEnclosureTests, MultipleInnerPolygonsContainsTest)
     constexpr double extension = 2.0;
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon1{{innerMin1, innerMin1}, {innerMin1, innerMax1}, {innerMax1, innerMax1}, {innerMax1, innerMin1}, {innerMin1, innerMin1}};
-    std::vector<mk::Point> innerPolygon2{{innerMin2, innerMin2}, {innerMin2, innerMax2}, {innerMax2, innerMax2}, {innerMax2, innerMin2}, {innerMin2, innerMin2}};
+    std::vector<mk::Point> innerPolygon1{{innerMin1, innerMin1}, {innerMax1, innerMin1}, {innerMax1, innerMax1}, {innerMin1, innerMax1}, {innerMin1, innerMin1}};
+    std::vector<mk::Point> innerPolygon2{{innerMin2, innerMin2}, {innerMax2, innerMin2}, {innerMax2, innerMax2}, {innerMin2, innerMax2}, {innerMin2, innerMin2}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon1.begin(), innerPolygon1.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon2.begin(), innerPolygon2.end());
 
+    //--------------------------------
     // Start test.
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
@@ -188,15 +192,16 @@ TEST(PolygonalEnclosureTests, RefineTest)
     constexpr double innerMax = 60.0;
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
+    //--------------------------------
     // Start test.
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
@@ -226,11 +231,11 @@ TEST(PolygonalEnclosureTests, RefineFailureTest)
     constexpr double innerMax = 60.0;
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
@@ -260,15 +265,16 @@ TEST(PolygonalEnclosureTests, SnapToLandBoundaryTest)
     mk::LandBoundary landBoundary(landBoundaryNodes);
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
+    //--------------------------------
     // Start test.
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
@@ -300,11 +306,11 @@ TEST(PolygonalEnclosureTests, SnappingFailureTest)
     mk::LandBoundary landBoundary(landBoundaryNodes);
 
     std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
-    // Inner polygon needs to be reversed.
-    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMin, innerMax}, {innerMax, innerMax}, {innerMax, innerMin}, {innerMin, innerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
 
     std::vector<mk::Point> polygonPoints;
 
+    // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
@@ -313,4 +319,77 @@ TEST(PolygonalEnclosureTests, SnappingFailureTest)
 
     EXPECT_THROW(enclosure.SnapToLandBoundary(3, 2, landBoundary), mk::ConstraintError);
     EXPECT_THROW(enclosure.SnapToLandBoundary(0, 6, landBoundary), mk::ConstraintError);
+}
+
+TEST(PolygonalEnclosureTests, OffsetTest)
+{
+    // Test the polygon offset.
+
+    constexpr double tolerance = 1.0e-10;
+
+    constexpr double outerMin = 0.0;
+    constexpr double outerMax = 100.0;
+
+    constexpr double innerMin = 20.0;
+    constexpr double innerMax = 80.0;
+    constexpr double distance = 5.0;
+
+    std::vector<mk::Point> outerPolygon{{outerMin, outerMin}, {outerMax, outerMin}, {outerMax, outerMax}, {outerMin, outerMax}, {outerMin, outerMin}};
+    std::vector<mk::Point> innerPolygon{{innerMin, innerMin}, {innerMax, innerMin}, {innerMax, innerMax}, {innerMin, innerMax}, {innerMin, innerMin}};
+
+    std::vector<mk::Point> polygonPoints;
+
+    // Combine the points into a single array
+    polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
+    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
+
+    std::vector<mk::Point> expectedOffset{{-distance, -distance}, {distance, -distance}, {distance, distance}, {-distance, distance}, {-distance, -distance}};
+
+    //--------------------------------
+    // Start test.
+
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+
+    auto [outward, inward] = enclosure.OffsetCopy(distance, true);
+
+    // Should not return null pointers, if any pointer is null then abort the test.
+    ASSERT_TRUE(outward != nullptr);
+    ASSERT_TRUE(inward != nullptr);
+
+    // First check the outer perimeter polygon has been offset correctly
+    std::vector<mk::Point> actualPoints = outward->Outer().Nodes();
+
+    for (size_t i = 0; i < actualPoints.size(); ++i)
+    {
+        EXPECT_NEAR(actualPoints[i].x, outerPolygon[i].x + expectedOffset[i].x, tolerance);
+        EXPECT_NEAR(actualPoints[i].y, outerPolygon[i].y + expectedOffset[i].y, tolerance);
+    }
+
+    // Now check the inner polygon (there is only 1)
+    actualPoints = outward->Inner(0).Nodes();
+
+    for (size_t i = 0; i < actualPoints.size(); ++i)
+    {
+        EXPECT_NEAR(actualPoints[i].x, innerPolygon[i].x + expectedOffset[i].x, tolerance);
+        EXPECT_NEAR(actualPoints[i].y, innerPolygon[i].y + expectedOffset[i].y, tolerance);
+    }
+
+    // First check the inner polygon has been offset correctly
+    actualPoints = inward->Outer().Nodes();
+
+    for (size_t i = 0; i < actualPoints.size(); ++i)
+    {
+        EXPECT_NEAR(actualPoints[i].x, outerPolygon[i].x - expectedOffset[i].x, tolerance);
+        EXPECT_NEAR(actualPoints[i].y, outerPolygon[i].y - expectedOffset[i].y, tolerance);
+    }
+
+    // Now check the inner polygon (there is only 1)
+    actualPoints = inward->Inner(0).Nodes();
+
+    for (size_t i = 0; i < actualPoints.size(); ++i)
+    {
+        EXPECT_NEAR(actualPoints[i].x, innerPolygon[i].x - expectedOffset[i].x, tolerance);
+        EXPECT_NEAR(actualPoints[i].y, innerPolygon[i].y - expectedOffset[i].y, tolerance);
+    }
 }

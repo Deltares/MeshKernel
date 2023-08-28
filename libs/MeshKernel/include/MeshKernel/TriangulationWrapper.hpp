@@ -237,7 +237,9 @@ namespace meshkernel
             return m_yCoordFlat[nodeIndex];
         }
 
-        // TODO be consistent in naming function like this (also in Polygon, perhaps other places too)
+        /// @brief Retrieves the (x,y) coordinate of a triangulated node
+        /// @param nodeIndex The index of the node to retrieve
+        /// @return Point
         Point GetCoord(const UInt nodeIndex) const
         {
             return Point(m_xCoordFlat[nodeIndex], m_yCoordFlat[nodeIndex]);
