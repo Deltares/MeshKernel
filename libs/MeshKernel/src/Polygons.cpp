@@ -116,7 +116,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
         const auto [localPolygonArea, centerOfMass, direction] = polygon.FaceAreaAndCenterOfMass();
 
         // average triangle size
-        const auto averageEdgeLength = polygon.ClosedPerimeterLength() / static_cast<double>(polygon.Size());
+        const auto averageEdgeLength = polygon.PerimeterLength() / static_cast<double>(polygon.Size());
         const double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles

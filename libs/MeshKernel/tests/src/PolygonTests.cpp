@@ -160,7 +160,7 @@ TEST(PolygonTests, AreaCentreAndDirectionTest)
     EXPECT_EQ(direction, mk::TraversalDirection::AntiClockwise);
 
     // Check the polygon perimeter
-    double perimeter = polygon.ClosedPerimeterLength();
+    double perimeter = polygon.PerimeterLength();
     EXPECT_EQ(perimeter, 90.0);
 }
 

@@ -74,10 +74,6 @@ namespace meshkernel
         /// @brief Move assignment operator
         Polygon& operator=(Polygon&& copy);
 
-        // From here
-        // Could be PointSequence?
-        // Then polygon, spline and land boundary could use this.
-
         /// @brief Return the number of points in the polygon
         UInt Size() const;
 
@@ -93,8 +89,6 @@ namespace meshkernel
 
         /// @brief Get the bounding box of the polygon
         const BoundingBox& GetBoundingBox() const;
-
-        // To here
 
         /// @brief Determine if the polygon contains the point
         bool Contains(const Point& point) const;
@@ -114,9 +108,8 @@ namespace meshkernel
         /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
         static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection);
 
-        // PerimeterClosed
         /// @brief Compute the perimiter length of the closed polygon
-        double ClosedPerimeterLength() const;
+        double PerimeterLength() const;
 
         /// @brief Computes the edge lengths of the polygon
         /// @return edgeLengths The length of each polygon edge

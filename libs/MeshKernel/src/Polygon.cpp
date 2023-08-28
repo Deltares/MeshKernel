@@ -398,7 +398,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     return FaceAreaAndCenterOfMass(m_nodes, m_projection);
 }
 
-double meshkernel::Polygon::ClosedPerimeterLength() const
+double meshkernel::Polygon::PerimeterLength() const
 {
     if (m_nodes.size() <= 1)
     {
