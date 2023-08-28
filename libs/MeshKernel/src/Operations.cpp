@@ -105,7 +105,7 @@ namespace meshkernel
     {
         UInt count = 0;
 
-        for (UInt i = start; i <= end; ++i)
+        for (size_t i = start; i <= end; ++i)
         {
             if (!points[i].IsValid())
             {
