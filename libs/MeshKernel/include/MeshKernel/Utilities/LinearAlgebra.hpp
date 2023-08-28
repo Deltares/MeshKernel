@@ -285,7 +285,7 @@ namespace lin_alg
     }
 
     /// @brief         Swaps two columns of a matrix
-    /// @tparam        T Matrix data type
+    /// @tparam        T       Matrix data type
     /// @tparam        storage Matrix storage option
     /// @param[in,out] matrix The matrix
     /// @param[in]     col_1 Index of first column to swap
@@ -314,7 +314,7 @@ namespace lin_alg
     }
 
     /// @brief         Swaps two rows of a matrix
-    /// @tparam        T Matrix data type
+    /// @tparam        T       Matrix data type
     /// @tparam        storage Matrix storage option
     /// @param[in,out] matrix The matrix
     /// @param[in]     row_1 Index of first row to swap
@@ -343,10 +343,10 @@ namespace lin_alg
     }
 
     /// @brief Returns the indices of a sorted matrix row without modifying the row
-    /// @tparam        T Matrix data type
-    /// @tparam        storage Matrix storage option
-    /// @param[in,out] row The matrix row
-    /// @return        The indices of the sorted matrix row
+    /// @tparam    T       Matrix data type
+    /// @tparam    storage Matrix storage option
+    /// @param[in] row The matrix row
+    /// @return    The indices of the sorted matrix row
     template <typename T, int storage>
     [[nodiscard]] RowVector<Eigen::Index> SortRow(MatrixRow<T, storage> const row)
     {
@@ -359,13 +359,18 @@ namespace lin_alg
         return indices;
     }
 
+    /// @brief Reorders a row of a matrix according to a row vector
+    /// @tparam        T       Matrix data type
+    /// @tparam        storage Matrix storage option
+    /// @param[in,out] row The matrix row to reorder
+    /// @param[in]     order The row vector containing the reordering indices
     template <typename T, int storage>
     void ReorderRow(MatrixRow<T, storage> row,
                     RowVector<Eigen::Index> const& order)
     {
         if (order.size() != row.size())
         {
-            std::invalid_argument("The matrix row and the order vector are not of the same size.");
+            throw std::invalid_argument("The matrix row and the order vector are not of the same size.");
         }
 
         std::vector<bool> swapped(row.size(), false);
@@ -386,6 +391,46 @@ namespace lin_alg
                 j = order[j];
             }
         }
+    }
+
+    /// @brief Copies a row from a matrix to an STL vector
+    /// @tparam T         Matrix data type
+    /// @tparam storage   Matrix storage option
+    /// @param matrix[in] The matrix
+    /// @param row[in]    The index of the row to copy
+    /// @return  The matrix row as an STL vector
+    template <typename T, int storage>
+    [[nodiscard]] inline static std::vector<T> MatrixRowToSTLVector(Matrix<T, storage> const& matrix,
+                                                                    Eigen::Index row)
+    {
+        if (row < 0 || row > matrix.rows() - 1)
+        {
+            throw std::invalid_argument("Invalid range");
+        }
+
+        std::vector<T> vector(matrix.cols());
+        Eigen::Map<Matrix<T, storage>>(vector.data(), 1, matrix.cols()) = matrix.row(row);
+        return vector;
+    }
+
+    /// @brief Copies a column from a matrix to an STL vector
+    /// @tparam T         Matrix data type
+    /// @tparam storage   Matrix storage option
+    /// @param matrix[in] The matrix
+    /// @param col[in]    The index of the column to copy
+    /// @return  The matrix column as an STL vector
+    template <typename T, int storage>
+    [[nodiscard]] inline static std::vector<T> MatrixColToSTLVector(Matrix<T, storage> const& matrix,
+                                                                    Eigen::Index col)
+    {
+        if (col < 0 || col > matrix.cols() - 1)
+        {
+            throw std::invalid_argument("Invalid range");
+        }
+
+        std::vector<T> vector(matrix.rows());
+        Eigen::Map<Matrix<T, storage>>(vector.data(), matrix.rows(), 1) = matrix.col(col);
+        return vector;
     }
 
 } // namespace lin_alg

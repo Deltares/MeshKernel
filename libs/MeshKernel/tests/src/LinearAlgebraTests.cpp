@@ -632,3 +632,31 @@ TEST(LinearAlgebra, SortAndReorderRow)
         matrix.row(row_index)[i] = expected_row[i];
     }
 }
+
+TEST(LinearAlgebra, MatrixRowAndMatrixColToSTLVector)
+{
+    lin_alg::Matrix<int> matrix(4, 3);
+    matrix << 1, 3, 2,
+        4, 6, 5,
+        7, 9, 8,
+        10, 12, 11;
+    {
+        std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, 2);
+        EXPECT_TRUE(vector.size() == 3);
+        std::vector<int> expected_vector{7, 9, 8};
+        EXPECT_EQ(vector, expected_vector);
+        // go out of range
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, -1), std::invalid_argument);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, 4), std::invalid_argument);
+    }
+
+    {
+        std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 1);
+        EXPECT_TRUE(vector.size() == 4);
+        std::vector<int> expected_vector{3, 6, 9, 12};
+        EXPECT_EQ(vector, expected_vector);
+        // go out of range
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, -1), std::invalid_argument);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 3), std::invalid_argument);
+    }
+}
