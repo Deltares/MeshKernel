@@ -47,8 +47,8 @@ namespace meshkernel
     }
 
     std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec,
-                                                   UInt start,
-                                                   UInt end,
+                                                   size_t start,
+                                                   size_t end,
                                                    double separator)
     {
         std::vector<std::pair<UInt, UInt>> result;
@@ -70,12 +70,12 @@ namespace meshkernel
         {
             if (!IsEqual(vec[n].x, separator) && !inRange)
             {
-                startRange = n;
+                startRange = static_cast<UInt>(n);
                 inRange = true;
             }
             if (IsEqual(vec[n].x, separator) && inRange)
             {
-                result.emplace_back(startRange, n - 1);
+                result.emplace_back(startRange, static_cast<UInt>(n - 1));
                 inRange = false;
             }
         }
@@ -101,7 +101,7 @@ namespace meshkernel
         }
     }
 
-    UInt InvalidPointCount(const std::vector<Point>& points, UInt start, UInt end)
+    UInt InvalidPointCount(const std::vector<Point>& points, size_t start, size_t end)
     {
         UInt count = 0;
 

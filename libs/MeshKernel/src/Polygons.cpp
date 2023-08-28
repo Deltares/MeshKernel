@@ -148,9 +148,9 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
         throw ConstraintError("Polygons::RefineFirstPolygon: No nodes in polygon.");
     }
 
-    size_t polygonIndex = 0;
-    size_t polygonStartNode = 0;
-    size_t polygonEndNode = 0;
+    UInt polygonIndex = 0;
+    UInt polygonStartNode = 0;
+    UInt polygonEndNode = 0;
 
     if (startIndex == 0 && endIndex == 0)
     {

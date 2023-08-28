@@ -79,7 +79,7 @@ namespace meshkernel
         // Then polygon, spline and land boundary could use this.
 
         /// @brief Return the number of points in the polygon
-        size_t Size() const;
+        UInt Size() const;
 
         // TODO be consistent in naming
         /// @brief Return vector of nodes of the polygon
@@ -152,9 +152,9 @@ namespace meshkernel
 
 } // namespace meshkernel
 
-inline size_t meshkernel::Polygon::Size() const
+inline meshkernel::UInt meshkernel::Polygon::Size() const
 {
-    return m_nodes.size();
+    return static_cast<UInt>(m_nodes.size());
 }
 
 inline const std::vector<meshkernel::Point>& meshkernel::Polygon::Nodes() const

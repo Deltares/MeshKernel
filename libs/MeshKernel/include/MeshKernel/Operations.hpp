@@ -145,7 +145,7 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, UInt start, UInt end, double separator);
+    std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
 
     /// @brief Determine if the number of invalid points in the point array.
     UInt InvalidPointCount(const std::vector<Point>& points);
@@ -154,7 +154,7 @@ namespace meshkernel
     /// @param[in] points The array of points
     /// @param[in] start The start of the range in which to search
     /// @param[in] end The end of the range in which to search
-    UInt InvalidPointCount(const std::vector<Point>& points, UInt start, UInt end);
+    UInt InvalidPointCount(const std::vector<Point>& points, size_t start, size_t end);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort

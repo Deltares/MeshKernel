@@ -163,8 +163,8 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
 }
 
 void meshkernel::PolygonalEnclosure::CopyPoints(const std::vector<Point>& source,
-                                                const UInt start,
-                                                const UInt end,
+                                                const size_t start,
+                                                const size_t end,
                                                 UInt& count,
                                                 std::vector<Point>& target)
 {

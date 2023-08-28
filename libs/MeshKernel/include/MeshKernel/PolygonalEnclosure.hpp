@@ -59,7 +59,7 @@ namespace meshkernel
         const Polygon& Outer() const;
 
         /// @brief The number of inner hole regions
-        size_t NumberOfInner() const;
+        UInt NumberOfInner() const;
 
         /// @brief Get an inner polygon
         const Polygon& Inner(size_t i) const;
@@ -112,8 +112,8 @@ namespace meshkernel
         /// @param [in,out] count The current index in the target array
         /// @param [in,out] target The array to whicih the source points are copied
         static void CopyPoints(const std::vector<Point>& source,
-                               const UInt start,
-                               const UInt end,
+                               const size_t start,
+                               const size_t end,
                                UInt& count,
                                std::vector<Point>& target);
 
@@ -142,9 +142,9 @@ inline const meshkernel::Polygon& meshkernel::PolygonalEnclosure::Outer() const
     return m_outer;
 }
 
-inline size_t meshkernel::PolygonalEnclosure::NumberOfInner() const
+inline meshkernel::UInt meshkernel::PolygonalEnclosure::NumberOfInner() const
 {
-    return m_inner.size();
+    return static_cast<UInt>(m_inner.size());
 }
 
 inline const meshkernel::Polygon& meshkernel::PolygonalEnclosure::Inner(const size_t i) const
