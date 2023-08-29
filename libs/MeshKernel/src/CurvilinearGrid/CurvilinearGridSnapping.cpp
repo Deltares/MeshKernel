@@ -7,11 +7,9 @@
 #include <cmath>
 #include <numbers>
 
-meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGrid& grid,
-                                                                           const CurvilinearGridNodeIndices& lowerLeft,
+meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,
                                                                            const CurvilinearGridNodeIndices& upperRight,
-                                                                           const CurvilinearGridNodeIndices& regionIndicator) : m_grid(grid),
-                                                                                                                                m_indexBoxLowerLeft(lowerLeft),
+                                                                           const CurvilinearGridNodeIndices& regionIndicator) : m_indexBoxLowerLeft(lowerLeft),
                                                                                                                                 m_indexBoxUpperRight(upperRight),
                                                                                                                                 m_smoothingRegionIndicator(regionIndicator) {}
 
@@ -194,7 +192,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
     if (m_points.size() > 2)
     {
         // User defined smoothing region
-        smoothingFactorCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_originalGrid, m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
+        smoothingFactorCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
     }
     else
     {
