@@ -27,10 +27,12 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 #include "MeshKernel/Polygon.hpp"
 
 namespace meshkernel
@@ -83,12 +85,17 @@ namespace meshkernel
         void SnapToLandBoundary(size_t startIndex, size_t endIndex, const LandBoundary& landBoundary);
 
         /// @brief Refine the polygon.
+        /// @param [in] startIndex The start index of the sections to be refined
+        /// @param [in] endIndex The end index of the sections to be refined
+        /// @param [in] refinementDistance The maximum distance between points.
+        /// @returns Points making the polygon with the sections indicated refined.
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance);
 
         /// @brief Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
-        /// @param[in] outwardsAndInwards Offset outwards only or outwards and inwards
-        /// @return The new offset polygon(s), may be nullptr if outwardsAndInwards is false, i.e. only outwards required
+        /// @param[in] outwardsAndInwards Offset outwards only or both outwards and inwards
+        /// @note Order of result is outward offset first, inward offset second, this may be nullptr.
+        /// @return The new offset polygon(s), may be nullptr if outwardsAndInwards is false, i.e. only outwards required.
         std::tuple<std::unique_ptr<PolygonalEnclosure>, std::unique_ptr<PolygonalEnclosure>> OffsetCopy(double distance, bool outwardsAndInwards) const;
 
     private:
@@ -117,7 +124,7 @@ namespace meshkernel
                                UInt& count,
                                std::vector<Point>& target);
 
-        /// @brief Construct the outer perimiter polygon from the points.
+        /// @brief Construct the outer perimeter polygon from the points.
         void ConstructOuterPolygon(const std::vector<Point>& points,
                                    size_t start, size_t end,
                                    const IndexRangeArray& innerIndices,

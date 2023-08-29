@@ -113,7 +113,6 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
     }
 
     // If winding number is not zero then the point is contained within the polygon
-    // TODO what about the case of m_nodes.size = 0
     return windingNumber != 0;
 }
 
@@ -367,8 +366,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         Vector middle = 0.5 * (delta + deltaNext);
         delta = GetDelta(polygon[n], polygon[nextNode], projection);
 
-        // TODO Comment is incorrect, rotation is by 3pi/2
-        // Rotate by pi/2
+        // Rotate by 3pi/2
         Vector normal(delta.y(), -delta.x());
         double xds = dot(normal, middle);
         area += 0.5 * xds;

@@ -159,12 +159,12 @@ namespace meshkernel
         return sphericalPoint;
     }
 
-    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
+    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
     {
         const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
         const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        const auto dx2 = GetDx(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
+        const auto dy2 = GetDy(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
         return dx1 * dy2 - dy1 * dx2;
     }
 
@@ -1098,7 +1098,7 @@ namespace meshkernel
 
     bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                              const Point& firstSegmentSecondPoint,
-                             const Point& secondSegmentFistPoint,
+                             const Point& secondSegmentFirstPoint,
                              const Point& secondSegmentSecondPoint,
                              bool adimensionalCrossProduct,
                              const Projection& projection,
@@ -1118,11 +1118,11 @@ namespace meshkernel
             auto const x21 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
             auto const y21 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
 
-            auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            auto const x43 = GetDx(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
+            auto const y43 = GetDy(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
 
-            auto const x31 = GetDx(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
-            auto const y31 = GetDy(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
+            auto const x31 = GetDx(firstSegmentFirstPoint, secondSegmentFirstPoint, projection);
+            auto const y31 = GetDy(firstSegmentFirstPoint, secondSegmentFirstPoint, projection);
 
             auto const det = x43 * y21 - y43 * x21;
 
@@ -1151,21 +1151,21 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstSegmentFistCartesian3DPoint{SphericalToCartesian3D(firstSegmentFirstPoint)};
+            const Cartesian3DPoint firstSegmentFirstCartesian3DPoint{SphericalToCartesian3D(firstSegmentFirstPoint)};
 
             const Cartesian3DPoint firstSegmentSecondCartesian3DPoint{SphericalToCartesian3D(firstSegmentSecondPoint)};
 
-            const Cartesian3DPoint secondSegmentFistCartesian3DPoint{SphericalToCartesian3D(secondSegmentFistPoint)};
+            const Cartesian3DPoint secondSegmentFirstCartesian3DPoint{SphericalToCartesian3D(secondSegmentFirstPoint)};
 
             const Cartesian3DPoint secondSegmentSecondCartesian3DPoint{SphericalToCartesian3D(secondSegmentSecondPoint)};
 
-            auto n12 = VectorProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
+            auto n12 = VectorProduct(firstSegmentFirstCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
             const auto n12InnerProduct = std::sqrt(InnerProduct(n12, n12));
             n12.x = n12.x / n12InnerProduct;
             n12.y = n12.y / n12InnerProduct;
             n12.z = n12.z / n12InnerProduct;
 
-            auto n34 = VectorProduct(secondSegmentFistCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
+            auto n34 = VectorProduct(secondSegmentFirstCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
             const auto n34InnerProduct = std::sqrt(InnerProduct(n34, n34));
             n34.x = n34.x / n34InnerProduct;
             n34.y = n34.y / n34InnerProduct;
@@ -1177,22 +1177,22 @@ namespace meshkernel
             if (n12n34InnerProduct > tolerance)
             {
                 Cartesian3DPoint firstSegmentDifference;
-                firstSegmentDifference.x = firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x;
-                firstSegmentDifference.y = firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y;
-                firstSegmentDifference.z = firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z;
+                firstSegmentDifference.x = firstSegmentSecondCartesian3DPoint.x - firstSegmentFirstCartesian3DPoint.x;
+                firstSegmentDifference.y = firstSegmentSecondCartesian3DPoint.y - firstSegmentFirstCartesian3DPoint.y;
+                firstSegmentDifference.z = firstSegmentSecondCartesian3DPoint.z - firstSegmentFirstCartesian3DPoint.z;
 
                 Cartesian3DPoint secondSegmentDifference;
-                secondSegmentDifference.x = secondSegmentSecondCartesian3DPoint.x - secondSegmentFistCartesian3DPoint.x;
-                secondSegmentDifference.y = secondSegmentSecondCartesian3DPoint.y - secondSegmentFistCartesian3DPoint.y;
-                secondSegmentDifference.z = secondSegmentSecondCartesian3DPoint.z - secondSegmentFistCartesian3DPoint.z;
+                secondSegmentDifference.x = secondSegmentSecondCartesian3DPoint.x - secondSegmentFirstCartesian3DPoint.x;
+                secondSegmentDifference.y = secondSegmentSecondCartesian3DPoint.y - secondSegmentFirstCartesian3DPoint.y;
+                secondSegmentDifference.z = secondSegmentSecondCartesian3DPoint.z - secondSegmentFirstCartesian3DPoint.z;
 
                 const auto Det12 = InnerProduct(firstSegmentDifference, n34);
                 const auto Det34 = InnerProduct(secondSegmentDifference, n12);
 
                 if (std::abs(Det12) > tolerance && std::abs(Det34) > tolerance)
                 {
-                    ratioFirstSegment = -InnerProduct(firstSegmentFistCartesian3DPoint, n34) / Det12;
-                    ratioSecondSegment = -InnerProduct(secondSegmentFistCartesian3DPoint, n12) / Det34;
+                    ratioFirstSegment = -InnerProduct(firstSegmentFirstCartesian3DPoint, n34) / Det12;
+                    ratioSecondSegment = -InnerProduct(secondSegmentFirstCartesian3DPoint, n12) / Det34;
                 }
             }
 
@@ -1204,9 +1204,9 @@ namespace meshkernel
 
                 // compute intersection
                 Cartesian3DPoint intersectionCartesian3DPoint;
-                intersectionCartesian3DPoint.x = firstSegmentFistCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x);
-                intersectionCartesian3DPoint.y = firstSegmentFistCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y);
-                intersectionCartesian3DPoint.z = firstSegmentFistCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z);
+                intersectionCartesian3DPoint.x = firstSegmentFirstCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFirstCartesian3DPoint.x);
+                intersectionCartesian3DPoint.y = firstSegmentFirstCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFirstCartesian3DPoint.y);
+                intersectionCartesian3DPoint.z = firstSegmentFirstCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFirstCartesian3DPoint.z);
                 intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFirstPoint.x, firstSegmentSecondPoint.x));
             }
         }

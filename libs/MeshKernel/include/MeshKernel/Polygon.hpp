@@ -77,7 +77,6 @@ namespace meshkernel
         /// @brief Return the number of points in the polygon
         UInt Size() const;
 
-        // TODO be consistent in naming
         /// @brief Return vector of nodes of the polygon
         const std::vector<Point>& Nodes() const;
 
@@ -102,10 +101,10 @@ namespace meshkernel
         /// @return The points for the refined polygon
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
-        /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
+        /// @brief Compute the area of the polygon, its centre of mass and the direction
         std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass() const;
 
-        /// @brief Compute the area of the polygon, its centre of mass and the direction (true is anti-clockwise)
+        /// @brief Compute the area of the polygon, its centre of mass and the direction
         static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection);
 
         /// @brief Compute the perimiter length of the closed polygon

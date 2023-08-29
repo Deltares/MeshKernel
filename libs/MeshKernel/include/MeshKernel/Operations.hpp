@@ -271,11 +271,11 @@ namespace meshkernel
     /// @brief Computes the cross product between two segments (duitpl)
     /// @param[in] firstSegmentFirstPoint   The first point of the first segment
     /// @param[in] firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in] secondSegmentFistPoint   The second point of the second segment
+    /// @param[in] secondSegmentFirstPoint   The second point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
     /// @param[in] projection               The coordinate system projection
     /// @return The cross product value
-    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
+    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
     /// @param[in] point The point to check
@@ -437,7 +437,7 @@ namespace meshkernel
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment
     /// @param[in]  firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in]  secondSegmentFistPoint   The first point of the second segment
+    /// @param[in]  secondSegmentFirstPoint   The first point of the second segment
     /// @param[in]  secondSegmentSecondPoint The second point of the second segment
     /// @param[in]  adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in]  projection               The coordinate system projection
@@ -448,7 +448,7 @@ namespace meshkernel
     /// @return If the two segments are crossing
     [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                                            const Point& firstSegmentSecondPoint,
-                                           const Point& secondSegmentFistPoint,
+                                           const Point& secondSegmentFirstPoint,
                                            const Point& secondSegmentSecondPoint,
                                            bool adimensionalCrossProduct,
                                            const Projection& projection,
