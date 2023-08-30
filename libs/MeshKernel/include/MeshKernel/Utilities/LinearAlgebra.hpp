@@ -433,4 +433,19 @@ namespace lin_alg
         return vector;
     }
 
+    /// @brief Copies an STL vector of vectors to a row-major matrix
+    /// @tparam T Matrix data type
+    /// @param vector[in] vector of vectors to copy
+    /// @return Row-major matrix
+    template <typename T>
+    [[nodiscard]] inline static Matrix<T> STLVectorOfVectorsToMatrix(std::vector<std::vector<T>> const& vector)
+    {
+        Matrix<T> matrix(vector.size(), vector.front().size());
+        for (size_t i = 0; i < vector.size(); ++i)
+        {
+            matrix.row(i) = RowVector<T>::Map(vector[i].data(), 1, vector[i].size());
+        }
+        return matrix;
+    }
+
 } // namespace lin_alg

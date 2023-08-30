@@ -636,7 +636,7 @@ TEST(LinearAlgebra, SortAndReorderRow)
 TEST(LinearAlgebra, MatrixRowAndMatrixColToSTLVector)
 {
     lin_alg::Matrix<int> matrix(4, 3);
-    matrix << 1, 3, 2,
+    matrix << 1, 2, 3,
         4, 6, 5,
         7, 9, 8,
         10, 12, 11;
@@ -653,10 +653,28 @@ TEST(LinearAlgebra, MatrixRowAndMatrixColToSTLVector)
     {
         std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 1);
         EXPECT_TRUE(vector.size() == 4);
-        std::vector<int> expected_vector{3, 6, 9, 12};
+        std::vector<int> expected_vector{2, 6, 9, 12};
         EXPECT_EQ(vector, expected_vector);
         // go out of range
         EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, -1), std::invalid_argument);
         EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 3), std::invalid_argument);
     }
+}
+
+TEST(LinearAlgebra, STLVectorOfVectorToMatrix)
+{
+    std::vector<std::vector<int>> const vector{
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 10, 11, 12}};
+
+    lin_alg::Matrix<int> matrix = lin_alg::STLVectorOfVectorsToMatrix(vector);
+
+    EXPECT_EQ(matrix.rows(), 3);
+    EXPECT_EQ(matrix.cols(), 4);
+    lin_alg::Matrix<int> expected_matrix(3, 4);
+    expected_matrix << 1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12;
+    EXPECT_EQ(matrix, expected_matrix);
 }

@@ -155,7 +155,7 @@ namespace meshkernel
 
         /// @brief Computes the points at front, which have to be moved.
         /// @returns The indices of the grid points, the front grid points and the number of front points
-        std::tuple<lin_alg::Matrix<Eigen::Index>, lin_alg::RowVector<Point>, Eigen::Index> FindFront();
+        std::tuple<lin_alg::Matrix<UInt>, lin_alg::RowVector<Point>, UInt> FindFront();
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param[in] layerIndex The current grid layerIndex index
@@ -166,7 +166,7 @@ namespace meshkernel
         /// @param[in] gridPoints The front grid points
         /// @param[in] index The front grid point index from which the neighbors should be searched
         /// @returns The left and the right index for the current front grid point index
-        std::pair<Eigen::Index, Eigen::Index> GetNeighbours(lin_alg::RowVector<Point> const& gridPoints, Eigen::Index index) const;
+        std::pair<UInt, UInt> GetNeighbours(lin_alg::RowVector<Point> const& gridPoints, UInt) const;
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
@@ -230,8 +230,8 @@ namespace meshkernel
         /// @param[out] heights
         void FindNearestCrossSplines(UInt s,
                                      UInt j,
-                                     const std::vector<UInt>& numHeightsLeft,
-                                     const lin_alg::Matrix<double>& crossSplineLeftHeights,
+                                     const lin_alg::Matrix<UInt>& numHeightsLeft,
+                                     const lin_alg::Matrix<std::vector<double>>& crossSplineLeftHeights,
                                      const std::vector<double>& edgesCenterPoints,
                                      std::vector<UInt>& localValidSplineIndices,
                                      std::vector<double>& localSplineDerivatives,

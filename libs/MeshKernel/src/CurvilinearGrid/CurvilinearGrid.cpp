@@ -591,39 +591,48 @@ void CurvilinearGrid::InsertFace(Point const& point)
     SetFlatCopies();
 }
 
-bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
+bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                            CurvilinearGridNodeIndices const& secondNode)
 {
     // If both nodes are invalid, we can substitute the invalid values. New allocation is not needed.
-    bool const areNodesValid = m_gridNodes(firstNode.m_m, firstNode.m_n).IsValid() && m_gridNodes(secondNode.m_m, secondNode.m_n).IsValid();
+    bool const areNodesValid = m_gridNodes(firstNode.m_m, firstNode.m_n).IsValid() &&
+                               m_gridNodes(secondNode.m_m, secondNode.m_n).IsValid();
 
     // Allocation depends on directions
     bool gridSizeChanged = false;
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
-    if (gridLineType == BoundaryGridLineType::Left && areNodesValid)
+
+    if (areNodesValid)
     {
-        m_gridNodes.emplace(m_gridNodes.begin(), std::vector<Point>(m_gridNodes.cols()));
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Right && areNodesValid)
-    {
-        m_gridNodes.emplace_back(std::vector<Point>(m_gridNodes.cols()));
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Up && areNodesValid)
-    {
-        for (auto& gridNodes : m_gridNodes)
+
+        if (gridLineType == BoundaryGridLineType::Left)
         {
-            gridNodes.emplace_back();
+            lin_alg::InsertRow(m_gridNodes,
+                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
+                               0);
+            gridSizeChanged = true;
         }
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Bottom && areNodesValid)
-    {
-        for (auto& gridNodes : m_gridNodes)
+        if (gridLineType == BoundaryGridLineType::Right)
         {
-            gridNodes.emplace(gridNodes.begin());
+            lin_alg::InsertRow(m_gridNodes,
+                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
+                               m_gridNodes.rows());
+            gridSizeChanged = true;
         }
-        gridSizeChanged = true;
+        if (gridLineType == BoundaryGridLineType::Up)
+        {
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
+                               m_gridNodes.cols());
+            gridSizeChanged = true;
+        }
+        if (gridLineType == BoundaryGridLineType::Bottom)
+        {
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
+                               0);
+            gridSizeChanged = true;
+        }
     }
 
     return gridSizeChanged;

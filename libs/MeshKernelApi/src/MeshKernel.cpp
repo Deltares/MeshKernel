@@ -58,6 +58,7 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/Utilities/Linearalgebra.hpp>
 
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <MeshKernelApi/State.hpp>
@@ -1776,7 +1777,7 @@ namespace meshkernelapi
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            splineValues.AddSpline(splinePoints, startSplineIndex, static_cast<meshkernel::UInt>(splinePoints.size()));
+            splineValues.AddSpline(splinePoints.data(), startSplineIndex, static_cast<meshkernel::UInt>(splinePoints.size()));
 
             //--------------------------------
             // Snap specified splines to the land boundary
@@ -2822,14 +2823,14 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
 
-            std::vector curviGridPoints(grid.num_m, std::vector<meshkernel::Point>(grid.num_n));
+            lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_m, grid.num_n);
             int nodeIndex = 0;
             for (int i = 0; i < grid.num_m; ++i)
             {
                 for (int j = 0; j < grid.num_n; ++j)
                 {
 
-                    curviGridPoints[i][j] = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
+                    curviGridPoints(i, j) = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
                     nodeIndex++;
                 }
             }

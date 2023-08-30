@@ -233,7 +233,7 @@ namespace meshkernelapi
             const auto size = endIndex - startIndex + 1;
             if (size > 0)
             {
-                spline.AddSpline(splineCornerPoints, startIndex, size);
+                spline.AddSpline(splineCornerPoints.data(), startIndex, size);
             }
         }
     }

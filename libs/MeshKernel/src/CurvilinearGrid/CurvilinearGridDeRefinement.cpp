@@ -70,12 +70,12 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
+            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes(mIndexOriginalGrid, nIndexOriginalGrid));
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;
     }
 
     // substitute original grid with the derefined one
-    return CurvilinearGrid(deRefinedGrid, m_grid.m_projection);
+    return CurvilinearGrid(lin_alg::STLVectorOfVectorsToMatrix(deRefinedGrid), m_grid.m_projection);
 }

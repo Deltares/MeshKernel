@@ -17,7 +17,7 @@ TEST(Splines, SetSpline)
                                                 {1030.506469726562, 653.380187988281}});
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
-    splines.AddSpline(splineNodes, 0, static_cast<meshkernel::UInt>(splineNodes.size()));
+    splines.AddSpline(splineNodes.data(), 0, static_cast<meshkernel::UInt>(splineNodes.size()));
 
     ASSERT_EQ(1, splines.GetNumSplines());
     ASSERT_EQ(4, splines.m_splineNodes[0].size());
@@ -71,12 +71,12 @@ TEST(Splines, SplineIntersection)
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
 
-    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
+    splines.AddSpline(firstSpline.data(), 0, static_cast<meshkernel::UInt>(firstSpline.size()));
 
     std::vector<meshkernel::Point> secondSpline;
     secondSpline.push_back(meshkernel::Point{72.5010681152344, 391.129577636719});
     secondSpline.push_back(meshkernel::Point{462.503479003906, 90.3765411376953});
-    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
+    splines.AddSpline(secondSpline.data(), 0, static_cast<meshkernel::UInt>(secondSpline.size()));
 
     double crossProductIntersection;
     meshkernel::Point dimensionalIntersection;
@@ -129,7 +129,7 @@ TEST(Splines, SnapToLandBoundaryTest)
                                                         {923.500177844106, 412.5818685325169}};
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
-    splines.AddSpline(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()));
+    splines.AddSpline(splinePoints.data(), 0, static_cast<meshkernel::UInt>(splinePoints.size()));
 
     // Snap the spline to the land boundary
     splines.SnapSpline(0, landBoundary, iterationCountForTest);
@@ -177,8 +177,8 @@ TEST(Splines, SplineSnappingIndexOutOfRangeTest)
                                                  {1030.506469726562, 653.380187988281}});
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
-    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
-    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
+    splines.AddSpline(firstSpline.data(), 0, static_cast<meshkernel::UInt>(firstSpline.size()));
+    splines.AddSpline(secondSpline.data(), 0, static_cast<meshkernel::UInt>(secondSpline.size()));
 
     // Spline 2 is out of range, so should throw an exception.
     EXPECT_THROW(splines.SnapSpline(2, landBoundary), meshkernel::ConstraintError);

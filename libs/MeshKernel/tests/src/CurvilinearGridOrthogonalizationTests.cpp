@@ -4,6 +4,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
@@ -11,13 +12,13 @@ using namespace meshkernel;
 TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinearGrid_ShouldOrthogonalizeGrid)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(4, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
 
     // Move a node, to make the grid strongly non orthogonal
     curvilinearGrid->MoveNode({10.0, 20.0}, {18.0, 12.0});
@@ -42,13 +43,13 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
 TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_ShouldNotModifyGrid)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(4, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;

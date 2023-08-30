@@ -4,17 +4,19 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 
+using namespace meshkernel;
+
 TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(4, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -50,16 +52,17 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
 TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldRefine)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{}, {}, {20, 20}, {20, 30}},
-        {{}, {}, {30, 20}, {30, 30}},
-        {{40, 0}, {40, 10}, {40, 20}, {40, 30}},
-        {{50, 0}, {50, 10}, {50, 20}, {50, 30}}};
+    lin_alg::Matrix<Point> grid(6, 4);
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{}, Point{}, Point{20, 20}, Point{20, 30},
+        Point{}, Point{}, Point{30, 20}, Point{30, 30},
+        Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30},
+        Point{50, 0}, Point{50, 10}, Point{50, 20}, Point{50, 30};
+
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -83,35 +86,35 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes(0, 3).y, tolerance);
 
     // vertical gridline 2
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(2, 0).x, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(2, 1).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(2, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(2, 1).x, tolerance);
     ASSERT_NEAR(11.0, refinedGrid.m_gridNodes(2, 2).x, tolerance);
     ASSERT_NEAR(11.0, refinedGrid.m_gridNodes(2, 3).x, tolerance);
 
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(3, 0).y, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(3, 1).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(3, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(3, 1).y, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes(3, 2).y, tolerance);
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes(3, 3).y, tolerance);
 
     // vertical gridline 10
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 0).x, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 1).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 1).x, tolerance);
     ASSERT_NEAR(19.0, refinedGrid.m_gridNodes(10, 2).x, tolerance);
     ASSERT_NEAR(19.0, refinedGrid.m_gridNodes(10, 3).x, tolerance);
 
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 0).y, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 1).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(10, 1).y, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes(10, 2).y, tolerance);
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes(10, 3).y, tolerance);
 
     // vertical gridline 11
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 0).x, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 1).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 1).x, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes(11, 2).x, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes(11, 3).x, tolerance);
 
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 0).y, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 1).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, refinedGrid.m_gridNodes(11, 1).y, tolerance);
     ASSERT_NEAR(20.0, refinedGrid.m_gridNodes(11, 2).y, tolerance);
     ASSERT_NEAR(30.0, refinedGrid.m_gridNodes(11, 3).y, tolerance);
 }

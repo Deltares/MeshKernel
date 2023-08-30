@@ -6,18 +6,20 @@
 #include <MeshKernel/Entities.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+using namespace meshkernel;
+
 TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGrid)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(4, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
     curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
@@ -71,7 +73,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothG
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
     curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
@@ -126,7 +128,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
     curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
@@ -201,7 +203,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
     curvilinearGridSmoothing.SetLine({80143, 367041}, {80333, 366553});
     curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
 
@@ -237,7 +239,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
     curvilinearGridSmoothing.SetLine({80199, 366749}, {80480, 366869});
     curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
 

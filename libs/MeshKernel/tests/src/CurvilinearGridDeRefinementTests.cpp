@@ -4,18 +4,20 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 
+using namespace meshkernel;
+
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVerticalGridLines)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{15, 0}, {15, 10}, {15, 20}, {15, 30}}, // this vertical grid line will be removed
-        {{20, 0}, {20, 10}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(5, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{15, 0}, Point{15, 10}, Point{15, 20}, Point{15, 30}, // this vertical grid line will be removed
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -29,19 +31,19 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldDeRefineVerticalGridLines)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 20}, {10, 30}},
-        {{}, {}, {11, 20}, {11, 30}},
-        {{}, {}, {12, 20}, {12, 30}},
-        {{}, {}, {13, 20}, {13, 30}},
-        {{}, {}, {20, 20}, {20, 30}},
-        {{}, {}, {30, 20}, {30, 30}},
-        {{40, 0}, {40, 10}, {40, 20}, {40, 30}},
-        {{50, 0}, {50, 10}, {50, 20}, {50, 30}}};
+    lin_alg::Matrix<Point> grid(9, 4);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{}, Point{}, Point{11, 20}, Point{11, 30},
+        Point{}, Point{}, Point{12, 20}, Point{12, 30},
+        Point{}, Point{}, Point{13, 20}, Point{13, 30},
+        Point{}, Point{}, Point{20, 20}, Point{20, 30},
+        Point{}, Point{}, Point{30, 20}, Point{30, 30},
+        Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30},
+        Point{50, 0}, Point{50, 10}, Point{50, 20}, Point{50, 30};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -56,14 +58,14 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizontalGridLines)
 {
     // Set-up
-    std::vector<std::vector<meshkernel::Point>> grid{
-        {{0, 0}, {0, 10}, {0, 11}, {0, 20}, {0, 30}},
-        {{10, 0}, {10, 10}, {10, 11}, {10, 20}, {10, 30}},
-        {{20, 0}, {20, 10}, {20, 11}, {20, 20}, {20, 30}},
-        {{30, 0}, {30, 10}, {30, 11}, {30, 20}, {30, 30}}};
+    lin_alg::Matrix<Point> grid(4, 5);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 11}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 11}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 11}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 11}, Point{30, 20}, Point{30, 30};
 
-    auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
 
     // Execute

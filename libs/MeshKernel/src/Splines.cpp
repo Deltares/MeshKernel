@@ -40,31 +40,65 @@ using meshkernel::Splines;
 Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
-
 {
     // first the m_n m_m-gridlines
-    std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
+    lin_alg::Matrix<Point> mGridLines(grid.m_numN, grid.m_numM);
     for (UInt n = 0; n < grid.m_numN; ++n)
     {
         for (UInt m = 0; m < grid.m_numM; ++m)
         {
-            mGridLines[n][m] = grid.m_gridNodes[m][n];
+            mGridLines(n, m) = grid.m_gridNodes(m, n);
         }
-        AddSpline(mGridLines[n], 0, static_cast<UInt>(mGridLines[n].size()));
+        AddSpline(mGridLines.row(n).data(), 0, static_cast<UInt>(mGridLines.cols()));
     }
 
     // then the m_m m_n-gridlines
-    std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
+    lin_alg::Matrix<Point> nGridLines(grid.m_numM, grid.m_numN);
     for (UInt m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid.m_gridNodes[m], 0, static_cast<UInt>(grid.m_gridNodes[m].size()));
+        AddSpline(grid.m_gridNodes.row(m).data(), 0, static_cast<UInt>(grid.m_gridNodes.cols()));
     }
 
     m_projection = grid.m_projection;
 }
 
+///// add a new spline, return the index
+// void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size)
+//{
+//     if (size == 0)
+//     {
+//         return;
+//     }
+//
+//     // copy the spline nodes from start to start + size
+//     UInt count = 0;
+//     std::vector<Point> splinesNodes(size);
+//     for (auto i = start; i < start + size; ++i)
+//     {
+//         splinesNodes[count] = splines[i];
+//         count++;
+//     }
+//     m_splineNodes.emplace_back(splinesNodes);
+//
+//     // compute second order derivatives
+//     std::vector<Point> splineDerivatives(splinesNodes.size());
+//     const auto indices = FindIndices(splinesNodes, 0, static_cast<UInt>(splinesNodes.size()), constants::missing::doubleValue);
+//     for (auto index : indices)
+//     {
+//         const auto& [startIndex, endIndex] = index;
+//         const auto derivatives = SplineAlgorithms::SecondOrderDerivative(splinesNodes, startIndex, endIndex);
+//         for (auto j = startIndex; j <= endIndex; ++j)
+//         {
+//             splineDerivatives[j] = derivatives[j - startIndex];
+//         }
+//     }
+//     m_splineDerivatives.emplace_back(splineDerivatives);
+//
+//     m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+// }
+
 /// add a new spline, return the index
-void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size)
+void Splines::AddSpline(Point const* const splines, UInt start, UInt size)
 {
     if (size == 0)
     {
@@ -83,7 +117,9 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
 
     // compute second order derivatives
     std::vector<Point> splineDerivatives(splinesNodes.size());
-    const auto indices = FindIndices(splinesNodes, 0, static_cast<UInt>(splinesNodes.size()), constants::missing::doubleValue);
+    const auto indices = FindIndices(splinesNodes, 0,
+                                     static_cast<UInt>(splinesNodes.size()),
+                                     constants::missing::doubleValue);
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
