@@ -182,8 +182,7 @@ namespace meshkernel
         void ComputeIfFaceShouldBeSplit();
 
         /// @brief The refinement operation by splitting the face (refine_cells)
-        /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
-        void RefineFacesBySplittingEdges(UInt numEdgesBeforeRefinement);
+        void RefineFacesBySplittingEdges();
 
         /// @brief Compute if an edge must be refined based on the face location type and the Courant criteria
         /// @param edge The index of the edge to be refined
@@ -200,12 +199,16 @@ namespace meshkernel
         /// @brief Compute the face location type based on the depths values on the nodes
         void ComputeFaceLocationTypes();
 
+        /// @brief Compute which edge will be below the minimum size after refinement
+        void ComputeEdgeBelowMinSizeAfterRefinement();
+
         RTree m_samplesRTree; ///< The sample node RTree
 
-        std::vector<int> m_faceMask;      ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int> m_edgeMask;      ///< If 0, edge is not split
-        std::vector<int> m_nodeMask;      ///< The node mask used in the refinement process
-        std::vector<UInt> m_brotherEdges; ///< The index of the brother edge for each edge
+        std::vector<int> m_faceMask;                           ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_edgeMask;                           ///< If 0, edge is not split
+        std::vector<bool> m_isEdgeBelowMinSizeAfterRefinement; ///< If an edge is below the minimum size after refinement
+        std::vector<int> m_nodeMask;                           ///< The node mask used in the refinement process
+        std::vector<UInt> m_brotherEdges;                      ///< The index of the brother edge for each edge
 
         /// Local caches
         std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging

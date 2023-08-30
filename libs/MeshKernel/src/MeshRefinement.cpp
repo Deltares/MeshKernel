@@ -106,26 +106,25 @@ void MeshRefinement::Compute()
     for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
         // Compute all edge lengths at once
-        m_mesh->ComputeEdgesLengths();
-
-        const auto numEdgesBeforeRefinement = m_mesh->GetNumEdges();
+        ComputeEdgeBelowMinSizeAfterRefinement();
 
         // computes the edge and face refinement mask from samples
         if (isRefinementBasedOnSamples)
         {
             ComputeRefinementMasksFromSamples();
-
-            for (auto& edge : m_edgeMask)
-            {
-                edge = -edge;
-            }
-
-            SmoothRefinementMasks();
         }
         else
         {
             std::ranges::fill(m_faceMask, 1);
             std::ranges::fill(m_edgeMask, -1);
+
+            for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
+            {
+                if (m_isEdgeBelowMinSizeAfterRefinement[e])
+                {
+                    m_edgeMask[e] = 0;
+                }
+            }
         }
 
         if (level == 0)
@@ -185,7 +184,7 @@ void MeshRefinement::Compute()
         numFacesAfterRefinement = numFacesAfterRefinement * 4;
 
         // spit the edges
-        RefineFacesBySplittingEdges(numEdgesBeforeRefinement);
+        RefineFacesBySplittingEdges();
 
         m_mesh->OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
 
@@ -455,8 +454,10 @@ void MeshRefinement::ConnectHangingNodes()
     }
 }
 
-void MeshRefinement::RefineFacesBySplittingEdges(UInt numEdgesBeforeRefinement)
+void MeshRefinement::RefineFacesBySplittingEdges()
 {
+    const auto numEdgesBeforeRefinement = m_mesh->GetNumEdges();
+
     // Add new nodes where required
     std::vector<UInt> notHangingFaceNodes;
     notHangingFaceNodes.reserve(Mesh::m_maximumNumberOfNodesPerFace);
@@ -742,6 +743,12 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
 
         ComputeRefinementMasksFromSamples(f);
     }
+
+    for (auto& edge : m_edgeMask)
+    {
+        edge = -edge;
+    }
+    SmoothRefinementMasks();
 }
 
 void MeshRefinement::FindHangingNodes(UInt face)
@@ -887,6 +894,10 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
                 numEdgesToBeRefined++;
                 continue;
             }
+            if (m_isEdgeBelowMinSizeAfterRefinement[edge])
+            {
+                continue;
+            }
 
             bool doRefinement;
             if (m_useNodalRefinement)
@@ -897,8 +908,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
                 }
                 else if (m_faceLocationType[face] == FaceLocation::LandWater)
                 {
-                    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
-                    doRefinement = newEdgeLength >= m_meshRefinementParameters.min_edge_size;
+                    doRefinement = true;
                 }
                 else
                 {
@@ -1000,13 +1010,23 @@ void MeshRefinement::ComputeFaceLocationTypes()
     }
 }
 
+void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
+{
+    m_mesh->ComputeEdgesLengths();
+    m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh->GetNumEdges());
+    for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
+    {
+        const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[e];
+        m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
+    }
+}
+
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const
 {
     const double maxDtCourant = 120.0;
-    const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edge];
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
     const double waveCourant = celerity * maxDtCourant / m_mesh->m_edgeLengths[edge];
-    bool doRefinement = waveCourant < 1.0 && newEdgeLength >= m_meshRefinementParameters.min_edge_size;
+    bool doRefinement = waveCourant < 1.0;
     return doRefinement;
 }
 
@@ -1085,7 +1105,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
 
                 if (num + 1 != Mesh::m_numNodesQuads)
                 {
-                    throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: The number the links in the cell is not equals 3.");
+                    throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: The number the links in the cell is not equal to 3.");
                 }
 
                 UInt numEdgesToRefine = 0;
