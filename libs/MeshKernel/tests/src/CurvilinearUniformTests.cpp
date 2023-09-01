@@ -8,7 +8,7 @@
 
 using namespace meshkernel;
 
-TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
+TEST(CurvilinearGridUniform, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
 {
     // Setup
     std::vector<Point> polygonNodes{{0.5, 2.5},
@@ -36,7 +36,7 @@ TEST(CurvilinearGrid, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurv
     ASSERT_EQ(9, numValidNodes);
 }
 
-TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
+TEST(CurvilinearGridUniform, MakeCurvilinearInPolygonSpherical)
 {
     // Setup
     std::vector<Point> polygonNodes{{302.002502, 472.130371},
@@ -65,7 +65,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
     ASSERT_EQ(0, numValidNodes);
 }
 
-TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
+TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
 {
     // 1 Setup
     const double angle = 0.0;
@@ -116,7 +116,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(90.0, mesh.m_nodes[7].y);
 }
 
-TEST(CurvilinearGrid, InsertFace_OnBottomLeft_ShouldInsertFace)
+TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -135,7 +135,7 @@ TEST(CurvilinearGrid, InsertFace_OnBottomLeft_ShouldInsertFace)
     ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(0, 2).y, tolerance);
 }
 
-TEST(CurvilinearGrid, InsertFace_OnBottomRight_ShouldInsertFace)
+TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -154,7 +154,7 @@ TEST(CurvilinearGrid, InsertFace_OnBottomRight_ShouldInsertFace)
     ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 2).y, tolerance);
 }
 
-TEST(CurvilinearGrid, InsertFace_OnTopLeft_ShouldInsertFace)
+TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -173,7 +173,7 @@ TEST(CurvilinearGrid, InsertFace_OnTopLeft_ShouldInsertFace)
     ASSERT_NEAR(367626.58734840894, curvilinearGrid->m_gridNodes(0, 8).y, tolerance);
 }
 
-TEST(CurvilinearGrid, InsertFace_OnTopRight_ShouldInsertFace)
+TEST(CurvilinearGridUniform, InsertFace_OnTopRight_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -192,7 +192,7 @@ TEST(CurvilinearGrid, InsertFace_OnTopRight_ShouldInsertFace)
     ASSERT_NEAR(366327.01674911042, curvilinearGrid->m_gridNodes(5, 8).y, tolerance);
 }
 
-TEST(CurvilinearGrid, InsertFace_OnGridWithHoles_ShouldInsertFace)
+TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
@@ -223,7 +223,7 @@ TEST(CurvilinearGrid, InsertFace_OnGridWithHoles_ShouldInsertFace)
     ASSERT_NEAR(366718.10475241451, curvilinearGrid->m_gridNodes(3, 8).y, tolerance);
 }
 
-TEST(CurvilinearGrid, DeleteNode_OnUniformGrid_ShouldDeleteNode)
+TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
 {
     // Prepare
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Exceptions.hpp"
 
 #include <Eigen/Core>
 
@@ -62,7 +63,10 @@ namespace lin_alg
     {
         if (rows < 0 || cols < 0)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
+                "Invalid dimensions: rows = {}, cols = {}. Dimensions must be strictly positive.",
+                rows,
+                cols));
         }
 
         Eigen::Index const rows_old = matrix.rows();
@@ -113,7 +117,11 @@ namespace lin_alg
             row_end < row_begin ||
             row_end > matrix.rows() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
+                "Invalid range: row_begin_index = {}, row_end_index = {}, max_row_index = {}",
+                row_begin,
+                row_end,
+                matrix.rows() - 1));
         }
 
         Eigen::Index const rows_to_remove = row_end - row_begin + 1;
@@ -155,7 +163,11 @@ namespace lin_alg
             col_end < col_begin ||
             col_end > matrix.cols() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
+                "Invalid range: col_begin_index = {}, col_end_index = {}, max_col_index = {}",
+                col_begin,
+                col_end,
+                matrix.cols() - 1));
         }
 
         Eigen::Index const rows = matrix.rows();
@@ -195,7 +207,9 @@ namespace lin_alg
     {
         if (row < 0 || row > matrix.rows())
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
+                "Invalid range: cannot insert at index = {}.",
+                row));
         }
 
         Eigen::Index const rows_new = matrix.rows() + 1;
@@ -246,7 +260,9 @@ namespace lin_alg
     {
         if (col < 0 || col > matrix.cols())
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
+                "Invalid range: cannot insert at index = {}.",
+                col));
         }
 
         Eigen::Index const rows = matrix.rows();
@@ -300,7 +316,7 @@ namespace lin_alg
             col_2 < 0 ||
             col_2 > matrix.cols() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError("Invalid range");
         }
 
         // do nothing if column indices are identical
@@ -329,7 +345,7 @@ namespace lin_alg
             row_2 < 0 ||
             row_2 > matrix.rows() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError("Invalid range");
         }
 
         // do nothing if row indices are identical
@@ -370,7 +386,7 @@ namespace lin_alg
     {
         if (order.size() != row.size())
         {
-            throw std::invalid_argument("The matrix row and the order vector are not of the same size.");
+            throw meshkernel::LinearAlgebraError("The matrix row and the order vector are not of the same size.");
         }
 
         std::vector<bool> swapped(row.size(), false);
@@ -405,7 +421,7 @@ namespace lin_alg
     {
         if (row < 0 || row > matrix.rows() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError("Invalid range");
         }
 
         std::vector<T> vector(matrix.cols());
@@ -425,7 +441,7 @@ namespace lin_alg
     {
         if (col < 0 || col > matrix.cols() - 1)
         {
-            throw std::invalid_argument("Invalid range");
+            throw meshkernel::LinearAlgebraError("Invalid range");
         }
 
         std::vector<T> vector(matrix.rows());

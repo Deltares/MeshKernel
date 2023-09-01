@@ -1057,8 +1057,8 @@ namespace meshkernel
         }
 
         bool circularConnection = false;
-        UInt localLeftIndex = index;
-        UInt localRightIndex = index;
+        auto localLeftIndex = static_cast<int>(index);
+        auto localRightIndex = static_cast<int>(index);
 
         // left
         while (ComputeSquaredDistance(gridPoints[localLeftIndex], gridPoints[index], m_splines->m_projection) < m_onTopOfEachOtherSquaredTolerance)

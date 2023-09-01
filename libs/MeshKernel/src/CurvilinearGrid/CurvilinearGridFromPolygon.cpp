@@ -395,13 +395,22 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         // add to grid
         if (t == 0)
         {
-            gridNodes = result;
+            // gridNodes = result;
+            for (UInt i = 0; i < result.rows(); ++i)
+            {
+                for (UInt j = 0; j < result.cols(); ++j)
+                {
+                    gridNodes(i, j) = result(i, j);
+                }
+            }
         }
         if (t == 1)
         {
-            for (Eigen::Index i = 0; i < result.rows(); ++i)
+            // std::cout << "result:    " << result.rows() << ' ' << result.cols() << std::endl;
+            // std::cout << "gridNodes: " << gridNodes.rows() << ' ' << gridNodes.cols() << std::endl;
+            for (UInt i = 0; i < result.rows(); ++i)
             {
-                for (Eigen::Index j = 0; j < result.cols(); ++j)
+                for (UInt j = 0; j < result.cols(); ++j)
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
@@ -411,9 +420,9 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         }
         if (t == 2)
         {
-            for (Eigen::Index i = 0; i < result.cols(); ++i)
+            for (UInt i = 0; i < result.cols(); ++i)
             {
-                for (Eigen::Index j = 0; j < result.rows(); ++j)
+                for (UInt j = 0; j < result.rows(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
                     gridNodes(i, jIndex) = result(j, i);

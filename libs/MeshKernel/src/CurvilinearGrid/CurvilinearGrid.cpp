@@ -66,8 +66,12 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     const auto numN = static_cast<UInt>(m_gridNodes.rows());
     const auto numM = static_cast<UInt>(m_gridNodes.cols());
 
-    std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
-    std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
+    lin_alg::Matrix<bool> nodeBasedMask(numN, numM);
+    nodeBasedMask.fill(false);
+
+    lin_alg::Matrix<bool> faceBasedMask(numN - 1, numM - 1);
+    faceBasedMask.fill(true);
+
     // Mark points inside a polygonIndex
     for (UInt n = 0; n < numN; ++n)
     {
@@ -76,7 +80,7 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
             const auto isInPolygon = polygons->IsPointInPolygon(m_gridNodes(n, m), polygonIndex);
             if (isInPolygon)
             {
-                nodeBasedMask[n][m] = true;
+                nodeBasedMask(n, m) = true;
             }
         }
     }
@@ -86,28 +90,28 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     {
         for (UInt m = 0; m < numM - 1; ++m)
         {
-            if (!nodeBasedMask[n][m] ||
-                !nodeBasedMask[n + 1][m] ||
-                !nodeBasedMask[n][m + 1] ||
-                !nodeBasedMask[n + 1][m + 1])
+            if (!nodeBasedMask(n, m) ||
+                !nodeBasedMask(n + 1, m) ||
+                !nodeBasedMask(n, m + 1) ||
+                !nodeBasedMask(n + 1, m + 1))
             {
-                faceBasedMask[n][m] = false;
+                faceBasedMask(n, m) = false;
             }
         }
     }
 
     // Mark only the nodes of faces completely included in the polygonIndex
-    std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
+    nodeBasedMask.fill(false);
     for (UInt n = 0; n < numN - 1; ++n)
     {
         for (UInt m = 0; m < numM - 1; ++m)
         {
-            if (faceBasedMask[n][m])
+            if (faceBasedMask(n, m))
             {
-                nodeBasedMask[n][m] = true;
-                nodeBasedMask[n + 1][m] = true;
-                nodeBasedMask[n][m + 1] = true;
-                nodeBasedMask[n + 1][m + 1] = true;
+                nodeBasedMask(n, m) = true;
+                nodeBasedMask(n + 1, m) = true;
+                nodeBasedMask(n, m + 1) = true;
+                nodeBasedMask(n + 1, m + 1) = true;
             }
         }
     }
@@ -117,7 +121,7 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     {
         for (UInt m = 0; m < numM; ++m)
         {
-            if (!nodeBasedMask[n][m])
+            if (!nodeBasedMask(n, m))
             {
                 m_gridNodes(n, m).x = constants::missing::doubleValue;
                 m_gridNodes(n, m).y = constants::missing::doubleValue;
@@ -141,7 +145,10 @@ void CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGridNodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>,
+           std::vector<CurvilinearGridNodeIndices>>
+CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
 {
     if (!IsValid())
     {
@@ -149,9 +156,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     }
 
     std::vector<Point> nodes(m_gridNodes.rows() * m_gridNodes.cols());
-    std::vector<Edge> edges(m_gridNodes.rows() * (m_gridNodes.cols() - 1) + (m_gridNodes.rows() - 1) * m_gridNodes.cols());
-    std::vector<std::vector<UInt>> nodeIndices(m_gridNodes.rows(), std::vector<UInt>(m_gridNodes.cols(), constants::missing::uintValue));
-    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::uintValue, constants::missing::uintValue});
+    std::vector<Edge> edges(m_gridNodes.rows() * (m_gridNodes.cols() - 1) +
+                            (m_gridNodes.rows() - 1) * m_gridNodes.cols());
+    lin_alg::Matrix<UInt> nodeIndices(m_gridNodes.rows(), m_gridNodes.cols());
+    nodeIndices.setConstant(constants::missing::uintValue);
+    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(),
+                                                        CurvilinearGridNodeIndices{constants::missing::uintValue,
+                                                                                   constants::missing::uintValue});
 
     UInt ind = 0;
     for (UInt m = 0; m < m_gridNodes.rows(); m++)
@@ -159,7 +170,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
         for (UInt n = 0; n < m_gridNodes.cols(); n++)
         {
             nodes[ind] = m_gridNodes(m, n);
-            nodeIndices[m][n] = ind;
+            nodeIndices(m, n) = ind;
             gridIndices[ind] = {m, n};
             ind++;
         }
@@ -170,10 +181,11 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (UInt n = 0; n < m_gridNodes.cols(); n++)
         {
-            if (nodeIndices[m][n] != constants::missing::uintValue && nodeIndices[m + 1][n] != constants::missing::uintValue)
+            if (nodeIndices(m, n) != constants::missing::uintValue &&
+                nodeIndices(m + 1, n) != constants::missing::uintValue)
             {
-                edges[ind].first = nodeIndices[m][n];
-                edges[ind].second = nodeIndices[m + 1][n];
+                edges[ind].first = nodeIndices(m, n);
+                edges[ind].second = nodeIndices(m + 1, n);
                 ind++;
             }
         }
@@ -183,10 +195,11 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     {
         for (UInt n = 0; n < m_gridNodes.cols() - 1; n++)
         {
-            if (nodeIndices[m][n] != constants::missing::uintValue && nodeIndices[m][n + 1] != constants::missing::uintValue)
+            if (nodeIndices(m, n) != constants::missing::uintValue &&
+                nodeIndices(m, n + 1) != constants::missing::uintValue)
             {
-                edges[ind].first = nodeIndices[m][n];
-                edges[ind].second = nodeIndices[m][n + 1];
+                edges[ind].first = nodeIndices(m, n);
+                edges[ind].second = nodeIndices(m, n + 1);
                 ind++;
             }
         }
@@ -271,7 +284,6 @@ CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& 
 void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
-    // ResizeAndFill2DVector(m_gridFacesMask, m_numM - 1, m_numN - 1, true, false);
     lin_alg::ResizeAndFillMatrix(m_gridFacesMask, m_numM - 1, m_numN - 1, false, false);
     for (UInt m = 0; m < m_numM - 1; ++m)
     {
@@ -347,7 +359,6 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
-    // ResizeAndFill2DVector(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
     lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, m_numM, m_numN, false, NodeType::Invalid);
 
     // Flag faces based on boundaries

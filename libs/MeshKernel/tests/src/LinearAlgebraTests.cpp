@@ -19,7 +19,7 @@ TEST(LinearAlgebra, Resize)
 {
     lin_alg::Matrix<int> matrix;
 
-    EXPECT_THROW(lin_alg::ResizeAndFillMatrix(matrix, -1, -1), std::invalid_argument);
+    EXPECT_THROW(lin_alg::ResizeAndFillMatrix(matrix, -1, -1), meshkernel::LinearAlgebraError);
 
     {
         Eigen::Index constexpr rows = 3;
@@ -306,7 +306,7 @@ TEST(LinearAlgebra, InsertRowFromRowVector)
         // 3 : 10, 11, 12
         // 4 : can insert here but won't
         // 5 : cannot insert here, should throw
-        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, 5), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, 5), meshkernel::LinearAlgebraError);
 
         // at the bottom side of the matrix
         // row
@@ -315,7 +315,7 @@ TEST(LinearAlgebra, InsertRowFromRowVector)
         // 1 : 4, 5, 6,
         // 2 : 7, 8, 9,
         // 3 : 10, 11, 12
-        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, -1), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, -1), meshkernel::LinearAlgebraError);
     }
 }
 
@@ -392,7 +392,7 @@ TEST(LinearAlgebra, InsertRowFromSTLVector)
         // 3 : 10, 11, 12
         // 4 : can insert here but won't
         // 5 : cannot insert here, should throw
-        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, 5), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, 5), meshkernel::LinearAlgebraError);
 
         // at the top side of the matrix
         // row
@@ -401,7 +401,7 @@ TEST(LinearAlgebra, InsertRowFromSTLVector)
         // 1 : 4, 5, 6,
         // 2 : 7, 8, 9,
         // 3 : 10, 11, 12
-        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, -1), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertRow(matrix, vector, -1), meshkernel::LinearAlgebraError);
     }
 }
 
@@ -464,9 +464,9 @@ TEST(LinearAlgebra, InsertColFromColVector)
         lin_alg::ColVector<int> vector(rows);
         vector << 666, 666, 666;
         // at the right side of the matrix
-        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, 5), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, 5), meshkernel::LinearAlgebraError);
         // at the left side of the matrix
-        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, -1), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, -1), meshkernel::LinearAlgebraError);
     }
 }
 
@@ -525,9 +525,9 @@ TEST(LinearAlgebra, InsertColFromSTLVector)
     {
         std::vector<int> vector{666, 666, 666};
         // at the right side of the matrix
-        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, 5), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, 5), meshkernel::LinearAlgebraError);
         // at the left side of the matrix
-        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, -1), std::invalid_argument);
+        EXPECT_THROW(lin_alg::InsertCol(matrix, vector, -1), meshkernel::LinearAlgebraError);
     }
 }
 
@@ -575,9 +575,9 @@ TEST(LinearAlgebra, SwapRows)
     EXPECT_EQ(matrix, expected_matrix);
 
     // go out of range
-    EXPECT_THROW(lin_alg::SwapRows(matrix, 0, 4), std::invalid_argument);
-    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 3), std::invalid_argument);
-    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 4), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapRows(matrix, 0, 4), meshkernel::LinearAlgebraError);
+    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 3), meshkernel::LinearAlgebraError);
+    EXPECT_THROW(lin_alg::SwapRows(matrix, -1, 4), meshkernel::LinearAlgebraError);
 }
 
 TEST(LinearAlgebra, SwapColumns)
@@ -605,9 +605,9 @@ TEST(LinearAlgebra, SwapColumns)
     EXPECT_EQ(matrix, expected_matrix);
 
     // go out of range
-    EXPECT_THROW(lin_alg::SwapColumns(matrix, 0, 3), std::invalid_argument);
-    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 2), std::invalid_argument);
-    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 3), std::invalid_argument);
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, 0, 3), meshkernel::LinearAlgebraError);
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 2), meshkernel::LinearAlgebraError);
+    EXPECT_THROW(lin_alg::SwapColumns(matrix, -1, 3), meshkernel::LinearAlgebraError);
 }
 
 TEST(LinearAlgebra, SortAndReorderRow)
@@ -646,8 +646,8 @@ TEST(LinearAlgebra, MatrixRowAndMatrixColToSTLVector)
         std::vector<int> expected_vector{7, 9, 8};
         EXPECT_EQ(vector, expected_vector);
         // go out of range
-        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, -1), std::invalid_argument);
-        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, 4), std::invalid_argument);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, -1), meshkernel::LinearAlgebraError);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixRowToSTLVector(matrix, 4), meshkernel::LinearAlgebraError);
     }
 
     {
@@ -656,8 +656,8 @@ TEST(LinearAlgebra, MatrixRowAndMatrixColToSTLVector)
         std::vector<int> expected_vector{2, 6, 9, 12};
         EXPECT_EQ(vector, expected_vector);
         // go out of range
-        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, -1), std::invalid_argument);
-        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 3), std::invalid_argument);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, -1), meshkernel::LinearAlgebraError);
+        EXPECT_THROW(std::vector<int> vector = lin_alg::MatrixColToSTLVector(matrix, 3), meshkernel::LinearAlgebraError);
     }
 }
 

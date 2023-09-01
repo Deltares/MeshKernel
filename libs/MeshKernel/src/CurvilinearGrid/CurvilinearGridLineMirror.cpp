@@ -68,19 +68,25 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
     {
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Left)
         {
-            m_grid.m_gridNodes(0, i) = m_grid.m_gridNodes(1, i) * a + m_grid.m_gridNodes(2, i) * b;
+            m_grid.m_gridNodes.row(0)[i] = m_grid.m_gridNodes(1, i) * a +
+                                           m_grid.m_gridNodes(2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
-            m_grid.m_gridNodes(m_grid.m_numM - 1, i) = m_grid.m_gridNodes(m_grid.m_numM - 1, i) * a - m_grid.m_gridNodes(m_grid.m_numM - 2, i) * b;
+            auto const last_row = m_grid.m_gridNodes.rows() - 1;
+            m_grid.m_gridNodes.row(last_row)[i] = m_grid.m_gridNodes(m_grid.m_numM - 1, i) * a -
+                                                  m_grid.m_gridNodes(m_grid.m_numM - 2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)
         {
-            m_grid.m_gridNodes(i, m_grid.m_numN - 1) = m_grid.m_gridNodes(i, m_grid.m_numN - 1) * a + m_grid.m_gridNodes(i, m_grid.m_numN - 2) * b;
+            auto const last_col = m_grid.m_gridNodes.cols() - 1;
+            m_grid.m_gridNodes.col(last_col)[i] = m_grid.m_gridNodes(i, m_grid.m_numN - 1) * a +
+                                                  m_grid.m_gridNodes(i, m_grid.m_numN - 2) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Bottom)
         {
-            m_grid.m_gridNodes(i, 0) = m_grid.m_gridNodes(i, 1) * a + m_grid.m_gridNodes(i, 2) * b;
+            m_grid.m_gridNodes.col(0)[i] = m_grid.m_gridNodes(i, 1) * a +
+                                           m_grid.m_gridNodes(i, 2) * b;
         }
     }
 

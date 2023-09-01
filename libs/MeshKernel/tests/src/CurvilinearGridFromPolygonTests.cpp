@@ -83,16 +83,16 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
 
 TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
 {
-    std::vector<meshkernel::Point> polygonPoints{{444.504791, 437.155945},
-                                                 {427.731781, 382.745758},
-                                                 {405.640503, 317.699005},
-                                                 {381.094666, 262.470612},
-                                                 {451.050354, 262.879700},
-                                                 {528.778931, 263.288788},
-                                                 {593.416260, 266.561584},
-                                                 {558.643005, 324.653687},
-                                                 {526.733398, 377.836578},
-                                                 {444.095703, 436.746857}};
+    std::vector<meshkernel::Point> const polygonPoints{{444.504791, 437.155945},
+                                                       {427.731781, 382.745758},
+                                                       {405.640503, 317.699005},
+                                                       {381.094666, 262.470612},
+                                                       {451.050354, 262.879700},
+                                                       {528.778931, 263.288788},
+                                                       {593.416260, 266.561584},
+                                                       {558.643005, 324.653687},
+                                                       {526.733398, 377.836578},
+                                                       {444.095703, 436.746857}};
 
     auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshkernel::Projection::cartesian);
 

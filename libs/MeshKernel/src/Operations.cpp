@@ -1252,9 +1252,9 @@ namespace meshkernel
         lin_alg::Matrix<double> iWeightFactor(numMPoints, numNPoints);
         lin_alg::Matrix<double> jWeightFactor(numMPoints, numNPoints);
 
-        for (Eigen::Index m = 0; m < numMPoints; m++)
+        for (UInt m = 0; m < numMPoints; m++)
         {
-            for (Eigen::Index n = 0; n < numNPoints; n++)
+            for (UInt n = 0; n < numNPoints; n++)
             {
                 const double mWeight = double(m) / double(numM);
                 const double nWeight = double(n) / double(numN);
@@ -1263,9 +1263,6 @@ namespace meshkernel
                 jWeightFactor(m, n) = (1.0 - mWeight) * sideOneAdimensional[n] + mWeight * sideTwoAdimensional[n];
             }
         }
-
-        // lin_alg::Matrix<double> ones(numMPoints, numNPoints);
-        // ones.fill(1.0);
 
         lin_alg::Matrix<double> ones = lin_alg::Matrix<double>::Ones(numMPoints, numNPoints);
         lin_alg::Matrix<double> weightOne = (ones - jWeightFactor) * totalLengthThree + jWeightFactor * totalLengthFour;
@@ -1278,21 +1275,21 @@ namespace meshkernel
 
         // border points
         lin_alg::Matrix<Point> result(numMPoints, numNPoints);
-        for (Eigen::Index m = 0; m < numMPoints; m++)
+        for (UInt m = 0; m < numMPoints; m++)
         {
             result(m, 0) = bottomDiscretization[m];
             result(m, numN) = upperDiscretization[m];
         }
-        for (Eigen::Index n = 0; n < numNPoints; n++)
+        for (UInt n = 0; n < numNPoints; n++)
         {
             result(0, n) = leftDiscretization[n];
             result(numM, n) = rightDiscretization[n];
         }
 
         // first interpolation
-        for (Eigen::Index m = 1; m < numM; m++)
+        for (UInt m = 1; m < numM; m++)
         {
-            for (Eigen::Index n = 1; n < numN; n++)
+            for (UInt n = 1; n < numN; n++)
             {
 
                 result(m, n).x = (leftDiscretization[n].x * (1.0 - iWeightFactor(m, n)) +
@@ -1312,9 +1309,9 @@ namespace meshkernel
         }
 
         // update weights
-        for (Eigen::Index m = 0; m < numMPoints; m++)
+        for (UInt m = 0; m < numMPoints; m++)
         {
-            for (Eigen::Index n = 0; n < numNPoints; n++)
+            for (UInt n = 0; n < numNPoints; n++)
             {
                 weightOne(m, n) = (1.0 - jWeightFactor(m, n)) * sideThreeAdimensional[m] * totalLengthThree +
                                   jWeightFactor(m, n) * sideFourAdimensional[m] * totalLengthFour;
@@ -1323,25 +1320,25 @@ namespace meshkernel
             }
         }
 
-        for (Eigen::Index m = 1; m < numMPoints; m++)
+        for (UInt m = 1; m < numMPoints; m++)
         {
-            for (Eigen::Index n = 0; n < numNPoints; n++)
+            for (UInt n = 0; n < numNPoints; n++)
             {
                 weightThree(m, n) = weightOne(m, n) - weightOne(m - 1, n);
             }
         }
 
-        for (Eigen::Index m = 0; m < numMPoints; m++)
+        for (UInt m = 0; m < numMPoints; m++)
         {
-            for (Eigen::Index n = 1; n < numNPoints; n++)
+            for (UInt n = 1; n < numNPoints; n++)
             {
                 weightFour(m, n) = weightTwo(m, n) - weightTwo(m, n - 1);
             }
         }
 
-        for (Eigen::Index m = 1; m < numMPoints; m++)
+        for (UInt m = 1; m < numMPoints; m++)
         {
-            for (Eigen::Index n = 1; n < numNPoints - 1; n++)
+            for (UInt n = 1; n < numNPoints - 1; n++)
             {
                 weightOne(m, n) = 0.25 *
                                   (weightFour(m, n) +
@@ -1352,9 +1349,9 @@ namespace meshkernel
             }
         }
 
-        for (Eigen::Index m = 1; m < numMPoints - 1; m++)
+        for (UInt m = 1; m < numMPoints - 1; m++)
         {
-            for (Eigen::Index n = 1; n < numNPoints; n++)
+            for (UInt n = 1; n < numNPoints; n++)
             {
                 weightTwo(m, n) = 0.25 *
                                   (weightThree(m, n) +
@@ -1372,18 +1369,18 @@ namespace meshkernel
         for (UInt iter = 0; iter < numIterations; iter++)
         {
             // re-assign the weights
-            for (Eigen::Index m = 0; m < numMPoints; m++)
+            for (UInt m = 0; m < numMPoints; m++)
             {
-                for (Eigen::Index n = 0; n < numNPoints; n++)
+                for (UInt n = 0; n < numNPoints; n++)
                 {
                     weightThree(m, n) = result(m, n).x;
                     weightFour(m, n) = result(m, n).y;
                 }
             }
 
-            for (Eigen::Index m = 1; m < numM; m++)
+            for (UInt m = 1; m < numM; m++)
             {
-                for (Eigen::Index n = 1; n < numN; n++)
+                for (UInt n = 1; n < numN; n++)
                 {
 
                     const double wa = 1.0 /

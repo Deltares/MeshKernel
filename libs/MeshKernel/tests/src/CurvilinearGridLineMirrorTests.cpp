@@ -15,7 +15,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
     const auto mirroredGrid = curvilinearLineMirror.Compute();
 
     // Asserts
-    const double tolerance = 1e-6;
+    constexpr double tolerance = 1e-6;
     ASSERT_NEAR(79885.972404917018, mirroredGrid.m_gridNodes(0, 0).x, tolerance);
     ASSERT_NEAR(79945.113707304932, mirroredGrid.m_gridNodes(1, 0).x, tolerance);
     ASSERT_NEAR(79997.648681153471, mirroredGrid.m_gridNodes(2, 0).x, tolerance);
@@ -49,7 +49,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     const auto mirroredGrid = curvilinearLineMirror.Compute();
 
     // Asserts
-    const double tolerance = 1e-6;
+    constexpr double tolerance = 1e-6;
     Eigen::Index const last = mirroredGrid.m_gridNodes.cols() - 1;
     ASSERT_NEAR(80703.065731618568, mirroredGrid.m_gridNodes(0, last).x, tolerance);
     ASSERT_NEAR(80878.447265919545, mirroredGrid.m_gridNodes(1, last).x, tolerance);
@@ -75,7 +75,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldAddFacesOnLef
     const auto mirroredGrid = curvilinearLineMirror.Compute();
 
     // Asserts
-    const double tolerance = 1e-6;
+    constexpr double tolerance = 1e-6;
     ASSERT_NEAR(79899.555713630645, mirroredGrid.m_gridNodes(0, 0).x, tolerance);
     ASSERT_NEAR(79970.016439946601, mirroredGrid.m_gridNodes(0, 1).x, tolerance);
     ASSERT_NEAR(80039.226795186711, mirroredGrid.m_gridNodes(0, 2).x, tolerance);
@@ -108,7 +108,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     const auto mirroredGrid = curvilinearLineMirror.Compute();
 
     // Asserts
-    const double tolerance = 1e-6;
+    constexpr double tolerance = 1e-6;
     Eigen::Index const last = mirroredGrid.m_gridNodes.rows() - 1;
     ASSERT_NEAR(272501.90233055683, mirroredGrid.m_gridNodes(last, 0).x, tolerance);
     ASSERT_NEAR(272806.24608551903, mirroredGrid.m_gridNodes(last, 1).x, tolerance);

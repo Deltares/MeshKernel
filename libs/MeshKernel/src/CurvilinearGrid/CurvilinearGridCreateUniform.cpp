@@ -31,6 +31,8 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Polygons.hpp>
 
+#include <cmath>
+
 namespace meshkernel
 {
 
@@ -160,8 +162,8 @@ namespace meshkernel
                                                          blockSizeX,
                                                          blockSizeY);
 
-        const auto numM = result.rows();
-        const auto numN = result.cols();
+        const auto numM = result.cols();
+        const auto numN = result.rows();
         bool onPoles = false;
         constexpr double latitudePoles = 90.0;
 
@@ -173,7 +175,7 @@ namespace meshkernel
                 const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result(n - 1, m).y);
                 result(n, m).y = adjustedLatitude;
 
-                if (IsEqual(abs(adjustedLatitude), latitudePoles))
+                if (IsEqual(std::abs(adjustedLatitude), latitudePoles))
                 {
                     onPoles = true;
                     lastRowOnPole = n;
@@ -181,7 +183,7 @@ namespace meshkernel
             }
             if (onPoles)
             {
-                lin_alg::EraseCols(result, lastRowOnPole, result.rows() - 1);
+                lin_alg::EraseRows(result, lastRowOnPole + 1, result.rows() - 1);
                 // result.erase(result.begin() + lastRowOnPole + 1, result.end());
                 break;
             }
@@ -194,7 +196,7 @@ namespace meshkernel
         constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
         constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
 
-        const auto latitudeInRadiants = cos(constants::conversion::degToRad * latitude);
+        const auto latitudeInRadiants = std::cos(constants::conversion::degToRad * latitude);
         const auto asp = latitudeInRadiants + (1.0 - latitudeInRadiants) * 0.3;
         const auto dy = blockSize * latitudeInRadiants * asp;
 
