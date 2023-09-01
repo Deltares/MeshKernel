@@ -183,6 +183,7 @@ namespace meshkernel
         /// @param[in] mergingDistance The distance below which two nodes will be merged
         void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
+        // TODO is this the same as newlink
         /// @brief Connect two existing nodes, forming a new edge (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index

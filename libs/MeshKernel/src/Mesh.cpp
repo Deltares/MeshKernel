@@ -324,6 +324,12 @@ meshkernel::UInt Mesh::ConnectNodes(UInt startNode, UInt endNode)
 
 meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
 {
+    // TODO idea here for performance
+    // if reallocation is necessary, perhaps reserve more than is required
+    // and resize to required size. E.g.
+    // m_nodes.reseve(size + extra); // extra > 1 e.g. 20, 100?
+    // m_nodes.resize(size + 1);
+
     const auto newSize = GetNumNodes() + 1;
     const auto newNodeIndex = GetNumNodes();
 

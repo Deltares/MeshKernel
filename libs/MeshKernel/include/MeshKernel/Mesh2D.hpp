@@ -293,6 +293,11 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
+        void ConnectCurvilinearQuadsDDType();
+
+        // TODO remove when ConnectCurvilinearQuadsDDType is complete
+        void print();
+
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
@@ -352,5 +357,11 @@ namespace meshkernel
             m_facesCircumcenters.reserve(GetNumNodes());
             m_numFacesNodes.reserve(GetNumNodes());
         }
+
+        void IsLinkAdjacentToLink(const UInt link1, const UInt link2, bool& areAdjacent, UInt& k1k, UInt& k2k) const;
+
+        void TegenoverNodesAndLink(const UInt np, const UInt LL, UInt& k1a, UInt& k2a, UInt& La) const;
+
+        void NextCell(const UInt np, const UInt LL, UInt& npa, UInt& k1a, UInt& k2a, UInt& La) const;
     };
 } // namespace meshkernel

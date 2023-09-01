@@ -913,3 +913,32 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     ASSERT_EQ(faceIntersections[8].edgeNodes[1], 28);
     ASSERT_EQ(faceIntersections[8].edgeIndexses.size(), 1);
 }
+
+// TODO find correct name
+TEST(Mesh2D, ConnectCurvilinearQuadsDDType)
+{
+    // Setup a mesh with eight triangles
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unconnected_simple_net_east.nc");
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_net_south.nc");
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_net_north.nc");
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_net_west.nc");
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_2_net_east.nc");
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_3_net_east.nc");
+    auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_4_net_east.nc");
+
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_simple_level_3_east_net.nc");
+
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_complex_5x5_net_east_9x9.nc");
+
+    // auto unconnectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/unmerged_complex_5x5_net_east_4x4.nc");
+
+    // auto connectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/connected_simple_net.nc");
+    // auto connectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/merged_complex_5x5_net_east_9x9.nc");
+    auto connectedMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/merged_simple_level_4_net_east.nc");
+
+    std::cout << "unconnected: " << unconnectedMesh->GetNumNodes() << "  " << unconnectedMesh->GetNumEdges() << "  " << unconnectedMesh->GetNumFaces() << std::endl;
+    std::cout << "connected:   " << connectedMesh->GetNumNodes() << "  " << connectedMesh->GetNumEdges() << "  " << connectedMesh->GetNumFaces() << std::endl;
+    unconnectedMesh->ConnectCurvilinearQuadsDDType();
+    unconnectedMesh->print();
+    connectedMesh->print();
+}
