@@ -1709,8 +1709,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
         {
             if (facesIntersection.edgeIndexses.size() > 2)
             {
-                throw AlgorithmError("Mesh2D::GetPolylineIntersections: more than 2 intersected edges for face " +
-                                     std::to_string(facesIntersection.faceIndex));
+                throw AlgorithmError("More than 2 intersected edges for face {}", facesIntersection.faceIndex);
             }
 
             if (facesIntersection.edgeIndexses.empty())

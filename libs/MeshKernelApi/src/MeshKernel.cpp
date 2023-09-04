@@ -82,49 +82,36 @@ namespace meshkernelapi
 
     // Error state
     static char exceptionMessage[512] = "";
-    static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError("", 0, meshkernel::Mesh::Location::Unknown);
+    static meshkernel::UInt invalidMeshIndex{0};
+    static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
 
-    int HandleExceptions(std::exception_ptr const exception_ptr)
+    static int HandleExceptions(std::exception_ptr exception_ptr)
     {
-        if (!exception_ptr)
-        {
-            throw std::bad_exception();
-        }
-
         try
         {
             std::rethrow_exception(exception_ptr);
         }
-        catch (const meshkernel::NotImplemented& e)
+        catch (meshkernel::MeshGeometryError const& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::NotImplemented;
-        }
-        catch (const meshkernel::MeshGeometryError& e)
-        {
-            meshGeometryError = e;
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::MeshGeometryError;
-        }
-        catch (meshkernel::AlgorithmError const& e)
-        {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::AlgorithmError;
+            invalidMeshIndex = e.InavlidMeshIndex();
+            invalidMeshLocation = e.InvalidMeshLocation();
+            return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::MeshKernelError;
+            return e.Code();
         }
-        catch (const std::exception& e)
+        catch (std::exception const& e)
         {
             std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::StadardLibraryException;
+            return meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
             strncpy_s(exceptionMessage, "Unknown exception", sizeof exceptionMessage);
-            return MeshKernelApiErrors::UnknownException;
+            return meshkernel::ExitCode::UnknownExceptionCode;
         }
     }
 
@@ -133,12 +120,12 @@ namespace meshkernelapi
         meshKernelId = meshKernelStateCounter++;
         auto const projection = static_cast<meshkernel::Projection>(projectionType);
         meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -156,7 +143,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, int invertDeletion)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -183,7 +170,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -235,7 +222,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                        const Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -260,7 +247,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -282,7 +269,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -309,7 +296,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -329,7 +316,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -349,7 +336,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -368,7 +355,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -387,7 +374,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -408,7 +395,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId,
                                             Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -427,7 +414,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -447,7 +434,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId,
                                                  CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -466,7 +453,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -484,7 +471,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -509,7 +496,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numHangingEdges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -529,7 +516,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -551,7 +538,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -573,7 +560,7 @@ namespace meshkernelapi
                                                              const GeometryList& selectingPolygon,
                                                              const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -620,7 +607,7 @@ namespace meshkernelapi
                                                                 const GeometryList& selectingPolygon,
                                                                 const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -663,7 +650,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_prepare_outer_iteration_orthogonalization(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -687,7 +674,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -711,7 +698,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_finalize_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -735,7 +722,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_delete_orthogonalization(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -759,7 +746,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -793,7 +780,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -824,7 +811,7 @@ namespace meshkernelapi
                                         GeometryList& geometryListOut,
                                         int numberOfPointsBetweenNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (geometryListIn.num_coordinates == 0)
@@ -895,7 +882,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -922,7 +909,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -946,7 +933,7 @@ namespace meshkernelapi
                                                 const meshkernel::MakeGridParameters& makeGridParameters,
                                                 const GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -970,7 +957,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
                                                              const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -993,7 +980,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1015,7 +1002,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1045,7 +1032,7 @@ namespace meshkernelapi
                                                                int* faceNumEdges,
                                                                int* faceEdgeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1100,7 +1087,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1128,7 +1115,7 @@ namespace meshkernelapi
                                                  double distance,
                                                  int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1153,7 +1140,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1176,7 +1163,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_merge_two_nodes(int meshKernelId, int firstNode, int secondNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1197,7 +1184,7 @@ namespace meshkernelapi
                                                          int inside,
                                                          int* selectedNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1234,7 +1221,7 @@ namespace meshkernelapi
                                                            int inside,
                                                            int& numberOfMeshNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1266,7 +1253,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1285,7 +1272,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1306,7 +1293,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_delete_node(int meshKernelId, int nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1325,7 +1312,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_move_node(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1352,7 +1339,7 @@ namespace meshkernelapi
                                                double xUpperRightBoundingBox,
                                                double yUpperRightBoundingBox)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1385,7 +1372,7 @@ namespace meshkernelapi
                                             double yUpperRightBoundingBox,
                                             int& edgeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1410,7 +1397,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, int inWard, double distance, GeometryList& geometryListOut)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1436,7 +1423,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, int innerPolygon, double distance, int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1464,7 +1451,7 @@ namespace meshkernelapi
                                                            int minimumNumSamples,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1515,7 +1502,7 @@ namespace meshkernelapi
                                                                    const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1587,7 +1574,7 @@ namespace meshkernelapi
                                                            const GeometryList& geometryList,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1623,7 +1610,7 @@ namespace meshkernelapi
                                                   double yUpperRightBoundingBox,
                                                   int& nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1686,7 +1673,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_polygon_get_included_points(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1717,7 +1704,7 @@ namespace meshkernelapi
                                                          int startSplineIndex,
                                                          int endSplineIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
 
         try
         {
@@ -1728,12 +1715,14 @@ namespace meshkernelapi
 
             if (startSplineIndex < 0)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Start spline index is less than zero: {}", startSplineIndex).GetFormatted());
+                throw std::invalid_argument(fmt_::format("Start spline index is less than zero: {}", startSplineIndex));
             }
 
             if (startSplineIndex > endSplineIndex)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: {} > {}", startSplineIndex, endSplineIndex).GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid spline range: {} > {}",
+                                                         startSplineIndex,
+                                                         endSplineIndex));
             }
 
             if (land.num_coordinates == 0)
@@ -1758,16 +1747,15 @@ namespace meshkernelapi
 
             if (startSplineIndex > splines.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: start greater than number of spline coordinates {} > {}",
-                                                                             startSplineIndex, splines.num_coordinates)
-                                                .GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid spline range: start greater than number of spline coordinates {} > {}",
+                                                         startSplineIndex,
+                                                         splines.num_coordinates));
             }
 
             if (endSplineIndex >= splines.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: end greater than number of spline coordinates {} >= {}",
-                                                                             endSplineIndex, splines.num_coordinates)
-                                                .GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid spline range: end greater than number of spline coordinates {} >= {}",
+                                                         endSplineIndex, splines.num_coordinates));
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
@@ -1809,7 +1797,7 @@ namespace meshkernelapi
                                                          int startIndex,
                                                          int endIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
 
         try
         {
@@ -1840,23 +1828,23 @@ namespace meshkernelapi
 
             if (startIndex < 0 || endIndex < 0)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
-                                                                             startIndex, endIndex)
-                                                .GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
+                                                         startIndex,
+                                                         endIndex));
             }
 
             if (startIndex > endIndex)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex greater than endIndex {} > {}",
-                                                                             startIndex, endIndex)
-                                                .GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid polygon points range: startIndex greater than endIndex {} > {}",
+                                                         startIndex,
+                                                         endIndex));
             }
 
             if (endIndex >= polygon.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
-                                                                             endIndex, polygon.num_coordinates)
-                                                .GetFormatted());
+                throw std::invalid_argument(fmt_::format("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
+                                                         endIndex,
+                                                         polygon.num_coordinates));
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
@@ -1891,7 +1879,7 @@ namespace meshkernelapi
                                               const GeometryList& selectingPolygon,
                                               const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1924,7 +1912,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_count_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1945,7 +1933,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1968,25 +1956,25 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
         std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_version(char* version)
     {
         std::memcpy(version, versionString, sizeof versionString);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
-    MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
+    MKERNEL_API int mkernel_get_geometry_error(int& meshIndex, int& meshLocation)
     {
-        invalidIndex = static_cast<int>(meshGeometryError.InavlidIndex());
-        type = static_cast<int>(meshGeometryError.MeshLocation());
-        return Success;
+        meshIndex = static_cast<int>(invalidMeshIndex);
+        meshLocation = static_cast<int>(invalidMeshLocation);
+        return 0;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_obtuse_triangles(int meshKernelId, int& numObtuseTriangles)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2007,7 +1995,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_get_obtuse_triangles_mass_centers(int meshKernelId, GeometryList& result)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2028,7 +2016,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2051,7 +2039,7 @@ namespace meshkernelapi
                                                     const GeometryList& polygons,
                                                     double projectionFactor)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2082,7 +2070,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_contacts_compute_multiple(int meshKernelId,
                                                       const int* oneDNodeMask)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2109,7 +2097,7 @@ namespace meshkernelapi
                                                            const int* oneDNodeMask,
                                                            const GeometryList& polygons)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2141,7 +2129,7 @@ namespace meshkernelapi
                                                          const int* oneDNodeMask,
                                                          const GeometryList& points)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2171,7 +2159,7 @@ namespace meshkernelapi
                                                       const GeometryList& polygons,
                                                       double searchRadius)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2204,7 +2192,7 @@ namespace meshkernelapi
                                                double yUpperRightCorner,
                                                int refinement)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2232,7 +2220,7 @@ namespace meshkernelapi
                                                  double xUpperRightCorner,
                                                  double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2261,7 +2249,7 @@ namespace meshkernelapi
                                                                          const GeometryList& splines,
                                                                          const meshkernel::CurvilinearParameters& curvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2296,7 +2284,7 @@ namespace meshkernelapi
                                                                          int thirdNode,
                                                                          int useFourthSide)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2329,7 +2317,7 @@ namespace meshkernelapi
                                                                           int secondNode,
                                                                           int thirdNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2360,7 +2348,7 @@ namespace meshkernelapi
                                                                              const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                              const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2389,7 +2377,7 @@ namespace meshkernelapi
                                                                                 const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                 const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2413,7 +2401,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_iterate_orthogonal_grid_from_splines(int meshKernelId, int layer)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2436,7 +2424,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2462,7 +2450,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2488,7 +2476,7 @@ namespace meshkernelapi
                                                      const meshkernel::MakeGridParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2511,7 +2499,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
                                                                   const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2532,7 +2520,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
                                                                  const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2556,7 +2544,7 @@ namespace meshkernelapi
                                                                 double xUpperRightCorner,
                                                                 double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2589,7 +2577,7 @@ namespace meshkernelapi
                                                                        double ySecondGridLineNode)
 
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2617,7 +2605,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2642,7 +2630,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2672,7 +2660,7 @@ namespace meshkernelapi
                                                   double yUpperRightCorner)
 
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2718,7 +2706,7 @@ namespace meshkernelapi
                                                               double xUpperRightCornerSmootingArea,
                                                               double yUpperRightCornerSmootingArea)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2759,7 +2747,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId)
     {
 
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2792,7 +2780,7 @@ namespace meshkernelapi
                                                             double xSecondGridLineNode,
                                                             double ySecondGridLineNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2814,7 +2802,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2850,7 +2838,7 @@ namespace meshkernelapi
                                                              double xUpperRightCorner,
                                                              double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2876,7 +2864,7 @@ namespace meshkernelapi
                                                              double xToCoordinate,
                                                              double yToCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2896,7 +2884,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2920,7 +2908,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2939,7 +2927,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_insert_face(int meshKernelId, double xCoordinate, double yCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2970,7 +2958,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3008,7 +2996,7 @@ namespace meshkernelapi
                                                                   double xUpperRightCorner,
                                                                   double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3042,7 +3030,7 @@ namespace meshkernelapi
                                                     double xSecondGridLineNode,
                                                     double ySecondGridLineNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3077,7 +3065,7 @@ namespace meshkernelapi
                                                     double xPointCoordinate,
                                                     double yPointCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3110,7 +3098,7 @@ namespace meshkernelapi
                                                   double xToPoint,
                                                   double yToPoint)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3153,7 +3141,7 @@ namespace meshkernelapi
                                                            size_t minNumSamples,
                                                            GeometryList& results)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3211,7 +3199,7 @@ namespace meshkernelapi
                                                                int locationType,
                                                                GeometryList& results)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3247,70 +3235,70 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_edges_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Edges);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_nodes_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Nodes);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_faces_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Faces);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::SimpleAveraging);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Closest);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_max(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Max);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Min);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weighting(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::InverseWeightedDistance);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::MinAbsValue);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::cartesian);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::spherical);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
     {
         projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
 } // namespace meshkernelapi

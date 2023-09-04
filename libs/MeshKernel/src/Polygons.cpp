@@ -149,7 +149,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (endIndex <= startIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The end index is smaller than the start index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError("The end index is smaller than the start index: {} >= {}.", startIndex, endIndex);
     }
 
     //--------------------------------
@@ -169,7 +169,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (!areIndicesValid)
     {
-        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     //--------------------------------
@@ -310,7 +310,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 {
     if (m_nodes.empty())
     {
-        throw ConstraintError(VariadicErrorMessage("No nodes in polygon."));
+        throw ConstraintError("No nodes in polygon.");
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -320,7 +320,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 
     if (startIndex >= endIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError("The start index is greater than the end index: {} >= {}.", startIndex, endIndex);
     }
 
     for (size_t i = startIndex; i <= endIndex; ++i)

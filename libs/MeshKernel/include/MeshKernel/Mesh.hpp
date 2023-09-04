@@ -31,6 +31,8 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
+#include <map>
+
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
@@ -99,6 +101,12 @@ namespace meshkernel
             Edges = 2,  ///< Edges
             Unknown = 3 ///< Unknown
         };
+
+        inline static std::map<Location, std::string> const LocationToString = {
+            {Location::Faces, "Faces"},
+            {Location::Nodes, "Nodes"},
+            {Location::Edges, "Edges"},
+            {Location::Unknown, "Unknown"}};
 
         /// edge-segment intersection
         struct EdgeMeshPolylineIntersection
