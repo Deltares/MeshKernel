@@ -104,7 +104,7 @@ namespace meshkernel
         [[nodiscard]] meshkernel::Point& GetNode(const UInt i, const UInt j) { return m_gridNodes(i, j); }
 
         /// @brief Gets a reference to the grid node at the (i,j) location
-        [[nodiscard]] meshkernel::Point GetNode(const UInt i, const UInt j) const { return m_gridNodes(i, j); }
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt i, const UInt j) const { return m_gridNodes(i, j); }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
@@ -121,7 +121,7 @@ namespace meshkernel
         /// @brief Get a constant reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
-        [[nodiscard]] meshkernel::Point GetNode(const CurvilinearGridNodeIndices& index) const
+        [[nodiscard]] meshkernel::Point const& GetNode(const CurvilinearGridNodeIndices& index) const
         {
             if (!index.IsValid())
             {
