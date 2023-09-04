@@ -183,8 +183,10 @@ namespace meshkernel
             }
             if (onPoles)
             {
-                lin_alg::EraseRows(result, lastRowOnPole + 1, result.rows() - 1);
-                // result.erase(result.begin() + lastRowOnPole + 1, result.end());
+                if (lastRowOnPole + 1 < result.rows())
+                {
+                    lin_alg::EraseRows(result, lastRowOnPole + 1, result.rows() - 1);
+                }
                 break;
             }
         }
