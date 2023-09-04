@@ -302,10 +302,11 @@ namespace meshkernel
 
     private:
         // orthogonalization
-        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
-        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+        static constexpr double m_minimumEdgeLength = 1e-4;                ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;      ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;                 ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;                ///< Weight circum center
+        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 10; ///< The maximum number of hanging nodes along a single element edge
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -360,8 +361,14 @@ namespace meshkernel
 
         void IsLinkAdjacentToLink(const UInt link1, const UInt link2, bool& areAdjacent, UInt& k1k, UInt& k2k) const;
 
-        void TegenoverNodesAndLink(const UInt np, const UInt LL, UInt& k1a, UInt& k2a, UInt& La) const;
+        void FindFaceOnOppositeEdge(const UInt faceId, const UInt edgeId, UInt& oppositeFaceId, UInt& startNode, UInt& endNode) const;
 
-        void NextCell(const UInt np, const UInt LL, UInt& npa, UInt& k1a, UInt& k2a, UInt& La) const;
+        void NextCell(const UInt faceId, const UInt LL, UInt& npa, UInt& k1a, UInt& k2a, UInt& La) const;
+
+        void GetElementsOnDomainBoundary(std::vector<UInt>& elementsOnDomainBoundary, std::vector<UInt>& edgesOnDomainBoundary) const;
+
+        void InsertNewMeshItems(const UInt numberOfHangingNodes, const std::vector<UInt>& hangingNodesOnEdge, const UInt faceId, const Edge& boundaryEdge, const Point& boundaryNode, const UInt edgeId);
+
+        void MergeNodes(const std::vector<std::array<UInt, 2>>& nodesToMerge, std::vector<int>& kc);
     };
 } // namespace meshkernel

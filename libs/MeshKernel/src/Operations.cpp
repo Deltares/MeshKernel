@@ -894,8 +894,8 @@ namespace meshkernel
                          GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
                         squaredDistance;
                 const auto correctedRatio = std::max(std::min(1.0, ratio), 0.0);
-                normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
-                normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
+
+                normalPoint = firstNode + correctedRatio * (secondNode - firstNode);
                 distance = ComputeDistance(point, normalPoint, projection);
             }
         }
@@ -1126,8 +1126,9 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            std::vector<double> values{std::abs(x21), std::abs(y21), std::abs(x43), std::abs(y43)};
-            const double eps = std::max(0.00001 * *std::max_element(values.begin(), values.end()), std::numeric_limits<double>::denorm_min());
+            double maxValue = std::max(std::max(std::abs(x21), std::abs(y21)),
+                                       std::max(std::abs(x43), std::abs(y43)));
+            const double eps = std::max(0.00001 * maxValue, std::numeric_limits<double>::denorm_min());
 
             if (std::abs(det) < eps)
             {
