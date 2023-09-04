@@ -230,11 +230,6 @@ namespace meshkernel
         /// @brief Computes the valid grid faces
         void ComputeGridFacesMask();
 
-        /// @brief Compute spline derivatives along a gridline, also accounting for missing values
-        /// @param[in] gridLine The input gridline
-        /// @returns The spline derivatives
-        [[nodiscard]] std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
-
         /// @brief Adds an edge at the boundary forming a new face. Increase the grid if required (MODGR1)
         /// The position of the new edge depends on the type of \p firstNode or \p secondNode.
         /// For example, if one of the node types is 'Left' the new edge will be inserted on the left.
