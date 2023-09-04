@@ -87,7 +87,7 @@ void MeshRefinement::Compute()
     auto const isRefinementBasedOnSamples = m_interpolant != nullptr;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
-        const auto edgeMask = m_mesh->EdgesMaskOfFacesInPolygons(m_polygons, false, true);
+        const auto edgeMask = m_mesh->MaskEdgesOfFacesInPolygon(m_polygons, false, true);
         m_nodeMask = m_mesh->NodeMaskFromEdgeMask(edgeMask);
     }
     else
@@ -115,16 +115,7 @@ void MeshRefinement::Compute()
         }
         else
         {
-            std::ranges::fill(m_faceMask, 1);
-            std::ranges::fill(m_edgeMask, -1);
-
-            for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
-            {
-                if (m_isEdgeBelowMinSizeAfterRefinement[e])
-                {
-                    m_edgeMask[e] = 0;
-                }
-            }
+            ComputeRefinementMaskFromEdgeSize();
         }
 
         if (level == 0)
@@ -201,6 +192,25 @@ void MeshRefinement::Compute()
     {
         ConnectHangingNodes();
         m_mesh->Administrate();
+    }
+}
+
+void MeshRefinement::ComputeRefinementMaskFromEdgeSize()
+{
+    std::ranges::fill(m_edgeMask, 0);
+    std::ranges::fill(m_faceMask, 0);
+
+    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    {
+        for (UInt e = 0; e < m_mesh->GetNumFaceEdges(f); ++e)
+        {
+            const auto edge = m_mesh->m_facesEdges[f][e];
+            if (!m_isEdgeBelowMinSizeAfterRefinement[edge])
+            {
+                m_edgeMask[edge] = -1;
+                m_faceMask[f] = 1;
+            }
+        }
     }
 }
 
@@ -1014,11 +1024,31 @@ void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 {
     m_mesh->ComputeEdgesLengths();
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh->GetNumEdges());
+
+    double maxEdgeSize = -1000000000;
+    int numCandidateForRefinement = 0;
     for (UInt e = 0; e < m_mesh->GetNumEdges(); e++)
     {
+        const auto edge = m_mesh->m_edges[e];
+        if (m_nodeMask[edge.first] == 0 && m_nodeMask[edge.second] == 0)
+        {
+            continue;
+        }
+        maxEdgeSize = std::max(maxEdgeSize, m_mesh->m_edgeLengths[e]);
         const double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[e];
-        m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
+        if (newEdgeLength < m_meshRefinementParameters.min_edge_size)
+        {
+            m_isEdgeBelowMinSizeAfterRefinement[e] = true;
+        }
+        else
+        {
+            m_isEdgeBelowMinSizeAfterRefinement[e] = false;
+            numCandidateForRefinement++;
+        }
+        // m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
     }
+    std::cout << "minEdgeSize " << maxEdgeSize << std::endl;
+    std::cout << "numCandidateForRefinement " << numCandidateForRefinement << std::endl;
 }
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const

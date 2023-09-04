@@ -3102,7 +3102,7 @@ TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGener
     ASSERT_EQ(mesh2d.num_faces, 8160);
 }
 
-TEST(Mesh2D, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
+TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
 {
     // Prepare
     int meshKernelId;
@@ -3214,7 +3214,7 @@ TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpac
     ASSERT_EQ(76, mesh2dResults.num_faces);
 }
 
-TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -3263,7 +3263,7 @@ TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinat
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -3606,4 +3606,117 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     {
         EXPECT_NEAR(polygonGeometry.coordinates_y[i], expectedSnappedPointY[i], tolerance);
     }
+}
+
+TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithLargeMinEdgeSize_ShouldNotRefine)
+{
+    // Prepare
+    int isGeographic = 1;
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = -6.0;
+    makeGridParameters.origin_y = 48.5;
+    makeGridParameters.upper_right_x = 2;
+    makeGridParameters.upper_right_y = 51.2;
+    makeGridParameters.block_size_x = 0.5;
+    makeGridParameters.block_size_y = 0.5;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+
+    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
+    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
+    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
+    meshRefinementParameters.min_edge_size = 200000.0;
+
+    // Execute
+    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+}
+
+TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithSmallMinEdgeSize_ShouldRefine)
+{
+    // Prepare
+    int isGeographic = 1;
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = -6.0;
+    makeGridParameters.origin_y = 48.5;
+    makeGridParameters.upper_right_x = 2;
+    makeGridParameters.upper_right_y = 51.2;
+    makeGridParameters.block_size_x = 0.5;
+    makeGridParameters.block_size_y = 0.5;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+
+    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
+    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
+    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
+
+    // The minimum edge size
+    meshRefinementParameters.min_edge_size = 2000.0;
+
+    // Execute
+    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(1570, mesh2d.num_nodes);
+    ASSERT_EQ(3361, mesh2d.num_edges);
 }

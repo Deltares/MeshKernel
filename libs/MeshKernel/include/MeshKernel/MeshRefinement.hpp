@@ -142,6 +142,9 @@ namespace meshkernel
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         void ComputeRefinementMasksFromSamples();
 
+        /// @brief Computes the edge and face refinement mask from the minimum edge size
+        void ComputeRefinementMaskFromEdgeSize();
+
         /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
         /// @param face The face index

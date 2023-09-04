@@ -279,7 +279,7 @@ namespace meshkernel
         /// @param[in] invertSelection Invert selection
         /// @param[in] includeIntersected Included the edges intersected by the polygon
         /// @return The edge mask
-        [[nodiscard]] std::vector<int> EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+        [[nodiscard]] std::vector<int> MaskEdgesOfFacesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
 
         /// @brief From the edge mask compute the node mask
         /// @param[in] edgeMask The edge mask
