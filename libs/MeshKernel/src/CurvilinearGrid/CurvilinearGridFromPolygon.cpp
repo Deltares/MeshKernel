@@ -27,7 +27,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygon.hpp>

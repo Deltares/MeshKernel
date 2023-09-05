@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include "MeshKernel/Constants.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
 
 #include <algorithm>

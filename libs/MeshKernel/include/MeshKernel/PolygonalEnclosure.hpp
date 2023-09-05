@@ -109,7 +109,8 @@ namespace meshkernel
 
         /// @brief Construct a polygon from a (sub) range of points.
         static Polygon ConstructPolygon(const std::vector<Point>& points,
-                                        size_t start, size_t end,
+                                        size_t start, 
+                                        size_t end,
                                         Projection projection);
 
         /// @brief Copy selected points from source vector to end of target vector
