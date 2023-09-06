@@ -25,15 +25,16 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/TriangulationWrapper.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygon.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/TriangulationWrapper.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
 using meshkernel::Mesh2D;
 
@@ -115,7 +116,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
         local_nodes.emplace_back(local_nodes.front());
 
-        auto [face_area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(local_nodes, m_projection);
+        auto [face_area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(local_nodes, m_projection);
 
         m_faceArea.emplace_back(face_area);
         m_facesMassCenters.emplace_back(center_of_mass);
@@ -386,8 +387,9 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         }
         nodalValues.emplace_back(nodalValues.front());
 
-        auto const [area, center_of_mass, is_counter_clock_wise] = FaceAreaAndCenterOfMass(nodalValues, m_projection);
-        if (!is_counter_clock_wise)
+        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(nodalValues, m_projection);
+
+        if (direction == TraversalDirection::Clockwise)
         {
             return;
         }
@@ -484,7 +486,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
 
         if (computeMassCenters)
         {
-            const auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
+            const auto [area, centerOfMass, direction] = Polygon::FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
             m_faceArea[f] = area;
             m_facesMassCenters[f] = centerOfMass;
         }
@@ -1249,7 +1251,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
     dualFace.emplace_back(dualFace[0]);
 
     // now we can compute the mass center of the dual face
-    auto [area, centerOfMass, isCounterClockWise] = FaceAreaAndCenterOfMass(dualFace, m_projection);
+    auto [area, centerOfMass, direction] = Polygon::FaceAreaAndCenterOfMass(dualFace, m_projection);
 
     if (m_projection == Projection::spherical)
     {
@@ -1321,8 +1323,10 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
     return result;
 }
 
-std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygon)
+std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
 {
+
+    Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
     Administrate();
@@ -1342,8 +1346,8 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygon, m_projection);
-        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygon, m_projection);
+        bool firstNodeInPolygon = polygon.Contains(m_nodes[firstNodeIndex]);
+        bool secondNodeInPolygon = polygon.Contains(m_nodes[secondNodeIndex]);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -1392,7 +1396,7 @@ std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<P
     return meshBoundaryPolygon;
 }
 
-void Mesh2D::WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
+void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const
@@ -1403,7 +1407,7 @@ void Mesh2D::WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
     {
         if (!currentNodeInPolygon)
         {
-            currentNodeInPolygon = IsPointInPolygonNodes(m_nodes[currentNode], polygonNodes, m_projection);
+            currentNodeInPolygon = polygon.Contains(m_nodes[currentNode]);
         }
 
         if (!currentNodeInPolygon)

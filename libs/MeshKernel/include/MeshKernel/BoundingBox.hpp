@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -56,7 +56,24 @@ namespace meshkernel
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
         template <typename T>
-        explicit BoundingBox(const std::vector<T>& points) : BoundingBox(points, 0, points.size() - 1) {}
+        explicit BoundingBox(const std::vector<T>& points)
+        {
+            Reset(points);
+        }
+
+        /// @brief Reset bounding box with a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        template <typename T>
+        void Reset(const std::vector<T>& points);
+
+        /// @brief Reset bounding box with a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
+        template <typename T>
+        void Reset(const std::vector<T>& points, size_t start, size_t end);
 
         /// @brief Constructor taking a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
@@ -66,25 +83,7 @@ namespace meshkernel
         template <typename T>
         BoundingBox(const std::vector<T>& points, size_t start, size_t end)
         {
-            double minx = std::numeric_limits<double>::max();
-            double maxx = std::numeric_limits<double>::lowest();
-            double miny = std::numeric_limits<double>::max();
-            double maxy = std::numeric_limits<double>::lowest();
-
-            for (size_t i = start; i <= end; ++i)
-            {
-                const auto& point = points[i];
-
-                if (point.IsValid())
-                {
-                    minx = std::min(minx, point.x);
-                    maxx = std::max(maxx, point.x);
-                    miny = std::min(miny, point.y);
-                    maxy = std::max(maxy, point.y);
-                }
-            }
-            m_lowerLeft = Point(minx, miny);
-            m_upperRight = Point(maxx, maxy);
+            Reset(points, start, end);
         }
 
         /// @brief Not equal operator
@@ -130,6 +129,7 @@ namespace meshkernel
         /// @brief Extends the bounding box by a factor
         void Extend(double factor)
         {
+            // TODO should check that the BB does not cover the entire fp space.
             const double width = Width();
             const double height = Height();
             m_lowerLeft.x -= width * factor;
@@ -139,7 +139,7 @@ namespace meshkernel
         }
 
         /// @brief Return the delta of the bounding box.
-        Point Delta() const;
+        Vector Delta() const;
 
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
@@ -151,6 +151,46 @@ namespace meshkernel
 
 } // namespace meshkernel
 
+template <typename T>
+void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
+{
+
+    if (points.size() > 0)
+    {
+        Reset(points, 0, points.size() - 1);
+    }
+    else
+    {
+        m_lowerLeft = Point(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+        m_upperRight = Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    }
+
+} // namespace meshkernel
+
+template <typename T>
+void meshkernel::BoundingBox::Reset(const std::vector<T>& points, size_t start, size_t end)
+{
+    double minx = std::numeric_limits<double>::max();
+    double maxx = std::numeric_limits<double>::lowest();
+    double miny = std::numeric_limits<double>::max();
+    double maxy = std::numeric_limits<double>::lowest();
+
+    for (size_t i = start; i <= end; ++i)
+    {
+        const auto& point = points[i];
+
+        if (point.IsValid())
+        {
+            minx = std::min(minx, point.x);
+            maxx = std::max(maxx, point.x);
+            miny = std::min(miny, point.y);
+            maxy = std::max(maxy, point.y);
+        }
+    }
+    m_lowerLeft = Point(minx, miny);
+    m_upperRight = Point(maxx, maxy);
+}
+
 inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const BoundingBox& b2)
 {
     Point lowerLeft{std::min(b1.lowerLeft().x, b2.lowerLeft().x), std::min(b1.lowerLeft().y, b2.lowerLeft().y)};
@@ -159,7 +199,7 @@ inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const Bo
     return BoundingBox(lowerLeft, upperRight);
 }
 
-inline meshkernel::Point meshkernel::BoundingBox::Delta() const
+inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 {
-    return m_upperRight - m_lowerLeft;
+    return Vector(m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y);
 }

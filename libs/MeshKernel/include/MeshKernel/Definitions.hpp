@@ -33,4 +33,22 @@ namespace meshkernel
 {
     /// @brief Integer type used when indexing mesh graph entities.
     using UInt = std::uint32_t;
+
+    /// @brief Enumerator describing the supported projections
+    enum class Projection
+    {
+        cartesian = 0,        // jsferic  = 0
+        spherical = 1,        // jsferic  = 1
+        sphericalAccurate = 2 // jasfer3D = 1
+    };
+
+    /// @brief Indicator for traversal direction of the points specifying a polygon
+    // PolygonTraversalDirection? too long
+    // PolygonOrientation
+    enum class TraversalDirection
+    {
+        Clockwise,    ///< Points define a clockwise traversal of the polygon
+        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
+    };
+
 } // namespace meshkernel

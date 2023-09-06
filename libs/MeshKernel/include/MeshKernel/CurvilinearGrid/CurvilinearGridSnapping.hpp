@@ -62,12 +62,10 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor
-        /// @param [in] grid The starting (before smoothing) grid
         /// @param [in] lowerLeft       Index of lower left point of smoothing region
         /// @param [in] upperRight      Index of upper right point of smoothing region
         /// @param [in] regionIndicator
-        DirectionalSmoothingCalculator(const CurvilinearGrid& grid,
-                                       const CurvilinearGridNodeIndices& lowerLeft,
+        DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,
                                        const CurvilinearGridNodeIndices& upperRight,
                                        const CurvilinearGridNodeIndices& regionIndicator);
 
@@ -77,9 +75,6 @@ namespace meshkernel
                        const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
 
     private:
-        /// @brief The original grid before smoothing
-        const CurvilinearGrid& m_grid;
-
         /// @brief Index of lower left point of smoothing region
         CurvilinearGridNodeIndices m_indexBoxLowerLeft;
 
