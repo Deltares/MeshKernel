@@ -297,6 +297,7 @@ namespace meshkernel
 
         // TODO remove when ConnectCurvilinearQuadsDDType is complete
         void print();
+        void printMatlab();
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
@@ -359,9 +360,10 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
 
+        // adjacent.f90
         void IsLinkAdjacentToLink(const UInt link1, const UInt link2, bool& areAdjacent, UInt& k1k, UInt& k2k) const;
 
-        void FindFaceOnOppositeEdge(const UInt faceId, const UInt edgeId, UInt& oppositeFaceId, UInt& startNode, UInt& endNode) const;
+        void FindOppositeEdge(const UInt faceId, const UInt edgeId, UInt& oppositeEdgeId, UInt& startNode, UInt& endNode) const;
 
         void NextCell(const UInt faceId, const UInt LL, UInt& npa, UInt& k1a, UInt& k2a, UInt& La) const;
 
@@ -369,6 +371,15 @@ namespace meshkernel
 
         void InsertNewMeshItems(const UInt numberOfHangingNodes, const std::vector<UInt>& hangingNodesOnEdge, const UInt faceId, const Edge& boundaryEdge, const Point& boundaryNode, const UInt edgeId);
 
+        void GetOrderedDistanceFromPoint (const std::vector<UInt>& nodeIndices, const UInt numberOfNodes, const Point& point,
+                                          std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>& nearestNeighbours ) const;
+
         void MergeNodes(const std::vector<std::array<UInt, 2>>& nodesToMerge, std::vector<int>& kc);
+
+        void GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary,
+                                  std::vector<std::array<UInt, 5>>& irregularEdge,
+                                  std::vector<UInt>& irregularEdgeCount,
+                                  std::vector<UInt>& irregularStartNodes,
+                                  std::vector<UInt>& irregularEndNodes) const;
     };
 } // namespace meshkernel
