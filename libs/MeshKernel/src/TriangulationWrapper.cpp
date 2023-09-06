@@ -98,3 +98,19 @@ void TriangulationWrapper::BuildTriangulation()
         }
     }
 }
+
+std::vector<meshkernel::Point> TriangulationWrapper::SelectNodes(const PolygonalEnclosure& enclosure) const
+{
+    std::vector<Point> generatedPoints;
+    generatedPoints.reserve(GetNumNodes());
+
+    for (int i = 0; i < GetNumNodes(); ++i)
+    {
+        if (Point p(GetCoord(i)); enclosure.Contains(p))
+        {
+            generatedPoints.emplace_back(p);
+        }
+    }
+
+    return generatedPoints;
+}

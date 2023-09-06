@@ -32,7 +32,9 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
@@ -143,7 +145,16 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, UInt start, UInt end, double separator);
+    std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
+
+    /// @brief Determine if the number of invalid points in the point array.
+    UInt InvalidPointCount(const std::vector<Point>& points);
+
+    /// @brief Determine if the number of invalid points in the section of the point array.
+    /// @param[in] points The array of points
+    /// @param[in] start The start of the range in which to search
+    /// @param[in] end The end of the range in which to search
+    UInt InvalidPointCount(const std::vector<Point>& points, size_t start, size_t end);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
@@ -260,11 +271,11 @@ namespace meshkernel
     /// @brief Computes the cross product between two segments (duitpl)
     /// @param[in] firstSegmentFirstPoint   The first point of the first segment
     /// @param[in] firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in] secondSegmentFistPoint   The second point of the second segment
+    /// @param[in] secondSegmentFirstPoint   The second point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
     /// @param[in] projection               The coordinate system projection
     /// @return The cross product value
-    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
+    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
     /// @param[in] point The point to check
@@ -292,6 +303,20 @@ namespace meshkernel
     /// @param[in] secondPoint
     /// @param[in] projection The coordinate system projection.
     [[nodiscard]] double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the delta (dx, dy) for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection The coordinate system projection.
+    Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the normal to the line described by the two points.
+    ///
+    /// The vector is normalised.
+    /// @param[in] start Point at the start of the line
+    /// @param[in] end Point at the end of the line
+    /// @param[in] projection The coordinate system projection.
+    Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection);
 
     /// @brief Gets dy for the given projection
     /// @param[in] firstPoint
@@ -349,11 +374,16 @@ namespace meshkernel
     /// @param[in,out] point The point to be incremented.
     void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point);
 
-    /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
+    /// @brief For a given polygon the function may shift the input coordinates
     /// @param[in,out] polygon    The input polygon.
+    /// @note To be called for spherical coordinate system only
+    void TranslateSphericalCoordinates(std::vector<Point>& polygon);
+
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] polygon    The input polygon.
     /// @param[in]     projection The coordinate system projection.
     /// @return The reference point
-    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection);
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection);
 
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root
@@ -407,7 +437,7 @@ namespace meshkernel
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment
     /// @param[in]  firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in]  secondSegmentFistPoint   The first point of the second segment
+    /// @param[in]  secondSegmentFirstPoint   The first point of the second segment
     /// @param[in]  secondSegmentSecondPoint The second point of the second segment
     /// @param[in]  adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in]  projection               The coordinate system projection
@@ -418,7 +448,7 @@ namespace meshkernel
     /// @return If the two segments are crossing
     [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                                            const Point& firstSegmentSecondPoint,
-                                           const Point& secondSegmentFistPoint,
+                                           const Point& secondSegmentFirstPoint,
                                            const Point& secondSegmentSecondPoint,
                                            bool adimensionalCrossProduct,
                                            const Projection& projection,
@@ -426,12 +456,6 @@ namespace meshkernel
                                            double& crossProduct,
                                            double& ratioFirstSegment,
                                            double& ratioSecondSegment);
-
-    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
-    /// @param[in]  polygon            The input vector containing the nodes of the polygon (must be closed)
-    /// @param[in]  projection         The projection to use.
-    /// @return A tuple containing the resulting area, the resulting center of mass, and the orientation of the edges (counterclockwise/clockwise)
-    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates

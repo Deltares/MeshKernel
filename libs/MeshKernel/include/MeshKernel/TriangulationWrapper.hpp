@@ -28,6 +28,9 @@
 #pragma once
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/PolygonalEnclosure.hpp"
 
 #include <concepts>
 
@@ -53,7 +56,6 @@ namespace meshkernel
                            double trisize);
     }
 
-    class Point;
     class Sample;
 
     /// @brief Wrapper around the Triangle library
@@ -140,6 +142,9 @@ namespace meshkernel
                 }
             }
         }
+
+        /// @brief From the set of computed points, select those that are contained within the enclosure
+        std::vector<Point> SelectNodes(const PolygonalEnclosure& enclosure) const;
 
         /// @brief Build the internal triangulation from the flat triangulation
         void BuildTriangulation();
@@ -230,6 +235,14 @@ namespace meshkernel
         [[nodiscard]] double GetYCoord(const UInt nodeIndex) const
         {
             return m_yCoordFlat[nodeIndex];
+        }
+
+        /// @brief Retrieves the (x,y) coordinate of a triangulated node
+        /// @param nodeIndex The index of the node to retrieve
+        /// @return Point
+        Point GetCoord(const UInt nodeIndex) const
+        {
+            return Point(m_xCoordFlat[nodeIndex], m_yCoordFlat[nodeIndex]);
         }
 
     private:

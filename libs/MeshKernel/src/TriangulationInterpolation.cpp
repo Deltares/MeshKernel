@@ -68,6 +68,7 @@ void TriangulationInterpolation::Compute()
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.GetNumFaces(), {constants::missing::doubleValue, constants::missing::doubleValue});
+    // TODO can the inner vectors be replaced with std::array?
     std::vector<std::vector<Point>> triangles(triangulationWrapper.GetNumFaces(), std::vector<Point>(4));
     std::vector<std::vector<double>> values(triangulationWrapper.GetNumFaces(), std::vector<double>(4, constants::missing::doubleValue));
 
