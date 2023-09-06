@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A class describing polygons.  
+<p>A class containing a list of polygonaly enclosed regions.  
  <a href="classmeshkernel_1_1_polygons.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_polygons_8hpp_source.html">Polygons.hpp</a>&gt;</code></p>
@@ -95,12 +95,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a140506286f9ea3796c9e1b5e357edd04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a140506286f9ea3796c9e1b5e357edd04">Polygons</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:a140506286f9ea3796c9e1b5e357edd04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classmeshkernel_1_1_polygons.html#a140506286f9ea3796c9e1b5e357edd04">More...</a><br /></td></tr>
 <tr class="separator:a140506286f9ea3796c9e1b5e357edd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5842f987925e590dd3f09c9446859128"><td class="memItemLeft" align="right" valign="top"><a id="a5842f987925e590dd3f09c9446859128"></a>
+std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a5842f987925e590dd3f09c9446859128">PolygonIndex</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex) const</td></tr>
+<tr class="memdesc:a5842f987925e590dd3f09c9446859128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of the polygon, and map the start- and end-index to the start- and end-index of the local polygon nodes. <br /></td></tr>
+<tr class="separator:a5842f987925e590dd3f09c9446859128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f293d0b696bb94b495dce5ffc4a8ddb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb">Enclosure</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> index) const</td></tr>
+<tr class="memdesc:a2f293d0b696bb94b495dce5ffc4a8ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the polygonal enclosure at the index.  <a href="classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb">More...</a><br /></td></tr>
+<tr class="separator:a2f293d0b696bb94b495dce5ffc4a8ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23395a761a480653a2023903922acc21"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a23395a761a480653a2023903922acc21">ComputePointsInPolygons</a> () const</td></tr>
 <tr class="memdesc:a23395a761a480653a2023903922acc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)  <a href="classmeshkernel_1_1_polygons.html#a23395a761a480653a2023903922acc21">More...</a><br /></td></tr>
 <tr class="separator:a23395a761a480653a2023903922acc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee0f08ce9602ace9b15f952fc6116800"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#aee0f08ce9602ace9b15f952fc6116800">RefineFirstPolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex, double refinementDistance) const</td></tr>
 <tr class="memdesc:aee0f08ce9602ace9b15f952fc6116800"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)  <a href="classmeshkernel_1_1_polygons.html#aee0f08ce9602ace9b15f952fc6116800">More...</a><br /></td></tr>
 <tr class="separator:aee0f08ce9602ace9b15f952fc6116800"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a921f06aabd9e3f46b3a2ea7cb6f3c8e5">RefinePolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex, double refinementDistance) const</td></tr>
+<tr class="memdesc:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)  <a href="classmeshkernel_1_1_polygons.html#a921f06aabd9e3f46b3a2ea7cb6f3c8e5">More...</a><br /></td></tr>
+<tr class="separator:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18b31cd6a49f8212bba9184547e36369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">OffsetCopy</a> (double distance, bool innerAndOuter) const</td></tr>
 <tr class="memdesc:a18b31cd6a49f8212bba9184547e36369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">More...</a><br /></td></tr>
 <tr class="separator:a18b31cd6a49f8212bba9184547e36369"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,39 +120,34 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3183f33250c74aa4865857eb233b37a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3183f33250c74aa4865857eb233b37a5">IsPointInPolygon</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;point, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex) const</td></tr>
 <tr class="memdesc:a3183f33250c74aa4865857eb233b37a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon. When the polygon is empty, the point is always included by default.  <a href="classmeshkernel_1_1_polygons.html#a3183f33250c74aa4865857eb233b37a5">More...</a><br /></td></tr>
 <tr class="separator:a3183f33250c74aa4865857eb233b37a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04c314b63fc7c0cebe84f556c341e263"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; bool, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a04c314b63fc7c0cebe84f556c341e263">IsPointInPolygons</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point) const</td></tr>
-<tr class="memdesc:a04c314b63fc7c0cebe84f556c341e263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)  <a href="classmeshkernel_1_1_polygons.html#a04c314b63fc7c0cebe84f556c341e263">More...</a><br /></td></tr>
-<tr class="separator:a04c314b63fc7c0cebe84f556c341e263"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3dc55e609e0a383a5b25de8a269a325"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; bool, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ae3dc55e609e0a383a5b25de8a269a325">IsPointInPolygons</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point) const</td></tr>
+<tr class="memdesc:ae3dc55e609e0a383a5b25de8a269a325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)  <a href="classmeshkernel_1_1_polygons.html#ae3dc55e609e0a383a5b25de8a269a325">More...</a><br /></td></tr>
+<tr class="separator:ae3dc55e609e0a383a5b25de8a269a325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00bf73b5fd65ee623f62aa9f7c971488"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488">PointsInPolygons</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;point) const</td></tr>
 <tr class="memdesc:a00bf73b5fd65ee623f62aa9f7c971488"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each point, compute the index of the polygon including it.  <a href="classmeshkernel_1_1_polygons.html#a00bf73b5fd65ee623f62aa9f7c971488">More...</a><br /></td></tr>
 <tr class="separator:a00bf73b5fd65ee623f62aa9f7c971488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada9dba423c7ed711062841761d058b4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">IsEmpty</a> () const</td></tr>
 <tr class="memdesc:ada9dba423c7ed711062841761d058b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the polygon is empty.  <a href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">More...</a><br /></td></tr>
 <tr class="separator:ada9dba423c7ed711062841761d058b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51a29c0e975cdda3ec4bc78c460c5f78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a51a29c0e975cdda3ec4bc78c460c5f78">GetNumPolygons</a> () const</td></tr>
-<tr class="memdesc:a51a29c0e975cdda3ec4bc78c460c5f78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives the number of polygons.  <a href="classmeshkernel_1_1_polygons.html#a51a29c0e975cdda3ec4bc78c460c5f78">More...</a><br /></td></tr>
-<tr class="separator:a51a29c0e975cdda3ec4bc78c460c5f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a456c08fc862cac554b00a44e12f1dd41"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">GetNumNodes</a> () const</td></tr>
-<tr class="memdesc:a456c08fc862cac554b00a44e12f1dd41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of polygon nodes.  <a href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">More...</a><br /></td></tr>
-<tr class="separator:a456c08fc862cac554b00a44e12f1dd41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8798760ec172aa51268cb99feecf05d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a8798760ec172aa51268cb99feecf05d2">GetNumPolygons</a> () const</td></tr>
+<tr class="memdesc:a8798760ec172aa51268cb99feecf05d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives the number of polygons.  <a href="classmeshkernel_1_1_polygons.html#a8798760ec172aa51268cb99feecf05d2">More...</a><br /></td></tr>
+<tr class="separator:a8798760ec172aa51268cb99feecf05d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a65b49142bef3728000aebd3ea8b3bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a5a65b49142bef3728000aebd3ea8b3bc">GetNumNodes</a> () const</td></tr>
+<tr class="memdesc:a5a65b49142bef3728000aebd3ea8b3bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of polygon nodes.  <a href="classmeshkernel_1_1_polygons.html#a5a65b49142bef3728000aebd3ea8b3bc">More...</a><br /></td></tr>
+<tr class="separator:a5a65b49142bef3728000aebd3ea8b3bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a86ed0a9a3f5c9198f8cc662d3e166413">GetProjection</a> () const</td></tr>
 <tr class="memdesc:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the projection.  <a href="classmeshkernel_1_1_polygons.html#a86ed0a9a3f5c9198f8cc662d3e166413">More...</a><br /></td></tr>
 <tr class="separator:a86ed0a9a3f5c9198f8cc662d3e166413"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bcdb47c94815333fa08b5e70407697f"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3bcdb47c94815333fa08b5e70407697f">OuterIndices</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i) const</td></tr>
-<tr class="memdesc:a3bcdb47c94815333fa08b5e70407697f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the start-end indices of each outer polygon.  <a href="classmeshkernel_1_1_polygons.html#a3bcdb47c94815333fa08b5e70407697f">More...</a><br /></td></tr>
-<tr class="separator:a3bcdb47c94815333fa08b5e70407697f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e1366273d0308573fc9866a2d748439"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439">Nodes</a> () const</td></tr>
-<tr class="memdesc:a7e1366273d0308573fc9866a2d748439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the nodes of the polygon.  <a href="classmeshkernel_1_1_polygons.html#a7e1366273d0308573fc9866a2d748439">More...</a><br /></td></tr>
-<tr class="separator:a7e1366273d0308573fc9866a2d748439"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cd2837a1b1858dea482e38b42e334fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc">Node</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i) const</td></tr>
-<tr class="memdesc:a0cd2837a1b1858dea482e38b42e334fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of a node by index.  <a href="classmeshkernel_1_1_polygons.html#a0cd2837a1b1858dea482e38b42e334fc">More...</a><br /></td></tr>
-<tr class="separator:a0cd2837a1b1858dea482e38b42e334fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8be1cbcc3ad50dc76336c8e80073005"><td class="memItemLeft" align="right" valign="top"><a id="af8be1cbcc3ad50dc76336c8e80073005"></a>
+std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#af8be1cbcc3ad50dc76336c8e80073005">GatherAllEnclosureNodes</a> () const</td></tr>
+<tr class="memdesc:af8be1cbcc3ad50dc76336c8e80073005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the nodes of all enclosures. <br /></td></tr>
+<tr class="separator:af8be1cbcc3ad50dc76336c8e80073005"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb4c0ad29cee0017afda379be2353843"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#acb4c0ad29cee0017afda379be2353843">GetBoundingBox</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex) const</td></tr>
 <tr class="memdesc:acb4c0ad29cee0017afda379be2353843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bounding box for the polygon index i.  <a href="classmeshkernel_1_1_polygons.html#acb4c0ad29cee0017afda379be2353843">More...</a><br /></td></tr>
 <tr class="separator:acb4c0ad29cee0017afda379be2353843"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class describing polygons. </p>
+<div class="textblock"><p>A class containing a list of polygonaly enclosed regions. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a140506286f9ea3796c9e1b5e357edd04"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a140506286f9ea3796c9e1b5e357edd04">&#9670;&nbsp;</a></span>Polygons()</h2>
@@ -202,6 +207,35 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a2f293d0b696bb94b495dce5ffc4a8ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f293d0b696bb94b495dce5ffc4a8ddb">&#9670;&nbsp;</a></span>Enclosure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">meshkernel::PolygonalEnclosure</a> &amp; meshkernel::Polygons::Enclosure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the polygonal enclosure at the index. </p>
+<dl class="section note"><dt>Note</dt><dd>Will throw <a class="el" href="classmeshkernel_1_1_constraint_error.html" title="An exception class thrown when an attempt is made that violates a range constraint.">ConstraintError</a> exception if polygons.IsEmpty = true or index is out of range </dd></dl>
+
+</div>
+</div>
 <a id="acb4c0ad29cee0017afda379be2353843"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb4c0ad29cee0017afda379be2353843">&#9670;&nbsp;</a></span>GetBoundingBox()</h2>
 
@@ -229,8 +263,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a456c08fc862cac554b00a44e12f1dd41"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a456c08fc862cac554b00a44e12f1dd41">&#9670;&nbsp;</a></span>GetNumNodes()</h2>
+<a id="a5a65b49142bef3728000aebd3ea8b3bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a65b49142bef3728000aebd3ea8b3bc">&#9670;&nbsp;</a></span>GetNumNodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -239,7 +273,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto meshkernel::Polygons::GetNumNodes </td>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> meshkernel::Polygons::GetNumNodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -257,19 +291,27 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a51a29c0e975cdda3ec4bc78c460c5f78"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51a29c0e975cdda3ec4bc78c460c5f78">&#9670;&nbsp;</a></span>GetNumPolygons()</h2>
+<a id="a8798760ec172aa51268cb99feecf05d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8798760ec172aa51268cb99feecf05d2">&#9670;&nbsp;</a></span>GetNumPolygons()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Polygons::GetNumPolygons </td>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> meshkernel::Polygons::GetNumPolygons </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Gives the number of polygons. </p>
@@ -363,8 +405,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a04c314b63fc7c0cebe84f556c341e263"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04c314b63fc7c0cebe84f556c341e263">&#9670;&nbsp;</a></span>IsPointInPolygons()</h2>
+<a id="ae3dc55e609e0a383a5b25de8a269a325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3dc55e609e0a383a5b25de8a269a325">&#9670;&nbsp;</a></span>IsPointInPolygons()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -372,7 +414,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">std::tuple&lt;bool, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt; meshkernel::Polygons::IsPointInPolygons </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
           <td class="paramname"><em>point</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -387,69 +429,6 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue </dd></dl>
-
-</div>
-</div>
-<a id="a0cd2837a1b1858dea482e38b42e334fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0cd2837a1b1858dea482e38b42e334fc">&#9670;&nbsp;</a></span>Node()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> const&amp; meshkernel::Polygons::Node </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>i</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets the coordinates of a node by index. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>Node index </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Node coordinates </dd></dl>
-
-</div>
-</div>
-<a id="a7e1366273d0308573fc9866a2d748439"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e1366273d0308573fc9866a2d748439">&#9670;&nbsp;</a></span>Nodes()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; const&amp; meshkernel::Polygons::Nodes </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets the nodes of the polygon. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmeshkernel_1_1_vector.html" title="A class defining a vector.">Vector</a> of nodes of the polygon </dd></dl>
 
 </div>
 </div>
@@ -488,41 +467,6 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new offset polygon </dd></dl>
-
-</div>
-</div>
-<a id="a3bcdb47c94815333fa08b5e70407697f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3bcdb47c94815333fa08b5e70407697f">&#9670;&nbsp;</a></span>OuterIndices()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::pair&lt;<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt; const&amp; meshkernel::Polygons::OuterIndices </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>i</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets the start-end indices of each outer polygon. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">i</td><td>Outer polygon index </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Pair of start and end indices </dd></dl>
 
 </div>
 </div>
@@ -590,6 +534,58 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinementDistance</td><td>The chosen refinement distance </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>refinedPolygon The computed polygon </dd></dl>
+
+</div>
+</div>
+<a id="a921f06aabd9e3f46b3a2ea7cb6f3c8e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921f06aabd9e3f46b3a2ea7cb6f3c8e5">&#9670;&nbsp;</a></span>RefinePolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Polygons::RefinePolygon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>polygonIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>endIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>refinementDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndex</td><td>The polygon index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index for the node array for the polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index for the node array for the polygon </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">refinementDistance</td><td>The chosen refinement distance </td></tr>
   </table>
   </dd>

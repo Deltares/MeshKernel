@@ -1,13 +1,15 @@
 var searchData=
 [
-  ['transformglobalvectortolocal_517',['TransformGlobalVectorToLocal',['../namespacemeshkernel.html#ae0627229f0f4bf223d00001cc39b8686',1,'meshkernel']]],
-  ['transformsphericaltocartesian_518',['TransformSphericalToCartesian',['../classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3',1,'meshkernel::Point']]],
-  ['triangulatefaces_519',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a4836ba2335da505e7c952bbc8706873b',1,'meshkernel::Mesh2D']]],
-  ['triangulatepoints_520',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulatepointsandgeneratefaces_521',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulation_522',['Triangulation',['../namespacemeshkernel.html#a329282934f3c7bc126cc4e4016307e0f',1,'meshkernel']]],
-  ['triangulationinterpolation_523',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html',1,'meshkernel::TriangulationInterpolation'],['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation::TriangulationInterpolation()']]],
-  ['triangulationoptions_524',['TriangulationOptions',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulationwrapper_525',['TriangulationWrapper',['../structmeshkernel_1_1_triangulation_wrapper.html',1,'meshkernel']]],
-  ['type_526',['Type',['../classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078',1,'meshkernel::Mesh']]]
+  ['transformglobalvectortolocal_552',['TransformGlobalVectorToLocal',['../namespacemeshkernel.html#ae0627229f0f4bf223d00001cc39b8686',1,'meshkernel']]],
+  ['transformsphericaltocartesian_553',['TransformSphericalToCartesian',['../classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3',1,'meshkernel::Point']]],
+  ['translatesphericalcoordinates_554',['TranslateSphericalCoordinates',['../namespacemeshkernel.html#acde0b0ca587eded2a5e2167f4a737ca8',1,'meshkernel']]],
+  ['traversaldirection_555',['TraversalDirection',['../namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4',1,'meshkernel']]],
+  ['triangulatefaces_556',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a4836ba2335da505e7c952bbc8706873b',1,'meshkernel::Mesh2D']]],
+  ['triangulatepoints_557',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulatepointsandgeneratefaces_558',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulation_559',['Triangulation',['../namespacemeshkernel.html#a329282934f3c7bc126cc4e4016307e0f',1,'meshkernel']]],
+  ['triangulationinterpolation_560',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html',1,'meshkernel::TriangulationInterpolation'],['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation::TriangulationInterpolation()']]],
+  ['triangulationoptions_561',['TriangulationOptions',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulationwrapper_562',['TriangulationWrapper',['../structmeshkernel_1_1_triangulation_wrapper.html',1,'meshkernel']]],
+  ['type_563',['Type',['../classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078',1,'meshkernel::Mesh']]]
 ];

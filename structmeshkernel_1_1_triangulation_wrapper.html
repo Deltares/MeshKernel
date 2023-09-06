@@ -102,6 +102,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a56312e8cdb01e6f43f17008839c3ebf3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a56312e8cdb01e6f43f17008839c3ebf3">Compute</a> (const std::vector&lt; T &gt; &amp;inputNodes, <a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf">TriangulationOptions</a> triangulationOption, double averageTriangleArea, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> estimatedNumberOfTriangles)</td></tr>
 <tr class="memdesc:a56312e8cdb01e6f43f17008839c3ebf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the triangulation.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a56312e8cdb01e6f43f17008839c3ebf3">More...</a><br /></td></tr>
 <tr class="separator:a56312e8cdb01e6f43f17008839c3ebf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e3cc7f702d41e2c6fb394fde6aeb23"><td class="memItemLeft" align="right" valign="top"><a id="a96e3cc7f702d41e2c6fb394fde6aeb23"></a>
+std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a96e3cc7f702d41e2c6fb394fde6aeb23">SelectNodes</a> (const <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &amp;enclosure) const</td></tr>
+<tr class="memdesc:a96e3cc7f702d41e2c6fb394fde6aeb23"><td class="mdescLeft">&#160;</td><td class="mdescRight">From the set of computed points, select those that are contained within the enclosure. <br /></td></tr>
+<tr class="separator:a96e3cc7f702d41e2c6fb394fde6aeb23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73d40dd5ec3a76b49391895a293f0e4b"><td class="memItemLeft" align="right" valign="top"><a id="a73d40dd5ec3a76b49391895a293f0e4b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a73d40dd5ec3a76b49391895a293f0e4b">BuildTriangulation</a> ()</td></tr>
 <tr class="memdesc:a73d40dd5ec3a76b49391895a293f0e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the internal triangulation from the flat triangulation. <br /></td></tr>
@@ -139,6 +143,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918">GetYCoord</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
 <tr class="memdesc:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the y coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918">More...</a><br /></td></tr>
 <tr class="separator:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeae570347e7eff8b572c081027a4ce29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aeae570347e7eff8b572c081027a4ce29">GetCoord</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
+<tr class="memdesc:aeae570347e7eff8b572c081027a4ce29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the (x,y) coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#aeae570347e7eff8b572c081027a4ce29">More...</a><br /></td></tr>
+<tr class="separator:aeae570347e7eff8b572c081027a4ce29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper around the Triangle library. </p>
@@ -241,6 +248,41 @@ template&lt;std::derived_from&lt; Point &gt; T&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aeae570347e7eff8b572c081027a4ce29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeae570347e7eff8b572c081027a4ce29">&#9670;&nbsp;</a></span>GetCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::TriangulationWrapper::GetCoord </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the (x,y) coordinate of a triangulated node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmeshkernel_1_1_point.html" title="A struct describing a point in a two-dimensional space.">Point</a> </dd></dl>
 
 </div>
 </div>

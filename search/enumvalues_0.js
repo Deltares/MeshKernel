@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['closest_1120',['Closest',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a0c89b66f6bdfb128781e2c68d43364d8',1,'meshkernel::AveragingInterpolation']]]
+  ['anticlockwise_1191',['AntiClockwise',['../namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54',1,'meshkernel']]]
 ];

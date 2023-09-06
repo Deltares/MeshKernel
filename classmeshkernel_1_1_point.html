@@ -85,7 +85,7 @@ $(function() {
 <p>A struct describing a point in a two-dimensional space.  
  <a href="classmeshkernel_1_1_point.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_entities_8hpp_source.html">Entities.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_point_8hpp_source.html">Point.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for meshkernel::Point:</div>
 <div class="dyncontent">
@@ -113,6 +113,14 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a9d427b9a354d963f37d4972d93d948e5">operator-=</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p)</td></tr>
 <tr class="memdesc:a9d427b9a354d963f37d4972d93d948e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inplace subtract point from point. <br /></td></tr>
 <tr class="separator:a9d427b9a354d963f37d4972d93d948e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19538fc845dae2b71ff343056a5bcb52"><td class="memItemLeft" align="right" valign="top"><a id="a19538fc845dae2b71ff343056a5bcb52"></a>
+<a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a19538fc845dae2b71ff343056a5bcb52">operator+=</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;vec)</td></tr>
+<tr class="memdesc:a19538fc845dae2b71ff343056a5bcb52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inplace add vector to a point. <br /></td></tr>
+<tr class="separator:a19538fc845dae2b71ff343056a5bcb52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a720d2422d96e260b33aaabdfe2a76276"><td class="memItemLeft" align="right" valign="top"><a id="a720d2422d96e260b33aaabdfe2a76276"></a>
+<a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a720d2422d96e260b33aaabdfe2a76276">operator-=</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;vec)</td></tr>
+<tr class="memdesc:a720d2422d96e260b33aaabdfe2a76276"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inplace subtract vector from a point. <br /></td></tr>
+<tr class="separator:a720d2422d96e260b33aaabdfe2a76276"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a859bf966c4d62164510f5d3c63834cae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a859bf966c4d62164510f5d3c63834cae">operator/=</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p)</td></tr>
 <tr class="memdesc:a859bf966c4d62164510f5d3c63834cae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inplace divide point by point.  <a href="classmeshkernel_1_1_point.html#a859bf966c4d62164510f5d3c63834cae">More...</a><br /></td></tr>
 <tr class="separator:a859bf966c4d62164510f5d3c63834cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,9 +147,8 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#aa7c6bcba47a27e28552f462657b6aba5">operator*</a> (int const &amp;rhs) const</td></tr>
 <tr class="memdesc:aa7c6bcba47a27e28552f462657b6aba5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloads multiplication with a integer. <br /></td></tr>
 <tr class="separator:aa7c6bcba47a27e28552f462657b6aba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5944c99e57cc73b5c8b13d25e65e2d3"><td class="memItemLeft" align="right" valign="top"><a id="aa5944c99e57cc73b5c8b13d25e65e2d3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3">TransformSphericalToCartesian</a> (double referenceLatitude)</td></tr>
-<tr class="memdesc:aa5944c99e57cc73b5c8b13d25e65e2d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms spherical coordinates to cartesian. <br /></td></tr>
+<tr class="memitem:aa5944c99e57cc73b5c8b13d25e65e2d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3">TransformSphericalToCartesian</a> (double referenceLatitude)</td></tr>
+<tr class="memdesc:aa5944c99e57cc73b5c8b13d25e65e2d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms spherical coordinates to cartesian.  <a href="classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3">More...</a><br /></td></tr>
 <tr class="separator:aa5944c99e57cc73b5c8b13d25e65e2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5861eebe8cc2aaedca2eac8b8572d619"><td class="memItemLeft" align="right" valign="top"><a id="a5861eebe8cc2aaedca2eac8b8572d619"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a5861eebe8cc2aaedca2eac8b8572d619">IsValid</a> (const double missingValue=constants::missing::doubleValue) const</td></tr>
@@ -266,8 +273,37 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 </div>
 </div>
+<a id="aa5944c99e57cc73b5c8b13d25e65e2d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5944c99e57cc73b5c8b13d25e65e2d3">&#9670;&nbsp;</a></span>TransformSphericalToCartesian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Point::TransformSphericalToCartesian </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>referenceLatitude</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transforms spherical coordinates to cartesian. </p>
+<p>&lt; Factor used in the transformation from spherical to Cartesian coordinates</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_entities_8hpp_source.html">Entities.hpp</a></li>
+<li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_point_8hpp_source.html">Point.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

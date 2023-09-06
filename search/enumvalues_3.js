@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['generatepoints_1123',['GeneratePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa97f35f197df956a37084d39c32d97ebf',1,'meshkernel::TriangulationWrapper']]]
+  ['faces_1196',['Faces',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af',1,'meshkernel::Mesh']]]
 ];

@@ -221,9 +221,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:acf52d4c97ef09036a3110ab61fab031b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#acf52d4c97ef09036a3110ab61fab031b">MeshBoundaryToPolygon</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon)</td></tr>
 <tr class="memdesc:acf52d4c97ef09036a3110ab61fab031b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)  <a href="classmeshkernel_1_1_mesh2_d.html#acf52d4c97ef09036a3110ab61fab031b">More...</a><br /></td></tr>
 <tr class="separator:acf52d4c97ef09036a3110ab61fab031b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16f25bd9ed676e12cf753f9275737fcb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a16f25bd9ed676e12cf753f9275737fcb">WalkBoundaryFromNode</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, std::vector&lt; bool &gt; &amp;isVisited, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;currentNode, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;meshBoundaryPolygon) const</td></tr>
-<tr class="memdesc:a16f25bd9ed676e12cf753f9275737fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a polygon from the meshboundary, by walking through the mesh.  <a href="classmeshkernel_1_1_mesh2_d.html#a16f25bd9ed676e12cf753f9275737fcb">More...</a><br /></td></tr>
-<tr class="separator:a16f25bd9ed676e12cf753f9275737fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ccf24cf23136393e36d0fd07bbbfff2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a9ccf24cf23136393e36d0fd07bbbfff2">WalkBoundaryFromNode</a> (const <a class="el" href="classmeshkernel_1_1_polygon.html">Polygon</a> &amp;polygon, std::vector&lt; bool &gt; &amp;isVisited, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;currentNode, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;meshBoundaryPolygon) const</td></tr>
+<tr class="memdesc:a9ccf24cf23136393e36d0fd07bbbfff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a polygon from the meshboundary, by walking through the mesh.  <a href="classmeshkernel_1_1_mesh2_d.html#a9ccf24cf23136393e36d0fd07bbbfff2">More...</a><br /></td></tr>
+<tr class="separator:a9ccf24cf23136393e36d0fd07bbbfff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54988d04981fbfcc21077fbd44229910"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a54988d04981fbfcc21077fbd44229910">GetHangingEdges</a> () const</td></tr>
 <tr class="memdesc:a54988d04981fbfcc21077fbd44229910"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the hanging edges.  <a href="classmeshkernel_1_1_mesh2_d.html#a54988d04981fbfcc21077fbd44229910">More...</a><br /></td></tr>
 <tr class="separator:a54988d04981fbfcc21077fbd44229910"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -872,7 +872,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
 <p>Deletes a mesh in a polygon, using several options (delnet) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon where to perform the operation If this <a class="el" href="classmeshkernel_1_1_polygons.html" title="A class describing polygons.">Polygons</a> instance contains multiple polygons, the first one will be taken. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon where to perform the operation If this <a class="el" href="classmeshkernel_1_1_polygons.html" title="A class containing a list of polygonaly enclosed regions.">Polygons</a> instance contains multiple polygons, the first one will be taken. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deletionOption</td><td>The deletion option </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">invertDeletion</td><td>Inverts the selected node to delete (instead of outside the polygon, inside the polygon) </td></tr>
   </table>
@@ -1422,8 +1422,8 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="a16f25bd9ed676e12cf753f9275737fcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16f25bd9ed676e12cf753f9275737fcb">&#9670;&nbsp;</a></span>WalkBoundaryFromNode()</h2>
+<a id="a9ccf24cf23136393e36d0fd07bbbfff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ccf24cf23136393e36d0fd07bbbfff2">&#9670;&nbsp;</a></span>WalkBoundaryFromNode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1431,8 +1431,8 @@ Coincide circumcenter</div></div>
         <tr>
           <td class="memname">void meshkernel::Mesh2D::WalkBoundaryFromNode </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>polygonNodes</em>, </td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygon.html">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1463,9 +1463,9 @@ Coincide circumcenter</div></div>
 <p>Constructs a polygon from the meshboundary, by walking through the mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygonNodes</td><td>The input mesh </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">isVisited</td><td>the visited mesh nodes </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">currentNode</td><td>the current node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The input polygon </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">isVisited</td><td>the visited mesh nodes </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">currentNode</td><td>the current node </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">meshBoundaryPolygon</td><td>The resulting polygon points </td></tr>
   </table>
   </dd>
