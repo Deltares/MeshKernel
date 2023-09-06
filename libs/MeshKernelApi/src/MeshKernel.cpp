@@ -90,24 +90,24 @@ namespace meshkernelapi
         }
         catch (meshkernel::MeshGeometryError const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize);
+            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
             invalidMeshIndex = e.InavlidMeshIndex();
             invalidMeshLocation = e.InvalidMeshLocation();
             return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize);
+            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
             return e.Code();
         }
         catch (std::exception const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize);
+            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
             return meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
-            std::strncpy(exceptionMessage, "Unknown exception", bufferSize);
+            std::strncpy(exceptionMessage, "Unknown exception", bufferSize - 1);
             return meshkernel::ExitCode::UnknownExceptionCode;
         }
     }
