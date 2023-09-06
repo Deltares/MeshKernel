@@ -176,7 +176,7 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
 
     if (polygonIndex >= m_enclosures.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid polygon index: {} > {}.", polygonIndex, m_enclosures.size() - 1));
+        throw ConstraintError("Invalid polygon index: {} > {}.", polygonIndex, m_enclosures.size() - 1);
     }
 
     // TODO train wreck-ish.
@@ -227,7 +227,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 {
     if (IsEmpty())
     {
-        throw ConstraintError(VariadicErrorMessage("No enclosures."));
+        throw ConstraintError("No enclosures.");
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -239,7 +239,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
     // TODO is it valid to snap a single point to the land boundary?
     if (startIndex >= endIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError("The start index is greater than the end index: {} >= {}.", startIndex, endIndex);
     }
 
     const auto [polygonIndex, polygonStartNode, polygonEndNode] = PolygonIndex(startIndex, endIndex);
@@ -283,7 +283,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt, meshkernel::UInt> Polygons::Polyg
 
     if (!indicesAreValid)
     {
-        throw ConstraintError(VariadicErrorMessage("The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     return {polygonIndex, polygonStartNode, polygonEndNode};
@@ -385,13 +385,12 @@ meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const
 {
     if (IsEmpty())
     {
-        throw ConstraintError(VariadicErrorMessage("Enclosures list is empty."));
+        throw ConstraintError("Enclosures list is empty.");
     }
 
     if (polygonIndex >= m_enclosures.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid enclosure index: {}, maximum index: {}",
-                                                   polygonIndex, m_enclosures.size() - 1));
+        throw ConstraintError("Invalid enclosure index: {}, maximum index: {}", polygonIndex, m_enclosures.size() - 1);
     }
 
     return m_enclosures[polygonIndex].Outer().GetBoundingBox();

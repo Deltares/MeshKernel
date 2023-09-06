@@ -43,7 +43,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 {
     if (m_polygon.Size() < 4)
     {
-        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
+        throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -52,8 +52,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     if (!areNodesValid)
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid node selection, duplicate values found: first = {}, second = {}, third = {}",
-                                                   firstNode, secondNode, thirdNode));
+        throw ConstraintError("Invalid node selection, duplicate values found: first = {}, second = {}, third = {}",
+                              firstNode, secondNode, thirdNode);
     }
 
     // for the current polygon find the number of nodes
@@ -232,7 +232,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 {
     if (m_polygon.Size() < 4)
     {
-        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
+        throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
     const auto areNodesValid = firstNode != secondNode &&

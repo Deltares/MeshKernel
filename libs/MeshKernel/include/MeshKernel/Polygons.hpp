@@ -162,13 +162,12 @@ inline const meshkernel::PolygonalEnclosure& meshkernel::Polygons::Enclosure(con
 {
     if (IsEmpty())
     {
-        throw ConstraintError(VariadicErrorMessage("Enclosures list is empty."));
+        throw ConstraintError("Enclosures list is empty.");
     }
 
     if (index >= m_enclosures.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid enclosure index: {}, maximum index: {}",
-                                                   index, m_enclosures.size() - 1));
+        throw ConstraintError("Invalid enclosure index: {}, maximum index: {}", index, m_enclosures.size() - 1);
     }
 
     return m_enclosures[index];
