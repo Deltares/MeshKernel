@@ -157,7 +157,7 @@ namespace meshkernel
 
         /// @brief Returns the error category.
         /// @return The error category.
-        virtual ErrorCategory Category() const { return {"MeshKernelError", ExitCode::MeshGeometryErrorCode}; }
+        virtual ErrorCategory Category() const { return {"MeshKernelError", ExitCode::MeshKernelErrorCode}; }
 
         /// @brief Returns the message.
         virtual std::string FormattedMessage() const { return m_fmt_message; }
@@ -220,7 +220,6 @@ namespace meshkernel
     ///
     /// 1. When an index is out of bounds or violates a range constraint.
     /// 2. Attempt to retrieve a component that does not exist.
-    /// 3. Attempt to dereference a null pointer.
     class ConstraintError final : public MeshKernelError
     {
     public:

@@ -59,10 +59,6 @@ target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 # link to static MeshKernel library
 target_link_libraries(${TARGET_NAME} PRIVATE MeshKernel)
 
-if(${USE_LIBFMT})
-  target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
-endif()
-
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(

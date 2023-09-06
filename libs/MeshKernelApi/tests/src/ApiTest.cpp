@@ -3505,25 +3505,40 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
 
     //--------------------------------
     // Start index is less than 0
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, -2, 1);
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     -2,
+                                                     1);
+    EXPECT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
     //--------------------------------
     // Start index is greater than end index
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 2, 1);
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     2,
+                                                     1);
+    EXPECT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
     //--------------------------------
     // The land boundary is not set
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     0,
+                                                     static_cast<int>(splinePointsX.size() - 1));
+    EXPECT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
     // First define the number of land boundary points
     landBoundaryGeometry.num_coordinates = static_cast<int>(landBoundaryPointsX.size());
 
     // The land boundary points are null
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry, 0,
+                                                     static_cast<int>(splinePointsX.size() - 1));
+    EXPECT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
     //--------------------------------
     // Now define the land boundary
@@ -3531,28 +3546,42 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     landBoundaryGeometry.coordinates_y = landBoundaryPointsY.data();
 
     // The number of spline points is 0
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     0,
+                                                     static_cast<int>(splinePointsX.size() - 1));
+    EXPECT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
     // define the number of spline points
     splineGeometry.num_coordinates = static_cast<int>(splinePointsX.size());
 
     // The spline values are null
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry, 0, static_cast<int>(splinePointsX.size() - 1));
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     0,
+                                                     static_cast<int>(splinePointsX.size() - 1));
+    EXPECT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
     splineGeometry.coordinates_x = splinePointsX.data();
     splineGeometry.coordinates_y = splinePointsY.data();
 
     // Start spline index is greater than the number of spline points
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
-                                                     static_cast<int>(splinePointsX.size()) + 1, static_cast<int>(splinePointsX.size()) + 2);
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     static_cast<int>(splinePointsX.size()) + 1,
+                                                     static_cast<int>(splinePointsX.size()) + 2);
+    EXPECT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
     // End spline index is greater than the number of spline points
-    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId, landBoundaryGeometry, splineGeometry,
-                                                     0, static_cast<int>(splinePointsX.size()));
-    EXPECT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+    errorCode = mkernel_splines_snap_to_landboundary(meshKernelId,
+                                                     landBoundaryGeometry,
+                                                     splineGeometry,
+                                                     0,
+                                                     static_cast<int>(splinePointsX.size()));
+    EXPECT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
 TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
