@@ -223,6 +223,11 @@ namespace meshkernel
     /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
     bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
 
+    /// @brief Compute the point at some position along the line connecting start- and end-point.
+    ///
+    /// \$f r = (1-\lambda) s + \lambda e \f$
+    Point PointAlongLine(const Point& startPoint, const Point& endPoint, const double lambda);
+
     /// @brief Rotate a point around a reference
     /// @param[in] point The point to rotate
     /// @param[in] angle The rotation angle
@@ -420,4 +425,9 @@ inline double meshkernel::GetDeltaYCartesian(const Point& p1, const Point& p2)
 inline meshkernel::Vector meshkernel::GetDeltaCartesian(const Point& p1, const Point& p2)
 {
     return Vector(GetDeltaXCartesian(p1, p2), GetDeltaYCartesian(p1, p2));
+}
+
+inline meshkernel::Point meshkernel::PointAlongLine(const Point& startPoint, const Point& endPoint, const double lambda)
+{
+    return (1.0 - lambda) * startPoint + lambda * endPoint;
 }

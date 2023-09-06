@@ -26,7 +26,10 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <array>
 #include <ranges>
+#include <utility>
+#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -303,11 +306,14 @@ namespace meshkernel
 
     private:
         // orthogonalization
-        static constexpr double m_minimumEdgeLength = 1e-4;                ///< Minimum edge length
-        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;      ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-        static constexpr double m_minimumCellArea = 1e-12;                 ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;                ///< Weight circum center
-        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 10; ///< The maximum number of hanging nodes along a single element edge
+        static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
+        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
+
+        /// @brief Bounded array for storing hanging node indices.
+        using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -360,26 +366,60 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
 
-        // adjacent.f90
-        void IsLinkAdjacentToLink(const UInt link1, const UInt link2, bool& areAdjacent, UInt& k1k, UInt& k2k) const;
+        /// @brief Determine if the edges are adjacent, if so then return the start and end points (adjacent.f90)
+        // TODO change name. 1. AreLinksAdjacent and 2. start and end node ids are also returned
+        void IsLinkAdjacentToLink(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const;
 
-        void FindOppositeEdge(const UInt faceId, const UInt edgeId, UInt& oppositeEdgeId, UInt& startNode, UInt& endNode) const;
+        /// @brief Find edge on the opposite side of the element
+        /// @note Currently only works for quadrilateral elements.
+        /// Will throw exception NotImplemented for other element shapes.
+        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
 
-        void NextCell(const UInt faceId, const UInt LL, UInt& npa, UInt& k1a, UInt& k2a, UInt& La) const;
+        /// @brief Get the next face adjacent to the edge on the opposite side.
+        /// @param [in] faceId The starting face
+        /// @param [in] edgeId The starting edge
+        /// @param [out] adjacentFaceId Id of the face
+        /// @param [out] oppositeEdgeId Id of the edge on the opposite side of the
+        void NextFace(const UInt faceId, const UInt edgeId, UInt& adjacentFaceId, UInt& oppositeEdgeId) const;
 
         void GetElementsOnDomainBoundary(std::vector<UInt>& elementsOnDomainBoundary, std::vector<UInt>& edgesOnDomainBoundary) const;
 
-        void InsertNewMeshItems(const UInt numberOfHangingNodes, const std::vector<UInt>& hangingNodesOnEdge, const UInt faceId, const Edge& boundaryEdge, const Point& boundaryNode, const UInt edgeId);
+        void GetOrderedDistanceFromPoint(const std::vector<UInt>& nodeIndices, const UInt numberOfNodes, const Point& point,
+                                         HangingNodeIndexArray& nearestNeighbours) const;
 
-        void GetOrderedDistanceFromPoint (const std::vector<UInt>& nodeIndices, const UInt numberOfNodes, const Point& point,
-                                          std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>& nearestNeighbours ) const;
+        /// @brief Merge coincident nodes
+        void MergeNodes(const std::vector<std::pair<UInt, UInt>>& nodesToMerge, std::vector<int>& mergeIndicator);
 
-        void MergeNodes(const std::vector<std::array<UInt, 2>>& nodesToMerge, std::vector<int>& kc);
+        /// @brief Free one hanging node along an irregular edge.
+        void FreeOneHangingNode(const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
 
+        /// @brief Free two hanging nodes along an irregular edge.
+        void FreeTwoHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
+
+        /// @brief Free three hanging nodes along an irregular edge.
+        void FreeThreeHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
+
+        /// @brief Free four hanging nodes along an irregular edge.
+        void FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
+
+        /// @brief Free any hanging nodes along an irregular edge.
+        void FreeHangingNodes(const UInt numberOfHangingNodes,
+                              const std::vector<UInt>& hangingNodesOnEdge,
+                              const UInt faceId,
+                              const Edge& boundaryEdge,
+                              const Point& boundaryNode,
+                              const UInt edgeId);
+
+        /// @brief Find and retain any hanging node id's
         void GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary,
-                                  std::vector<std::array<UInt, 5>>& irregularEdge,
+                                  std::vector<HangingNodeIndexArray>& irregularEdge,
                                   std::vector<UInt>& irregularEdgeCount,
                                   std::vector<UInt>& irregularStartNodes,
                                   std::vector<UInt>& irregularEndNodes) const;
+
+        // static constexpr int NoMergeNecessary = 0;
+        // static constexpr int NoMergeNecessary = 1;
+        // static constexpr int NoMergeNecessary = -1;
     };
+
 } // namespace meshkernel
