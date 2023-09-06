@@ -68,7 +68,7 @@ namespace meshkernel
     class ErrorCategory
     {
     public:
-        ErrorCategory(std::string name,
+        ErrorCategory(std::string_view name,
                       ExitCode code)
             : m_name(name),
               m_code{code}
@@ -129,7 +129,8 @@ namespace meshkernel
             }
             else
             {
-                m_fmt_message = fmt_::vformat(message.Format(), fmt_::make_format_args(args...));
+                m_fmt_message = fmt_::vformat(message.Format(),
+                                              fmt_::make_format_args(args...));
             }
         }
 

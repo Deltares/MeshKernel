@@ -70,10 +70,6 @@
 #include <unordered_map>
 #include <vector>
 
-#if (defined(__linux__) || defined(__APPLE__)) && defined(__GNUC__)
-#define strncpy_s strncpy
-#endif
-
 namespace meshkernelapi
 {
     // The state held by MeshKernel
@@ -81,7 +77,8 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static char exceptionMessage[512] = "";
+    static int constexpr bufferSize = 512;
+    static char exceptionMessage[bufferSize] = "";
     static meshkernel::UInt invalidMeshIndex{0};
     static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
 
@@ -93,24 +90,24 @@ namespace meshkernelapi
         }
         catch (meshkernel::MeshGeometryError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            std::strncpy(exceptionMessage, e.what(), bufferSize);
             invalidMeshIndex = e.InavlidMeshIndex();
             invalidMeshLocation = e.InvalidMeshLocation();
             return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            std::strncpy(exceptionMessage, e.what(), bufferSize);
             return e.Code();
         }
         catch (std::exception const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
+            std::strncpy(exceptionMessage, e.what(), bufferSize);
             return meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
-            strncpy_s(exceptionMessage, "Unknown exception", sizeof exceptionMessage);
+            std::strncpy(exceptionMessage, "Unknown exception", bufferSize);
             return meshkernel::ExitCode::UnknownExceptionCode;
         }
     }
