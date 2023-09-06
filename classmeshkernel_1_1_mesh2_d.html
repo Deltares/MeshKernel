@@ -243,9 +243,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ad2aca39594f2a68e3717829f98ba04d0"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a> &gt;, std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">GetPolylineIntersections</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polyLine)</td></tr>
 <tr class="memdesc:ad2aca39594f2a68e3717829f98ba04d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges and faces intersected by a polyline, with additional information on the intersections.  <a href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">More...</a><br /></td></tr>
 <tr class="separator:ad2aca39594f2a68e3717829f98ba04d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd">EdgesMaskOfFacesInPolygons</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, bool invertSelection, bool includeIntersected) const</td></tr>
-<tr class="memdesc:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Masks the edges of all faces entirely included in all polygons.  <a href="classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd">More...</a><br /></td></tr>
-<tr class="separator:a7a8d2323884afc07dcf4e1efd2d699bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7decde6c1988555f70610c313e68342a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7decde6c1988555f70610c313e68342a">MaskEdgesOfFacesInPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, bool invertSelection, bool includeIntersected) const</td></tr>
+<tr class="memdesc:a7decde6c1988555f70610c313e68342a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Masks the edges of all faces entirely included in all polygons.  <a href="classmeshkernel_1_1_mesh2_d.html#a7decde6c1988555f70610c313e68342a">More...</a><br /></td></tr>
+<tr class="separator:a7decde6c1988555f70610c313e68342a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0842f06cb37b04dea67fb797056cd216"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216">NodeMaskFromEdgeMask</a> (std::vector&lt; int &gt; const &amp;edgeMask) const</td></tr>
 <tr class="memdesc:a0842f06cb37b04dea67fb797056cd216"><td class="mdescLeft">&#160;</td><td class="mdescRight">From the edge mask compute the node mask.  <a href="classmeshkernel_1_1_mesh2_d.html#a0842f06cb37b04dea67fb797056cd216">More...</a><br /></td></tr>
 <tr class="separator:a0842f06cb37b04dea67fb797056cd216"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -951,51 +951,6 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="a7a8d2323884afc07dcf4e1efd2d699bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a8d2323884afc07dcf4e1efd2d699bd">&#9670;&nbsp;</a></span>EdgesMaskOfFacesInPolygons()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;int&gt; meshkernel::Mesh2D::EdgesMaskOfFacesInPolygons </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
-          <td class="paramname"><em>polygons</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>invertSelection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>includeIntersected</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Masks the edges of all faces entirely included in all polygons. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The selection polygon </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">invertSelection</td><td>Invert selection </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">includeIntersected</td><td>Included the edges intersected by the polygon </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The edge mask </dd></dl>
-
-</div>
-</div>
 <a id="a6a40ea7da15823130792bcb0d74214a2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6a40ea7da15823130792bcb0d74214a2">&#9670;&nbsp;</a></span>GetEdgesCrossingSmallFlowEdges()</h2>
 
@@ -1236,6 +1191,51 @@ Coincide circumcenter</div></div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a7decde6c1988555f70610c313e68342a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7decde6c1988555f70610c313e68342a">&#9670;&nbsp;</a></span>MaskEdgesOfFacesInPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; meshkernel::Mesh2D::MaskEdgesOfFacesInPolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>invertSelection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>includeIntersected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Masks the edges of all faces entirely included in all polygons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The selection polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">invertSelection</td><td>Invert selection </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">includeIntersected</td><td>Included the edges intersected by the polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The edge mask </dd></dl>
 
 </div>
 </div>

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['makedualface_808',['MakeDualFace',['../classmeshkernel_1_1_mesh2_d.html#a1acdab15ff562599311e2264f4728844',1,'meshkernel::Mesh2D']]],
+  ['makedualface_807',['MakeDualFace',['../classmeshkernel_1_1_mesh2_d.html#a1acdab15ff562599311e2264f4728844',1,'meshkernel::Mesh2D']]],
+  ['maskedgesoffacesinpolygon_808',['MaskEdgesOfFacesInPolygon',['../classmeshkernel_1_1_mesh2_d.html#a7decde6c1988555f70610c313e68342a',1,'meshkernel::Mesh2D']]],
   ['masscentre_809',['MassCentre',['../classmeshkernel_1_1_bounding_box.html#aeeba20e16c2859e755611c196971869b',1,'meshkernel::BoundingBox']]],
   ['matrixnorm_810',['MatrixNorm',['../namespacemeshkernel.html#ab08750c57678ca9093d7268866965f25',1,'meshkernel']]],
   ['merge_811',['Merge',['../namespacemeshkernel.html#a4285279848fabaee72bd145770a53af6',1,'meshkernel']]],

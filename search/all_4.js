@@ -14,9 +14,8 @@ var searchData=
   ['edgenodes_115',['edgeNodes',['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a4d1004f3b565c537d5caa737ae790e17',1,'meshkernel::Mesh::FaceMeshPolylineIntersection']]],
   ['edges_116',['Edges',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9',1,'meshkernel::Mesh']]],
   ['edgesecondnode_117',['edgeSecondNode',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a2e1a15fb056dd134e013dc99eeb56fd9',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]],
-  ['edgesmaskoffacesinpolygons_118',['EdgesMaskOfFacesInPolygons',['../classmeshkernel_1_1_mesh2_d.html#a7a8d2323884afc07dcf4e1efd2d699bd',1,'meshkernel::Mesh2D']]],
-  ['enclosure_119',['Enclosure',['../classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb',1,'meshkernel::Polygons']]],
-  ['evaluate_120',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms']]],
-  ['extend_121',['Extend',['../classmeshkernel_1_1_bounding_box.html#a83cbb729691f3a3bdf4328f3eb1ad481',1,'meshkernel::BoundingBox']]],
-  ['exterior_122',['Exterior',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3ad9b3dceaf520ba1fa45c371c498c6baf',1,'meshkernel::PolygonalEnclosure']]]
+  ['enclosure_118',['Enclosure',['../classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb',1,'meshkernel::Polygons']]],
+  ['evaluate_119',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms']]],
+  ['extend_120',['Extend',['../classmeshkernel_1_1_bounding_box.html#a83cbb729691f3a3bdf4328f3eb1ad481',1,'meshkernel::BoundingBox']]],
+  ['exterior_121',['Exterior',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3ad9b3dceaf520ba1fa45c371c498c6baf',1,'meshkernel::PolygonalEnclosure']]]
 ];
