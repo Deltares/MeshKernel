@@ -1422,10 +1422,10 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const bool inWardBool = inWard == 1 ? true : false;
+            const bool inWardBool = inWard == 1;
             const auto newPolygon = polygon.OffsetCopy(distance, inWardBool);
 
-            ConvertPointVectorToGeometryList(newPolygon.Nodes(), geometryListOut);
+            ConvertPointVectorToGeometryList(newPolygon.GatherAllEnclosureNodes(), geometryListOut);
         }
         catch (...)
         {
@@ -1445,7 +1445,7 @@ namespace meshkernelapi
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const bool innerPolygonBool = innerPolygon == 1 ? true : false;
+            const bool innerPolygonBool = innerPolygon == 1;
             const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygonBool);
 
@@ -1866,11 +1866,12 @@ namespace meshkernelapi
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
+            const auto [enclosureIndex, polygonStartNode, polygonEndNode] = polygons.PolygonIndex(startIndex, endIndex);
 
             //--------------------------------
             // Now copy back the polygon values
 
-            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Nodes();
+            const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
             for (int i = startIndex; i <= endIndex; ++i)
             {
@@ -2306,7 +2307,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
+            meshkernel::Polygon localPolygon(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 
@@ -2339,7 +2340,7 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
+            meshkernel::Polygon localPolygon(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 

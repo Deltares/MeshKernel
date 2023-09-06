@@ -312,7 +312,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     Point newNodeRight;
     if (endSegmentIndex == startSegmentIndex)
     {
-        newNodeRight = m_landBoundary.Node(startNodeLeftBoundary) + m_landBoundary.Node(endNodeLeftBoundary) - newNodeLeft;
+        newNodeRight = m_landBoundary.Node(startNodeLeftBoundary) + (m_landBoundary.Node(endNodeLeftBoundary) - newNodeLeft);
     }
     else
     {
