@@ -132,8 +132,7 @@ namespace meshkernel
         /// @param[in] args         The arguments to be formatted.
         template <typename... Args>
         MeshKernelError(FormatString const& format_string, Args&&... args)
-            : m_formatted_message(),
-              m_what(),
+            : m_what(),
               m_source_location(format_string.SourceLocation())
         {
             if (sizeof...(args) == 0)
@@ -168,8 +167,6 @@ namespace meshkernel
         [[nodiscard]] ExitCode Code() const { return Category().Code(); }
 
     protected:
-        std::string m_formatted_message; ///< The formatted message
-
         /// @brief Returns the error category.
         /// @return The error category.
         [[nodiscard]] virtual ErrorCategory Category() const
@@ -181,6 +178,8 @@ namespace meshkernel
         [[nodiscard]] virtual std::string FormattedMessage() const { return m_formatted_message; }
 
     private:
+        std::string m_formatted_message; ///< The formatted message
+
         mutable std::string m_what; ///< C-style formatted message
 
         std::source_location m_source_location; ///< The source location
@@ -301,7 +300,7 @@ namespace meshkernel
             return fmt_ns::format("Error occurred at index {} (location: {}). {}",
                                   m_mesh_index,
                                   Mesh::LocationToString.at(m_mesh_location),
-                                  MeshKernelError::m_formatted_message);
+                                  MeshKernelError::FormattedMessage());
         }
 
         meshkernel::UInt m_mesh_index;  ///< The invalid mesh location index.
