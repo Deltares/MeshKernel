@@ -212,7 +212,7 @@ namespace meshkernel
     class NotImplemented final : public MeshKernelError
     {
     public:
-        // inherit
+        /// @brief Class constructor
         using MeshKernelError::MeshKernelError;
 
     private:
@@ -228,7 +228,7 @@ namespace meshkernel
     class AlgorithmError final : public MeshKernelError
     {
     public:
-        // inherit
+        /// @brief Class constructor
         using MeshKernelError::MeshKernelError;
 
     private:
@@ -247,7 +247,7 @@ namespace meshkernel
     class ConstraintError final : public MeshKernelError
     {
     public:
-        /// @brief ConstraintError constructor
+        /// @brief Class constructor
         using MeshKernelError::MeshKernelError;
 
     private:
