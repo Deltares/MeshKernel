@@ -370,8 +370,7 @@ namespace meshkernel
         }
 
         /// @brief Determine if the edges are adjacent, if so then return the start and end points (adjacent.f90)
-        // TODO change name. 1. AreLinksAdjacent and 2. start and end node ids are also returned
-        void IsLinkAdjacentToLink(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const;
+        void AreEdgesAdjacent(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const;
 
         /// @brief Find edge on the opposite side of the element
         /// @note Currently only works for quadrilateral elements.

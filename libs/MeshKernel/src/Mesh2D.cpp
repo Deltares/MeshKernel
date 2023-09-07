@@ -2027,7 +2027,7 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
     return constants::missing::uintValue;
 }
 
-void Mesh2D::IsLinkAdjacentToLink(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const
+void Mesh2D::AreEdgesAdjacent(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const
 {
     Point edge1Start = m_nodes[m_edges[edge1].first];
     Point edge1End = m_nodes[m_edges[edge1].second];
@@ -2125,8 +2125,7 @@ void Mesh2D::GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary
             UInt endNode;
             bool areAdjacent = false;
 
-            // TODO Change to AreLinksAdjacent
-            IsLinkAdjacentToLink(edgeI, edgeJ, areAdjacent, startNode, endNode);
+            AreEdgesAdjacent(edgeI, edgeJ, areAdjacent, startNode, endNode);
 
             if (areAdjacent)
             {
