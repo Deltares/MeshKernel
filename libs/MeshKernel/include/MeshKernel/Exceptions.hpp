@@ -152,6 +152,7 @@ namespace meshkernel
         /// @return The explanatory string of the error.
         const char* what() const noexcept override
         {
+#if HAVE_SRC_LOC_IN_ERR_MSGS
             m_what = fmt_ns::format("Exception of type '{}' in {} ({}:{}) {}: {}\n",
                                     Category().Name(),
                                     StrippedFilePath(),
@@ -159,6 +160,11 @@ namespace meshkernel
                                     m_source_location.column(),
                                     m_source_location.function_name(),
                                     FormattedMessage());
+#else
+            m_what = fmt_ns::format("Exception of type '{}': {}\n",
+                                    Category().Name(),
+                                    FormattedMessage());
+#endif
             return m_what.c_str();
         }
 

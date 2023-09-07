@@ -34,6 +34,9 @@ endif()
 # CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur
 add_compile_definitions(CMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
 
+# Show the source location in the exception message?
+add_compile_definitions(HAVE_SRC_LOC_IN_ERR_MSGS=$<BOOL:${HAVE_SRC_LOC_IN_ERR_MSGS}>)
+
 # format library: from the standard lib or third-party?
 # When supported, std::format is preferred. Otherwise, fmtlib should be used.
 set(USE_LIBFMT 0)
