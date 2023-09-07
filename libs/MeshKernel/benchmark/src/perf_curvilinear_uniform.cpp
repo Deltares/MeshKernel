@@ -62,3 +62,51 @@ BENCHMARK(BM_CurvilinearUniform)
     ->Args({2000, 2000})
     ->Args({4000, 4000})
     ->Args({5000, 5000});
+
+static void BM_CurvilinearUniform_add_faces_to_the_left(benchmark::State& state)
+{
+    for (auto _ : state)
+    {
+        std::vector<meshkernel::Point> polygon_points{};
+
+        auto const polygons = std::make_shared<Polygons>(polygon_points, Projection::cartesian);
+        const double block_size = 10.0;
+
+        MakeGridParameters make_grid_arameters;
+        make_grid_arameters.angle = 0.0;
+        make_grid_arameters.origin_x = 0.0;
+        make_grid_arameters.origin_y = 0.0;
+        make_grid_arameters.num_columns = static_cast<int>(state.range(0));
+        make_grid_arameters.num_rows = static_cast<int>(state.range(1));
+        make_grid_arameters.block_size_x = block_size;
+        make_grid_arameters.block_size_y = block_size;
+
+        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
+            curvilinear_grid_create_uniform.Compute(make_grid_arameters.angle,
+                                                    make_grid_arameters.block_size_x,
+                                                    make_grid_arameters.block_size_y,
+                                                    polygons,
+                                                    0));
+
+        double const faces_to_add = static_cast<int>(state.range(2));
+
+        // pause the timers to prepare the benchmark (excludes operation
+        // that are irrelevant to the benchmark and should not be measured)
+        state.PauseTiming();
+
+        Point point{-5.0, 5.0};
+        for (int i = 0; i < faces_to_add; ++i)
+        {
+            curvilinearGrid->InsertFace(point);
+            point.x -= block_size;
+        }
+
+        // resume the timers to begin benchmarking
+        state.ResumeTiming();
+    }
+}
+BENCHMARK(BM_CurvilinearUniform_add_faces_to_the_left)
+    ->ArgNames({"x-nodes", "y-nodes", "faces_to_add"})
+    ->Args({5000, 5000, 10})
+    ->Args({5000, 5000, 100});
