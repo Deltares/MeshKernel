@@ -107,4 +107,4 @@ static void BM_CurvilinearUniform_add_faces_to_left_boundary(benchmark::State& s
 BENCHMARK(BM_CurvilinearUniform_add_faces_to_left_boundary)
     ->ArgNames({"x-nodes", "y-nodes", "faces_to_add"})
     ->Args({500, 500, 10})
-    ->Args({500, 500, 100});
+    ->Args({1000, 1000, 100});
