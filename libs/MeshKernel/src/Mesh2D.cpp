@@ -1531,7 +1531,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     if (deletionOption == FacesCompletelyIncluded)
     {
         Administrate();
-        const auto edgeMask = EdgesMaskOfFacesInPolygons(polygon, invertDeletion, false);
+        const auto edgeMask = MaskEdgesOfFacesInPolygon(polygon, invertDeletion, false);
 
         // mark the edges for deletion
         for (UInt e = 0; e < GetNumEdges(); ++e)
@@ -1794,7 +1794,7 @@ Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
     return {edgesIntersectionsResult, faceIntersectionsResult};
 }
 
-std::vector<int> Mesh2D::EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const
+std::vector<int> Mesh2D::MaskEdgesOfFacesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected) const
 {
     // mark all nodes in polygon with 1
     std::vector<int> nodeMask(GetNumNodes(), 0);

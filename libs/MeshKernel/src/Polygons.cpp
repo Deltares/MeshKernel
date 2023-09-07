@@ -59,7 +59,7 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
             polygonPoints.emplace_back(polygon[i]);
         }
 
-        m_enclosures.emplace_back(PolygonalEnclosure(std::move(polygonPoints), m_projection));
+        m_enclosures.emplace_back(polygonPoints, m_projection);
 
         // No inner polygon found
         if (inner_polygons_indices.size() <= 1)
@@ -320,7 +320,8 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
         {
             return {true, i};
         }
-        else if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
+
+        if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
         {
             // Point can be found in an hole in the polygon
             break;
@@ -357,7 +358,7 @@ std::vector<meshkernel::Point> Polygons::GatherAllEnclosureNodes() const
     const Point outerSeparator{constants::missing::doubleValue, constants::missing::doubleValue};
     const Point innerSeparator{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator};
 
-    std::vector<meshkernel::Point> allPoints;
+    std::vector<Point> allPoints;
     allPoints.reserve(m_numberOfNodes);
 
     for (size_t i = 0; i < m_enclosures.size(); ++i)

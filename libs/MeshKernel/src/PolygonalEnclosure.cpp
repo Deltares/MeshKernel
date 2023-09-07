@@ -7,18 +7,19 @@ meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& poi
                                                    Projection projection)
 {
     // The inner polygon indices, the first interval corresponds to the outer polygon
-    IndexRangeArray innerIndices = FindIndices(points, 0, points.size() - 1, constants::missing::innerOuterSeparator);
+    const IndexRangeArray innerIndices = FindIndices(points, 0, points.size() - 1, constants::missing::innerOuterSeparator);
 
     ConstructOuterPolygon(points, 0, points.size() - 1, innerIndices, projection);
 
-    if (innerIndices.size() >= 1)
+    if (!innerIndices.empty())
     {
         ConstructInnerPolygons(points, innerIndices, projection);
     }
 }
 
 meshkernel::Polygon meshkernel::PolygonalEnclosure::ConstructPolygon(const std::vector<Point>& points,
-                                                                     size_t start, size_t end,
+                                                                     size_t start,
+                                                                     size_t end,
                                                                      Projection projection)
 {
     if (start > end)
@@ -47,12 +48,13 @@ meshkernel::Polygon meshkernel::PolygonalEnclosure::ConstructPolygon(const std::
 }
 
 void meshkernel::PolygonalEnclosure::ConstructOuterPolygon(const std::vector<Point>& points,
-                                                           size_t start, size_t end,
+                                                           size_t start,
+                                                           size_t end,
                                                            const IndexRangeArray& innerIndices,
                                                            Projection projection)
 {
 
-    size_t outerStartIndex = start;
+    const size_t outerStartIndex = start;
     size_t outerEndIndex = end;
 
     if (innerIndices.size() > 1)

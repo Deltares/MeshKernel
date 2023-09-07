@@ -225,7 +225,7 @@ namespace meshkernel
 
     /// @brief Compute the point at some position along the line connecting start- and end-point.
     ///
-    /// \$f r = (1-\lambda) s + \lambda e \f$
+    /// \f$ r = (1-\lambda) s + \lambda e \f$
     Point PointAlongLine(const Point& startPoint, const Point& endPoint, const double lambda);
 
     /// @brief Rotate a point around a reference
