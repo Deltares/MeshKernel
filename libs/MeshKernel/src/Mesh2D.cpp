@@ -1936,46 +1936,28 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
     return nodeMask;
 }
 
-void Mesh2D::print()
+void Mesh2D::print(std::ostream& out) const
 {
+    out << "nodex = zeros ( " << m_nodes.size() << ", 1);" << std::endl;
+    out << "nodey = zeros ( " << m_nodes.size() << ", 1);" << std::endl;
+    out << "edges = zeros ( " << m_edges.size() << ", 2);" << std::endl;
 
-    for (UInt i = 0; i < m_facesNodes.size(); ++i)
+    for (UInt i = 0; i < m_nodes.size(); ++i)
     {
-        std::cout << "element " << i << std::endl;
-
-        for (UInt j = 0; j < m_facesNodes[i].size(); ++j)
-        {
-            std::cout << " point " << m_facesNodes[i][j] << "--> " << m_nodes[m_facesNodes[i][j]].x << "  " << m_nodes[m_facesNodes[i][j]].y << std::endl;
-        }
-
-        std::cout << "-------------------------------- " << std::endl;
+        out << "nodex (" << i + 1 << " ) = " << m_nodes[i].x << ";" << std::endl;
     }
 
     for (UInt i = 0; i < m_nodes.size(); ++i)
     {
-        std::cout << "node " << i + 1 << " = {" << m_nodes[i].x << ", " << m_nodes[i].y << "}" << std::endl;
-    }
-}
-
-void Mesh2D::printMatlab()
-{
-
-    for (UInt i = 0; i < m_nodes.size(); ++i)
-    {
-        std::cout << "nodex (" << i + 1 << " ) = " << m_nodes[i].x << ";" << std::endl;
-    }
-
-    for (UInt i = 0; i < m_nodes.size(); ++i)
-    {
-        std::cout << "nodey (" << i + 1 << " ) = " << m_nodes[i].y << ";" << std::endl;
+        out << "nodey (" << i + 1 << " ) = " << m_nodes[i].y << ";" << std::endl;
     }
 
     std::cout << "edges = zeros ( " << m_edges.size() << ", 2 );" << std::endl;
 
     for (UInt i = 0; i < m_edges.size(); ++i)
     {
-        std::cout << "edges ( " << i + 1 << ", 1 ) = " << m_edges[i].first + 1 << ";" << std::endl;
-        std::cout << "edges ( " << i + 1 << ", 2 ) = " << m_edges[i].second + 1 << ";" << std::endl;
+        out << "edges ( " << i + 1 << ", 1 ) = " << m_edges[i].first + 1 << ";" << std::endl;
+        out << "edges ( " << i + 1 << ", 2 ) = " << m_edges[i].second + 1 << ";" << std::endl;
     }
 }
 
@@ -2025,29 +2007,22 @@ meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) 
     return constants::missing::uintValue;
 }
 
-void Mesh2D::NextFace(const UInt faceId, const UInt edgeId, UInt& adjacentFaceId, UInt& oppositeEdgeId) const
+meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
 {
-    oppositeEdgeId = constants::missing::uintValue;
-    adjacentFaceId = constants::missing::uintValue;
+    if (faceId != constants::missing::uintValue)
+    {
+        if (m_edgesFaces[edgeId][0] == faceId)
+        {
+            return m_edgesFaces[edgeId][1];
+        }
 
-    if (faceId == constants::missing::uintValue)
-    {
-        return;
-    }
-
-    if (m_edgesFaces[edgeId][0] == faceId)
-    {
-        adjacentFaceId = m_edgesFaces[edgeId][1];
-    }
-    else if (m_edgesFaces[edgeId][1] == faceId)
-    {
-        adjacentFaceId = m_edgesFaces[edgeId][0];
+        if (m_edgesFaces[edgeId][1] == faceId)
+        {
+            return m_edgesFaces[edgeId][0];
+        }
     }
 
-    if (adjacentFaceId != constants::missing::uintValue)
-    {
-        oppositeEdgeId = FindOppositeEdge(adjacentFaceId, edgeId);
-    }
+    return constants::missing::uintValue;
 }
 
 void Mesh2D::IsLinkAdjacentToLink(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const
@@ -2168,6 +2143,47 @@ void Mesh2D::GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary
     }
 }
 
+void Mesh2D::GatherNodesToMerge(const UInt startNode, const UInt endNode, const Edge& boundaryEdge, std::vector<std::pair<UInt, UInt>>& nodesToMerge, std::vector<int>& mergeIndicator) const
+{
+    if (startNode != constants::missing::uintValue)
+    {
+        if (mergeIndicator[boundaryEdge.first] == 1)
+        {
+            nodesToMerge.push_back({boundaryEdge.first, startNode});
+            mergeIndicator[boundaryEdge.first] = -1;
+        }
+    }
+
+    if (endNode != constants::missing::uintValue)
+    {
+        if (mergeIndicator[boundaryEdge.second] == 1)
+        {
+            nodesToMerge.push_back({boundaryEdge.second, endNode});
+            mergeIndicator[boundaryEdge.second] = -1;
+        }
+    }
+}
+
+void Mesh2D::GatherHangingNodes(const UInt primaryStartNode, const UInt primaryEndNode, const Edge& irregularEdge, std::vector<UInt>& hangingNodesOnEdge, UInt& numberOfHangingNodes, std::vector<int>& mergeIndicator) const
+{
+    UInt secondaryStartNode = irregularEdge.first;
+    UInt secondaryEndNode = irregularEdge.second;
+
+    if (mergeIndicator[secondaryStartNode] == 1 && secondaryStartNode != primaryStartNode && secondaryStartNode != primaryEndNode)
+    {
+        hangingNodesOnEdge[numberOfHangingNodes] = secondaryStartNode;
+        ++numberOfHangingNodes;
+        mergeIndicator[secondaryStartNode] = 0;
+    }
+
+    if (mergeIndicator[secondaryEndNode] == 1 && secondaryEndNode != primaryStartNode && secondaryEndNode != primaryEndNode)
+    {
+        hangingNodesOnEdge[numberOfHangingNodes] = secondaryEndNode;
+        ++numberOfHangingNodes;
+        mergeIndicator[secondaryEndNode] = 0;
+    }
+}
+
 void Mesh2D::ConnectCurvilinearQuadsDDType()
 {
     // Only here to shorten several of the initialisations below
@@ -2190,14 +2206,14 @@ void Mesh2D::ConnectCurvilinearQuadsDDType()
 
     GatherHangingNodeIds(edgesOnDomainBoundary, irregularEdge, irregularEdgeCount, irregularStartNodes, irregularEndNodes);
 
-    std::vector<int> lc(GetNumEdges(), 1);
+    std::vector<bool> adjacentEdgeIndicator(GetNumEdges(), true);
     std::vector<std::pair<UInt, UInt>> nodesToMerge;
     nodesToMerge.reserve(4 * GetNumEdges());
 
     std::vector<UInt> hangingNodesOnEdge(GetNumEdges());
     std::vector<int> mergeIndicator(GetNumEdges(), 1);
 
-    // Collect nodes to be merged.
+    // Free hanging nodes along edges.
     for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
     {
         if (irregularEdgeCount[i] == missingValue)
@@ -2206,9 +2222,7 @@ void Mesh2D::ConnectCurvilinearQuadsDDType()
         }
 
         UInt boundaryEdgeId = edgesOnDomainBoundary[i];
-        UInt boundaryFaceId = elementsOnDomainBoundary[i];
         Edge boundaryEdge = m_edges[boundaryEdgeId];
-        Point boundaryNode = m_nodes[boundaryEdge.first];
 
         UInt primaryStartNode = irregularStartNodes[i];
         UInt primaryEndNode = irregularEndNodes[i];
@@ -2216,60 +2230,32 @@ void Mesh2D::ConnectCurvilinearQuadsDDType()
         UInt numberOfHangingNodes = 0;
         std::fill(hangingNodesOnEdge.begin(), hangingNodesOnEdge.end(), missingValue);
 
+        // Find hanging nodes along edge and collect nodes to be merged
         for (UInt j = 0; j < irregularEdgeCount[i]; ++j)
         {
             UInt irregularEdgeIndex = irregularEdge[i][j];
             UInt irregularEdgeId = edgesOnDomainBoundary[irregularEdgeIndex];
-            UInt secondaryStartNode = m_edges[irregularEdgeId].first;
-            UInt secondaryEndNode = m_edges[irregularEdgeId].second;
 
             if (irregularEdgeCount[i] >= irregularEdgeCount[irregularEdgeIndex])
             {
-
-                if (primaryStartNode != missingValue)
-                {
-                    if (mergeIndicator[boundaryEdge.first] == 1)
-                    {
-                        nodesToMerge.push_back({boundaryEdge.first, primaryStartNode});
-                        mergeIndicator[boundaryEdge.first] = -1;
-                    }
-                }
-
-                if (primaryEndNode != missingValue)
-                {
-                    if (mergeIndicator[boundaryEdge.second] == 1)
-                    {
-                        nodesToMerge.push_back({boundaryEdge.second, primaryEndNode});
-                        mergeIndicator[boundaryEdge.second] = -1;
-                    }
-                }
+                GatherNodesToMerge(primaryStartNode, primaryEndNode, boundaryEdge, nodesToMerge, mergeIndicator);
 
                 if (irregularEdgeCount[i] > irregularEdgeCount[irregularEdgeIndex])
                 {
-                    if (mergeIndicator[secondaryStartNode] == 1 && secondaryStartNode != primaryStartNode && secondaryStartNode != primaryEndNode)
-                    {
-                        hangingNodesOnEdge[numberOfHangingNodes] = secondaryStartNode;
-                        ++numberOfHangingNodes;
-                        mergeIndicator[secondaryStartNode] = 0;
-                    }
-
-                    if (mergeIndicator[secondaryEndNode] == 1 && secondaryEndNode != primaryStartNode && secondaryEndNode != primaryEndNode)
-                    {
-                        hangingNodesOnEdge[numberOfHangingNodes] = secondaryEndNode;
-                        ++numberOfHangingNodes;
-                        mergeIndicator[secondaryEndNode] = 0;
-                    }
+                    GatherHangingNodes(primaryStartNode, primaryEndNode, m_edges[irregularEdgeId], hangingNodesOnEdge, numberOfHangingNodes, mergeIndicator);
                 }
 
-                if (lc[boundaryEdgeId] == 1 && lc[irregularEdgeId] == 1)
+                if (adjacentEdgeIndicator[boundaryEdgeId] && adjacentEdgeIndicator[irregularEdgeId])
                 {
-                    lc[boundaryEdgeId] = 0;
+                    adjacentEdgeIndicator[boundaryEdgeId] = false;
                     m_edges[boundaryEdgeId].first = missingValue;
                     m_edges[boundaryEdgeId].second = missingValue;
                 }
             }
         }
 
+        UInt boundaryFaceId = elementsOnDomainBoundary[i];
+        Point boundaryNode = m_nodes[boundaryEdge.first];
         FreeHangingNodes(numberOfHangingNodes, hangingNodesOnEdge, boundaryFaceId, boundaryEdge, boundaryNode, boundaryEdgeId);
     }
 
@@ -2359,14 +2345,13 @@ void Mesh2D::FreeTwoHangingNodes(const UInt faceId, const UInt edgeId, const Han
     ConnectNodes(newNodeIndex, startNode);
     ConnectNodes(newNodeIndex, endNode);
 
-    UInt adjacentFaceId;
-    UInt nextOppositeEdge;
+    UInt adjacentFaceId = NextFace(faceId, edgeId);
 
-    NextFace(faceId, edgeId, adjacentFaceId, nextOppositeEdge);
     DeleteEdge(edgeId);
 
     if (adjacentFaceId != constants::missing::uintValue)
     {
+        UInt nextOppositeEdge = FindOppositeEdge(adjacentFaceId, edgeId);
         // Connect node marked with 'o' to nodes labeled 1 and 2
         ConnectNodes(newNodeIndex, m_edges[nextOppositeEdge].first);
         ConnectNodes(newNodeIndex, m_edges[nextOppositeEdge].second);
@@ -2401,14 +2386,13 @@ void Mesh2D::FreeThreeHangingNodes(const UInt faceId, const UInt edgeId, const H
     ConnectNodes(hangingNodes[2], newNodeIndex);
     ConnectNodes(hangingNodes[2], endNode);
 
-    UInt adjacentFaceId;
-    UInt nextOppositeEdge;
+    UInt adjacentFaceId = NextFace(faceId, edgeId);
 
-    NextFace(faceId, edgeId, adjacentFaceId, nextOppositeEdge);
     DeleteEdge(edgeId);
 
     if (adjacentFaceId != constants::missing::uintValue)
     {
+        UInt nextOppositeEdge = FindOppositeEdge(adjacentFaceId, edgeId);
         ConnectNodes(newNodeIndex, m_edges[nextOppositeEdge].first);
         ConnectNodes(newNodeIndex, m_edges[nextOppositeEdge].second);
     }
@@ -2437,12 +2421,7 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
     // Create 3 new nodes (labelled 1, 2 and 3 in ASCII diagram)
     // Connect newly created nodes to hanging nodes
 
-    UInt firstNextFace;
-    UInt firstNextOppositeEdge;
-
-    NextFace(faceId, edgeId, firstNextFace, firstNextOppositeEdge);
-    UInt firstNextOppositeStartNode = m_edges[firstNextOppositeEdge].first;
-    UInt firstNextOppositeEndNode = m_edges[firstNextOppositeEdge].second;
+    UInt firstNextFace = NextFace(faceId, edgeId);
 
     // Compute points labeled 1, 2 or 3 in ASCII diagram above
     UInt node1 = InsertNode(PointAlongLine(m_nodes[startNode], m_nodes[endNode], 0.25));
@@ -2474,6 +2453,10 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
         return;
     }
 
+    UInt firstNextOppositeEdge = FindOppositeEdge(firstNextFace, edgeId);
+    UInt firstNextOppositeStartNode = m_edges[firstNextOppositeEdge].first;
+    UInt firstNextOppositeEndNode = m_edges[firstNextOppositeEdge].second;
+
     //--------------------------------
     // Create 2 new nodes (labelled 4 and 5 in ASCII diagram)
     // Connect newly created nodes to (newly created) hanging nodes (1, 2 and 3)
@@ -2496,9 +2479,7 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
     // The original edge can now be deleted.
     DeleteEdge(firstNextOppositeEdge);
 
-    UInt secondNextFaceId;
-    UInt secondNextOppositeEdge;
-    NextFace(firstNextFace, firstNextOppositeEdge, secondNextFaceId, secondNextOppositeEdge);
+    UInt secondNextFaceId = NextFace(firstNextFace, firstNextOppositeEdge);
 
     // Reached the end of the mesh
     if (secondNextFaceId == constants::missing::uintValue)
@@ -2506,6 +2487,7 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
         return;
     }
 
+    UInt secondNextOppositeEdge = FindOppositeEdge(secondNextFaceId, firstNextOppositeEdge);
     UInt secondNextOppositeStartNode = m_edges[secondNextOppositeEdge].first;
     UInt secondNextOppositeEndNode = m_edges[secondNextOppositeEdge].second;
 
@@ -2527,10 +2509,7 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
     // Create 1 new node (labelled 6 in ASCII diagram)
     // Connect newly created node to existing nodes
 
-    UInt thirdNextFaceId;
-    UInt thirdNextOppositeEdge;
-
-    NextFace(secondNextFaceId, secondNextOppositeEdge, thirdNextFaceId, thirdNextOppositeEdge);
+    UInt thirdNextFaceId = NextFace(secondNextFaceId, secondNextOppositeEdge);
 
     // Reached the end of the mesh
     if (thirdNextFaceId == constants::missing::uintValue)
@@ -2538,6 +2517,7 @@ void Mesh2D::FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const Ha
         return;
     }
 
+    UInt thirdNextOppositeEdge = FindOppositeEdge(thirdNextFaceId, secondNextOppositeEdge);
     ConnectNodes(node6, m_edges[thirdNextOppositeEdge].second);
     ConnectNodes(node6, m_edges[thirdNextOppositeEdge].first);
 }

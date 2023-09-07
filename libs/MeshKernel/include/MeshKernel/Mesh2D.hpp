@@ -296,11 +296,14 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
+        /// @brief Connect two or more curvilinear grids
+        ///
+        /// Grid with upto 4 hanging nodes can be connected
+        /// \note All element along the region to be connected must be quadrilaterals.
         void ConnectCurvilinearQuadsDDType();
 
-        // TODO remove when ConnectCurvilinearQuadsDDType is complete
-        void print();
-        void printMatlab();
+        /// @brief Print the mesh in a form that can be loaded into matlab/octave.
+        void print(std::ostream& out = std::cout) const;
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
@@ -372,18 +375,19 @@ namespace meshkernel
 
         /// @brief Find edge on the opposite side of the element
         /// @note Currently only works for quadrilateral elements.
-        /// Will throw exception NotImplemented for other element shapes.
+        /// Will throw exception NotImplemented for non-quadrilateral element shapes.
         UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
 
         /// @brief Get the next face adjacent to the edge on the opposite side.
         /// @param [in] faceId The starting face
         /// @param [in] edgeId The starting edge
-        /// @param [out] adjacentFaceId Id of the face
-        /// @param [out] oppositeEdgeId Id of the edge on the opposite side of the
-        void NextFace(const UInt faceId, const UInt edgeId, UInt& adjacentFaceId, UInt& oppositeEdgeId) const;
+        /// @return Id of neighbour face along the edge
+        UInt NextFace(const UInt faceId, const UInt edgeId) const;
 
+        /// @brief Find all elements that do no have a neighbour across any of edges.
         void GetElementsOnDomainBoundary(std::vector<UInt>& elementsOnDomainBoundary, std::vector<UInt>& edgesOnDomainBoundary) const;
 
+        /// @brief Get list of node id's ordered with distance from given point.
         void GetOrderedDistanceFromPoint(const std::vector<UInt>& nodeIndices, const UInt numberOfNodes, const Point& point,
                                          HangingNodeIndexArray& nearestNeighbours) const;
 
@@ -417,9 +421,22 @@ namespace meshkernel
                                   std::vector<UInt>& irregularStartNodes,
                                   std::vector<UInt>& irregularEndNodes) const;
 
-        // static constexpr int NoMergeNecessary = 0;
-        // static constexpr int NoMergeNecessary = 1;
-        // static constexpr int NoMergeNecessary = -1;
+        /// @brief Gather all the nodes that need to be merged.
+        ///
+        /// Before merging there may be 2 or more nodes that are at the same point.
+        void GatherNodesToMerge(const UInt startNode,
+                                const UInt endNode,
+                                const Edge& boundaryEdge,
+                                std::vector<std::pair<UInt, UInt>>& nodesToMerge,
+                                std::vector<int>& mergeIndicator) const;
+
+        /// @brief Gather hanging nodes along the irregular edge.
+        void GatherHangingNodes(const UInt primaryStartNode,
+                                const UInt primaryEndNode,
+                                const Edge& irregularEdge,
+                                std::vector<UInt>& hangingNodesOnEdge,
+                                UInt& numberOfHangingNodes,
+                                std::vector<int>& mergeIndicator) const;
     };
 
 } // namespace meshkernel

@@ -22,9 +22,6 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     // Connect hanging nodes
     unconnectedGrid->ConnectCurvilinearQuadsDDType();
 
-    unconnectedGrid->printMatlab();
-    connectedGrid->printMatlab();
-
     // Check mesh entity counts are the same
     ASSERT_EQ(unconnectedGrid->GetNumNodes(), connectedGrid->GetNumNodes());
     ASSERT_EQ(unconnectedGrid->GetNumEdges(), connectedGrid->GetNumEdges());
@@ -95,4 +92,30 @@ TEST(Mesh2DConnectDD, ConnectGridComplexTest)
     // On each edge of this is a small rectangle each progressively more refined
     // than the previous.
     CheckConnectGrids("unmatched_all_sides.nc", "matched_all_sides.nc");
+}
+
+TEST(Mesh2DConnectDD, ConnectGridSimple4HangingNodes2Element)
+{
+    // Test connecting edges with 4 hanging nodes along irregular edge, with two master elements deep
+    // When there are 4 hanging nodes, upto 3 elements on the coarse side will be affected
+    CheckConnectGrids("unmatched_4_hanging_nodes_2_elements.nc", "matched_4_hanging_nodes_2_elements.nc");
+}
+
+TEST(Mesh2DConnectDD, ConnectGridSimple4HangingNodes1Element)
+{
+    // Test connecting edges with 4 hanging nodes along irregular edge, with single master element
+    // When there are 4 hanging nodes, upto 3 elements on the coarse side will be affected
+    CheckConnectGrids("unmatched_4_hanging_nodes_1_element.nc", "matched_4_hanging_nodes_1_element.nc");
+}
+
+TEST(Mesh2DConnectDD, ConnectGridSimple3HangingNodes)
+{
+    // Test connecting edges with 3 hanging nodes along irregular edge
+    CheckConnectGrids("unmatched_3_hanging_nodes.nc", "matched_3_hanging_nodes.nc");
+}
+
+TEST(Mesh2DConnectDD, ConnectGridSimple2HangingNodes)
+{
+    // Test connecting edges with 2 hanging nodes along irregular edge
+    CheckConnectGrids("unmatched_2_hanging_nodes.nc", "matched_2_hanging_nodes.nc");
 }
