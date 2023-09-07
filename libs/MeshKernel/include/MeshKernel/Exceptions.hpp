@@ -39,12 +39,13 @@
 #include <string>
 #include <string_view>
 
+// set the namespace of the formatting library
 #if USE_LIBFMT
 #include <fmt/format.h>
-namespace fmt_ = fmt;
+namespace fmt_ns = fmt;
 #else
 #include <format>
-namespace fmt_ = std;
+namespace fmt_ns = std;
 #endif
 
 #define STRINGIFY(str) #str
@@ -53,84 +54,95 @@ namespace fmt_ = std;
 namespace meshkernel
 {
 
+    /// @brief Enumeration of exit codes
     enum ExitCode
     {
-        Success = 0,
-        MeshKernelErrorCode = 1,
-        NotImplementedCode = 2,
-        AlgorithmErrorCode = 3,
-        ConstraintErrorCode = 4,
-        MeshGeometryErrorCode = 5,
-        StdLibExceptionCode = 6,
-        UnknownExceptionCode = 7
+        Success = 0,               ///< Success
+        MeshKernelErrorCode = 1,   ///< MehKernel error
+        NotImplementedCode = 2,    ///< Not implemented error
+        AlgorithmErrorCode = 3,    ///< Algorithm error
+        ConstraintErrorCode = 4,   ///< Constraint error
+        MeshGeometryErrorCode = 5, ///< Geometry error
+        StdLibExceptionCode = 6,   ///< Standrad library exception
+        UnknownExceptionCode = 7   ///< Unknown exception
     };
 
+    /// @brief Contains error category information
     class ErrorCategory
     {
     public:
+        /// @brief Class constructor
+        /// @param[in] name      The name of the error category
+        /// @param[in] exit_code The exit code of the error category
         ErrorCategory(std::string_view name,
-                      ExitCode code)
+                      ExitCode exit_code)
             : m_name(name),
-              m_code{code}
+              m_exit_code{exit_code}
         {
         }
 
-        std::string Name() const { return m_name; }
+        /// @brief Returns the name of the error category
+        /// @return The name of the error category
+        [[nodiscard]] std::string_view Name() const { return m_name; }
 
-        ExitCode Code() const { return m_code; }
+        /// @brief Return the exit code of the error category
+        /// @return The exit code of the error category
+        [[nodiscard]] ExitCode Code() const { return m_exit_code; }
 
     private:
-        std::string m_name;
-        ExitCode m_code;
+        std::string_view m_name; ///< The name of the category
+        ExitCode m_exit_code;    ///< The exit code of the category
     };
 
-    class Message final
+    /// @brief Manages the format string and source location
+    class FormatString final
     {
     public:
         /// @brief Class constructor
-        /// @param[in] format          The format and source location
+        /// @param[in] format_string   The format string
         /// @param[in] source_location The source location
-        Message(const char* format,
-                std::source_location const& source_location = std::source_location::current())
-            : m_format(format),
+        template <typename... Args>
+        FormatString(const char* const format_string,
+                     std::source_location const& source_location = std::source_location::current())
+            : m_format_string(format_string),
               m_source_location(source_location)
         {
         }
 
-        /// @brief Returns the format
-        /// @return The format
-        const char* Format() const { return m_format; }
+        /// @brief Returns the format string
+        /// @return The format string
+        [[nodiscard]] std::string_view String() const { return m_format_string; }
 
         /// @brief Returns the source location
         /// @return The source location
-        std::source_location const& SourceLocation() const { return m_source_location; }
+        [[nodiscard]] std::source_location const& SourceLocation() const { return m_source_location; }
 
     private:
-        const char* m_format; ///< The format
+        const char* const m_format_string; ///< The format
 
         std::source_location m_source_location; ///< The source location
     };
 
+    /// @brief A class for throwing general MeshKernel exceptions
     class MeshKernelError : public std::exception
     {
     public:
         /// @brief Class constructor
-        /// @param[in] message The format and source location
-        /// @param[in] args    The arguments to be formatted.
+        /// @param[in] format_string The format string
+        /// @param[in] args         The arguments to be formatted.
         template <typename... Args>
-        MeshKernelError(Message const& message, Args&&... args)
-            : m_fmt_message(),
+        MeshKernelError(FormatString const& format_string, Args&&... args)
+            : m_formatted_message(),
               m_what(),
-              m_source_location(message.SourceLocation())
+              m_source_location(format_string.SourceLocation())
         {
             if (sizeof...(args) == 0)
             {
-                m_fmt_message = message.Format();
+                m_formatted_message = format_string.String();
             }
             else
             {
-                m_fmt_message = fmt_::vformat(message.Format(),
-                                              fmt_::make_format_args(args...));
+                m_formatted_message = fmt_ns::vformat(format_string.String(), fmt_ns::make_format_args(args...));
             }
         }
 
@@ -138,30 +150,35 @@ namespace meshkernel
         virtual ~MeshKernelError() = default;
 
         /// @brief Returns the explanatory string of the error.
-        /// @return the explanatory string of the error.
+        /// @return The explanatory string of the error.
         const char* what() const noexcept override
         {
-            m_what = fmt_::format("Exception of type '{}' in {} ({}:{}) {}: {}\n",
-                                  Category().Name(),
-                                  StrippedFilePath(),
-                                  m_source_location.line(),
-                                  m_source_location.column(),
-                                  m_source_location.function_name(),
-                                  FormattedMessage());
+            m_what = fmt_ns::format("Exception of type '{}' in {} ({}:{}) {}: {}\n",
+                                    Category().Name(),
+                                    StrippedFilePath(),
+                                    m_source_location.line(),
+                                    m_source_location.column(),
+                                    m_source_location.function_name(),
+                                    FormattedMessage());
             return m_what.c_str();
         }
 
-        ExitCode Code() const { return Category().Code(); }
+        /// @brief Returns the exit code
+        /// @return The exit code
+        [[nodiscard]] ExitCode Code() const { return Category().Code(); }
 
     protected:
-        std::string m_fmt_message; ///< The formatted message
+        std::string m_formatted_message; ///< The formatted message
 
         /// @brief Returns the error category.
         /// @return The error category.
-        virtual ErrorCategory Category() const { return {"MeshKernelError", ExitCode::MeshKernelErrorCode}; }
+        [[nodiscard]] virtual ErrorCategory Category() const
+        {
+            return {"MeshKernelError", ExitCode::MeshKernelErrorCode};
+        }
 
         /// @brief Returns the message.
-        virtual std::string FormattedMessage() const { return m_fmt_message; }
+        [[nodiscard]] virtual std::string FormattedMessage() const { return m_formatted_message; }
 
     private:
         mutable std::string m_what; ///< C-style formatted message
@@ -170,7 +187,7 @@ namespace meshkernel
 
         /// @brief Strips CMAKE_SRC_DIR from the path of the file name obtained from the source location.
         /// @return The stripped file name.
-        std::string StrippedFilePath() const
+        [[nodiscard]] std::string StrippedFilePath() const
         {
             std::string path = m_source_location.file_name();
 #ifdef CMAKE_SRC_DIR
@@ -201,7 +218,10 @@ namespace meshkernel
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        ErrorCategory Category() const override { return {"NotImplemented", ExitCode::NotImplementedCode}; }
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"NotImplemented", ExitCode::NotImplementedCode};
+        }
     };
 
     /// @brief A class for throwing algorithm exceptions
@@ -214,7 +234,10 @@ namespace meshkernel
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        ErrorCategory Category() const override { return {"AlgorithmError", ExitCode::AlgorithmErrorCode}; }
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"AlgorithmError", ExitCode::AlgorithmErrorCode};
+        }
     };
 
     /// @brief An exception class thrown when an attempt is made that violates a range constraint.
@@ -230,7 +253,10 @@ namespace meshkernel
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        ErrorCategory Category() const override { return {"ConstraintError", ExitCode::ConstraintErrorCode}; }
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"ConstraintError", ExitCode::ConstraintErrorCode};
+        }
     };
 
     /// @brief A class for throwing mesh geometry errors.
@@ -238,45 +264,48 @@ namespace meshkernel
     {
     public:
         /// @brief Class constructor
-        /// @param[in] invalid_index               The invalid mesh location index.
-        /// @param[in] mesh_location               The location type.
-        /// @param[in] message The format and source location
-        /// @param[in] args                        The arguments to be formatted.
+        /// @param[in] mesh_index    The mesh index
+        /// @param[in] mesh_location The mesh location
+        /// @param[in] format_string The format string
+        /// @param[in] args          The arguments to be formatted.
         template <typename... Args>
-        MeshGeometryError(meshkernel::UInt invalid_mesh_index,
-                          Mesh::Location invalid_mesh_location,
-                          Message const& message,
+        MeshGeometryError(meshkernel::UInt mesh_index,
+                          Mesh::Location mesh_location,
+                          FormatString const& format_string,
                           Args&&... args)
-            : MeshKernelError(message, std::forward<Args>(args)...),
-              m_invalid_mesh_index(invalid_mesh_index),
-              m_invalid_mesh_location(invalid_mesh_location)
+            : MeshKernelError(format_string, std::forward<Args>(args)...),
+              m_mesh_index(mesh_index),
+              m_mesh_location(mesh_location)
         {
         }
 
         /// @brief Returns the invalid index.
         /// @return The invalid index.
-        meshkernel::UInt InavlidMeshIndex() const { return m_invalid_mesh_index; }
+        [[nodiscard]] meshkernel::UInt MeshIndex() const { return m_mesh_index; }
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
-        Mesh::Location InvalidMeshLocation() const { return m_invalid_mesh_location; }
+        [[nodiscard]] Mesh::Location MeshLocation() const { return m_mesh_location; }
 
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        ErrorCategory Category() const override { return {"MeshGeometryError", ExitCode::MeshGeometryErrorCode}; }
-
-        /// @brief Returns the message.
-        std::string FormattedMessage() const override
+        [[nodiscard]] ErrorCategory Category() const override
         {
-            return fmt_::format("Error occurred at index {} (location: {}). {}",
-                                m_invalid_mesh_index,
-                                Mesh::LocationToString.at(m_invalid_mesh_location),
-                                MeshKernelError::m_fmt_message);
+            return {"MeshGeometryError", ExitCode::MeshGeometryErrorCode};
         }
 
-        meshkernel::UInt m_invalid_mesh_index;  ///< The invalid mesh location index.
-        Mesh::Location m_invalid_mesh_location; ///< The location type.
+        /// @brief Returns the message.
+        [[nodiscard]] std::string FormattedMessage() const override
+        {
+            return fmt_ns::format("Error occurred at index {} (location: {}). {}",
+                                  m_mesh_index,
+                                  Mesh::LocationToString.at(m_mesh_location),
+                                  MeshKernelError::m_formatted_message);
+        }
+
+        meshkernel::UInt m_mesh_index;  ///< The invalid mesh location index.
+        Mesh::Location m_mesh_location; ///< The location type.
     };
 
 } // namespace meshkernel

@@ -102,6 +102,7 @@ namespace meshkernel
             Unknown = 3 ///< Unknown
         };
 
+        /// @brief Maps Location enumeration to a string
         inline static std::map<Location, std::string> const LocationToString = {
             {Location::Faces, "Faces"},
             {Location::Nodes, "Nodes"},
