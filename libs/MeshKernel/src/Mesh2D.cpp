@@ -1981,7 +1981,7 @@ meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) 
         }
     }
 
-    UInt opposite = constants::missing::uintValue;
+    UInt opposite;
 
     switch (position)
     {
@@ -1997,6 +1997,8 @@ meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) 
     case 3:
         opposite = 1;
         break;
+    default:
+        opposite = constants::missing::uintValue;
     }
 
     if (opposite != constants::missing::uintValue)
@@ -2114,29 +2116,31 @@ void Mesh2D::GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary
         {
             UInt edgeJ = edgesOnDomainBoundary[j];
 
-            if (i != j)
+            if (i == j)
             {
-                UInt startNode;
-                UInt endNode;
-                bool areAdjacent = false;
+                continue;
+            }
 
-                // TODO Change to AreLinksAdjacent
-                IsLinkAdjacentToLink(edgeI, edgeJ, areAdjacent, startNode, endNode);
+            UInt startNode;
+            UInt endNode;
+            bool areAdjacent = false;
 
-                if (areAdjacent)
+            // TODO Change to AreLinksAdjacent
+            IsLinkAdjacentToLink(edgeI, edgeJ, areAdjacent, startNode, endNode);
+
+            if (areAdjacent)
+            {
+                irregularEdgeCount[i] += 1;
+                irregularEdge[i][irregularEdgeCount[i]] = j;
+
+                if (startNode != constants::missing::uintValue)
                 {
-                    irregularEdgeCount[i] += 1;
-                    irregularEdge[i][irregularEdgeCount[i]] = j;
+                    irregularStartNodes[i] = startNode;
+                }
 
-                    if (startNode != constants::missing::uintValue)
-                    {
-                        irregularStartNodes[i] = startNode;
-                    }
-
-                    if (endNode != constants::missing::uintValue)
-                    {
-                        irregularEndNodes[i] = endNode;
-                    }
+                if (endNode != constants::missing::uintValue)
+                {
+                    irregularEndNodes[i] = endNode;
                 }
             }
         }
@@ -2145,22 +2149,16 @@ void Mesh2D::GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary
 
 void Mesh2D::GatherNodesToMerge(const UInt startNode, const UInt endNode, const Edge& boundaryEdge, std::vector<std::pair<UInt, UInt>>& nodesToMerge, std::vector<int>& mergeIndicator) const
 {
-    if (startNode != constants::missing::uintValue)
+    if (startNode != constants::missing::uintValue && mergeIndicator[boundaryEdge.first] == 1)
     {
-        if (mergeIndicator[boundaryEdge.first] == 1)
-        {
-            nodesToMerge.push_back({boundaryEdge.first, startNode});
-            mergeIndicator[boundaryEdge.first] = -1;
-        }
+        nodesToMerge.push_back({boundaryEdge.first, startNode});
+        mergeIndicator[boundaryEdge.first] = -1;
     }
 
-    if (endNode != constants::missing::uintValue)
+    if (endNode != constants::missing::uintValue && mergeIndicator[boundaryEdge.second] == 1)
     {
-        if (mergeIndicator[boundaryEdge.second] == 1)
-        {
-            nodesToMerge.push_back({boundaryEdge.second, endNode});
-            mergeIndicator[boundaryEdge.second] = -1;
-        }
+        nodesToMerge.push_back({boundaryEdge.second, endNode});
+        mergeIndicator[boundaryEdge.second] = -1;
     }
 }
 
@@ -2228,7 +2226,7 @@ void Mesh2D::ConnectCurvilinearQuadsDDType()
         UInt primaryEndNode = irregularEndNodes[i];
 
         UInt numberOfHangingNodes = 0;
-        std::fill(hangingNodesOnEdge.begin(), hangingNodesOnEdge.end(), missingValue);
+        std::ranges::fill(hangingNodesOnEdge, missingValue);
 
         // Find hanging nodes along edge and collect nodes to be merged
         for (UInt j = 0; j < irregularEdgeCount[i]; ++j)
@@ -2266,12 +2264,12 @@ void Mesh2D::ConnectCurvilinearQuadsDDType()
 void Mesh2D::MergeNodes(const std::vector<std::pair<UInt, UInt>>& nodesToMerge, std::vector<int>& mergeIndicator)
 {
 
-    for (const std::pair<UInt, UInt>& coincidingNodes : nodesToMerge)
+    for (const auto& [coincidingNodeFirst, coincidingNodeSecond] : nodesToMerge)
     {
-        if (mergeIndicator[coincidingNodes.second] != 0)
+        if (mergeIndicator[coincidingNodeSecond] != 0)
         {
-            MergeTwoNodes(coincidingNodes.first, coincidingNodes.second);
-            mergeIndicator[coincidingNodes.second] = 0;
+            MergeTwoNodes(coincidingNodeFirst, coincidingNodeSecond);
+            mergeIndicator[coincidingNodeSecond] = 0;
         }
     }
 }
@@ -2282,7 +2280,7 @@ void Mesh2D::GetOrderedDistanceFromPoint(const std::vector<UInt>& nodeIndices, c
     std::array<double, m_maximumNumberOfHangingNodesAlongEdge> distance;
     HangingNodeIndexArray distanceIndex;
 
-    std::fill(distance.begin(), distance.end(), 0.0);
+    std::ranges::fill(distance, 0.0);
 
     // Compute distances of nodes in list from the base point
     for (UInt j = 0; j < numberOfNodes; ++j)
@@ -2291,9 +2289,9 @@ void Mesh2D::GetOrderedDistanceFromPoint(const std::vector<UInt>& nodeIndices, c
     }
 
     std::iota(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, 0);
-    std::sort(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, [distance](UInt i, UInt j)
+    std::sort(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, [&distance](UInt i, UInt j)
               { return distance[i] < distance[j]; });
-    std::fill(nearestNeighbours.begin(), nearestNeighbours.end(), constants::missing::uintValue);
+    std::ranges::fill(nearestNeighbours, constants::missing::uintValue);
 
     // Get node indices in order of distance from point, closest first.
     for (UInt j = 0; j < numberOfNodes; ++j)
