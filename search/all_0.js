@@ -4,7 +4,7 @@ var searchData=
   ['account_5ffor_5fsamples_5foutside_1',['account_for_samples_outside',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a7f67d5c8c4af34722edba2c7dcf2c9a5',1,'meshkernel::MeshRefinementParameters']]],
   ['addincrementtopoint_2',['AddIncrementToPoint',['../namespacemeshkernel.html#a15cda98460fdb79b658f83825236bcb4',1,'meshkernel']]],
   ['addsegment_3',['AddSegment',['../classmeshkernel_1_1_land_boundary.html#a51d66581fb7b0485b83dea4985bb82ad',1,'meshkernel::LandBoundary']]],
-  ['addspline_4',['AddSpline',['../classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00',1,'meshkernel::Splines']]],
+  ['addspline_4',['AddSpline',['../classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines, UInt start, UInt size)'],['../classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines)']]],
   ['adimensionalpolylinesegmentdistance_5',['adimensionalPolylineSegmentDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a66496d13661f5406531be68b3d3819ce',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]],
   ['administrate_6',['Administrate',['../classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73',1,'meshkernel::LandBoundaries::Administrate()'],['../classmeshkernel_1_1_mesh2_d.html#adf046d573135e33e8074b18b6d456008',1,'meshkernel::Mesh2D::Administrate()']]],
   ['administratenodesedges_7',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],

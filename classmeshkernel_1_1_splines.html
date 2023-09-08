@@ -102,6 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00">AddSpline</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> start, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> size)</td></tr>
 <tr class="memdesc:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new spline to m_splineCornerPoints.  <a href="classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00">More...</a><br /></td></tr>
 <tr class="separator:a7bef4e9529986fdc6ecccebea3a9bd00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23fd8c21a71af9fbad421c5373403dee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee">AddSpline</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines)</td></tr>
+<tr class="memdesc:a23fd8c21a71af9fbad421c5373403dee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new spline to m_splineCornerPoints.  <a href="classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee">More...</a><br /></td></tr>
+<tr class="separator:a23fd8c21a71af9fbad421c5373403dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc8d4728f45976a5a922599f4ccacca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">SnapSpline</a> (const size_t splineIndex, const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;landBoundary, const int numberOfIterations=constants::numeric::defaultSnappingIterations)</td></tr>
 <tr class="memdesc:a4dc8d4728f45976a5a922599f4ccacca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap the spline to the land boundary (snap_spline)  <a href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">More...</a><br /></td></tr>
 <tr class="separator:a4dc8d4728f45976a5a922599f4ccacca"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,8 +206,34 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a23fd8c21a71af9fbad421c5373403dee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23fd8c21a71af9fbad421c5373403dee">&#9670;&nbsp;</a></span>AddSpline() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Splines::AddSpline </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>splines</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a new spline to m_splineCornerPoints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">splines</td><td>The spline corner points </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a7bef4e9529986fdc6ecccebea3a9bd00"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7bef4e9529986fdc6ecccebea3a9bd00">&#9670;&nbsp;</a></span>AddSpline()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bef4e9529986fdc6ecccebea3a9bd00">&#9670;&nbsp;</a></span>AddSpline() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
