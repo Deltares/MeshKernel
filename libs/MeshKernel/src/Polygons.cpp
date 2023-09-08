@@ -125,7 +125,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
 
         if (numberOfTriangles == 0)
         {
-            throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles = 0.");
+            throw AlgorithmError("The number of triangles = 0.");
         }
 
         triangulationWrapper.Compute(polygon.Nodes(),
@@ -145,7 +145,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (IsEmpty())
     {
-        throw ConstraintError("Polygons::RefineFirstPolygon: No nodes in polygon.");
+        throw ConstraintError("No nodes in polygon.");
     }
 
     UInt polygonIndex = 0;

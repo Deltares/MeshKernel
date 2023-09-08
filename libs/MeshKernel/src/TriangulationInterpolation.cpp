@@ -48,7 +48,7 @@ void TriangulationInterpolation::Compute()
     // no samples available, return
     if (m_samples.empty())
     {
-        throw AlgorithmError("TriangulationInterpolation::Compute: No samples available.");
+        throw AlgorithmError("No samples available.");
     }
 
     // triangulate samples
@@ -63,7 +63,7 @@ void TriangulationInterpolation::Compute()
     // no triangles formed, return
     if (triangulationWrapper.GetNumFaces() < 1)
     {
-        throw AlgorithmError("TriangulationInterpolation::Compute: Triangulation of samples produced no triangles.");
+        throw AlgorithmError("Triangulation of samples produced no triangles.");
     }
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle

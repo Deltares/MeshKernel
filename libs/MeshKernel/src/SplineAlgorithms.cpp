@@ -89,7 +89,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(splinePoints, splineDerivative, adimensionalPointCoordinate);
     if (!pointCoordinate.IsValid())
     {
-        throw AlgorithmError("SplineAlgorithms::ComputeCurvatureOnSplinePoint: Could not interpolate spline points.");
+        throw AlgorithmError("Could not interpolate spline points.");
     }
 
     Point p = splinePoints[rightCornerPoint] - splinePoints[leftCornerPoint] +

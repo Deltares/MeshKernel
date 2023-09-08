@@ -271,7 +271,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                         leftNode = m_mesh->m_nodesNodes[n][nn];
                         if (leftNode == constants::missing::uintValue)
                         {
-                            throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
+                            throw AlgorithmError("The left node is invalid.");
                         }
                         secondPoint = m_originalNodes[leftNode];
                     }
@@ -280,7 +280,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                         rightNode = m_mesh->m_nodesNodes[n][nn];
                         if (rightNode == constants::missing::uintValue)
                         {
-                            throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
+                            throw AlgorithmError("The right node is invalid.");
                         }
                         thirdPoint = m_originalNodes[rightNode];
                     }
@@ -294,9 +294,11 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             // Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
 
-            const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection);
+            const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] =
+                DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection);
 
-            const auto [distanceThirdPoint, normalThirdPoint, ratioThirdPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, m_mesh->m_projection);
+            const auto [distanceThirdPoint, normalThirdPoint, ratioThirdPoint] =
+                DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, m_mesh->m_projection);
 
             if (distanceSecondPoint < distanceThirdPoint)
             {
@@ -325,7 +327,7 @@ void OrthogonalizationAndSmoothing::ComputeCoordinates() const
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
     }
-    throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
+    throw NotImplemented("This functionality is not implemented yet.");
 }
 
 void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)

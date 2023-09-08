@@ -229,7 +229,7 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
 
     if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
-        throw ConstraintError("Polygon::SnapToLandBoundary: The indices are not valid: {}, {}.", startIndex, endIndex);
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     // snap polygon section to land boundary

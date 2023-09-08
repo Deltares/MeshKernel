@@ -108,7 +108,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
         {
             if (m_edgesNumFaces[e] > 2)
             {
-                throw AlgorithmError("Mesh2D::AdministrateFromFaceNodes: m_edgesNumFaces > 2.");
+                throw AlgorithmError("AdministrateFromFaceNodes: m_edgesNumFaces > 2.");
             }
             m_edgesFaces[e][m_edgesNumFaces[e]] = f;
             m_edgesNumFaces[e] += 1;
