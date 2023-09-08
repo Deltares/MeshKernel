@@ -38,23 +38,23 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         double const delta_x = dim_x / static_cast<double>(state.range(0) - 1);
         double const delta_y = dim_y / static_cast<double>(state.range(1) - 1);
 
-        MakeGridParameters make_grid_arameters;
-        make_grid_arameters.angle = 0.0;
-        make_grid_arameters.origin_x = 0.0;
-        make_grid_arameters.origin_y = 0.0;
-        make_grid_arameters.num_columns = 3;
-        make_grid_arameters.num_rows = 3;
-        make_grid_arameters.block_size_x = delta_x;
-        make_grid_arameters.block_size_y = delta_y;
+        MakeGridParameters make_grid_parameters;
+        make_grid_parameters.angle = 0.0;
+        make_grid_parameters.origin_x = 0.0;
+        make_grid_parameters.origin_y = 0.0;
+        make_grid_parameters.num_columns = 3;
+        make_grid_parameters.num_rows = 3;
+        make_grid_parameters.block_size_x = delta_x;
+        make_grid_parameters.block_size_y = delta_y;
 
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
         CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
-            curvilinear_grid_create_uniform.Compute(make_grid_arameters.angle,
-                                                    make_grid_arameters.block_size_x,
-                                                    make_grid_arameters.block_size_y,
+            curvilinear_grid_create_uniform.Compute(make_grid_parameters.angle,
+                                                    make_grid_parameters.block_size_x,
+                                                    make_grid_parameters.block_size_y,
                                                     polygons,
                                                     0));
     }
