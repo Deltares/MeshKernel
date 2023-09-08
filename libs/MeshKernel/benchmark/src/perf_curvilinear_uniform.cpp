@@ -21,7 +21,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
-        std::vector<meshkernel::Point> polygon_points{
+        const std::vector<meshkernel::Point> polygon_points{
             {2.21527777777778, 5.08143004115226},
             {3.88194444444444, 6.5397633744856},
             {6.27777777777778, 5.8522633744856},

@@ -16,12 +16,12 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
                                    {850.255920410156, 499.130676269531}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{72.5010681152344, 391.129577636719},
                                     {462.503479003906, 90.3765411376953}};
 
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     // construct CurvilinearGridFromSplines
     CurvilinearParameters curvilinearParameters;
@@ -80,23 +80,23 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
                                    {770.755432128906, 607.881774902344}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline;
     secondSpline.emplace_back(Point{273.502319335938, 86.6264953613281});
     secondSpline.emplace_back(Point{557.004089355469, 316.128814697266});
     secondSpline.emplace_back(Point{847.255920410156, 409.129730224609});
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     std::vector<Point> thirdSpline;
     thirdSpline.emplace_back(Point{62.7510070800781, 396.379608154297});
     thirdSpline.emplace_back(Point{350.752807617188, 73.8763732910156});
-    splines->AddSpline(thirdSpline, 0, static_cast<UInt>(thirdSpline.size()));
+    splines->AddSpline(thirdSpline);
 
     std::vector<Point> fourthSpline;
     fourthSpline.emplace_back(Point{704.755004882812, 636.382019042969});
     fourthSpline.emplace_back(Point{845.005859375000, 285.378509521484});
-    splines->AddSpline(fourthSpline, 0, static_cast<UInt>(fourthSpline.size()));
+    splines->AddSpline(fourthSpline);
 
     // construct CurvilinearGridFromSplines
     CurvilinearParameters curvilinearParameters;
@@ -130,12 +130,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                    {2048.50780774173, 1644.48279915859}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline;
     secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
     secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     // construct CurvilinearGridFromSplines
     CurvilinearParameters curvilinearParameters;
@@ -196,12 +196,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
                                    {2048.50780774173, 1644.48279915859}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline;
     secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
     secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -262,12 +262,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                    {2048.50780774173, 1644.48279915859}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline;
     secondSpline.emplace_back(Point{-179.920786312031, 1068.50251010579});
     secondSpline.emplace_back(Point{600.169022647819, 321.964950993679});
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -363,22 +363,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
                                    {1498.58116776234, 776.950530211586}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{-250.826438421303, 394.996536194825},
                                     {101.970762159065, 292.947759167446}};
 
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     std::vector<Point> thirdSpline{{647.202799419633, 482.466916504007},
                                    {486.840435519465, 144.248112641836}};
 
-    splines->AddSpline(thirdSpline, 0, static_cast<UInt>(thirdSpline.size()));
+    splines->AddSpline(thirdSpline);
 
     std::vector<Point> fourthSpline{{1224.50730946023, 747.793736775192},
                                     {1568.55747200968, 464.97284044217}};
 
-    splines->AddSpline(fourthSpline, 0, static_cast<UInt>(fourthSpline.size()));
+    splines->AddSpline(fourthSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -462,39 +462,39 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     std::vector<Point> firstCentralSpline{{1.542516E+02, 7.687640E+01},
                                           {3.192526E+02, 2.733784E+02},
                                           {6.350046E+02, 5.231309E+02}};
-    splines->AddSpline(firstCentralSpline, 0, static_cast<UInt>(firstCentralSpline.size()));
+    splines->AddSpline(firstCentralSpline);
 
     std::vector<Point> secondCentralSpline{{1.310014E+02, 9.637659E+01},
                                            {2.960025E+02, 2.891285E+02},
                                            {6.222545E+02, 5.418811E+02}};
-    splines->AddSpline(secondCentralSpline, 0, static_cast<UInt>(secondCentralSpline.size()));
+    splines->AddSpline(secondCentralSpline);
 
     std::vector<Point> thirdCentralSpline{{1.782517E+02, 5.662619E+01},
                                           {3.335027E+02, 2.448781E+02},
                                           {6.455046E+02, 4.983806E+02}};
 
-    splines->AddSpline(thirdCentralSpline, 0, static_cast<UInt>(thirdCentralSpline.size()));
+    splines->AddSpline(thirdCentralSpline);
 
     std::vector<Point> fourthBankSpline{{3.500084E+01, 1.901275E+02},
                                         {2.195020E+02, 3.813795E+02},
                                         {5.727542E+02, 6.221319E+02}};
 
-    splines->AddSpline(fourthBankSpline, 0, static_cast<UInt>(fourthBankSpline.size()));
+    splines->AddSpline(fourthBankSpline);
 
     std::vector<Point> fifthBankSpline{{3.177526E+02, -3.712475E+01},
                                        {4.377534E+02, 1.218768E+02},
                                        {7.445052E+02, 4.136298E+02}};
 
-    splines->AddSpline(fifthBankSpline, 0, static_cast<UInt>(fifthBankSpline.size()));
+    splines->AddSpline(fifthBankSpline);
 
     std::vector<Point> sixthBankSpline{{1.250633E+00, 2.748784E+02},
                                        {3.620029E+02, -3.337471E+01}};
-    splines->AddSpline(sixthBankSpline, 0, static_cast<UInt>(sixthBankSpline.size()));
+    splines->AddSpline(sixthBankSpline);
 
     std::vector<Point> seventhBankSpline{{5.030038E+02, 6.476321E+02},
                                          {7.542553E+02, 3.378790E+02}};
 
-    splines->AddSpline(seventhBankSpline, 0, static_cast<UInt>(seventhBankSpline.size()));
+    splines->AddSpline(seventhBankSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -620,11 +620,11 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                    {4.110644E+01, 4.110904E+01}};
 
     auto splines = std::make_shared<Splines>(Projection::spherical);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{4.109612E+01, 4.110473E+01},
                                     {4.109923E+01, 4.110212E+01}};
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -704,12 +704,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
                                    {1465.84415268176, 1608.50892444055}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{-333.478887051536, 921.388799234953},
                                     {167.303577081355, 490.482958004326}};
 
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -772,12 +772,12 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
                                    {1465.84415268176, 1608.50892444055}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{-333.478887051536, 921.388799234953},
                                     {167.303577081355, 490.482958004326}};
 
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     CurvilinearParameters curvilinearParameters;
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
@@ -860,7 +860,7 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
                                    {7.9579184E+04, 3.6419894E+05}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(firstSpline, 0, static_cast<UInt>(firstSpline.size()));
+    splines->AddSpline(firstSpline);
 
     std::vector<Point> secondSpline{{7.6618112E+04, 3.7136337E+05},
                                     {7.6754253E+04, 3.7005301E+05},
@@ -871,7 +871,7 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
                                     {7.9477078E+04, 3.6544123E+05},
                                     {7.8779354E+04, 3.6452228E+05}};
 
-    splines->AddSpline(secondSpline, 0, static_cast<UInt>(secondSpline.size()));
+    splines->AddSpline(secondSpline);
 
     std::vector<Point> thirdSpline{{7.7281800E+04, 3.7144846E+05},
                                    {7.7366889E+04, 3.6984880E+05},
@@ -883,17 +883,17 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
                                    {7.9579184E+04, 3.6484561E+05},
                                    {7.9170760E+04, 3.6431806E+05}};
 
-    splines->AddSpline(thirdSpline, 0, static_cast<UInt>(thirdSpline.size()));
+    splines->AddSpline(thirdSpline);
 
     std::vector<Point> fourthSpline{{7.613792E+04, 3.712157E+05},
                                     {7.831719E+04, 3.710751E+05}};
 
-    splines->AddSpline(fourthSpline, 0, static_cast<UInt>(fourthSpline.size()));
+    splines->AddSpline(fourthSpline);
 
     std::vector<Point> fifthSpline{{7.857202E+04, 3.649151E+05},
                                    {8.003072E+04, 3.641506E+05}};
 
-    splines->AddSpline(fifthSpline, 0, static_cast<UInt>(fifthSpline.size()));
+    splines->AddSpline(fifthSpline);
 
     SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     CurvilinearParameters curvilinearParameters;
