@@ -2221,7 +2221,7 @@ TEST_F(CartesianApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorC
     // Execute
     const auto errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshKernelId, -0.5, -0.5, -1);
 
-    // Assert errorCode is not equal to MeshKernelApiErrors::Success
+    // Assert call was not successful
     ASSERT_NE(meshkernel::ExitCode::Success, errorCode);
 }
 
