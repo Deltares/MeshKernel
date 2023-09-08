@@ -95,8 +95,8 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
                                                        {593.416260, 266.561584},
                                                        {558.643005, 324.653687},
                                                        {526.733398, 377.836578},
-                                                 {444.095703, 436.746857},
-                                                 {444.504791, 437.155945}};
+                                                       {444.095703, 436.746857},
+                                                       {444.504791, 437.155945}};
 
     meshkernel::Polygon polygon(polygonPoints, meshkernel::Projection::cartesian);
 

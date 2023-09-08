@@ -292,7 +292,7 @@ namespace meshkernel
 
                 newCrossSpline[0] = {xs1, ys1};
                 newCrossSpline[1] = {xs2, ys2};
-            m_splines->AddSpline(newCrossSpline);
+                m_splines->AddSpline(newCrossSpline);
                 // flag the cross spline as artificially added
                 m_type.emplace_back(SplineTypes::artificial);
             }
