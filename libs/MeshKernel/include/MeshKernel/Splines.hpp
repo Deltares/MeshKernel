@@ -64,6 +64,10 @@ namespace meshkernel
         /// @param[in] size The number of points making up the spline(s).
         void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
 
+        /// @brief Adds a new spline to m_splineCornerPoints
+        /// @param[in] splines The spline corner points
+        void AddSpline(const std::vector<Point>& splines);
+
         /// @brief Snap the spline to the land boundary (snap_spline)
         ///
         /// @param[in] splineIndex The index of the spline to be snapped to boundary

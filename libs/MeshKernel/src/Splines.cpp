@@ -50,17 +50,22 @@ Splines::Splines(CurvilinearGrid const& grid)
         {
             mGridLines[n][m] = grid.m_gridNodes[m][n];
         }
-        AddSpline(mGridLines[n], 0, static_cast<UInt>(mGridLines[n].size()));
+        AddSpline(mGridLines[n]);
     }
 
     // then the m_m m_n-gridlines
     std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
     for (UInt m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid.m_gridNodes[m], 0, static_cast<UInt>(grid.m_gridNodes[m].size()));
+        AddSpline(grid.m_gridNodes[m]);
     }
 
     m_projection = grid.m_projection;
+}
+
+void Splines::AddSpline(const std::vector<Point>& splines)
+{
+    AddSpline(splines, 0, static_cast<UInt>(splines.size()));
 }
 
 /// add a new spline, return the index
