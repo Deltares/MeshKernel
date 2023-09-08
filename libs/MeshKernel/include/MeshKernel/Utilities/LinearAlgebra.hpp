@@ -71,34 +71,32 @@ namespace lin_alg
 
         Eigen::Index const rows_old = matrix.rows();
         Eigen::Index const cols_old = matrix.cols();
+
         bool const resize = (rows != rows_old) || (cols != cols_old);
-        if (!resize)
+        if (!resize && !preserve)
         {
-            if (!preserve)
+            matrix.fill(fill_value);
+        }
+
+        if (resize && !preserve)
+        {
+            matrix.resize(rows, cols);
+            matrix.fill(fill_value);
+        }
+
+        if (resize && preserve)
+        {
+            matrix.conservativeResize(rows, cols);
+            if (rows > rows_old)
             {
-                matrix.fill(fill_value);
+                matrix.bottomRows(rows - rows_old).setConstant(fill_value);
+            }
+            if (cols > cols_old)
+            {
+                matrix.topRightCorner(rows_old, cols - cols_old).setConstant(fill_value);
             }
         }
-        else
-        {
-            if (!preserve)
-            {
-                matrix.resize(rows, cols);
-                matrix.fill(fill_value);
-            }
-            else
-            {
-                matrix.conservativeResize(rows, cols);
-                if (rows > rows_old)
-                {
-                    matrix.bottomRows(rows - rows_old).setConstant(fill_value);
-                }
-                if (cols > cols_old)
-                {
-                    matrix.topRightCorner(rows_old, cols - cols_old).setConstant(fill_value);
-                }
-            }
-        }
+
         return resize;
     }
 
@@ -106,8 +104,8 @@ namespace lin_alg
     /// @tparam        T         Matrix data type
     /// @tparam        storage   Matrix storage option
     /// @param[in,out] matrix    The matrix
-    /// @param[in]     col_begin The begin row index
-    /// @param[in]     col_end   The end row index
+    /// @param[in]     row_begin The begin row index
+    /// @param[in]     row_end   The end row index
     template <typename T, int storage>
     inline static void EraseRows(Matrix<T, storage>& matrix,
                                  Eigen::Index row_begin,
@@ -368,8 +366,7 @@ namespace lin_alg
     {
         RowVector<Eigen::Index> indices(row.size());
         std::iota(indices.begin(), indices.end(), 0);
-        std::ranges::stable_sort(indices.begin(),
-                                 indices.end(),
+        std::ranges::stable_sort(indices,
                                  [&row](Eigen::Index row_index_1, Eigen::Index row_index_2)
                                  { return row[row_index_1] < row[row_index_2]; });
         return indices;

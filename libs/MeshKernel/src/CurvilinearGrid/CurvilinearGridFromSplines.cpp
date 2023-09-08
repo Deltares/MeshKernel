@@ -63,7 +63,7 @@ namespace meshkernel
         m_maximumGridHeights.resize(numSplines);
         std::fill(m_maximumGridHeights.begin(), m_maximumGridHeights.end(), constants::missing::doubleValue);
 
-        lin_alg::ResizeAndFillMatrix(m_crossingSplinesIndices, numSplines, numSplines, false, (UInt)0);
+        lin_alg::ResizeAndFillMatrix(m_crossingSplinesIndices, numSplines, numSplines, false, 0U);
         lin_alg::ResizeAndFillMatrix(m_isLeftOriented, numSplines, numSplines, false, true);
         lin_alg::ResizeAndFillMatrix(m_crossSplineCoordinates, numSplines, numSplines, false, constants::missing::doubleValue);
         lin_alg::ResizeAndFillMatrix(m_cosCrossingAngle, numSplines, numSplines, false, constants::missing::doubleValue);
@@ -71,8 +71,8 @@ namespace meshkernel
                                      std::vector<double>(m_maxNumCenterSplineHeights, constants::missing::doubleValue));
         lin_alg::ResizeAndFillMatrix(m_crossSplineRightHeights, numSplines, numSplines, false,
                                      std::vector<double>(m_maxNumCenterSplineHeights, constants::missing::doubleValue));
-        lin_alg::ResizeAndFillMatrix(m_numCrossSplineLeftHeights, numSplines, numSplines, false, (UInt)0);
-        lin_alg::ResizeAndFillMatrix(m_numCrossSplineRightHeights, numSplines, numSplines, false, (UInt)0);
+        lin_alg::ResizeAndFillMatrix(m_numCrossSplineLeftHeights, numSplines, numSplines, false, 0U);
+        lin_alg::ResizeAndFillMatrix(m_numCrossSplineRightHeights, numSplines, numSplines, false, 0U);
 
         m_numMSplines.resize(numSplines);
         std::fill(m_numMSplines.begin(), m_numMSplines.end(), 0);
