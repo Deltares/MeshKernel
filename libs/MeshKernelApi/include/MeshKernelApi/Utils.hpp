@@ -225,7 +225,10 @@ namespace meshkernelapi
 
         const auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-        const auto indices = FindIndices(splineCornerPoints, 0, static_cast<meshkernel::UInt>(splineCornerPoints.size()), meshkernel::constants::missing::doubleValue);
+        const auto indices = FindIndices(splineCornerPoints,
+                                         0,
+                                         static_cast<meshkernel::UInt>(splineCornerPoints.size()),
+                                         meshkernel::constants::missing::doubleValue);
 
         for (const auto& index : indices)
         {
@@ -233,7 +236,7 @@ namespace meshkernelapi
             const auto size = endIndex - startIndex + 1;
             if (size > 0)
             {
-                spline.AddSpline(splineCornerPoints.data(), startIndex, size);
+                spline.AddSpline(splineCornerPoints, startIndex, size);
             }
         }
     }

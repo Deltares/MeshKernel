@@ -63,7 +63,7 @@ namespace meshkernel
         /// @param[in] start The starting index in splines
         /// @param[in] size The number of points making up the spline(s).
         // void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
-        void AddSpline(Point const* const splines, UInt start, UInt size);
+        void AddSpline(const std::vector<Point>& splines, UInt start, UInt size);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points
