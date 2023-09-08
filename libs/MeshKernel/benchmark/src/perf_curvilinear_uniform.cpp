@@ -121,9 +121,9 @@ static void BM_CurvilinearFromSplines(benchmark::State& state)
         // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
-        auto splines = std::make_shared<Splines>(Projection::cartesian);
+        const auto splines = std::make_shared<Splines>(Projection::cartesian);
 
-        std::vector<Point>
+        const std::vector<Point>
             firstSpline{
                 {-429.606973475825, 246.105697581108},
                 {-47.0754200262393, 684.481273432093},
@@ -131,17 +131,17 @@ static void BM_CurvilinearFromSplines(benchmark::State& state)
                 {2479.86659363708, 1753.89430241889},
                 {2870.77475044688, 1977.27039202449}};
 
-        std::vector<Point> secondSpline{{-549.671621638834, 701.234480152513},
-                                        {-83.3740345871489, 248.897898701178}};
+        const std::vector<Point> secondSpline{{-549.671621638834, 701.234480152513},
+                                              {-83.3740345871489, 248.897898701178}};
 
-        std::vector<Point> thirdSpline{{422.014368145516, 1265.25910640665},
-                                       {731.948692473283, 690.065675672233}};
+        const std::vector<Point> thirdSpline{{422.014368145516, 1265.25910640665},
+                                             {731.948692473283, 690.065675672233}};
 
-        std::vector<Point> fourthSpline{{1502.59620161259, 1801.36172146008},
-                                        {1848.82914050127, 1086.55823472217}};
+        const std::vector<Point> fourthSpline{{1502.59620161259, 1801.36172146008},
+                                              {1848.82914050127, 1086.55823472217}};
 
-        std::vector<Point> fifthSpline{{2494.60941555105, 2140.44662548138},
-                                       {2802.19829093796, 1489.08194819146}};
+        const std::vector<Point> fifthSpline{{2494.60941555105, 2140.44662548138},
+                                             {2802.19829093796, 1489.08194819146}};
 
         splines->AddSpline(firstSpline);
         splines->AddSpline(secondSpline);
@@ -163,16 +163,14 @@ static void BM_CurvilinearFromSplines(benchmark::State& state)
         curvilinearParameters.m_refinement = static_cast<int>(state.range(0));
         curvilinearParameters.n_refinement = static_cast<int>(state.range(1));
 
-        CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
-
-        CurvilinearGridFromSplines CurvilinearGridFromSplines(splines,
+        CurvilinearGridFromSplines curvilinearGridFromSplines(splines,
                                                               curvilinearParameters,
                                                               splinesToCurvilinearParameters);
 
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        const auto curvilinearGrid = CurvilinearGridFromSplines.Compute();
+        const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
     }
 }
 BENCHMARK(BM_CurvilinearFromSplines)
@@ -188,21 +186,21 @@ static void BM_CurvilinearFromSplinesTransfinite(benchmark::State& state)
         // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
-        std::vector<Point> firstSpline{{2.172341E+02, -2.415445E+01},
-                                       {4.314185E+02, 1.947381E+02},
-                                       {8.064374E+02, 3.987241E+02}};
+        const std::vector<Point> firstSpline{{2.172341E+02, -2.415445E+01},
+                                             {4.314185E+02, 1.947381E+02},
+                                             {8.064374E+02, 3.987241E+02}};
 
-        std::vector<Point> secondSpline{{2.894012E+01, 2.010146E+02},
-                                        {2.344944E+02, 3.720490E+02},
-                                        {6.424647E+02, 5.917262E+02}};
+        const std::vector<Point> secondSpline{{2.894012E+01, 2.010146E+02},
+                                              {2.344944E+02, 3.720490E+02},
+                                              {6.424647E+02, 5.917262E+02}};
 
-        std::vector<Point> thirdSpline{{2.265137E+00, 2.802553E+02},
-                                       {2.799988E+02, -2.807726E+01}};
+        const std::vector<Point> thirdSpline{{2.265137E+00, 2.802553E+02},
+                                             {2.799988E+02, -2.807726E+01}};
 
-        std::vector<Point> fourthSpline{{5.067361E+02, 6.034946E+02},
-                                        {7.475956E+02, 3.336055E+02}};
+        const std::vector<Point> fourthSpline{{5.067361E+02, 6.034946E+02},
+                                              {7.475956E+02, 3.336055E+02}};
 
-        auto splines = std::make_shared<Splines>(Projection::cartesian);
+        const auto splines = std::make_shared<Splines>(Projection::cartesian);
         splines->AddSpline(firstSpline);
         splines->AddSpline(secondSpline);
         splines->AddSpline(thirdSpline);
