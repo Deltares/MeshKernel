@@ -44,8 +44,8 @@ namespace meshkernel
     }
 
     std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec,
-                                                   UInt start,
-                                                   UInt end,
+                                                   size_t start,
+                                                   size_t end,
                                                    double separator)
     {
         std::vector<std::pair<UInt, UInt>> result;
@@ -67,12 +67,12 @@ namespace meshkernel
         {
             if (!IsEqual(vec[n].x, separator) && !inRange)
             {
-                startRange = n;
+                startRange = static_cast<UInt>(n);
                 inRange = true;
             }
             if (IsEqual(vec[n].x, separator) && inRange)
             {
-                result.emplace_back(startRange, n - 1);
+                result.emplace_back(startRange, static_cast<UInt>(n - 1));
                 inRange = false;
             }
         }
@@ -84,6 +84,33 @@ namespace meshkernel
         }
 
         return result;
+    }
+
+    UInt InvalidPointCount(const std::vector<Point>& points)
+    {
+        if (points.size() > 0)
+        {
+            return InvalidPointCount(points, 0, points.size() - 1);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    UInt InvalidPointCount(const std::vector<Point>& points, size_t start, size_t end)
+    {
+        UInt count = 0;
+
+        for (size_t i = start; i <= end; ++i)
+        {
+            if (!points[i].IsValid())
+            {
+                ++count;
+            }
+        }
+
+        return count;
     }
 
     UInt NextCircularForwardIndex(UInt currentIndex, UInt size)
@@ -129,12 +156,12 @@ namespace meshkernel
         return sphericalPoint;
     }
 
-    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
+    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
     {
         const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
         const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        const auto dx2 = GetDx(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
+        const auto dy2 = GetDy(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
         return dx1 * dy2 - dy1 * dx2;
     }
 
@@ -145,6 +172,7 @@ namespace meshkernel
                                UInt startNode,
                                UInt endNode)
     {
+
         if (polygonNodes.empty())
         {
             return true;
@@ -310,6 +338,25 @@ namespace meshkernel
         ephi[0] = -sin(phi0) * cos(lambda0);
         ephi[1] = -sin(phi0) * sin(lambda0);
         ephi[2] = cos(phi0);
+    }
+
+    Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
+    {
+        if (projection == Projection::cartesian)
+        {
+            return GetDeltaCartesian(firstPoint, secondPoint);
+        }
+
+        // TODO some performance can be gained here, by combining the computing of dx and dy
+        return Vector(GetDx(firstPoint, secondPoint, projection), GetDy(firstPoint, secondPoint, projection));
+    }
+
+    Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection)
+    {
+        Vector direction = GetDelta(start, end, projection);
+        direction.normalise();
+        Vector normal(-direction.y(), direction.x());
+        return normal;
     }
 
     double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
@@ -731,14 +778,44 @@ namespace meshkernel
         }
     }
 
-    Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection)
+    void TranslateSphericalCoordinates(std::vector<Point>& polygon)
     {
-        auto minX = std::numeric_limits<double>::max();
-        auto minY = std::numeric_limits<double>::max();
+        double minX = std::numeric_limits<double>::max();
+        double maxX = std::numeric_limits<double>::lowest();
+
+        for (UInt i = 0; i < polygon.size(); ++i)
+        {
+            minX = std::min(polygon[i].x, minX);
+            maxX = std::max(polygon[i].x, maxX);
+        }
+
+        if (maxX - minX > 180.0)
+        {
+            const double deltaX = maxX - 180.0;
+
+            for (UInt i = 0; i < polygon.size(); ++i)
+            {
+                if (polygon[i].x < deltaX)
+                {
+                    polygon[i].x = polygon[i].x + 360.0;
+                }
+            }
+        }
+    }
+
+    Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection)
+    {
+        double minX = std::numeric_limits<double>::max();
+        // Used only in spherical coordinate system, but quicker to compute at the same time as the minX
+        double maxX = std::numeric_limits<double>::lowest();
+        double minY = std::numeric_limits<double>::max();
         const auto numPoints = static_cast<UInt>(polygon.size());
+
         for (UInt i = 0; i < numPoints; ++i)
         {
             minX = std::min(polygon[i].x, minX);
+            maxX = std::max(polygon[i].x, maxX);
+
             if (abs(polygon[i].y) < abs(minY))
             {
                 minY = polygon[i].y;
@@ -747,23 +824,9 @@ namespace meshkernel
 
         if (projection == Projection::spherical)
         {
-            double maxX = std::numeric_limits<double>::lowest();
-            for (UInt i = 0; i < numPoints; ++i)
-            {
-                maxX = std::max(polygon[i].x, maxX);
-            }
-
             if (maxX - minX > 180.0)
             {
-                const double deltaX = maxX - 180.0;
-                for (UInt i = 0; i < numPoints; ++i)
-                {
-                    if (polygon[i].x < deltaX)
-                    {
-                        polygon[i].x = polygon[i].x + 360.0;
-                    }
-                }
-                minX = minX + 360.0;
+                minX += 360.0;
             }
         }
 
@@ -1032,7 +1095,7 @@ namespace meshkernel
 
     bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                              const Point& firstSegmentSecondPoint,
-                             const Point& secondSegmentFistPoint,
+                             const Point& secondSegmentFirstPoint,
                              const Point& secondSegmentSecondPoint,
                              bool adimensionalCrossProduct,
                              const Projection& projection,
@@ -1052,11 +1115,11 @@ namespace meshkernel
             auto const x21 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
             auto const y21 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
 
-            auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            auto const x43 = GetDx(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
+            auto const y43 = GetDy(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
 
-            auto const x31 = GetDx(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
-            auto const y31 = GetDy(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
+            auto const x31 = GetDx(firstSegmentFirstPoint, secondSegmentFirstPoint, projection);
+            auto const y31 = GetDy(firstSegmentFirstPoint, secondSegmentFirstPoint, projection);
 
             auto const det = x43 * y21 - y43 * x21;
 
@@ -1085,21 +1148,21 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstSegmentFistCartesian3DPoint{SphericalToCartesian3D(firstSegmentFirstPoint)};
+            const Cartesian3DPoint firstSegmentFirstCartesian3DPoint{SphericalToCartesian3D(firstSegmentFirstPoint)};
 
             const Cartesian3DPoint firstSegmentSecondCartesian3DPoint{SphericalToCartesian3D(firstSegmentSecondPoint)};
 
-            const Cartesian3DPoint secondSegmentFistCartesian3DPoint{SphericalToCartesian3D(secondSegmentFistPoint)};
+            const Cartesian3DPoint secondSegmentFirstCartesian3DPoint{SphericalToCartesian3D(secondSegmentFirstPoint)};
 
             const Cartesian3DPoint secondSegmentSecondCartesian3DPoint{SphericalToCartesian3D(secondSegmentSecondPoint)};
 
-            auto n12 = VectorProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
+            auto n12 = VectorProduct(firstSegmentFirstCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
             const auto n12InnerProduct = std::sqrt(InnerProduct(n12, n12));
             n12.x = n12.x / n12InnerProduct;
             n12.y = n12.y / n12InnerProduct;
             n12.z = n12.z / n12InnerProduct;
 
-            auto n34 = VectorProduct(secondSegmentFistCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
+            auto n34 = VectorProduct(secondSegmentFirstCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
             const auto n34InnerProduct = std::sqrt(InnerProduct(n34, n34));
             n34.x = n34.x / n34InnerProduct;
             n34.y = n34.y / n34InnerProduct;
@@ -1111,22 +1174,22 @@ namespace meshkernel
             if (n12n34InnerProduct > tolerance)
             {
                 Cartesian3DPoint firstSegmentDifference;
-                firstSegmentDifference.x = firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x;
-                firstSegmentDifference.y = firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y;
-                firstSegmentDifference.z = firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z;
+                firstSegmentDifference.x = firstSegmentSecondCartesian3DPoint.x - firstSegmentFirstCartesian3DPoint.x;
+                firstSegmentDifference.y = firstSegmentSecondCartesian3DPoint.y - firstSegmentFirstCartesian3DPoint.y;
+                firstSegmentDifference.z = firstSegmentSecondCartesian3DPoint.z - firstSegmentFirstCartesian3DPoint.z;
 
                 Cartesian3DPoint secondSegmentDifference;
-                secondSegmentDifference.x = secondSegmentSecondCartesian3DPoint.x - secondSegmentFistCartesian3DPoint.x;
-                secondSegmentDifference.y = secondSegmentSecondCartesian3DPoint.y - secondSegmentFistCartesian3DPoint.y;
-                secondSegmentDifference.z = secondSegmentSecondCartesian3DPoint.z - secondSegmentFistCartesian3DPoint.z;
+                secondSegmentDifference.x = secondSegmentSecondCartesian3DPoint.x - secondSegmentFirstCartesian3DPoint.x;
+                secondSegmentDifference.y = secondSegmentSecondCartesian3DPoint.y - secondSegmentFirstCartesian3DPoint.y;
+                secondSegmentDifference.z = secondSegmentSecondCartesian3DPoint.z - secondSegmentFirstCartesian3DPoint.z;
 
                 const auto Det12 = InnerProduct(firstSegmentDifference, n34);
                 const auto Det34 = InnerProduct(secondSegmentDifference, n12);
 
                 if (std::abs(Det12) > tolerance && std::abs(Det34) > tolerance)
                 {
-                    ratioFirstSegment = -InnerProduct(firstSegmentFistCartesian3DPoint, n34) / Det12;
-                    ratioSecondSegment = -InnerProduct(secondSegmentFistCartesian3DPoint, n12) / Det34;
+                    ratioFirstSegment = -InnerProduct(firstSegmentFirstCartesian3DPoint, n34) / Det12;
+                    ratioSecondSegment = -InnerProduct(secondSegmentFirstCartesian3DPoint, n12) / Det34;
                 }
             }
 
@@ -1138,75 +1201,14 @@ namespace meshkernel
 
                 // compute intersection
                 Cartesian3DPoint intersectionCartesian3DPoint;
-                intersectionCartesian3DPoint.x = firstSegmentFistCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x);
-                intersectionCartesian3DPoint.y = firstSegmentFistCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y);
-                intersectionCartesian3DPoint.z = firstSegmentFistCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z);
+                intersectionCartesian3DPoint.x = firstSegmentFirstCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFirstCartesian3DPoint.x);
+                intersectionCartesian3DPoint.y = firstSegmentFirstCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFirstCartesian3DPoint.y);
+                intersectionCartesian3DPoint.z = firstSegmentFirstCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFirstCartesian3DPoint.z);
                 intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFirstPoint.x, firstSegmentSecondPoint.x));
             }
         }
 
         return isCrossing;
-    }
-
-    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection)
-    {
-        if (polygon.empty())
-        {
-            throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
-        }
-
-        if (polygon.size() - 1 < Mesh::m_numNodesInTriangle)
-        {
-            throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
-        }
-
-        double area = 0.0;
-        double xCenterOfMass = 0.0;
-        double yCenterOfMass = 0.0;
-        const double minArea = 1e-8;
-        const Point reference = ReferencePoint(polygon, projection);
-        const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
-        for (UInt n = 0; n < numberOfPointsOpenedPolygon; n++)
-        {
-            const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
-            double dx0 = GetDx(reference, polygon[n], projection);
-            double dy0 = GetDy(reference, polygon[n], projection);
-            const double dx1 = GetDx(reference, polygon[nextNode], projection);
-            const double dy1 = GetDy(reference, polygon[nextNode], projection);
-
-            const double xc = 0.5 * (dx0 + dx1);
-            const double yc = 0.5 * (dy0 + dy1);
-
-            dx0 = GetDx(polygon[n], polygon[nextNode], projection);
-            dy0 = GetDy(polygon[n], polygon[nextNode], projection);
-            const double dsx = dy0;
-            const double dsy = -dx0;
-            const double xds = xc * dsx + yc * dsy;
-            area = area + 0.5 * xds;
-
-            xCenterOfMass = xCenterOfMass + xds * xc;
-            yCenterOfMass = yCenterOfMass + xds * yc;
-        }
-
-        bool isCounterClockWise = area > 0.0;
-
-        area = std::abs(area) < minArea ? minArea : area;
-
-        const double fac = 1.0 / (3.0 * area);
-        xCenterOfMass = fac * xCenterOfMass;
-        yCenterOfMass = fac * yCenterOfMass;
-
-        if (projection == Projection::spherical)
-        {
-            yCenterOfMass = yCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad);
-            xCenterOfMass = xCenterOfMass / (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((yCenterOfMass + reference.y) * constants::conversion::degToRad));
-        }
-
-        Point centerOfMass;
-        centerOfMass.x = xCenterOfMass + reference.x;
-        centerOfMass.y = yCenterOfMass + reference.y;
-
-        return {std::abs(area), centerOfMass, isCounterClockWise};
     }
 
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection)

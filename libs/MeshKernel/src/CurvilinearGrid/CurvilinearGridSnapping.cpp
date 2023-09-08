@@ -2,15 +2,14 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Vector.hpp"
 
 #include <cmath>
 #include <numbers>
 
-meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGrid& grid,
-                                                                           const CurvilinearGridNodeIndices& lowerLeft,
+meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,
                                                                            const CurvilinearGridNodeIndices& upperRight,
-                                                                           const CurvilinearGridNodeIndices& regionIndicator) : m_grid(grid),
-                                                                                                                                m_indexBoxLowerLeft(lowerLeft),
+                                                                           const CurvilinearGridNodeIndices& regionIndicator) : m_indexBoxLowerLeft(lowerLeft),
                                                                                                                                 m_indexBoxUpperRight(upperRight),
                                                                                                                                 m_smoothingRegionIndicator(regionIndicator) {}
 
@@ -44,12 +43,12 @@ double meshkernel::NonDirectionalSmoothingCalculator::CalculateSmoothingRegion(c
     const BoundingBox gridBb = grid.GetBoundingBox();
     const BoundingBox landBoundaryBb = landBoundary.GetBoundingBox();
 
-    Point delta = Merge(gridBb, landBoundaryBb).Delta();
+    Vector delta = Merge(gridBb, landBoundaryBb).Delta();
 
     delta *= smoothingRegionEnlargementFactor;
 
-    delta.y = std::max(delta.y, aspectRatio * delta.x);
-    return delta.y / (6.0 * aspectRatio);
+    delta.y() = std::max(delta.y(), aspectRatio * delta.x());
+    return delta.y() / (6.0 * aspectRatio);
 }
 
 meshkernel::NonDirectionalSmoothingCalculator::NonDirectionalSmoothingCalculator(const CurvilinearGrid& originalGrid,
@@ -193,7 +192,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
     if (m_points.size() > 2)
     {
         // User defined smoothing region
-        smoothingFactorCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_originalGrid, m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
+        smoothingFactorCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
     }
     else
     {

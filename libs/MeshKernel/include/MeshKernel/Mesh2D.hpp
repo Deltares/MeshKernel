@@ -30,6 +30,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Polygon.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -233,11 +234,11 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygon);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygonNodes The input mesh
-        /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] currentNode the current node
+        /// @param[in] polygon The input polygon
+        /// @param[in,out] isVisited the visited mesh nodes
+        /// @param[in,out] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
+        void WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
@@ -279,7 +280,7 @@ namespace meshkernel
         /// @param[in] invertSelection Invert selection
         /// @param[in] includeIntersected Included the edges intersected by the polygon
         /// @return The edge mask
-        [[nodiscard]] std::vector<int> EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+        [[nodiscard]] std::vector<int> MaskEdgesOfFacesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
 
         /// @brief From the edge mask compute the node mask
         /// @param[in] edgeMask The edge mask

@@ -552,9 +552,9 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
-    std::vector xCoordinatesIn{0.0, 1.0, 1.0, 0.0};
-    std::vector yCoordinatesIn{0.0, 0.0, 1.0, 1.0};
-    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
+    std::vector xCoordinatesIn{0.0, 1.0, 1.0, 0.0, 0.0};
+    std::vector yCoordinatesIn{0.0, 0.0, 1.0, 1.0, 0.0};
+    std::vector valuesIn{0.0, 0.0, 0.0, 0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinatesIn.data();
     geometryListIn.coordinates_y = yCoordinatesIn.data();
@@ -565,7 +565,7 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
     int numberOfpolygonNodes;
     auto errorCode = mkernel_polygon_count_offset(meshKernelId, geometryListIn, false, 0.5, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(4, numberOfpolygonNodes);
+    ASSERT_EQ(5, numberOfpolygonNodes);
 
     meshkernelapi::GeometryList geometryListOut;
 
@@ -584,8 +584,18 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
 
     // Assert
     const double tolerance = 1e-6;
-    ASSERT_NEAR(0.0, geometryListOut.coordinates_x[0], tolerance);
+
+    ASSERT_NEAR(-10.0, geometryListOut.coordinates_x[0], tolerance);
+    ASSERT_NEAR(11.0, geometryListOut.coordinates_x[1], tolerance);
+    ASSERT_NEAR(11.0, geometryListOut.coordinates_x[2], tolerance);
+    ASSERT_NEAR(-10.0, geometryListOut.coordinates_x[3], tolerance);
+    ASSERT_NEAR(-10.0, geometryListOut.coordinates_x[4], tolerance);
+
     ASSERT_NEAR(-10.0, geometryListOut.coordinates_y[0], tolerance);
+    ASSERT_NEAR(-10.0, geometryListOut.coordinates_y[1], tolerance);
+    ASSERT_NEAR(11.0, geometryListOut.coordinates_y[2], tolerance);
+    ASSERT_NEAR(11.0, geometryListOut.coordinates_y[3], tolerance);
+    ASSERT_NEAR(-10.0, geometryListOut.coordinates_y[4], tolerance);
 }
 
 TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
@@ -597,9 +607,9 @@ TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
 
-    std::vector xCoordinatesIn{76.251099, 498.503723, 505.253784};
-    std::vector yCoordinatesIn{92.626556, 91.126541, 490.130554};
-    std::vector valuesIn{0.0, 0.0, 0.0};
+    std::vector xCoordinatesIn{76.251099, 498.503723, 505.253784, 76.251099};
+    std::vector yCoordinatesIn{92.626556, 91.126541, 490.130554, 92.626556};
+    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinatesIn.data();
     geometryListIn.coordinates_y = yCoordinatesIn.data();
@@ -610,7 +620,7 @@ TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
     int numberOfpolygonNodes;
     auto errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(22, numberOfpolygonNodes);
+    ASSERT_EQ(23, numberOfpolygonNodes);
 
     meshkernelapi::GeometryList geometryListOut;
     geometryListOut.num_coordinates = numberOfpolygonNodes;
@@ -785,7 +795,8 @@ TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
         250.0,
         50.0,
         150.0,
-        250.0};
+        250.0,
+        50.0};
 
     std::vector yCoordinatesIn{
         50.0,
@@ -796,7 +807,8 @@ TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
         150.0,
         250.0,
         250.0,
-        250.0};
+        250.0,
+        50.0};
 
     std::vector valuesIn{
         2.0,
@@ -807,7 +819,8 @@ TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
         3.0,
         4.0,
         4.0,
-        4.0};
+        4.0,
+        2.0};
 
     geometryListIn.coordinates_x = xCoordinatesIn.data();
     geometryListIn.coordinates_y = yCoordinatesIn.data();
@@ -1431,7 +1444,8 @@ TEST_F(CartesianApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         593.416260,
         558.643005,
         526.733398,
-        444.095703};
+        444.095703,
+        444.504791};
     std::vector yCoordinatesIn{
         437.155945,
         382.745758,
@@ -1442,8 +1456,10 @@ TEST_F(CartesianApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         266.561584,
         324.653687,
         377.836578,
-        436.746857};
+        436.746857,
+        437.155945};
     std::vector valuesIn{
+        0.0,
         0.0,
         0.0,
         0.0,
@@ -3102,7 +3118,7 @@ TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGener
     ASSERT_EQ(mesh2d.num_faces, 8160);
 }
 
-TEST(Mesh2D, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
+TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
 {
     // Prepare
     int meshKernelId;
@@ -3214,7 +3230,7 @@ TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpac
     ASSERT_EQ(76, mesh2dResults.num_faces);
 }
 
-TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -3263,7 +3279,7 @@ TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinat
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-TEST(Mesh2D, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -3568,19 +3584,29 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     std::vector<double> landBoundaryPointsX{139.251465, 527.753906, 580.254211, 194.001801};
     std::vector<double> landBoundaryPointsY{497.630615, 499.880676, 265.878296, 212.627762};
 
-    std::vector<double> polygonPointsX{170.001648, 263.002228, 344.002747, 458.753448, 515.753845, 524.753906, 510.503754, 557.754089, 545.004028, 446.003387, 340.252716, 242.752106};
-    std::vector<double> polygonPointsY{472.880371, 472.880371, 475.130432, 482.630493, 487.130554, 434.630005, 367.129333, 297.378601, 270.378357, 259.128235, 244.128067, 226.877884};
+    std::vector<double> polygonPointsX{170.001648, 263.002228, 344.002747,
+                                       458.753448, 515.753845, 524.753906,
+                                       510.503754, 557.754089, 545.004028,
+                                       446.003387, 340.252716, 242.752106,
+                                       170.001648};
+    std::vector<double> polygonPointsY{472.880371, 472.880371, 475.130432,
+                                       482.630493, 487.130554, 434.630005,
+                                       367.129333, 297.378601, 270.378357,
+                                       259.128235, 244.128067, 226.877884,
+                                       472.880371};
 
     // The expected polygon values after snapping to land boundary.
     std::vector<double> expectedSnappedPointX = {169.8572772242283, 262.8547378163090, 343.8655709877979,
                                                  458.6558591358565, 515.6804060372598, 541.5480568270806,
                                                  555.2836667233159, 572.4472626165707, 546.2703464583593,
-                                                 447.5942143903486, 341.7865993173012, 243.7707524316129};
+                                                 447.5942143903486, 341.7865993173012, 243.7707524316129,
+                                                 169.8572772242283};
 
     std::vector<double> expectedSnappedPointY = {497.8078724305628, 498.3464789799546, 498.8156634613377,
                                                  499.4804859264834, 499.8107507986815, 438.3979070214996,
                                                  377.1760644727631, 300.6751319852315, 261.1931241088368,
-                                                 247.5891786326750, 233.0020541046851, 219.4891385810638};
+                                                 247.5891786326750, 233.0020541046851, 219.4891385810638,
+                                                 497.8078724305628};
 
     meshkernelapi::GeometryList landBoundaryGeometry{};
     landBoundaryGeometry.geometry_separator = meshkernel::constants::missing::doubleValue;
@@ -3606,4 +3632,117 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     {
         EXPECT_NEAR(polygonGeometry.coordinates_y[i], expectedSnappedPointY[i], tolerance);
     }
+}
+
+TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithLargeMinEdgeSize_ShouldNotRefine)
+{
+    // Prepare
+    int isGeographic = 1;
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = -6.0;
+    makeGridParameters.origin_y = 48.5;
+    makeGridParameters.upper_right_x = 2;
+    makeGridParameters.upper_right_y = 51.2;
+    makeGridParameters.block_size_x = 0.5;
+    makeGridParameters.block_size_y = 0.5;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+
+    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
+    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
+    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
+    meshRefinementParameters.min_edge_size = 200000.0;
+
+    // Execute
+    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+}
+
+TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithSmallMinEdgeSize_ShouldRefine)
+{
+    // Prepare
+    int isGeographic = 1;
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = -6.0;
+    makeGridParameters.origin_y = 48.5;
+    makeGridParameters.upper_right_x = 2;
+    makeGridParameters.upper_right_y = 51.2;
+    makeGridParameters.block_size_x = 0.5;
+    makeGridParameters.block_size_y = 0.5;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(221, mesh2d.num_nodes);
+    ASSERT_EQ(412, mesh2d.num_edges);
+
+    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
+    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
+    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 10;
+
+    // The minimum edge size
+    meshRefinementParameters.min_edge_size = 2000.0;
+
+    // Execute
+    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(1570, mesh2d.num_nodes);
+    ASSERT_EQ(3361, mesh2d.num_edges);
 }
