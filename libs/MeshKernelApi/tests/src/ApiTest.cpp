@@ -3653,7 +3653,11 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     polygonGeometry.coordinates_y = polygonPointsY.data();
     polygonGeometry.num_coordinates = static_cast<int>(polygonPointsX.size());
 
-    errorCode = meshkernelapi::mkernel_polygon_snap_to_landboundary(meshKernelId, landBoundaryGeometry, polygonGeometry, 0, static_cast<int>(polygonPointsX.size()) - 1);
+    errorCode = meshkernelapi::mkernel_polygon_snap_to_landboundary(meshKernelId,
+                                                                    landBoundaryGeometry,
+                                                                    polygonGeometry,
+                                                                    0,
+                                                                    static_cast<int>(polygonPointsX.size()) - 1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (size_t i = 0; i < polygonPointsX.size(); ++i)
@@ -3673,7 +3677,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     int isGeographic = 1;
     int meshKernelId = -1;
     auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -3685,10 +3689,10 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     makeGridParameters.block_size_y = 0.5;
 
     errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Mesh2D mesh2d{};
@@ -3713,11 +3717,11 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
 
     // Execute
     errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
     ASSERT_EQ(221, mesh2d.num_nodes);
@@ -3730,7 +3734,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     int isGeographic = 1;
     int meshKernelId = -1;
     auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -3742,10 +3746,10 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     makeGridParameters.block_size_y = 0.5;
 
     errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
     meshkernelapi::Mesh2D mesh2d{};
@@ -3771,11 +3775,11 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
 
     // Execute
     errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(1570, mesh2d.num_nodes);
     ASSERT_EQ(3361, mesh2d.num_edges);
 }
