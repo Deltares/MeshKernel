@@ -913,3 +913,22 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     ASSERT_EQ(faceIntersections[8].edgeNodes[1], 28);
     ASSERT_EQ(faceIntersections[8].edgeIndexses.size(), 1);
 }
+
+TEST(Mesh2D, RemoveSingleIsland)
+{
+    // Load mesh with 2 disconnected regions, first a 10x10 and the second is a smaller 2x2 mesh
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/single_disconnected_region.nc");
+
+    // Remove all smaller island region.
+    mesh->RemoveIslands();
+}
+
+TEST(Mesh2D, RemoveMultipleIslands)
+{
+    // Load mesh with 4 disconnected regions, the main domain is a 10x10, there are 3 other much small island regions,
+    // each with a different shape and number of elements.
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/multiple_disconnected_regions.nc");
+
+    // Remove all smaller island regions.
+    mesh->RemoveIslands();
+}

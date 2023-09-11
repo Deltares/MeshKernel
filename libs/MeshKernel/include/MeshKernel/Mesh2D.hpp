@@ -293,6 +293,14 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
+        /// @brief Remove any small regions that are disconnected from the main part of the domain.
+        ///
+        /// @note The assumption is that the main region of interest will contain the largest number of elements.
+        /// The element of any other disconnected region (having fewer elements) will be removed.
+        /// Element connectivty is across shared edges, so elements that share only a single node are not
+        /// consideredto be connected.
+        void RemoveIslands();
+
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
@@ -352,5 +360,30 @@ namespace meshkernel
             m_facesCircumcenters.reserve(GetNumNodes());
             m_numFacesNodes.reserve(GetNumNodes());
         }
+
+        /// @brief Get the neighbour element along an edge.
+        ///
+        /// Returns the null value if elementId is the null value or does not match any element connected to the edge.
+        UInt GetNeighbour(const std::array<UInt, 2>& edge, const UInt elementId) const;
+
+        /// @brief Label the elements in the connected (across faces only) region
+        ///
+        /// The faces of the region will be labeled with the regionId.
+        /// The connected region is labeled using a flood fill algorithm
+        void LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elementRegionId, const UInt unlabledElementId, UInt& regionCount) const;
+
+        /// @brief Label the elements in a single connected region.
+        ///
+        /// If no elements are left unlabeled then the regionCount is zero
+        void LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& regionCount) const;
+
+        /// @brief Label all regions in the mesh.
+        ///
+        /// Each region will be assigned a unique identifier
+        /// All elements in a single region will be assigned a unique identifier
+        void LabelAllDomainRegions(std::vector<UInt>& elementRegionId, std::vector<std::pair<UInt, UInt>>& regionCount) const;
+
+        /// @brief Remove elements that do not have the specified identifier.
+        void RemoveIslandElements(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& numberOfElementsRemoved);
     };
 } // namespace meshkernel
