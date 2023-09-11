@@ -1958,14 +1958,14 @@ meshkernel::UInt Mesh2D::GetNeighbour(const std::array<UInt, 2>& edge, const UIn
     return constants::missing::uintValue;
 }
 
-void Mesh2D::LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elementRegionId, const UInt unlabledElementId, UInt& regionCount) const
+void Mesh2D::LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elementRegionId, const UInt unlabledElementId, UInt& elementCount) const
 {
     // Use a flood fill like algorithm to label all elements, connected via edges, with the same region id.
 
     std::queue<UInt> toBeProcessed;
     // Add a single unlabeled element to the queue
     toBeProcessed.push(unlabledElementId);
-    regionCount = 0;
+    elementCount = 0;
 
     // Process the queue, until there are no nodes left to process.
     while (toBeProcessed.size() > 0)
@@ -1986,17 +1986,17 @@ void Mesh2D::LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elemen
                 // If any neighbour element is labeled undefined it will get current region id
                 // and added to the end of the queue to be processed later.
                 elementRegionId[neighbour] = regionId;
-                ++regionCount;
+                ++elementCount;
                 toBeProcessed.push(neighbour);
             }
         }
     }
 }
 
-void Mesh2D::LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& regionCount) const
+void Mesh2D::LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& elementCount) const
 {
     UInt unlabledElementId = constants::missing::uintValue;
-    regionCount = 0;
+    elementCount = 0;
 
     // Find an element that has not yet been labeled, any as yet unlabeled element will do,
     // so use the first one that we find in the list.
@@ -2014,7 +2014,7 @@ void Mesh2D::LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& ele
     // with the current regionId.
     if (unlabledElementId != constants::missing::uintValue)
     {
-        LabelConnectedRegion(regionId, elementRegionId, unlabledElementId, regionCount);
+        LabelConnectedRegion(regionId, elementRegionId, unlabledElementId, elementCount);
     }
 }
 
@@ -2028,13 +2028,13 @@ void Mesh2D::LabelAllDomainRegions(std::vector<UInt>& elementRegionId, std::vect
 
     while (!allRegionsCounted)
     {
-        UInt count = 0;
-        LabelSingleDomainRegion(regionId, elementRegionId, count);
+        UInt elementCount = 0;
+        LabelSingleDomainRegion(regionId, elementRegionId, elementCount);
 
-        if (count > 0)
+        if (elementCount > 0)
         {
             // If more than 0 elements were labaled, then save this region-id and number of elements.
-            regionCount.push_back({regionId, count});
+            regionCount.push_back({regionId, elementCount});
             ++regionId;
         }
         else
@@ -2067,12 +2067,17 @@ void Mesh2D::RemoveIslandElements(const UInt regionId, std::vector<UInt>& elemen
 
 void Mesh2D::RemoveIslands()
 {
+    // Label each discontiguous region of the mesh with a unique identifier.
+    // A mapping between the identifier for the region and the number of elements in the same region is retained
+    // Only the region containing the largest number of elements will be kept, all other regions removed.
+
     // Map from element id (the domain, index of the array) to region id.
     std::vector<UInt> elementRegionId;
     // List of number of elements labeled with number
     // the domain (index) is the region id and the range, regionCount[id], is the element count.
     std::vector<std::pair<UInt, UInt>> regionCount;
 
+    // Generate region identifier for all elements in the mesh and a mapping between the region id the the number of elements.
     LabelAllDomainRegions(elementRegionId, regionCount);
 
     // If more that 1 region has been found then remove all regions that have fewer elements

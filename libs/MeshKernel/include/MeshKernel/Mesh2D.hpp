@@ -370,17 +370,17 @@ namespace meshkernel
         ///
         /// The faces of the region will be labeled with the regionId.
         /// The connected region is labeled using a flood fill algorithm
-        void LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elementRegionId, const UInt unlabledElementId, UInt& regionCount) const;
+        void LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elementRegionId, const UInt unlabledElementId, UInt& elementCount) const;
 
         /// @brief Label the elements in a single connected region.
         ///
-        /// If no elements are left unlabeled then the regionCount is zero
-        void LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& regionCount) const;
+        /// If no elements are left unlabeled then the elementCount is zero
+        void LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& elementRegionId, UInt& elementCount) const;
 
-        /// @brief Label all regions in the mesh.
+        /// @brief Label the elements of all regions in the mesh.
         ///
         /// Each region will be assigned a unique identifier
-        /// All elements in a single region will be assigned a unique identifier
+        /// All elements in a single region will be assigned the same unique identifier (each region will have a different identifier)
         void LabelAllDomainRegions(std::vector<UInt>& elementRegionId, std::vector<std::pair<UInt, UInt>>& regionCount) const;
 
         /// @brief Remove elements that do not have the specified identifier.
