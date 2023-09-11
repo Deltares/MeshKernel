@@ -921,6 +921,7 @@ TEST(Mesh2D, RemoveSingleIsland)
 
     // Remove all smaller island region.
     mesh->RemoveIslands();
+    EXPECT_EQ(mesh->GetNumFaces(), 100);
 }
 
 TEST(Mesh2D, RemoveMultipleIslands)
@@ -931,4 +932,5 @@ TEST(Mesh2D, RemoveMultipleIslands)
 
     // Remove all smaller island regions.
     mesh->RemoveIslands();
+    EXPECT_EQ(mesh->GetNumFaces(), 100);
 }

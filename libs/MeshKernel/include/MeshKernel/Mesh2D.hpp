@@ -297,8 +297,8 @@ namespace meshkernel
         ///
         /// @note The assumption is that the main region of interest will contain the largest number of elements.
         /// The element of any other disconnected region (having fewer elements) will be removed.
-        /// Element connectivty is across shared edges, so elements that share only a single node are not
-        /// consideredto be connected.
+        /// Element connectivity is across shared edges, so elements that share only a single corner node are not
+        /// considered to be connected.
         void RemoveIslands();
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours

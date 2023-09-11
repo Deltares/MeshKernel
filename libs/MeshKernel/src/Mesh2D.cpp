@@ -2055,7 +2055,12 @@ void Mesh2D::RemoveIslandElements(const UInt regionId, std::vector<UInt>& elemen
         if (elementRegionId[i] != regionId)
         {
             ++numberOfElementsRemoved;
-            // DeleteFace(i);
+
+            // Remove the boundary edges of the element
+            for (UInt j = 0; j < m_facesEdges[i].size(); ++j)
+            {
+                DeleteEdge(m_facesEdges[i][j]);
+            }
         }
     }
 }
@@ -2091,5 +2096,6 @@ void Mesh2D::RemoveIslands()
         UInt numberOfElementsRemoved = 0;
         // Remove all elements that do not have the main region id.
         RemoveIslandElements(mainRegionId, elementRegionId, numberOfElementsRemoved);
+        Administrate();
     }
 }
