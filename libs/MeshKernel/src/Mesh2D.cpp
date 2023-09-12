@@ -1965,7 +1965,8 @@ void Mesh2D::LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elemen
     std::queue<UInt> toBeProcessed;
     // Add a single unlabeled element to the queue
     toBeProcessed.push(unlabledElementId);
-    elementCount = 0;
+    elementRegionId[unlabledElementId] = regionId;
+    elementCount = 1;
 
     // Process the queue, until there are no nodes left to process.
     while (toBeProcessed.size() > 0)
