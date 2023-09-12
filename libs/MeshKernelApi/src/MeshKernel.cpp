@@ -77,7 +77,8 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static int constexpr bufferSize = 512;
+    static size_t constexpr bufferSize = 512;
+    static size_t constexpr maxCharsToCopy = bufferSize - 1; // make sure destination string is null-terminated when strncpy is used
     static char exceptionMessage[bufferSize] = "";
     static meshkernel::UInt invalidMeshIndex{0};
     static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
@@ -90,24 +91,24 @@ namespace meshkernelapi
         }
         catch (meshkernel::MeshGeometryError const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
             invalidMeshIndex = e.MeshIndex();
             invalidMeshLocation = e.MeshLocation();
             return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
             return e.Code();
         }
         catch (std::exception const& e)
         {
-            std::strncpy(exceptionMessage, e.what(), bufferSize - 1);
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
             return meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
-            std::strncpy(exceptionMessage, "Unknown exception", bufferSize - 1);
+            std::strncpy(exceptionMessage, "Unknown exception", maxCharsToCopy);
             return meshkernel::ExitCode::UnknownExceptionCode;
         }
     }

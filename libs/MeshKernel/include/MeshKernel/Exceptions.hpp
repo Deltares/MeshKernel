@@ -101,7 +101,6 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] format_string   The format string
         /// @param[in] source_location The source location
-        template <typename... Args>
         FormatString(const char* const format_string,
                      std::source_location const& source_location = std::source_location::current())
             : m_format_string(format_string),
@@ -118,7 +117,7 @@ namespace meshkernel
         [[nodiscard]] std::source_location const& SourceLocation() const { return m_source_location; }
 
     private:
-        const char* const m_format_string; ///< The format
+        std::string_view m_format_string; ///< The format
 
         std::source_location m_source_location; ///< The source location
     };
@@ -213,7 +212,7 @@ namespace meshkernel
         }
     };
 
-    /// @brief A class for throwing algorithm exceptions
+    /// @brief A class for throwing not implemented exceptions
     class NotImplemented final : public MeshKernelError
     {
     public:
