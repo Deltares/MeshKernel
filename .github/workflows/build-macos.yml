@@ -74,19 +74,18 @@ jobs:
           sudo apt-get install libboost-all-dev
           sudo apt-get install doxygen
       
-      # Step: Cache external dependencies
-      - name: Cache user-provided dependencies
-        uses: actions/cache@v3
-        id: cache-external-dependencies
+      # Step: Restore cached user-provided dependencies
+      - name: Restore cached user-provided dependencies
+        uses: actions/cache/restore@v3
+        id: restore-cached-external-dependencies
         with:
+          key: ${{ runner.os }}-cache-key
+          restore-keys: ${{ runner.os }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
 
-      # Step: Build and install user-provided dependencies, executes only if not previously cached
-      - if: steps.cache-external-dependencies.outputs.cache-hit != 'true'
-        name: Build and install user-provided dependencies
+      # Step: Build and install user-provided dependencies, executes only if no cache restored
+      - name: Build and install user-provided dependencies
+        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
@@ -94,6 +93,14 @@ jobs:
           -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
           -BuildType '${{ matrix.build_type }}'
           -ParallelJobs 10
+
+    # Step: Cache user-provided dependencies, executes only if no cache restored
+      - name: Cache user-provided dependencies
+        uses: actions/cache/save@v3
+        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        with:
+          key: ${{ runner.os }}-cache-key
+          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
       
       # Step: CMake configuration
       - name: Configure

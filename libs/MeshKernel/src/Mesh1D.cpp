@@ -83,7 +83,7 @@ Point Mesh1D::ComputeProjectedNode(UInt node, double distanceFactor) const
 
     if (m_nodesNumEdges[node] <= 0)
     {
-        throw AlgorithmError("meshkernel::Mesh1D::ComputeProjectedNode: mesh 1d node has no connected edges");
+        throw AlgorithmError("ComputeProjectedNode: mesh 1d node has no connected edges");
     }
 
     if (IsNodeOnBoundary(node))

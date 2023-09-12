@@ -38,8 +38,7 @@ CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection projection
 {
     if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
     {
-        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+        throw meshkernel::NotImplemented("Projection value: {} not supported", static_cast<int>(m_projection));
     }
 }
 
@@ -73,8 +72,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const int numColumns,
                                                 blockSizeY),
                                m_projection};
     }
-    const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-    throw NotImplemented(message);
+    throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
 }
 
 std::vector<std::vector<meshkernel::Point>> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -323,8 +321,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double angle,
                                           m_projection};
         break;
     default:
-        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+        throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
     // remove nodes outside the polygon
@@ -384,8 +381,7 @@ CurvilinearGrid CurvilinearGridCreateUniform::Compute(const double originX,
         break;
     case Projection::sphericalAccurate:
     default:
-        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+        throw meshkernel::NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
     return curvilinearGrid;

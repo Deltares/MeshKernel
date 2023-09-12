@@ -125,7 +125,7 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
 
         if (numberOfTriangles == 0)
         {
-            throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles = 0.");
+            throw AlgorithmError("The number of triangles = 0.");
         }
 
         triangulationWrapper.Compute(polygon.Nodes(),
@@ -145,7 +145,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (IsEmpty())
     {
-        throw ConstraintError("Polygons::RefineFirstPolygon: No nodes in polygon.");
+        throw ConstraintError("No nodes in polygon.");
     }
 
     UInt polygonIndex = 0;
@@ -163,7 +163,7 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
 
     if (endIndex <= startIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("Polygons::RefineFirstPolygon: The end index is smaller than the start index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError("The end index is smaller than the start index: {} >= {}.", startIndex, endIndex);
     }
 
     std::tie(polygonIndex, polygonStartNode, polygonEndNode) = PolygonIndex(startIndex, endIndex);
@@ -176,7 +176,7 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
 
     if (polygonIndex >= m_enclosures.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid polygon index: {} > {}.", polygonIndex, m_enclosures.size() - 1));
+        throw ConstraintError("Invalid polygon index: {} > {}.", polygonIndex, m_enclosures.size() - 1);
     }
 
     // TODO train wreck-ish.
@@ -227,7 +227,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
 {
     if (IsEmpty())
     {
-        throw ConstraintError(VariadicErrorMessage("No enclosures."));
+        throw ConstraintError("No enclosures.");
     }
 
     if (startIndex == 0 && endIndex == 0)
@@ -239,7 +239,7 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
     // TODO is it valid to snap a single point to the land boundary?
     if (startIndex >= endIndex)
     {
-        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} >= {}.", startIndex, endIndex));
+        throw ConstraintError("The start index is greater than the end index: {} >= {}.", startIndex, endIndex);
     }
 
     const auto [polygonIndex, polygonStartNode, polygonEndNode] = PolygonIndex(startIndex, endIndex);
@@ -283,7 +283,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt, meshkernel::UInt> Polygons::Polyg
 
     if (!indicesAreValid)
     {
-        throw ConstraintError(VariadicErrorMessage("The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     return {polygonIndex, polygonStartNode, polygonEndNode};
@@ -385,13 +385,12 @@ meshkernel::BoundingBox Polygons::GetBoundingBox(UInt polygonIndex) const
 {
     if (IsEmpty())
     {
-        throw ConstraintError(VariadicErrorMessage("Enclosures list is empty."));
+        throw ConstraintError("Enclosures list is empty.");
     }
 
     if (polygonIndex >= m_enclosures.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid enclosure index: {}, maximum index: {}",
-                                                   polygonIndex, m_enclosures.size() - 1));
+        throw ConstraintError("Invalid enclosure index: {}, maximum index: {}", polygonIndex, m_enclosures.size() - 1);
     }
 
     return m_enclosures[polygonIndex].Outer().GetBoundingBox();

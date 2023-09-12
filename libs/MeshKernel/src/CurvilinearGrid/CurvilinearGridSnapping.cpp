@@ -83,7 +83,7 @@ meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(std::shared_ptr<Cur
 {
     if (m_points.size() <= 1 || m_points.size() > 4)
     {
-        throw ConstraintError(VariadicErrorMessage("Snapping line or region has not been defined, number of points: {}", m_points.size()));
+        throw ConstraintError("Snapping line or region has not been defined, number of points: {}", m_points.size());
     }
 
     if (const bool allValid = std::accumulate(m_points.begin(), m_points.end(), true, [](const bool val, const Point& p)

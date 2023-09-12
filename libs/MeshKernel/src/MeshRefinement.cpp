@@ -240,7 +240,7 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
                 if (faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][0] &&
                     faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], static_cast<UInt>(1))])
                 {
-                    throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
+                    throw AlgorithmError("Algorithm error.");
                 }
 
                 UInt ee = 0;
@@ -266,7 +266,7 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
 
                 if (m_mesh->m_numFacesNodes[faceIndex] != ee || m_mesh->m_numFacesNodes[faceIndex] != nn)
                 {
-                    throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
+                    throw AlgorithmError("Algorithm error.");
                 }
             }
 
@@ -342,7 +342,7 @@ void MeshRefinement::ConnectHangingNodes()
             edgeEndNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
             if (edgeEndNodeCache[numNonHangingNodes] == constants::missing::uintValue)
             {
-                throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
+                throw AlgorithmError("Could not find common node.");
             }
 
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
@@ -350,7 +350,7 @@ void MeshRefinement::ConnectHangingNodes()
                 hangingNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
                 if (hangingNodeCache[numNonHangingNodes] == constants::missing::uintValue)
                 {
-                    throw AlgorithmError("MeshRefinement::connect_hanging_nodes: Could not find common node.");
+                    throw AlgorithmError("Could not find common node.");
                 }
             }
             numNonHangingNodes++;
@@ -584,7 +584,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
                 const auto newNode = m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex]);
                 if (newNode == constants::missing::uintValue)
                 {
-                    throw AlgorithmError("MeshRefinement::RefineFacesBySplittingEdges: Could not find common node.");
+                    throw AlgorithmError("Could not find common node.");
                 }
 
                 notHangingFaceNodes.emplace_back(newNode);
@@ -766,7 +766,7 @@ void MeshRefinement::FindHangingNodes(UInt face)
 
     if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
     {
-        throw AlgorithmError("MeshRefinement::FindHangingNodes: The number of face nodes is greater than the maximum number of edges per node.");
+        throw AlgorithmError("The number of face nodes is greater than the maximum number of edges per node.");
     }
 
     m_isHangingNodeCache.resize(Mesh::m_maximumNumberOfNodesPerFace);
@@ -793,7 +793,7 @@ void MeshRefinement::FindHangingNodes(UInt face)
                 commonNode = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
                 if (commonNode == constants::missing::uintValue)
                 {
-                    throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
+                    throw AlgorithmError("Could not find common node.");
                 }
             }
             else if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
@@ -801,7 +801,7 @@ void MeshRefinement::FindHangingNodes(UInt face)
                 commonNode = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
                 if (commonNode == constants::missing::uintValue)
                 {
-                    throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
+                    throw AlgorithmError("Could not find common node.");
                 }
             }
 
@@ -1114,7 +1114,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
 
                 if (num + 1 != Mesh::m_numNodesQuads)
                 {
-                    throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: The number the links in the cell is not equal to 3.");
+                    throw AlgorithmError("The number the links in the cell is not equal to 3.");
                 }
 
                 UInt numEdgesToRefine = 0;
@@ -1171,7 +1171,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
 
     if (repeat)
     {
-        throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMask: Solution did not converge.");
+        throw AlgorithmError("Solution did not converge.");
     }
 
     // only keep m_edgeMask = 1, set other values to 0
