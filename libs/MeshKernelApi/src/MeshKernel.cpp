@@ -80,6 +80,7 @@ namespace meshkernelapi
     static size_t constexpr bufferSize = 512;
     static size_t constexpr maxCharsToCopy = bufferSize - 1; // make sure destination string is null-terminated when strncpy is used
     static char exceptionMessage[bufferSize] = "";
+    static meshkernel::ExitCode lastExitCode = meshkernel::ExitCode::Success;
     static meshkernel::UInt invalidMeshIndex{0};
     static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
 
@@ -94,23 +95,25 @@ namespace meshkernelapi
             std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
             invalidMeshIndex = e.MeshIndex();
             invalidMeshLocation = e.MeshLocation();
-            return e.Code();
+            lastExitCode = e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
             std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
-            return e.Code();
+            lastExitCode = e.Code();
         }
         catch (std::exception const& e)
         {
             std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
-            return meshkernel::ExitCode::StdLibExceptionCode;
+            lastExitCode = meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
             std::strncpy(exceptionMessage, "Unknown exception", maxCharsToCopy);
-            return meshkernel::ExitCode::UnknownExceptionCode;
+            lastExitCode = meshkernel::ExitCode::UnknownExceptionCode;
         }
+
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
@@ -1956,6 +1959,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
         std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_check_error_is_geometric(bool& errorIsGemetric)
+    {
+        errorIsGemetric = (lastExitCode == meshkernel::ExitCode::MeshGeometryErrorCode);
         return meshkernel::ExitCode::Success;
     }
 

@@ -521,9 +521,14 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_edges_location_type(int& type);
 
         /// @brief Gets pointer to error message.
-        /// @param[out] error_message The pointer to the latest error message
+        /// @param[out] errorMessage The pointer to the latest error message
         /// @returns Error code
-        MKERNEL_API int mkernel_get_error(char* error_message);
+        MKERNEL_API int mkernel_get_error(char* errorMessage);
+
+        /// @brief Checks if last error is geomtric
+        /// @param[in,out] errorIsGemetric True if error is geometric, false otherwise
+        /// @return Error code
+        MKERNEL_API int mkernel_check_error_is_geometric(bool& errorIsGemetric);
 
         /// @brief Gets an int indicating the faces location type
         /// @param[out] type The int indicating the face location type
