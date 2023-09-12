@@ -2021,13 +2021,13 @@ void Mesh2D::LabelSingleDomainRegion(const UInt regionId, std::vector<UInt>& ele
 
 void Mesh2D::LabelAllDomainRegions(std::vector<UInt>& elementRegionId, std::vector<std::pair<UInt, UInt>>& regionCount) const
 {
-    bool allRegionsCounted = false;
+    bool allRegionsLabeled = false;
     UInt regionId = 1;
 
     elementRegionId.resize(GetNumFaces(), constants::missing::uintValue);
     regionCount.clear();
 
-    while (!allRegionsCounted)
+    while (!allRegionsLabeled)
     {
         UInt elementCount = 0;
         LabelSingleDomainRegion(regionId, elementRegionId, elementCount);
@@ -2041,7 +2041,7 @@ void Mesh2D::LabelAllDomainRegions(std::vector<UInt>& elementRegionId, std::vect
         else
         {
             // If no elements were found then we are complete.
-            allRegionsCounted = true;
+            allRegionsLabeled = true;
         }
     }
 }
@@ -2068,7 +2068,7 @@ void Mesh2D::RemoveIslandElements(const UInt regionId, std::vector<UInt>& elemen
 
 void Mesh2D::RemoveIslands()
 {
-    // Label each discontiguous region of the mesh with a unique identifier.
+    // Label the elements of each discontiguous region of the mesh with a unique identifier for the region.
     // A mapping between the identifier for the region and the number of elements in the same region is retained
     // Only the region containing the largest number of elements will be kept, all other regions removed.
 
