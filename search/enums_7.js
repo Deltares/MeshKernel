@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['traversaldirection_1188',['TraversalDirection',['../namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4',1,'meshkernel']]],
-  ['triangulationoptions_1189',['TriangulationOptions',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf',1,'meshkernel::TriangulationWrapper']]],
-  ['type_1190',['Type',['../classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078',1,'meshkernel::Mesh']]]
+  ['region_1206',['Region',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3',1,'meshkernel::PolygonalEnclosure']]]
 ];

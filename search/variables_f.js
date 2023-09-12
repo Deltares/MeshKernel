@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['value_1166',['value',['../classmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['values_1167',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList::values()'],['../structmeshkernelapi_1_1_gridded_samples.html#aab159ea4c8567ff71c93a22671f57e01',1,'meshkernelapi::GriddedSamples::values()']]]
+  ['upper_5fright_5fx_1182',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
+  ['upper_5fright_5fy_1183',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
+  ['use_5fmass_5fcenter_5fwhen_5frefining_1184',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
 ];

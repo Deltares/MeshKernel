@@ -95,22 +95,16 @@ Inheritance diagram for meshkernel::MeshKernelError:</div>
 <area href="classmeshkernel_1_1_algorithm_error.html" title="A class for throwing algorithm exceptions." alt="meshkernel::AlgorithmError" shape="rect" coords="0,112,197,136"/>
 <area href="classmeshkernel_1_1_constraint_error.html" title="An exception class thrown when an attempt is made that violates a range constraint." alt="meshkernel::ConstraintError" shape="rect" coords="207,112,404,136"/>
 <area href="classmeshkernel_1_1_mesh_geometry_error.html" title="A class for throwing mesh geometry errors." alt="meshkernel::MeshGeometryError" shape="rect" coords="414,112,611,136"/>
-<area href="classmeshkernel_1_1_not_implemented.html" title="A class for throwing &quot;not implemented&quot; exceptions." alt="meshkernel::NotImplemented" shape="rect" coords="621,112,818,136"/>
+<area href="classmeshkernel_1_1_not_implemented.html" title="A class for throwing not implemented exceptions." alt="meshkernel::NotImplemented" shape="rect" coords="621,112,818,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7cf6f7e0856ad6263446abcbb086638b"><td class="memItemLeft" align="right" valign="top"><a id="a7cf6f7e0856ad6263446abcbb086638b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#a7cf6f7e0856ad6263446abcbb086638b">MeshKernelError</a> ()=delete</td></tr>
-<tr class="memdesc:a7cf6f7e0856ad6263446abcbb086638b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class default constructor. It is deleted to prevent constructing errors without messages. <br /></td></tr>
-<tr class="separator:a7cf6f7e0856ad6263446abcbb086638b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2ad64a91cf27c5224b016a07fe81600"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#aa2ad64a91cf27c5224b016a07fe81600">MeshKernelError</a> (<a class="el" href="classmeshkernel_1_1_variadic_error_message.html">VariadicErrorMessage</a> const &amp;message, std::source_location const &amp;source_location=std::source_location::current())</td></tr>
-<tr class="memdesc:aa2ad64a91cf27c5224b016a07fe81600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor parametrized by a variadic error message and optionally the source location.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#aa2ad64a91cf27c5224b016a07fe81600">More...</a><br /></td></tr>
-<tr class="separator:aa2ad64a91cf27c5224b016a07fe81600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeff001c842b73224c1ed505ecb351dc0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#aeff001c842b73224c1ed505ecb351dc0">MeshKernelError</a> (std::string_view message, std::source_location const &amp;source_location=std::source_location::current())</td></tr>
-<tr class="memdesc:aeff001c842b73224c1ed505ecb351dc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor parametrized by a string error message and optionally the source location.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#aeff001c842b73224c1ed505ecb351dc0">More...</a><br /></td></tr>
-<tr class="separator:aeff001c842b73224c1ed505ecb351dc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba8e9975b6d71103ff1a3905c31c3dc2"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:aba8e9975b6d71103ff1a3905c31c3dc2"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#aba8e9975b6d71103ff1a3905c31c3dc2">MeshKernelError</a> (<a class="el" href="classmeshkernel_1_1_format_string.html">FormatString</a> const &amp;format_string, Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:aba8e9975b6d71103ff1a3905c31c3dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#aba8e9975b6d71103ff1a3905c31c3dc2">More...</a><br /></td></tr>
+<tr class="separator:aba8e9975b6d71103ff1a3905c31c3dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5897d249c7573bc7c7e30854e6f39f52"><td class="memItemLeft" align="right" valign="top"><a id="a5897d249c7573bc7c7e30854e6f39f52"></a>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#a5897d249c7573bc7c7e30854e6f39f52">~MeshKernelError</a> ()=default</td></tr>
 <tr class="memdesc:a5897d249c7573bc7c7e30854e6f39f52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class destructor. <br /></td></tr>
@@ -118,21 +112,30 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:ae995508dd378b8a2245af33a4978880e"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e">what</a> () const noexcept override</td></tr>
 <tr class="memdesc:ae995508dd378b8a2245af33a4978880e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the explanatory string of the error.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e">More...</a><br /></td></tr>
 <tr class="separator:ae995508dd378b8a2245af33a4978880e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fed2e8c508b75b3f3f0bed29ee762f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#ad3fed2e8c508b75b3f3f0bed29ee762f">Code</a> () const</td></tr>
+<tr class="memdesc:ad3fed2e8c508b75b3f3f0bed29ee762f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the exit code.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#ad3fed2e8c508b75b3f3f0bed29ee762f">More...</a><br /></td></tr>
+<tr class="separator:ad3fed2e8c508b75b3f3f0bed29ee762f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ab01f553af7ce69feebc5b99b7ebb4a1c"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#ab01f553af7ce69feebc5b99b7ebb4a1c">Category</a> () const</td></tr>
-<tr class="memdesc:ab01f553af7ce69feebc5b99b7ebb4a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the error category.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#ab01f553af7ce69feebc5b99b7ebb4a1c">More...</a><br /></td></tr>
-<tr class="separator:ab01f553af7ce69feebc5b99b7ebb4a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb313e219fc20d4e7a4f3b450aa50331"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmeshkernel_1_1_error_category.html">ErrorCategory</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#afb313e219fc20d4e7a4f3b450aa50331">Category</a> () const</td></tr>
+<tr class="memdesc:afb313e219fc20d4e7a4f3b450aa50331"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the error category.  <a href="classmeshkernel_1_1_mesh_kernel_error.html#afb313e219fc20d4e7a4f3b450aa50331">More...</a><br /></td></tr>
+<tr class="separator:afb313e219fc20d4e7a4f3b450aa50331"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75850dc953f5ed1ed741f5b4f855ba98"><td class="memItemLeft" align="right" valign="top"><a id="a75850dc953f5ed1ed741f5b4f855ba98"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_kernel_error.html#a75850dc953f5ed1ed741f5b4f855ba98">FormattedMessage</a> () const</td></tr>
+<tr class="memdesc:a75850dc953f5ed1ed741f5b4f855ba98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the message. <br /></td></tr>
+<tr class="separator:a75850dc953f5ed1ed741f5b4f855ba98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for throwing general MeshKernel exceptions. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa2ad64a91cf27c5224b016a07fe81600"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2ad64a91cf27c5224b016a07fe81600">&#9670;&nbsp;</a></span>MeshKernelError() <span class="overload">[1/2]</span></h2>
+<a id="aba8e9975b6d71103ff1a3905c31c3dc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba8e9975b6d71103ff1a3905c31c3dc2">&#9670;&nbsp;</a></span>MeshKernelError()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -140,14 +143,14 @@ Protected Member Functions</h2></td></tr>
         <tr>
           <td class="memname">meshkernel::MeshKernelError::MeshKernelError </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_variadic_error_message.html">VariadicErrorMessage</a> const &amp;&#160;</td>
-          <td class="paramname"><em>message</em>, </td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_format_string.html">FormatString</a> const &amp;&#160;</td>
+          <td class="paramname"><em>format_string</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::source_location const &amp;&#160;</td>
-          <td class="paramname"><em>source_location</em> = <code>std::source_location::current()</code>&#160;</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -162,56 +165,11 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Class constructor parametrized by a variadic error message and optionally the source location. </p>
+<p>Class constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>The variadic error message. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">source_location</td><td>The source location. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="aeff001c842b73224c1ed505ecb351dc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeff001c842b73224c1ed505ecb351dc0">&#9670;&nbsp;</a></span>MeshKernelError() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">meshkernel::MeshKernelError::MeshKernelError </td>
-          <td>(</td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>message</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::source_location const &amp;&#160;</td>
-          <td class="paramname"><em>source_location</em> = <code>std::source_location::current()</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Class constructor parametrized by a string error message and optionally the source location. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>The string error message. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">source_location</td><td>The source location. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">format_string</td><td>The format string </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>The arguments to be formatted. </td></tr>
   </table>
   </dd>
 </dl>
@@ -219,8 +177,8 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab01f553af7ce69feebc5b99b7ebb4a1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab01f553af7ce69feebc5b99b7ebb4a1c">&#9670;&nbsp;</a></span>Category()</h2>
+<a id="afb313e219fc20d4e7a4f3b450aa50331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb313e219fc20d4e7a4f3b450aa50331">&#9670;&nbsp;</a></span>Category()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +187,7 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string meshkernel::MeshKernelError::Category </td>
+          <td class="memname">virtual <a class="el" href="classmeshkernel_1_1_error_category.html">ErrorCategory</a> meshkernel::MeshKernelError::Category </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -244,6 +202,34 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the error category. </p>
 <dl class="section return"><dt>Returns</dt><dd>The error category. </dd></dl>
+
+</div>
+</div>
+<a id="ad3fed2e8c508b75b3f3f0bed29ee762f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fed2e8c508b75b3f3f0bed29ee762f">&#9670;&nbsp;</a></span>Code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> meshkernel::MeshKernelError::Code </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the exit code. </p>
+<dl class="section return"><dt>Returns</dt><dd>The exit code </dd></dl>
 
 </div>
 </div>
@@ -271,7 +257,7 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the explanatory string of the error. </p>
-<dl class="section return"><dt>Returns</dt><dd>the explanatory string of the error. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The explanatory string of the error. </dd></dl>
 
 </div>
 </div>

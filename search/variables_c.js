@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['refine_5fintersected_1158',['refine_intersected',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa39ee6bd0a820b00f564fac00e06cc26',1,'meshkernel::MeshRefinementParameters']]],
-  ['refinement_5ftype_1159',['refinement_type',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a5c1fb9c41739362ff3d3db9ee48b8351',1,'meshkernel::MeshRefinementParameters']]],
-  ['remove_5fskinny_5ftriangles_1160',['remove_skinny_triangles',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a15b853a211af2462adf0e4e3ecd440c3',1,'meshkernel::SplinesToCurvilinearParameters']]]
+  ['polylinedistance_1175',['polylineDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a6afd9cf7eeb667d616612c9a04b73ad8',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection::polylineDistance()'],['../structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html#a8214e290245fa388f1fce673e8d551d7',1,'meshkernel::Mesh::FaceMeshPolylineIntersection::polylineDistance()']]],
+  ['polylinesegmentindex_1176',['polylineSegmentIndex',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a9718c9a82d78df9aab8a9f0381f1eff5',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]]
 ];

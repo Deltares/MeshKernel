@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MeshKernel: meshkernel::VariadicErrorMessage Class Reference</title>
+<title>MeshKernel: meshkernel::FormatString Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,58 +69,58 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacemeshkernel.html">meshkernel</a></li><li class="navelem"><a class="el" href="classmeshkernel_1_1_variadic_error_message.html">VariadicErrorMessage</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacemeshkernel.html">meshkernel</a></li><li class="navelem"><a class="el" href="classmeshkernel_1_1_format_string.html">FormatString</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classmeshkernel_1_1_variadic_error_message-members.html">List of all members</a>  </div>
+<a href="classmeshkernel_1_1_format_string-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">meshkernel::VariadicErrorMessage Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">meshkernel::FormatString Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>A class for generating a variadic error message.  
- <a href="classmeshkernel_1_1_variadic_error_message.html#details">More...</a></p>
+<p>Manages the format string and source location.  
+ <a href="classmeshkernel_1_1_format_string.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_exceptions_8hpp_source.html">Exceptions.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab0f66073acb49ce612021b74597c728b"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:ab0f66073acb49ce612021b74597c728b"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_variadic_error_message.html#ab0f66073acb49ce612021b74597c728b">VariadicErrorMessage</a> (std::string_view message, Args const &amp;... args)</td></tr>
-<tr class="memdesc:ab0f66073acb49ce612021b74597c728b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="classmeshkernel_1_1_variadic_error_message.html#ab0f66073acb49ce612021b74597c728b">More...</a><br /></td></tr>
-<tr class="separator:ab0f66073acb49ce612021b74597c728b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bfe9236557ee1b92b4a66237eb70881"><td class="memItemLeft" align="right" valign="top">std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_variadic_error_message.html#a6bfe9236557ee1b92b4a66237eb70881">GetFormatted</a> () const</td></tr>
-<tr class="memdesc:a6bfe9236557ee1b92b4a66237eb70881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the formatted error message.  <a href="classmeshkernel_1_1_variadic_error_message.html#a6bfe9236557ee1b92b4a66237eb70881">More...</a><br /></td></tr>
-<tr class="separator:a6bfe9236557ee1b92b4a66237eb70881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa47a68540af02d0de0faa4c959e26028"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_format_string.html#aa47a68540af02d0de0faa4c959e26028">FormatString</a> (const char *const format_string, std::source_location const &amp;source_location=std::source_location::current())</td></tr>
+<tr class="memdesc:aa47a68540af02d0de0faa4c959e26028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="classmeshkernel_1_1_format_string.html#aa47a68540af02d0de0faa4c959e26028">More...</a><br /></td></tr>
+<tr class="separator:aa47a68540af02d0de0faa4c959e26028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10b352a5392cb1e47b723391f75b1e9"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_format_string.html#ad10b352a5392cb1e47b723391f75b1e9">String</a> () const</td></tr>
+<tr class="memdesc:ad10b352a5392cb1e47b723391f75b1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the format string.  <a href="classmeshkernel_1_1_format_string.html#ad10b352a5392cb1e47b723391f75b1e9">More...</a><br /></td></tr>
+<tr class="separator:ad10b352a5392cb1e47b723391f75b1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a036ed5d37c1523c5595f13674a948c7a"><td class="memItemLeft" align="right" valign="top">std::source_location const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_format_string.html#a036ed5d37c1523c5595f13674a948c7a">SourceLocation</a> () const</td></tr>
+<tr class="memdesc:a036ed5d37c1523c5595f13674a948c7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the source location.  <a href="classmeshkernel_1_1_format_string.html#a036ed5d37c1523c5595f13674a948c7a">More...</a><br /></td></tr>
+<tr class="separator:a036ed5d37c1523c5595f13674a948c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class for generating a variadic error message. </p>
+<div class="textblock"><p>Manages the format string and source location. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab0f66073acb49ce612021b74597c728b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0f66073acb49ce612021b74597c728b">&#9670;&nbsp;</a></span>VariadicErrorMessage()</h2>
+<a id="aa47a68540af02d0de0faa4c959e26028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa47a68540af02d0de0faa4c959e26028">&#9670;&nbsp;</a></span>FormatString()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Args&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">meshkernel::VariadicErrorMessage::VariadicErrorMessage </td>
+          <td class="memname">meshkernel::FormatString::FormatString </td>
           <td>(</td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>message</em>, </td>
+          <td class="paramtype">const char *const&#160;</td>
+          <td class="paramname"><em>format_string</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Args const &amp;...&#160;</td>
-          <td class="paramname"><em>args</em>&#160;</td>
+          <td class="paramtype">std::source_location const &amp;&#160;</td>
+          <td class="paramname"><em>source_location</em> = <code>std::source_location::current()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -138,8 +138,8 @@ template&lt;typename... Args&gt; </div>
 <p>Class constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">message</td><td>The format string of the error message. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>Arguments to be formatted. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">format_string</td><td>The format string </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">source_location</td><td>The source location </td></tr>
   </table>
   </dd>
 </dl>
@@ -147,8 +147,8 @@ template&lt;typename... Args&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6bfe9236557ee1b92b4a66237eb70881"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6bfe9236557ee1b92b4a66237eb70881">&#9670;&nbsp;</a></span>GetFormatted()</h2>
+<a id="a036ed5d37c1523c5595f13674a948c7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a036ed5d37c1523c5595f13674a948c7a">&#9670;&nbsp;</a></span>SourceLocation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +157,7 @@ template&lt;typename... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string const&amp; meshkernel::VariadicErrorMessage::GetFormatted </td>
+          <td class="memname">std::source_location const&amp; meshkernel::FormatString::SourceLocation </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -170,8 +170,36 @@ template&lt;typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the formatted error message. </p>
-<dl class="section return"><dt>Returns</dt><dd>The formatted error message. </dd></dl>
+<p>Returns the source location. </p>
+<dl class="section return"><dt>Returns</dt><dd>The source location </dd></dl>
+
+</div>
+</div>
+<a id="ad10b352a5392cb1e47b723391f75b1e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10b352a5392cb1e47b723391f75b1e9">&#9670;&nbsp;</a></span>String()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view meshkernel::FormatString::String </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the format string. </p>
+<dl class="section return"><dt>Returns</dt><dd>The format string </dd></dl>
 
 </div>
 </div>
