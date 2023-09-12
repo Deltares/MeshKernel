@@ -2056,7 +2056,8 @@ void Mesh2D::RemoveIslandElements(const UInt regionId, std::vector<UInt>& elemen
         if (elementRegionId[i] != regionId)
         {
             ++numberOfElementsRemoved;
-            std::ranges::for_each (m_facesEdges[i], [this](const UInt edge){DeleteEdge (edge);});
+            std::ranges::for_each (m_facesEdges[i], [this](const UInt edge)
+                                   {DeleteEdge (edge);});
         }
     }
 }
