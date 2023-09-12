@@ -724,7 +724,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     }
     else if (numSharedFaces > 0)
     {
-        throw MeshGeometryError("Smoother::ComputeNodeXiEta: Fatal error (phiTot=0)", currentNode, Mesh::Location::Nodes);
+        throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Fatal error (phiTot=0)");
     }
 
     double phi0 = 0.0;
@@ -746,7 +746,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
             }
             else
             {
-                throw MeshGeometryError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary face", currentNode, Mesh::Location::Nodes);
+                throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Inappropriate fictitious boundary face");
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;
@@ -755,7 +755,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
         const auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
         {
-            throw AlgorithmError("Smoother::ComputeNodeXiEta: The number of face nodes is greater than the maximum number of edges per node.");
+            throw AlgorithmError("The number of face nodes is greater than the maximum number of edges per node.");
         }
 
         dPhi0 = OptimalEdgeAngle(numFaceNodes);

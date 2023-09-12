@@ -77,8 +77,10 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
 
     if (rightCornerPoint >= numNodesFirstSpline)
     {
-        throw ConstraintError(VariadicErrorMessage("Coordinate out of bounds, resulting in index out of bounds: coordinate = {}, end index = {}, size = {}",
-                                                   adimensionalPointCoordinate, rightCornerPoint, numNodesFirstSpline));
+        throw ConstraintError("Coordinate out of bounds, resulting in index out of bounds: coordinate = {}, end index = {}, size = {}",
+                              adimensionalPointCoordinate,
+                              rightCornerPoint,
+                              numNodesFirstSpline);
     }
 
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
@@ -87,7 +89,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(splinePoints, splineDerivative, adimensionalPointCoordinate);
     if (!pointCoordinate.IsValid())
     {
-        throw AlgorithmError("SplineAlgorithms::ComputeCurvatureOnSplinePoint: Could not interpolate spline points.");
+        throw AlgorithmError("Could not interpolate spline points.");
     }
 
     Point p = splinePoints[rightCornerPoint] - splinePoints[leftCornerPoint] +
@@ -236,7 +238,7 @@ void SplineAlgorithms::ComputeInterpolationMatrix(const EigenIndex numberOfSplin
 
     if (numberOfSplinePoints < 1)
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid spline point count: {}", numberOfSplinePoints));
+        throw ConstraintError("Invalid spline point count: {}", numberOfSplinePoints);
     }
 
     numberOfSamplePoints = numberOfSplinePoints + (numberOfSplinePoints - 1) * intervalRefinement;
@@ -294,19 +296,19 @@ void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
 
     if (splinePoints.empty())
     {
-        throw ConstraintError(VariadicErrorMessage("Empty spline"));
+        throw ConstraintError("Empty spline");
     }
 
     if (splineDerivative.empty())
     {
-        throw ConstraintError(VariadicErrorMessage("Empty spline derivative"));
+        throw ConstraintError("Empty spline derivative");
     }
 
     if (splinePoints.size() != splineDerivative.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Spline and derivative are not the same size: {} /= {}",
-                                                   splinePoints.size(),
-                                                   splineDerivative.size()));
+        throw ConstraintError("Spline and derivative are not the same size: {} /= {}",
+                              splinePoints.size(),
+                              splineDerivative.size());
     }
 
     constexpr double tolerance = 1.0e-5;
