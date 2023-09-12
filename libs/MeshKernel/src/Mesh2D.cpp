@@ -1952,7 +1952,7 @@ void Mesh2D::print(std::ostream& out) const
         out << "nodey (" << i + 1 << " ) = " << m_nodes[i].y << ";" << std::endl;
     }
 
-    std::cout << "edges = zeros ( " << m_edges.size() << ", 2 );" << std::endl;
+    out << "edges = zeros ( " << m_edges.size() << ", 2 );" << std::endl;
 
     for (UInt i = 0; i < m_edges.size(); ++i)
     {
