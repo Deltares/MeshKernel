@@ -1969,7 +1969,7 @@ void Mesh2D::LabelConnectedRegion(const UInt regionId, std::vector<UInt>& elemen
     elementCount = 1;
 
     // Process the queue, until there are no nodes left to process.
-    while (toBeProcessed.size() > 0)
+    while (!toBeProcessed.empty())
     {
         UInt currentElement = toBeProcessed.front();
         toBeProcessed.pop();
@@ -2056,12 +2056,7 @@ void Mesh2D::RemoveIslandElements(const UInt regionId, std::vector<UInt>& elemen
         if (elementRegionId[i] != regionId)
         {
             ++numberOfElementsRemoved;
-
-            // Remove the boundary edges of the element
-            for (UInt j = 0; j < m_facesEdges[i].size(); ++j)
-            {
-                DeleteEdge(m_facesEdges[i][j]);
-            }
+            std::ranges::for_each (m_facesEdges[i], [this](const UInt edge){DeleteEdge (edge);});
         }
     }
 }
@@ -2087,14 +2082,14 @@ void Mesh2D::RemoveIslands()
     {
         // We assume the region with the largest number of elements is the region of interest we would like to retain.
         // all other regions can (and will) be removed.
-        UInt maxRegionCount = 0;
+        UInt maxRegionElementCount = 0;
         UInt mainRegionId = 0;
 
-        for (auto [regionId, regionCount] : regionCount)
+        for (auto [regionId, regionElementCount] : regionCount)
         {
-            if (regionCount > maxRegionCount)
+            if (regionElementCount > maxRegionElementCount)
             {
-                maxRegionCount = regionCount;
+                maxRegionElementCount = regionElementCount;
                 mainRegionId = regionId;
             }
         }
