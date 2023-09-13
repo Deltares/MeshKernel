@@ -63,10 +63,9 @@ namespace lin_alg
     {
         if (rows < 0 || cols < 0)
         {
-            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
-                "Invalid dimensions: rows = {}, cols = {}. Dimensions must be strictly positive.",
-                rows,
-                cols));
+            throw meshkernel::LinearAlgebraError("Invalid dimensions: rows = {}, cols = {}. Dimensions must be strictly positive.",
+                                                 rows,
+                                                 cols);
         }
 
         Eigen::Index const rows_old = matrix.rows();
@@ -115,11 +114,10 @@ namespace lin_alg
             row_end < row_begin ||
             row_end > matrix.rows() - 1)
         {
-            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
-                "Invalid range: row_begin_index = {}, row_end_index = {}, max_row_index = {}",
-                row_begin,
-                row_end,
-                matrix.rows() - 1));
+            throw meshkernel::LinearAlgebraError("Invalid range: row_begin_index = {}, row_end_index = {}, max_row_index = {}",
+                                                 row_begin,
+                                                 row_end,
+                                                 matrix.rows() - 1);
         }
 
         Eigen::Index const rows_to_remove = row_end - row_begin + 1;
@@ -161,11 +159,10 @@ namespace lin_alg
             col_end < col_begin ||
             col_end > matrix.cols() - 1)
         {
-            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
-                "Invalid range: col_begin_index = {}, col_end_index = {}, max_col_index = {}",
-                col_begin,
-                col_end,
-                matrix.cols() - 1));
+            throw meshkernel::LinearAlgebraError("Invalid range: col_begin_index = {}, col_end_index = {}, max_col_index = {}",
+                                                 col_begin,
+                                                 col_end,
+                                                 matrix.cols() - 1);
         }
 
         Eigen::Index const rows = matrix.rows();
@@ -205,9 +202,7 @@ namespace lin_alg
     {
         if (row < 0 || row > matrix.rows())
         {
-            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
-                "Invalid range: cannot insert at index = {}.",
-                row));
+            throw meshkernel::LinearAlgebraError("Invalid range: cannot insert at index = {}.", row);
         }
 
         Eigen::Index const rows_new = matrix.rows() + 1;
@@ -258,9 +253,7 @@ namespace lin_alg
     {
         if (col < 0 || col > matrix.cols())
         {
-            throw meshkernel::LinearAlgebraError(meshkernel::VariadicErrorMessage(
-                "Invalid range: cannot insert at index = {}.",
-                col));
+            throw meshkernel::LinearAlgebraError("Invalid range: cannot insert at index = {}.", col);
         }
 
         Eigen::Index const rows = matrix.rows();

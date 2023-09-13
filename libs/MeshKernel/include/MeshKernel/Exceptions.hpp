@@ -57,14 +57,15 @@ namespace meshkernel
     /// @brief Enumeration of exit codes
     enum ExitCode
     {
-        Success = 0,               ///< Success
-        MeshKernelErrorCode = 1,   ///< MehKernel error
-        NotImplementedCode = 2,    ///< Not implemented error
-        AlgorithmErrorCode = 3,    ///< Algorithm error
-        ConstraintErrorCode = 4,   ///< Constraint error
-        MeshGeometryErrorCode = 5, ///< Geometry error
-        StdLibExceptionCode = 6,   ///< Standrad library exception
-        UnknownExceptionCode = 7   ///< Unknown exception
+        Success = 0,                ///< Success
+        MeshKernelErrorCode = 1,    ///< MehKernel error
+        NotImplementedCode = 2,     ///< Not implemented error
+        AlgorithmErrorCode = 3,     ///< Algorithm error
+        ConstraintErrorCode = 4,    ///< Constraint error
+        MeshGeometryErrorCode = 5,  ///< Geometry error
+        LinearAlgebraErrorCode = 6, ///< Lienar algebra error
+        StdLibExceptionCode = 7,    ///< Standrad library exception
+        UnknownExceptionCode = 8    ///< Unknown exception
     };
 
     /// @brief Contains error category information
@@ -316,28 +317,16 @@ namespace meshkernel
     class LinearAlgebraError final : public MeshKernelError
     {
     public:
-        /// @brief Class constructor parametrized by a variadic error message and optionally the source location.
-        /// @param[in] message         The variadic error message.
-        /// @param[in] source_location The source location.
-        LinearAlgebraError(VariadicErrorMessage const& message,
-                           std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError(message, source_location)
-        {
-        }
-
-        /// @brief Class constructor parametrized by a string error message and optionally the source location.
-        /// @param[in] message         The string error message.
-        /// @param[in] source_location The source location.
-        LinearAlgebraError(std::string_view message,
-                           std::source_location const& source_location = std::source_location::current())
-            : MeshKernelError(message, source_location)
-        {
-        }
+        /// @brief Class constructor
+        using MeshKernelError::MeshKernelError;
 
     private:
         /// @brief Returns the error category.
         /// @return The  error category.
-        std::string Category() const override { return "LinearAlgebraError"; }
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"LinearAlgebraError", ExitCode::LinearAlgebraErrorCode};
+        }
     };
 
 } // namespace meshkernel
