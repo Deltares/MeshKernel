@@ -23,8 +23,8 @@ void meshkernel::Polygon::Initialise()
 {
     if (0 < m_nodes.size() && m_nodes.size() < 4)
     {
-        throw ConstraintError(VariadicErrorMessage("Insufficient nodes in the polygon: {}, require at least 3 (+1, making 4, to close)",
-                                                   m_nodes.size()));
+        throw ConstraintError("Insufficient nodes in the polygon: {}, require at least 3 (+1, making 4, to close)",
+                              m_nodes.size());
     }
 
     if (m_nodes.size() > 0 && m_nodes[0] != m_nodes[m_nodes.size() - 1])
@@ -221,7 +221,7 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
 
     if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
-        throw ConstraintError(VariadicErrorMessage("Polygon::SnapToLandBoundary: The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     // snap polygon section to land boundary
@@ -272,7 +272,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 
     if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
-        throw ConstraintError(VariadicErrorMessage("The indices are not valid: {}, {}.", startIndex, endIndex));
+        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     //--------------------------------

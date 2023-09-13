@@ -43,7 +43,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 {
     if (m_polygon.Size() < 4)
     {
-        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
+        throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -52,8 +52,8 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     if (!areNodesValid)
     {
-        throw ConstraintError(VariadicErrorMessage("Invalid node selection, duplicate values found: first = {}, second = {}, third = {}",
-                                                   firstNode, secondNode, thirdNode));
+        throw ConstraintError("Invalid node selection, duplicate values found: first = {}, second = {}, third = {}",
+                              firstNode, secondNode, thirdNode);
     }
 
     // for the current polygon find the number of nodes
@@ -214,16 +214,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
                                               polygonProjection, numMNodes - 1, numNNodes - 1);
 
-    // Assign the points to the curvilinear grid
-    std::vector<std::vector<Point>> gridNodes(numMNodes, std::vector<Point>(numNNodes));
-    for (UInt i = 0; i < numMNodes; i++)
-    {
-        for (UInt j = 0; j < numNNodes; j++)
-        {
-            gridNodes[i][j] = result[i][j];
-        }
-    }
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(result, polygonProjection);
 }
 
 CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
@@ -232,7 +223,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 {
     if (m_polygon.Size() < 4)
     {
-        throw ConstraintError(VariadicErrorMessage("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size()));
+        throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -332,7 +323,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     std::vector<Point> sideThree(maximumNumberOfNodes);
     std::vector<Point> sideFour(maximumNumberOfNodes);
 
-    std::vector gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
+    lin_alg::Matrix<Point> gridNodes(n1 + n3 + 1, n2 + n3 + 1);
 
     Projection const polygonProjection = m_polygon.GetProjection();
 
@@ -403,38 +394,41 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         // add to grid
         if (t == 0)
         {
-            for (UInt i = 0; i < result.size(); ++i)
+            // gridNodes = result;
+            for (UInt i = 0; i < result.rows(); ++i)
             {
-                for (UInt j = 0; j < result[0].size(); ++j)
+                for (UInt j = 0; j < result.cols(); ++j)
                 {
-                    gridNodes[i][j] = result[i][j];
+                    gridNodes(i, j) = result(i, j);
                 }
             }
         }
         if (t == 1)
         {
-            for (UInt i = 0; i < result.size(); ++i)
+            // std::cout << "result:    " << result.rows() << ' ' << result.cols() << std::endl;
+            // std::cout << "gridNodes: " << gridNodes.rows() << ' ' << gridNodes.cols() << std::endl;
+            for (UInt i = 0; i < result.rows(); ++i)
             {
-                for (UInt j = 0; j < result[0].size(); ++j)
+                for (UInt j = 0; j < result.cols(); ++j)
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
-                    gridNodes[iIndex][jIndex] = result[i][j];
+                    gridNodes(iIndex, jIndex) = result(i, j);
                 }
             }
         }
         if (t == 2)
         {
-            for (UInt i = 0; i < result[0].size(); ++i)
+            for (UInt i = 0; i < result.cols(); ++i)
             {
-                for (UInt j = 0; j < result.size(); ++j)
+                for (UInt j = 0; j < result.rows(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
-                    gridNodes[i][jIndex] = result[j][i];
+                    gridNodes(i, jIndex) = result(j, i);
                 }
             }
         }
     }
 
-    return CurvilinearGrid(std::move(gridNodes), polygonProjection);
+    return CurvilinearGrid(gridNodes, polygonProjection);
 }

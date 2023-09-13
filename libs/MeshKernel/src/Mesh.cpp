@@ -445,7 +445,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
         return GetLocationsIndices(0, Location::Nodes);
     }
 
-    throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
+    throw AlgorithmError("Could not find the node index close to a point.");
 }
 
 meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
@@ -459,7 +459,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool
 
     if (GetNumLocations(Location::Nodes) <= 0)
     {
-        throw AlgorithmError("Mesh::FindNodeCloseToAPoint: query result size <= 0.");
+        throw AlgorithmError("Query result size <= 0.");
     }
 
     // resultSize > 0, no node mask applied
@@ -478,7 +478,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool
         }
     }
 
-    throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
+    throw AlgorithmError("Could not find the node index close to a point.");
 }
 
 meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
@@ -495,7 +495,7 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
         return GetLocationsIndices(0, Location::Edges);
     }
 
-    throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
+    throw AlgorithmError("Could not find the closest edge to a point.");
 }
 
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)

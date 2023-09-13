@@ -33,6 +33,8 @@
 #include <limits>
 #include <math.h>
 
+#include <Eigen/Core>
+
 namespace meshkernel
 {
 
@@ -41,11 +43,12 @@ namespace meshkernel
         // missing values
         namespace missing
         {
-            constexpr double innerOuterSeparator = -998.0;               ///< Double value used to separate the inner part of a polygon from its outer part
-            constexpr double doubleValue = -999.0;                       ///< Double value used as missing value
-            constexpr int intValue = -999;                               ///< Integer value used as missing value
-            constexpr UInt uintValue = std::numeric_limits<UInt>::max(); ///< missing value used for invalid indices
-        }                                                                // namespace missing
+            constexpr double innerOuterSeparator = -998.0;                                     ///< Double value used to separate the inner part of a polygon from its outer part
+            constexpr double doubleValue = -999.0;                                             ///< Double value used as missing value
+            constexpr int intValue = -999;                                                     ///< Integer value used as missing value
+            constexpr UInt uintValue = std::numeric_limits<UInt>::max();                       ///< missing value used for invalid indices
+            constexpr Eigen::Index EigenIndexValue = std::numeric_limits<Eigen::Index>::max(); ///< missing value used for invalid eigen indices
+        }                                                                                      // namespace missing
 
         // often used values
         namespace numeric

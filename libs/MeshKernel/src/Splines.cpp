@@ -40,24 +40,22 @@ using meshkernel::Splines;
 Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
-
 {
     // first the m_n m_m-gridlines
-    std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
+    lin_alg::Matrix<Point> mGridLines(grid.m_numN, grid.m_numM);
     for (UInt n = 0; n < grid.m_numN; ++n)
     {
         for (UInt m = 0; m < grid.m_numM; ++m)
         {
-            mGridLines[n][m] = grid.m_gridNodes[m][n];
+            mGridLines(n, m) = grid.m_gridNodes(m, n);
         }
-        AddSpline(mGridLines[n], 0, static_cast<UInt>(mGridLines[n].size()));
+        AddSpline(lin_alg::MatrixRowToSTLVector(mGridLines, n));
     }
 
     // then the m_m m_n-gridlines
-    std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
     for (UInt m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid.m_gridNodes[m], 0, static_cast<UInt>(grid.m_gridNodes[m].size()));
+        AddSpline(lin_alg::MatrixRowToSTLVector(grid.m_gridNodes, m));
     }
 
     m_projection = grid.m_projection;
@@ -96,6 +94,11 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     m_splineDerivatives.emplace_back(splineDerivatives);
 
     m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+}
+
+void Splines::AddSpline(const std::vector<Point>& splines)
+{
+    AddSpline(splines, 0, static_cast<UInt>(splines.size()));
 }
 
 void Splines::DeleteSpline(UInt splineIndex)
@@ -386,7 +389,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
         if (!points[i].IsValid())
         {
-            throw AlgorithmError("Splines::ComputePointOnSplineFromAdimensionalDistance: Could not interpolate spline points.");
+            throw AlgorithmError("Could not interpolate spline points.");
         }
     }
     return {points, adimensionalDistances};
@@ -405,12 +408,14 @@ void Splines::SnapSpline(const size_t splineIndex,
 {
     if (splineIndex >= GetNumSplines())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          splineIndex,
+                                          GetNumSplines() - 1);
     }
 
     if (m_splineNodes[splineIndex].empty())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline at index: {}", splineIndex));
+        throw meshkernel::ConstraintError("Empty spline at index: {}", splineIndex);
     }
 
     const auto indices = FindIndices(m_splineNodes[splineIndex], 0, static_cast<UInt>(m_splineNodes[splineIndex].size()), constants::missing::doubleValue);

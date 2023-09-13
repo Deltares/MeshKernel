@@ -260,7 +260,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
 
                 if (landboundarySegmentIndex == std::numeric_limits<UInt>::max())
                 {
-                    throw AlgorithmError("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: No segment index found: cannot assign segment to mesh nodes.");
+                    throw AlgorithmError("No segment index found: cannot assign segment to mesh nodes.");
                 }
                 const auto& [startIndex, endIndex] = m_validLandBoundaries[landboundarySegmentIndex];
 
@@ -348,7 +348,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
 
     if (startMeshNode == constants::missing::uintValue || endMeshNode == constants::missing::uintValue || startMeshNode == endMeshNode)
     {
-        throw AlgorithmError("LandBoundaries::MakePath: Cannot not find valid mesh nodes.");
+        throw AlgorithmError("MakePath: Cannot not find valid mesh nodes.");
     }
     const auto connectedNodeEdges = ShortestPath(landBoundaryIndex, startMeshNode);
 
@@ -848,7 +848,7 @@ std::vector<meshkernel::UInt> LandBoundaries::ShortestPath(UInt landBoundaryInde
 
         if (currentNodeLandBoundaryNodeIndex == constants::missing::uintValue)
         {
-            throw AlgorithmError("LandBoundaries::ShortestPath: Cannot compute the nearest node on the land boundary.");
+            throw AlgorithmError("ShortestPath: Cannot compute the nearest node on the land boundary.");
         }
 
         for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])

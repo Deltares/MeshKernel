@@ -48,18 +48,6 @@
 /// @brief Contains all structs and functions exposed at the API level
 namespace meshkernelapi
 {
-    /// @brief Enumeration for api error types
-    enum MeshKernelApiErrors
-    {
-        Success = 0,
-        NotImplemented = 1,
-        MeshGeometryError = 2,
-        AlgorithmError = 3,
-        MeshKernelError = 4,
-        StadardLibraryException = 5,
-        UnknownException = 6
-    };
-
 #ifdef __cplusplus
     extern "C"
     {

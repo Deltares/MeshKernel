@@ -24,14 +24,12 @@ meshkernel::Polygon meshkernel::PolygonalEnclosure::ConstructPolygon(const std::
 {
     if (start > end)
     {
-        throw ConstraintError(VariadicErrorMessage("The start index is greater than the end index: {} > {}.",
-                                                   start, end));
+        throw ConstraintError("The start index is greater than the end index: {} > {}.", start, end);
     }
 
     if (end >= points.size())
     {
-        throw ConstraintError(VariadicErrorMessage("The end index is greater than the number of points: {} >= {}.",
-                                                   end, points.size()));
+        throw ConstraintError("The end index is greater than the number of points: {} >= {}.", end, points.size());
     }
 
     std::vector<Point> polygonPoints;
@@ -146,8 +144,9 @@ void meshkernel::PolygonalEnclosure::SnapToLandBoundary(size_t startIndex, size_
 {
     if (endIndex >= m_outer.Size())
     {
-        throw ConstraintError(VariadicErrorMessage("The end index is greater than the number of points in the outer polygon: {} >= {}.",
-                                                   endIndex, m_outer.Size()));
+        throw ConstraintError("The end index is greater than the number of points in the outer polygon: {} >= {}.",
+                              endIndex,
+                              m_outer.Size());
     }
 
     m_outer.SnapToLandBoundary(startIndex, endIndex, landBoundary);
@@ -157,8 +156,9 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
 {
     if (endIndex >= m_outer.Size())
     {
-        throw ConstraintError(VariadicErrorMessage("The end index is greater than the number of points in the outer polygon: {} >= {}.",
-                                                   endIndex, m_outer.Size()));
+        throw ConstraintError("The end index is greater than the number of points in the outer polygon: {} >= {}.",
+                              endIndex,
+                              m_outer.Size());
     }
 
     return m_outer.Refine(startIndex, endIndex, refinementDistance);
