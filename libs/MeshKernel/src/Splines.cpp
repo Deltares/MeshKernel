@@ -389,7 +389,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
         if (!points[i].IsValid())
         {
-            throw AlgorithmError("Splines::ComputePointOnSplineFromAdimensionalDistance: Could not interpolate spline points.");
+            throw AlgorithmError("Could not interpolate spline points.");
         }
     }
     return {points, adimensionalDistances};
@@ -408,12 +408,14 @@ void Splines::SnapSpline(const size_t splineIndex,
 {
     if (splineIndex >= GetNumSplines())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Invalid spline index: {}, not in range 0 .. {}", splineIndex, GetNumSplines() - 1));
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          splineIndex,
+                                          GetNumSplines() - 1);
     }
 
     if (m_splineNodes[splineIndex].empty())
     {
-        throw meshkernel::ConstraintError(VariadicErrorMessage("Empty spline at index: {}", splineIndex));
+        throw meshkernel::ConstraintError("Empty spline at index: {}", splineIndex);
     }
 
     const auto indices = FindIndices(m_splineNodes[splineIndex], 0, static_cast<UInt>(m_splineNodes[splineIndex].size()), constants::missing::doubleValue);

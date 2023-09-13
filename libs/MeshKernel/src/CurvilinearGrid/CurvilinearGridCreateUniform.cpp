@@ -40,8 +40,7 @@ namespace meshkernel
     {
         if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
         {
-            const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-            throw NotImplemented(message);
+        throw meshkernel::NotImplemented("Projection value: {} not supported", static_cast<int>(m_projection));
         }
     }
 
@@ -75,8 +74,7 @@ namespace meshkernel
                                                     blockSizeY),
                                    m_projection};
         }
-        const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-        throw NotImplemented(message);
+    throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
     lin_alg::Matrix<Point> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -328,8 +326,7 @@ namespace meshkernel
                                               m_projection};
             break;
         default:
-            const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-            throw NotImplemented(message);
+        throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
         }
 
         // remove nodes outside the polygon
@@ -389,8 +386,7 @@ namespace meshkernel
             break;
         case Projection::sphericalAccurate:
         default:
-            const std::string message = "Projection value: " + std::to_string(static_cast<int>(m_projection)) + " not supported";
-            throw NotImplemented(message);
+        throw meshkernel::NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
         }
 
         return curvilinearGrid;

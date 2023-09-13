@@ -71,10 +71,6 @@
 #include <unordered_map>
 #include <vector>
 
-#if (defined(__linux__) || defined(__APPLE__)) && defined(__GNUC__)
-#define strncpy_s strncpy
-#endif
-
 namespace meshkernelapi
 {
     // The state held by MeshKernel
@@ -82,50 +78,39 @@ namespace meshkernelapi
     static int meshKernelStateCounter = 0;
 
     // Error state
-    static char exceptionMessage[512] = "";
-    static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError("", 0, meshkernel::Mesh::Location::Unknown);
+    static size_t constexpr bufferSize = 512;
+    static size_t constexpr maxCharsToCopy = bufferSize - 1; // make sure destination string is null-terminated when strncpy is used
+    static char exceptionMessage[bufferSize] = "";
+    static meshkernel::UInt invalidMeshIndex{0};
+    static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
 
-    int HandleExceptions(std::exception_ptr const exception_ptr)
+    static int HandleExceptions(std::exception_ptr exception_ptr = std::current_exception())
     {
-        if (!exception_ptr)
-        {
-            throw std::bad_exception();
-        }
-
         try
         {
             std::rethrow_exception(exception_ptr);
         }
-        catch (const meshkernel::NotImplemented& e)
+        catch (meshkernel::MeshGeometryError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::NotImplemented;
-        }
-        catch (const meshkernel::MeshGeometryError& e)
-        {
-            meshGeometryError = e;
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::MeshGeometryError;
-        }
-        catch (meshkernel::AlgorithmError const& e)
-        {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::AlgorithmError;
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
+            invalidMeshIndex = e.MeshIndex();
+            invalidMeshLocation = e.MeshLocation();
+            return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::MeshKernelError;
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
+            return e.Code();
         }
-        catch (const std::exception& e)
+        catch (std::exception const& e)
         {
-            std::memcpy(exceptionMessage, e.what(), sizeof exceptionMessage);
-            return MeshKernelApiErrors::StadardLibraryException;
+            std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
+            return meshkernel::ExitCode::StdLibExceptionCode;
         }
         catch (...)
         {
-            strncpy_s(exceptionMessage, "Unknown exception", sizeof exceptionMessage);
-            return MeshKernelApiErrors::UnknownException;
+            std::strncpy(exceptionMessage, "Unknown exception", maxCharsToCopy);
+            return meshkernel::ExitCode::UnknownExceptionCode;
         }
     }
 
@@ -134,39 +119,39 @@ namespace meshkernelapi
         meshKernelId = meshKernelStateCounter++;
         auto const projection = static_cast<meshkernel::Projection>(projectionType);
         meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState.erase(meshKernelId);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, int invertDeletion)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The 2d mesh contains no nodes.");
+                throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
             const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
@@ -177,19 +162,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // convert raw arrays to containers
@@ -228,7 +213,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -236,12 +221,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                        const Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             // convert raw arrays to containers
             const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
@@ -254,19 +239,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const localPolylines = ConvertGeometryListToVectorOfPointVectors(polylines);
@@ -276,19 +261,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             std::vector<double> localFixedChainages(sizeFixedChainages);
@@ -303,19 +288,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Do not change the pointer, just the object it is pointing to
@@ -323,19 +308,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Do not change the pointer, just the object it is pointing to (add to the existing mesh1d stored in the instance)
@@ -343,57 +328,57 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             SetMesh2dApiDimensions(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             SetMesh2dApiData(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             mesh1d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumNodes());
@@ -401,7 +386,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -409,38 +394,38 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId,
                                             Mesh1D& mesh1d)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             SetMesh1dApiData(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numN);
             curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numM);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -448,49 +433,49 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId,
                                                  CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_curvilinearGrid->SetFlatCopies();
             SetCurvilinearGridApiData(meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();
@@ -503,19 +488,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numHangingEdges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
@@ -523,19 +508,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             for (size_t i = 0; i < hangingEdges.size(); ++i)
@@ -545,25 +530,25 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges();
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -574,16 +559,16 @@ namespace meshkernelapi
                                                              const GeometryList& selectingPolygon,
                                                              const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The 2d mesh contains no nodes.");
+                throw meshkernel::MeshKernelError("The 2d mesh contains no nodes.");
             }
 
             // build the selecting polygon
@@ -610,7 +595,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -621,12 +606,12 @@ namespace meshkernelapi
                                                                 const GeometryList& selectingPolygon,
                                                                 const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -657,19 +642,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_prepare_outer_iteration_orthogonalization(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -681,19 +666,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -705,19 +690,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_finalize_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -729,19 +714,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_orthogonalization(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -753,19 +738,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -777,7 +762,7 @@ namespace meshkernelapi
 
             if (static_cast<size_t>(geometryList.num_coordinates) != result.size())
             {
-                throw std::invalid_argument("MeshKernel: The value array has not the same size of the result array storing the orthogonality values at the edges");
+                throw meshkernel::MeshKernelError("The value array has not the same size of the result array storing the orthogonality values at the edges");
             }
 
             for (auto i = 0; i < geometryList.num_coordinates; ++i)
@@ -787,19 +772,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
@@ -816,7 +801,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -825,12 +810,12 @@ namespace meshkernelapi
                                         GeometryList& geometryListOut,
                                         int numberOfPointsBetweenNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (geometryListIn.num_coordinates == 0)
             {
-                throw std::invalid_argument("MeshKernel: The number of coordinates of the given geometry is zero.");
+                throw meshkernel::MeshKernelError("The number of coordinates of the given geometry is zero.");
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.num_coordinates);
@@ -889,19 +874,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const polygonPointsVector = ConvertGeometryListToPointVector(polygonPoints);
@@ -916,19 +901,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             auto sampleVector = ConvertGeometryListToPointVector(samples);
 
@@ -938,7 +923,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -947,12 +932,12 @@ namespace meshkernelapi
                                                 const meshkernel::MakeGridParameters& makeGridParameters,
                                                 const GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
@@ -963,7 +948,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -971,12 +956,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
                                                              const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
@@ -987,19 +972,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
@@ -1009,19 +994,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
@@ -1030,7 +1015,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1046,12 +1031,12 @@ namespace meshkernelapi
                                                                int* faceNumEdges,
                                                                int* faceEdgeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
@@ -1094,19 +1079,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
@@ -1117,7 +1102,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1129,12 +1114,12 @@ namespace meshkernelapi
                                                  double distance,
                                                  int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
@@ -1147,19 +1132,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
@@ -1170,25 +1155,25 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_merge_two_nodes(int meshKernelId, int firstNode, int secondNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1198,12 +1183,12 @@ namespace meshkernelapi
                                                          int inside,
                                                          int* selectedNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
@@ -1225,7 +1210,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1235,12 +1220,12 @@ namespace meshkernelapi
                                                            int inside,
                                                            int& numberOfMeshNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
@@ -1260,38 +1245,38 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             new_edge_index = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode));
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
@@ -1300,38 +1285,38 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_node(int meshKernelId, int nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshKernelState[meshKernelId].m_mesh2d->DeleteNode(nodeIndex);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_move_node(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Point newPosition{xCoordinate, yCoordinate};
@@ -1340,7 +1325,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1353,12 +1338,12 @@ namespace meshkernelapi
                                                double xUpperRightBoundingBox,
                                                double yUpperRightBoundingBox)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
@@ -1372,7 +1357,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1386,12 +1371,12 @@ namespace meshkernelapi
                                             double yUpperRightBoundingBox,
                                             int& edgeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
@@ -1404,19 +1389,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, int inWard, double distance, GeometryList& geometryListOut)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
@@ -1430,19 +1415,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, int innerPolygon, double distance, int& numberOfPolygonNodes)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
@@ -1454,7 +1439,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1465,16 +1450,16 @@ namespace meshkernelapi
                                                            int minimumNumSamples,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
@@ -1506,7 +1491,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1516,16 +1501,16 @@ namespace meshkernelapi
                                                                    const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
             std::vector values(griddedSamples.num_x * griddedSamples.num_y, 0.0);
@@ -1549,12 +1534,12 @@ namespace meshkernelapi
             {
                 if (griddedSamples.x_coordinates == nullptr)
                 {
-                    throw std::invalid_argument("MeshKernel: griddedSamples.x_coordinates is nullptr");
+                    throw meshkernel::MeshKernelError("griddedSamples.x_coordinates is nullptr");
                 }
 
                 if (griddedSamples.y_coordinates == nullptr)
                 {
-                    throw std::invalid_argument("MeshKernel: griddedSamples.y_coordinates is nullptr");
+                    throw meshkernel::MeshKernelError("griddedSamples.y_coordinates is nullptr");
                 }
 
                 std::vector<double> xCoordinates(griddedSamples.num_x);
@@ -1579,7 +1564,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1588,16 +1573,16 @@ namespace meshkernelapi
                                                            const GeometryList& geometryList,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
             auto points = ConvertGeometryListToPointVector(geometryList);
@@ -1609,7 +1594,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1624,16 +1609,16 @@ namespace meshkernelapi
                                                   double yUpperRightBoundingBox,
                                                   int& nodeIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
@@ -1643,7 +1628,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1680,19 +1665,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_polygon_get_included_points(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             auto const polygonVector = ConvertGeometryListToPointVector(selectingPolygon);
 
@@ -1707,7 +1692,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1718,57 +1703,59 @@ namespace meshkernelapi
                                                          int startSplineIndex,
                                                          int endSplineIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
 
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (startSplineIndex < 0)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Start spline index is less than zero: {}", startSplineIndex).GetFormatted());
+                throw meshkernel::ConstraintError("Start spline index is less than zero: {}", startSplineIndex);
             }
 
             if (startSplineIndex > endSplineIndex)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: {} > {}", startSplineIndex, endSplineIndex).GetFormatted());
+                throw meshkernel::ConstraintError("Invalid spline range: {} > {}",
+                                                  startSplineIndex,
+                                                  endSplineIndex);
             }
 
             if (land.num_coordinates == 0)
             {
-                throw std::invalid_argument("Land boundary has no point values.");
+                throw meshkernel::MeshKernelError("Land boundary has no point values.");
             }
 
             if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
             {
-                throw std::invalid_argument("Land boundary data is null.");
+                throw meshkernel::MeshKernelError("Land boundary data is null.");
             }
 
             if (splines.num_coordinates == 0)
             {
-                throw std::invalid_argument("Spline has no point values.");
+                throw meshkernel::MeshKernelError("Spline has no point values.");
             }
 
             if (splines.coordinates_x == nullptr || splines.coordinates_y == nullptr)
             {
-                throw std::invalid_argument("Spline data is null.");
+                throw meshkernel::MeshKernelError("Spline data is null.");
             }
 
             if (startSplineIndex > splines.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: start greater than number of spline coordinates {} > {}",
-                                                                             startSplineIndex, splines.num_coordinates)
-                                                .GetFormatted());
+                throw meshkernel::ConstraintError("Invalid spline range: start greater than number of spline coordinates {} > {}",
+                                                  startSplineIndex,
+                                                  splines.num_coordinates);
             }
 
             if (endSplineIndex >= splines.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid spline range: end greater than number of spline coordinates {} >= {}",
-                                                                             endSplineIndex, splines.num_coordinates)
-                                                .GetFormatted());
+                throw meshkernel::ConstraintError("Invalid spline range: end greater than number of spline coordinates {} >= {}",
+                                                  endSplineIndex,
+                                                  splines.num_coordinates);
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
@@ -1799,7 +1786,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1810,54 +1797,54 @@ namespace meshkernelapi
                                                          int startIndex,
                                                          int endIndex)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
 
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (land.num_coordinates == 0)
             {
-                throw std::invalid_argument("Land boundary has no point values.");
+                throw meshkernel::MeshKernelError("Land boundary has no point values.");
             }
 
             if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
             {
-                throw std::invalid_argument("Land boundary data is null.");
+                throw meshkernel::MeshKernelError("Land boundary data is null.");
             }
 
             if (polygon.num_coordinates == 0)
             {
-                throw std::invalid_argument("Polygon has no point values.");
+                throw meshkernel::MeshKernelError("Polygon has no point values.");
             }
 
             if (polygon.coordinates_x == nullptr || polygon.coordinates_y == nullptr)
             {
-                throw std::invalid_argument("Polygon data is null.");
+                throw meshkernel::MeshKernelError("Polygon data is null.");
             }
 
             if (startIndex < 0 || endIndex < 0)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
-                                                                             startIndex, endIndex)
-                                                .GetFormatted());
+                throw meshkernel::ConstraintError("Invalid polygon points range: startIndex and/or endIndex {} < 0 and/or {} < 0",
+                                                  startIndex,
+                                                  endIndex);
             }
 
             if (startIndex > endIndex)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: startIndex greater than endIndex {} > {}",
-                                                                             startIndex, endIndex)
-                                                .GetFormatted());
+                throw meshkernel::ConstraintError("Invalid polygon points range: startIndex greater than endIndex {} > {}",
+                                                  startIndex,
+                                                  endIndex);
             }
 
             if (endIndex >= polygon.num_coordinates)
             {
-                throw std::invalid_argument(meshkernel::VariadicErrorMessage("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
-                                                                             endIndex, polygon.num_coordinates)
-                                                .GetFormatted());
+                throw meshkernel::ConstraintError("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
+                                                  endIndex,
+                                                  polygon.num_coordinates);
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
@@ -1882,7 +1869,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1893,12 +1880,12 @@ namespace meshkernelapi
                                               const GeometryList& selectingPolygon,
                                               const GeometryList& landBoundaries)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // build the selecting polygon
@@ -1919,19 +1906,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesLengthThreshold);
             const auto smallFlowEdgeCenters = meshKernelState[meshKernelId].m_mesh2d->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
@@ -1940,19 +1927,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
@@ -1962,7 +1949,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1970,30 +1957,30 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
         std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_version(char* version)
     {
         std::memcpy(version, versionString, sizeof versionString);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
-    MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
+    MKERNEL_API int mkernel_get_geometry_error(int& meshIndex, int& meshLocation)
     {
-        invalidIndex = static_cast<int>(meshGeometryError.InavlidIndex());
-        type = static_cast<int>(meshGeometryError.MeshLocation());
-        return Success;
+        meshIndex = static_cast<int>(invalidMeshIndex);
+        meshLocation = static_cast<int>(invalidMeshLocation);
+        return 0;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_obtuse_triangles(int meshKernelId, int& numObtuseTriangles)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto obtuseTriangles = meshKernelState[meshKernelId].m_mesh2d->GetObtuseTrianglesCenters();
@@ -2002,19 +1989,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_obtuse_triangles_mass_centers(int meshKernelId, GeometryList& result)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto obtuseTriangles = meshKernelState[meshKernelId].m_mesh2d->GetObtuseTrianglesCenters();
@@ -2023,19 +2010,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
@@ -2043,7 +2030,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2053,12 +2040,12 @@ namespace meshkernelapi
                                                     const GeometryList& polygons,
                                                     double projectionFactor)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Convert 1D node mask from int** to vector<bool>
@@ -2076,7 +2063,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2084,12 +2071,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_contacts_compute_multiple(int meshKernelId,
                                                       const int* oneDNodeMask)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Convert 1D node mask from int** to vector<bool>
@@ -2102,7 +2089,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2111,12 +2098,12 @@ namespace meshkernelapi
                                                            const int* oneDNodeMask,
                                                            const GeometryList& polygons)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Convert 1D node mask from int* to vector<bool>
@@ -2135,7 +2122,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2143,12 +2130,12 @@ namespace meshkernelapi
                                                          const int* oneDNodeMask,
                                                          const GeometryList& points)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Convert 1D node mask from int* to vector<bool>
@@ -2163,7 +2150,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2173,12 +2160,12 @@ namespace meshkernelapi
                                                       const GeometryList& polygons,
                                                       double searchRadius)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Convert 1D node mask from int* to vector<bool>
@@ -2194,7 +2181,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2206,12 +2193,12 @@ namespace meshkernelapi
                                                double yUpperRightCorner,
                                                int refinement)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
@@ -2223,7 +2210,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2234,12 +2221,12 @@ namespace meshkernelapi
                                                  double xUpperRightCorner,
                                                  double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
@@ -2254,7 +2241,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2263,12 +2250,12 @@ namespace meshkernelapi
                                                                          const GeometryList& splines,
                                                                          const meshkernel::CurvilinearParameters& curvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // Use the default constructor, no instance present
@@ -2286,7 +2273,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2298,12 +2285,12 @@ namespace meshkernelapi
                                                                          int thirdNode,
                                                                          int useFourthSide)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
@@ -2320,7 +2307,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2331,12 +2318,12 @@ namespace meshkernelapi
                                                                           int secondNode,
                                                                           int thirdNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
@@ -2352,7 +2339,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2362,12 +2349,12 @@ namespace meshkernelapi
                                                                              const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                              const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             // use the default constructor, no instance present
@@ -2381,7 +2368,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2391,12 +2378,12 @@ namespace meshkernelapi
                                                                                 const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                 const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             auto spline = std::make_shared<meshkernel::Splines>(meshKernelState[meshKernelId].m_projection);
@@ -2408,47 +2395,47 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_iterate_orthogonal_grid_from_splines(int meshKernelId, int layer)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
             if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridFromSplines not instantiated.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridFromSplines->Iterate(layer);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridFromSplines not instantiated.");
             }
 
             const auto curvilinearGrid = meshKernelState[meshKernelId].m_curvilinearGridFromSplines->ComputeCurvilinearGridFromGridPoints();
@@ -2457,31 +2444,31 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridFromSplines not instantiated.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridFromSplines.reset();
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2490,12 +2477,12 @@ namespace meshkernelapi
                                                      const meshkernel::MakeGridParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
@@ -2505,7 +2492,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2513,12 +2500,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
                                                                   const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
@@ -2526,7 +2513,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2534,12 +2521,12 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
                                                                  const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_shared<meshkernel::CurvilinearGridOrthogonalization>(meshKernelState[meshKernelId].m_curvilinearGrid,
@@ -2547,7 +2534,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2558,17 +2545,17 @@ namespace meshkernelapi
                                                                 double xUpperRightCorner,
                                                                 double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
             }
 
             meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
@@ -2579,7 +2566,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2591,17 +2578,17 @@ namespace meshkernelapi
                                                                        double ySecondGridLineNode)
 
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
             }
 
             meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
@@ -2612,24 +2599,24 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
             }
 
             // Execute
@@ -2637,31 +2624,31 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization.reset();
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2674,22 +2661,22 @@ namespace meshkernelapi
                                                   double yUpperRightCorner)
 
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             const meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
@@ -2704,7 +2691,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2720,22 +2707,22 @@ namespace meshkernelapi
                                                               double xUpperRightCornerSmootingArea,
                                                               double yUpperRightCornerSmootingArea)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             meshkernel::Point const firstNode{xFirstGridlineNode, yFirstGridlineNode};
@@ -2753,7 +2740,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2761,29 +2748,29 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId)
     {
 
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridLineShift = std::make_shared<meshkernel::CurvilinearGridLineShift>(meshKernelState[meshKernelId].m_curvilinearGrid);
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2794,12 +2781,12 @@ namespace meshkernelapi
                                                             double xSecondGridLineNode,
                                                             double ySecondGridLineNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshkernel::Point const firstNode{xFirstGridLineNode, yFirstGridLineNode};
@@ -2809,19 +2796,19 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_m, grid.num_n);
@@ -2841,7 +2828,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2852,12 +2839,12 @@ namespace meshkernelapi
                                                              double xUpperRightCorner,
                                                              double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshkernel::Point const lowerLeftPoint{xLowerLeftCorner, yLowerLeftCorner};
@@ -2867,7 +2854,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -2878,12 +2865,12 @@ namespace meshkernelapi
                                                              double xToCoordinate,
                                                              double yToCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
             meshkernel::Point const fromPoint{xFromCoordinate, yFromCoordinate};
             meshkernel::Point const toPoint{xToCoordinate, yToCoordinate};
@@ -2891,72 +2878,72 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGridLineShift == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Curvilinear grid line shift algorithm instance is null.");
+                throw meshkernel::MeshKernelError("Curvilinear grid line shift algorithm instance is null.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGridLineShift.reset();
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_insert_face(int meshKernelId, double xCoordinate, double yCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Empty curvilinear grid");
+                throw meshkernel::MeshKernelError("Empty curvilinear grid");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
@@ -2965,24 +2952,24 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 && meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
             {
-                throw std::invalid_argument("MeshKernel: The existing mesh2d projection is not equal to the curvilinear grid projection");
+                throw meshkernel::MeshKernelError("The existing mesh2d projection is not equal to the curvilinear grid projection");
             }
 
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
@@ -2994,7 +2981,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3010,12 +2997,12 @@ namespace meshkernelapi
                                                                   double xUpperRightCorner,
                                                                   double yUpperRightCorner)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
@@ -3032,7 +3019,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3044,22 +3031,22 @@ namespace meshkernelapi
                                                     double xSecondGridLineNode,
                                                     double ySecondGridLineNode)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(meshKernelState[meshKernelId].m_curvilinearGrid, mirroringFactor);
@@ -3070,7 +3057,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3079,29 +3066,29 @@ namespace meshkernelapi
                                                     double xPointCoordinate,
                                                     double yPointCoordinate)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
-                throw std::invalid_argument("MeshKernel: Not valid curvilinear grid.");
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
             meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate});
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3112,17 +3099,17 @@ namespace meshkernelapi
                                                   double xToPoint,
                                                   double yToPoint)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: Not a valid curvilinear grid instance.");
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
 
             meshkernel::Point const fromPoint{xFromPoint, yFromPoint};
@@ -3132,7 +3119,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3155,17 +3142,17 @@ namespace meshkernelapi
                                                            size_t minNumSamples,
                                                            GeometryList& results)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                throw std::invalid_argument("MeshKernel: The mesh is empty.");
+                throw meshkernel::MeshKernelError("The mesh is empty.");
             }
 
             auto sampleValues = ConvertGeometryListToSampleVector(samples);
@@ -3203,7 +3190,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3213,17 +3200,17 @@ namespace meshkernelapi
                                                                int locationType,
                                                                GeometryList& results)
     {
-        int exitCode = Success;
+        int exitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
             {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() == 0)
             {
-                throw std::invalid_argument("MeshKernel: The mesh is empty.");
+                throw meshkernel::MeshKernelError("The mesh is empty.");
             }
 
             // Locations
@@ -3241,7 +3228,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions(std::current_exception());
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -3249,70 +3236,70 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_edges_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Edges);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_nodes_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Nodes);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_faces_location_type(int& type)
     {
         type = static_cast<int>(meshkernel::Mesh::Location::Faces);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::SimpleAveraging);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Closest);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_max(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Max);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Min);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weighting(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::InverseWeightedDistance);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
     {
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::MinAbsValue);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::cartesian);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::spherical);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
         projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
     {
         projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
-        return Success;
+        return meshkernel::ExitCode::Success;
     }
 
 } // namespace meshkernelapi
