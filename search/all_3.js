@@ -12,7 +12,7 @@ var searchData=
   ['delta_100',['Delta',['../classmeshkernel_1_1_bounding_box.html#a8b1c03b754fcf2e2583efff4a891c69c',1,'meshkernel::BoundingBox']]],
   ['design_101',['Design',['../_design.html',1,'']]],
   ['directional_5frefinement_102',['directional_refinement',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa98c7a4f188214dbddb5d213475e1491',1,'meshkernel::MeshRefinementParameters']]],
-  ['discretizetransfinite_103',['DiscretizeTransfinite',['../namespacemeshkernel.html#a96dbe86ccf8ddd38cfce268601eb5540',1,'meshkernel']]],
+  ['discretizetransfinite_103',['DiscretizeTransfinite',['../namespacemeshkernel.html#ae6ef3a4e3b6172de6a99d2c1c9e14ff1',1,'meshkernel']]],
   ['distancefromline_104',['DistanceFromLine',['../namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8',1,'meshkernel']]],
   ['dot_105',['dot',['../namespacemeshkernel.html#aec0e604161b010fc791f1c101e15e929',1,'meshkernel']]],
   ['dotproduct_106',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]]

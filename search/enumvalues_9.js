@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['triangulatepoints_1234',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulatepointsandgeneratefaces_1235',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]]
+  ['simpleaveraging_1235',['SimpleAveraging',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08',1,'meshkernel::AveragingInterpolation']]],
+  ['stdlibexceptioncode_1236',['StdLibExceptionCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003',1,'meshkernel']]],
+  ['success_1237',['Success',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5',1,'meshkernel']]]
 ];

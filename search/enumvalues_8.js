@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['simpleaveraging_1231',['SimpleAveraging',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08',1,'meshkernel::AveragingInterpolation']]],
-  ['stdlibexceptioncode_1232',['StdLibExceptionCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003',1,'meshkernel']]],
-  ['success_1233',['Success',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5',1,'meshkernel']]]
+  ['nodes_1232',['Nodes',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e',1,'meshkernel::Mesh']]],
+  ['none_1233',['None',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3a6adf97f83acf6453d4a6a4b1070f3754',1,'meshkernel::PolygonalEnclosure']]],
+  ['notimplementedcode_1234',['NotImplementedCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4a157c357776039bdda49e4e84640701',1,'meshkernel']]]
 ];

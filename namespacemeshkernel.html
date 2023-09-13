@@ -129,6 +129,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class containing the land boundary polylines.  <a href="classmeshkernel_1_1_land_boundary.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_linear_algebra_error.html">LinearAlgebraError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for throwing linear algebra exceptions.  <a href="classmeshkernel_1_1_linear_algebra_error.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html">MakeGridParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct describes the necessary parameters to create a new curvilinear grid in a C-compatible manner.  <a href="structmeshkernel_1_1_make_grid_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,8 +243,10 @@ Enumerations</h2></td></tr>
 <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486">ConstraintErrorCode</a> = 4, 
 <a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce">MeshGeometryErrorCode</a> = 5, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a> = 6, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a> = 7
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44">LinearAlgebraErrorCode</a> = 6, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a> = 7, 
+<br />
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a> = 8
 <br />
  }</td></tr>
 <tr class="memdesc:a25feb926a55573977c6c4f410ece8fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of exit codes.  <a href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">More...</a><br /></td></tr>
@@ -411,9 +416,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a5f0c68fd74f7232f452d77bac69696e2"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2">sgn</a> (T val)</td></tr>
 <tr class="memdesc:a5f0c68fd74f7232f452d77bac69696e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sign of a type.  <a href="namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2">More...</a><br /></td></tr>
 <tr class="separator:a5f0c68fd74f7232f452d77bac69696e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96dbe86ccf8ddd38cfce268601eb5540"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a96dbe86ccf8ddd38cfce268601eb5540">DiscretizeTransfinite</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;leftDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;rightDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;bottomDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;upperDiscretization, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numM, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numN)</td></tr>
-<tr class="memdesc:a96dbe86ccf8ddd38cfce268601eb5540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).  <a href="namespacemeshkernel.html#a96dbe86ccf8ddd38cfce268601eb5540">More...</a><br /></td></tr>
-<tr class="separator:a96dbe86ccf8ddd38cfce268601eb5540"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ef3a4e3b6172de6a99d2c1c9e14ff1"><td class="memItemLeft" align="right" valign="top">lin_alg::Matrix&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae6ef3a4e3b6172de6a99d2c1c9e14ff1">DiscretizeTransfinite</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;leftDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;rightDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;bottomDiscretization, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;upperDiscretization, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numM, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numN)</td></tr>
+<tr class="memdesc:ae6ef3a4e3b6172de6a99d2c1c9e14ff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).  <a href="namespacemeshkernel.html#ae6ef3a4e3b6172de6a99d2c1c9e14ff1">More...</a><br /></td></tr>
+<tr class="separator:ae6ef3a4e3b6172de6a99d2c1c9e14ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">ComputeEdgeCenters</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df84a19a3f709cf8">Edge</a> &gt; &amp;edges)</td></tr>
 <tr class="memdesc:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the edge centers.  <a href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">More...</a><br /></td></tr>
 <tr class="separator:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -563,6 +568,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486"></a>ConstraintErrorCode&#160;</td><td class="fielddoc"><p>Constraint error. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce"></a>MeshGeometryErrorCode&#160;</td><td class="fielddoc"><p>Geometry error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44"></a>LinearAlgebraErrorCode&#160;</td><td class="fielddoc"><p>Lienar algebra error. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003"></a>StdLibExceptionCode&#160;</td><td class="fielddoc"><p>Standrad library exception. </p>
 </td></tr>
@@ -1447,14 +1454,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a96dbe86ccf8ddd38cfce268601eb5540"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96dbe86ccf8ddd38cfce268601eb5540">&#9670;&nbsp;</a></span>DiscretizeTransfinite()</h2>
+<a id="ae6ef3a4e3b6172de6a99d2c1c9e14ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ef3a4e3b6172de6a99d2c1c9e14ff1">&#9670;&nbsp;</a></span>DiscretizeTransfinite()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; &gt; meshkernel::DiscretizeTransfinite </td>
+          <td class="memname">lin_alg::Matrix&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::DiscretizeTransfinite </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>leftDiscretization</em>, </td>
