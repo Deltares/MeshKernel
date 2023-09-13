@@ -1964,8 +1964,8 @@ meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) 
 {
     if (m_numFacesNodes[faceId] != 4)
     {
-        throw NotImplemented(VariadicErrorMessage("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
-                                                  m_numFacesNodes[faceId]));
+        throw NotImplemented("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
+                             m_numFacesNodes[faceId]);
     }
 
     UInt position = constants::missing::uintValue;
@@ -2537,7 +2537,7 @@ void Mesh2D::FreeHangingNodes(const UInt numberOfHangingNodes,
 
     if (oppositeEdgeId == constants::missing::uintValue)
     {
-        throw ConstraintError(VariadicErrorMessage("Opposite edge not found for element {} and edge {}.", faceId, edgeId));
+        throw ConstraintError("Opposite edge not found for element {} and edge {}.", faceId, edgeId);
     }
 
     UInt startNode = m_edges[oppositeEdgeId].first;
@@ -2572,7 +2572,7 @@ void Mesh2D::FreeHangingNodes(const UInt numberOfHangingNodes,
         break;
     default:
         // 0 hanging nodes is handled at the top of this function, so to be here can only be: numberOfHangingNodes > 4
-        throw NotImplemented(VariadicErrorMessage("Cannot handle more than 4 hanging nodes along irregular edge, number is: {}",
-                                                  numberOfHangingNodes));
+        throw NotImplemented("Cannot handle more than 4 hanging nodes along irregular edge, number is: {}",
+                             numberOfHangingNodes);
     }
 }
