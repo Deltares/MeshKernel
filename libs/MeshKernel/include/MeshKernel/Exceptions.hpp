@@ -57,14 +57,15 @@ namespace meshkernel
     /// @brief Enumeration of exit codes
     enum ExitCode
     {
-        Success = 0,               ///< Success
-        MeshKernelErrorCode = 1,   ///< MehKernel error
-        NotImplementedCode = 2,    ///< Not implemented error
-        AlgorithmErrorCode = 3,    ///< Algorithm error
-        ConstraintErrorCode = 4,   ///< Constraint error
-        MeshGeometryErrorCode = 5, ///< Geometry error
-        StdLibExceptionCode = 6,   ///< Standrad library exception
-        UnknownExceptionCode = 7   ///< Unknown exception
+        Success = 0,                ///< Success
+        MeshKernelErrorCode = 1,    ///< MehKernel error
+        NotImplementedCode = 2,     ///< Not implemented error
+        AlgorithmErrorCode = 3,     ///< Algorithm error
+        ConstraintErrorCode = 4,    ///< Constraint error
+        MeshGeometryErrorCode = 5,  ///< Geometry error
+        LinearAlgebraErrorCode = 6, ///< Lienar algebra error
+        StdLibExceptionCode = 7,    ///< Standrad library exception
+        UnknownExceptionCode = 8    ///< Unknown exception
     };
 
     /// @brief Contains error category information
@@ -310,6 +311,22 @@ namespace meshkernel
 
         meshkernel::UInt m_mesh_index;  ///< The invalid mesh location index.
         Mesh::Location m_mesh_location; ///< The location type.
+    };
+
+    /// @brief A class for throwing linear algebra exceptions
+    class LinearAlgebraError final : public MeshKernelError
+    {
+    public:
+        /// @brief Class constructor
+        using MeshKernelError::MeshKernelError;
+
+    private:
+        /// @brief Returns the error category.
+        /// @return The  error category.
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"LinearAlgebraError", ExitCode::LinearAlgebraErrorCode};
+        }
     };
 
 } // namespace meshkernel

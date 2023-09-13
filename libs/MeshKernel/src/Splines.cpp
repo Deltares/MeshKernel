@@ -40,32 +40,25 @@ using meshkernel::Splines;
 Splines::Splines(Projection projection) : m_projection(projection) {}
 
 Splines::Splines(CurvilinearGrid const& grid)
-
 {
     // first the m_n m_m-gridlines
-    std::vector<std::vector<Point>> mGridLines(grid.m_numN, std::vector<Point>(grid.m_numM));
+    lin_alg::Matrix<Point> mGridLines(grid.m_numN, grid.m_numM);
     for (UInt n = 0; n < grid.m_numN; ++n)
     {
         for (UInt m = 0; m < grid.m_numM; ++m)
         {
-            mGridLines[n][m] = grid.m_gridNodes[m][n];
+            mGridLines(n, m) = grid.m_gridNodes(m, n);
         }
-        AddSpline(mGridLines[n]);
+        AddSpline(lin_alg::MatrixRowToSTLVector(mGridLines, n));
     }
 
     // then the m_m m_n-gridlines
-    std::vector<std::vector<Point>> nGridLines(grid.m_numM, std::vector<Point>(grid.m_numN));
     for (UInt m = 0; m < grid.m_numM; ++m)
     {
-        AddSpline(grid.m_gridNodes[m]);
+        AddSpline(lin_alg::MatrixRowToSTLVector(grid.m_gridNodes, m));
     }
 
     m_projection = grid.m_projection;
-}
-
-void Splines::AddSpline(const std::vector<Point>& splines)
-{
-    AddSpline(splines, 0, static_cast<UInt>(splines.size()));
 }
 
 /// add a new spline, return the index
@@ -101,6 +94,11 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     m_splineDerivatives.emplace_back(splineDerivatives);
 
     m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+}
+
+void Splines::AddSpline(const std::vector<Point>& splines)
+{
+    AddSpline(splines, 0, static_cast<UInt>(splines.size()));
 }
 
 void Splines::DeleteSpline(UInt splineIndex)
