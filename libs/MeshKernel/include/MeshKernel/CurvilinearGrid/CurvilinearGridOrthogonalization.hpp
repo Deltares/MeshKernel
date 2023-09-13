@@ -32,6 +32,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
 {
@@ -72,24 +73,45 @@ namespace meshkernel
         /// @brief Compute the matrix coefficients for n-gridlines (SOMDIST)
         void ComputeVerticalCoefficients();
 
-        /// @brief Computes the invalid nodes on m boundary grid lines
-        /// @return A vector with true if the node is an invalid boundary node, false otherwise
-        [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
+        /// @brief Computes the invalid nodes on horizontal boundary grid lines
+        /// @return A matrix whose coefficients are true if the node is an invalid boundary node, false otherwise
+        [[nodiscard]] lin_alg::Matrix<bool> ComputeInvalidHorizontalBoundaryNodes() const;
 
-        /// @brief Computes the invalid nodes on n boundary grid lines
-        /// @return A vector with true if the node is an invalid boundary node, false otherwise
-        [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes() const;
+        /// @brief Computes the invalid nodes on vertical boundary grid lines
+        /// @return A matrix whose coefficients are true if the node is an invalid boundary node, false otherwise
+        [[nodiscard]] lin_alg::Matrix<bool> ComputeInvalidVerticalBoundaryNodes() const;
 
         OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
-        std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
-        std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation
-        std::vector<std::vector<double>> m_c;   ///< The c term of the orthogonalization equation
-        std::vector<std::vector<double>> m_d;   ///< The d term of the orthogonalization equation
-        std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
-        std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
+        struct OrthogonalizationEquationTerms
+        {
+            OrthogonalizationEquationTerms(UInt M, UInt N)
+                : a(M, N),
+                  b(M, N),
+                  c(M, N),
+                  d(M, N),
+                  e(M, N),
+                  atp(M, N)
+            {
+                a.fill(constants::missing::doubleValue);
+                b.fill(constants::missing::doubleValue);
+                c.fill(constants::missing::doubleValue);
+                d.fill(constants::missing::doubleValue);
+                e.fill(constants::missing::doubleValue);
+                atp.fill(constants::missing::doubleValue);
+            }
 
-        std::vector<std::vector<bool>> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
+            lin_alg::Matrix<double> a;   ///< The a term of the orthogonalization equation
+            lin_alg::Matrix<double> b;   ///< The b term of the orthogonalization equation
+            lin_alg::Matrix<double> c;   ///< The c term of the orthogonalization equation
+            lin_alg::Matrix<double> d;   ///< The d term of the orthogonalization equation
+            lin_alg::Matrix<double> e;   ///< The e term of the orthogonalization equation
+            lin_alg::Matrix<double> atp; ///< The atp term of the orthogonalization equation
+        };
+
+        OrthogonalizationEquationTerms m_orthoEqTerms;
+
+        lin_alg::Matrix<bool> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
 
         Splines m_splines; ///< The grid lines stored as splines
     };

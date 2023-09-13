@@ -67,7 +67,7 @@ namespace meshkernel
         /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, UInt m, UInt n);
 
-        UInt m_smoothingIterations;                       ///< The orthogonalization parameters
-        std::vector<std::vector<Point>> m_gridNodesCache; ///< A cache for storing current iteration node positions
+        UInt m_smoothingIterations;              ///< The orthogonalization parameters
+        lin_alg::Matrix<Point> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };
 } // namespace meshkernel

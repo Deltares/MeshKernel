@@ -85,7 +85,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
     const auto TotalNRows = (m_numMSplines - 1) * m_numN;
-    std::vector<std::vector<Point>> gridNodes(TotalMColumns + 1, std::vector<Point>(TotalNRows + 1));
+    lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, TotalNRows + 1);
 
     UInt numMSplines = 0;
     UInt numNSplines = 0;
@@ -152,11 +152,11 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
         {
             if (splineIndex < m_numMSplines)
             {
-                gridNodes[i][position] = points[index];
+                gridNodes(i, position) = points[index];
             }
             else
             {
-                gridNodes[position][i] = points[index];
+                gridNodes(position, i) = points[index];
             }
             index++;
         }
@@ -179,26 +179,26 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                     const auto n = j * m_numN + l;
 
                     // We are at the boundary
-                    if (!gridNodes[m][n].IsValid())
+                    if (!gridNodes(m, n).IsValid())
                     {
                         continue;
                     }
 
                     if (k == 0)
                     {
-                        sideOne[l] = gridNodes[m][n];
+                        sideOne[l] = gridNodes(m, n);
                     }
                     if (k == m_numM)
                     {
-                        sideTwo[l] = gridNodes[m][n];
+                        sideTwo[l] = gridNodes(m, n);
                     }
                     if (l == 0)
                     {
-                        sideThree[k] = gridNodes[m][n];
+                        sideThree[k] = gridNodes(m, n);
                     }
                     if (l == m_numN)
                     {
-                        sideFour[k] = gridNodes[m][n];
+                        sideFour[k] = gridNodes(m, n);
                     }
                 }
             }
@@ -220,18 +220,18 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                     const auto m = i * m_numM + k;
                     const auto n = j * m_numN + l;
 
-                    if (gridNodes[m][n].IsValid())
+                    if (gridNodes(m, n).IsValid())
                     {
                         continue;
                     }
 
-                    gridNodes[m][n] = interpolationResult[k][l];
+                    gridNodes(m, n) = interpolationResult(k, l);
                 }
             }
         }
     }
 
-    return CurvilinearGrid(std::move(gridNodes), m_splines->m_projection);
+    return CurvilinearGrid(gridNodes, m_splines->m_projection);
 }
 
 void CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(UInt numIntersections,

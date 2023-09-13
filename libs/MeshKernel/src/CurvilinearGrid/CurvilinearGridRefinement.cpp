@@ -68,7 +68,7 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     std::vector<Point> rightRefinement(m_refinement);
 
     // The refined grid
-    std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
+    lin_alg::Matrix<Point> refinedGrid(maxM, maxN);
 
     UInt refinedM = 0;
     for (UInt currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
@@ -90,10 +90,10 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid.m_gridNodes[currentM][currentN].IsValid() &&
-                m_grid.m_gridNodes[currentM + 1][currentN].IsValid() &&
-                m_grid.m_gridNodes[currentM][currentN + 1].IsValid() &&
-                m_grid.m_gridNodes[currentM + 1][currentN + 1].IsValid())
+            if (m_grid.m_gridNodes(currentM, currentN).IsValid() &&
+                m_grid.m_gridNodes(currentM + 1, currentN).IsValid() &&
+                m_grid.m_gridNodes(currentM, currentN + 1).IsValid() &&
+                m_grid.m_gridNodes(currentM + 1, currentN + 1).IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
@@ -126,11 +126,11 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
-                for (UInt m = 0; m < localMRefinement + 1; ++m)
+                for (Eigen::Index m = 0; m < localMRefinement + 1; ++m)
                 {
-                    for (UInt n = 0; n < localNRefinement + 1; ++n)
+                    for (Eigen::Index n = 0; n < localNRefinement + 1; ++n)
                     {
-                        refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
+                        refinedGrid(refinedM + m, refinedN + n) = localGrid(m, n);
                     }
                 }
             }
@@ -140,5 +140,5 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     }
 
     // Substitute original grid with the refined one
-    return CurvilinearGrid(std::move(refinedGrid), m_grid.m_projection);
+    return CurvilinearGrid(refinedGrid, m_grid.m_projection);
 }
