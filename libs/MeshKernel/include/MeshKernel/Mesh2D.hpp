@@ -27,6 +27,7 @@
 
 #pragma once
 #include <array>
+#include <iostream>
 #include <ranges>
 #include <utility>
 #include <vector>
