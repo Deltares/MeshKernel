@@ -297,14 +297,19 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
-        /// @brief Connect two or more curvilinear grids
-        ///
-        /// Grid with upto 4 hanging nodes can be connected
-        /// \note All element along the region to be connected must be quadrilaterals.
-        void ConnectCurvilinearQuadsDDType();
+        /// @brief Find edge on the opposite side of the element
+        /// @note Currently only valid of quadrilateral elements.
+        /// Will throw exception NotImplemented for non-quadrilateral element shapes.
+        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
+
+        /// @brief Get the next face adjacent to the edge on the opposite side.
+        /// @param [in] faceId The starting face
+        /// @param [in] edgeId The starting edge
+        /// @return Id of neighbour face along the edge
+        UInt NextFace(const UInt faceId, const UInt edgeId) const;
 
         /// @brief Print the mesh in a form that can be loaded into matlab/octave.
-        void print(std::ostream& out = std::cout) const;
+        void Print(std::ostream& out = std::cout) const;
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
@@ -369,74 +374,6 @@ namespace meshkernel
             m_facesCircumcenters.reserve(GetNumNodes());
             m_numFacesNodes.reserve(GetNumNodes());
         }
-
-        /// @brief Determine if the edges are adjacent, if so then return the start and end points (adjacent.f90)
-        void AreEdgesAdjacent(const UInt edge1, const UInt edge2, bool& areAdjacent, UInt& startNode, UInt& endNode) const;
-
-        /// @brief Find edge on the opposite side of the element
-        /// @note Currently only works for quadrilateral elements.
-        /// Will throw exception NotImplemented for non-quadrilateral element shapes.
-        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
-
-        /// @brief Get the next face adjacent to the edge on the opposite side.
-        /// @param [in] faceId The starting face
-        /// @param [in] edgeId The starting edge
-        /// @return Id of neighbour face along the edge
-        UInt NextFace(const UInt faceId, const UInt edgeId) const;
-
-        /// @brief Find all elements that do no have a neighbour across any of edges.
-        void GetElementsOnDomainBoundary(std::vector<UInt>& elementsOnDomainBoundary, std::vector<UInt>& edgesOnDomainBoundary) const;
-
-        /// @brief Get list of node id's ordered with distance from given point.
-        void GetOrderedDistanceFromPoint(const std::vector<UInt>& nodeIndices, const UInt numberOfNodes, const Point& point,
-                                         HangingNodeIndexArray& nearestNeighbours) const;
-
-        /// @brief Merge coincident nodes
-        void MergeNodes(const std::vector<std::pair<UInt, UInt>>& nodesToMerge, std::vector<int>& mergeIndicator);
-
-        /// @brief Free one hanging node along an irregular edge.
-        void FreeOneHangingNode(const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
-
-        /// @brief Free two hanging nodes along an irregular edge.
-        void FreeTwoHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
-
-        /// @brief Free three hanging nodes along an irregular edge.
-        void FreeThreeHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
-
-        /// @brief Free four hanging nodes along an irregular edge.
-        void FreeFourHangingNodes(const UInt faceId, const UInt edgeId, const HangingNodeIndexArray& hangingNodes, const UInt startNode, const UInt endNode);
-
-        /// @brief Free any hanging nodes along an irregular edge.
-        void FreeHangingNodes(const UInt numberOfHangingNodes,
-                              const std::vector<UInt>& hangingNodesOnEdge,
-                              const UInt faceId,
-                              const Edge& boundaryEdge,
-                              const Point& boundaryNode,
-                              const UInt edgeId);
-
-        /// @brief Find and retain any hanging node id's
-        void GatherHangingNodeIds(const std::vector<UInt>& edgesOnDomainBoundary,
-                                  std::vector<HangingNodeIndexArray>& irregularEdge,
-                                  std::vector<UInt>& irregularEdgeCount,
-                                  std::vector<UInt>& irregularStartNodes,
-                                  std::vector<UInt>& irregularEndNodes) const;
-
-        /// @brief Gather all the nodes that need to be merged.
-        ///
-        /// Before merging there may be 2 or more nodes that are at the same point.
-        void GatherNodesToMerge(const UInt startNode,
-                                const UInt endNode,
-                                const Edge& boundaryEdge,
-                                std::vector<std::pair<UInt, UInt>>& nodesToMerge,
-                                std::vector<int>& mergeIndicator) const;
-
-        /// @brief Gather hanging nodes along the irregular edge.
-        void GatherHangingNodes(const UInt primaryStartNode,
-                                const UInt primaryEndNode,
-                                const Edge& irregularEdge,
-                                std::vector<UInt>& hangingNodesOnEdge,
-                                UInt& numberOfHangingNodes,
-                                std::vector<int>& mergeIndicator) const;
     };
 
 } // namespace meshkernel
