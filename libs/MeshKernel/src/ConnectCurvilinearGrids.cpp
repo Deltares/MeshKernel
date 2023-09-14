@@ -187,7 +187,7 @@ void meshkernel::ConnectCurvilinearGrids::Compute(Mesh2D& mesh) const
     std::vector<std::pair<UInt, UInt>> nodesToMerge;
 
     // Size of this array needs to be greater than the number of edges
-    // The safty margin here is the maximum numnber of irregular elements along an edge.
+    // The safety margin here is the maximum number of irregular elements along an edge.
     nodesToMerge.reserve(m_maximumNumberOfIrregularElementsAlongEdge * mesh.GetNumEdges());
 
     std::vector<UInt> hangingNodesOnEdge(mesh.GetNumEdges());
