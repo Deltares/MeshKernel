@@ -160,6 +160,7 @@ set(
 set(
   UTILITIES_INC_LIST
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
+  ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
 )
 

@@ -30,32 +30,11 @@
 #include <cmath>
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Utilities/NumericFunctions.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
-
-    // TODO move IsEquatl function to utilities or similar
-    /// @brief Generic function for determining if two floating point values are equal
-    /// @param[value] The value to compare
-    /// @param[ref_value] The reference value to compare to
-    /// @param[relative_tol] Relative tolerance to which the values are compared.
-    /// @return Boolean indicating whether the value and reference value are equal to a relative tolerance.
-    template <std::floating_point T>
-    static bool IsEqual(const T value, T ref_value, T relative_tol = 10.0 * std::numeric_limits<T>::epsilon())
-    {
-
-        if (value == ref_value)
-        {
-            return true;
-        }
-
-        const T abs_diff = std::abs(value - ref_value);
-        const T abs_value = std::abs(value);
-        const T abs_ref_value = std::abs(ref_value);
-
-        return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
-    }
 
     /// @brief A struct describing a point in a two-dimensional space
     class Point
@@ -220,7 +199,10 @@ namespace meshkernel
     bool operator!=(const Point& p1, const Point& p2);
 
     /// @brief Test points for equality upto a tolerance
-    /// @returns \f$ p1.x = p2.x \wedge p1.y = p2.y)\f$
+    /// @param [in] p1 First point to compare
+    /// @param [in] p2 Second point to compare
+    /// @param[in] epsilon Relative tolerance to which the values are compared.
+    /// @returns Boolean value indicating where the points p1 and p2 are equal upto a relative tolerance.
     bool IsEqual(const Point& p1, const Point& p2, const double epsilon);
 
     /// @brief Compute the point at some position along the line connecting start- and end-point.

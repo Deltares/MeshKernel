@@ -1935,31 +1935,6 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
     return nodeMask;
 }
 
-void Mesh2D::Print(std::ostream& out) const
-{
-    out << "nodex = zeros ( " << m_nodes.size() << ", 1);" << std::endl;
-    out << "nodey = zeros ( " << m_nodes.size() << ", 1);" << std::endl;
-    out << "edges = zeros ( " << m_edges.size() << ", 2);" << std::endl;
-
-    for (UInt i = 0; i < m_nodes.size(); ++i)
-    {
-        out << "nodex (" << i + 1 << " ) = " << m_nodes[i].x << ";" << std::endl;
-    }
-
-    for (UInt i = 0; i < m_nodes.size(); ++i)
-    {
-        out << "nodey (" << i + 1 << " ) = " << m_nodes[i].y << ";" << std::endl;
-    }
-
-    out << "edges = zeros ( " << m_edges.size() << ", 2 );" << std::endl;
-
-    for (UInt i = 0; i < m_edges.size(); ++i)
-    {
-        out << "edges ( " << i + 1 << ", 1 ) = " << m_edges[i].first + 1 << ";" << std::endl;
-        out << "edges ( " << i + 1 << ", 2 ) = " << m_edges[i].second + 1 << ";" << std::endl;
-    }
-}
-
 meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) const
 {
     if (m_numFacesNodes[faceId] != 4)

@@ -27,7 +27,6 @@
 
 #pragma once
 #include <array>
-#include <iostream>
 #include <ranges>
 #include <utility>
 #include <vector>
@@ -307,9 +306,6 @@ namespace meshkernel
         /// @param [in] edgeId The starting edge
         /// @return Id of neighbour face along the edge
         UInt NextFace(const UInt faceId, const UInt edgeId) const;
-
-        /// @brief Print the mesh in a form that can be loaded into matlab/octave.
-        void Print(std::ostream& out = std::cout) const;
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
