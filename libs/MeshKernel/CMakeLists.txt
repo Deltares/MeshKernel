@@ -32,6 +32,8 @@ set(
   ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/ConnectCurvilinearGrids.cpp
   ${SRC_DIR}/Contacts.cpp
+  ${SRC_DIR}/Definitions.cpp
+  ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp

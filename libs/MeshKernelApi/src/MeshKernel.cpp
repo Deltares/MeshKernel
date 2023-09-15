@@ -27,6 +27,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
+#include <MeshKernel/ConnectCurvilinearGrids.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -2147,6 +2148,40 @@ namespace meshkernelapi
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask, meshKernelPoints);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions();
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_connect_curvilinear_grids(const Mesh2D& meshIn,
+                                                      const int projection,
+                                                      Mesh2D& meshOut)
+    {
+
+        int exitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshIn.num_edges, meshIn.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(meshIn.num_nodes, meshIn.node_x, geometryListIn.node_y);
+
+            if (meshIn.num_faces > 0 && meshIn.face_nodes != nullptr && meshIn.nodes_per_face != nullptr)
+            {
+                const auto face_nodes = meshkernel::ConvertToFaceNodesVector(meshIn.num_faces, meshIn.face_nodes, meshIn.nodes_per_face);
+
+                std::vector<meshkernel::UInt> num_face_nodes(meshIn.num_faces);
+                std::transform (meshIn.nodes_per_face, meshIn.nodes_per_face + meshIn.num_faces, num_face_nodes.begin (),
+                                [](int val){
+                    return static_cast<meshkernel::UInt>(val);}));
+
+                meshkernel::Mesh2D mesh(edges, nodes, face_nodes, num_face_nodes, meshkernel::GetProjectionValue(projection));
+
+                meshkernel::ConnectCurvilinearGrids connectCurvilinearGrids;
+                connectCurvilinearGrids.Compute(mesh);
+                // meshOut = Convert (mesh);
+            }
         }
         catch (...)
         {
