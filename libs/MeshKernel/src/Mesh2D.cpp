@@ -992,9 +992,10 @@ void Mesh2D::ComputeNodeNeighbours()
 
 std::vector<double> Mesh2D::GetOrthogonality()
 {
-    std::vector<double> result;
-    result.reserve(GetNumEdges());
-    for (UInt e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result(GetNumEdges());
+    const int numEdges = static_cast<int>(GetNumEdges());
+#pragma omp parallel for
+    for (int e = 0; e < numEdges; e++)
     {
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
@@ -1012,12 +1013,12 @@ std::vector<double> Mesh2D::GetOrthogonality()
                                                     m_facesCircumcenters[firstFaceIndex],
                                                     m_facesCircumcenters[secondFaceIndex],
                                                     m_projection);
-            if (!IsEqual(val, constants::missing::doubleValue))
+            if (val != constants::missing::doubleValue)
             {
                 val = std::abs(val);
             }
         }
-        result.emplace_back(val);
+        result[e] = val;
     }
     return result;
 }
