@@ -670,6 +670,7 @@ TEST(Polygons, SnapMultiPolygonToSingleLandBoundary)
 
     meshkernel::LandBoundary landBoundary(landBoundaryPoints);
 
+
     // The original polygon points.
     std::vector<meshkernel::Point> polygonPoints{{170.001648, 472.880371},
                                                  {263.002228, 472.880371},
@@ -735,7 +736,7 @@ TEST(Polygons, SnapMultiPolygonToSingleLandBoundary)
     }
 }
 
-TEST(Polygons, DISABLED_SnapMultiPolygonToMultiLandBoundary)
+TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
 {
     // Test the algorithm for snapping multi-polygons to land boundaries.
 
@@ -763,6 +764,7 @@ TEST(Polygons, DISABLED_SnapMultiPolygonToMultiLandBoundary)
                                                  {0.4, -0.1},
                                                  {0.5, -0.02},
                                                  {1.1, 0.1},
+                                                 {0.2, 1.1},
                                                  {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
                                                  {1.9, -0.1},
                                                  {2.1, 0.1},
@@ -771,7 +773,8 @@ TEST(Polygons, DISABLED_SnapMultiPolygonToMultiLandBoundary)
                                                  {2.95, 0.1},
                                                  {2.9, 0.2},
                                                  {3.1, 0.5},
-                                                 {2.95, 0.9}};
+                                                 {2.95, 0.9},
+                                                 {1.9, -0.1}};
 
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
@@ -782,22 +785,25 @@ TEST(Polygons, DISABLED_SnapMultiPolygonToMultiLandBoundary)
                                                               {0.2, 0.0},
                                                               {0.4, 0.0},
                                                               {0.5, 0.0},
-                                                              {1.0, 0.0}};
+                                                              {1.0, 0.0},
+                                                              {0.0, 1.0}};
 
-    std::vector<meshkernel::Point> expectedSnappedPointsSecond{{2.0, 0.0},
-                                                               {2.1, 0.0},
-                                                               {2.5, 0.0},
-                                                               {3.0, 0.0},
-                                                               {3.0, 0.1},
-                                                               {3.0, 0.2},
-                                                               {3.0, 0.5},
-                                                               {3.0, 0.9}};
+    std::vector<meshkernel::Point> expectedSnappedPointsSecond{{1.9, -0.1},
+                                                               {2.1, 0.1},
+                                                               {2.5, 0.04},
+                                                               {3.1, -0.1},
+                                                               {2.95, 0.1},
+                                                               {2.9, 0.2},
+                                                               {3.1, 0.5},
+                                                               {2.95, 0.9},
+                                                               {1.9, -0.1}};
 
     // Snap the polygon to the land boundary
+    // Only snaps the first polygon
     polygon.SnapToLandBoundary(landBoundary, 0, 0);
 
     const meshkernel::Polygon& firstPolygon = polygon.Enclosure(0).Outer();
-    const meshkernel::Polygon& secondPolygon = polygon.Enclosure(1).Outer();
+    [[maybe_unused]]const meshkernel::Polygon& secondPolygon = polygon.Enclosure(1).Outer();
 
     for (meshkernel::UInt i = 0; i < expectedSnappedPointsFirst.size(); ++i)
     {
