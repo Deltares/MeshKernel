@@ -108,6 +108,11 @@ namespace meshkernel
     /// @brief Compute the dot product of two vectors.
     double dot(const Vector& v1, const Vector& v2);
 
+    /// @brief Unary minus
+    ///
+    /// @returns \f$ (-vec.x, -vec.y)\f$
+    Vector operator-(const Vector& vec);
+
     /// @brief Add two vectors
     Vector operator+(const Vector& v1, const Vector& v2);
 
@@ -176,6 +181,11 @@ inline meshkernel::Vector meshkernel::normalise(const Vector& vec)
 inline double meshkernel::dot(const Vector& v1, const Vector& v2)
 {
     return v1.x() * v2.x() + v1.y() * v2.y();
+}
+
+inline meshkernel::Vector meshkernel::operator-(const Vector& vec)
+{
+    return Vector(-vec.x(), -vec.y());
 }
 
 inline meshkernel::Vector meshkernel::operator+(const Vector& v1, const Vector& v2)

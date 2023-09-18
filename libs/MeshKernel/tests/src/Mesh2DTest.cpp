@@ -8,6 +8,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/RidgeRefinement.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -912,4 +913,48 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     ASSERT_EQ(faceIntersections[8].edgeNodes[0], 29);
     ASSERT_EQ(faceIntersections[8].edgeNodes[1], 28);
     ASSERT_EQ(faceIntersections[8].edgeIndexses.size(), 1);
+}
+
+TEST(Mesh2D, RidgeReinement)
+{
+    // 1 Setup
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({0.0, 1.0});
+    nodes.push_back({1.0, 0.0});
+    nodes.push_back({1.0, 1.0});
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 2});
+    edges.push_back({1, 3});
+    edges.push_back({0, 1});
+    edges.push_back({2, 3});
+
+    // 2 Execution
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    const size_t DatasetSize = 100;
+    std::vector<meshkernel::Point> samplePoints(DatasetSize);
+    std::vector<double> sampleData(DatasetSize);
+    double invMax = 1.0 / static_cast<double>(RAND_MAX);
+
+    for (size_t i = 0; i < DatasetSize; ++i)
+    {
+        samplePoints[i] = meshkernel::Point(rand() * invMax, rand() * invMax);
+        sampleData[i] = rand() * invMax;
+
+        if (i > 10)
+        {
+
+            if (i % 10 == 0)
+            {
+                std::cout << " setting " << i << "  " << i - 1 << "  " << samplePoints[i].x << "  " << samplePoints[i].y << std::endl;
+                samplePoints[i - 1] = samplePoints[i] + meshkernel::Point(1.0e-5, 1.0e-5);
+                sampleData[i - 1] = sampleData[i];
+            }
+        }
+    }
+
+    meshkernel::RidgeRefinement ridgeRefinement;
+
+    ridgeRefinement.Compute(mesh, samplePoints, sampleData);
 }
