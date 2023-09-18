@@ -1001,13 +1001,18 @@ std::vector<double> Mesh2D::GetOrthogonality()
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
+        const auto firstFaceIndex = m_edgesFaces[e][0];
+        const auto secondFaceIndex = m_edgesFaces[e][1];
 
-        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            firstFaceIndex != constants::missing::uintValue &&
+            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
             val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
                                                     m_nodes[secondNode],
-                                                    m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                    m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                    m_facesCircumcenters[firstFaceIndex],
+                                                    m_facesCircumcenters[secondFaceIndex],
                                                     m_projection);
             if (!IsEqual(val, constants::missing::doubleValue))
             {
