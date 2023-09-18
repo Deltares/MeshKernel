@@ -992,9 +992,9 @@ void Mesh2D::ComputeNodeNeighbours()
 
 std::vector<double> Mesh2D::GetOrthogonality()
 {
-    std::vector<double> result;
-    result.reserve(GetNumEdges());
-    for (UInt e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result(GetNumEdges());
+    const auto numEdges = GetNumEdges();
+    for (UInt e = 0; e < numEdges; e++)
     {
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
@@ -1012,32 +1012,36 @@ std::vector<double> Mesh2D::GetOrthogonality()
                                                     m_facesCircumcenters[firstFaceIndex],
                                                     m_facesCircumcenters[secondFaceIndex],
                                                     m_projection);
-            if (!IsEqual(val, constants::missing::doubleValue))
+
+            if (val != constants::missing::doubleValue)
             {
                 val = std::abs(val);
             }
         }
-        result.emplace_back(val);
+        result[e] = val;
     }
     return result;
 }
 
 std::vector<double> Mesh2D::GetSmoothness()
 {
-    std::vector<double> result;
-    result.reserve(GetNumEdges());
-    for (UInt e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result(GetNumEdges());
+    const auto numEdges = GetNumEdges();
+    for (UInt e = 0; e < numEdges; e++)
     {
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
+        const auto firstFaceIndex = m_edgesFaces[e][0];
+        const auto secondFaceIndex = m_edgesFaces[e][1];
 
-        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            firstFaceIndex != constants::missing::uintValue &&
+            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
-            const auto leftFace = m_edgesFaces[e][0];
-            const auto rightFace = m_edgesFaces[e][1];
-            const auto leftFaceArea = m_faceArea[leftFace];
-            const auto rightFaceArea = m_faceArea[rightFace];
+            const auto leftFaceArea = m_faceArea[firstFaceIndex];
+            const auto rightFaceArea = m_faceArea[secondFaceIndex];
 
             if (leftFaceArea < m_minimumCellArea || rightFaceArea < m_minimumCellArea)
             {
@@ -1048,7 +1052,7 @@ std::vector<double> Mesh2D::GetSmoothness()
                 val = 1.0 / val;
             }
         }
-        result.emplace_back(val);
+        result[e] = val;
     }
     return result;
 }
