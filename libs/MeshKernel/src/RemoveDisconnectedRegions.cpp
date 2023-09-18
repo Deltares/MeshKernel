@@ -83,6 +83,7 @@ void meshkernel::RemoveDisconnectedRegions::LabelSingleDomainRegion(const Mesh2D
 void meshkernel::RemoveDisconnectedRegions::LabelAllDomainRegions(const Mesh2D& mesh, std::vector<UInt>& elementRegionId, std::vector<std::pair<UInt, UInt>>& regionCount) const
 {
     bool allRegionsLabeled = false;
+    // Initialise with the first region identifier.
     UInt regionId = 1;
 
     elementRegionId.resize(mesh.GetNumFaces(), constants::missing::uintValue);
