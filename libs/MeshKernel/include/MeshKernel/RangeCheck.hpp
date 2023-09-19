@@ -94,7 +94,7 @@ namespace meshkernel
             if (!predicate(value, bound))
             {
                 throw RangeError(
-                    std::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
+                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
                     variable_name,
                     value,
                     variable_name,
@@ -113,7 +113,7 @@ namespace meshkernel
             if (!predicate(value, lower_bound, upper_bound))
             {
                 throw RangeError(
-                    std::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
+                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
                     variable_name,
                     value,
                     lower_bound,
@@ -132,8 +132,8 @@ namespace meshkernel
             if (!predicate(value, list))
             {
                 throw RangeError(
-                    std::format("{{}} = {{}} is invalid. Valid range: {}.",
-                                ValidRangeFormat.at(comparison)),
+                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.",
+                                   ValidRangeFormat.at(comparison)),
                     variable_name,
                     value,
                     variable_name,
