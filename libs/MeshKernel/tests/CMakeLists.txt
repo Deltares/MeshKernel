@@ -40,6 +40,7 @@ set(
   ${SRC_DIR}/PolygonalEnclosureTests.cpp
   ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/PolygonsTests.cpp
+  ${SRC_DIR}/RangeCheckTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp

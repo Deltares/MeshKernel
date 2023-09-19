@@ -116,6 +116,7 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
