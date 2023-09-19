@@ -43,6 +43,7 @@ namespace meshkernel
 
     namespace range_check
     {
+        /// @brief Restricts checkable data types to floating point and selected integral types
         template <typename T>
         concept RangeCheckableType = std::floating_point<T> ||
                                      (std::integral<T> &&
@@ -53,9 +54,10 @@ namespace meshkernel
                                       !std::same_as<T, char32_t> &&
                                       !std::same_as<T, wchar_t>);
 
+        /// @brief Keys of range check oprtaions
         enum class Comparison
         {
-            Equal,
+            Equal, ///>
             NotEqual,
             Greater,
             GreaterEqual,
@@ -94,7 +96,8 @@ namespace meshkernel
             if (!predicate(value, bound))
             {
                 throw RangeError(
-                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
+                    fmt_ns::vformat("{{}} = {{}} is invalid. Valid range: {}.",
+                                    fmt_ns::make_format_args(ValidRangeFormat.at(comparison))),
                     variable_name,
                     value,
                     variable_name,
@@ -113,7 +116,8 @@ namespace meshkernel
             if (!predicate(value, lower_bound, upper_bound))
             {
                 throw RangeError(
-                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
+                    fmt_ns::vformat("{{}} = {{}} is invalid. Valid range: {}.",
+                                    fmt_ns::make_format_args(ValidRangeFormat.at(comparison))),
                     variable_name,
                     value,
                     lower_bound,
@@ -132,8 +136,8 @@ namespace meshkernel
             if (!predicate(value, list))
             {
                 throw RangeError(
-                    fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.",
-                                   ValidRangeFormat.at(comparison)),
+                    fmt_ns::vformat("{{}} = {{}} is invalid. Valid range: {}.",
+                                    fmt_ns::make_format_args(ValidRangeFormat.at(comparison))),
                     variable_name,
                     value,
                     variable_name,
