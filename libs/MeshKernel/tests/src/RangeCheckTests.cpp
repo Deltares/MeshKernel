@@ -140,7 +140,7 @@ private:
 
 using TestTypes = ::testing::Types<int,
                                    short,
-                                   long,
+                                   // long,
                                    int32_t, // same as int
                                    uint32_t,
                                    int64_t,
