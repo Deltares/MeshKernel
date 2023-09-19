@@ -99,6 +99,7 @@ set(
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
+  ${DOMAIN_INC_DIR}/Formatting.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp

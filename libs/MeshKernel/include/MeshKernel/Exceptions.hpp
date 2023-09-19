@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Formatting.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 #include <algorithm>
@@ -38,15 +39,6 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-
-// set the namespace of the formatting library
-#if USE_LIBFMT
-#include <fmt/format.h>
-namespace fmt_ns = fmt;
-#else
-#include <format>
-namespace fmt_ns = std;
-#endif
 
 #define STRINGIFY(str) #str
 #define TO_STR_LITERAL(str) STRINGIFY(str)
