@@ -27,6 +27,9 @@
 
 #pragma once
 
+// #include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/RangeCheck.hpp"
+
 namespace meshkernel
 {
     /// @brief This struct describes the necessary parameters to create a new curvilinear grid in a C-compatible manner
@@ -62,6 +65,19 @@ namespace meshkernel
         double upper_right_y = 0.0;
     };
 
+    inline static void CheckMakeGridParameters(MakeGridParameters const& parameters)
+    {
+        range_check::CheckGreater(parameters.num_columns, 0, "Number of columns");
+        range_check::CheckGreater(parameters.num_rows, 0, "Number of rows");
+        range_check::CheckInClosedInterval(parameters.angle, {0.0, 90}, "Grid angle");
+        // range_check::CheckGreater(parameters.origin_x, 0.0, "Upper left corner (origin) x-coordinate");
+        // range_check::CheckGreater(parameters.origin_y, 0.0, "Upper left corner (origin) y-coordinate");
+        range_check::CheckGreater(parameters.block_size_x, 0.0, "X block size");
+        range_check::CheckGreater(parameters.block_size_y, 0.0, "Y block size");
+        // range_check::CheckGreater(parameters.upper_right_x, 0.0, "Upper right corner x-coordinate");
+        // range_check::CheckGreater(parameters.upper_right_y, 0.0, "Upper right corner y-coordinate");
+    }
+
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
     struct CurvilinearParameters
     {
@@ -80,6 +96,15 @@ namespace meshkernel
         /// @brief Attraction/repulsion parameter
         double attraction_parameter = 0.0;
     };
+
+    inline static void CheckCurvilinearParameters(CurvilinearParameters const& parameters)
+    {
+        range_check::CheckGreater(parameters.m_refinement, 0, " M-refinement factor");
+        range_check::CheckGreater(parameters.n_refinement, 0, "N-refinement factor");
+        range_check::CheckGreater(parameters.smoothing_iterations, 0, "Smoothing iterations");
+        range_check::CheckInClosedInterval(parameters.smoothing_parameter, {0.0, 1.0}, "Smoothing parameter"); // or open interval?
+        range_check::CheckGreater(parameters.attraction_parameter, 0.0, "Attraction parameter");               // is it bounded?
+    }
 
     /// @brief A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner
     struct SplinesToCurvilinearParameters
@@ -115,6 +140,20 @@ namespace meshkernel
         int remove_skinny_triangles = 1;
     };
 
+    inline static void CheckSplinesToCurvilinearParameters(SplinesToCurvilinearParameters const& parameters)
+    {
+        range_check::CheckGreater(parameters.aspect_ratio, 0.0, "Aspect ratio");
+        range_check::CheckGreater(parameters.aspect_ratio_grow_factor, 0.0, "Aspect ratio grow factor");
+        range_check::CheckGreater(parameters.average_width, 0.0, "Average width");
+        range_check::CheckOneOf(parameters.curvature_adapted_grid_spacing, {0, 1}, "Curvature adapted grid spacing");
+        range_check::CheckOneOf(parameters.grow_grid_outside, {0, 1}, "Grow grid outside");
+        range_check::CheckGreater(parameters.maximum_num_faces_in_uniform_part, 0, "Max number of faces in uniform part");
+        range_check::CheckGreater(parameters.nodes_on_top_of_each_other_tolerance, 0.0, "nodes on top of each other tolerance");
+        range_check::CheckGreater(parameters.min_cosine_crossing_angles, 0.0, "Min cosine crossing angles");
+        range_check::CheckOneOf(parameters.check_front_collisions, {0, 1}, "Check front collisions");
+        range_check::CheckOneOf(parameters.remove_skinny_triangles, {0, 1}, "Remove skinny triangles");
+    }
+
     /// @brief A struct used to describe the mesh refinement parameters in a C-compatible manner
     struct MeshRefinementParameters
     {
@@ -149,6 +188,26 @@ namespace meshkernel
         int directional_refinement = 0;
     };
 
+    inline static void CheckMeshRefinementParameters(MeshRefinementParameters const& parameters)
+    {
+        range_check::CheckGreater(parameters.max_num_refinement_iterations, 0, "Max num refinement iterations");
+        range_check::CheckOneOf(parameters.refine_intersected, {0, 1}, "Refine intersected");
+        range_check::CheckOneOf(parameters.use_mass_center_when_refining, {0, 1}, "Use mass center when refining");
+        range_check::CheckGreater(parameters.min_edge_size, 0.0, "Min edge size");
+        static std::vector<int> const ValidMeshRefinementTypes{1, 2};
+        // static std::vector<int> const ValidMeshRefinementTypes{
+        //     static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant),
+        //     static_cast<int>(meshkernel::MeshRefinement::RefinementType::RefinementLevels) //
+        // };
+
+        range_check::CheckOneOf(parameters.refinement_type, ValidMeshRefinementTypes, "Refinement type");
+        range_check::CheckOneOf(parameters.connect_hanging_nodes, {0, 1}, "Connect hanging nodes");
+        range_check::CheckOneOf(parameters.account_for_samples_outside, {0, 1}, "Account for samples outside");
+        range_check::CheckGreater(parameters.smoothing_iterations, 0, "Smoothing iterations");
+        range_check::CheckGreater(parameters.max_courant_time, 0.0, "Max courant time");
+        range_check::CheckOneOf(parameters.directional_refinement, {0, 1}, "Directional refinement");
+    }
+
     /// @brief A struct used to describe the orthogonalization parameters in a C-compatible manner
     struct OrthogonalizationParameters
     {
@@ -170,5 +229,15 @@ namespace meshkernel
         /// @brief Factor between smoother 1d0 and area-homogenizer 0d0
         double areal_to_angle_smoothing_factor = 1.0;
     };
+
+    inline static void CheckOrthogonalizationParameters(OrthogonalizationParameters const& parameters)
+    {
+        range_check::CheckGreater(parameters.outer_iterations, 0, "Outer iterations");
+        range_check::CheckGreater(parameters.boundary_iterations, 0, "Boundary iterations");
+        range_check::CheckGreater(parameters.inner_iterations, 0, "Inner iterations");
+        range_check::CheckInClosedInterval(parameters.orthogonalization_to_smoothing_factor, {0.0, 1.0}, "Orthogonalization-to-smoothing_factor");
+        range_check::CheckGreater(parameters.orthogonalization_to_smoothing_factor_at_boundary, 0.0, "orthogonalization-to-smoothing factor at boundary");
+        range_check::CheckInClosedInterval(parameters.areal_to_angle_smoothing_factor, {0.0, 1.0}, "area to angle smoothing factor");
+    }
 
 } // namespace meshkernel
