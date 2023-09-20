@@ -36,6 +36,7 @@ set(
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
   ${SRC_DIR}/OrthogonalizationTests.cpp
+  ${SRC_DIR}/ParametersTests.cpp
   ${SRC_DIR}/PointTests.cpp
   ${SRC_DIR}/PolygonalEnclosureTests.cpp
   ${SRC_DIR}/PolygonTests.cpp
