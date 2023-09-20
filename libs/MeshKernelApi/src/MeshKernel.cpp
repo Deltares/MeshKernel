@@ -2156,32 +2156,18 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_connect_curvilinear_grids(const Mesh2D& meshIn,
-                                                      const int projection,
-                                                      Mesh2D& meshOut)
+    MKERNEL_API int mkernel_connect_curvilinear_grids(int meshKernelId)
     {
-
         int exitCode = meshkernel::ExitCode::Success;
         try
         {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshIn.num_edges, meshIn.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshIn.num_nodes, meshIn.node_x, geometryListIn.node_y);
-
-            if (meshIn.num_faces > 0 && meshIn.face_nodes != nullptr && meshIn.nodes_per_face != nullptr)
+            if (!meshKernelState.contains(meshKernelId))
             {
-                const auto face_nodes = meshkernel::ConvertToFaceNodesVector(meshIn.num_faces, meshIn.face_nodes, meshIn.nodes_per_face);
-
-                std::vector<meshkernel::UInt> num_face_nodes(meshIn.num_faces);
-                std::transform (meshIn.nodes_per_face, meshIn.nodes_per_face + meshIn.num_faces, num_face_nodes.begin (),
-                                [](int val){
-                    return static_cast<meshkernel::UInt>(val);}));
-
-                meshkernel::Mesh2D mesh(edges, nodes, face_nodes, num_face_nodes, meshkernel::GetProjectionValue(projection));
-
-                meshkernel::ConnectCurvilinearGrids connectCurvilinearGrids;
-                connectCurvilinearGrids.Compute(mesh);
-                // meshOut = Convert (mesh);
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            meshkernel::ConnectCurvilinearGrids connectCurvilinearGrids;
+            connectCurvilinearGrids.Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {
