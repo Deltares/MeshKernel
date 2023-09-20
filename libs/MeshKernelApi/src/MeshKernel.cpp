@@ -199,17 +199,17 @@ namespace meshkernelapi
                 }
 
                 // Do not change the pointer, just the object it is pointing to
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
-                                                                             nodes2d,
-                                                                             face_nodes,
-                                                                             num_face_nodes,
-                                                                             meshKernelState[meshKernelId].m_projection);
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
+                                                                              nodes2d,
+                                                                              face_nodes,
+                                                                              num_face_nodes,
+                                                                              meshKernelState[meshKernelId].m_projection);
             }
             else
             {
                 // Do not change the pointer, just the object it is pointing to
                 // Compute the faces
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
             }
         }
         catch (...)
