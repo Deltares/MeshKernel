@@ -39,11 +39,12 @@ using meshkernel::CurvilinearGridOrthogonalization;
 CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
-      m_orthogonalizationParameters(orthogonalizationParameters),
       m_orthoEqTerms(m_grid.m_numM, m_grid.m_numN),
       m_isGridNodeFrozen(m_grid.m_numM, m_grid.m_numN),
       m_splines(Splines(m_grid))
 {
+    CheckOrthogonalizationParameters(orthogonalizationParameters);
+    m_orthogonalizationParameters = orthogonalizationParameters;
     m_isGridNodeFrozen.fill(false);
 }
 
