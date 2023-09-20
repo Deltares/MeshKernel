@@ -45,6 +45,7 @@ set(
   ${SRC_DIR}/Polygon.cpp
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
+  ${SRC_DIR}/RemoveDisconnectedRegions.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -115,6 +116,7 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
