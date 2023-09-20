@@ -114,29 +114,33 @@ public:
 
     void CheckOneOfTest()
     {
-        EXPECT_THROW(range_check::CheckOneOf<T>(1, list, name), RangeError);
-        EXPECT_NO_THROW(range_check::CheckOneOf<T>(2, list, name));
-        EXPECT_NO_THROW(range_check::CheckOneOf<T>(3, list, name));
-        EXPECT_NO_THROW(range_check::CheckOneOf<T>(4, list, name));
-        EXPECT_NO_THROW(range_check::CheckOneOf<T>(5, list, name));
-        EXPECT_THROW(range_check::CheckOneOf<T>(6, list, name), RangeError);
+        EXPECT_THROW(range_check::CheckOneOf<T>(1, values, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckOneOf<T>(2, values, name));
+        EXPECT_NO_THROW(range_check::CheckOneOf<T>(3, values, name));
+        EXPECT_NO_THROW(range_check::CheckOneOf<T>(4, values, name));
+        EXPECT_NO_THROW(range_check::CheckOneOf<T>(5, values, name));
+        EXPECT_THROW(range_check::CheckOneOf<T>(6, values, name), RangeError);
     }
 
     void CheckNoneOfTest()
     {
-        EXPECT_NO_THROW(range_check::CheckNoneOf<T>(1, list, name));
-        EXPECT_THROW(range_check::CheckNoneOf<T>(2, list, name), RangeError);
-        EXPECT_THROW(range_check::CheckNoneOf<T>(3, list, name), RangeError);
-        EXPECT_THROW(range_check::CheckNoneOf<T>(4, list, name), RangeError);
-        EXPECT_THROW(range_check::CheckNoneOf<T>(5, list, name), RangeError);
-        EXPECT_NO_THROW(range_check::CheckNoneOf<T>(6, list, name));
+        EXPECT_NO_THROW(range_check::CheckNoneOf<T>(1, values, name));
+        EXPECT_THROW(range_check::CheckNoneOf<T>(2, values, name), RangeError);
+        EXPECT_THROW(range_check::CheckNoneOf<T>(3, values, name), RangeError);
+        EXPECT_THROW(range_check::CheckNoneOf<T>(4, values, name), RangeError);
+        EXPECT_THROW(range_check::CheckNoneOf<T>(5, values, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckNoneOf<T>(6, values, name));
     }
 
 private:
     inline static std::string const name{"dummy"};
     std::pair<T, T> const interval{T{3}, T{5}};
-    std::vector<T> const list{2, 3, 4, 5};
+    std::vector<T> const values{2, 3, 4, 5};
 };
+
+// Cannot include long when using MSVC 16 2019. It's a bug. See:
+// https://github.com/microsoft/STL/issues/2765
+// Fixed in MSVC 17 2022
 
 using TestTypes = ::testing::Types<int,
                                    short,

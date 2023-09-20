@@ -40,9 +40,9 @@
 
 namespace meshkernel
 {
-
     namespace range_check
     {
+        /// @brief Defines the checkable types: flaoting point types and inetgral types except for bool and char.
         template <typename T>
         concept RangeCheckableType = std::floating_point<T> ||
                                      (std::integral<T> &&
@@ -53,22 +53,24 @@ namespace meshkernel
                                       !std::same_as<T, char32_t> &&
                                       !std::same_as<T, wchar_t>);
 
+        /// @brief  Keys of performed comparison
         enum class Comparison
         {
-            Equal,
-            NotEqual,
-            Greater,
-            GreaterEqual,
-            Less,
-            LessEqual,
-            InClosedInterval,
-            InOpenInterval,
-            InSemiOpenFromAboveInterval,
-            InSemiOpenFromBelowInterval,
-            OneOf,
-            NoneOf
+            Equal,                       ///< Equal to
+            NotEqual,                    ///< Not equal to
+            Greater,                     ///< Greater than
+            GreaterEqual,                ///< Greater than or equal to
+            Less,                        ///< Less than
+            LessEqual,                   ///< Less than or equal to
+            InClosedInterval,            ///< In closed interval
+            InOpenInterval,              ///< In open open interval
+            InSemiOpenFromAboveInterval, ///< In semi-open from above interval
+            InSemiOpenFromBelowInterval, ///< In semi-open from below interval
+            OneOf,                       ///< One of
+            NoneOf                       ///< None of
         };
 
+        /// @brief Maps the comparison keys to valid range format string (used for the generation of error messages)
         inline static std::unordered_map<Comparison, std::string> const ValidRangeFormat = {
             {Comparison::Equal, "{} = {}"},
             {Comparison::NotEqual, "{} != {}"},
@@ -84,6 +86,14 @@ namespace meshkernel
             {Comparison::NoneOf, "{} is none of {}"} //
         };
 
+        /// @brief Checks the validity of a value given a bound, supports the predicates ==, !=, >, >=, <, and <=
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param bound The bound against which the value is compared
+        /// @param predicate The comparison predicate (one of ==, !=, >, >=, <, and <=)
+        /// @param comparison The key of the performed comparison
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckRange(T const& value,
                                       T const& bound,
@@ -102,34 +112,51 @@ namespace meshkernel
             }
         }
 
+        /// @brief Checks the validity of a value given interval bounds, supports the predicates ==, !=, >, >=, <, and <=
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_lower_bound The lower bound of the interval
+        /// @param interval_upper_bound The upper bound of the interval
+        /// @param predicate The comparison predicate (one of <= ... <=, < ... <, < ... <=, and <= ... <)
+        /// @param comparison The key of the performed comparison
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckRange(T const& value,
-                                      T const& lower_bound,
-                                      T const& upper_bound,
+                                      T const& interval_lower_bound,
+                                      T const& interval_upper_bound,
                                       std::function<bool(T const&, T const&, T const&)> predicate,
                                       Comparison const comparison,
                                       std::string_view const variable_name)
         {
-            if (!predicate(value, lower_bound, upper_bound))
+            if (!predicate(value, interval_lower_bound, interval_upper_bound))
             {
                 throw RangeError(
                     fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.", ValidRangeFormat.at(comparison)),
                     variable_name,
                     value,
-                    lower_bound,
+                    interval_lower_bound,
                     variable_name,
-                    upper_bound);
+                    interval_upper_bound);
             }
         }
 
+        /// @brief Checks the validity of a value given a vector of values, supports the predicates one of and none of
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param values The vector of values
+        /// @param predicate The comparison predicate (one of <= ... <=, < ... <, < ... <=, and <= ... <)
+        /// @param comparison The key of the performed comparison
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckRange(T const& value,
-                                      std::vector<T> const& list,
+                                      std::vector<T> const& values,
                                       std::function<bool(T const&, std::vector<T> const&)> predicate,
                                       Comparison const comparison,
                                       std::string_view const variable_name)
         {
-            if (!predicate(value, list))
+            if (!predicate(value, values))
             {
                 throw RangeError(
                     fmt_ns::format("{{}} = {{}} is invalid. Valid range: {}.",
@@ -137,34 +164,52 @@ namespace meshkernel
                     variable_name,
                     value,
                     variable_name,
-                    list);
+                    values);
             }
         }
 
+        /// @brief Checks if two values are equal
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param other_value The other value
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckEqual(T const& value,
-                                      T const& bound,
+                                      T const& other_value,
                                       std::string_view const variable_name)
         {
             CheckRange<T>(value,
-                          bound,
+                          other_value,
                           std::equal_to<T>(),
                           Comparison::Equal,
                           variable_name);
         }
 
+        /// @brief Checks if two values are not equal
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param other_value The other value
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckNotEqual(T const& value,
-                                         T const& bound,
+                                         T const& other_value,
                                          std::string_view const variable_name)
         {
             CheckRange<T>(value,
-                          bound,
+                          other_value,
                           std::not_equal_to<T>(),
                           Comparison::NotEqual,
                           variable_name);
         }
 
+        /// @brief Checks if a value is strictly greater than another
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param bound The bound
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckGreater(T const& value,
                                         T const& bound,
@@ -177,6 +222,12 @@ namespace meshkernel
                           variable_name);
         }
 
+        /// @brief Checks if a value is greater than or equal to another
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param bound The bound
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckGreaterEqual(T const& value,
                                              T const& bound,
@@ -189,6 +240,12 @@ namespace meshkernel
                           variable_name);
         }
 
+        /// @brief Checks if a value is strictly less than another
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param bound The bound
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckLess(T const& value,
                                      T const& bound,
@@ -201,6 +258,12 @@ namespace meshkernel
                           variable_name);
         }
 
+        /// @brief Checks if a value is less than or equal to another
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param bound The bound
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckLessEqual(T const& value,
                                           T const& bound,
@@ -213,10 +276,17 @@ namespace meshkernel
                           variable_name);
         }
 
+        /// @brief Checks if a value is in a closed inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_lower_bound The lower bound of the interval
+        /// @param interval_upper_bound The upper bound of the interval
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInClosedInterval(T const& value,
-                                                 T const& lower_bound,
-                                                 T const& upper_bound,
+                                                 T const& interval_lower_bound,
+                                                 T const& interval_upper_bound,
                                                  std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, T const& l, T const& u)
@@ -225,28 +295,41 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          lower_bound,
-                          upper_bound,
+                          interval_lower_bound,
+                          interval_upper_bound,
                           predicate,
                           Comparison::InClosedInterval,
                           variable_name);
         }
 
+        /// @brief Checks if a value is in a closed inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param inteval_bounds The interval bounds
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInClosedInterval(T const& value,
-                                                 std::pair<T, T> const& bounds,
+                                                 std::pair<T, T> const& inteval_bounds,
                                                  std::string_view const variable_name)
         {
             CheckInClosedInterval(value,
-                                  bounds.first,
-                                  bounds.second,
+                                  inteval_bounds.first,
+                                  inteval_bounds.second,
                                   variable_name);
         }
 
+        /// @brief Checks if a value is in an open inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_lower_bound The lower bound of the interval
+        /// @param interval_upper_bound The upper bound of the interval
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInOpenInterval(T const& value,
-                                               T const& lower_bound,
-                                               T const& upper_bound,
+                                               T const& interval_lower_bound,
+                                               T const& interval_upper_bound,
                                                std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, T const& l, T const& u)
@@ -255,28 +338,41 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          lower_bound,
-                          upper_bound,
+                          interval_lower_bound,
+                          interval_upper_bound,
                           predicate,
                           Comparison::InOpenInterval,
                           variable_name);
         }
 
+        /// @brief Checks if a value is in an open inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param inteval_bounds The interval bounds
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInOpenInterval(T const& value,
-                                               std::pair<T, T> const& bounds,
+                                               std::pair<T, T> const& interval_bounds,
                                                std::string_view const variable_name)
         {
             CheckInOpenInterval(value,
-                                bounds.first,
-                                bounds.second,
+                                interval_bounds.first,
+                                interval_bounds.second,
                                 variable_name);
         }
 
+        /// @brief Checks if a value is in an open from above and closed from below inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_lower_bound The lower bound of the interval
+        /// @param interval_upper_bound The upper bound of the interval
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInSemiOpenFromAboveInterval(T const& value,
-                                                            T const& lower_bound,
-                                                            T const& upper_bound,
+                                                            T const& interval_lower_bound,
+                                                            T const& interval_upper_bound,
                                                             std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, T const& l, T const& u)
@@ -285,28 +381,41 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          lower_bound,
-                          upper_bound,
+                          interval_lower_bound,
+                          interval_upper_bound,
                           predicate,
                           Comparison::InSemiOpenFromAboveInterval,
                           variable_name);
         }
 
+        /// @brief Checks if a value is in an open from above and closed from below inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_bounds The interval bounds
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInSemiOpenFromAboveInterval(T const& value,
-                                                            std::pair<T, T> const& bounds,
+                                                            std::pair<T, T> const& interval_bounds,
                                                             std::string_view const variable_name)
         {
             CheckInSemiOpenFromAboveInterval(value,
-                                             bounds.first,
-                                             bounds.second,
+                                             interval_bounds.first,
+                                             interval_bounds.second,
                                              variable_name);
         }
 
+        /// @brief Checks if a value is in an open from below and closed from above inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_lower_bound The lower bound of the interval
+        /// @param interval_upper_bound The upper bound of the interval
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInSemiOpenFromBelowInterval(T const& value,
-                                                            T const& lower_bound,
-                                                            T const& upper_bound,
+                                                            T const& interval_lower_bound,
+                                                            T const& interval_upper_bound,
                                                             std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, T const& l, T const& u)
@@ -315,27 +424,39 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          lower_bound,
-                          upper_bound,
+                          interval_lower_bound,
+                          interval_upper_bound,
                           predicate,
                           Comparison::InSemiOpenFromBelowInterval,
                           variable_name);
         }
 
+        /// @brief Checks if a value is in an open from below and closed from above inetrval
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param interval_bounds The interval bounds
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckInSemiOpenFromBelowInterval(T const& value,
-                                                            std::pair<T, T> const& bounds,
+                                                            std::pair<T, T> const& interval_bounds,
                                                             std::string_view const variable_name)
         {
             CheckInSemiOpenFromBelowInterval(value,
-                                             bounds.first,
-                                             bounds.second,
+                                             interval_bounds.first,
+                                             interval_bounds.second,
                                              variable_name);
         }
 
+        /// @brief Checks if a value is an element of a vector of values
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param values TThe vector of values
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckOneOf(T const& value,
-                                      std::vector<T> const& list,
+                                      std::vector<T> const& values,
                                       std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, std::vector<T> const& l)
@@ -345,15 +466,21 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          list,
+                          values,
                           predicate,
                           Comparison::OneOf,
                           variable_name);
         }
 
+        /// @brief Checks if a value is not an element of a vector of values
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param values TThe vector of values
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
         inline static void CheckNoneOf(T const& value,
-                                       std::vector<T> const& list,
+                                       std::vector<T> const& values,
                                        std::string_view const variable_name)
         {
             auto const predicate = [](T const& v, std::vector<T> const& l)
@@ -363,7 +490,7 @@ namespace meshkernel
             };
 
             CheckRange<T>(value,
-                          list,
+                          values,
                           predicate,
                           Comparison::NoneOf,
                           variable_name);
