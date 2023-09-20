@@ -42,7 +42,7 @@ namespace meshkernel
 {
     namespace range_check
     {
-        /// @brief Defines the checkable types: flaoting point types and inetgral types except for bool and char.
+        /// @brief Defines the checkable types: floating point types and inetgral types except for bool and char.
         template <typename T>
         concept RangeCheckableType = std::floating_point<T> ||
                                      (std::integral<T> &&
@@ -451,7 +451,7 @@ namespace meshkernel
         /// @brief Checks if a value is an element of a vector of values
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
-        /// @param values TThe vector of values
+        /// @param values The vector of values
         /// @param variable_name The name or description of the variable whose value is checked
         ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
@@ -475,7 +475,7 @@ namespace meshkernel
         /// @brief Checks if a value is not an element of a vector of values
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
-        /// @param values TThe vector of values
+        /// @param values The vector of values
         /// @param variable_name The name or description of the variable whose value is checked
         ///                      (It is recommended to use a concise string)
         template <RangeCheckableType T>
