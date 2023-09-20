@@ -61,7 +61,7 @@ struct fmt_ns::formatter<std::vector<T>> : fmt_ns::formatter<T>
     {
         // get ref to the output buffer
         auto&& out = format_context.out();
-        // wrirte opening braces (must be escaped)
+        // write opening braces (must be escaped)
         fmt_ns::format_to(out, "{{");
         bool first = true;
         for (auto const& item : vector)

@@ -40,7 +40,7 @@ TEST(ParametersTests, CurvilinearParameters)
     CurvilinearParameters parameters;
 
     // default parameters should be valid
-    EXPECT_NO_THROW(parameters);
+    EXPECT_NO_THROW(CheckCurvilinearParameters(parameters));
 
     // reset and assign an invalid value, one struct member at a time
 
@@ -70,7 +70,7 @@ TEST(ParametersTests, SplinesToCurvilinearParameters)
     SplinesToCurvilinearParameters parameters;
 
     // default parameters should be valid
-    EXPECT_NO_THROW(parameters);
+    EXPECT_NO_THROW(CheckSplinesToCurvilinearParameters(parameters));
 
     // reset and assign an invalid value, one struct member at a time
 
@@ -120,7 +120,7 @@ TEST(ParametersTests, MeshRefinementParameters)
     MeshRefinementParameters parameters;
 
     // default parameters should be valid
-    EXPECT_NO_THROW(parameters);
+    EXPECT_NO_THROW(CheckMeshRefinementParameters(parameters));
 
     // reset and assign an invalid value, one struct member at a time
 
@@ -170,7 +170,7 @@ TEST(ParametersTests, OrthogonalizationParameters)
     OrthogonalizationParameters parameters;
 
     // default parameters should be valid
-    EXPECT_NO_THROW(parameters);
+    EXPECT_NO_THROW(CheckOrthogonalizationParameters(parameters));
 
     // reset and assign an invalid value, one struct member at a time
 

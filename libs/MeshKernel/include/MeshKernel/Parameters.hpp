@@ -98,7 +98,7 @@ namespace meshkernel
         range_check::CheckGreater(parameters.n_refinement, 0, "N-refinement factor");
         range_check::CheckGreater(parameters.smoothing_iterations, 0, "Smoothing iterations");
         range_check::CheckInClosedInterval(parameters.smoothing_parameter, {0.0, 1.0}, "Smoothing parameter"); // CHECK ME
-        range_check::CheckGreater(parameters.attraction_parameter, 0.0, "Attraction parameter");               // CHECK ME
+        range_check::CheckGreaterEqual(parameters.attraction_parameter, 0.0, "Attraction parameter");          // CHECK ME
     }
 
     /// @brief A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner
