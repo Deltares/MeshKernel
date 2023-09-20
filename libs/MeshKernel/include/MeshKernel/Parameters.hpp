@@ -27,7 +27,6 @@
 
 #pragma once
 
-// #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/RangeCheck.hpp"
 
 namespace meshkernel
@@ -69,13 +68,9 @@ namespace meshkernel
     {
         range_check::CheckGreater(parameters.num_columns, 0, "Number of columns");
         range_check::CheckGreater(parameters.num_rows, 0, "Number of rows");
-        range_check::CheckInClosedInterval(parameters.angle, {0.0, 90}, "Grid angle");
-        // range_check::CheckGreater(parameters.origin_x, 0.0, "Upper left corner (origin) x-coordinate");
-        // range_check::CheckGreater(parameters.origin_y, 0.0, "Upper left corner (origin) y-coordinate");
+        range_check::CheckInOpenInterval(parameters.angle, {-90.0, 90.0}, "Grid angle");
         range_check::CheckGreater(parameters.block_size_x, 0.0, "X block size");
         range_check::CheckGreater(parameters.block_size_y, 0.0, "Y block size");
-        // range_check::CheckGreater(parameters.upper_right_x, 0.0, "Upper right corner x-coordinate");
-        // range_check::CheckGreater(parameters.upper_right_y, 0.0, "Upper right corner y-coordinate");
     }
 
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
@@ -102,8 +97,8 @@ namespace meshkernel
         range_check::CheckGreater(parameters.m_refinement, 0, " M-refinement factor");
         range_check::CheckGreater(parameters.n_refinement, 0, "N-refinement factor");
         range_check::CheckGreater(parameters.smoothing_iterations, 0, "Smoothing iterations");
-        range_check::CheckInClosedInterval(parameters.smoothing_parameter, {0.0, 1.0}, "Smoothing parameter"); // or open interval?
-        range_check::CheckGreater(parameters.attraction_parameter, 0.0, "Attraction parameter");               // is it bounded?
+        range_check::CheckInClosedInterval(parameters.smoothing_parameter, {0.0, 1.0}, "Smoothing parameter"); // CHECK ME
+        range_check::CheckGreater(parameters.attraction_parameter, 0.0, "Attraction parameter");               // CHECK ME
     }
 
     /// @brief A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner
@@ -194,12 +189,9 @@ namespace meshkernel
         range_check::CheckOneOf(parameters.refine_intersected, {0, 1}, "Refine intersected");
         range_check::CheckOneOf(parameters.use_mass_center_when_refining, {0, 1}, "Use mass center when refining");
         range_check::CheckGreater(parameters.min_edge_size, 0.0, "Min edge size");
+        // Move enum meshkernel::MeshRefinement::RefinementType out of meshkernel::MeshRefinement
+        // then use the underlying type of the enums to define ValidMeshRefinementTypes
         static std::vector<int> const ValidMeshRefinementTypes{1, 2};
-        // static std::vector<int> const ValidMeshRefinementTypes{
-        //     static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant),
-        //     static_cast<int>(meshkernel::MeshRefinement::RefinementType::RefinementLevels) //
-        // };
-
         range_check::CheckOneOf(parameters.refinement_type, ValidMeshRefinementTypes, "Refinement type");
         range_check::CheckOneOf(parameters.connect_hanging_nodes, {0, 1}, "Connect hanging nodes");
         range_check::CheckOneOf(parameters.account_for_samples_outside, {0, 1}, "Account for samples outside");
@@ -236,7 +228,7 @@ namespace meshkernel
         range_check::CheckGreater(parameters.boundary_iterations, 0, "Boundary iterations");
         range_check::CheckGreater(parameters.inner_iterations, 0, "Inner iterations");
         range_check::CheckInClosedInterval(parameters.orthogonalization_to_smoothing_factor, {0.0, 1.0}, "Orthogonalization-to-smoothing_factor");
-        range_check::CheckGreater(parameters.orthogonalization_to_smoothing_factor_at_boundary, 0.0, "orthogonalization-to-smoothing factor at boundary");
+        range_check::CheckInClosedInterval(parameters.orthogonalization_to_smoothing_factor_at_boundary, {0.0, 1.0}, "orthogonalization-to-smoothing factor at boundary");
         range_check::CheckInClosedInterval(parameters.areal_to_angle_smoothing_factor, {0.0, 1.0}, "area to angle smoothing factor");
     }
 
