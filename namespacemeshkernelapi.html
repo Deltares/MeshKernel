@@ -427,6 +427,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a7dda13ff3814870fa33c6b06e01f7ccd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7dda13ff3814870fa33c6b06e01f7ccd">mkernel_mesh2d_refine_based_on_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, double relativeSearchRadius, int minimumNumSamples, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:a7dda13ff3814870fa33c6b06e01f7ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <a href="namespacemeshkernelapi.html#a7dda13ff3814870fa33c6b06e01f7ccd">More...</a><br /></td></tr>
 <tr class="separator:a7dda13ff3814870fa33c6b06e01f7ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51b8b6364302aacea2b8461008c91993"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a51b8b6364302aacea2b8461008c91993">mkernel_mesh2d_remove_disconnected_regions</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a51b8b6364302aacea2b8461008c91993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove any disconnected regions from a mesh2d.  <a href="namespacemeshkernelapi.html#a51b8b6364302aacea2b8461008c91993">More...</a><br /></td></tr>
+<tr class="separator:a51b8b6364302aacea2b8461008c91993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8871161744c899f45413808e2ebbbfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">mkernel_mesh2d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aa8871161744c899f45413808e2ebbbfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">More...</a><br /></td></tr>
 <tr class="separator:aa8871161744c899f45413808e2ebbbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5208,6 +5211,32 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a51b8b6364302aacea2b8461008c91993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51b8b6364302aacea2b8461008c91993">&#9670;&nbsp;</a></span>mkernel_mesh2d_remove_disconnected_regions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_remove_disconnected_regions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove any disconnected regions from a mesh2d. </p>
+<p>The assumption is that the main region of interest has the largest number of elements. Regions with fewer elements that this will be removed. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
