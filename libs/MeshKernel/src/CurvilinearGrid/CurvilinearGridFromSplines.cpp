@@ -44,6 +44,9 @@ namespace meshkernel
           m_curvilinearParameters(curvilinearParameters),
           m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
     {
+        CheckCurvilinearParameters(curvilinearParameters);
+        CheckSplinesToCurvilinearParameters(splinesToCurvilinearParameters);
+
         m_onTopOfEachOtherSquaredTolerance = m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance *
                                              m_splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance;
     }

@@ -690,7 +690,7 @@ TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
 
@@ -759,7 +759,7 @@ TEST_F(CartesianApiTests, RefineBasedOnGebcoSamples_OnAUniformMesh_shouldRefineM
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
 
