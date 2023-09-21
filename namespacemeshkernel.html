@@ -186,6 +186,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class containing a list of polygonaly enclosed regions.  <a href="classmeshkernel_1_1_polygons.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_range_error.html">RangeError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for throwing range error exceptions.  <a href="classmeshkernel_1_1_range_error.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_remove_disconnected_regions.html">RemoveDisconnectedRegions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes any small regions that are disconnected from the main part of the domain.  <a href="classmeshkernel_1_1_remove_disconnected_regions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,16 +243,17 @@ Enumerations</h2></td></tr>
 <tr class="separator:a74432f6294d6952b6f3b363b0f85a3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4a157c357776039bdda49e4e84640701">NotImplementedCode</a> = 2, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306">AlgorithmErrorCode</a> = 3, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4a157c357776039bdda49e4e84640701">NotImplementedCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306">AlgorithmErrorCode</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486">ConstraintErrorCode</a> = 4, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce">MeshGeometryErrorCode</a> = 5, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44">LinearAlgebraErrorCode</a> = 6, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a> = 7, 
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486">ConstraintErrorCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce">MeshGeometryErrorCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44">LinearAlgebraErrorCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba949be9b10f2ff8307a87fa276eb523d9">RangeErrorCode</a>, 
 <br />
-&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a> = 8
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a>
 <br />
  }</td></tr>
 <tr class="memdesc:a25feb926a55573977c6c4f410ece8fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of exit codes.  <a href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">More...</a><br /></td></tr>
@@ -572,7 +576,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce"></a>MeshGeometryErrorCode&#160;</td><td class="fielddoc"><p>Geometry error. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44"></a>LinearAlgebraErrorCode&#160;</td><td class="fielddoc"><p>Lienar algebra error. </p>
+<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44"></a>LinearAlgebraErrorCode&#160;</td><td class="fielddoc"><p>Linear algebra error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba949be9b10f2ff8307a87fa276eb523d9"></a>RangeErrorCode&#160;</td><td class="fielddoc"><p>Range error. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003"></a>StdLibExceptionCode&#160;</td><td class="fielddoc"><p>Standrad library exception. </p>
 </td></tr>
