@@ -773,6 +773,11 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
     }
 }
 
+void Mesh::Administrate()
+{
+    AdministrateNodesEdges();
+}
+
 void Mesh::AdministrateNodesEdges()
 {
     DeleteInvalidNodesAndEdges();
@@ -888,7 +893,7 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    AdministrateNodesEdges();
+    Administrate();
 
     return *this;
 }
