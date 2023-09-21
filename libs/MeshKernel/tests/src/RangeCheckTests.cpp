@@ -18,12 +18,12 @@ public:
         EXPECT_NO_THROW(range_check::CheckEqual<T>(1, 1, name));
         EXPECT_THROW(range_check::CheckEqual<T>(1, 2, name), RangeError);
 
-        if (std::same_as<T, float> ||
-            std::same_as<T, double> ||
-            std::same_as<T, long double>)
+        if (std::is_same_v<T, float> ||
+            std::is_same_v<T, double> ||
+            std::is_same_v<T, long double>)
         {
-            double constexpr x = 1.0;
-            double constexpr epsilon = std::numeric_limits<T>::epsilon();
+            T constexpr x = T{1};
+            T constexpr epsilon = std::numeric_limits<T>::epsilon();
             EXPECT_THROW(range_check::CheckEqual<T>(x, x - epsilon, name), RangeError);
             EXPECT_NO_THROW(range_check::CheckEqual<T>(x, x, name));
             EXPECT_THROW(range_check::CheckEqual<T>(x, x + epsilon, name), RangeError);
@@ -39,8 +39,8 @@ public:
             std::same_as<T, double> ||
             std::same_as<T, long double>)
         {
-            double constexpr x = 1.0;
-            double constexpr epsilon = std::numeric_limits<T>::epsilon();
+            T constexpr x = T{1};
+            T constexpr epsilon = std::numeric_limits<T>::epsilon();
             EXPECT_NO_THROW(range_check::CheckNotEqual<T>(x, x - epsilon, name));
             EXPECT_THROW(range_check::CheckNotEqual<T>(x, x, name), RangeError);
             EXPECT_NO_THROW(range_check::CheckNotEqual<T>(x, x + epsilon, name));
@@ -93,23 +93,41 @@ public:
         EXPECT_THROW(range_check::CheckInOpenInterval<T>(6, interval, name), RangeError);
     }
 
-    void CheckInSemiOpenFromAboveIntervalTest()
+    void CheckInRightHalfOpenIntervalTest()
     {
-        EXPECT_THROW(range_check::CheckInSemiOpenFromAboveInterval<T>(1, interval, name), RangeError);
-        EXPECT_NO_THROW(range_check::CheckInSemiOpenFromAboveInterval<T>(3, interval, name));
-        EXPECT_NO_THROW(range_check::CheckInSemiOpenFromAboveInterval<T>(4, interval, name));
-        EXPECT_THROW(range_check::CheckInSemiOpenFromAboveInterval<T>(5, interval, name), RangeError);
-        EXPECT_THROW(range_check::CheckInSemiOpenFromAboveInterval<T>(6, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckInRightHalfOpenInterval<T>(1, interval, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckInRightHalfOpenInterval<T>(3, interval, name));
+        EXPECT_NO_THROW(range_check::CheckInRightHalfOpenInterval<T>(4, interval, name));
+        EXPECT_THROW(range_check::CheckInRightHalfOpenInterval<T>(5, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckInRightHalfOpenInterval<T>(6, interval, name), RangeError);
     }
 
-    void CheckInSemiOpenFromBelowIntervalTest()
+    void CheckInLeftHalfOpenIntervalTest()
     {
 
-        EXPECT_THROW(range_check::CheckInSemiOpenFromBelowInterval<T>(1, interval, name), RangeError);
-        EXPECT_THROW(range_check::CheckInSemiOpenFromBelowInterval<T>(3, interval, name), RangeError);
-        EXPECT_NO_THROW(range_check::CheckInSemiOpenFromBelowInterval<T>(4, interval, name));
-        EXPECT_NO_THROW(range_check::CheckInSemiOpenFromBelowInterval<T>(5, interval, name));
-        EXPECT_THROW(range_check::CheckInSemiOpenFromBelowInterval<T>(6, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckInLeftHalfOpenInterval<T>(1, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckInLeftHalfOpenInterval<T>(3, interval, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckInLeftHalfOpenInterval<T>(4, interval, name));
+        EXPECT_NO_THROW(range_check::CheckInLeftHalfOpenInterval<T>(5, interval, name));
+        EXPECT_THROW(range_check::CheckInLeftHalfOpenInterval<T>(6, interval, name), RangeError);
+    }
+
+    void CheckOutsideClosedIntervalTest()
+    {
+        EXPECT_NO_THROW(range_check::CheckOutsideClosedInterval<T>(2, interval, name));
+        EXPECT_THROW(range_check::CheckOutsideClosedInterval<T>(3, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckOutsideClosedInterval<T>(4, interval, name), RangeError);
+        EXPECT_THROW(range_check::CheckOutsideClosedInterval<T>(5, interval, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckOutsideClosedInterval<T>(6, interval, name));
+    }
+
+    void CheckOutsideOpenIntervalTest()
+    {
+        EXPECT_NO_THROW(range_check::CheckOutsideOpenInterval<T>(2, interval, name));
+        EXPECT_NO_THROW(range_check::CheckOutsideOpenInterval<T>(3, interval, name));
+        EXPECT_THROW(range_check::CheckOutsideOpenInterval<T>(4, interval, name), RangeError);
+        EXPECT_NO_THROW(range_check::CheckOutsideOpenInterval<T>(5, interval, name));
+        EXPECT_NO_THROW(range_check::CheckOutsideOpenInterval<T>(6, interval, name));
     }
 
     void CheckOneOfTest()
@@ -157,14 +175,18 @@ TYPED_TEST_SUITE(RangeCheckFixture, TestTypes);
 
 TYPED_TEST(RangeCheckFixture, TestTypes)
 {
+    this->CheckEqual();
+    this->CheckNotEqual();
     this->CheckGreaterTest();
     this->CheckGreaterEqualTest();
     this->CheckLessTest();
     this->CheckLessEqualTest();
     this->CheckInClosedIntervalTest();
     this->CheckInOpenIntervalTest();
-    this->CheckInSemiOpenFromAboveIntervalTest();
-    this->CheckInSemiOpenFromBelowIntervalTest();
+    this->CheckInRightHalfOpenIntervalTest();
+    this->CheckInLeftHalfOpenIntervalTest();
+    this->CheckOutsideClosedIntervalTest();
+    this->CheckOutsideOpenIntervalTest();
     this->CheckOneOfTest();
     this->CheckNoneOfTest();
 }

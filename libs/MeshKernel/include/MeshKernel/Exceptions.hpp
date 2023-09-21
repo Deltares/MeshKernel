@@ -55,7 +55,7 @@ namespace meshkernel
         AlgorithmErrorCode,     ///< Algorithm error
         ConstraintErrorCode,    ///< Constraint error
         MeshGeometryErrorCode,  ///< Geometry error
-        LinearAlgebraErrorCode, ///< Lienar algebra error
+        LinearAlgebraErrorCode, ///< Linear algebra error
         RangeErrorCode,         ///< Range error
         StdLibExceptionCode,    ///< Standrad library exception
         UnknownExceptionCode    ///< Unknown exception

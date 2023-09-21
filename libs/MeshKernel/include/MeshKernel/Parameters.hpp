@@ -68,7 +68,7 @@ namespace meshkernel
     {
         range_check::CheckGreater(parameters.num_columns, 0, "Number of columns");
         range_check::CheckGreater(parameters.num_rows, 0, "Number of rows");
-        range_check::CheckInOpenInterval(parameters.angle, {-90.0, 90.0}, "Grid angle");
+        range_check::CheckInClosedInterval(parameters.angle, {-90.0, 90.0}, "Grid angle");
         range_check::CheckGreater(parameters.block_size_x, 0.0, "X block size");
         range_check::CheckGreater(parameters.block_size_y, 0.0, "Y block size");
     }
