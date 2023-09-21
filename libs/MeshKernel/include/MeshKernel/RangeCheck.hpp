@@ -451,7 +451,7 @@ namespace meshkernel
                                         variable_name);
         }
 
-        /// @brief Checks if a value is outisde a closed inetrval
+        /// @brief Checks if a value is outsidea closed inetrval
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
         /// @param interval_lower_bound The lower bound of the interval
@@ -477,7 +477,7 @@ namespace meshkernel
                           variable_name);
         }
 
-        /// @brief Checks if a value is outisde a closed inetrval
+        /// @brief Checks if a value is outsidea closed inetrval
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
         /// @param interval_bounds The interval bounds
@@ -494,7 +494,7 @@ namespace meshkernel
                                        variable_name);
         }
 
-        /// @brief Checks if a value is outisde an open inetrval
+        /// @brief Checks if a value is outsidean open inetrval
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
         /// @param interval_lower_bound The lower bound of the interval
@@ -520,7 +520,7 @@ namespace meshkernel
                           variable_name);
         }
 
-        /// @brief Checks if a value is outisde an open inetrval
+        /// @brief Checks if a value is outsidean open inetrval
         /// @tparam T The type of the value to check (RangeCheckableType)
         /// @param value The value to check
         /// @param interval_bounds The interval bounds
