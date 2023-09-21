@@ -54,6 +54,7 @@
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
@@ -1591,6 +1592,30 @@ namespace meshkernelapi
 
             meshkernel::MeshRefinement meshRefinement(meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
             meshRefinement.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions();
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_remove_disconnected_regions(int meshKernelId)
+    {
+        int exitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
+            }
+
+            meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
+            removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {
