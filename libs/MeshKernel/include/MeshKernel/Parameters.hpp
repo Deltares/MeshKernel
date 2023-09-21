@@ -195,7 +195,7 @@ namespace meshkernel
         range_check::CheckOneOf(parameters.refinement_type, ValidMeshRefinementTypes, "Refinement type");
         range_check::CheckOneOf(parameters.connect_hanging_nodes, {0, 1}, "Connect hanging nodes");
         range_check::CheckOneOf(parameters.account_for_samples_outside, {0, 1}, "Account for samples outside");
-        range_check::CheckGreater(parameters.smoothing_iterations, 0, "Smoothing iterations");
+        range_check::CheckGreaterEqual(parameters.smoothing_iterations, 0, "Smoothing iterations");
         range_check::CheckGreater(parameters.max_courant_time, 0.0, "Max courant time");
         range_check::CheckOneOf(parameters.directional_refinement, {0, 1}, "Directional refinement");
     }
