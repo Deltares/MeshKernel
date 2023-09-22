@@ -7,9 +7,7 @@
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 
-#include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include <TestUtils/SampleFileReader.hpp>
 
 class CartesianApiTests : public testing::Test
 {
