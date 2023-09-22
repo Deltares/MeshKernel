@@ -209,7 +209,7 @@ TEST(LandBoundaries, LandBoundaryConstructorTestFindClosestPoint)
                                                  {10.0, 10.0}};
 
     meshkernel::LandBoundary landBoundary(controlPoints);
-    meshkernel::Projection::Type projection = meshkernel::Projection::Type::Cartesian;
+    meshkernel::Projection::Type projection = meshkernel::Projection::Cartesian;
 
     // Expect  this point to be closest to the first point (0, 0)
     meshkernel::Point samplePoint({1.0, 1.0});

@@ -81,7 +81,7 @@ void MeshRefinement::Compute()
     // get bounding box
     Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
-    if (m_mesh->m_projection == Projection::Type::Spherical)
+    if (m_mesh->m_projection == Projection::Spherical)
     {
         const auto boundingBox = BoundingBox(m_mesh->m_nodes);
         lowerLeft = boundingBox.lowerLeft();
@@ -497,7 +497,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
         const auto secondNode = m_mesh->m_nodes[secondNodeIndex];
 
         Point middle{(firstNode.x + secondNode.x) * 0.5, (firstNode.y + secondNode.y) * 0.5};
-        if (m_mesh->m_projection == Projection::Type::Spherical)
+        if (m_mesh->m_projection == Projection::Spherical)
         {
 
             middle.y = (firstNode.y + secondNode.y) / 2.0;
@@ -641,7 +641,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
             splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                                                            localEdgesNumFaces);
 
-            if (m_mesh->m_projection == Projection::Type::Spherical)
+            if (m_mesh->m_projection == Projection::Spherical)
             {
                 auto miny = std::numeric_limits<double>::max();
                 auto maxy = std::numeric_limits<double>::lowest();

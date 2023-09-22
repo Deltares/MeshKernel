@@ -3309,17 +3309,17 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::Type::Cartesian);
+        projection = static_cast<int>(meshkernel::Projection::Cartesian);
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::Type::Spherical);
+        projection = static_cast<int>(meshkernel::Projection::Spherical);
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::Type::SphericalAccurate);
+        projection = static_cast<int>(meshkernel::Projection::SphericalAccurate);
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)

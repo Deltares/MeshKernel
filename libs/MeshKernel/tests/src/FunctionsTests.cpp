@@ -15,7 +15,7 @@ TEST(FunctionsTest, NormalVectorInsideTestCartesian)
     bool flippedNormal;
 
     // 2 Execute
-    NormalVectorInside(firstPoint, secondPoint, insidePoint, normal, flippedNormal, meshkernel::Projection::Type::Cartesian);
+    NormalVectorInside(firstPoint, secondPoint, insidePoint, normal, flippedNormal, meshkernel::Projection::Cartesian);
 
     // 3 Validation
     ASSERT_EQ(normal.x, 0.0);

@@ -277,14 +277,14 @@ namespace meshkernel
                 double ys1 = constants::missing::doubleValue;
                 double ys2 = constants::missing::doubleValue;
 
-                if (m_splines->m_projection == Projection::Type::Cartesian)
+                if (m_splines->m_projection == Projection::Cartesian)
                 {
                     xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
                     xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
                     ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
                     ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
                 }
-                if (m_splines->m_projection == Projection::Type::Spherical)
+                if (m_splines->m_projection == Projection::Spherical)
                 {
                     const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
                     xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
@@ -982,7 +982,7 @@ namespace meshkernel
                 normalVectorLeft = NormalVectorOutside(m_gridPoints(layerIndex, currentRightIndex),
                                                        m_gridPoints(layerIndex, currentLeftIndex),
                                                        m_splines->m_projection);
-                if (m_splines->m_projection == Projection::Type::Spherical)
+                if (m_splines->m_projection == Projection::Spherical)
                 {
                     normalVectorLeft.x = normalVectorLeft.x * std::cos(constants::conversion::degToRad * 0.5 *
                                                                        (m_gridPoints(layerIndex, currentLeftIndex).y +
@@ -999,7 +999,7 @@ namespace meshkernel
                                                         m_gridPoints(layerIndex, m),
                                                         m_splines->m_projection);
 
-                if (m_splines->m_projection == Projection::Type::Spherical)
+                if (m_splines->m_projection == Projection::Spherical)
                 {
                     normalVectorLeft.x = normalVectorLeft.x * std::cos(constants::conversion::degToRad * 0.5 *
                                                                        (m_gridPoints(layerIndex, currentLeftIndex).y +
@@ -1039,7 +1039,7 @@ namespace meshkernel
                 velocityVector[m] = rightVelocity * 1.0 / (rightLeftVelocityRatio * cosphi);
             }
 
-            if (m_splines->m_projection == Projection::Type::Spherical)
+            if (m_splines->m_projection == Projection::Spherical)
             {
                 velocityVector[m].x = velocityVector[m].x * constants::geometric::inverse_earth_radius * constants::conversion::radToDeg /
                                       std::cos(constants::conversion::degToRad * m_gridPoints(layerIndex, m).y);

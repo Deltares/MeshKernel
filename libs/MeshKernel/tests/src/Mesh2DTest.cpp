@@ -27,7 +27,7 @@ TEST(Mesh2D, OneQuadTestConstructor)
     edges.push_back({2, 3});
 
     // 2 Execution
-    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -90,12 +90,12 @@ TEST(Mesh2D, TriangulateSamples)
     nodes.push_back({501.418832237663, 1642.90729527249});
     nodes.push_back({498.503152894023, 1645.82297461613});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::Cartesian);
 }
 
 TEST(Mesh2D, ComputePointsInPolygonGeneratesIncludedPoints)
@@ -138,7 +138,7 @@ TEST(Mesh2D, ComputePointsInPolygonGeneratesIncludedPoints)
                                                 {-594.274359505687, 2360.57328005743},
                                                 {-657.485056492302, 2363.36631085451}};
 
-    meshkernel::Polygons polygons(polygonNodes, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygons(polygonNodes, meshkernel::Projection::Cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
@@ -167,7 +167,7 @@ TEST(Mesh2D, TwoTrianglesDuplicatedEdges)
 
     meshkernel::Mesh2D mesh;
     // 2 Execution
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -189,7 +189,7 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     edges.push_back({2, 1});
 
     meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
@@ -224,7 +224,7 @@ TEST(Mesh2D, HangingEdge)
     edges.push_back({2, 1});
 
     meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -269,7 +269,7 @@ TEST(Mesh2D, NodeMerging)
     }
 
     meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
@@ -305,7 +305,7 @@ TEST(Mesh2D, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // 2. Act
     meshkernel::Polygons polygon;
@@ -356,7 +356,7 @@ TEST(Mesh2D, MillionQuads)
 
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -383,7 +383,7 @@ TEST(Mesh2D, GetObtuseTriangles)
         {3, 1}};
 
     meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // execute, only one obtuse triangle should be found
     const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
@@ -409,7 +409,7 @@ TEST(Mesh2D, GetSmallFlowEdgeCenters)
         {2, 0},
     };
 
-    meshkernel::Mesh2D mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Mesh2D mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();
@@ -476,7 +476,7 @@ TEST(Mesh2D, DeleteHangingEdge)
 
     // Execute
     meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::Cartesian);
 
     // Assert
     ASSERT_EQ(1, mesh.GetNumFaces());
@@ -499,7 +499,7 @@ TEST(Mesh2D, DeleteHangingEdge)
 TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectIntersections)
 {
     // 1. Setup
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::Type::Cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Point> boundaryLines;
     boundaryLines.emplace_back(0.5, 0.5);
@@ -639,7 +639,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersections)
 {
     // 1. Setup
-    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::Type::Cartesian);
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Point> boundaryLines;
     boundaryLines.emplace_back(3.9, 0.0);
@@ -769,7 +769,7 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
 {
     // 1. Setup
     const meshkernel::Point origin{78.0, 45.0};
-    auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::Type::Cartesian, origin);
+    auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::Cartesian, origin);
 
     std::vector<meshkernel::Point> boundaryLines;
     boundaryLines.emplace_back(80.6623, 50.0074);

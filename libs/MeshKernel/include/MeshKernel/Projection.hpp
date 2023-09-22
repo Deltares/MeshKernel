@@ -40,7 +40,7 @@ namespace meshkernel
     {
     public:
         /// @brief Enumerator describing the projections
-        enum class Type
+        enum Type
         {
             Cartesian = 0,         ///> Cartesian
             Spherical = 1,         ///> Spherical
@@ -55,13 +55,13 @@ namespace meshkernel
         {
             switch (type)
             {
-            case Type::Cartesian:
+            case Cartesian:
                 return "Cartesian";
-            case Type::Spherical:
+            case Spherical:
                 return "Spherical";
-            case Type::SphericalAccurate:
+            case SphericalAccurate:
                 return "Spherical accurate";
-            case Type::Unknown:
+            case Unknown:
             default:
                 return "Unknown";
             }
@@ -71,7 +71,7 @@ namespace meshkernel
         /// @param type Type of projection
         inline static void CheckValidity(Type const type)
         {
-            range_check::CheckOneOf(to_underlying(type),
+            range_check::CheckOneOf(static_cast<int>(type),
                                     m_valid_projections,
                                     "Projection type");
         }
@@ -79,9 +79,9 @@ namespace meshkernel
     private:
         /// @brief Vector of valid projections stored as integers
         inline static std::vector<int> const m_valid_projections = {
-            to_underlying(Type::Cartesian),
-            to_underlying(Type::Spherical),
-            to_underlying(Type::SphericalAccurate) //
+            Cartesian,
+            Spherical,
+            SphericalAccurate //
         };
     };
 

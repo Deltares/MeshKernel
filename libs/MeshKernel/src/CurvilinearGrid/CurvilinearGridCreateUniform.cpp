@@ -43,7 +43,7 @@ namespace meshkernel
     {
         Projection::CheckValidity(projection);
 
-        if (m_projection == Projection::Type::SphericalAccurate)
+        if (m_projection == Projection::SphericalAccurate)
         {
             throw NotImplemented("Projection::Type value: {} not supported", Projection::ToString(m_projection));
         }
@@ -63,7 +63,7 @@ namespace meshkernel
         range_check::CheckGreater(blockSizeX, 0.0, "X block size");
         range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
 
-        if (m_projection == Projection::Type::Spherical)
+        if (m_projection == Projection::Spherical)
         {
             return CurvilinearGrid{ComputeSpherical(numColumns,
                                                     numRows,
@@ -74,7 +74,7 @@ namespace meshkernel
                                                     blockSizeY),
                                    m_projection};
         }
-        if (m_projection == Projection::Type::Cartesian)
+        if (m_projection == Projection::Cartesian)
         {
             return CurvilinearGrid{ComputeCartesian(numColumns,
                                                     numRows,
@@ -199,7 +199,7 @@ namespace meshkernel
             throw AlgorithmError("blockSizeY cannot be larger than mesh height");
         }
 
-        if (projection == Projection::Type::Cartesian)
+        if (projection == Projection::Cartesian)
         {
             const int numM = static_cast<int>(std::ceil(std::abs(maxY - minY) / blockSizeY));
             return std::max(numM, 1);
@@ -269,7 +269,7 @@ namespace meshkernel
         CurvilinearGrid curvilinearGrid;
         switch (m_projection)
         {
-        case Projection::Type::Spherical:
+        case Projection::Spherical:
             curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
                                                                numRows,
                                                                originX,
@@ -279,7 +279,7 @@ namespace meshkernel
                                                                blockSizeY),
                                               m_projection};
             break;
-        case Projection::Type::Cartesian:
+        case Projection::Cartesian:
             curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
                                                                numRows,
                                                                originX,
@@ -321,7 +321,7 @@ namespace meshkernel
         CurvilinearGrid curvilinearGrid;
         switch (m_projection)
         {
-        case Projection::Type::Spherical:
+        case Projection::Spherical:
 
             curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
                                                                numRows,
@@ -332,7 +332,7 @@ namespace meshkernel
                                                                blockSizeY),
                                               m_projection};
             break;
-        case Projection::Type::Cartesian:
+        case Projection::Cartesian:
             curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
                                                                numRows,
                                                                originX,
@@ -342,7 +342,7 @@ namespace meshkernel
                                                                blockSizeY),
                                               m_projection};
             break;
-        case Projection::Type::SphericalAccurate:
+        case Projection::SphericalAccurate:
         default:
             throw NotImplemented("Projection::Type value {} not supported", Projection::ToString(m_projection));
         }

@@ -27,7 +27,7 @@ public:
             {25.3723169493137, 24.1623588554512},
             {25.8072280000000, 33.5111870000000}};
         std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
-        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Cartesian);
     }
 
     std::shared_ptr<meshkernel::Mesh1D> MakeMesh1DOutsideMesh2D() const
@@ -39,7 +39,7 @@ public:
             {15.0, 15.0},
             {35.0, 35.0}};
         std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}};
-        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+        return std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Cartesian);
     }
 };
 
@@ -50,7 +50,7 @@ TEST_F(ContactsTests, ComputeSingleContacts1dMeshInside2dMesh)
     const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
@@ -58,7 +58,7 @@ TEST_F(ContactsTests, ComputeSingleContacts1dMeshInside2dMesh)
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Cartesian);
 
     // Execute
     contacts.ComputeSingleContacts(onedNodeMask, polygon, 0.0);
@@ -75,7 +75,7 @@ TEST_F(ContactsTests, ComputeSingleContacts_onAMesh2DWithLaterals_ShouldComputeC
     const auto mesh1d = MakeMesh1DOutsideMesh2D();
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
@@ -83,7 +83,7 @@ TEST_F(ContactsTests, ComputeSingleContacts_onAMesh2DWithLaterals_ShouldComputeC
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Cartesian);
 
     // Execute
     contacts.ComputeSingleContacts(onedNodeMask, polygon, 5.0);
@@ -100,7 +100,7 @@ TEST_F(ContactsTests, ComputeMultipleContacts1dMeshInside2dMesh)
     const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
@@ -120,7 +120,7 @@ TEST_F(ContactsTests, ComputeContactsWithPoints)
     const auto mesh1d = MakeMesh1D();
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
@@ -202,10 +202,10 @@ TEST(Contacts, ComputeContactsWithPolygons)
         edges.emplace_back(meshkernel::Edge{index, index + 1});
     }
 
-    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Cartesian);
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(100, 100, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(100, 100, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
@@ -253,7 +253,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
         {632.128113, 667.280518},
         {missing::doubleValue, missing::doubleValue},
     };
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Cartesian);
 
     // Execute
     contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
@@ -276,10 +276,10 @@ TEST(Contacts, ComputeBoundaryContacts)
         {2.02441565010741, 36.6383587923643},
         {10.9135970000000, 36.8592080000000}};
     std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}};
-    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::Cartesian);
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Type::Cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::Cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
@@ -287,7 +287,7 @@ TEST(Contacts, ComputeBoundaryContacts)
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Cartesian);
 
     // Execute
     contacts.ComputeBoundaryContacts(onedNodeMask, polygon, 200.0);

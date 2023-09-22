@@ -39,7 +39,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
     // Execute
-    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Type::Cartesian);
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Cartesian);
     auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
     auto smoother = std::make_shared<Smoother>(mesh);
     auto polygon = std::make_shared<Polygons>();
@@ -218,7 +218,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto smoother = std::make_shared<Smoother>(mesh);
 
     std::vector<Point> landBoundary;
-    auto polygon = std::make_shared<Polygons>(nodes, Projection::Type::Cartesian);
+    auto polygon = std::make_shared<Polygons>(nodes, Projection::Cartesian);
     auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
@@ -318,7 +318,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::Type::Cartesian);
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::Cartesian);
 
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
@@ -423,7 +423,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::Type::Spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::Spherical, {41.1, 41.1});
 
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
@@ -511,7 +511,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                             {2, 1},
                             {0, 2}};
 
-    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Type::Spherical);
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Spherical);
 
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;

@@ -15,7 +15,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
         Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::Type::Cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::Cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 
@@ -61,7 +61,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
         Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30},
         Point{50, 0}, Point{50, 10}, Point{50, 20}, Point{50, 30};
 
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::Type::Cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::Cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 

@@ -11,7 +11,7 @@
 TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Type::Spherical);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Spherical);
 
     std::vector<meshkernel::Sample> samples{
         {1.5, 1.5, 2.0},
@@ -719,7 +719,7 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
 TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Type::Cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Sample> samples{
         {2.5, 1.0, 1.0},
@@ -770,7 +770,7 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Type::Cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Sample> samples{
         {2.0, 1.0, 1.0},

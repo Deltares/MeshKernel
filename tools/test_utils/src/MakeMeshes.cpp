@@ -342,7 +342,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFil
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Cartesian);
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
@@ -529,7 +529,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Cartesian);
 }
 
 /// @brief Make face nodes

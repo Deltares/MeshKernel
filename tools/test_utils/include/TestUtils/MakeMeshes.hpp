@@ -65,11 +65,11 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
 
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
     std::filesystem::path const& file_path,
-    meshkernel::Projection::Type projection = meshkernel::Projection::Type::Cartesian);
+    meshkernel::Projection::Type projection = meshkernel::Projection::Cartesian);
 
 std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
     std::filesystem::path const& file_path,
-    meshkernel::Projection::Type projection = meshkernel::Projection::Type::Cartesian);
+    meshkernel::Projection::Type projection = meshkernel::Projection::Cartesian);
 
 std::tuple<meshkernel::UInt,
            meshkernel::UInt,

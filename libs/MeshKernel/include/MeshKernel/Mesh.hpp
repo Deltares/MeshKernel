@@ -328,7 +328,7 @@ namespace meshkernel
         std::vector<Point> m_facesMassCenters;       ///< The faces centers of mass (xzw, yzw)
         std::vector<double> m_faceArea;              ///< The face area
 
-        Projection::Type m_projection = Projection::Type::Unknown; ///< The projection used
+        Projection::Type m_projection = Projection::Unknown; ///< The projection used
 
         // counters
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update

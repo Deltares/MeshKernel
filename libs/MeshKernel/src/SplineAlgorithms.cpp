@@ -100,7 +100,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     Point pp = splineDerivative[leftCornerPoint] * leftSegment +
                splineDerivative[rightCornerPoint] * rightSegment;
 
-    if (projection == Projection::Type::Spherical)
+    if (projection == Projection::Spherical)
     {
         p.TransformSphericalToCartesian(pointCoordinate.y);
         pp.TransformSphericalToCartesian(pointCoordinate.y);

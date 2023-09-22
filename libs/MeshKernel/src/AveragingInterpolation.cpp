@@ -146,7 +146,7 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
                            [&relativeSearchRadius = std::as_const(m_relativeSearchRadius), &interpolationPoint](Point const& p)
                            { return p * relativeSearchRadius + interpolationPoint * (1.0 - relativeSearchRadius); });
 
-    if (m_mesh.m_projection == Projection::Type::Spherical)
+    if (m_mesh.m_projection == Projection::Spherical)
     {
         auto const boundingBox = BoundingBox(searchPolygon);
         auto const& lowerLeftPoint = boundingBox.lowerLeft();

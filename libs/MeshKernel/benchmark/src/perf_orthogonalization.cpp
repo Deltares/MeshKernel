@@ -34,7 +34,7 @@ static void BM_Orthogonalization(benchmark::State& state)
                                           m,
                                           dim_x,
                                           dim_y,
-                                          Projection::Type::Cartesian);
+                                          Projection::Cartesian);
 
         // move nodes to skew the mesh
         double const delta_x = dim_x / static_cast<double>(n - 1);

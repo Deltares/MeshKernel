@@ -137,7 +137,7 @@ namespace meshkernel
         std::vector<Point> m_nodes;
 
         /// @brief The current projection
-        Projection::Type m_projection = Projection::Type::Cartesian;
+        Projection::Type m_projection = Projection::Cartesian;
 
         /// @brief The bounding box containing the polygon
         BoundingBox m_boundingBox;

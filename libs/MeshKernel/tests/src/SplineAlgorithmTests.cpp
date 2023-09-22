@@ -46,7 +46,7 @@ TEST(SplineAlgorithms, SnapToLandBoundaryTest)
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
 
     // Snap the spline to the land boundary
-    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Type::Cartesian, iterationCountForTest);
+    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Cartesian, iterationCountForTest);
 
     // The number of points in the spline should be unchanged
     ASSERT_EQ(splinePoints.size(), expectedSplinePoints.size()) << ", expected the number of points to be unchanged.";
@@ -110,7 +110,7 @@ TEST(SplineAlgorithms, SnapToLandBoundaryTestMoreComplex)
     std::vector<meshkernel::Point> splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
 
     // Snap the spline to the land boundary
-    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Type::Cartesian, iterationCountForTest);
+    meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Cartesian, iterationCountForTest);
 
     // The number of points in the spline should be unchanged
     ASSERT_EQ(splinePoints.size(), expectedSplinePoints.size()) << ", expected the number of points to be unchanged.";
@@ -145,7 +145,7 @@ TEST(SplineAlgorithms, SnapToLandBoundarExceptionalCasesTest)
 
     //--------------------------------
     // Should throw exception ConstraintError, splineDerivative is empty vector
-    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Type::Cartesian),
+    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Cartesian),
                  meshkernel::ConstraintError);
 
     splineDerivative = meshkernel::SplineAlgorithms::SecondOrderDerivative(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()) - 1);
@@ -156,13 +156,13 @@ TEST(SplineAlgorithms, SnapToLandBoundarExceptionalCasesTest)
 
     //--------------------------------
     // Should throw exception ConstraintError, spline and splineDerivative are not same length
-    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Type::Cartesian),
+    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Cartesian),
                  meshkernel::ConstraintError);
 
     splinePoints.clear();
 
     //--------------------------------
     // Should throw exception ConstraintError, spline is empty vector
-    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Type::Cartesian),
+    EXPECT_THROW(meshkernel::SplineAlgorithms::SnapSplineToBoundary(splinePoints, splineDerivative, landBoundary, meshkernel::Projection::Cartesian),
                  meshkernel::ConstraintError);
 }
