@@ -1037,10 +1037,10 @@ void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const
 {
-    const double maxDtCourant = 120.0;
+    const double maxDtCourant = m_meshRefinementParameters.max_courant_time;
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
     const double waveCourant = celerity * maxDtCourant / m_mesh->m_edgeLengths[edge];
-    bool doRefinement = waveCourant < 1.0;
+    const bool doRefinement = waveCourant < 1.0;
     return doRefinement;
 }
 
