@@ -59,7 +59,7 @@ TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
 TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
 {
     // Prepare
-    MakeMesh();
+    MakeMesh(10, 10, 25);
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
@@ -109,157 +109,75 @@ TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.max_courant_time = 0.1;
+
+    // Get the old state
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(121, mesh2d.num_nodes);
+    ASSERT_EQ(220, mesh2d.num_edges);
 
     // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
+    errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(1626, mesh2d.num_nodes);
+    ASSERT_EQ(3225, mesh2d.num_edges);
 }
-
-TEST_F(CartesianApiTests, RefineBasedOnGebcoSamples_OnAUniformMesh_shouldRefineMesh)
-{
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinatesIn{
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0};
-
-    std::vector yCoordinatesIn{
-        50.0,
-        50.0,
-        50.0,
-        150.0,
-        150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0};
-
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-
-    // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
-}
-
 TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
 {
     // Prepare
-    MakeMesh();
+    MakeMesh(10, 10, 25);
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    meshkernelapi::GeometryList polygon;
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector xCoordinatesIn{
         50.0,
         150.0,
         250.0,
         50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
         50.0};
 
     std::vector yCoordinatesIn{
         50.0,
         50.0,
-        50.0,
         150.0,
         150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0,
         50.0};
 
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0,
-        2.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+    polygon.coordinates_x = xCoordinatesIn.data();
+    polygon.coordinates_y = yCoordinatesIn.data();
+    polygon.num_coordinates = static_cast<int>(xCoordinatesIn.size());
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
 
+    // Get the old state
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(121, mesh2d.num_nodes);
+    ASSERT_EQ(220, mesh2d.num_edges);
+
     // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
+    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, polygon, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(279, mesh2d.num_nodes);
+    ASSERT_EQ(595, mesh2d.num_edges);
 }
 
 TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
@@ -497,7 +415,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    // Get the new state
+    // Get the old state
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(221, mesh2d.num_nodes);
@@ -585,74 +503,4 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(1570, mesh2d.num_nodes);
     ASSERT_EQ(3361, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTests, RefineBasedOnPolygon_WithSmallCourantTime_ShouldRefine)
-{
-    // Prepare
-    MakeMesh(10, 10, 25);
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernelapi::mkernel_get_separator();
-    std::vector xCoordinatesIn{
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0};
-
-    std::vector yCoordinatesIn{
-        50.0,
-        50.0,
-        50.0,
-        150.0,
-        150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0};
-
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.max_courant_time = 0.1;
-
-    // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.5, 1, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(1626, mesh2d.num_nodes);
-    ASSERT_EQ(3225, mesh2d.num_edges);
 }
