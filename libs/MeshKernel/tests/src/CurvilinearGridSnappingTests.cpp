@@ -89,7 +89,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                        {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 6.997894028534e+01, 7.997860717722e+01, 8.997827406910e+01, 9.777374826707e+01},
                                                        {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
     snappingLine = std::vector{Point(100, 0), Point(100, 100)};
     CurvilinearGridSnapping snappingEast(grid, eastLandBoundary, snappingLine);
 
@@ -113,7 +113,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     //--------------------------------
 
-    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::cartesian);
+    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::Type::Cartesian);
     snappingLine = std::vector{Point(0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
 
@@ -161,7 +161,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     //--------------------------------
 
-    auto grid3 = std::make_shared<CurvilinearGrid>(computedGrid2.m_gridNodes, Projection::cartesian);
+    auto grid3 = std::make_shared<CurvilinearGrid>(computedGrid2.m_gridNodes, Projection::Type::Cartesian);
     snappingLine = std::vector{Point({0.0e+00, 1.0e+02}), Point({1.043040e+02, 9.715260e+01})};
     CurvilinearGridSnapping snappingNorth(grid3, northLandBoundary, snappingLine);
 
@@ -246,7 +246,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                         {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                         {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     std::vector<Point> snappingLine{Point(50.0, 100.0), Point(0.0, 100.0)};
     CurvilinearGridSnapping snappingNorth(grid, northLandBoundary, snappingLine);
@@ -287,7 +287,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::cartesian);
+    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::Type::Cartesian);
     snappingLine = std::vector{Point(0.0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
     auto computedGrid2 = snappingWest.Compute();
@@ -345,7 +345,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
                                                            {4.090098002615e+00, 9.976827813659e+00, 1.997642286026e+01, 2.997601790685e+01, 3.997561295345e+01, 4.997520800005e+01, 5.997480304664e+01, 6.997439809324e+01, 7.997399313984e+01, 8.997358818643e+01, 9.729358682083e+01},
                                                            {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
     auto computedGrid = snapping.Compute();
@@ -405,7 +405,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
                                                    {0.000000000000e+00, 9.976827813659e+00, 1.997642286026e+01, 2.997601790685e+01, 3.997561295345e+01, 4.997520800005e+01, 5.997480304664e+01, 6.997439809324e+01, 7.997399313984e+01, 8.997358818643e+01, 1.000000000000e+02},
                                                    {0.000000000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
 
@@ -473,7 +473,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
                                                     {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02},
                                                     {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, westLandBoundary, snappingLine);
 
@@ -541,7 +541,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.020664439596e+01, 8.181183341756e+01, 9.386143769632e+01, 1.047799937436e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
@@ -610,7 +610,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.070001387673e+01, 8.238999687179e+01, 9.407997986685e+01, 1.047799937436e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.025755535907e+01, 8.087934900000e+01, 9.150114264093e+01, 1.017586980000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
@@ -680,7 +680,7 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::Type::Cartesian);
 
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
@@ -710,7 +710,7 @@ TEST(CurvilinearGridSnapping, ChecksForFailingTests)
     // Tests the snapping throws exceptions when expected.
 
     LandBoundary eastLandBoundary({{104.303970, 97.152596}, {103.697906, 4.303172}});
-    auto grid = std::make_shared<CurvilinearGrid>(snapping::GetGridPoints10x10(), Projection::cartesian);
+    auto grid = std::make_shared<CurvilinearGrid>(snapping::GetGridPoints10x10(), Projection::Type::Cartesian);
     std::vector<Point> snappingLine{Point(0.0, 100.0)};
 
     // Test should throw as there is only a single point defined for the grid line

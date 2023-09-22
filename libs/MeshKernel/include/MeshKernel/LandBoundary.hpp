@@ -45,7 +45,7 @@ namespace meshkernel
 
         /// @brief Find the nearest point on the land boundary (toland)
         void FindNearestPoint(const Point& samplePoint,
-                              const Projection& projection,
+                              const Projection::Type& projection,
                               Point& nearestPoint,
                               double& minimumDistance,
                               UInt& segmentStartIndex,
@@ -53,7 +53,7 @@ namespace meshkernel
 
         /// @brief Find the nearest point on the land boundary (toland)
         Point FindNearestPoint(const Point& samplePoint,
-                               const Projection& projection) const;
+                               const Projection::Type& projection) const;
 
         /// @brief Gets the number of land boundary nodes.
         size_t GetNumNodes() const;
@@ -71,7 +71,7 @@ namespace meshkernel
         void AddSegment(const Point& leftNode, const Point& rightNode);
 
         /// @brief Find the closest of two points to a given point.
-        Point ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const;
+        Point ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection::Type projection) const;
 
         /// @brief Get the bounding box for the section of the land boundary.
         BoundingBox GetBoundingBox(const size_t startIndex, const size_t endIndex) const;

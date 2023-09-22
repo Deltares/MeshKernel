@@ -157,7 +157,7 @@ ComputeEdgesAndNodes(
 
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
     std::filesystem::path const& file_path,
-    meshkernel::Projection projection)
+    meshkernel::Projection::Type projection)
 {
     const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh2D);
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
@@ -165,7 +165,7 @@ std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
 
 std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
     std::filesystem::path const& file_path,
-    meshkernel::Projection projection)
+    meshkernel::Projection::Type projection)
 {
     const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh1D);
     return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
@@ -176,7 +176,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt m,
     double dim_x,
     double dim_y,
-    meshkernel::Projection projection,
+    meshkernel::Projection::Type projection,
     meshkernel::Point const& origin)
 {
     std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
@@ -228,7 +228,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
-    meshkernel::Projection projection,
+    meshkernel::Projection::Type projection,
     meshkernel::Point const& origin)
 {
     double const dim_x = delta * static_cast<double>(n - 1);
@@ -342,7 +342,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFil
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
 }
 
 std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
@@ -529,7 +529,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::Type::Cartesian);
 }
 
 /// @brief Make face nodes

@@ -52,7 +52,7 @@ namespace meshkernel
 
         /// @brief Ctor, set projection
         /// @brief[in] projection   The map projection
-        explicit Splines(Projection projection);
+        explicit Splines(Projection::Type projection);
 
         /// @brief Ctor from grids, each gridline is converted to spline, first the first m_n horizontal lines then the m_m vertical lines
         /// @brief[in] grid         The curvilinear grid
@@ -136,7 +136,7 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 ///< The length of each spline
-        Projection m_projection = Projection::cartesian;     ///< The map projection
+        Projection::Type m_projection = Projection::Type::Cartesian;     ///< The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline
@@ -227,7 +227,7 @@ namespace meshkernel
         double operator()(double adimensionalDistanceReferencePoint) const
         {
             const auto pointOnSpline = ComputePointOnSplineAtAdimensionalDistance(m_spline->m_splineNodes[m_splineIndex], m_spline->m_splineDerivatives[m_splineIndex], adimensionalDistanceReferencePoint);
-            return ComputeDistance(m_point, pointOnSpline, Projection::cartesian);
+            return ComputeDistance(m_point, pointOnSpline, Projection::Type::Cartesian);
         }
 
         Splines* m_spline;                  ///< Pointer to splines

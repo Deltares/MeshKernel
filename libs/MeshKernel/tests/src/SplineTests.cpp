@@ -16,7 +16,7 @@ TEST(Splines, SetSpline)
                                                 {930.506469726562, 453.380187988281},
                                                 {1030.506469726562, 653.380187988281}});
 
-    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+    meshkernel::Splines splines(meshkernel::Projection::Type::Cartesian);
     splines.AddSpline(splineNodes, 0, static_cast<meshkernel::UInt>(splineNodes.size()));
 
     ASSERT_EQ(1, splines.GetNumSplines());
@@ -69,7 +69,7 @@ TEST(Splines, SplineIntersection)
     firstSpline.push_back(meshkernel::Point{374.752960205078, 336.378997802734});
     firstSpline.push_back(meshkernel::Point{850.255920410156, 499.130676269531});
 
-    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+    meshkernel::Splines splines(meshkernel::Projection::Type::Cartesian);
 
     splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
 
@@ -128,7 +128,7 @@ TEST(Splines, SnapToLandBoundaryTest)
                                                         {836.262785315633, 388.6415116416172},
                                                         {923.500177844106, 412.5818685325169}};
 
-    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+    meshkernel::Splines splines(meshkernel::Projection::Type::Cartesian);
     splines.AddSpline(splinePoints, 0, static_cast<meshkernel::UInt>(splinePoints.size()));
 
     // Snap the spline to the land boundary
@@ -176,7 +176,7 @@ TEST(Splines, SplineSnappingIndexOutOfRangeTest)
                                                  {930.506469726562, 453.380187988281},
                                                  {1030.506469726562, 653.380187988281}});
 
-    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+    meshkernel::Splines splines(meshkernel::Projection::Type::Cartesian);
     splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
     splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
 

@@ -72,7 +72,7 @@ namespace meshkernel
 
         /// @brief Construct a mesh2d using only the projection
         /// @param[in] projection The projection to use
-        Mesh2D(Projection projection);
+        Mesh2D(Projection::Type projection);
 
         /// @brief Construct a mesh2d starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -80,7 +80,7 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
-               Projection projection);
+               Projection::Type projection);
 
         /// @brief Construct a mesh2d from face nodes and num face nodes
         /// @param[in] edges The input edges
@@ -92,13 +92,13 @@ namespace meshkernel
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
                const std::vector<UInt>& numFaceNodes,
-               Projection projection);
+               Projection::Type projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
         /// @param[in] projection The projection to use
-        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
+        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection::Type projection);
 
         /// @brief Perform mesh administration
         void Administrate();

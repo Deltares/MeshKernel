@@ -65,7 +65,7 @@ namespace meshkernel
         ComputeCurvatureOnSplinePoint(const std::vector<Point>& splinePoints,
                                       const std::vector<Point>& splineDerivative,
                                       double adimensionalPointCoordinate,
-                                      const Projection projection);
+                                      const Projection::Type projection);
 
         /// @brief Evaluate a spline function (splint)
         ///
@@ -86,7 +86,7 @@ namespace meshkernel
         static void SnapSplineToBoundary(std::vector<Point>& splinePoints,
                                          const std::vector<Point>& splineDerivative,
                                          const LandBoundary& landBoundary,
-                                         const Projection projection,
+                                         const Projection::Type projection,
                                          const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 
     private:
@@ -98,7 +98,7 @@ namespace meshkernel
         /// @returns vector of the spline weights
         static lin_alg::ColVector<double> ComputeSplineWeights(const lin_alg::ColVector<double>& xf,
                                                                const lin_alg::ColVector<double>& yf,
-                                                               const Projection projection);
+                                                               const Projection::Type projection);
         /// @brief Compute the spline sample points.
         ///
         /// @param [in] splinePoints The spline points

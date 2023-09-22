@@ -93,7 +93,7 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::Type::Cartesian);
 }
 
 std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissingFaces()
@@ -151,5 +151,5 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::Type::Cartesian);
 }

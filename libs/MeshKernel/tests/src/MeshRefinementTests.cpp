@@ -14,7 +14,7 @@ using namespace meshkernel;
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::Type::Cartesian);
 
     // sample points
     std::vector<Sample> samples{
@@ -26,7 +26,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -106,7 +106,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
 TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
 {
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 500.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 500.0, Projection::Type::Cartesian);
 
     // sample points
     std::vector<Sample> samples{
@@ -118,7 +118,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -219,7 +219,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -310,7 +310,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::Type::Cartesian);
 
     // sample points
     std::vector<Sample> samples{
@@ -345,7 +345,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -406,7 +406,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::Type::Cartesian, {197253.0, 442281.0});
 
     // Sample points
     std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -414,7 +414,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -472,7 +472,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::Type::Cartesian, {197253.0, 442281.0});
 
     // Sample points
     std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -480,7 +480,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::Max,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.01,
                                                                        false,
                                                                        true,
@@ -541,7 +541,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::Type::Cartesian);
 
     std::vector<Point> point{
         {25.0, -10.0},
@@ -596,7 +596,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::Type::Cartesian);
 
     std::vector<Point> point{
         {9.09836065573771, 34.016393442623},
@@ -627,7 +627,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, Projection::Type::Spherical, {41.1, 41.1});
 
     // sample points
     std::vector<Sample> samples{
@@ -639,7 +639,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,
                                                                        AveragingInterpolation::Method::MinAbsValue,
-                                                                       Mesh::Location::Faces,
+                                                                       MeshLocation::Faces,
                                                                        1.0,
                                                                        false,
                                                                        false,
@@ -690,7 +690,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, Projection::Type::Spherical, {41.1, 41.1});
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -802,7 +802,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
 TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefine)
 {
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::Type::Cartesian);
 
     std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
@@ -829,7 +829,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
 TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRefine)
 {
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::Type::Cartesian);
 
     std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
@@ -856,7 +856,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
 TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine)
 {
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::Type::Cartesian);
 
     std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
     Point origin{-5.0, -5.0};

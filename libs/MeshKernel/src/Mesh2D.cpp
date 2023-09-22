@@ -40,11 +40,11 @@
 
 using meshkernel::Mesh2D;
 
-Mesh2D::Mesh2D(Projection projection) : Mesh(projection) {}
+Mesh2D::Mesh2D(Projection::Type projection) : Mesh(projection) {}
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
-               Projection projection) : Mesh(edges, nodes, projection)
+               Projection::Type projection) : Mesh(edges, nodes, projection)
 {
     Administrate();
 }
@@ -53,7 +53,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
                const std::vector<UInt>& numFaceNodes,
-               Projection projection) : Mesh(edges, nodes, projection)
+               Projection::Type projection) : Mesh(edges, nodes, projection)
 {
 
     AdministrateNodesEdges();
@@ -146,7 +146,7 @@ void Mesh2D::Administrate()
     ClassifyNodes();
 }
 
-Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection)
+Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection::Type projection)
 {
     m_projection = projection;
     // compute triangulation
@@ -263,7 +263,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
         auto thirdNode = m_facesNodes[f][2];
 
         // account for periodic spherical coordinate
-        if ((m_projection == Projection::spherical || m_projection == Projection::sphericalAccurate) && IsPointOnPole(m_nodes[firstNode]))
+        if ((m_projection == Projection::Type::Spherical || m_projection == Projection::Type::SphericalAccurate) && IsPointOnPole(m_nodes[firstNode]))
         {
             const auto saveFirstNode = firstNode;
             firstNode = secondNode;
@@ -654,7 +654,7 @@ void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygo
 
 void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
-    if (m_projection == Projection::spherical && maxx - minx > 180.0)
+    if (m_projection == Projection::Type::Spherical && maxx - minx > 180.0)
     {
         for (UInt n = 0; n < GetNumNodes(); ++n)
         {
@@ -675,7 +675,7 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                  const std::vector<UInt>& edgesNumFaces) const
 {
     const UInt maximumNumberCircumcenterIterations = 100;
-    const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
+    const double eps = m_projection == Projection::Type::Cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
 
     std::array<Point, m_maximumNumberOfNodesPerFace> middlePoints;
     std::array<Point, m_maximumNumberOfNodesPerFace> normals;
@@ -1228,7 +1228,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
         const auto edgeIndex = m_nodesEdges[node][e];
         auto edgeCenter = m_edgesCenters[edgeIndex];
 
-        if (m_projection == Projection::spherical)
+        if (m_projection == Projection::Type::Spherical)
         {
             const auto firstNodeIndex = m_edges[edgeIndex].first;
             const auto secondNodeIndex = m_edges[edgeIndex].second;
@@ -1264,7 +1264,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
     // now we can compute the mass center of the dual face
     auto [area, centerOfMass, direction] = Polygon::FaceAreaAndCenterOfMass(dualFace, m_projection);
 
-    if (m_projection == Projection::spherical)
+    if (m_projection == Projection::Type::Spherical)
     {
         if (centerOfMass.x - m_nodes[node].x > 180.0)
         {
@@ -1576,7 +1576,7 @@ std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>&
     std::vector<UInt> result;
     result.resize(numPoints, constants::missing::uintValue);
     std::vector<Point> polygonNodesCache;
-    BuildTree(Location::Edges);
+    BuildTree(MeshLocation::Edges);
 
     for (UInt i = 0; i < numPoints; ++i)
     {

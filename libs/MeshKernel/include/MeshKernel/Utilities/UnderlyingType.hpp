@@ -31,11 +31,18 @@
 
 namespace meshkernel
 {
-    // replace by std::to_underlying when c++23 is supported
-    template <typename E>
-    inline static constexpr auto to_underlying(E e) noexcept
+
+    /// @brief Converts an enumeration to its underlying type
+    /// @tparam Enum Enumeration type
+    /// @param e Enumeration value
+    /// @return The integer value of the underlying type of Enum, converted from e
+    //
+    // Note: replace by std::to_underlying when c++23 is supported
+    //
+    template <typename Enum>
+    inline static constexpr auto to_underlying(Enum e) noexcept
     {
-        return static_cast<std::underlying_type_t<E>>(e);
+        return static_cast<std::underlying_type_t<Enum>>(e);
     }
 
 } // namespace meshkernel

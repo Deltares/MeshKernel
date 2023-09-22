@@ -55,7 +55,7 @@ namespace meshkernel
 
         /// @brief Constructor
         PolygonalEnclosure(const std::vector<Point>& points,
-                           Projection projection);
+                           Projection::Type projection);
 
         /// @brief The outer perimeter polygon
         const Polygon& Outer() const;
@@ -111,7 +111,7 @@ namespace meshkernel
         static Polygon ConstructPolygon(const std::vector<Point>& points,
                                         size_t start,
                                         size_t end,
-                                        Projection projection);
+                                        Projection::Type projection);
 
         /// @brief Copy selected points from source vector to end of target vector
         /// @param [in] source The source points, to be copied
@@ -129,12 +129,12 @@ namespace meshkernel
         void ConstructOuterPolygon(const std::vector<Point>& points,
                                    size_t start, size_t end,
                                    const IndexRangeArray& innerIndices,
-                                   Projection projection);
+                                   Projection::Type projection);
 
         /// @brief Construct all, if any, inner polygons from the points.
         void ConstructInnerPolygons(const std::vector<Point>& points,
                                     const IndexRangeArray& innerIndices,
-                                    Projection projection);
+                                    Projection::Type projection);
 
         /// @brief The outer perimeter polygon of the enclosure
         Polygon m_outer;

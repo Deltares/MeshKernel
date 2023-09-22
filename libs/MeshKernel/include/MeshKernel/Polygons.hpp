@@ -53,7 +53,7 @@ namespace meshkernel
         /// @param[in] polygon The polygon nodes
         /// @param[in] projection The projection to use
         Polygons(const std::vector<Point>& polygon,
-                 Projection projection);
+                 Projection::Type projection);
 
         /// @brief Get index of the polygon, and map the start- and end-index to the start- and end-index of the local polygon nodes
         // This is bollocks
@@ -130,7 +130,7 @@ namespace meshkernel
 
         /// @brief Gets the projection
         /// @return The projection
-        [[nodiscard]] Projection GetProjection() const { return m_projection; }
+        [[nodiscard]] Projection::Type GetProjection() const { return m_projection; }
 
         /// @brief Gets the nodes of all enclosures.
         [[nodiscard]] std::vector<Point> GatherAllEnclosureNodes() const;
@@ -142,7 +142,7 @@ namespace meshkernel
 
     private:
         std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
-        Projection m_projection = Projection::unknown;               ///< The current projection
+        Projection::Type m_projection = Projection::Type::Unknown;               ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
         UInt m_numberOfNodes = 0;                                    ///< The number of nodes when constructing the Polygons
     };

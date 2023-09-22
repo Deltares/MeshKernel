@@ -48,7 +48,7 @@ namespace meshkernel
 
         /// @brief Construct a mesh1d using only the projection
         /// @param[in] projection The projection to use
-        Mesh1D(Projection projection);
+        Mesh1D(Projection::Type projection);
 
         /// @brief Construct a mesh1d starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -56,7 +56,7 @@ namespace meshkernel
         /// @param[in] projection  The projection to use
         Mesh1D(std::vector<Edge> const& edges,
                std::vector<Point> const& nodes,
-               Projection projection);
+               Projection::Type projection);
 
         /// @brief Constructs a mesh 1d from a network 1d. The network contains the chainages where the discratization points will be computed.
         /// @param[in] network1d The input network

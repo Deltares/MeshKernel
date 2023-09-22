@@ -37,21 +37,22 @@ namespace meshkernel
     /// @brief Integer type used when indexing mesh graph entities.
     using UInt = std::uint32_t;
 
-    /// @brief Enumerator describing the supported projections
-    enum class Projection
+    /// @enum Location
+    /// @brief Mesh locations enumeration
+    enum class MeshLocation
     {
-        cartesian = 0,         // jsferic  = 0
-        spherical = 1,         // jsferic  = 1
-        sphericalAccurate = 2, // jasfer3D = 1
-        unknown = 3
+        Faces = 0,  ///< Faces
+        Nodes = 1,  ///< Nodes
+        Edges = 2,  ///< Edges
+        Unknown = 3 ///< Unknown
     };
 
-    // @brief Maps Projection enumeration to a string
-    inline static std::map<Projection, std::string> const ProjectionToString = {
-        {Projection::cartesian, "Cartesian"},
-        {Projection::spherical, "spherical"},
-        {Projection::sphericalAccurate, "Spherical accurate"}, //
-        {Projection::unknown, "Unknown"}};
+    /// @brief Maps Location enumeration to a string
+    inline static std::map<MeshLocation, std::string> const LocationToString = {
+        {MeshLocation::Faces, "Faces"},
+        {MeshLocation::Nodes, "Nodes"},
+        {MeshLocation::Edges, "Edges"},
+        {MeshLocation::Unknown, "Unknown"}};
 
     /// @brief Indicator for traversal direction of the points specifying a polygon
     // PolygonTraversalDirection? too long

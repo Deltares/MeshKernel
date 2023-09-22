@@ -33,6 +33,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/Projection.hpp"
 
 namespace meshkernel
 {
@@ -57,16 +58,16 @@ namespace meshkernel
 
         /// @brief Constructor
         Polygon(const std::vector<Point>& points,
-                Projection projection);
+                Projection::Type projection);
 
         /// @brief Constructor
         /// @note Points are moved to the polygon
         Polygon(std::vector<Point>&& points,
-                Projection projection);
+                Projection::Type projection);
 
         ///  @brief Reset the polygon
         void Reset(const std::vector<Point>& points,
-                   Projection projection);
+                   Projection::Type projection);
 
         /// @brief Copy assignment operator
         Polygon& operator=(const Polygon& copy);
@@ -105,7 +106,7 @@ namespace meshkernel
         std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass() const;
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction
-        static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection);
+        static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection::Type projection);
 
         /// @brief Compute the perimiter length of the closed polygon
         double PerimeterLength() const;
@@ -118,7 +119,7 @@ namespace meshkernel
         std::vector<Point> ComputeOffset(double displacement, const bool innerAndOuter) const;
 
         /// @brief Get the projection used.
-        Projection GetProjection() const;
+        Projection::Type GetProjection() const;
 
     private:
         /// @brief Check polygon has a valid state and initialise it.
@@ -136,7 +137,7 @@ namespace meshkernel
         std::vector<Point> m_nodes;
 
         /// @brief The current projection
-        Projection m_projection = Projection::cartesian;
+        Projection::Type m_projection = Projection::Type::Cartesian;
 
         /// @brief The bounding box containing the polygon
         BoundingBox m_boundingBox;
@@ -169,7 +170,7 @@ inline const meshkernel::BoundingBox& meshkernel::Polygon::GetBoundingBox() cons
     return m_boundingBox;
 }
 
-inline meshkernel::Projection meshkernel::Polygon::GetProjection() const
+inline meshkernel::Projection::Type meshkernel::Polygon::GetProjection() const
 {
     return m_projection;
 }

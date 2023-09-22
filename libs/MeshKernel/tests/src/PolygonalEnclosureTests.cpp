@@ -29,7 +29,7 @@ TEST(PolygonalEnclosureTests, BasicConstruction)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     ASSERT_EQ(enclosure.Outer().Size(), outerPolygon.size());
 
@@ -75,7 +75,7 @@ TEST(PolygonalEnclosureTests, ContainsTest)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
     ASSERT_EQ(enclosure.NumberOfInner(), 1);
 
     int numberOfSteps = 100;
@@ -141,7 +141,7 @@ TEST(PolygonalEnclosureTests, MultipleInnerPolygonsContainsTest)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     ASSERT_EQ(enclosure.NumberOfInner(), 2);
 
@@ -204,7 +204,7 @@ TEST(PolygonalEnclosureTests, RefineTest)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     double delta = 25.0;
 
@@ -240,7 +240,7 @@ TEST(PolygonalEnclosureTests, RefineFailureTest)
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     // End point lies in inner polygon, so outside the outer polygon
     EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(0, 6, 25.0), mk::ConstraintError);
@@ -277,7 +277,7 @@ TEST(PolygonalEnclosureTests, SnapToLandBoundaryTest)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     enclosure.SnapToLandBoundary(2, 3, landBoundary);
 
@@ -315,7 +315,7 @@ TEST(PolygonalEnclosureTests, SnappingFailureTest)
     polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     EXPECT_THROW(enclosure.SnapToLandBoundary(3, 2, landBoundary), mk::ConstraintError);
     EXPECT_THROW(enclosure.SnapToLandBoundary(0, 6, landBoundary), mk::ConstraintError);
@@ -349,7 +349,7 @@ TEST(PolygonalEnclosureTests, OffsetTest)
     //--------------------------------
     // Start test.
 
-    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
+    mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::Type::Cartesian);
 
     auto [outward, inward] = enclosure.OffsetCopy(distance, true);
 

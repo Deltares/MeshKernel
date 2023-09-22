@@ -46,7 +46,7 @@ namespace meshkernelapi
 
         /// @brief Constructor initializing mesh and contacts classes
         /// @param[in] projection The projection to use
-        MeshKernelState(meshkernel::Projection projection) : m_projection(projection)
+        MeshKernelState(meshkernel::Projection::Type projection) : m_projection(projection)
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>(projection);
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>(projection);
@@ -69,7 +69,7 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
 
         // Exclusively owned state
-        meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+        meshkernel::Projection::Type m_projection{meshkernel::Projection::Type::Unknown}; ///< Projection::Type used by the meshes
     };
 
 } // namespace meshkernelapi

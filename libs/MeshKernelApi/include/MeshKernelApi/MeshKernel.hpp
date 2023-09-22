@@ -606,7 +606,7 @@ namespace meshkernelapi
         /// \see meshkernel::AveragingInterpolation
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] samples                The samples coordinates and values
-        /// @param[in] locationType           The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in] locationType           The location type (see \ref meshkernel::MeshLocation enum)
         /// @param[in] averagingMethodType    The averaging method (see Method enum)
         /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
         /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
@@ -1086,7 +1086,7 @@ namespace meshkernelapi
         /// \see meshkernel::TriangulationInterpolation
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  samples            The samples coordinates and values
-        /// @param[in]  locationType       The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in]  locationType       The location type (see \ref meshkernel::MeshLocation enum)
         /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
         MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,

@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Projection.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -44,13 +45,13 @@ namespace meshkernel
 
         // @brief Construct a Network1D only from the projection
         /// @param[in] projection The projection to use
-        Network1D(Projection projection);
+        Network1D(Projection::Type projection);
 
         /// @brief Construct a mesh1d by discretizing polyLines
         /// @param[in] polyLines The polylines to be discretize
         /// @param[in] projection The projection to use
         Network1D(std::vector<std::vector<Point>> const& polyLines,
-                  Projection projection);
+                  Projection::Type projection);
 
         /// @brief Compute the chainages from fixed point locations
         /// @param[in] fixedChainagesByPolyline The fixed chainages. These are the locations where the discretization points before and after must be at a distance equal to fixedChainagesOffset
@@ -68,7 +69,7 @@ namespace meshkernel
         /// @return A discretization vector for each polyline
         [[nodiscard]] std::vector<std::vector<Point>> ComputeDiscretizationsFromChainages();
 
-        Projection m_projection = Projection::unknown; ///< The projection used
+        Projection::Type m_projection = Projection::Type::Unknown; ///< The projection used
 
     private:
         std::vector<std::vector<Point>> m_polyLines;  ///< The network poly lines

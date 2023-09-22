@@ -37,7 +37,7 @@ using meshkernel::AveragingInterpolation;
 AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                std::vector<Sample>& samples,
                                                Method method,
-                                               Mesh::Location locationType,
+                                               MeshLocation locationType,
                                                double relativeSearchRadius,
                                                bool useClosestSampleIfNoneAvailable,
                                                bool transformSamples,
@@ -63,7 +63,7 @@ void AveragingInterpolation::Compute()
         throw AlgorithmError("AveragingInterpolation::Compute: No samples available.");
     }
 
-    if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
+    if (m_interpolationLocation == MeshLocation::Nodes || m_interpolationLocation == MeshLocation::Edges)
     {
 
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
@@ -82,7 +82,7 @@ void AveragingInterpolation::Compute()
     }
 
     // for edges, an average of the nodal interpolated value is made
-    if (m_interpolationLocation == Mesh::Location::Edges)
+    if (m_interpolationLocation == MeshLocation::Edges)
     {
         m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
         std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
@@ -101,7 +101,7 @@ void AveragingInterpolation::Compute()
         }
     }
 
-    if (m_interpolationLocation == Mesh::Location::Faces)
+    if (m_interpolationLocation == MeshLocation::Faces)
     {
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);
@@ -146,7 +146,7 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
                            [&relativeSearchRadius = std::as_const(m_relativeSearchRadius), &interpolationPoint](Point const& p)
                            { return p * relativeSearchRadius + interpolationPoint * (1.0 - relativeSearchRadius); });
 
-    if (m_mesh.m_projection == Projection::spherical)
+    if (m_mesh.m_projection == Projection::Type::Spherical)
     {
         auto const boundingBox = BoundingBox(searchPolygon);
         auto const& lowerLeftPoint = boundingBox.lowerLeft();

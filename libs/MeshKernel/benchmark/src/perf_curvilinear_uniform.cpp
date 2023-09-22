@@ -31,7 +31,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
             {2.04861111111111, 4.5397633744856},
             {2.21527777777778, 5.08143004115226}};
 
-        auto const polygons = std::make_shared<Polygons>(polygon_points, Projection::cartesian);
+        auto const polygons = std::make_shared<Polygons>(polygon_points, Projection::Type::Cartesian);
 
         double const dim_x = 10.0;
         double const dim_y = 15.0;
@@ -50,7 +50,7 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::Type::Cartesian);
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
             curvilinear_grid_create_uniform.Compute(make_grid_parameters.angle,
                                                     make_grid_parameters.block_size_x,
@@ -85,7 +85,7 @@ static void BM_CurvilinearUniform_add_faces_to_left_boundary(benchmark::State& s
         const double blockSizeX = block_size;
         const double blockSizeY = block_size;
 
-        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::Type::Cartesian);
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
             curvilinear_grid_create_uniform.Compute(numColumns,
                                                     numRows,
@@ -121,7 +121,7 @@ static void BM_CurvilinearFromSplines(benchmark::State& state)
         // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
-        const auto splines = std::make_shared<Splines>(Projection::cartesian);
+        const auto splines = std::make_shared<Splines>(Projection::Type::Cartesian);
 
         const std::vector<Point>
             firstSpline{
@@ -200,7 +200,7 @@ static void BM_CurvilinearFromSplinesTransfinite(benchmark::State& state)
         const std::vector<Point> fourthSpline{{5.067361E+02, 6.034946E+02},
                                               {7.475956E+02, 3.336055E+02}};
 
-        const auto splines = std::make_shared<Splines>(Projection::cartesian);
+        const auto splines = std::make_shared<Splines>(Projection::Type::Cartesian);
         splines->AddSpline(firstSpline);
         splines->AddSpline(secondSpline);
         splines->AddSpline(thirdSpline);

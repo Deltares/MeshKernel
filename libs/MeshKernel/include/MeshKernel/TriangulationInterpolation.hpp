@@ -28,13 +28,14 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Projection.hpp>
 
 namespace meshkernel
 {
     /// @brief A class used for triangulation interpolation
     ///
     /// As for averaging, the triangle interpolation operates at three specific
-    /// \ref Mesh::Location - Faces, Nodes, and Edges.
+    /// \ref MeshLocation - Faces, Nodes, and Edges.
     /// Only the values at the nodes of the identified triangle are used in
     /// the computation of each location.
     /// The algorithm operates as follow:
@@ -74,10 +75,10 @@ namespace meshkernel
         /// @brief Constructor
         /// @param[in] locations  Locations the values should be computed
         /// @param[in] samples    Values to use for the interpolation
-        /// @param[in] projection \ref Projection to use
+        /// @param[in] projection \ref Projection::Type to use
         TriangulationInterpolation(const std::vector<Point>& locations,
                                    const std::vector<Sample>& samples,
-                                   Projection projection);
+                                   Projection::Type projection);
 
         /// @brief Compute results on the interpolation points
         void Compute();
@@ -92,7 +93,7 @@ namespace meshkernel
     private:
         const std::vector<Point>& m_locations; ///< Locations
         const std::vector<Sample>& m_samples;  ///< Samples
-        Projection m_projection;               ///< Projection
+        Projection::Type m_projection;         ///< Projection
         std::vector<double> m_results;         ///< Results
     };
 

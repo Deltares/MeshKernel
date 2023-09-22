@@ -29,6 +29,7 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Projection.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
 #include <map>
@@ -92,23 +93,6 @@ namespace meshkernel
             Mesh2D  ///< Mesh2D
         };
 
-        /// @enum Location
-        /// @brief Mesh locations enumeration
-        enum class Location
-        {
-            Faces = 0,  ///< Faces
-            Nodes = 1,  ///< Nodes
-            Edges = 2,  ///< Edges
-            Unknown = 3 ///< Unknown
-        };
-
-        /// @brief Maps Location enumeration to a string
-        inline static std::map<Location, std::string> const LocationToString = {
-            {Location::Faces, "Faces"},
-            {Location::Nodes, "Nodes"},
-            {Location::Edges, "Edges"},
-            {Location::Unknown, "Unknown"}};
-
         /// edge-segment intersection
         struct EdgeMeshPolylineIntersection
         {
@@ -135,7 +119,7 @@ namespace meshkernel
 
         /// @brief  Constructs an empty mesh, sets only the projection
         /// @param[in] projection  The projection to use
-        Mesh(Projection projection) : m_projection(projection) {}
+        Mesh(Projection::Type projection);
 
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -143,7 +127,7 @@ namespace meshkernel
         /// @param[in] projection  The projection to use
         Mesh(const std::vector<Edge>& edges,
              const std::vector<Point>& nodes,
-             Projection projection);
+             Projection::Type projection);
 
         /// @brief Inquire if a node is on boundary
         /// @param[in] node The node index
@@ -273,48 +257,48 @@ namespace meshkernel
 
         /// @brief Build the rtree for the corresponding location, using all locations
         /// @param[in] meshLocation The mesh location for which the RTree is build
-        void BuildTree(Location meshLocation);
+        void BuildTree(MeshLocation meshLocation);
 
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
         /// @param[in] meshLocation The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+        void BuildTree(MeshLocation meshLocation, const BoundingBox& boundingBox);
 
         /// @brief Search all points sorted by proximity to another point.
         /// @param[in] point The reference point.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, Location meshLocation);
+        void SearchNearestLocation(Point point, MeshLocation meshLocation);
 
         /// @brief Search the nearest point within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
+        void SearchNearestLocation(Point point, double squaredRadius, MeshLocation meshLocation);
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchLocations(Point point, double squaredRadius, Location meshLocation);
+        void SearchLocations(Point point, double squaredRadius, MeshLocation meshLocation);
 
         /// @brief Gets the search results.
         /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        UInt GetNumLocations(Location meshLocation) const;
+        UInt GetNumLocations(MeshLocation meshLocation) const;
 
         /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, Location meshLocation);
+        [[nodiscard]] UInt GetLocationsIndices(UInt index, MeshLocation meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocation meshLocation) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
@@ -344,7 +328,7 @@ namespace meshkernel
         std::vector<Point> m_facesMassCenters;       ///< The faces centers of mass (xzw, yzw)
         std::vector<double> m_faceArea;              ///< The face area
 
-        Projection m_projection = Projection::unknown; ///< The projection used
+        Projection::Type m_projection = Projection::Type::Unknown; ///< The projection used
 
         // counters
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update

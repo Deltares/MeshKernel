@@ -53,7 +53,7 @@ TEST(Polygons, CreatePointsInPolygons)
     nodes.push_back({301.252502, 471.380371});
     nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
@@ -95,7 +95,7 @@ TEST(Polygons, InvalidRefinePolygonIndex)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::Type::Cartesian);
 
     // First is greater than last
     EXPECT_THROW([[maybe_unused]] auto result = polygon.RefineFirstPolygon(10, 8, 1.0), meshkernel::ConstraintError);
@@ -114,7 +114,7 @@ TEST(Polygons, RefinePolygon)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
@@ -162,12 +162,12 @@ TEST(Polygons, RefinePolygonTwiceWithSameRefinement)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::Type::Cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 1.0);
 
     constexpr double tolerance = 1e-5;
@@ -216,12 +216,12 @@ TEST(Polygons, RefinePolygonTwiceWithLargerRefinement)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::Type::Cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 2.0);
 
     constexpr double tolerance = 1e-13;
@@ -249,12 +249,12 @@ TEST(Polygons, RefinePolygonTwice)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::Type::Cartesian);
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 0, 0.5);
 
     constexpr double tolerance = 1e-5;
@@ -327,7 +327,7 @@ TEST(Polygons, RefinePolygonOneSide)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
@@ -363,12 +363,12 @@ TEST(Polygons, RefinePolygonTwoTimesOneSideSameRefinement)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
 
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::Type::Cartesian);
     // Now there are additional segments in the polygon, the segments to refine is different.
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(0, 3, 1.0);
 
@@ -411,12 +411,12 @@ TEST(Polygons, RefinePolygonTwoTimesOneSide)
     nodes.push_back({0, 4});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(1, 2, 2.0);
 
-    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons2(refinedPolygon, meshkernel::Projection::Type::Cartesian);
 
     // Refine the same edge, this time there should be two segments making up the edge.
     const auto refinedPolygon2 = polygons2.RefineFirstPolygon(1, 3, 1.0);
@@ -469,7 +469,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     nodes.push_back({3.5, 0});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::Type::Cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
@@ -520,7 +520,7 @@ TEST(Polygons, OffsetCopy)
     nodes.push_back({308.002533, 397.879639});
     nodes.push_back({296.752472, 397.879639});
 
-    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::Type::Cartesian);
 
     double distance = 10.0;
     bool innerAndOuter = false;
@@ -555,7 +555,7 @@ TEST(Polygons, SimpleOffsetCopy)
     nodes.push_back({0.0, 100.0});
     nodes.push_back({0.0, 0.0});
 
-    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::Type::Cartesian);
 
     double distance = 10.0;
     bool innerAndOuter = true;
@@ -623,7 +623,7 @@ TEST(Polygons, SnapSinglePolygonToSingleLandBoundary)
                                                  {242.752106, 226.877884},
                                                  {170.001648, 472.880371}};
 
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
 
     // The expected polygon values after snapping to land boundary.
     std::vector<meshkernel::Point> expectedSnappedPoint{{169.8572772242283, 497.8078724305628},
@@ -687,7 +687,7 @@ TEST(Polygons, SnapMultiPolygonToSingleLandBoundary)
                                                  {242.752106, 226.877884},
                                                  {510.503754, 367.129333}};
 
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
 
     std::vector<meshkernel::Point> expectedSnappedPointsFirst{{169.8572772242283, 497.8078724305628},
                                                               {262.854737816309, 498.3464789799546},
@@ -775,7 +775,7 @@ TEST(Polygons, SnapMultiPolygonToMultiLandBoundary)
                                                  {2.95, 0.9},
                                                  {1.9, -0.1}};
 
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
 
     std::vector<meshkernel::Point> expectedSnappedPointsFirst{{0.0, 1.0},
                                                               {0.0, 0.8},
@@ -855,7 +855,7 @@ TEST(Polygons, SnapMultiPolygonPartToSingleLandBoundary)
                                                  {242.752106, 226.877884},
                                                  {510.503754, 367.129333}};
 
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::Type::Cartesian);
 
     // The expected polygon values after snapping to land boundary.
     std::vector<meshkernel::Point> expectedSnappedPoint{{169.8572772242283, 497.8078724305628},

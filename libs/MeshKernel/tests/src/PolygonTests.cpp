@@ -17,11 +17,11 @@ TEST(PolygonTests, BasicConstruction)
 {
     std::vector<mk::Point> polygonPoints{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0}};
 
-    mk::Polygon polygon(polygonPoints, mk::Projection::cartesian);
+    mk::Polygon polygon(polygonPoints, mk::Projection::Type::Cartesian);
 
     EXPECT_EQ(polygon.Size(), polygonPoints.size());
     EXPECT_EQ(polygon.Nodes(), polygonPoints);
-    EXPECT_EQ(polygon.GetProjection(), mk::Projection::cartesian);
+    EXPECT_EQ(polygon.GetProjection(), mk::Projection::Type::Cartesian);
 
     for (size_t i = 0; i < polygonPoints.size(); ++i)
     {
@@ -35,7 +35,7 @@ TEST(PolygonTests, BasicConstruction)
 
     EXPECT_EQ(polygonCopy.Size(), polygonPoints.size());
     EXPECT_EQ(polygonCopy.Nodes(), polygonPoints);
-    EXPECT_EQ(polygonCopy.GetProjection(), mk::Projection::cartesian);
+    EXPECT_EQ(polygonCopy.GetProjection(), mk::Projection::Type::Cartesian);
 
     for (size_t i = 0; i < polygonPoints.size(); ++i)
     {
@@ -53,7 +53,7 @@ TEST(PolygonTests, BasicConstruction)
 
     EXPECT_EQ(polygonAssign.Size(), polygonPoints.size());
     EXPECT_EQ(polygonAssign.Nodes(), polygonPoints);
-    EXPECT_EQ(polygonAssign.GetProjection(), mk::Projection::cartesian);
+    EXPECT_EQ(polygonAssign.GetProjection(), mk::Projection::Type::Cartesian);
 
     for (size_t i = 0; i < polygonPoints.size(); ++i)
     {
@@ -67,7 +67,7 @@ TEST(PolygonTests, BoundingBoxTest)
 {
     std::vector<mk::Point> polygonPointsSquare{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0}};
 
-    mk::Polygon polygon(polygonPointsSquare, mk::Projection::cartesian);
+    mk::Polygon polygon(polygonPointsSquare, mk::Projection::Type::Cartesian);
     mk::BoundingBox boundingBox = polygon.GetBoundingBox();
 
     constexpr double tolerance = 1.0e-10;
@@ -78,7 +78,7 @@ TEST(PolygonTests, BoundingBoxTest)
     EXPECT_NEAR(boundingBox.upperRight().y, 10.0, tolerance);
 
     std::vector<mk::Point> polygonPointsLargerSquare{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {-10.0, -5.0}};
-    polygon.Reset(polygonPointsLargerSquare, mk::Projection::cartesian);
+    polygon.Reset(polygonPointsLargerSquare, mk::Projection::Type::Cartesian);
 
     boundingBox = polygon.GetBoundingBox();
     // The boundingbox should be reset too
@@ -88,7 +88,7 @@ TEST(PolygonTests, BoundingBoxTest)
     EXPECT_NEAR(boundingBox.upperRight().y, 10.0, tolerance);
 
     std::vector<mk::Point> polygonPointsPentagon{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {5.0, 15.0}, {-10.0, 10.0}, {-10.0, -5.0}};
-    polygon.Reset(polygonPointsPentagon, mk::Projection::cartesian);
+    polygon.Reset(polygonPointsPentagon, mk::Projection::Type::Cartesian);
 
     boundingBox = polygon.GetBoundingBox();
     // The boundingbox should be reset too
@@ -106,7 +106,7 @@ TEST(PolygonTests, ContainsTest)
 
     std::vector<mk::Point> polygonPoints{{min, min}, {max, min}, {max, max}, {min, max}, {min, min}};
 
-    mk::Polygon polygon(polygonPoints, mk::Projection::cartesian);
+    mk::Polygon polygon(polygonPoints, mk::Projection::Type::Cartesian);
 
     int numberOfSteps = 100;
     double delta = ((max + extension) - (min - extension)) / static_cast<double>(numberOfSteps - 1);
@@ -146,7 +146,7 @@ TEST(PolygonTests, ContainsTest)
 TEST(PolygonTests, AreaCentreAndDirectionTest)
 {
     std::vector<mk::Point> polygonPointsLargerSquare{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {-10.0, -5.0}};
-    mk::Polygon polygon(polygonPointsLargerSquare, mk::Projection::cartesian);
+    mk::Polygon polygon(polygonPointsLargerSquare, mk::Projection::Type::Cartesian);
 
     double area = 0.0;
     mk::Point centre;
@@ -167,11 +167,11 @@ TEST(PolygonTests, AreaCentreAndDirectionTest)
 TEST(PolygonTests, FailureConstructionTests)
 {
     std::vector<mk::Point> openPolygon{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}};
-    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(openPolygon, mk::Projection::cartesian), mk::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(openPolygon, mk::Projection::Type::Cartesian), mk::ConstraintError);
 
     std::vector<mk::Point> twoPoints{{0.0, 0.0}, {10.0, 0.0}};
-    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(twoPoints, mk::Projection::cartesian), mk::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(twoPoints, mk::Projection::Type::Cartesian), mk::ConstraintError);
 
     std::vector<mk::Point> closedPolygonWithNull{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {mk::constants::missing::doubleValue, mk::constants::missing::doubleValue}, {-10.0, -5.0}};
-    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::cartesian), mk::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::Type::Cartesian), mk::ConstraintError);
 }

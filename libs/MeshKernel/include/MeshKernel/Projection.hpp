@@ -35,22 +35,22 @@
 
 namespace meshkernel
 {
-    /// @brief Projection class
+    /// @brief Projection::Type class
     class Projection
     {
     public:
         /// @brief Enumerator describing the projections
         enum class Type
         {
-            Cartesian = 0,         // jsferic  = 0
-            Spherical = 1,         // jsferic  = 1
-            SphericalAccurate = 2, // jasfer3D = 1
-            Unknown = 3
+            Cartesian = 0,         ///> Cartesian
+            Spherical = 1,         ///> Spherical
+            SphericalAccurate = 2, ///> Spherical accurate
+            Unknown = 3            ///> Unknown
         };
 
-        /// @brief
-        /// @param type
-        /// @return
+        /// @brief Returns the projection as a string
+        /// @param type Type of projection
+        /// @return Type of the projection as a string
         inline static std::string ToString(Type const type)
         {
             switch (type)
@@ -67,6 +67,8 @@ namespace meshkernel
             }
         }
 
+        /// @brief Checks the validity of the projection
+        /// @param type Type of projection
         inline static void CheckValidity(Type const type)
         {
             range_check::CheckOneOf(to_underlying(type),
@@ -75,6 +77,7 @@ namespace meshkernel
         }
 
     private:
+        /// @brief Vector of valid projections stored as integers
         inline static std::vector<int> const m_valid_projections = {
             to_underlying(Type::Cartesian),
             to_underlying(Type::Spherical),

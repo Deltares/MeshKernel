@@ -38,7 +38,7 @@ namespace meshkernel
     class Smoother;
     class Orthogonalizer;
     class Polygons;
-    enum class Projection;
+    enum class Projection::Type;
 
     /// @brief Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
     ///

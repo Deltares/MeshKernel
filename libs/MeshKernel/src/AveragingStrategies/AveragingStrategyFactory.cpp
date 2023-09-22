@@ -37,7 +37,7 @@
 std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
                                                                                                                                 size_t minNumSamples,
                                                                                                                                 Point const& interpolationPoint,
-                                                                                                                                Projection projection)
+                                                                                                                                Projection::Type projection)
 {
     switch (averagingMethod)
     {

@@ -38,7 +38,7 @@
 
 using meshkernel::Polygons;
 
-Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_projection(projection)
+Polygons::Polygons(const std::vector<Point>& polygon, Projection::Type projection) : m_projection(projection)
 {
 
     // Find the polygons in the current list of points

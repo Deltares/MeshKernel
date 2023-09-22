@@ -724,7 +724,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     }
     else if (numSharedFaces > 0)
     {
-        throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Fatal error (phiTot=0)");
+        throw MeshGeometryError(currentNode, MeshLocation::Nodes, "Fatal error (phiTot=0)");
     }
 
     double phi0 = 0.0;
@@ -746,7 +746,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
             }
             else
             {
-                throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Inappropriate fictitious boundary face");
+                throw MeshGeometryError(currentNode, MeshLocation::Nodes, "Inappropriate fictitious boundary face");
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;
@@ -1072,7 +1072,7 @@ void Smoother::ComputeJacobian(UInt currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_topologyConnectedNodes[currentTopology].size();
-    if (m_mesh->m_projection == Projection::cartesian)
+    if (m_mesh->m_projection == Projection::Type::Cartesian)
     {
         J[0] = 0.0;
         J[1] = 0.0;
@@ -1086,7 +1086,7 @@ void Smoother::ComputeJacobian(UInt currentNode, std::vector<double>& J) const
             J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
-    if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::Type::Spherical || m_mesh->m_projection == Projection::Type::SphericalAccurate)
     {
         const auto cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * constants::conversion::degToRad);
         J[0] = 0.0;

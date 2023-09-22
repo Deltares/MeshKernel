@@ -22,7 +22,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
-    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::Type::Cartesian);
     Network1D.ComputeFixedChainages(fixedChaninagesOnPolyline, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
@@ -68,7 +68,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 1.0;
 
-    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::Type::Cartesian);
     Network1D.ComputeFixedChainages(fixedChaninagesOnPolyline, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
@@ -111,7 +111,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithFixedChainages_ShouldGenerateMesh)
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
-    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::Type::Cartesian);
     Network1D.ComputeFixedChainages(fixedChainages, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 
@@ -160,7 +160,7 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithChainagesWithinOffset_ShouldGenerateM
     double const minFaceSize = 0.01;
     double const offsetFromFixedChainages = 0.2;
 
-    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::cartesian);
+    meshkernel::Network1D Network1D(polyLines, meshkernel::Projection::Type::Cartesian);
     Network1D.ComputeFixedChainages(fixedChainages, minFaceSize, offsetFromFixedChainages);
     Network1D.ComputeOffsettedChainages(offset);
 

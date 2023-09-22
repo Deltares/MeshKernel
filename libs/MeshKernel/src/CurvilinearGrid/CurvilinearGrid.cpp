@@ -33,9 +33,9 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
-CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
+CurvilinearGrid::CurvilinearGrid(Projection::Type projection) : Mesh(projection) {}
 
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection::Type projection) : m_gridNodes(grid)
 {
     if (!IsValid())
     {
@@ -229,27 +229,27 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    BuildTree(Location::Nodes);
-    SearchNearestLocation(point, Location::Nodes);
-    if (GetNumLocations(Location::Nodes) == 0)
+    BuildTree(MeshLocation::Nodes);
+    SearchNearestLocation(point, MeshLocation::Nodes);
+    if (GetNumLocations(MeshLocation::Nodes) == 0)
     {
         return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
+    const auto nodeIndex = GetLocationsIndices(0, MeshLocation::Nodes);
     return m_gridIndices[nodeIndex];
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
-    BuildTree(Location::Edges);
-    SearchNearestLocation(point, Location::Edges);
-    if (GetNumLocations(Location::Edges) == 0)
+    BuildTree(MeshLocation::Edges);
+    SearchNearestLocation(point, MeshLocation::Edges);
+    if (GetNumLocations(MeshLocation::Edges) == 0)
     {
         return {{}, {}};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Edges);
+    const auto nodeIndex = GetLocationsIndices(0, MeshLocation::Edges);
     auto const firstNode = m_edges[nodeIndex].first;
     auto const secondNode = m_edges[nodeIndex].second;
 

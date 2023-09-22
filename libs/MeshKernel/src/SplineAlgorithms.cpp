@@ -64,7 +64,7 @@ std::tuple<meshkernel::Point, meshkernel::Point, double>
 SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& splinePoints,
                                                 const std::vector<Point>& splineDerivative,
                                                 double adimensionalPointCoordinate,
-                                                const Projection projection)
+                                                const Projection::Type projection)
 {
     if (splinePoints.empty())
     {
@@ -100,7 +100,7 @@ SplineAlgorithms::ComputeCurvatureOnSplinePoint(const std::vector<Point>& spline
     Point pp = splineDerivative[leftCornerPoint] * leftSegment +
                splineDerivative[rightCornerPoint] * rightSegment;
 
-    if (projection == Projection::spherical)
+    if (projection == Projection::Type::Spherical)
     {
         p.TransformSphericalToCartesian(pointCoordinate.y);
         pp.TransformSphericalToCartesian(pointCoordinate.y);
@@ -151,7 +151,7 @@ meshkernel::Point SplineAlgorithms::Evaluate(const std::vector<Point>& splinePoi
 
 lin_alg::ColVector<double> SplineAlgorithms::ComputeSplineWeights(const lin_alg::ColVector<double>& xf,
                                                                   const lin_alg::ColVector<double>& yf,
-                                                                  const Projection projection)
+                                                                  const Projection::Type projection)
 {
 
     const Eigen::Index totalNumberOfPoints = xf.size();
@@ -290,7 +290,7 @@ lin_alg::Matrix<double, Eigen::ColMajor> SplineAlgorithms::ComputeLeastSquaresMa
 void SplineAlgorithms::SnapSplineToBoundary(std::vector<Point>& splinePoints,
                                             const std::vector<Point>& splineDerivative,
                                             const LandBoundary& landBoundary,
-                                            const Projection projection,
+                                            const Projection::Type projection,
                                             const int numberOfIterations)
 {
 

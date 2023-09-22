@@ -17,14 +17,14 @@ TEST(CurvilinearGridUniform, CurvilinearGridCreateUniform_WithPolygon_ShouldComp
                                     {3.5, 5.0},
                                     {0.5, 2.5}};
 
-    const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::cartesian);
+    const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::Type::Cartesian);
 
     const double angle = 0.0;
     const double blockSizeX = 1.0;
     const double blockSizeY = 1.0;
 
     // Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::cartesian);
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::Type::Cartesian);
     const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
                                                                                                         blockSizeX,
                                                                                                         blockSizeY,
@@ -46,14 +46,14 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInPolygonSpherical)
                                     {301.252502, 471.380371},
                                     {302.002502, 472.130371}};
 
-    const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::spherical);
+    const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::Type::Spherical);
 
     const double angle = 0.0;
     const double blockSizeX = 500.0; // resolution in degree
     const double blockSizeY = 500.0;
 
     // Execution: function not producing grid points because too large block size
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::Type::Spherical);
     const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
                                                                                                         blockSizeX,
                                                                                                         blockSizeY,
@@ -77,7 +77,7 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
     const double blockSizeY = 0.1;
 
     // 2 Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
+    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::Type::Spherical);
     const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute(numColumns,
                                                                                   numRows,
                                                                                   originX,
@@ -87,7 +87,7 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
                                                                                   blockSizeY)
                                                  .ConvertCurvilinearToNodesAndEdges();
 
-    Mesh2D mesh(edges, nodes, Projection::spherical);
+    Mesh2D mesh(edges, nodes, Projection::Type::Spherical);
 
     // 3 Assert
     ASSERT_EQ(10, mesh.GetNumEdges());
