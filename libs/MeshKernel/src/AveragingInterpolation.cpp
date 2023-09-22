@@ -142,26 +142,28 @@ std::vector<meshkernel::Point> AveragingInterpolation::GetSearchPolygon(std::vec
     std::vector<Point> searchPolygon(polygon.size());
     std::ranges::transform(std::begin(polygon),
                            std::end(polygon),
-                           begin(searchPolygon),
-                           [&](Point const& p)
-                           { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
+                           std::begin(searchPolygon),
+                           [&relativeSearchRadius = std::as_const(m_relativeSearchRadius), &interpolationPoint](Point const& p)
+                           { return p * relativeSearchRadius + interpolationPoint * (1.0 - relativeSearchRadius); });
 
     if (m_mesh.m_projection == Projection::spherical)
     {
-        const auto boundingBox = BoundingBox(searchPolygon);
-        const auto lowerLeft = boundingBox.lowerLeft();
-        const auto upperRight = boundingBox.upperRight();
+        auto const boundingBox = BoundingBox(searchPolygon);
+        auto const& lowerLeftPoint = boundingBox.lowerLeft();
+        auto const& upperRightPoint = boundingBox.upperRight();
 
-        if (upperRight.x - lowerLeft.x <= 180.0)
-            return searchPolygon;
-
-        auto const x_mean = 0.5 * (upperRight.x + lowerLeft.x);
-
-        for (auto& value : searchPolygon)
+        if (upperRightPoint.x - lowerLeftPoint.x <= 180.0)
         {
-            if (value.x < x_mean)
+            return searchPolygon;
+        }
+
+        auto const x_mean = 0.5 * (upperRightPoint.x + lowerLeftPoint.x);
+
+        for (auto& point : searchPolygon)
+        {
+            if (point.x < x_mean)
             {
-                value.x = value.x + 360.0;
+                point.x += 360.0;
             }
         }
     }

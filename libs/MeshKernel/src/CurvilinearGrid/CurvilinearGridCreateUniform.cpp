@@ -29,6 +29,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 
@@ -41,7 +42,7 @@ namespace meshkernel
     {
         if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
         {
-            throw meshkernel::NotImplemented("Projection value: {} not supported", static_cast<int>(m_projection));
+            throw NotImplemented("Projection value: {} not supported", ProjectionToString.at(m_projection));
         }
     }
 
@@ -81,7 +82,7 @@ namespace meshkernel
                                                     blockSizeY),
                                    m_projection};
         }
-        throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
+        throw NotImplemented("Projection value {} not supported", ProjectionToString.at(m_projection));
     }
 
     lin_alg::Matrix<Point> CurvilinearGridCreateUniform::ComputeCartesian(const int numColumns,
@@ -286,7 +287,7 @@ namespace meshkernel
                                               m_projection};
             break;
         default:
-            throw NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
+            throw NotImplemented("Projection value {} not supported", ProjectionToString.at(m_projection));
         }
 
         // remove nodes outside the polygon
@@ -340,7 +341,7 @@ namespace meshkernel
             break;
         case Projection::sphericalAccurate:
         default:
-            throw meshkernel::NotImplemented("Projection value {} not supported", static_cast<int>(m_projection));
+            throw NotImplemented("Projection value {} not supported", ProjectionToString.at(m_projection));
         }
 
         return curvilinearGrid;

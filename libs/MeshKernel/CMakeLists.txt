@@ -117,6 +117,7 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/Projection.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
@@ -163,6 +164,7 @@ set(
   UTILITIES_INC_LIST
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
+  ${UTILITIES_INC_DIR}/UnderlyingType.hpp
 )
 
 set(

@@ -27,39 +27,15 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
-#include <cstdint>
+#include <type_traits>
 
 namespace meshkernel
 {
-    /// @brief Integer type used when indexing mesh graph entities.
-    using UInt = std::uint32_t;
-
-    /// @brief Enumerator describing the supported projections
-    enum class Projection
+    // replace by std::to_underlying when c++23 is supported
+    template <typename E>
+    inline static constexpr auto to_underlying(E e) noexcept
     {
-        cartesian = 0,         // jsferic  = 0
-        spherical = 1,         // jsferic  = 1
-        sphericalAccurate = 2, // jasfer3D = 1
-        unknown = 3
-    };
-
-    // @brief Maps Projection enumeration to a string
-    inline static std::map<Projection, std::string> const ProjectionToString = {
-        {Projection::cartesian, "Cartesian"},
-        {Projection::spherical, "spherical"},
-        {Projection::sphericalAccurate, "Spherical accurate"}, //
-        {Projection::unknown, "Unknown"}};
-
-    /// @brief Indicator for traversal direction of the points specifying a polygon
-    // PolygonTraversalDirection? too long
-    // PolygonOrientation
-    enum class TraversalDirection
-    {
-        Clockwise,    ///< Points define a clockwise traversal of the polygon
-        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
-    };
+        return static_cast<std::underlying_type_t<E>>(e);
+    }
 
 } // namespace meshkernel

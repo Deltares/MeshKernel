@@ -68,7 +68,7 @@ namespace meshkernel
         /// @return A discretization vector for each polyline
         [[nodiscard]] std::vector<std::vector<Point>> ComputeDiscretizationsFromChainages();
 
-        Projection m_projection; ///< The projection used
+        Projection m_projection = Projection::unknown; ///< The projection used
 
     private:
         std::vector<std::vector<Point>> m_polyLines;  ///< The network poly lines
