@@ -315,10 +315,10 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
 
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
-        auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
-        auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
+        const auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
+        const auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
 
-        auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
+        const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
         if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
