@@ -103,8 +103,8 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// @brief Perform mesh administration
-        void Administrate();
+        /// @brief Perform complete administration
+        void Administrate() override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);

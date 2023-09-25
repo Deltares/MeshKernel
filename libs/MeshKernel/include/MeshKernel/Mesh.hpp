@@ -258,6 +258,9 @@ namespace meshkernel
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
 
+        /// @brief Perform complete administration
+        virtual void Administrate();
+
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
 
