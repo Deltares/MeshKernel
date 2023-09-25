@@ -7,11 +7,24 @@ add_executable(${TARGET_NAME})
 # source directory
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+# include directory
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 # list of target sources
-set(SRC_LIST ${SRC_DIR}/ApiTest.cpp)
+set(SRC_LIST 
+    ${SRC_DIR}/ApiTest.cpp
+    ${SRC_DIR}/Mesh2DRefinmentTests.cpp
+    )
+
+set(INC_LIST 
+    ${INC_DIR}/CartesianApiTestFixture.hpp
+    )
 
 # add sources to target
-target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST})
+target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST} ${INC_LIST})
+
+# Expose the interface of the shared lib
+target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(
@@ -49,3 +62,9 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MeshKernelApi>" "$<TARGET_FILE_DIR:MeshKernelApiUnitTests>"
     COMMENT "Copying MeshKernel shared library"
 )
+
+# group the sources in IDE tree
+source_group("Source Files" FILES ${SRC_LIST})
+
+# group the headers in IDE tree
+source_group("Header Files" FILES ${INC_LIST})
