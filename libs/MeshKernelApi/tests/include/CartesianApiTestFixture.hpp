@@ -9,11 +9,11 @@
 
 #include <TestUtils/MakeMeshes.hpp>
 
-class CartesianApiTests : public testing::Test
+class CartesianApiTestFixture : public testing::Test
 {
 public:
     /// Constructor for allocating state
-    CartesianApiTests()
+    CartesianApiTestFixture()
     {
         int isGeographic = 0;
         const auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, m_meshKernelId);
@@ -24,7 +24,7 @@ public:
     }
 
     /// Destructor for deallocating state
-    ~CartesianApiTests()
+    ~CartesianApiTestFixture()
     {
         meshkernelapi::mkernel_deallocate_state(m_meshKernelId);
     }

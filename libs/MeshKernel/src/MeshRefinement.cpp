@@ -1040,8 +1040,7 @@ bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double dept
     const double maxDtCourant = m_meshRefinementParameters.max_courant_time;
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
     const double waveCourant = celerity * maxDtCourant / m_mesh->m_edgeLengths[edge];
-    const bool doRefinement = waveCourant < 1.0;
-    return doRefinement;
+    return waveCourant < 1.0;
 }
 
 void MeshRefinement::ComputeEdgesRefinementMask()

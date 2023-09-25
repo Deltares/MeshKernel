@@ -12,9 +12,9 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
-#include "TestFixtures.hpp"
+#include "CartesianApiTestFixture.hpp"
 
-TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
+TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -56,7 +56,7 @@ TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
-TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
+TEST_F(CartesianApiTestFixture, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
 {
     // Prepare
     MakeMesh(10, 10, 25);
@@ -130,7 +130,7 @@ TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
     ASSERT_EQ(1626, mesh2d.num_nodes);
     ASSERT_EQ(3225, mesh2d.num_edges);
 }
-TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
+TEST_F(CartesianApiTestFixture, RefineAGridBasedOnPolygonThroughApi)
 {
     // Prepare
     MakeMesh(10, 10, 25);
@@ -233,7 +233,7 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_Should
     ASSERT_EQ(1936, mesh2dResults.num_face_nodes);
 }
 
-TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
+TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
 {
     // Prepare
     meshkernel::UInt nRows{5};

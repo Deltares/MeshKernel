@@ -17,7 +17,7 @@ set(SRC_LIST
     )
 
 set(INC_LIST 
-    ${INC_DIR}/TestFixtures.hpp
+    ${INC_DIR}/CartesianApiTestFixture.hpp
     )
 
 # add sources to target
