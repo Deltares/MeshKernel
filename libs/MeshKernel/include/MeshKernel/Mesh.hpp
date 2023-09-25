@@ -295,7 +295,7 @@ namespace meshkernel
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
-        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocation::Type meshLocation) const;
 

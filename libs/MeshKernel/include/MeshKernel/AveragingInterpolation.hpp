@@ -44,7 +44,7 @@ namespace meshkernel
 
     /// @brief The class used to interpolate based on averaging
     ///
-    /// The averaging interpolation operates on three specific \ref MeshLocation - Faces
+    /// The averaging interpolation operates on three specific \ref MeshLocation::Type - Faces
     /// (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to
     /// collect all samples close to the locations and perform a mathematical
     /// operation on their values. The \ref Method enum describes available operations.

@@ -3325,7 +3325,7 @@ namespace meshkernelapi
     }
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
     {
-        projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
+        projection = meshKernelState[meshKernelId].m_projection;
         return meshkernel::ExitCode::Success;
     }
 
