@@ -148,10 +148,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aae466a7ef61c51eb720f50d31ed94ca1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aae466a7ef61c51eb720f50d31ed94ca1">Mesh2D</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:aae466a7ef61c51eb720f50d31ed94ca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create triangular grid from nodes (triangulatesamplestonetwork)  <a href="classmeshkernel_1_1_mesh2_d.html#aae466a7ef61c51eb720f50d31ed94ca1">More...</a><br /></td></tr>
 <tr class="separator:aae466a7ef61c51eb720f50d31ed94ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf046d573135e33e8074b18b6d456008"><td class="memItemLeft" align="right" valign="top"><a id="adf046d573135e33e8074b18b6d456008"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#adf046d573135e33e8074b18b6d456008">Administrate</a> ()</td></tr>
-<tr class="memdesc:adf046d573135e33e8074b18b6d456008"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform mesh administration. <br /></td></tr>
-<tr class="separator:adf046d573135e33e8074b18b6d456008"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19223d2ef844428f5858291f588ad47"><td class="memItemLeft" align="right" valign="top"><a id="af19223d2ef844428f5858291f588ad47"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#af19223d2ef844428f5858291f588ad47">Administrate</a> () override</td></tr>
+<tr class="memdesc:af19223d2ef844428f5858291f588ad47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform complete administration. <br /></td></tr>
+<tr class="separator:af19223d2ef844428f5858291f588ad47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf625bb91c465cf93bfed19ce43dad50"><td class="memItemLeft" align="right" valign="top"><a id="aaf625bb91c465cf93bfed19ce43dad50"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aaf625bb91c465cf93bfed19ce43dad50">ComputeCircumcentersMassCentersAndFaceAreas</a> (bool computeMassCenters=false)</td></tr>
 <tr class="memdesc:aaf625bb91c465cf93bfed19ce43dad50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute face circumcenters. <br /></td></tr>
@@ -252,6 +252,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:adbc47b25ff52ee8fd178b357c7abfe91"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91">NodeMaskFromPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, bool inside) const</td></tr>
 <tr class="memdesc:adbc47b25ff52ee8fd178b357c7abfe91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask all nodes included in all polygons.  <a href="classmeshkernel_1_1_mesh2_d.html#adbc47b25ff52ee8fd178b357c7abfe91">More...</a><br /></td></tr>
 <tr class="separator:adbc47b25ff52ee8fd178b357c7abfe91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4db6fe647045d8c4fe81e44b1dcb7125"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a4db6fe647045d8c4fe81e44b1dcb7125">FindOppositeEdge</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceId, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeId) const</td></tr>
+<tr class="memdesc:a4db6fe647045d8c4fe81e44b1dcb7125"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find edge on the opposite side of the element.  <a href="classmeshkernel_1_1_mesh2_d.html#a4db6fe647045d8c4fe81e44b1dcb7125">More...</a><br /></td></tr>
+<tr class="separator:a4db6fe647045d8c4fe81e44b1dcb7125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399739726d1d913f8b23a385abe536aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a399739726d1d913f8b23a385abe536aa">NextFace</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceId, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeId) const</td></tr>
+<tr class="memdesc:a399739726d1d913f8b23a385abe536aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next face adjacent to the edge on the opposite side.  <a href="classmeshkernel_1_1_mesh2_d.html#a399739726d1d913f8b23a385abe536aa">More...</a><br /></td></tr>
+<tr class="separator:a399739726d1d913f8b23a385abe536aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a05bc04f7af254a40598f8b9627da6e60 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a05bc04f7af254a40598f8b9627da6e60"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a05bc04f7af254a40598f8b9627da6e60">Mesh</a> ()=default</td></tr>
@@ -911,7 +917,7 @@ Coincide circumcenter</div></div>
 <li><p class="startli">The edges crossing small flow edges are found. The flow edge length is computed from the face circumcenters and compared to an estimated cut off distance. The cutoff distance is computed using the face areas as follow:</p>
 <p class="startli">\(\textrm{cutOffDistance} = \textrm{threshold} \cdot 0.5 \cdot (\sqrt{\textrm{Area}_I}+\sqrt{\textrm{Area}_{II}})\)</p>
 </li>
-<li>All small flow edges are flagged with invalid indices and removed from the mesh. Removal occors in the <a class="el" href="classmeshkernel_1_1_mesh2_d.html#adf046d573135e33e8074b18b6d456008">Mesh2D::Administrate</a> method. <dl class="params"><dt>Parameters</dt><dd>
+<li>All small flow edges are flagged with invalid indices and removed from the mesh. Removal occors in the <a class="el" href="classmeshkernel_1_1_mesh2_d.html#af19223d2ef844428f5858291f588ad47">Mesh2D::Administrate</a> method. <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">smallFlowEdgesThreshold</td><td>The configurable threshold for detecting the small flow edges </td></tr>
   </table>
@@ -951,6 +957,37 @@ Coincide circumcenter</div></div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a4db6fe647045d8c4fe81e44b1dcb7125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4db6fe647045d8c4fe81e44b1dcb7125">&#9670;&nbsp;</a></span>FindOppositeEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh2D::FindOppositeEdge </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>faceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edgeId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find edge on the opposite side of the element. </p>
+<dl class="section note"><dt>Note</dt><dd>Currently only valid of quadrilateral elements. Will throw exception <a class="el" href="classmeshkernel_1_1_not_implemented.html" title="A class for throwing not implemented exceptions.">NotImplemented</a> for non-quadrilateral element shapes. </dd></dl>
 
 </div>
 </div>
@@ -1266,6 +1303,44 @@ Coincide circumcenter</div></div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting polygon mesh boundary </dd></dl>
+
+</div>
+</div>
+<a id="a399739726d1d913f8b23a385abe536aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a399739726d1d913f8b23a385abe536aa">&#9670;&nbsp;</a></span>NextFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh2D::NextFace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>faceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edgeId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the next face adjacent to the edge on the opposite side. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">faceId</td><td>The starting face </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeId</td><td>The starting edge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Id of neighbour face along the edge </dd></dl>
 
 </div>
 </div>

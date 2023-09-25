@@ -107,34 +107,41 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">   35</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> = std::uint32_t;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">   38</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        cartesian = 0,        <span class="comment">// jsferic  = 0</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        spherical = 1,        <span class="comment">// jsferic  = 1</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        sphericalAccurate = 2 <span class="comment">// jasfer3D = 1</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// PolygonTraversalDirection? too long</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// PolygonOrientation</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">   48</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4aba360a794737bcc8657a5b6e870d7ba8">Clockwise</a>,    </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54">AntiClockwise</a> </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    };</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">   36</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> = std::uint32_t;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">   39</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        cartesian = 0,        <span class="comment">// jsferic  = 0</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        spherical = 1,        <span class="comment">// jsferic  = 1</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        sphericalAccurate = 2 <span class="comment">// jasfer3D = 1</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    };</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> <a class="code" href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">GetProjectionValue</a>(<span class="keywordtype">int</span> projection);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> std::string&amp; <a class="code" href="namespacemeshkernel.html#a1fccbe2746c846a00eedadfe769e994e">ToString</a>(<a class="code" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">// PolygonTraversalDirection? too long</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="comment">// PolygonOrientation</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">   58</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4aba360a794737bcc8657a5b6e870d7ba8">Clockwise</a>,    </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <a class="code" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54">AntiClockwise</a> </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    };</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:38</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:39</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54"><div class="ttname"><a href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54">meshkernel::TraversalDirection::AntiClockwise</a></div><div class="ttdeci">@ AntiClockwise</div><div class="ttdoc">Points define a anti-clockwise (counter-clockwise) traversal of the polygon.</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a74432f6294d6952b6f3b363b0f85a3a4aba360a794737bcc8657a5b6e870d7ba8"><div class="ttname"><a href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4aba360a794737bcc8657a5b6e870d7ba8">meshkernel::TraversalDirection::Clockwise</a></div><div class="ttdeci">@ Clockwise</div><div class="ttdoc">Points define a clockwise traversal of the polygon.</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:37</div></div>
-<div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:35</div></div>
-<div class="ttc" id="anamespacemeshkernel_html_a74432f6294d6952b6f3b363b0f85a3a4"><div class="ttname"><a href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">meshkernel::TraversalDirection</a></div><div class="ttdeci">TraversalDirection</div><div class="ttdoc">Indicator for traversal direction of the points specifying a polygon.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:48</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a5aa59cfaa16a551c36007c392269bb0d"><div class="ttname"><a href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">meshkernel::GetProjectionValue</a></div><div class="ttdeci">Projection GetProjectionValue(int projection)</div><div class="ttdoc">Convert an integer value to the Projection enumeration type.</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:36</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a74432f6294d6952b6f3b363b0f85a3a4"><div class="ttname"><a href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">meshkernel::TraversalDirection</a></div><div class="ttdeci">TraversalDirection</div><div class="ttdoc">Indicator for traversal direction of the points specifying a polygon.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:58</div></div>
+<div class="ttc" id="anamespacemeshkernel_html_a1fccbe2746c846a00eedadfe769e994e"><div class="ttname"><a href="namespacemeshkernel.html#a1fccbe2746c846a00eedadfe769e994e">meshkernel::ToString</a></div><div class="ttdeci">const std::string &amp; ToString(Projection projection)</div><div class="ttdoc">Get the string representation of the Projection enumeration values.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

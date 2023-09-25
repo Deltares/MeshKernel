@@ -99,6 +99,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing the three coordinates in a cartesian projection.  <a href="structmeshkernel_1_1_cartesian3_d_point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html">ConnectMeshes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects grids across element faces.  <a href="classmeshkernel_1_1_connect_meshes.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_constraint_error.html">ConstraintError</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An exception class thrown when an attempt is made that violates a range constraint.  <a href="classmeshkernel_1_1_constraint_error.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -270,6 +273,13 @@ Functions</h2></td></tr>
 <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4285279848fabaee72bd145770a53af6">Merge</a> (const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;b1, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;b2)</td></tr>
 <tr class="memdesc:a4285279848fabaee72bd145770a53af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge two bounding boxes into a single bounding box that will contain both of the original. <br /></td></tr>
 <tr class="separator:a4285279848fabaee72bd145770a53af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aa59cfaa16a551c36007c392269bb0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">GetProjectionValue</a> (int projection)</td></tr>
+<tr class="memdesc:a5aa59cfaa16a551c36007c392269bb0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an integer value to the Projection enumeration type.  <a href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">More...</a><br /></td></tr>
+<tr class="separator:a5aa59cfaa16a551c36007c392269bb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fccbe2746c846a00eedadfe769e994e"><td class="memItemLeft" align="right" valign="top"><a id="a1fccbe2746c846a00eedadfe769e994e"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a1fccbe2746c846a00eedadfe769e994e">ToString</a> (<a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a1fccbe2746c846a00eedadfe769e994e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the string representation of the Projection enumeration values. <br /></td></tr>
+<tr class="separator:a1fccbe2746c846a00eedadfe769e994e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">ResizeAndFill2DVector</a> (std::vector&lt; std::vector&lt; T &gt;&gt; &amp;v, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;firstDimension, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;secondDimension, bool fill=false, const T &amp;fillValue={})</td></tr>
 <tr class="memdesc:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a two dimensional vector.  <a href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">More...</a><br /></td></tr>
@@ -453,6 +463,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:ab08750c57678ca9093d7268866965f25"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ab08750c57678ca9093d7268866965f25">MatrixNorm</a> (const std::vector&lt; double &gt; &amp;x, const std::vector&lt; double &gt; &amp;y, const std::vector&lt; double &gt; &amp;matCoefficients)</td></tr>
 <tr class="memdesc:ab08750c57678ca9093d7268866965f25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the matrix norm.  <a href="namespacemeshkernel.html#ab08750c57678ca9093d7268866965f25">More...</a><br /></td></tr>
 <tr class="separator:ab08750c57678ca9093d7268866965f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a749a67b6c700a68ade4777705702ffbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a749a67b6c700a68ade4777705702ffbc">Print</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df84a19a3f709cf8">Edge</a> &gt; &amp;edges, std::ostream &amp;out=std::cout)</td></tr>
+<tr class="memdesc:a749a67b6c700a68ade4777705702ffbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the (simplified) graph in a form that can be loaded into matlab/octave.  <a href="namespacemeshkernel.html#a749a67b6c700a68ade4777705702ffbc">More...</a><br /></td></tr>
+<tr class="separator:a749a67b6c700a68ade4777705702ffbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#adbadb3777c64aaa66fd0e98c1f8c3379">operator-</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;pnt)</td></tr>
 <tr class="memdesc:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unary minus.  <a href="namespacemeshkernel.html#adbadb3777c64aaa66fd0e98c1f8c3379">More...</a><br /></td></tr>
 <tr class="separator:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -504,6 +517,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a4f5895fbc1e957e83f917a57af5f3126"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a4f5895fbc1e957e83f917a57af5f3126">IsEqual</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p2, const double epsilon)</td></tr>
 <tr class="memdesc:a4f5895fbc1e957e83f917a57af5f3126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test points for equality upto a tolerance.  <a href="namespacemeshkernel.html#a4f5895fbc1e957e83f917a57af5f3126">More...</a><br /></td></tr>
 <tr class="separator:a4f5895fbc1e957e83f917a57af5f3126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad965c5d3142b77cb655d4f318d4f6b84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad965c5d3142b77cb655d4f318d4f6b84">PointAlongLine</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;startPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;endPoint, const double lambda)</td></tr>
+<tr class="memdesc:ad965c5d3142b77cb655d4f318d4f6b84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the point at some position along the line connecting start- and end-point.  <a href="namespacemeshkernel.html#ad965c5d3142b77cb655d4f318d4f6b84">More...</a><br /></td></tr>
+<tr class="separator:ad965c5d3142b77cb655d4f318d4f6b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80f42ff7f6ef1891a340a5fa7e5fe39c"><td class="memItemLeft" align="right" valign="top"><a id="a80f42ff7f6ef1891a340a5fa7e5fe39c"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a80f42ff7f6ef1891a340a5fa7e5fe39c">GetDeltaXCartesian</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p2)</td></tr>
 <tr class="memdesc:a80f42ff7f6ef1891a340a5fa7e5fe39c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the delta-x in Cartesian coordinate system. <br /></td></tr>
@@ -1959,6 +1975,27 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a5aa59cfaa16a551c36007c392269bb0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aa59cfaa16a551c36007c392269bb0d">&#9670;&nbsp;</a></span>GetProjectionValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> meshkernel::GetProjectionValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>projection</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert an integer value to the Projection enumeration type. </p>
+<p>If the integer projection value does not correspond to an enumeration value then a <a class="el" href="classmeshkernel_1_1_constraint_error.html" title="An exception class thrown when an attempt is made that violates a range constraint.">ConstraintError</a> will be thrown </p>
+
+</div>
+</div>
 <a id="af6338c4df9b1a0680f013b9624776d91"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af6338c4df9b1a0680f013b9624776d91">&#9670;&nbsp;</a></span>InnerProduct()</h2>
 
@@ -2141,7 +2178,15 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Test points for equality upto a tolerance. </p>
-<dl class="section return"><dt>Returns</dt><dd>\( p1.x = p2.x \wedge p1.y = p2.y)\) </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p1</td><td>First point to compare </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p2</td><td>Second point to compare </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">epsilon</td><td>Relative tolerance to which the values are compared. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Boolean value indicating where the points p1 and p2 are equal upto a relative tolerance. </dd></dl>
 
 </div>
 </div>
@@ -3295,6 +3340,88 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The projected point, the distance of the projection from the first point (expressed as a ratio), a boolean indicating if the projected point is within the first and second point. </dd></dl>
+
+</div>
+</div>
+<a id="ad965c5d3142b77cb655d4f318d4f6b84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad965c5d3142b77cb655d4f318d4f6b84">&#9670;&nbsp;</a></span>PointAlongLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">meshkernel::Point</a> meshkernel::PointAlongLine </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>startPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>endPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>lambda</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the point at some position along the line connecting start- and end-point. </p>
+<p>\( r = (1-\lambda) s + \lambda e \) </p>
+
+</div>
+</div>
+<a id="a749a67b6c700a68ade4777705702ffbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a749a67b6c700a68ade4777705702ffbc">&#9670;&nbsp;</a></span>Print()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Print </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df84a19a3f709cf8">Edge</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em> = <code>std::cout</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print the (simplified) graph in a form that can be loaded into matlab/octave. </p>
+<p>Only nodes and node connectivity need be printed to visualise the graph. </p>
 
 </div>
 </div>
