@@ -96,8 +96,8 @@ namespace meshkernelapi
         catch (meshkernel::MeshGeometryError const& e)
         {
             std::strncpy(exceptionMessage, e.what(), maxCharsToCopy);
-            invalidMeshIndex = e.MeshIndex();
-            invalidMeshLocation = e.MeshLocation();
+            invalidMeshIndex = e.Index();
+            invalidMeshLocation = e.Location();
             return e.Code();
         }
         catch (meshkernel::MeshKernelError const& e)

@@ -299,11 +299,11 @@ namespace meshkernel
 
         /// @brief Returns the invalid index.
         /// @return The invalid index.
-        [[nodiscard]] UInt MeshIndex() const { return m_mesh_index; }
+        [[nodiscard]] UInt Index() const { return m_mesh_index; }
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
-        [[nodiscard]] MeshLocation::Type MeshLocation() const { return m_mesh_location; }
+        [[nodiscard]] MeshLocation::Type Location() const { return m_mesh_location; }
 
     private:
         /// @brief Returns the error category.
