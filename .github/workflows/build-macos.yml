@@ -1,17 +1,19 @@
 name: Build and test on macos
 
 on:
+  push:
+    branches:
+      - master
+      - "release/v[0-9].[0-9].[0-9]"
   pull_request:
     types:
-      - opened             # triggers build when opened
-      - closed             # triggers build when merged
-      - synchronize        # triggers build when commits are pushed to HEAD
-      - auto_merge_enabled # triggers build when auto-merge is enabled
-    branches: 
+      - opened # triggers build when opened
+      - synchronize # triggers build when commits are pushed to HEAD
+    branches:
       - master
-      - 'release/v[0-9].[0-9].[0-9]'
-      - 'feature/**'
-  # Allow triggering this workflow manually from the actions tab
+      - "release/v[0-9].[0-9].[0-9]"
+      - "feature/**"
+  # Manual trigger
   workflow_dispatch:
 
 jobs:

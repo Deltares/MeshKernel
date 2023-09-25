@@ -1065,6 +1065,13 @@ namespace meshkernelapi
                                                                int minimumNumSamples,
                                                                const meshkernel::MeshRefinementParameters& meshRefinementParameters);
 
+        /// @brief Remove any disconnected regions from a mesh2d.
+        ///
+        /// The assumption is that the main region of interest has the largest number of elements.
+        /// Regions with fewer elements that this will be removed.
+        /// @param[in] meshKernelId The id of the mesh state
+        MKERNEL_API int mkernel_mesh2d_remove_disconnected_regions(int meshKernelId);
+
         /// @brief Sets the meshkernel::Mesh2D state
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh2d       The Mesh2D data

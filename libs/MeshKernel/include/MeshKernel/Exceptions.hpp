@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Formatting.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 #include <algorithm>
@@ -39,15 +40,6 @@
 #include <string>
 #include <string_view>
 
-// set the namespace of the formatting library
-#if USE_LIBFMT
-#include <fmt/format.h>
-namespace fmt_ns = fmt;
-#else
-#include <format>
-namespace fmt_ns = std;
-#endif
-
 #define STRINGIFY(str) #str
 #define TO_STR_LITERAL(str) STRINGIFY(str)
 
@@ -57,15 +49,16 @@ namespace meshkernel
     /// @brief Enumeration of exit codes
     enum ExitCode
     {
-        Success = 0,                ///< Success
-        MeshKernelErrorCode = 1,    ///< MehKernel error
-        NotImplementedCode = 2,     ///< Not implemented error
-        AlgorithmErrorCode = 3,     ///< Algorithm error
-        ConstraintErrorCode = 4,    ///< Constraint error
-        MeshGeometryErrorCode = 5,  ///< Geometry error
-        LinearAlgebraErrorCode = 6, ///< Lienar algebra error
-        StdLibExceptionCode = 7,    ///< Standrad library exception
-        UnknownExceptionCode = 8    ///< Unknown exception
+        Success = 0,            ///< Success
+        MeshKernelErrorCode,    ///< MehKernel error
+        NotImplementedCode,     ///< Not implemented error
+        AlgorithmErrorCode,     ///< Algorithm error
+        ConstraintErrorCode,    ///< Constraint error
+        MeshGeometryErrorCode,  ///< Geometry error
+        LinearAlgebraErrorCode, ///< Linear algebra error
+        RangeErrorCode,         ///< Range error
+        StdLibExceptionCode,    ///< Standrad library exception
+        UnknownExceptionCode    ///< Unknown exception
     };
 
     /// @brief Contains error category information
@@ -105,6 +98,26 @@ namespace meshkernel
         FormatString(const char* const format_string,
                      std::source_location const& source_location = std::source_location::current())
             : m_format_string(format_string),
+              m_source_location(source_location)
+        {
+        }
+
+        /// @brief Class constructor
+        /// @param[in] message         The message as an STL string view
+        /// @param[in] source_location The source location
+        FormatString(std::string_view message,
+                     std::source_location const& source_location = std::source_location::current())
+            : m_format_string(message),
+              m_source_location(source_location)
+        {
+        }
+
+        /// @brief Class constructor
+        /// @param[in] message         The message as an STL string
+        /// @param[in] source_location The source location
+        FormatString(std::string const& message,
+                     std::source_location const& source_location = std::source_location::current())
+            : m_format_string(message),
               m_source_location(source_location)
         {
         }
@@ -326,6 +339,22 @@ namespace meshkernel
         [[nodiscard]] ErrorCategory Category() const override
         {
             return {"LinearAlgebraError", ExitCode::LinearAlgebraErrorCode};
+        }
+    };
+
+    /// @brief A class for throwing range error exceptions
+    class RangeError final : public MeshKernelError
+    {
+    public:
+        /// @brief Class constructor
+        using MeshKernelError::MeshKernelError;
+
+    private:
+        /// @brief Returns the error category.
+        /// @return The  error category.
+        [[nodiscard]] ErrorCategory Category() const override
+        {
+            return {"RangeError", ExitCode::RangeErrorCode};
         }
     };
 

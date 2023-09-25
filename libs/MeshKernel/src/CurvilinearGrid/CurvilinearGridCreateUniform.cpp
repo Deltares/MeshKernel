@@ -30,6 +30,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/RangeCheck.hpp>
 
 #include <cmath>
 
@@ -52,6 +53,12 @@ namespace meshkernel
                                                           const double blockSizeX,
                                                           const double blockSizeY) const
     {
+        range_check::CheckGreater(numColumns, 0, "Number of columns");
+        range_check::CheckGreater(numRows, 0, "Number of rows");
+        range_check::CheckInOpenInterval(angle, {-90.0, 90.0}, "Grid angle");
+        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
+        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
+
         if (m_projection == Projection::spherical)
         {
             return CurvilinearGrid{ComputeSpherical(numColumns,
@@ -86,23 +93,6 @@ namespace meshkernel
                                                                           const double blockSizeY)
 
     {
-        if (numColumns <= 0)
-        {
-            throw AlgorithmError("Number of columns cannot be <= 0");
-        }
-        if (numRows <= 0)
-        {
-            throw AlgorithmError("Number of rows cannot be <= 0");
-        }
-        if (blockSizeX <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeX cannot be <= 0");
-        }
-        if (blockSizeY <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeY cannot be <= 0");
-        }
-
         const auto angleInRad = angle * constants::conversion::degToRad;
         const auto cosineAngle = std::cos(angleInRad);
         const auto sinAngle = std::sin(angleInRad);
@@ -135,23 +125,6 @@ namespace meshkernel
                                                                           const double blockSizeX,
                                                                           const double blockSizeY)
     {
-        if (numColumns <= 0)
-        {
-            throw AlgorithmError("Number of columns cannot be <= 0");
-        }
-        if (numRows <= 0)
-        {
-            throw AlgorithmError("Number of rows cannot be <= 0");
-        }
-        if (blockSizeX <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeX cannot be <= 0");
-        }
-        if (blockSizeY <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeY cannot be <= 0");
-        }
-
         lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
                                                          numRows,
                                                          originX,
@@ -217,10 +190,6 @@ namespace meshkernel
                                                      double blockSizeY,
                                                      Projection projection)
     {
-        if (blockSizeY <= 0.0)
-        {
-            throw AlgorithmError("blockSizeY cannot be <= 0");
-        }
         if (blockSizeY > std::abs(maxY - minY))
         {
             throw AlgorithmError("blockSizeY cannot be larger than mesh height");
@@ -256,23 +225,14 @@ namespace meshkernel
                                                           std::shared_ptr<Polygons> polygons,
                                                           UInt polygonIndex) const
     {
-        if (blockSizeX <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeX cannot be <= 0");
-        }
-        if (blockSizeY <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeY cannot be <= 0");
-        }
+
+        range_check::CheckInOpenInterval(angle, {-90.0, 90.0}, "Grid angle");
+        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
+        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
 
         if (polygons->GetProjection() != m_projection)
         {
             throw std::invalid_argument("Polygon projection is not equal to CurvilinearGridCreateUniform projection ");
-        }
-
-        if (std::abs(angle) > 90.0)
-        {
-            throw std::invalid_argument("Angle must be larger that -90 and smaller than 90");
         }
 
         if (polygons->IsEmpty())
@@ -342,14 +302,8 @@ namespace meshkernel
                                                           const double upperRightX,
                                                           const double upperRightY) const
     {
-        if (blockSizeX <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeX cannot be <= 0");
-        }
-        if (blockSizeY <= 0.0)
-        {
-            throw AlgorithmError("BlockSizeY cannot be <= 0");
-        }
+        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
+        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
 
         const int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX));
         if (numColumns <= 0)

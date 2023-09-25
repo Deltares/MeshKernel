@@ -690,7 +690,7 @@ TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
 
@@ -759,7 +759,7 @@ TEST_F(CartesianApiTests, RefineBasedOnGebcoSamples_OnAUniformMesh_shouldRefineM
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
 
@@ -3118,6 +3118,57 @@ TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGener
     ASSERT_EQ(mesh2d.num_nodes, 8343);
     ASSERT_EQ(mesh2d.num_edges, 16502);
     ASSERT_EQ(mesh2d.num_faces, 8160);
+}
+
+TEST(Mesh2D, RemoveSingleIsland)
+{
+    // Load mesh with 2 disconnected regions, first a 10x10 and the second is a smaller 2x2 mesh
+    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
+        ReadLegacyMeshFile(TEST_FOLDER + "/data/RemoveDomainIslands/single_disconnected_region.nc");
+
+    meshkernelapi::Mesh2D mesh;
+    mesh.num_edges = static_cast<int>(num_edges);
+    mesh.num_nodes = static_cast<int>(num_nodes);
+    mesh.node_x = node_x.data();
+    mesh.node_y = node_y.data();
+    mesh.edge_nodes = edge_nodes.data();
+
+    const int projectionType = 1;
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_set(meshKernelId, mesh);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_remove_disconnected_regions(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
+
+TEST(Mesh2D, RemoveMultipleIslands)
+{
+    // Load mesh with 4 disconnected regions, the main domain is a 10x10, there are 3 other much small island regions,
+    // each with a different shape and number of elements.
+    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
+        ReadLegacyMeshFile(TEST_FOLDER + "/data/RemoveDomainIslands/single_disconnected_region.nc");
+
+    meshkernelapi::Mesh2D mesh;
+    mesh.num_edges = static_cast<int>(num_edges);
+    mesh.num_nodes = static_cast<int>(num_nodes);
+    mesh.node_x = node_x.data();
+    mesh.node_y = node_y.data();
+    mesh.edge_nodes = edge_nodes.data();
+
+    const int projectionType = 1;
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_set(meshKernelId, mesh);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_remove_disconnected_regions(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
