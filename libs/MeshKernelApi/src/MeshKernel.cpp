@@ -27,7 +27,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
-#include <MeshKernel/ConnectCurvilinearGrids.hpp>
+#include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -2191,8 +2191,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::ConnectCurvilinearGrids connectCurvilinearGrids;
-            connectCurvilinearGrids.Compute(*meshKernelState[meshKernelId].m_mesh2d);
+            meshkernel::ConnectMeshes connectMeshes;
+            connectMeshes.Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {

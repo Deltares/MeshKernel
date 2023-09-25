@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <MeshKernel/ConnectCurvilinearGrids.hpp>
+#include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -14,7 +14,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
 {
     static const std::string testDataDir = TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/";
 
-    meshkernel::ConnectCurvilinearGrids connectCurviliearGrids;
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
 
     // Grid to connect hanging node across the DD boundary.
     auto unconnectedGrid = ReadLegacyMesh2DFromFile(testDataDir + unconnectedGridName);
@@ -23,7 +23,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
 
     // Connect hanging nodes
-    connectCurviliearGrids.Compute(*unconnectedGrid);
+    connectCurviliearMeshes.Compute(*unconnectedGrid);
 
     // Check mesh entity counts are the same
     ASSERT_EQ(unconnectedGrid->GetNumNodes(), connectedGrid->GetNumNodes());

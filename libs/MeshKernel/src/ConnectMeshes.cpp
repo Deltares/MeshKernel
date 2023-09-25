@@ -1,15 +1,15 @@
-#include "MeshKernel/ConnectCurvilinearGrids.hpp"
+#include "MeshKernel/ConnectMeshes.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
 #include <ranges>
 
-void meshkernel::ConnectCurvilinearGrids::AreEdgesAdjacent(const Mesh2D& mesh,
-                                                           const UInt edge1,
-                                                           const UInt edge2,
-                                                           bool& areAdjacent,
-                                                           UInt& startNode,
-                                                           UInt& endNode) const
+void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
+                                                 const UInt edge1,
+                                                 const UInt edge2,
+                                                 bool& areAdjacent,
+                                                 UInt& startNode,
+                                                 UInt& endNode) const
 {
     const Point edge1Start = mesh.m_nodes[mesh.m_edges[edge1].first];
     const Point edge1End = mesh.m_nodes[mesh.m_edges[edge1].second];
@@ -66,9 +66,9 @@ void meshkernel::ConnectCurvilinearGrids::AreEdgesAdjacent(const Mesh2D& mesh,
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
-                                                                                   std::vector<UInt>& elementsOnDomainBoundary,
-                                                                                   std::vector<UInt>& edgesOnDomainBoundary) const
+void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
+                                                                         std::vector<UInt>& elementsOnDomainBoundary,
+                                                                         std::vector<UInt>& edgesOnDomainBoundary) const
 {
     for (UInt i = 0; i < mesh.m_edges.size(); ++i)
     {
@@ -86,9 +86,9 @@ void meshkernel::ConnectCurvilinearGrids::GetQuadrilateralElementsOnDomainBounda
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::GatherHangingNodeIds(const Mesh2D& mesh,
-                                                               const std::vector<UInt>& edgesOnDomainBoundary,
-                                                               IrregularEdgeInfoArray& irregularEdges) const
+void meshkernel::ConnectMeshes::GatherHangingNodeIds(const Mesh2D& mesh,
+                                                     const std::vector<UInt>& edgesOnDomainBoundary,
+                                                     IrregularEdgeInfoArray& irregularEdges) const
 {
     for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
     {
@@ -131,11 +131,11 @@ void meshkernel::ConnectCurvilinearGrids::GatherHangingNodeIds(const Mesh2D& mes
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::GatherNodesToMerge(const UInt startNode,
-                                                             const UInt endNode,
-                                                             const Edge& boundaryEdge,
-                                                             std::vector<NodesToMerge>& nodesToMerge,
-                                                             std::vector<MergeIndicator>& mergeIndicator) const
+void meshkernel::ConnectMeshes::GatherNodesToMerge(const UInt startNode,
+                                                   const UInt endNode,
+                                                   const Edge& boundaryEdge,
+                                                   std::vector<NodesToMerge>& nodesToMerge,
+                                                   std::vector<MergeIndicator>& mergeIndicator) const
 {
     if (startNode != constants::missing::uintValue && mergeIndicator[boundaryEdge.first] == MergeIndicator::Initial)
     {
@@ -150,12 +150,12 @@ void meshkernel::ConnectCurvilinearGrids::GatherNodesToMerge(const UInt startNod
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::GatherHangingNodes(const UInt primaryStartNode,
-                                                             const UInt primaryEndNode,
-                                                             const Edge& irregularEdge,
-                                                             std::vector<UInt>& hangingNodesOnEdge,
-                                                             UInt& numberOfHangingNodes,
-                                                             std::vector<MergeIndicator>& mergeIndicator) const
+void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
+                                                   const UInt primaryEndNode,
+                                                   const Edge& irregularEdge,
+                                                   std::vector<UInt>& hangingNodesOnEdge,
+                                                   UInt& numberOfHangingNodes,
+                                                   std::vector<MergeIndicator>& mergeIndicator) const
 {
     const UInt secondaryStartNode = irregularEdge.first;
     const UInt secondaryEndNode = irregularEdge.second;
@@ -175,7 +175,7 @@ void meshkernel::ConnectCurvilinearGrids::GatherHangingNodes(const UInt primaryS
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::Compute(Mesh2D& mesh) const
+void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh) const
 {
     // Only here to shorten several of the initialisations below
     static constexpr UInt missingValue = constants::missing::uintValue;
@@ -258,7 +258,7 @@ void meshkernel::ConnectCurvilinearGrids::Compute(Mesh2D& mesh) const
     mesh.Administrate();
 }
 
-void meshkernel::ConnectCurvilinearGrids::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator) const
+void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator) const
 {
 
     for (const auto& [coincidingNodeFirst, coincidingNodeSecond] : nodesToMerge)
@@ -272,11 +272,11 @@ void meshkernel::ConnectCurvilinearGrids::MergeNodes(Mesh2D& mesh, const std::ve
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
-                                                                      const std::vector<UInt>& nodeIndices,
-                                                                      const UInt numberOfNodes,
-                                                                      const Point& point,
-                                                                      BoundedIntegerArray& nearestNeighbours) const
+void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
+                                                            const std::vector<UInt>& nodeIndices,
+                                                            const UInt numberOfNodes,
+                                                            const Point& point,
+                                                            BoundedIntegerArray& nearestNeighbours) const
 {
     std::array<double, m_maximumNumberOfIrregularElementsAlongEdge> distance;
     BoundedIntegerArray distanceIndex;
@@ -301,7 +301,7 @@ void meshkernel::ConnectCurvilinearGrids::GetOrderedDistanceFromPoint(const Mesh
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode) const
+void meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode) const
 {
     //
     // 2------+------+
@@ -316,12 +316,12 @@ void meshkernel::ConnectCurvilinearGrids::FreeOneHangingNode(Mesh2D& mesh, const
     mesh.ConnectNodes(hangingNodes[0], endNode);
 }
 
-void meshkernel::ConnectCurvilinearGrids::FreeTwoHangingNodes(Mesh2D& mesh,
-                                                              const UInt faceId,
-                                                              const UInt edgeId,
-                                                              const BoundedIntegerArray& hangingNodes,
-                                                              const UInt startNode,
-                                                              const UInt endNode) const
+void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
+                                                    const UInt faceId,
+                                                    const UInt edgeId,
+                                                    const BoundedIntegerArray& hangingNodes,
+                                                    const UInt startNode,
+                                                    const UInt endNode) const
 {
     //
     // 2------4------+------+
@@ -362,12 +362,12 @@ void meshkernel::ConnectCurvilinearGrids::FreeTwoHangingNodes(Mesh2D& mesh,
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::FreeThreeHangingNodes(Mesh2D& mesh,
-                                                                const UInt faceId,
-                                                                const UInt edgeId,
-                                                                const BoundedIntegerArray& hangingNodes,
-                                                                const UInt startNode,
-                                                                const UInt endNode) const
+void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
+                                                      const UInt faceId,
+                                                      const UInt edgeId,
+                                                      const BoundedIntegerArray& hangingNodes,
+                                                      const UInt startNode,
+                                                      const UInt endNode) const
 {
     //
     // 2------4------+------+
@@ -407,12 +407,12 @@ void meshkernel::ConnectCurvilinearGrids::FreeThreeHangingNodes(Mesh2D& mesh,
     }
 }
 
-void meshkernel::ConnectCurvilinearGrids::FreeFourHangingNodes(Mesh2D& mesh,
-                                                               const UInt faceId,
-                                                               const UInt edgeId,
-                                                               const BoundedIntegerArray& hangingNodes,
-                                                               const UInt startNode,
-                                                               const UInt endNode) const
+void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
+                                                     const UInt faceId,
+                                                     const UInt edgeId,
+                                                     const BoundedIntegerArray& hangingNodes,
+                                                     const UInt startNode,
+                                                     const UInt endNode) const
 {
     //
     //  +------+------+------+------+
@@ -536,13 +536,13 @@ void meshkernel::ConnectCurvilinearGrids::FreeFourHangingNodes(Mesh2D& mesh,
     mesh.ConnectNodes(node6, mesh.m_edges[thirdNextOppositeEdge].first);
 }
 
-void meshkernel::ConnectCurvilinearGrids::FreeHangingNodes(Mesh2D& mesh,
-                                                           const UInt numberOfHangingNodes,
-                                                           const std::vector<UInt>& hangingNodesOnEdge,
-                                                           const UInt faceId,
-                                                           const Edge& boundaryEdge,
-                                                           const Point& boundaryNode,
-                                                           const UInt edgeId) const
+void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
+                                                 const UInt numberOfHangingNodes,
+                                                 const std::vector<UInt>& hangingNodesOnEdge,
+                                                 const UInt faceId,
+                                                 const Edge& boundaryEdge,
+                                                 const Point& boundaryNode,
+                                                 const UInt edgeId) const
 {
     if (numberOfHangingNodes == 0)
     {

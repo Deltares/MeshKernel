@@ -37,15 +37,15 @@
 namespace meshkernel
 {
 
-    /// @brief Connects curvilinear grids across element faces.
+    /// @brief Connects grids across element faces.
     ///
     /// Can be connected with upto 5 elements or 4 hanging nodes along an edge.
     /// @note Currently only works for quadrilateral elements.
     // Functionality re-implemented from connectcurvilinearquadsddtype.f90
-    class ConnectCurvilinearGrids final
+    class ConnectMeshes final
     {
     public:
-        /// @brief Connect curvilinear grids.
+        /// @brief Connect grids.
         ///
         /// @param [in,out] mesh The mesh
         void Compute(Mesh2D& mesh) const;
