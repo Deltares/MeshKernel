@@ -356,9 +356,9 @@ namespace meshkernel
         BoundingBox m_boundingBoxCache;         ///< Caches the last bounding box used for selecting the locations
 
         // constants
-        static constexpr UInt m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
+        static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node
         static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
-        static constexpr UInt m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
+        static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
         static constexpr UInt m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
         static constexpr UInt m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
