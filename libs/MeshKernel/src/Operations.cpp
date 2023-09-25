@@ -891,8 +891,8 @@ namespace meshkernel
                          GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
                         squaredDistance;
                 const auto correctedRatio = std::max(std::min(1.0, ratio), 0.0);
-                normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
-                normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
+
+                normalPoint = firstNode + correctedRatio * (secondNode - firstNode);
                 distance = ComputeDistance(point, normalPoint, projection);
             }
         }
@@ -1123,8 +1123,9 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            std::vector<double> values{std::abs(x21), std::abs(y21), std::abs(x43), std::abs(y43)};
-            const double eps = std::max(0.00001 * *std::max_element(values.begin(), values.end()), std::numeric_limits<double>::denorm_min());
+            double maxValue = std::max(std::max(std::abs(x21), std::abs(y21)),
+                                       std::max(std::abs(x43), std::abs(y43)));
+            const double eps = std::max(0.00001 * maxValue, std::numeric_limits<double>::denorm_min());
 
             if (std::abs(det) < eps)
             {
@@ -1575,6 +1576,31 @@ namespace meshkernel
     double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients)
     {
         return (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
+    }
+
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
+    {
+        out << "nodex = zeros ( " << nodes.size() << ", 1);" << std::endl;
+        out << "nodey = zeros ( " << nodes.size() << ", 1);" << std::endl;
+        out << "edges = zeros ( " << edges.size() << ", 2);" << std::endl;
+
+        for (UInt i = 0; i < nodes.size(); ++i)
+        {
+            out << "nodex (" << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
+        }
+
+        for (UInt i = 0; i < nodes.size(); ++i)
+        {
+            out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
+        }
+
+        out << "edges = zeros ( " << edges.size() << ", 2 );" << std::endl;
+
+        for (UInt i = 0; i < edges.size(); ++i)
+        {
+            out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
+            out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+        }
     }
 
 } // namespace meshkernel

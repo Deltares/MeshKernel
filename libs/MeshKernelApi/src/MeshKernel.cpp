@@ -27,6 +27,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
+#include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -199,17 +200,17 @@ namespace meshkernelapi
                 }
 
                 // Do not change the pointer, just the object it is pointing to
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
-                                                                             nodes2d,
-                                                                             face_nodes,
-                                                                             num_face_nodes,
-                                                                             meshKernelState[meshKernelId].m_projection);
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
+                                                                              nodes2d,
+                                                                              face_nodes,
+                                                                              num_face_nodes,
+                                                                              meshKernelState[meshKernelId].m_projection);
             }
             else
             {
                 // Do not change the pointer, just the object it is pointing to
                 // Compute the faces
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
             }
         }
         catch (...)
@@ -2172,6 +2173,26 @@ namespace meshkernelapi
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask, meshKernelPoints);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions();
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId)
+    {
+        int exitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::ConnectMeshes connectMeshes;
+            connectMeshes.Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {

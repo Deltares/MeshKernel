@@ -183,7 +183,7 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
     return m_enclosures[polygonIndex].Outer().Refine(startIndex, endIndex, refinementDistance);
 }
 
-Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
+meshkernel::Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
 {
     UInt totalNumberOfPoints = GetNumNodes();
     // TODO Should the invalid points between enclosures be added too.
@@ -320,6 +320,7 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
         {
             return {true, i};
         }
+
         if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
         {
             // Point can be found in an hole in the polygon

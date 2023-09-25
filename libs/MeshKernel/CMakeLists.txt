@@ -30,7 +30,10 @@ set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
+  ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
+  ${SRC_DIR}/Definitions.cpp
+  ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
@@ -94,6 +97,7 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Definitions.hpp
@@ -162,6 +166,7 @@ set(
 set(
   UTILITIES_INC_LIST
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
+  ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
 )
 

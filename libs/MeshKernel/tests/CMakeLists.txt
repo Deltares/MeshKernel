@@ -32,6 +32,7 @@ set(
   ${SRC_DIR}/LandBoundaryTests.cpp
   ${SRC_DIR}/LinearAlgebraTests.cpp
   ${SRC_DIR}/Mesh1DTest.cpp
+  ${SRC_DIR}/Mesh2DConnectDDTest.cpp
   ${SRC_DIR}/Mesh2DTest.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
