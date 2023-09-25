@@ -323,7 +323,8 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
 
         if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
         {
-            throw std::invalid_argument("Smoother::ComputeOperatorsNode: Face could not be found, this happens when the face is outside of the polygon.");
+            throw std::invalid_argument(std::string("Smoother::ComputeOperatorsNode: Face could not be found,") +
+                                        std::string("this happens when the face is outside of the polygon or maximumNumberOfEdgesPerFace is too low"));
         }
 
         // by construction
