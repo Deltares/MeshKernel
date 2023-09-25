@@ -2156,7 +2156,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_connect_curvilinear_grids(int meshKernelId)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId)
     {
         int exitCode = meshkernel::ExitCode::Success;
         try
