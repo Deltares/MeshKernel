@@ -792,10 +792,10 @@ namespace meshkernel
         }
     }
 
-void Mesh::Administrate()
-{
-    AdministrateNodesEdges();
-}
+    void Mesh::Administrate()
+    {
+        AdministrateNodesEdges();
+    }
 
     void Mesh::AdministrateNodesEdges()
     {
@@ -912,7 +912,7 @@ void Mesh::Administrate()
         m_nodesRTreeRequiresUpdate = true;
         m_edgesRTreeRequiresUpdate = true;
 
-    Administrate();
+        Administrate();
 
         return *this;
     }
