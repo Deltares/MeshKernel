@@ -36,10 +36,11 @@ using meshkernel::CurvilinearGridFromSplinesTransfinite;
 
 CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
                                                                              const CurvilinearParameters& curvilinearParameters)
-    : m_splines(splines),
-      m_numM(curvilinearParameters.m_refinement),
-      m_numN(curvilinearParameters.n_refinement)
+    : m_splines(splines)
 {
+    CheckCurvilinearParameters(curvilinearParameters);
+    m_numM = curvilinearParameters.m_refinement;
+    m_numN = curvilinearParameters.n_refinement;
 }
 
 CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()

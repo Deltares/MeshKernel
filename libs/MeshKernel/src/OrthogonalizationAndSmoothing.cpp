@@ -50,9 +50,10 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
       m_orthogonalizer(orthogonalizer),
       m_polygons(polygon),
       m_landBoundaries(landBoundaries),
-      m_projectToLandBoundaryOption(projectToLandBoundaryOption),
-      m_orthogonalizationParameters(orthogonalizationParameters)
+      m_projectToLandBoundaryOption(projectToLandBoundaryOption)
 {
+    CheckOrthogonalizationParameters(orthogonalizationParameters);
+    m_orthogonalizationParameters = orthogonalizationParameters;
 }
 
 void OrthogonalizationAndSmoothing::Initialize()
