@@ -133,10 +133,10 @@ namespace meshkernel
         /// @return the number of splines
         auto GetNumSplines() const { return static_cast<UInt>(m_splineNodes.size()); }
 
-        std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
-        std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
-        std::vector<double> m_splinesLength;                 ///< The length of each spline
-        Projection::Type m_projection = Projection::Cartesian;     ///< The map projection
+        std::vector<std::vector<Point>> m_splineNodes;         ///< The spline corner points
+        std::vector<std::vector<Point>> m_splineDerivatives;   ///< The spline derivatives at the corner points
+        std::vector<double> m_splinesLength;                   ///< The length of each spline
+        Projection::Type m_projection = Projection::Cartesian; ///< The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline

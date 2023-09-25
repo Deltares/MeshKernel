@@ -6,8 +6,8 @@ namespace meshkernel::averaging
     InverseWeightedAveragingStrategy::InverseWeightedAveragingStrategy(Point const& interpolation_point,
                                                                        size_t minNumSamples,
                                                                        Projection::Type const projection) : m_interpolationPoint(interpolation_point),
-                                                                                                      m_minNumSamples(minNumSamples),
-                                                                                                      m_projection(projection) {}
+                                                                                                            m_minNumSamples(minNumSamples),
+                                                                                                            m_projection(projection) {}
 
     void InverseWeightedAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
