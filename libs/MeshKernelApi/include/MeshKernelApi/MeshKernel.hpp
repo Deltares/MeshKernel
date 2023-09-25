@@ -58,6 +58,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
+        /// @brief Connect two or more disconnected regions along boundary
+        /// @param[in]  meshKernelId  The id of the mesh states
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId);
+
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts

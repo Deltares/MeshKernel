@@ -142,6 +142,9 @@ namespace meshkernel
         return nodes;
     }
 
+    /// @brief Separate array of nodes to raw pointers to arrays of x-, y-coordinates and the size
+    static std::tuple<int, double*, double*> ConvertFromNodesVector(const std::vector<Point>& nodes);
+
     /// @brief Converts array of face centers to corresponding vector
     static std::vector<Point> ConvertToFaceCentersVector(int numFaces,
                                                          const double* const facex,

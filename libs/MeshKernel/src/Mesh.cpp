@@ -792,6 +792,11 @@ namespace meshkernel
         }
     }
 
+void Mesh::Administrate()
+{
+    AdministrateNodesEdges();
+}
+
     void Mesh::AdministrateNodesEdges()
     {
         DeleteInvalidNodesAndEdges();
@@ -907,7 +912,7 @@ namespace meshkernel
         m_nodesRTreeRequiresUpdate = true;
         m_edgesRTreeRequiresUpdate = true;
 
-        AdministrateNodesEdges();
+    Administrate();
 
         return *this;
     }

@@ -26,7 +26,10 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <array>
 #include <ranges>
+#include <utility>
+#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -100,8 +103,8 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection::Type projection);
 
-        /// @brief Perform mesh administration
-        void Administrate();
+        /// @brief Perform complete administration
+        void Administrate() override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -293,14 +296,29 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
+        /// @brief Find edge on the opposite side of the element
+        /// @note Currently only valid of quadrilateral elements.
+        /// Will throw exception NotImplemented for non-quadrilateral element shapes.
+        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
+
+        /// @brief Get the next face adjacent to the edge on the opposite side.
+        /// @param [in] faceId The starting face
+        /// @param [in] edgeId The starting edge
+        /// @return Id of neighbour face along the edge
+        UInt NextFace(const UInt faceId, const UInt edgeId) const;
+
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
     private:
         // orthogonalization
-        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
-        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+        static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
+        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
+
+        /// @brief Bounded array for storing hanging node indices.
+        using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -353,4 +371,5 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
     };
+
 } // namespace meshkernel

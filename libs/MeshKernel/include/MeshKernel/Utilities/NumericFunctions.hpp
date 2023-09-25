@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,33 +27,31 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
-#include <cstdint>
-#include <string>
+#include <cmath>
+#include <concepts>
+#include <limits>
 
 namespace meshkernel
 {
-    /// @brief Integer type used when indexing mesh graph entities.
-    using UInt = std::uint32_t;
 
-    /// @brief Convert an integer value to the Projection enumeration type
-    ///
-    /// If the integer projection value does not correspond to an enumeration
-    /// value then a ConstraintError will be thrown
-    Projection GetProjectionValue(int projection);
-
-    /// @brief Get the string representation of the Projection enumeration values.
-    const std::string& ToString(Projection projection);
-
-    /// @brief Indicator for traversal direction of the points specifying a polygon
-    // PolygonTraversalDirection? too long
-    // PolygonOrientation
-    enum class TraversalDirection
+    /// @brief Generic function for determining if two floating point values are equal
+    /// @param[value] The value to compare
+    /// @param[ref_value] The reference value to compare to
+    /// @param[relative_tol] Relative tolerance to which the values are compared.
+    /// @return Boolean indicating whether the value and reference value are equal to a relative tolerance.
+    template <std::floating_point T>
+    static bool IsEqual(const T value, T ref_value, T relative_tol = 10.0 * std::numeric_limits<T>::epsilon())
     {
-        Clockwise,    ///< Points define a clockwise traversal of the polygon
-        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
-    };
+        if (value == ref_value)
+        {
+            return true;
+        }
+
+        const T abs_diff = std::abs(value - ref_value);
+        const T abs_value = std::abs(value);
+        const T abs_ref_value = std::abs(ref_value);
+
+        return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
+    }
 
 } // namespace meshkernel

@@ -1945,3 +1945,69 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
     }
     return nodeMask;
 }
+
+meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) const
+{
+    if (m_numFacesNodes[faceId] != 4)
+    {
+        throw NotImplemented("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
+                             m_numFacesNodes[faceId]);
+    }
+
+    UInt position = constants::missing::uintValue;
+
+    // Find the corresponding position of edge
+    for (UInt i = 0; i < m_numFacesNodes[faceId]; ++i)
+    {
+        if (m_facesEdges[faceId][i] == edgeId)
+        {
+            position = i;
+            break;
+        }
+    }
+
+    UInt opposite;
+
+    switch (position)
+    {
+    case 0:
+        opposite = 2;
+        break;
+    case 1:
+        opposite = 3;
+        break;
+    case 2:
+        opposite = 0;
+        break;
+    case 3:
+        opposite = 1;
+        break;
+    default:
+        opposite = constants::missing::uintValue;
+    }
+
+    if (opposite != constants::missing::uintValue)
+    {
+        return m_facesEdges[faceId][opposite];
+    }
+
+    return constants::missing::uintValue;
+}
+
+meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
+{
+    if (faceId != constants::missing::uintValue)
+    {
+        if (m_edgesFaces[edgeId][0] == faceId)
+        {
+            return m_edgesFaces[edgeId][1];
+        }
+
+        if (m_edgesFaces[edgeId][1] == faceId)
+        {
+            return m_edgesFaces[edgeId][0];
+        }
+    }
+
+    return constants::missing::uintValue;
+}

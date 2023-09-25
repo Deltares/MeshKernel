@@ -118,8 +118,6 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 
 bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
 {
-    bool isInPolygon = false;
-
     // get 3D polygon coordinates
     std::vector<Cartesian3DPoint> cartesian3DPoints;
     cartesian3DPoints.reserve(Size());
@@ -180,13 +178,7 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
         }
     }
 
-    if (inside == 1)
-    {
-        isInPolygon = true;
-    }
-
     return inside == 1;
-    return isInPolygon;
 }
 
 bool meshkernel::Polygon::Contains(const Point& pnt) const

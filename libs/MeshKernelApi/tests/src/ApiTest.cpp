@@ -17,107 +17,9 @@
 
 #include <numeric>
 
-class CartesianApiTests : public testing::Test
-{
-public:
-    /// Constructor for allocating state
-    CartesianApiTests()
-    {
-        int isGeographic = 0;
-        const auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, m_meshKernelId);
-        if (errorCode != 0)
-        {
-            throw std::runtime_error("Could not allocate state");
-        }
-    }
+#include "CartesianApiTestFixture.hpp"
 
-    /// Destructor for deallocating state
-    ~CartesianApiTests()
-    {
-        meshkernelapi::mkernel_deallocate_state(m_meshKernelId);
-    }
-
-    /// @brief Make a mesh
-    /// @param[in]  numRows            Number of rows
-    /// @param[in]  numColumns            Number of columns
-    /// @param[in]  delta        Distance between neighboring nodes
-    void MakeMesh(meshkernel::UInt numRows = 2, meshkernel::UInt numColumns = 3, double delta = 1.0)
-    {
-        // Set-up new mesh
-        auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numRows, numColumns, delta);
-        meshkernelapi::Mesh2D mesh2d{};
-        mesh2d.num_edges = static_cast<int>(num_edges);
-        mesh2d.num_nodes = static_cast<int>(num_nodes);
-        mesh2d.node_x = node_x.data();
-        mesh2d.node_y = node_y.data();
-        mesh2d.edge_nodes = edge_nodes.data();
-        const auto errorCode = mkernel_mesh2d_set(m_meshKernelId, mesh2d);
-        if (errorCode != 0)
-        {
-            throw std::runtime_error("Could not set mesh2d");
-        }
-    }
-
-    void MakeUniformCurvilinearGrid(meshkernel::UInt numberOfColumns = 4,
-                                    meshkernel::UInt numberOfRows = 4,
-                                    double blockSizeX = 10.0,
-                                    double blockSizeY = 10.0,
-                                    double originX = 0.0,
-                                    double originY = 0.0) const
-    {
-        meshkernel::MakeGridParameters makeGridParameters{};
-        meshkernelapi::GeometryList geometryList{};
-
-        makeGridParameters.num_columns = static_cast<int>(numberOfColumns);
-        makeGridParameters.num_rows = static_cast<int>(numberOfRows);
-        makeGridParameters.angle = 0.0;
-        makeGridParameters.origin_x = originX;
-        makeGridParameters.origin_y = originY;
-        makeGridParameters.block_size_x = blockSizeX;
-        makeGridParameters.block_size_y = blockSizeY;
-
-        auto const errorCode = mkernel_curvilinear_make_uniform(m_meshKernelId, makeGridParameters, geometryList);
-        if (errorCode != 0)
-        {
-            throw std::runtime_error("Could not create uniform curvilinear grid");
-        }
-    }
-
-    [[nodiscard]] int GetMeshKernelId() const
-    {
-        return m_meshKernelId;
-    }
-
-private:
-    int m_meshKernelId{};
-};
-
-static auto GebcoMakeGridParameters()
-{
-
-    double lonMin = -1;
-    double lonMax = -0.2;
-    double latMin = 49.1;
-    double latMax = 49.6;
-    double lonRes = 0.1;
-    double latRes = 0.1;
-    int numX = static_cast<int>(std::ceil((lonMax - lonMin) / lonRes));
-    int numY = static_cast<int>(std::ceil((latMax - latMin) / latRes));
-
-    meshkernel::MakeGridParameters makeGridParameters{};
-
-    makeGridParameters.num_columns = numX;
-    makeGridParameters.num_rows = numY;
-    makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = lonMin;
-    makeGridParameters.origin_y = latMin;
-    makeGridParameters.block_size_x = 0.1;
-    makeGridParameters.block_size_y = 0.1;
-
-    return makeGridParameters;
-}
-
-TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
+TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
 {
     // Prepare
     MakeMesh();
@@ -204,7 +106,7 @@ TEST_F(CartesianApiTests, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
 
-TEST_F(CartesianApiTests, FlipEdges_ShouldFlipEdges)
+TEST_F(CartesianApiTestFixture, FlipEdges_ShouldFlipEdges)
 {
     // Prepare
     MakeMesh();
@@ -232,7 +134,7 @@ TEST_F(CartesianApiTests, FlipEdges_ShouldFlipEdges)
     ASSERT_EQ(23, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
+TEST_F(CartesianApiTestFixture, FlipEdges_WithALandBoundary_ShouldFlipEdges)
 {
     // Prepare
     MakeMesh();
@@ -271,7 +173,7 @@ TEST_F(CartesianApiTests, FlipEdges_WithALandBoundary_ShouldFlipEdges)
     ASSERT_EQ(23, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, InsertEdgeThroughApi)
+TEST_F(CartesianApiTestFixture, InsertEdgeThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -292,7 +194,7 @@ TEST_F(CartesianApiTests, InsertEdgeThroughApi)
     ASSERT_EQ(18, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, MergeTwoNodesThroughApi)
+TEST_F(CartesianApiTestFixture, MergeTwoNodesThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -311,7 +213,7 @@ TEST_F(CartesianApiTests, MergeTwoNodesThroughApi)
     ASSERT_EQ(15, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, MergeNodesThroughApi)
+TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -331,7 +233,7 @@ TEST_F(CartesianApiTests, MergeNodesThroughApi)
     ASSERT_EQ(17, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, OrthogonalizationThroughApi)
+TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
 {
     // Set a new mesh in mesh
     MakeMesh();
@@ -377,7 +279,7 @@ TEST_F(CartesianApiTests, OrthogonalizationThroughApi)
     ASSERT_EQ(17, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, GenerateTriangularGridThroughApi)
+TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -460,7 +362,7 @@ TEST_F(CartesianApiTests, GenerateTriangularGridThroughApi)
     ASSERT_EQ(107, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, GenerateTriangularGridFromSamplesThroughApi)
+TEST_F(CartesianApiTestFixture, GenerateTriangularGridFromSamplesThroughApi)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -511,7 +413,7 @@ TEST_F(CartesianApiTests, GenerateTriangularGridFromSamplesThroughApi)
     ASSERT_EQ(5, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, GetMeshBoundariesThroughApi)
+TEST_F(CartesianApiTestFixture, GetMeshBoundariesThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -543,7 +445,7 @@ TEST_F(CartesianApiTests, GetMeshBoundariesThroughApi)
     ASSERT_NEAR(0.0, geometryListOut.coordinates_y[0], tolerance);
 }
 
-TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
+TEST_F(CartesianApiTestFixture, OffsetAPolygonThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -598,255 +500,7 @@ TEST_F(CartesianApiTests, OffsetAPolygonThroughApi)
     ASSERT_NEAR(-10.0, geometryListOut.coordinates_y[4], tolerance);
 }
 
-TEST_F(CartesianApiTests, RefineAPolygonThroughApi)
-{
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-
-    std::vector xCoordinatesIn{76.251099, 498.503723, 505.253784, 76.251099};
-    std::vector yCoordinatesIn{92.626556, 91.126541, 490.130554, 92.626556};
-    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
-
-    // Execute
-    int numberOfpolygonNodes;
-    auto errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(23, numberOfpolygonNodes);
-
-    meshkernelapi::GeometryList geometryListOut;
-    geometryListOut.num_coordinates = numberOfpolygonNodes;
-    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector<double> xCoordinatesOut(numberOfpolygonNodes);
-    std::vector<double> yCoordinatesOut(numberOfpolygonNodes);
-    std::vector<double> valuesOut(numberOfpolygonNodes);
-    geometryListOut.coordinates_x = xCoordinatesOut.data();
-    geometryListOut.coordinates_y = yCoordinatesOut.data();
-    geometryListOut.values = valuesOut.data();
-    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, false, 0, 2, geometryListOut);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    const double tolerance = 1e-6;
-    ASSERT_NEAR(76.251099, geometryListOut.coordinates_x[0], tolerance);
-    ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
-}
-
-TEST_F(CartesianApiTests, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
-{
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinatesIn{
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0};
-
-    std::vector yCoordinatesIn{
-        50.0,
-        50.0,
-        50.0,
-        150.0,
-        150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0};
-
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-
-    // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTests, RefineBasedOnGebcoSamples_OnAUniformMesh_shouldRefineMesh)
-{
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinatesIn{
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0};
-
-    std::vector yCoordinatesIn{
-        50.0,
-        50.0,
-        50.0,
-        150.0,
-        150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0};
-
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.5;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-
-    // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTests, RefineAGridBasedOnPolygonThroughApi)
-{
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinatesIn{
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0,
-        150.0,
-        250.0,
-        50.0};
-
-    std::vector yCoordinatesIn{
-        50.0,
-        50.0,
-        50.0,
-        150.0,
-        150.0,
-        150.0,
-        250.0,
-        250.0,
-        250.0,
-        50.0};
-
-    std::vector valuesIn{
-        2.0,
-        2.0,
-        2.0,
-        3.0,
-        3.0,
-        3.0,
-        4.0,
-        4.0,
-        4.0,
-        2.0};
-
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
-
-    // Execute
-    auto errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
+TEST_F(CartesianApiTestFixture, ComputeSingleContactsThroughApi_ShouldGenerateContacts)
 {
     // Prepare
     MakeMesh(3, 3, 10);
@@ -930,7 +584,7 @@ TEST_F(CartesianApiTests, ComputeSingleContactsThroughApi_ShouldGenerateContacts
     ASSERT_EQ(8, contacts.mesh2d_indices[4]);
 }
 
-TEST_F(CartesianApiTests, ComputeMultipleContactsThroughApi)
+TEST_F(CartesianApiTestFixture, ComputeMultipleContactsThroughApi)
 {
     // Prepare
     MakeMesh(3, 3, 10);
@@ -1002,7 +656,7 @@ TEST_F(CartesianApiTests, ComputeMultipleContactsThroughApi)
     ASSERT_EQ(8, contacts.mesh2d_indices[4]);
 }
 
-TEST_F(CartesianApiTests, ComputeContactsWithPolygonsThroughApi)
+TEST_F(CartesianApiTestFixture, ComputeContactsWithPolygonsThroughApi)
 {
     // Prepare
     MakeMesh(3, 3, 10);
@@ -1076,7 +730,7 @@ TEST_F(CartesianApiTests, ComputeContactsWithPolygonsThroughApi)
     ASSERT_EQ(8, contacts.mesh2d_indices[0]);
 }
 
-TEST_F(CartesianApiTests, ComputeContactsWithPointsThroughApi)
+TEST_F(CartesianApiTestFixture, ComputeContactsWithPointsThroughApi)
 {
     // Prepare
     MakeMesh(3, 3, 10);
@@ -1156,7 +810,7 @@ TEST_F(CartesianApiTests, ComputeContactsWithPointsThroughApi)
     ASSERT_EQ(8, contacts.mesh2d_indices[2]);
 }
 
-TEST_F(CartesianApiTests, ComputeBoundaryContactsThroughApi)
+TEST_F(CartesianApiTestFixture, ComputeBoundaryContactsThroughApi)
 {
     // Prepare
     MakeMesh(3, 3, 10);
@@ -1356,7 +1010,7 @@ TEST(ApiStatelessTests, TestGettingVersionThroughApi)
     ASSERT_EQ(strcmp(versionFromApi.get(), versionString), 0);
 }
 
-TEST_F(CartesianApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
+TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
 {
     /*
 
@@ -1412,7 +1066,7 @@ TEST_F(CartesianApiTests, CurvilinearComputeTransfiniteFromPolygon_ShouldCompute
     ASSERT_EQ(3, curvilinear_grid.num_n);
 }
 
-TEST_F(CartesianApiTests, GetClosestMeshCoordinateThroughApi)
+TEST_F(CartesianApiTestFixture, GetClosestMeshCoordinateThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -1427,7 +1081,7 @@ TEST_F(CartesianApiTests, GetClosestMeshCoordinateThroughApi)
     ASSERT_EQ(0.0, xCoordinatesOut);
 }
 
-TEST_F(CartesianApiTests, MakeCurvilinearGridFromTriangleThroughApi)
+TEST_F(CartesianApiTestFixture, MakeCurvilinearGridFromTriangleThroughApi)
 {
     // Prepare
     MakeMesh();
@@ -1494,7 +1148,7 @@ TEST_F(CartesianApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     ASSERT_EQ(40, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, MakeCurvilinearGridThroughApi)
+TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1547,7 +1201,7 @@ TEST_F(CartesianApiTests, MakeCurvilinearGridThroughApi)
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[1], tolerance);
 }
 
-TEST_F(CartesianApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
+TEST_F(CartesianApiTestFixture, GenerateTransfiniteCurvilinearGridThroughApi)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1597,7 +1251,7 @@ TEST_F(CartesianApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     ASSERT_EQ(11, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
+TEST_F(CartesianApiTestFixture, GenerateOrthogonalCurvilinearGridThroughApi)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1667,7 +1321,7 @@ TEST_F(CartesianApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     ASSERT_EQ(7, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, RefineCompute_OnCurvilinearGrid_ShouldRefine)
+TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1685,7 +1339,7 @@ TEST_F(CartesianApiTests, RefineCompute_OnCurvilinearGrid_ShouldRefine)
     ASSERT_EQ(13, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
+TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1704,7 +1358,7 @@ TEST_F(CartesianApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
     ASSERT_EQ(4, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
+TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1746,7 +1400,7 @@ TEST_F(CartesianApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     ASSERT_NEAR(18.158586078094562, curvilinearGrid.node_y[9], tolerance);
 }
 
-TEST_F(CartesianApiTests, Smoothing_CurvilinearGrid_ShouldSmooth)
+TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1765,7 +1419,7 @@ TEST_F(CartesianApiTests, Smoothing_CurvilinearGrid_ShouldSmooth)
     ASSERT_EQ(5, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
+TEST_F(CartesianApiTestFixture, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1794,7 +1448,7 @@ TEST_F(CartesianApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth
     ASSERT_EQ(5, curvilinearGrid.num_n);
 }
 
-TEST_F(CartesianApiTests, ComputedLineShift_CurvilinearGrid_ShouldShift)
+TEST_F(CartesianApiTestFixture, ComputedLineShift_CurvilinearGrid_ShouldShift)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -1836,7 +1490,7 @@ TEST_F(CartesianApiTests, ComputedLineShift_CurvilinearGrid_ShouldShift)
     ASSERT_EQ(30.0, curvilinearGrid.node_x[3]);
 }
 
-TEST_F(CartesianApiTests, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
+TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
 {
     // Prepare
     MakeMesh();
@@ -1856,7 +1510,7 @@ TEST_F(CartesianApiTests, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
     ASSERT_EQ(0, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
+TEST_F(CartesianApiTestFixture, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
 {
     // Prepare
     MakeMesh();
@@ -1901,7 +1555,7 @@ TEST_F(CartesianApiTests, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh
     ASSERT_EQ(7, mesh1dResults.num_edges);
 }
 
-TEST_F(CartesianApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
+TEST_F(CartesianApiTestFixture, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
 {
     // Prepare
     MakeMesh();
@@ -1963,7 +1617,7 @@ TEST_F(CartesianApiTests, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
     ASSERT_THAT(computedEdges, ::testing::ContainerEq(validEdges));
 }
 
-TEST_F(CartesianApiTests, CountHangingEdgesMesh2D_WithZeroHangingEdges_ShouldCountZeroEdges)
+TEST_F(CartesianApiTestFixture, CountHangingEdgesMesh2D_WithZeroHangingEdges_ShouldCountZeroEdges)
 {
     // Prepare
     MakeMesh();
@@ -1976,7 +1630,7 @@ TEST_F(CartesianApiTests, CountHangingEdgesMesh2D_WithZeroHangingEdges_ShouldCou
     ASSERT_EQ(0, numHangingEdges);
 }
 
-TEST_F(CartesianApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEdges)
+TEST_F(CartesianApiTestFixture, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOneHangingEdges)
 {
     // Prepare
     MakeMesh();
@@ -2000,7 +1654,7 @@ TEST_F(CartesianApiTests, GetHangingEdgesMesh2D_WithOneHangingEdges_ShouldGetOne
     ASSERT_EQ(hangingEdges[0], 8);
 }
 
-TEST_F(CartesianApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
+TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
 {
     // Prepare
     MakeMesh();
@@ -2024,7 +1678,7 @@ TEST_F(CartesianApiTests, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDel
     ASSERT_EQ(mesh2d.num_edges, 15);
 }
 
-TEST_F(CartesianApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
+TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
 {
     // Prepare
     MakeMesh();
@@ -2049,7 +1703,7 @@ TEST_F(CartesianApiTests, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_Sh
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
+TEST_F(CartesianApiTestFixture, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality)
 {
     // Prepare
     MakeMesh();
@@ -2071,7 +1725,7 @@ TEST_F(CartesianApiTests, GetOrthogonalityMesh2D_OnMesh2D_ShouldGetOrthogonality
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
+TEST_F(CartesianApiTestFixture, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
 {
     // Prepare
     MakeMesh();
@@ -2093,7 +1747,7 @@ TEST_F(CartesianApiTests, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
+TEST_F(CartesianApiTestFixture, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
 {
     // Prepare
     MakeMesh();
@@ -2122,7 +1776,7 @@ TEST_F(CartesianApiTests, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNodes)
     ASSERT_THAT(actualResult, ::testing::ContainerEq(expectedResult));
 }
 
-TEST_F(CartesianApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
+TEST_F(CartesianApiTestFixture, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes)
 {
     // Prepare
     MakeMesh();
@@ -2143,7 +1797,7 @@ TEST_F(CartesianApiTests, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAllNodes
     ASSERT_EQ(12, numNodes);
 }
 
-TEST_F(CartesianApiTests, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
+TEST_F(CartesianApiTestFixture, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
 {
     // Prepare
     MakeMesh();
@@ -2166,7 +1820,7 @@ TEST_F(CartesianApiTests, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
     ASSERT_EQ(mesh2d.num_edges, 18);
 }
 
-TEST_F(CartesianApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
+TEST_F(CartesianApiTestFixture, MoveNode_OnMesh2D_ShouldMoveNode)
 {
     // Prepare
     MakeMesh();
@@ -2212,7 +1866,7 @@ TEST_F(CartesianApiTests, MoveNode_OnMesh2D_ShouldMoveNode)
     ASSERT_EQ(mesh2d.node_y[0], -0.5);
 }
 
-TEST_F(CartesianApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorCode)
+TEST_F(CartesianApiTestFixture, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorCode)
 {
     // Prepare
     MakeMesh();
@@ -2225,7 +1879,7 @@ TEST_F(CartesianApiTests, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorC
     ASSERT_NE(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
+TEST_F(CartesianApiTestFixture, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
 {
     // Prepare
     MakeMesh();
@@ -2240,7 +1894,7 @@ TEST_F(CartesianApiTests, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
     ASSERT_EQ(edgeIndex, 0);
 }
 
-TEST_F(CartesianApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
+TEST_F(CartesianApiTestFixture, GetNode_OnMesh2D_ShouldGetANodeIndex)
 {
     // Prepare
     MakeMesh();
@@ -2255,7 +1909,7 @@ TEST_F(CartesianApiTests, GetNode_OnMesh2D_ShouldGetANodeIndex)
     ASSERT_EQ(nodeIndex, 11);
 }
 
-TEST_F(CartesianApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
+TEST_F(CartesianApiTestFixture, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges)
 {
     // Prepare a mesh with two triangles
     meshkernelapi::Mesh2D mesh2d;
@@ -2284,7 +1938,7 @@ TEST_F(CartesianApiTests, CountSmallFlowEdges_OnMesh2D_ShouldCountSmallFlowEdges
     ASSERT_EQ(1, numSmallFlowEdges);
 }
 
-TEST_F(CartesianApiTests, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
+TEST_F(CartesianApiTestFixture, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
 {
     // Prepare a mesh with two triangles
     meshkernelapi::Mesh2D mesh2d;
@@ -2325,7 +1979,7 @@ TEST_F(CartesianApiTests, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdges)
     ASSERT_NEAR(result.coordinates_y[0], 0.0, tolerance);
 }
 
-TEST_F(CartesianApiTests, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldCountObtuseTriangles)
+TEST_F(CartesianApiTestFixture, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldCountObtuseTriangles)
 {
     // Prepare a mesh with one obtuse triangle
     meshkernelapi::Mesh2D mesh2d;
@@ -2350,7 +2004,7 @@ TEST_F(CartesianApiTests, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_Sho
     ASSERT_EQ(1, numObtuseTriangles);
 }
 
-TEST_F(CartesianApiTests, Mesh2DCountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtuseTriangle)
+TEST_F(CartesianApiTestFixture, Mesh2DCountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtuseTriangle)
 {
     // Prepare a mesh with one obtuse triangle
     meshkernelapi::Mesh2D mesh2d;
@@ -2388,7 +2042,7 @@ TEST_F(CartesianApiTests, Mesh2DCountObtuseTriangles_OnMesh2DWithOneObtuseTriang
     ASSERT_NEAR(computedCoordinatesY[0], 0.66666666666666652, tolerance);
 }
 
-TEST_F(CartesianApiTests, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTriangle_ShouldDeleteOneEdge)
+TEST_F(CartesianApiTestFixture, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTriangle_ShouldDeleteOneEdge)
 {
     // Prepare a mesh with one obtuse triangle
     meshkernelapi::Mesh2D mesh2d;
@@ -2419,7 +2073,7 @@ TEST_F(CartesianApiTests, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWi
     ASSERT_EQ(4, newMesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTests, CurvilinearComputeOrthogonalGridFromSplines_ShouldMakeCurvilinearGrid)
+TEST_F(CartesianApiTestFixture, CurvilinearComputeOrthogonalGridFromSplines_ShouldMakeCurvilinearGrid)
 {
     // Setup
     meshkernelapi::GeometryList splines{};
@@ -2532,7 +2186,7 @@ TEST_F(CartesianApiTests, CurvilinearComputeOrthogonalGridFromSplines_ShouldMake
     ASSERT_GT(curvilinearGrid.num_n, 0);
 }
 
-TEST_F(CartesianApiTests, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
+TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
 {
     // Setup
     MakeUniformCurvilinearGrid();
@@ -2549,7 +2203,7 @@ TEST_F(CartesianApiTests, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozen
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
+TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
 {
     // Setup
     MakeUniformCurvilinearGrid();
@@ -2566,7 +2220,7 @@ TEST_F(CartesianApiTests, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, CurvilinearInsertFace_ShouldInsertAFace)
+TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 {
     // Setup
     MakeUniformCurvilinearGrid();
@@ -2594,7 +2248,7 @@ TEST_F(CartesianApiTests, CurvilinearInsertFace_ShouldInsertAFace)
     ASSERT_EQ(numValidNodes, 27);
 }
 
-TEST_F(CartesianApiTests, CurvilinearLineMirror_ShouldInsertANewGridLine)
+TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
 {
     // Setup
     MakeUniformCurvilinearGrid();
@@ -2619,7 +2273,7 @@ TEST_F(CartesianApiTests, CurvilinearLineMirror_ShouldInsertANewGridLine)
     ASSERT_EQ(curvilinearGrid.num_m * curvilinearGrid.num_n, 30);
 }
 
-TEST_F(CartesianApiTests, Mesh2dAveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
+TEST_F(CartesianApiTestFixture, Mesh2dAveragingInterpolation_OnMesh2D_ShouldInterpolateValues)
 {
     // Setup
     MakeMesh();
@@ -2669,7 +2323,7 @@ TEST_F(CartesianApiTests, Mesh2dAveragingInterpolation_OnMesh2D_ShouldInterpolat
     ASSERT_NEAR(computedResultsValues[4], 3.0, tolerance);
 }
 
-TEST_F(CartesianApiTests, Mesh2dTriangulationInterpolation_ShouldInterpolateValues)
+TEST_F(CartesianApiTestFixture, Mesh2dTriangulationInterpolation_ShouldInterpolateValues)
 {
     // Setup
     MakeMesh();
@@ -2714,7 +2368,7 @@ TEST_F(CartesianApiTests, Mesh2dTriangulationInterpolation_ShouldInterpolateValu
     ASSERT_NEAR(computedResultsValues[8], 5.6666666666666670, tolerance);
 }
 
-TEST_F(CartesianApiTests, CurvilinearLineAttractionRepulsion_ShouldAttractGridlines)
+TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttractGridlines)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -2748,7 +2402,7 @@ TEST_F(CartesianApiTests, CurvilinearLineAttractionRepulsion_ShouldAttractGridli
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 }
 
-TEST_F(CartesianApiTests, CurvilinearDeleteNode_ShouldDeleteNode)
+TEST_F(CartesianApiTestFixture, CurvilinearDeleteNode_ShouldDeleteNode)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -2780,7 +2434,7 @@ TEST_F(CartesianApiTests, CurvilinearDeleteNode_ShouldDeleteNode)
     ASSERT_EQ(numValidNodesBefore - 2, numValidNodesAfter);
 }
 
-TEST_F(CartesianApiTests, Network1DComputeFixedChainages_ShouldGenerateMesh1D)
+TEST_F(CartesianApiTestFixture, Network1DComputeFixedChainages_ShouldGenerateMesh1D)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -2815,7 +2469,7 @@ TEST_F(CartesianApiTests, Network1DComputeFixedChainages_ShouldGenerateMesh1D)
     ASSERT_EQ(4, mesh1dResults.num_edges);
 }
 
-TEST_F(CartesianApiTests, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
+TEST_F(CartesianApiTestFixture, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
@@ -2897,7 +2551,7 @@ TEST(Mesh2D, Mesh2DInitializeOrthogonalization_WithHexagon_ShouldOrthogonalize)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST_F(CartesianApiTests, ContactsComputeSingle_OnMesh2D_ShouldComputeContacts)
+TEST_F(CartesianApiTestFixture, ContactsComputeSingle_OnMesh2D_ShouldComputeContacts)
 {
     auto [nodes_x, nodes_y, edges, face_nodes, num_face_nodes] = MakeMeshWithFaceNodes();
     const auto meshKernelId = GetMeshKernelId();
@@ -3169,218 +2823,6 @@ TEST(Mesh2D, RemoveMultipleIslands)
 
     errorCode = meshkernelapi::mkernel_mesh2d_remove_disconnected_regions(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-}
-
-TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
-{
-    // Prepare
-    int meshKernelId;
-    constexpr int isGeographic = 0;
-    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
-
-    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
-        ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
-    meshkernelapi::Mesh2D mesh2d;
-    mesh2d.num_edges = static_cast<int>(num_edges);
-    mesh2d.num_nodes = static_cast<int>(num_nodes);
-    mesh2d.node_x = node_x.data();
-    mesh2d.node_y = node_y.data();
-    mesh2d.edge_nodes = edge_nodes.data();
-
-    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, values] =
-        ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
-    meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.num_x = numX;
-    griddedSamples.num_y = numY;
-    griddedSamples.x_origin = xllCenter;
-    griddedSamples.y_origin = yllCenter;
-    griddedSamples.cell_size = cellSize;
-    griddedSamples.values = values.data();
-    griddedSamples.x_coordinates = nullptr;
-    griddedSamples.y_coordinates = nullptr;
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.min_edge_size = 0.01;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.smoothing_iterations = 0;
-
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2dResults;
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    ASSERT_EQ(417, mesh2dResults.num_nodes);
-    ASSERT_EQ(988, mesh2dResults.num_edges);
-    ASSERT_EQ(572, mesh2dResults.num_faces);
-    ASSERT_EQ(1936, mesh2dResults.num_face_nodes);
-}
-
-TEST_F(CartesianApiTests, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
-{
-    // Prepare
-    meshkernel::UInt nRows{5};
-    meshkernel::UInt nCols{4};
-    MakeMesh(nRows, nCols, 100.0);
-    auto const meshKernelId = GetMeshKernelId();
-
-    meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.num_y = 6;
-    griddedSamples.num_x = 7;
-    std::vector<double> x_coordinates(griddedSamples.num_x);
-    std::vector<double> y_coordinates(griddedSamples.num_y);
-
-    double coordinate = -50.0;
-    const double dx = 100.0;
-    for (size_t i = 0; i < x_coordinates.size(); ++i)
-    {
-        x_coordinates[i] = coordinate + i * dx;
-    }
-    coordinate = -50.0;
-    const double dy = 100.0;
-    for (size_t i = 0; i < y_coordinates.size(); ++i)
-    {
-        y_coordinates[i] = coordinate + i * dy;
-    }
-
-    std::vector<double> values(griddedSamples.num_y * griddedSamples.num_x);
-    for (size_t i = 0; i < values.size(); ++i)
-    {
-        values[i] = -0.05;
-    }
-
-    griddedSamples.x_coordinates = x_coordinates.data();
-    griddedSamples.y_coordinates = y_coordinates.data();
-    griddedSamples.values = values.data();
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_edge_size = 2.0;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.smoothing_iterations = 0;
-    meshRefinementParameters.max_courant_time = 120.0;
-    meshRefinementParameters.directional_refinement = 0;
-
-    auto errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2dResults;
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    ASSERT_EQ(86, mesh2dResults.num_nodes);
-    ASSERT_EQ(161, mesh2dResults.num_edges);
-    ASSERT_EQ(76, mesh2dResults.num_faces);
-}
-
-TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
-{
-    // Prepare
-    int meshKernelId;
-    constexpr int isSpherical = 1;
-    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
-
-    const auto makeGridParameters = GebcoMakeGridParameters();
-
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
-    meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.num_x = ncols;
-    griddedSamples.num_y = nrows;
-    griddedSamples.x_origin = xllcenter;
-    griddedSamples.y_origin = yllcenter;
-    griddedSamples.cell_size = cellsize;
-    griddedSamples.values = values.data();
-    griddedSamples.x_coordinates = nullptr;
-    griddedSamples.y_coordinates = nullptr;
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.use_mass_center_when_refining = 1;
-    meshRefinementParameters.min_edge_size = 0.01;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.smoothing_iterations = 5;
-    meshRefinementParameters.max_courant_time = 120;
-    meshRefinementParameters.directional_refinement = 0;
-
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2dResults;
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    ASSERT_EQ(5223, mesh2dResults.num_nodes);
-    ASSERT_EQ(10745, mesh2dResults.num_edges);
-    ASSERT_EQ(5523, mesh2dResults.num_faces);
-    ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
-}
-
-TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
-{
-    // Prepare
-    int meshKernelId;
-    constexpr int isSpherical = 1;
-    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
-
-    const auto makeGridParameters = GebcoMakeGridParameters();
-
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
-    meshkernelapi::GriddedSamples griddedSamples;
-    griddedSamples.num_x = ncols;
-    griddedSamples.num_y = nrows;
-    griddedSamples.x_origin = xllcenter;
-    griddedSamples.y_origin = yllcenter;
-    griddedSamples.cell_size = cellsize;
-    griddedSamples.values = values.data();
-    griddedSamples.x_coordinates = nullptr;
-    griddedSamples.y_coordinates = nullptr;
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.use_mass_center_when_refining = 1;
-    meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
-    meshRefinementParameters.smoothing_iterations = 5;
-    meshRefinementParameters.max_courant_time = 120;
-    meshRefinementParameters.directional_refinement = 0;
-
-    // Set a large value of min edge size
-    meshRefinementParameters.min_edge_size = 1e9;
-
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2dResults;
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert no refinement took place
-    ASSERT_EQ(54, (makeGridParameters.num_columns + 1) * (makeGridParameters.num_rows + 1));
 }
 
 TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
@@ -3655,7 +3097,7 @@ TEST(MeshState, MKernelSnapSplineToLandBoundary_ShouldThrowException)
     EXPECT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
-TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
+TEST(MeshState, PolygonSnapToLandboundary_ShouldSnapPolygonToLandBoundary)
 {
     const double tolerance = 1e-6;
 
@@ -3720,117 +3162,4 @@ TEST(MeshState, MKernelSnapPolygonToLandBoundary_ShouldSnap)
     {
         EXPECT_NEAR(polygonGeometry.coordinates_y[i], expectedSnappedPointY[i], tolerance);
     }
-}
-
-TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithLargeMinEdgeSize_ShouldNotRefine)
-{
-    // Prepare
-    int isGeographic = 1;
-    int meshKernelId = -1;
-    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernel::MakeGridParameters makeGridParameters;
-
-    makeGridParameters.origin_x = -6.0;
-    makeGridParameters.origin_y = 48.5;
-    makeGridParameters.upper_right_x = 2;
-    makeGridParameters.upper_right_y = 51.2;
-    makeGridParameters.block_size_x = 0.5;
-    makeGridParameters.block_size_y = 0.5;
-
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
-
-    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
-    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
-    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
-
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 10;
-    meshRefinementParameters.min_edge_size = 200000.0;
-
-    // Execute
-    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
-}
-
-TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithSmallMinEdgeSize_ShouldRefine)
-{
-    // Prepare
-    int isGeographic = 1;
-    int meshKernelId = -1;
-    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernel::MakeGridParameters makeGridParameters;
-
-    makeGridParameters.origin_x = -6.0;
-    makeGridParameters.origin_y = 48.5;
-    makeGridParameters.upper_right_x = 2;
-    makeGridParameters.upper_right_y = 51.2;
-    makeGridParameters.block_size_x = 0.5;
-    makeGridParameters.block_size_y = 0.5;
-
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Get the new state
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
-
-    std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
-    std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
-    std::vector valuesIn{1.0, 1.0, 1.0, 1.0};
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    geometryListIn.coordinates_x = xCoordinatesIn.data();
-    geometryListIn.coordinates_y = yCoordinatesIn.data();
-    geometryListIn.values = valuesIn.data();
-    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
-
-    meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 10;
-
-    // The minimum edge size
-    meshRefinementParameters.min_edge_size = 2000.0;
-
-    // Execute
-    errorCode = mkernel_mesh2d_refine_based_on_polygon(meshKernelId, geometryListIn, meshRefinementParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(1570, mesh2d.num_nodes);
-    ASSERT_EQ(3361, mesh2d.num_edges);
 }
