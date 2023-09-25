@@ -64,7 +64,7 @@ namespace meshkernel
         void Compute() override;
 
     private:
-        /// @brief Performs bilinear interpolation
+        /// @brief Performs bi-linear interpolation
         /// @param[in] point The input point
         /// @return The result of bilinear interpolation at the point
         double Interpolation(const Point& point) const;
@@ -87,7 +87,7 @@ namespace meshkernel
             return m_values[index];
         }
 
-        const Mesh2D& m_mesh; ///< Pointer to the mesh
+        const Mesh2D& m_mesh; ///< Reference to the mesh
         UInt m_numXCoord;     ///< The number of x coordinates of the gridded data
         UInt m_numYCoord;     ///< The number of y coordinates of the gridded data
         Point m_origin;       ///< The coordinate of the origin
