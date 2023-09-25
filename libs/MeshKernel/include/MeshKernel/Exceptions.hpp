@@ -30,7 +30,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Formatting.hpp"
-#include "MeshKernel/MEshLocation.hpp"
+#include "MeshKernel/MeshLocation.hpp"
 
 #include <algorithm>
 #include <exception>
