@@ -64,7 +64,7 @@ static void BM_Orthogonalization(benchmark::State& state)
 
         mesh->AdministrateNodesEdges();
 
-        auto const project_to_land_Boundary = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+        auto const project_to_land_Boundary = ProjectionToLandBoundary::None;
         OrthogonalizationParameters orthogonalization_parameters;
         orthogonalization_parameters.inner_iterations = 25;
         orthogonalization_parameters.boundary_iterations = 25;

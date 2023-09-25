@@ -29,6 +29,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
+#include <MeshKernel/ProjectionToLandBoundary.hpp>
 
 #include <memory>
 
@@ -47,16 +48,6 @@ namespace meshkernel
     {
 
     public:
-        /// Enumerator describing the options how to project to the land boundary
-        enum class ProjectToLandBoundaryOption
-        {
-            DoNotProjectToLandBoundary = 0,
-            ToOriginalNetBoundary = 1,
-            OuterMeshBoundaryToLandBoundary = 2,
-            InnerAndOuterMeshBoundaryToLandBoundary = 3,
-            WholeMesh = 4
-        };
-
         /// @brief Default constructor
         LandBoundaries() = default;
 
@@ -78,7 +69,7 @@ namespace meshkernel
 
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline).
         /// @param[in] projectToLandBoundaryOption The option describing the projection to the land boundary.
-        void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
+        void FindNearestMeshBoundary(ProjectionToLandBoundary::Type projectToLandBoundaryOption);
 
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
         void SnapMeshToLandBoundaries();

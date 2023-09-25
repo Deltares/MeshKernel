@@ -121,6 +121,7 @@ set(
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
   ${DOMAIN_INC_DIR}/Projection.hpp
+  ${DOMAIN_INC_DIR}/ProjectionToLandBoundary.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp

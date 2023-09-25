@@ -33,20 +33,21 @@
 namespace meshkernel
 {
     /// @brief Projection::Type class
-    class Projection
+    class ProjectionToLandBoundary
     {
     public:
         /// @brief Class cosntructor
-        Projection() = delete;
+        ProjectionToLandBoundary() = delete;
 
         /// @enum Type
         /// @brief Enumerator describing the projections
         enum Type
         {
-            Cartesian = 0,         ///> Cartesian
-            Spherical = 1,         ///> Spherical
-            SphericalAccurate = 2, ///> Spherical accurate
-            Unknown = 3            ///> Unknown
+            None = 0,
+            ToOriginalNetBoundary = 1,
+            OuterMeshBoundaryToLandBoundary = 2,
+            InnerAndOuterMeshBoundaryToLandBoundary = 3,
+            WholeMesh = 4
         };
 
         /// @brief Returns the projection as a string
@@ -56,20 +57,29 @@ namespace meshkernel
         {
             switch (type)
             {
-            case Cartesian:
-                return "Cartesian";
-            case Spherical:
-                return "Spherical";
-            case SphericalAccurate:
-                return "Spherical accurate";
-            case Unknown:
+            case None:
+                return "None";
+            case ToOriginalNetBoundary:
+                return "To original net boundary";
+            case OuterMeshBoundaryToLandBoundary:
+                return "Outer mesh boundary to land boundary";
+            case InnerAndOuterMeshBoundaryToLandBoundary:
+                return "Inner and outer mesh boundary to land boundary";
+            case WholeMesh:
+                return "Whole mesh";
             default:
                 return "Unknown";
             }
         }
 
         /// @brief Vector of valid projections stored as integers
-        inline static std::vector<int> const ValidValues = {Cartesian, Spherical, SphericalAccurate};
+        inline static std::vector<int> const ValidValues = {
+            None,
+            ToOriginalNetBoundary,
+            OuterMeshBoundaryToLandBoundary,
+            InnerAndOuterMeshBoundaryToLandBoundary,
+            WholeMesh //
+        };
     };
 
 } // namespace meshkernel

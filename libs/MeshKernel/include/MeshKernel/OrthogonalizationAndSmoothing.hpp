@@ -93,7 +93,7 @@ namespace meshkernel
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
                                       std::shared_ptr<Polygons> polygon,
                                       std::shared_ptr<LandBoundaries> landBoundaries,
-                                      LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                      ProjectionToLandBoundary::Type projectToLandBoundaryOption,
                                       const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
@@ -138,13 +138,13 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                                            ///< A pointer to mesh
-        std::shared_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
-        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
-        std::shared_ptr<Polygons> m_polygons;                                      ///< The polygon where to perform the orthogonalization
-        std::shared_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries
-        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
-        OrthogonalizationParameters m_orthogonalizationParameters;                 ///< The orthogonalization parameters
+        std::shared_ptr<Mesh2D> m_mesh;                               ///< A pointer to mesh
+        std::shared_ptr<Smoother> m_smoother;                         ///< A pointer to the smoother
+        std::shared_ptr<Orthogonalizer> m_orthogonalizer;             ///< A pointer to the orthogonalizer
+        std::shared_ptr<Polygons> m_polygons;                         ///< The polygon where to perform the orthogonalization
+        std::shared_ptr<LandBoundaries> m_landBoundaries;             ///< The land boundaries
+        ProjectionToLandBoundary::Type m_projectToLandBoundaryOption; ///< The project to land boundary option
+        OrthogonalizationParameters m_orthogonalizationParameters;    ///< The orthogonalization parameters
 
         std::vector<UInt> m_localCoordinatesIndices; ///< Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;       ///< Used in sphericalAccurate projection (xloc,yloc)

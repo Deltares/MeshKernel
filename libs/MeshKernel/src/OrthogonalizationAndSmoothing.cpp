@@ -27,7 +27,6 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -43,7 +42,7 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
                                                              std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                              std::shared_ptr<Polygons> polygon,
                                                              std::shared_ptr<LandBoundaries> landBoundaries,
-                                                             LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                                             ProjectionToLandBoundary::Type projectToLandBoundaryOption,
                                                              const OrthogonalizationParameters& orthogonalizationParameters)
     : m_mesh(mesh),
       m_smoother(smoother),

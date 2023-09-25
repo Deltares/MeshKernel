@@ -34,6 +34,7 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Projection.hpp>
+#include <MeshKernel/RangeCheck.hpp>
 
 namespace meshkernel
 {

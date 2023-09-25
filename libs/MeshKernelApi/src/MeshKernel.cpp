@@ -591,7 +591,7 @@ namespace meshkernelapi
                                                                        orthogonalizer,
                                                                        polygon,
                                                                        landBoundary,
-                                                                       static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                       static_cast<meshkernel::ProjectionToLandBoundary::Type>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
             ortogonalization.Initialize();
             ortogonalization.Compute();
@@ -639,7 +639,7 @@ namespace meshkernelapi
                                                                                                                                 orthogonalizer,
                                                                                                                                 polygon,
                                                                                                                                 landBoundary,
-                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                                                static_cast<meshkernel::ProjectionToLandBoundary::Type>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
             meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
