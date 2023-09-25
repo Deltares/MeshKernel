@@ -1,4 +1,7 @@
 #include "MeshKernel/RidgeRefinement.hpp"
+#include "MeshKernel/Operations.hpp"
+
+#include <Eigen/Core>
 
 meshkernel::Hessian::Hessian(const UInt dim1, const UInt dim2, const UInt dim3)
 {
@@ -7,6 +10,10 @@ meshkernel::Hessian::Hessian(const UInt dim1, const UInt dim2, const UInt dim3)
 
 void meshkernel::Hessian::resize(const UInt dim1, const UInt dim2, const UInt dim3)
 {
+    m_dimensions[0] = dim1;
+    m_dimensions[1] = dim2;
+    m_dimensions[2] = dim3;
+
     m_hessian.resize(dim1);
 
     for (UInt i = 0; i < dim1; ++i)
@@ -69,7 +76,6 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
 
     while (duplicatesFound)
     {
-        std::cout << "Duplicates found" << std::endl;
         duplicatesFound = false;
 
         // Check for duplicate sample data points
@@ -102,6 +108,8 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
                 }
             }
         }
+
+        std::cout << "Duplicates found: " << std::boolalpha << duplicatesFound << std::endl;
 
         UInt count = 0;
 
@@ -153,16 +161,19 @@ void meshkernel::RidgeRefinement::TidySamples(std::vector<Point>& samplePoints, 
     RemoveDuplicates(samplePoints, sampleData, sampleIndices);
 }
 
-void meshkernel::RidgeRefinement::smoothSamples(const std::vector<Point>& samplePoints,
-                                                const std::vector<double>& sampleData,
+void meshkernel::RidgeRefinement::smoothSamples(const std::vector<double>& sampleData,
+                                                const UInt numberOfSmoothingIterations,
                                                 Hessian& hessian) const
 {
 
-    lin_alg::MatrixColMajor<double> zsdum(mesh.m_numM, mesh.m_numN);
+    const double sigma = 0.5;
+
+    // Check the dimension are correct.
+    lin_alg::MatrixColMajor<double> zsdum(hessian.size(1), hessian.size(2));
     zsdum.setZero();
 
     // May be better to reorder the loop (j, then i), can then use a count for the sampleData.
-    for (UInt i = 0; j < hessian.size(1); ++i)
+    for (UInt i = 0; i < hessian.size(1); ++i)
     {
         for (UInt j = 0; j < hessian.size(2); ++j)
         {
@@ -170,14 +181,14 @@ void meshkernel::RidgeRefinement::smoothSamples(const std::vector<Point>& sample
         }
     }
 
-    for (int iter = 1; iter <= numberOfSmoothingIterations; ++iter)
+    for (UInt iter = 1; iter <= numberOfSmoothingIterations; ++iter)
     {
-        double af = static_cast<double>(iter - 1) / static_cast<double>(std::max(numberOfSmoothingIterations - 1, 1));
+        // double af = static_cast<double>(iter - 1) / static_cast<double>(std::max(numberOfSmoothingIterations - 1, 1));
         zsdum = hessian.getMatrix(0);
 
         for (UInt j = 1; j < hessian.size(2) - 1; ++j)
         {
-            for (UInt i = 1; j < hessian.size(1) - 1; ++i)
+            for (UInt i = 1; i < hessian.size(1) - 1; ++i)
             {
 
                 if (zsdum(i, j) == constants::missing::doubleValue)
@@ -186,23 +197,26 @@ void meshkernel::RidgeRefinement::smoothSamples(const std::vector<Point>& sample
                 }
 
                 // Needs tidying up, seems not to be really necessary
-                ciL = 1.0;
-                ciR = 1.0;
-                cjL = 1.0;
-                cjR = 1.0;
+                double ciL = 1.0;
+                double ciR = 1.0;
+                double cjL = 1.0;
+                double cjR = 1.0;
 
                 if (zsdum(i - 1, j) == constants::missing::doubleValue)
                 {
                     ciL = 0.0;
                 }
+
                 if (zsdum(i + 1, j) == constants::missing::doubleValue)
                 {
                     ciR = 0.0;
                 }
+
                 if (zsdum(i, j - 1) == constants::missing::doubleValue)
                 {
                     cjL = 0.0;
                 }
+
                 if (zsdum(i, j + 1) == constants::missing::doubleValue)
                 {
                     cjR = 0.0;
@@ -213,15 +227,15 @@ void meshkernel::RidgeRefinement::smoothSamples(const std::vector<Point>& sample
                     continue;
                 }
 
-                c0 = ciL + ciR + cjL + cjR;
+                double c0 = ciL + ciR + cjL + cjR;
 
                 if (std::abs(c0) < 0.5)
                 {
                     continue;
                 }
 
-                zss(1, i, j) = (1.0 - sigma) * zsdum(i, j) +
-                               sigma * (ciL * zsdum(i - 1, j) + ciR * zsdum(i + 1, j) + cjL * zsdum(i, j - 1) + ckR * zsdum(i, j + 1)) / c0;
+                hessian(0, i, j) = (1.0 - sigma) * zsdum(i, j) +
+                                   sigma * (ciL * zsdum(i - 1, j) + ciR * zsdum(i + 1, j) + cjL * zsdum(i, j - 1) + cjR * zsdum(i, j + 1)) / c0;
             }
         }
     }
@@ -229,6 +243,7 @@ void meshkernel::RidgeRefinement::smoothSamples(const std::vector<Point>& sample
 
 void meshkernel::RidgeRefinement::computeGradient(const std::vector<Point>& samplePoints,
                                                   const std::vector<double>& sampleData,
+                                                  const Projection projection,
                                                   const Hessian& hessian,
                                                   const UInt ip0,
                                                   const UInt ip1,
@@ -236,8 +251,10 @@ void meshkernel::RidgeRefinement::computeGradient(const std::vector<Point>& samp
                                                   const UInt ip0R,
                                                   const UInt ip1L,
                                                   const UInt ip1R,
-                                                  Eigen::Vector2d& gradient,
-                                                  Eigen::Vector2d& S) const
+                                                  meshkernel::Vector& gradient,
+                                                  meshkernel::Vector& S,
+                                                  double& dareaL,
+                                                  double& dareaR) const
 {
     //   compute the gradient in a control volume defined by the polygon (0-R-1-L)
     //
@@ -256,69 +273,84 @@ void meshkernel::RidgeRefinement::computeGradient(const std::vector<Point>& samp
     //  0 and 1 are sample points
     //  L and R are interpolated at sample cell centers
 
-    gradient(0) = DMISS;
-    gradient(1) = DMISS;
-    S(0) = 0.0;
-    S(1) = 0.0;
+    gradient[0] = constants::missing::doubleValue;
+    gradient[1] = constants::missing::doubleValue;
+    S[0] = 0.0;
+    S[1] = 0.0;
     dareaL = 0.0;
     dareaR = 0.0;
 
-    x0 = xs(ip0);
-    y0 = ys(ip0);
-    z0 = zss(1, ip0);
+    Point x0 = samplePoints[ip0];
+    double z0 = sampleData[ip0];
 
-    x1 = xs(ip1);
-    y1 = ys(ip1);
-    z1 = zss(1, ip1);
+    const lin_alg::MatrixColMajor<double>& zss = hessian.getMatrix(0);
 
-    if (x0.eq.DMISS.or.y1.eq.DMISS.or.x1.eq.DMISS.or.y1.eq.DMISS)
+    Point x1 = samplePoints[ip1];
+    double z1 = zss(ip1); // zss(1, ip1);
+
+    if (x0.x == constants::missing::doubleValue ||
+        x0.y == constants::missing::doubleValue ||
+        x1.x == constants::missing::doubleValue ||
+        x1.y == constants::missing::doubleValue)
     {
         return;
     }
 
-    leftPoint = 0.25 * (samplePoints[ip0] + samplePoints[ip1] + samplePoints[ip0L] + samplePoints[ip1L]);
-    rightPoint = 0.25 * (samplePoints[ip0] + samplePoints[ip1] + samplePoints[ip0R] + samplePoints[ip1R]);
+    Point leftPoint = 0.25 * (samplePoints[ip0] + samplePoints[ip1] + samplePoints[ip0L] + samplePoints[ip1L]);
+    Point rightPoint = 0.25 * (samplePoints[ip0] + samplePoints[ip1] + samplePoints[ip0R] + samplePoints[ip1R]);
 
-    cx1 = -GetDelta(leftPoint, rightPoint, projection);
-    cxL = -GetDelta(samplePoints[ip0], samplePoints[ip1], projection);
+    Vector cx1 = GetDelta(leftPoint, rightPoint, projection);
+    // Rotate delta by pi/2
+    cx1 = Vector(-cx1.y(), cx1.x());
 
-    cx0 = -cx1;
-    cxR = -cxL;
+    Vector cxL = GetDelta(samplePoints[ip0], samplePoints[ip1], projection);
+    // Rotate delta by pi/2
+    cxL = Vector(-cxL.y(), cxL.x());
 
-    darea = 0.5 * (dot(cx0, x0) + dot(cx1, x1) + dot(cxL, xL) + dot(cxR, xR));
+    Vector cx0 = -cx1;
+    Vector cxR = -cxL;
 
-    // darea = 0.5 * (cx0.x () * x0 + cy0.);
-    // darea = 0.5 * (cx0 * x0 + cy0 * y0 + cx1 * x1 + cy1 * y1 + cxL * xL + cyL * yL + cxR * xR + cyR * yR);
+    double darea = 0.5 * (dot(cx0, x0) + dot(cx1, x1) + dot(cxL, leftPoint) + dot(cxR, rightPoint));
 
     // !     gradx and grady can be composed
 
-    if (zss(1, ip0) != DMISS && zss(1, ip1) != DMISS && &zss(1, ip0L) != DMISS && zss(1, ip0R) != DMISS && &zss(1, ip1L) != DMISS && zss(1, ip1R) != DMISS)
+    if (zss(ip0) != constants::missing::doubleValue &&
+        zss(ip1) != constants::missing::doubleValue &&
+        zss(ip0L) != constants::missing::doubleValue &&
+        zss(ip0R) != constants::missing::doubleValue &&
+        zss(ip1L) != constants::missing::doubleValue &&
+        zss(ip1R) != constants::missing::doubleValue)
     {
-        double zL = 0.25 * (zss(1, ip0) + zss(1, ip1) + zss(1, ip0L) + zss(1, ip1L));
-        double zR = 0.25 * (zss(1, ip0) + zss(1, ip1) + zss(1, ip0R) + zss(1, ip1R));
-        gradient(0) = (cx1.x() * z1 + cxL.x() * zL + cx0.x() * z0 + cxR.x() * zR) / darea;
-        gradient(1) = (cy1.y() * z1 + cyL.y() * zL + cy0.y() * z0 + cyR.y() * zR) / darea;
+        double zL = 0.25 * (zss(ip0) + zss(ip1) + zss(ip0L) + zss(ip1L));
+        double zR = 0.25 * (zss(ip0) + zss(ip1) + zss(ip0R) + zss(ip1R));
+        gradient[0] = (cx1.x() * z1 + cxL.x() * zL + cx0.x() * z0 + cxR.x() * zR) / darea;
+        gradient[1] = (cx1.y() * z1 + cxL.y() * zL + cx0.y() * z0 + cxR.y() * zR) / darea;
     }
 
     S = 2.0 * cx1;
-    drealL = 0.5 * std::abs(OuterProductTwoSegments(x0, xR, x0, xL, projection));
-    drealR = 0.5 * std::abs(OuterProductTwoSegments(x1, xR, x1, xL, projection));
+    dareaL = 0.5 * std::abs(OuterProductTwoSegments(x0, rightPoint, x0, leftPoint, projection));
+    dareaR = 0.5 * std::abs(OuterProductTwoSegments(x1, rightPoint, x1, leftPoint, projection));
 }
 
 void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>& samplePoints,
                                                         const std::vector<double>& sampleData,
+                                                        const Projection projection,
+                                                        const Hessian& hessian,
                                                         const UInt direction,
                                                         const UInt i,
                                                         const UInt j,
-                                                        Eigen::Vector2d& gradient,
-                                                        Eigen::Vector2d& sn,
+                                                        meshkernel::Vector& gradient,
+                                                        meshkernel::Vector& sn,
                                                         double& dareaL,
-                                                        double& dereaR) const
+                                                        double& dareaR) const
 {
-    gradient(0) = 0.0;
-    gradient(1) = 0.0;
-    sn(0) = 0.0;
-    sn(1) = 0.0;
+
+    // const HessianDimension& dimension = hessian.size();
+
+    gradient[0] = 0.0;
+    gradient[1] = 0.0;
+    sn[0] = 0.0;
+    sn[1] = 0.0;
 
     dareaL = 0.0;
     dareaR = 0.0;
@@ -329,20 +361,27 @@ void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>
         //         control volume:
         //
         //                   L:(i+1/2,j+1/2)
-        //                  / \
-        //                 /   \
-        //          0:(i,j)-----1:(i+1,j)
-        //                 \   /
-        //                  \ /
+        //                  / \                  |
+        //                 /   \                 |
+        //          0:(i,j)-----1:(i+1,j)        |
+        //                 \   /                 |
+        //                  \ /                  |
         //                   R:(i+1/2,j-1/2)
 
-        ip0 = i + hessian.size(1) * (j - 1);                           // ! pointer to (i,j)
-        ip1 = i + 1 + hessian.size(1) * (j - 1);                       // ! pointer to (i+1,j)
-        ip0L = i + hessian.size(1) * (std::min(j + 1, MYSAM) - 1);     // ! pointer to (i,j+1)
-        ip0R = i + hessian.size(1) * (std::max(j - 1, 1) - 1);         // ! pointer to (i,j-1)
-        ip1L = i + 1 + hessian.size(1) * (std::min(j + 1, MYSAM) - 1); // ! pointer to (i+1,j+1)
-        ip1R = i + 1 + hessian.size(1) * (std::max(j - 1, 1) - 1);     // ! pointer to (i+1,j-1)
-        computeGradient(samplePoints, sampleData, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, S, DareaL, DareaR);
+        UInt ip0 = hessian.get1DIndex(i, j);          // ! pointer to (i,j)
+        UInt ip1 = hessian.get1DIndex(i + 1, j);      // ! pointer to (i+1,j)
+        UInt ip0L = hessian.get1DIndex(i, j + 1);     // ! pointer to (i,j+1)
+        UInt ip0R = hessian.get1DIndex(i, j - 1);     // ! pointer to (i,j-1)
+        UInt ip1L = hessian.get1DIndex(i + 1, j + 1); // ! pointer to (i+1,j+1)
+        UInt ip1R = hessian.get1DIndex(i + 1, j - 1); // ! pointer to (i+1,j-1)
+
+        // UInt ip0 = i + dimension[1] * j;                                        // ! pointer to (i,j)
+        // UInt ip1 = i + 1 + dimension[1] * j;                                    // ! pointer to (i+1,j)
+        // UInt ip0L = i + dimension[1] * (std::min(j + 1, dimension[2]) - 1);     // ! pointer to (i,j+1)
+        // UInt ip0R = i + dimension[1] * (std::max(j - 1, 1U) - 1);               // ! pointer to (i,j-1)
+        // UInt ip1L = i + 1 + dimension[1] * (std::min(j + 1, dimension[2]) - 1); // ! pointer to (i+1,j+1)
+        // UInt ip1R = i + 1 + dimension[1] * (std::max(j - 1, 1U) - 1);           // ! pointer to (i+1,j-1)
+        computeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
     else if (direction == 1)
     {
@@ -350,38 +389,64 @@ void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>
         //        control volume:
         //
         //                   1:(i,j+1)
-        //                  / \
-        //                 /   \
-        //  L:(i-1/2,j+1/2)-----R:(i+1/2,j+1/2)
-        //                 \   /
-        //                  \ /
+        //                  / \                  |
+        //                 /   \                 |
+        //  L:(i-1/2,j+1/2)-----R:(i+1/2,j+1/2)  |
+        //                 \   /                 |
+        //                  \ /                  |
         //                   0:(i,j)
 
-        ip0 = i + hessian.size(1) * (j - 1);                                 //              ! pointer to (i,j)
-        ip1 = i + hessian.size(1) * (j);                                     //              ! pointer to (i,j+1)
-        ip0L = std::max(i - 1, 1) + hessian.size(1) * (j - 1);               //              ! pointer to (i-1,j)
-        ip0R = std::min(i + 1, hessian.size(1)) + hessian.size(1) * (j - 1); //              ! pointer to (i+1,j)
-        ip1L = std::max(i - 1, 1) + hessian.size(1) * (j);                   //              ! pointer to (i-1,j+1)
-        ip1R = std::min(i + 1, hessian.size(1)) + hessian.size(1) * (j);     //              ! pointer to (i+1,j+1)
-        computeGradient(samplePoints, sampleData, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, S, DareaL, DareaR);
+        UInt ip0 = hessian.get1DIndex(i, j);
+        UInt ip1 = hessian.get1DIndex(i, j + 1);
+        UInt ip0L = hessian.get1DIndex(i - 1, j);     //              ! pointer to (i-1,j)
+        UInt ip0R = hessian.get1DIndex(i + 1, j);     //              ! pointer to (i+1,j)
+        UInt ip1L = hessian.get1DIndex(i - 1, j + 1); //              ! pointer to (i-1,j+1)
+        UInt ip1R = hessian.get1DIndex(i + 1, j + 1); //              ! pointer to (i+1,j+1)
+
+        // UInt ip0 = i + dimension[1] * (j - 1);                              //              ! pointer to (i,j)
+        // UInt ip1 = i + dimension[1] * (j);                                  //              ! pointer to (i,j+1)
+        // UInt ip0L = std::max(i - 1, 1U) + dimension[1] * (j - 1);           //              ! pointer to (i-1,j)
+        // UInt ip0R = std::min(i + 1, dimension[1]) + dimension[1] * (j - 1); //              ! pointer to (i+1,j)
+        // UInt ip1L = std::max(i - 1, 1U) + dimension[1] * (j);               //              ! pointer to (i-1,j+1)
+        // UInt ip1R = std::min(i + 1, dimension[1]) + dimension[1] * (j);     //              ! pointer to (i+1,j+1)
+        computeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
 }
 
 void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& samplePoints,
                                                  const std::vector<double>& sampleData,
+                                                 const Projection projection,
                                                  Hessian& hessian) const
 {
-    double dh = std::min(ComputeDistance(samplePoints[0], samplePoints[1], projection),
-                         ComputeDistance(samplePoints[hessian.size(1) - 1], samplePoints[hessian.size(1) - 1], projection));
+    // double dh = std::min(ComputeDistance(samplePoints[0], samplePoints[1], projection),
+    //                      ComputeDistance(samplePoints[hessian.size(1) - 1], samplePoints[hessian.size(1) - 1], projection));
+
+    (void)sampleData;
+    (void)projection;
 
     if (hessian.size(1) < 3 || hessian.size(2) < 2)
     {
         return;
     }
 
+    meshkernel::Vector gradientiL;
+    meshkernel::Vector gradientiR;
+    meshkernel::Vector gradientjL;
+    meshkernel::Vector gradientjR;
+
+    meshkernel::Vector SniL;
+    meshkernel::Vector SniR;
+    meshkernel::Vector SnjL;
+    meshkernel::Vector SnjR;
+
+    meshkernel::Vector S;
+
+    Eigen::Matrix2d VV;
+    UInt ip;
+
     for (UInt i = 1; i < hessian.size(1) - 1; ++i)
     {
-        double af = static_cast<double>(i - 1) / static_cast<double>(std::max(hessian.size(1) - 3, 1));
+        // double af = static_cast<double>(i - 1) / static_cast<double>(std::max(hessian.size(1) - 3, 1));
 
         for (UInt j = 1; j < hessian.size(2) - 1; ++j)
         {
@@ -392,91 +457,93 @@ void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& sampl
                 continue;
             }
 
-            double zxx = 0.0;
-            double zxy = 0.0;
-            double zyx = 0.0;
-            double zyy = 0.0;
+            double dareaiL = 0.0;
+            double dareaiR = 0.0;
+            double dareajL = 0.0;
+            double dareajR = 0.0;
+            double dum;
 
-            double UU = 0.0;
-            double VV = 0.0;
+            // bool hasRidge = false;
 
-            double zx = 0.0;
-            double zy = 0.0;
+            // (void)hasRidge;
 
-            double S = 0.0;
-            UInt k = 0;
-            bool hasRidge = false;
+            computeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i, j, gradientiR, SniR, dareaiR, dum);
 
-            for ()
+            if (gradientiR[0] == constants::missing::doubleValue)
             {
-                computeSampleGradient(samplePoints, sampleData, 0, i, j, gradientiR, sniR, dareaiR, dum);
-
-                if (gradientiR(0) == constants::missing::doubleValue)
-                {
-                    break;
-                }
-
-                computeSampleGradient(samplePoints, sampleData, 1, i - 1, j, gradientiL, sniL, dum, dareaiL);
-
-                if (gradientiL(0) == constants::missing::doubleValue)
-                {
-                    break;
-                }
-
-                computeSampleGradient(samplePoints, sampleData, 1, i, j, gradientjR, snij, dareajR, dum);
-
-                if (gradientjR(0) == constants::missing::doubleValue)
-                {
-                    break;
-                }
-
-                computeSampleGradient(samplePoints, sampleData, 1, i, j - 1, gradientjL, snjL, dum, dareajL);
-
-                if (gradientjL(0) == constants::missing::doubleValue)
-                {
-                    break;
-                }
-
-                area = dareaiL + dareaiR + dareajL + dareajR;
-
-                zx = (0.5d0 * (zss(1, i + 1, j) + zss(1, i, j)) * SniR(1) - 0.5d0 * (zss(1, i - 1, j) + zss(1, i, j)) * SniL(1) +
-                      0.5d0 * (zss(1, i, j + 1) + zss(1, i, j)) * SnjR(1) - 0.5d0 * (zss(1, i, j - 1) + zss(1, i, j)) * SnjL(1)) /
-                     area;
-                zy = (0.5d0 * (zss(1, i + 1, j) + zss(1, i, j)) * SniR(2) - 0.5d0 * (zss(1, i - 1, j) + zss(1, i, j)) * SniL(2) +
-                      0.5d0 * (zss(1, i, j + 1) + zss(1, i, j)) * SnjR(2) - 0.5d0 * (zss(1, i, j - 1) + zss(1, i, j)) * SnjL(2)) /
-                     area;
-
-                VV(0, 0) = (gradiR(1) * SniR(1) - gradiL(1) * SniL(1) + gradjR(1) * SnjR(1) - gradjL(1) * SnjL(1)) / area;
-                VV(0, 1) = (gradiR(1) * SniR(2) - gradiL(1) * SniL(2) + gradjR(1) * SnjR(2) - gradjL(1) * SnjL(2)) / area;
-                VV(1, 0) = (gradiR(2) * SniR(1) - gradiL(2) * SniL(1) + gradjR(2) * SnjR(1) - gradjL(2) * SnjL(1)) / area;
-                VV(1, 1) = (gradiR(2) * SniR(2) - gradiL(2) * SniL(2) + gradjR(2) * SnjR(2) - gradjL(2) * SnjL(2)) / area;
-
-                // Eigendecompostion
-                Eigen::EigenSolver<Matrix2d> eigensolver(VV);
-                jacobi(VV, 2, 2, S, UU, nrot);
-
-                k = std::abs(S(1)) > std::abs(S(2)) ? 0 : 1;
-
-                hessian(2, i, j) = VV(0, k);
-                hessian(3, i, j) = VV(1, k);
-                hessian(4, i, j) = S(k) * area;
-                hessian(5, i, j) = -(VV(1, k) * zx + VV(2, k) * zy) / (S(k) + 1.0e-8);
+                continue;
             }
+
+            computeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i - 1, j, gradientiL, SniL, dum, dareaiL);
+
+            if (gradientiL[0] == constants::missing::doubleValue)
+            {
+                continue;
+            }
+
+            computeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j, gradientjR, SnjR, dareajR, dum);
+
+            if (gradientjR[0] == constants::missing::doubleValue)
+            {
+                continue;
+            }
+
+            computeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j - 1, gradientjL, SnjL, dum, dareajL);
+
+            if (gradientjL[0] == constants::missing::doubleValue)
+            {
+                continue;
+            }
+
+            double area = dareaiL + dareaiR + dareajL + dareajR;
+
+            double zx = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[0] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[0] +
+                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[0] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[0]) /
+                        area;
+            double zy = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[1] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[1] +
+                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[1] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[1]) /
+                        area;
+
+            VV(0, 0) = (gradientiR[0] * SniR[0] - gradientiL[0] * SniL[0] + gradientjR[0] * SnjR[0] - gradientjL[0] * SnjL[0]) / area;
+            VV(0, 1) = (gradientiR[0] * SniR[1] - gradientiL[0] * SniL[1] + gradientjR[0] * SnjR[1] - gradientjL[0] * SnjL[1]) / area;
+            VV(1, 0) = (gradientiR[1] * SniR[0] - gradientiL[1] * SniL[0] + gradientjR[1] * SnjR[0] - gradientjL[1] * SnjL[0]) / area;
+            VV(1, 1) = (gradientiR[1] * SniR[1] - gradientiL[1] * SniL[1] + gradientjR[1] * SnjR[1] - gradientjL[1] * SnjL[1]) / area;
+
+            // Eigendecompostion
+            Eigen::EigenSolver<Eigen::Matrix2d> eigensolver(VV);
+            // eigensolver.compute(VV);
+
+            auto eigenvectors = eigensolver.eigenvectors();
+            auto eigenvalues = eigensolver.eigenvalues();
+            // Eigen::EigenvectorsType<Eigen::Matrix2d> eigenvectors = eigensolver.eigenvectors();
+
+            UInt k = std::abs(eigenvalues[0].real()) > std::abs(eigenvalues[1].real()) ? 0U : 1u;
+
+            hessian(1, i, j) = eigenvectors(0, k).real();
+            hessian(2, i, j) = eigenvectors(1, k).real();
+            hessian(3, i, j) = eigenvalues[k].real() * area;
+            hessian(4, i, j) = -(eigenvectors(0, k).real() * zx + eigenvectors(1, k).real() * zy) / (eigenvalues[k].real() + 1.0e-8);
         }
     }
 }
 
 void meshkernel::RidgeRefinement::prepareSampleForHessian(const std::vector<Point>& samplePoints,
                                                           const std::vector<double>& sampleData,
+                                                          const Projection projection,
                                                           Hessian& hessian) const
 {
+
+    UInt numberOfSmoothingIterations = 1;
+
     smoothSamples(sampleData, numberOfSmoothingIterations, hessian);
-    computeHessian(sampleData, hessian);
+    computeHessian(samplePoints, sampleData, projection, hessian);
 }
 
-void meshkernel::RidgeRefinement::Compute(Mesh2D& mesh, const std::vector<Point>& rawSamplePoints, const std::vector<double>& rawSampleData) const
+void meshkernel::RidgeRefinement::Compute(const std::vector<Point>& rawSamplePoints,
+                                          const std::vector<double>& rawSampleData,
+                                          const Projection projection,
+                                          const UInt numX, const UInt numY) const
 {
-    (void)mesh;
     std::vector<Point> samplePoints(rawSamplePoints);
     std::vector<double> sampleData(rawSampleData);
 
@@ -486,22 +553,36 @@ void meshkernel::RidgeRefinement::Compute(Mesh2D& mesh, const std::vector<Point>
     RTree kdTree;
     kdTree.BuildTree(samplePoints);
 
-    // Hessian hessian(5, mesh.);
-    // prepareSampleForHessian(samplePoints, sampleData);
+    Hessian hessian(5, numX, numY);
+    prepareSampleForHessian(samplePoints, sampleData, projection, hessian);
 }
 
-void meshkernel::RidgeRefinement::Compute(const CurvilinearMesh& mesh, const std::vector<Point>& rawSamplePoints, const std::vector<double>& rawSampleData) const
-{
-    (void)mesh;
-    std::vector<Point> samplePoints(rawSamplePoints);
-    std::vector<double> sampleData(rawSampleData);
+// void meshkernel::RidgeRefinement::FindLinkBrothers(Mesh2D& mesh, std::vector<UInt>& linkBrothers) const
+// {
+// }
 
-    TidySamples(samplePoints, sampleData);
-    BoundingBox boundingBox(samplePoints);
+// void meshkernel::RidgeRefinement::refineMesh(Mesh2D& mesh, const Hessian& hessian) const
+// {
+//     // DeleteDryPointsAndAreas(mesh);
+//     FindLinkBrothers(mesh, linkBrothers);
+// }
 
-    RTree kdTree;
-    kdTree.BuildTree(samplePoints);
+// void meshkernel::RidgeRefinement::Compute(Mesh2D& mesh,
+//                                           const std::vector<Point>& rawSamplePoints,
+//                                           const std::vector<double>& rawSampleData,
+//                                           const Projection projection,
+//                                           const UInt numX, const UInt numY) const
+// {
+//     std::vector<Point> samplePoints(rawSamplePoints);
+//     std::vector<double> sampleData(rawSampleData);
 
-    Hessian hessian(5, mesh.m_numM, mesh.m_numN);
-    prepareSampleForHessian(mesh, samplePoints, sampleData, hessian);
-}
+//     TidySamples(samplePoints, sampleData);
+//     BoundingBox boundingBox(samplePoints);
+
+//     RTree kdTree;
+//     kdTree.BuildTree(samplePoints);
+
+//     Hessian hessian(5, numX, numY);
+//     prepareSampleForHessian(samplePoints, sampleData, projection, hessian);
+//     refineMesh(mesh, hessian);
+// }

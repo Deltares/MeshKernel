@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "MeshKernel/Constants.hpp"
 
 namespace meshkernel
@@ -36,40 +38,46 @@ namespace meshkernel
     {
     public:
         /// @brief Default constructor
-        Vector() : m_x(constants::missing::doubleValue), m_y(constants::missing::doubleValue) {}
+        Vector() : m_values{constants::missing::doubleValue, constants::missing::doubleValue} {}
 
         /// @brief Class constructor
         ///
         /// @param[in] x The x coordinate of the vector
         /// @param[in] y The y coordinate of the vector
-        Vector(const double x, const double y) : m_x(x), m_y(y) {}
+        Vector(const double x, const double y) : m_values{x, y} {}
 
         /// @brief Gets the x coordinate of the vector
         /// @returns x The x coordinate of the vector
         [[nodiscard]] double x() const
         {
-            return m_x;
+            return m_values[0];
         }
 
         /// @brief Gets the x coordinate of the vector
         /// @returns x The x coordinate of the vector
         [[nodiscard]] double& x()
         {
-            return m_x;
+            return m_values[0];
         }
 
         /// @brief Gets the y coordinate of the vector
         /// @returns x The y coordinate of the vector
         [[nodiscard]] double y() const
         {
-            return m_y;
+            return m_values[1];
         }
         /// @brief Gets the y coordinate of the vector
         /// @returns x The y coordinate of the vector
         [[nodiscard]] double& y()
         {
-            return m_y;
+            return m_values[1];
         }
+
+        /// \brief Get the value of the vector.
+        double operator[](const UInt i) const;
+
+        /// \brief Get the value of the vector.
+        double& operator[](const UInt i);
 
         /// @brief Inplace add vector to vector.
         Vector& operator+=(const Vector& vec);
@@ -96,8 +104,8 @@ namespace meshkernel
         double length() const;
 
     private:
-        double m_x; ///< The x coordinate of the vector
-        double m_y; ///< The y coordinate of the vector
+        /// \brief Values of the vector
+        std::array<double, 2> m_values;
     };
 
     /// @brief Return the normalised vector.
@@ -130,45 +138,55 @@ namespace meshkernel
 
 } // namespace meshkernel
 
+inline double meshkernel::Vector::operator[](const UInt i) const
+{
+    return m_values[i];
+}
+
+inline double& meshkernel::Vector::operator[](const UInt i)
+{
+    return m_values[i];
+}
+
 inline meshkernel::Vector& meshkernel::Vector::operator+=(const Vector& vec)
 {
-    m_x += vec.m_x;
-    m_y += vec.m_y;
+    m_values[0] += vec.m_values[0];
+    m_values[1] += vec.m_values[1];
     return *this;
 }
 
 inline meshkernel::Vector& meshkernel::Vector::operator-=(const Vector& vec)
 {
-    m_x -= vec.m_x;
-    m_y -= vec.m_y;
+    m_values[0] -= vec.m_values[0];
+    m_values[1] -= vec.m_values[1];
     return *this;
 }
 
 inline meshkernel::Vector& meshkernel::Vector::operator/=(const double alpha)
 {
-    m_x /= alpha;
-    m_y /= alpha;
+    m_values[0] /= alpha;
+    m_values[1] /= alpha;
     return *this;
 }
 
 inline meshkernel::Vector& meshkernel::Vector::operator*=(const double alpha)
 {
-    m_x *= alpha;
-    m_y *= alpha;
+    m_values[0] *= alpha;
+    m_values[1] *= alpha;
     return *this;
 }
 
 inline void meshkernel::Vector::normalise()
 {
     double lengthInv = 1.0 / length();
-    m_x *= lengthInv;
-    m_y *= lengthInv;
+    m_values[0] *= lengthInv;
+    m_values[1] *= lengthInv;
 }
 
 inline double meshkernel::Vector::length() const
 {
     // TODO check implementation of hypot.
-    return std::hypot(m_x, m_y);
+    return std::hypot(m_values[0], m_values[1]);
 }
 
 inline meshkernel::Vector meshkernel::normalise(const Vector& vec)
