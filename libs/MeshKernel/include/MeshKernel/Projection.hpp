@@ -36,7 +36,7 @@ namespace meshkernel
     class Projection
     {
     public:
-        /// @brief Class cosntructor
+        /// @brief Class constructor
         Projection() = delete;
 
         /// @enum Type

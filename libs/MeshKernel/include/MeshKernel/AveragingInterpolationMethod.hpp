@@ -36,7 +36,7 @@ namespace meshkernel
     class AveragingInterpolationMethod
     {
     public:
-        /// @brief Class cosntructor
+        /// @brief Class constructor
         AveragingInterpolationMethod() = delete;
 
         /// @enum Method

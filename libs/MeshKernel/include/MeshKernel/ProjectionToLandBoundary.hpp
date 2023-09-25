@@ -36,7 +36,7 @@ namespace meshkernel
     class ProjectionToLandBoundary
     {
     public:
-        /// @brief Class cosntructor
+        /// @brief Class constructor
         ProjectionToLandBoundary() = delete;
 
         /// @enum Type

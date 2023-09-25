@@ -36,7 +36,7 @@ namespace meshkernel
     class MeshRefinementType
     {
     public:
-        /// @brief Class cosntructor
+        /// @brief Class constructor
         MeshRefinementType() = delete;
 
         /// @enum Type
