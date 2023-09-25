@@ -27,23 +27,46 @@
 
 #pragma once
 
-#include <map>
 #include <string>
-
-#include <cstdint>
+#include <vector>
 
 namespace meshkernel
 {
-    /// @brief Integer type used when indexing mesh graph entities.
-    using UInt = std::uint32_t;
-
-    /// @brief Indicator for traversal direction of the points specifying a polygon
-    // PolygonTraversalDirection? too long
-    // PolygonOrientation
-    enum class TraversalDirection
+    /// @brief Projection::Type class
+    class MeshRefinementType
     {
-        Clockwise,    ///< Points define a clockwise traversal of the polygon
-        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
+    public:
+        /// @brief Class cosntructor
+        MeshRefinementType() = delete;
+
+        /// @enum Type
+        /// @brief Enumerator describing the mesh refinements types
+        enum Type
+        {
+            WaveCourant = 1,      ///> Wave Couranr
+            RefinementLevels = 2, ///> Refinement levels
+            Unknown = 3           ///> Unknown
+        };
+
+        /// @brief Returns the mesh location string
+        /// @param type The mesh location enumeration
+        /// @return The mesh lcoations string
+        inline static std::string ToString(Type const type)
+        {
+            switch (type)
+            {
+            case WaveCourant:
+                return "Wave Courant";
+            case RefinementLevels:
+                return "Refinement levels";
+            case Unknown:
+            default:
+                return "Unknown";
+            }
+        }
+
+        /// @brief Vector of valid projections stored as integers
+        inline static std::vector<int> const ValidValues = {WaveCourant, RefinementLevels};
     };
 
 } // namespace meshkernel

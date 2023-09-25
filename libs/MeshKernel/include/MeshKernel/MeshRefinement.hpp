@@ -29,6 +29,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/MeshRefinementType.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>
@@ -80,13 +81,6 @@ namespace meshkernel
             Land = 1,
             Water = 2,
             LandWater = 3
-        };
-
-        /// @brief Enumerator describing the different refinement types
-        enum class RefinementType
-        {
-            WaveCourant = 1,
-            RefinementLevels = 2
         };
 
     public:
@@ -222,8 +216,8 @@ namespace meshkernel
         std::vector<UInt> m_refineEdgeCache;          ///< Cache for the edges to be refined
         std::vector<FaceLocation> m_faceLocationType; ///< Cache for the face location types
 
-        RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
-        bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
+        MeshRefinementType::Type m_refinementType = MeshRefinementType::Unknown; ///< The type of refinement to use
+        bool m_directionalRefinement = false;                                    ///< Whether there is directional refinement
 
         std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
         std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance

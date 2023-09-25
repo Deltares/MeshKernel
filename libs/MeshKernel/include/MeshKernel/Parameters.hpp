@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "MeshKernel/MeshRefinementType.hpp"
 #include "MeshKernel/RangeCheck.hpp"
 
 namespace meshkernel
@@ -189,10 +190,7 @@ namespace meshkernel
         range_check::CheckOneOf(parameters.refine_intersected, {0, 1}, "Refine intersected");
         range_check::CheckOneOf(parameters.use_mass_center_when_refining, {0, 1}, "Use mass center when refining");
         range_check::CheckGreater(parameters.min_edge_size, 0.0, "Min edge size");
-        // Move enum meshkernel::MeshRefinement::RefinementType out of meshkernel::MeshRefinement
-        // then use the underlying type of the enums to define ValidMeshRefinementTypes
-        static std::vector<int> const ValidMeshRefinementTypes{1, 2};
-        range_check::CheckOneOf(parameters.refinement_type, ValidMeshRefinementTypes, "Refinement type");
+        range_check::CheckOneOf(parameters.refinement_type, MeshRefinementType::ValidValues, "Refinement type");
         range_check::CheckOneOf(parameters.connect_hanging_nodes, {0, 1}, "Connect hanging nodes");
         range_check::CheckOneOf(parameters.account_for_samples_outside, {0, 1}, "Account for samples outside");
         range_check::CheckGreaterEqual(parameters.smoothing_iterations, 0, "Smoothing iterations");

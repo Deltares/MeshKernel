@@ -40,7 +40,9 @@ namespace meshkernel
 
     Mesh::Mesh(Projection::Type projection)
     {
-        Projection::CheckValidity(projection);
+        range_check::CheckOneOf<int>(projection,
+                                     Projection::ValidValues,
+                                     "Projection type");
         m_projection = projection;
     }
 
@@ -50,7 +52,9 @@ namespace meshkernel
         : m_nodes(nodes),
           m_edges(edges)
     {
-        Projection::CheckValidity(projection);
+        range_check::CheckOneOf<int>(projection,
+                                     Projection::ValidValues,
+                                     "Projection type");
         m_projection = projection;
     }
 
@@ -630,7 +634,7 @@ namespace meshkernel
         }
     }
 
-    void Mesh::SearchNearestLocation(Point point, MeshLocation meshLocation)
+    void Mesh::SearchNearestLocation(Point point, MeshLocation::Type meshLocation)
     {
         switch (meshLocation)
         {
@@ -649,7 +653,7 @@ namespace meshkernel
         }
     }
 
-    void Mesh::SearchNearestLocation(Point point, double squaredRadius, MeshLocation meshLocation)
+    void Mesh::SearchNearestLocation(Point point, double squaredRadius, MeshLocation::Type meshLocation)
     {
         switch (meshLocation)
         {
@@ -668,7 +672,7 @@ namespace meshkernel
         }
     }
 
-    void Mesh::SearchLocations(Point point, double squaredRadius, MeshLocation meshLocation)
+    void Mesh::SearchLocations(Point point, double squaredRadius, MeshLocation::Type meshLocation)
     {
         switch (meshLocation)
         {
@@ -687,7 +691,7 @@ namespace meshkernel
         }
     }
 
-    void Mesh::BuildTree(MeshLocation meshLocation)
+    void Mesh::BuildTree(MeshLocation::Type meshLocation)
     {
         switch (meshLocation)
         {
@@ -720,7 +724,7 @@ namespace meshkernel
         }
     }
 
-    void Mesh::BuildTree(MeshLocation meshLocation, const BoundingBox& boundingBox)
+    void Mesh::BuildTree(MeshLocation::Type meshLocation, const BoundingBox& boundingBox)
     {
         switch (meshLocation)
         {
@@ -755,7 +759,7 @@ namespace meshkernel
         }
     }
 
-    UInt Mesh::GetNumLocations(MeshLocation meshLocation) const
+    UInt Mesh::GetNumLocations(MeshLocation::Type meshLocation) const
     {
         switch (meshLocation)
         {
@@ -771,7 +775,7 @@ namespace meshkernel
         }
     }
 
-    UInt Mesh::GetLocationsIndices(UInt index, MeshLocation meshLocation)
+    UInt Mesh::GetLocationsIndices(UInt index, MeshLocation::Type meshLocation)
     {
         switch (meshLocation)
         {
@@ -826,7 +830,7 @@ namespace meshkernel
         return maxEdgeLength;
     }
 
-    std::vector<Point> Mesh::ComputeLocations(MeshLocation meshLocation) const
+    std::vector<Point> Mesh::ComputeLocations(MeshLocation::Type meshLocation) const
     {
         std::vector<Point> result;
         if (meshLocation == MeshLocation::Nodes)

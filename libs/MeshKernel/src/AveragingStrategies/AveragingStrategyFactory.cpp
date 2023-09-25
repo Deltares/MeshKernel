@@ -34,24 +34,24 @@
 #include <MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp>
 #include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
 
-std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
+std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolationMethod::Method averagingMethod,
                                                                                                                                 size_t minNumSamples,
                                                                                                                                 Point const& interpolationPoint,
                                                                                                                                 Projection::Type projection)
 {
     switch (averagingMethod)
     {
-    case AveragingInterpolation::Method::SimpleAveraging:
+    case AveragingInterpolationMethod::Method::SimpleAveraging:
         return std::make_unique<SimpleAveragingStrategy>(minNumSamples);
-    case AveragingInterpolation::Method::Closest:
+    case AveragingInterpolationMethod::Method::Closest:
         return std::make_unique<ClosestAveragingStrategy>(interpolationPoint, projection);
-    case AveragingInterpolation::Method::Max:
+    case AveragingInterpolationMethod::Method::Max:
         return std::make_unique<MaxAveragingStrategy>();
-    case AveragingInterpolation::Method::Min:
+    case AveragingInterpolationMethod::Method::Min:
         return std::make_unique<MinAveragingStrategy>();
-    case AveragingInterpolation::Method::InverseWeightedDistance:
+    case AveragingInterpolationMethod::Method::InverseWeightedDistance:
         return std::make_unique<InverseWeightedAveragingStrategy>(interpolationPoint, minNumSamples, projection);
-    case AveragingInterpolation::Method::MinAbsValue:
+    case AveragingInterpolationMethod::Method::MinAbsValue:
         return std::make_unique<MinAbsAveragingStrategy>();
     default:
         throw std::invalid_argument("Unsupported averagingMethod");

@@ -43,7 +43,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = static_cast<MeshRefinementType::Type>(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -56,7 +56,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = static_cast<MeshRefinementType::Type>(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -884,7 +884,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 
     switch (m_refinementType)
     {
-    case RefinementType::RefinementLevels:
+    case MeshRefinementType::RefinementLevels:
         if (m_interpolant->GetFaceResult(face) <= 0)
         {
             return;
@@ -895,7 +895,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
             m_refineEdgeCache[i] = 1;
         }
         break;
-    case RefinementType::WaveCourant:
+    case MeshRefinementType::WaveCourant:
         if (m_useNodalRefinement)
         {
             ComputeFaceLocationTypes();

@@ -49,6 +49,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshLocation.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -84,7 +85,7 @@ namespace meshkernelapi
     static size_t constexpr maxCharsToCopy = bufferSize - 1; // make sure destination string is null-terminated when strncpy is used
     static char exceptionMessage[bufferSize] = "";
     static meshkernel::UInt invalidMeshIndex{0};
-    static meshkernel::MeshLocation invalidMeshLocation{meshkernel::MeshLocation::Unknown};
+    static meshkernel::MeshLocation::Type invalidMeshLocation{meshkernel::MeshLocation::Unknown};
 
     static int HandleExceptions(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -1466,14 +1467,14 @@ namespace meshkernelapi
 
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
-            meshkernel::AveragingInterpolation::Method averagingMethod;
+            meshkernel::AveragingInterpolationMethod::Method averagingMethod;
             if (meshRefinementParameters.refinement_type == 1)
             {
-                averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
+                averagingMethod = meshkernel::AveragingInterpolationMethod::Method::MinAbsValue;
             }
             if (meshRefinementParameters.refinement_type == 2)
             {
-                averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
+                averagingMethod = meshkernel::AveragingInterpolationMethod::Method::Max;
             }
 
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
@@ -3182,8 +3183,8 @@ namespace meshkernelapi
             }
 
             auto sampleValues = ConvertGeometryListToSampleVector(samples);
-            auto const meshLocation = static_cast<meshkernel::MeshLocation>(locationType);
-            auto const averagingMethod = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethodType);
+            auto const meshLocation = static_cast<meshkernel::MeshLocation::Type>(locationType);
+            auto const averagingMethod = static_cast<meshkernel::AveragingInterpolationMethod::Method>(averagingMethodType);
 
             meshkernel::AveragingInterpolation averaging(*meshKernelState[meshKernelId].m_mesh2d,
                                                          sampleValues,
@@ -3241,7 +3242,7 @@ namespace meshkernelapi
 
             // Locations
             auto const sampleValues = ConvertGeometryListToSampleVector(samples);
-            auto const meshLocation = static_cast<meshkernel::MeshLocation>(locationType);
+            auto const meshLocation = static_cast<meshkernel::MeshLocation::Type>(locationType);
             auto const locations = meshKernelState[meshKernelId].m_mesh2d->ComputeLocations(meshLocation);
 
             // Execute triangulation
@@ -3261,65 +3262,65 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_edges_location_type(int& type)
     {
-        type = static_cast<int>(meshkernel::MeshLocation::Edges);
+        type = meshkernel::MeshLocation::Edges;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_nodes_location_type(int& type)
     {
-        type = static_cast<int>(meshkernel::MeshLocation::Nodes);
+        type = meshkernel::MeshLocation::Nodes;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_faces_location_type(int& type)
     {
-        type = static_cast<int>(meshkernel::MeshLocation::Faces);
+        type = meshkernel::MeshLocation::Faces;
         return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::SimpleAveraging);
+        method = meshkernel::AveragingInterpolationMethod::SimpleAveraging;
         return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Closest);
+        method = meshkernel::AveragingInterpolationMethod::Closest;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_max(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Max);
+        method = meshkernel::AveragingInterpolationMethod::Max;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Min);
+        method = meshkernel::AveragingInterpolationMethod::Min;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weighting(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::InverseWeightedDistance);
+        method = meshkernel::AveragingInterpolationMethod::InverseWeightedDistance;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
     {
-        method = static_cast<int>(meshkernel::AveragingInterpolation::Method::MinAbsValue);
+        method = meshkernel::AveragingInterpolationMethod::MinAbsValue;
         return meshkernel::ExitCode::Success;
     }
 
     MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::Cartesian);
+        projection = meshkernel::Projection::Cartesian;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::Spherical);
+        projection = meshkernel::Projection::Spherical;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
-        projection = static_cast<int>(meshkernel::Projection::SphericalAccurate);
+        projection = meshkernel::Projection::SphericalAccurate;
         return meshkernel::ExitCode::Success;
     }
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)

@@ -31,8 +31,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Projection.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
-
-#include <map>
+#include <MeshKernel/MeshLocation.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -257,48 +256,48 @@ namespace meshkernel
 
         /// @brief Build the rtree for the corresponding location, using all locations
         /// @param[in] meshLocation The mesh location for which the RTree is build
-        void BuildTree(MeshLocation meshLocation);
+        void BuildTree(MeshLocation::Type meshLocation);
 
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
         /// @param[in] meshLocation The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(MeshLocation meshLocation, const BoundingBox& boundingBox);
+        void BuildTree(MeshLocation::Type meshLocation, const BoundingBox& boundingBox);
 
         /// @brief Search all points sorted by proximity to another point.
         /// @param[in] point The reference point.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, MeshLocation meshLocation);
+        void SearchNearestLocation(Point point, MeshLocation::Type meshLocation);
 
         /// @brief Search the nearest point within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, MeshLocation meshLocation);
+        void SearchNearestLocation(Point point, double squaredRadius, MeshLocation::Type meshLocation);
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchLocations(Point point, double squaredRadius, MeshLocation meshLocation);
+        void SearchLocations(Point point, double squaredRadius, MeshLocation::Type meshLocation);
 
         /// @brief Gets the search results.
         /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
         ///
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The number of found neighbors.
-        UInt GetNumLocations(MeshLocation meshLocation) const;
+        UInt GetNumLocations(MeshLocation::Type meshLocation) const;
 
         /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, MeshLocation meshLocation);
+        [[nodiscard]] UInt GetLocationsIndices(UInt index, MeshLocation::Type meshLocation);
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
-        [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocation meshLocation) const;
+        [[nodiscard]] std::vector<Point> ComputeLocations(MeshLocation::Type meshLocation) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh

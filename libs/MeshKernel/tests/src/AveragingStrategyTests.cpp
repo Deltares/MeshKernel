@@ -9,18 +9,18 @@
 namespace meshkernel::averaging
 {
 
-    class MissingValueIsReturnedWhenNoValueIsAddedTest : public ::testing::TestWithParam<std::pair<AveragingInterpolation::Method, double>>
+    class MissingValueIsReturnedWhenNoValueIsAddedTest : public ::testing::TestWithParam<std::pair<AveragingInterpolationMethod::Method, double>>
     {
     public:
-        [[nodiscard]] static std::vector<std::pair<AveragingInterpolation::Method, double>> GetData()
+        [[nodiscard]] static std::vector<std::pair<AveragingInterpolationMethod::Method, double>> GetData()
         {
             return {
-                {AveragingInterpolation::Method::SimpleAveraging, constants::missing::doubleValue},
-                {AveragingInterpolation::Method::Closest, constants::missing::doubleValue},
-                {AveragingInterpolation::Method::Max, constants::missing::doubleValue},
-                {AveragingInterpolation::Method::Min, constants::missing::doubleValue},
-                {AveragingInterpolation::Method::InverseWeightedDistance, constants::missing::doubleValue},
-                {AveragingInterpolation::Method::MinAbsValue, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::SimpleAveraging, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::Closest, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::Max, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::Min, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::InverseWeightedDistance, constants::missing::doubleValue},
+                {AveragingInterpolationMethod::Method::MinAbsValue, constants::missing::doubleValue},
             };
         }
     };
@@ -47,9 +47,9 @@ namespace meshkernel::averaging
     class CalculateWithAddedValuesData
     {
     public:
-        CalculateWithAddedValuesData(AveragingInterpolation::Method const method, std::vector<std::pair<Point, double>> const& addData, double const expectedResult) : method_(method), addData_(addData), expectedResult(expectedResult) {}
+        CalculateWithAddedValuesData(AveragingInterpolationMethod::Method const method, std::vector<std::pair<Point, double>> const& addData, double const expectedResult) : method_(method), addData_(addData), expectedResult(expectedResult) {}
 
-        AveragingInterpolation::Method const method_;
+        AveragingInterpolationMethod::Method const method_;
         std::vector<std::pair<Point, double>> const addData_;
         double const expectedResult;
     };
@@ -82,12 +82,12 @@ namespace meshkernel::averaging
             };
 
             return {
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::SimpleAveraging, simpleData, -2.5),
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::Max, simpleData, -1.0),
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::Min, simpleData, -4.0),
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::MinAbsValue, simpleData, 1.0),
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::Closest, closestData, -1.0),
-                CalculateWithAddedValuesData(AveragingInterpolation::Method::InverseWeightedDistance, inverseWeigthedData, 0.218948),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::SimpleAveraging, simpleData, -2.5),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::Max, simpleData, -1.0),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::Min, simpleData, -4.0),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::MinAbsValue, simpleData, 1.0),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::Closest, closestData, -1.0),
+                CalculateWithAddedValuesData(AveragingInterpolationMethod::Method::InverseWeightedDistance, inverseWeigthedData, 0.218948),
             };
         }
     };

@@ -41,7 +41,9 @@ namespace meshkernel
     CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(Projection::Type projection)
         : m_projection(projection)
     {
-        Projection::CheckValidity(projection);
+        range_check::CheckOneOf<int>(projection,
+                                     Projection::ValidValues,
+                                     "Projection type");
 
         if (m_projection == Projection::SphericalAccurate)
         {

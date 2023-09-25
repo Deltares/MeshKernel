@@ -28,7 +28,6 @@
 #pragma once
 
 #include "MeshKernel/RangeCheck.hpp"
-#include "MeshKernel/Utilities/UnderlyingType.hpp"
 
 #include <string>
 #include <vector>
@@ -39,6 +38,10 @@ namespace meshkernel
     class Projection
     {
     public:
+        /// @brief Class cosntructor
+        Projection() = delete;
+
+        /// @enum Type
         /// @brief Enumerator describing the projections
         enum Type
         {
@@ -49,8 +52,8 @@ namespace meshkernel
         };
 
         /// @brief Returns the projection as a string
-        /// @param type Type of projection
-        /// @return Type of the projection as a string
+        /// @param type The projection enumeration
+        /// @return The projection string
         inline static std::string ToString(Type const type)
         {
             switch (type)
@@ -67,22 +70,8 @@ namespace meshkernel
             }
         }
 
-        /// @brief Checks the validity of the projection
-        /// @param type Type of projection
-        inline static void CheckValidity(Type const type)
-        {
-            range_check::CheckOneOf(static_cast<int>(type),
-                                    m_valid_projections,
-                                    "Projection type");
-        }
-
-    private:
         /// @brief Vector of valid projections stored as integers
-        inline static std::vector<int> const m_valid_projections = {
-            Cartesian,
-            Spherical,
-            SphericalAccurate //
-        };
+        inline static std::vector<int> const ValidValues = {Cartesian, Spherical, SphericalAccurate};
     };
 
 } // namespace meshkernel

@@ -92,6 +92,7 @@ set(
 set(
   INC_LIST
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
+  ${DOMAIN_INC_DIR}/AveragingInterpolationMethod.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
@@ -107,7 +108,9 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
+  ${DOMAIN_INC_DIR}/MeshLocation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
+  ${DOMAIN_INC_DIR}/MeshRefinementType.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp

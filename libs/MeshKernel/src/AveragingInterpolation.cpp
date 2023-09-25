@@ -36,8 +36,8 @@ using meshkernel::AveragingInterpolation;
 
 AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                std::vector<Sample>& samples,
-                                               Method method,
-                                               MeshLocation locationType,
+                                               AveragingInterpolationMethod::Method method,
+                                               MeshLocation::Type locationType,
                                                double relativeSearchRadius,
                                                bool useClosestSampleIfNoneAvailable,
                                                bool transformSamples,
