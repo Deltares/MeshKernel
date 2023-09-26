@@ -2003,10 +2003,10 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_get_exit_code_not_implemented(int& exitCode)
+    MKERNEL_API int mkernel_get_exit_code_not_implemented_error(int& exitCode)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        exitCode = meshkernel::ExitCode::NotImplementedCode;
+        exitCode = meshkernel::ExitCode::NotImplementedErrorCode;
         return lastExitCode;
     }
 

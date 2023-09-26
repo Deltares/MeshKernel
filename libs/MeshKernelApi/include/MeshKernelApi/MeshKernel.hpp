@@ -543,7 +543,7 @@ namespace meshkernelapi
         /// @brief Gets the exit code of an exception of type NotImplementedCode
         /// @param[in,out] exitCode The exit code
         /// @return Error code
-        MKERNEL_API int mkernel_get_exit_code_not_implemented(int& exitCode);
+        MKERNEL_API int mkernel_get_exit_code_not_implemented_error(int& exitCode);
 
         /// @brief Gets the exit code of an exception of type AlgorithmexitCode
         /// @param[in,out] exitCode The exit code

@@ -599,7 +599,7 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
         break;
     default:
         // 0 hanging nodes is handled at the top of this function, so to be here can only be: numberOfHangingNodes > 4
-        throw NotImplemented("Cannot handle more than 4 hanging nodes along irregular edge, number is: {}",
-                             numberOfHangingNodes);
+        throw NotImplementedError("Cannot handle more than 4 hanging nodes along irregular edge, number is: {}",
+                                  numberOfHangingNodes);
     }
 }
