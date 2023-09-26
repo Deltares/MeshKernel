@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/AveragingInterpolationMethod.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp>
 #include <MeshKernel/AveragingStrategies/InverseWeightedAveragingStrategy.hpp>
@@ -33,27 +34,33 @@
 #include <MeshKernel/AveragingStrategies/MinAbsAveragingStrategy.hpp>
 #include <MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp>
 #include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
-std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolationMethod::Method averagingMethod,
-                                                                                                                                size_t minNumSamples,
-                                                                                                                                Point const& interpolationPoint,
-                                                                                                                                Projection::Type projection)
+namespace meshkernel
 {
-    switch (averagingMethod)
+
+    std::unique_ptr<averaging::AveragingStrategy> averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolationMethod::Method averagingMethod,
+                                                                                                            size_t minNumSamples,
+                                                                                                            Point const& interpolationPoint,
+                                                                                                            Projection::Type projection)
     {
-    case AveragingInterpolationMethod::Method::SimpleAveraging:
-        return std::make_unique<SimpleAveragingStrategy>(minNumSamples);
-    case AveragingInterpolationMethod::Method::Closest:
-        return std::make_unique<ClosestAveragingStrategy>(interpolationPoint, projection);
-    case AveragingInterpolationMethod::Method::Max:
-        return std::make_unique<MaxAveragingStrategy>();
-    case AveragingInterpolationMethod::Method::Min:
-        return std::make_unique<MinAveragingStrategy>();
-    case AveragingInterpolationMethod::Method::InverseWeightedDistance:
-        return std::make_unique<InverseWeightedAveragingStrategy>(interpolationPoint, minNumSamples, projection);
-    case AveragingInterpolationMethod::Method::MinAbsValue:
-        return std::make_unique<MinAbsAveragingStrategy>();
-    default:
-        throw std::invalid_argument("Unsupported averagingMethod");
+        switch (averagingMethod)
+        {
+        case AveragingInterpolationMethod::Method::SimpleAveraging:
+            return std::make_unique<SimpleAveragingStrategy>(minNumSamples);
+        case AveragingInterpolationMethod::Method::Closest:
+            return std::make_unique<ClosestAveragingStrategy>(interpolationPoint, projection);
+        case AveragingInterpolationMethod::Method::Max:
+            return std::make_unique<MaxAveragingStrategy>();
+        case AveragingInterpolationMethod::Method::Min:
+            return std::make_unique<MinAveragingStrategy>();
+        case AveragingInterpolationMethod::Method::InverseWeightedDistance:
+            return std::make_unique<InverseWeightedAveragingStrategy>(interpolationPoint, minNumSamples, projection);
+        case AveragingInterpolationMethod::Method::MinAbsValue:
+            return std::make_unique<MinAbsAveragingStrategy>();
+        default:
+            throw MeshKernelError("Unsupported averaging method. Valid methods are {}",
+                                  AveragingInterpolationMethod::ValidValuesString());
+        }
     }
-}
+} // namespace meshkernel

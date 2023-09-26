@@ -30,6 +30,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::AveragingInterpolation;
@@ -44,13 +45,16 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                UInt minNumSamples)
     : m_mesh(mesh),
       m_samples(samples),
-      m_method(method),
       m_interpolationLocation(locationType),
       m_relativeSearchRadius(relativeSearchRadius),
       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
       m_transformSamples(transformSamples),
       m_minNumSamples(minNumSamples)
 {
+    range_check::CheckOneOf<int>(method,
+                                 AveragingInterpolationMethod::ValidValues(),
+                                 "Averaging inetrpolation method");
+    m_method = method;
     // build sample r-tree for searches
     m_samplesRtree.BuildTree(m_samples);
     m_visitedSamples.resize(m_samples.size());

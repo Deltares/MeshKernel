@@ -27,11 +27,13 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
 #include <cstdint>
+
+#include <algorithm>
 #include <string>
+#include <vector>
+
+#include "MeshKernel/Formatting.hpp"
 
 namespace meshkernel
 {
@@ -46,5 +48,18 @@ namespace meshkernel
         Clockwise,    ///< Points define a clockwise traversal of the polygon
         AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
     };
+
+    template <typename T>
+    inline static std::string MakeValidValuesString()
+    {
+        std::vector<std::string> ValidValuesStrVec;
+        auto const& ValidValues = T::ValidValues();
+        std::transform(ValidValues.cbegin(),
+                       ValidValues.cend(),
+                       std::back_inserter(ValidValuesStrVec),
+                       [](int const value)
+                       { return T::ToString(value); });
+        return fmt_ns::format("{}", ValidValuesStrVec);
+    }
 
 } // namespace meshkernel

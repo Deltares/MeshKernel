@@ -42,7 +42,7 @@ namespace meshkernel
     Mesh::Mesh(Projection::Type projection)
     {
         range_check::CheckOneOf<int>(projection,
-                                     Projection::ValidValues,
+                                     Projection::ValidValues(),
                                      "Projection type");
         m_projection = projection;
     }
@@ -54,7 +54,7 @@ namespace meshkernel
           m_edges(edges)
     {
         range_check::CheckOneOf<int>(projection,
-                                     Projection::ValidValues,
+                                     Projection::ValidValues(),
                                      "Projection type");
         m_projection = projection;
     }

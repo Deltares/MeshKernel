@@ -42,7 +42,7 @@ namespace meshkernel
         : m_projection(projection)
     {
         range_check::CheckOneOf<int>(projection,
-                                     Projection::ValidValues,
+                                     Projection::ValidValues(),
                                      "Projection type");
 
         if (m_projection == Projection::SphericalAccurate)

@@ -30,6 +30,8 @@
 #include <string>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
+
 namespace meshkernel
 {
     /// @brief Projection::Type class
@@ -68,8 +70,28 @@ namespace meshkernel
             }
         }
 
-        /// @brief Vector of valid projections stored as integers
-        inline static std::vector<int> const ValidValues = {Cartesian, Spherical, SphericalAccurate};
+        /// @brief Returns the mesh location string
+        /// @param type The mesh location enumeration as an integer
+        /// @return The mesh lcoations string
+        inline static std::string ToString(int const type)
+        {
+            return ToString(static_cast<Type>(type));
+        }
+
+        /// @brief Gets vector of valid values (integers)
+        /// @return Vector of valid values
+        inline static std::vector<int> const& ValidValues() { return m_ValidValues; }
+
+        /// @brief Gets valid values as a string
+        /// @return String of valid values
+        inline static std::string const& ValidValuesString() { return m_ValidValuesString; }
+
+    private:
+        /// @brief Vector of valid values
+        inline static std::vector<int> const m_ValidValues = {Cartesian, Spherical, SphericalAccurate};
+
+        /// @brief String of valid values
+        inline static std::string const m_ValidValuesString = MakeValidValuesString<Projection>();
     };
 
 } // namespace meshkernel
