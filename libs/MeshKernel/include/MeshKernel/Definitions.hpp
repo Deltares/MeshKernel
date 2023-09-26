@@ -28,6 +28,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace meshkernel
 {
@@ -41,6 +42,15 @@ namespace meshkernel
         spherical = 1,        // jsferic  = 1
         sphericalAccurate = 2 // jasfer3D = 1
     };
+
+    /// @brief Convert an integer value to the Projection enumeration type
+    ///
+    /// If the integer projection value does not correspond to an enumeration
+    /// value then a ConstraintError will be thrown
+    Projection GetProjectionValue(int projection);
+
+    /// @brief Get the string representation of the Projection enumeration values.
+    const std::string& ToString(Projection projection);
 
     /// @brief Indicator for traversal direction of the points specifying a polygon
     // PolygonTraversalDirection? too long

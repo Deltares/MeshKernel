@@ -25,11 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh2D.hpp"
+#include <queue>
+
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Polygons.hpp"
@@ -992,47 +994,56 @@ void Mesh2D::ComputeNodeNeighbours()
 
 std::vector<double> Mesh2D::GetOrthogonality()
 {
-    std::vector<double> result;
-    result.reserve(GetNumEdges());
-    for (UInt e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result(GetNumEdges());
+    const auto numEdges = GetNumEdges();
+    for (UInt e = 0; e < numEdges; e++)
     {
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
+        const auto firstFaceIndex = m_edgesFaces[e][0];
+        const auto secondFaceIndex = m_edgesFaces[e][1];
 
-        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            firstFaceIndex != constants::missing::uintValue &&
+            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
             val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
                                                     m_nodes[secondNode],
-                                                    m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                    m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                    m_facesCircumcenters[firstFaceIndex],
+                                                    m_facesCircumcenters[secondFaceIndex],
                                                     m_projection);
-            if (!IsEqual(val, constants::missing::doubleValue))
+
+            if (val != constants::missing::doubleValue)
             {
                 val = std::abs(val);
             }
         }
-        result.emplace_back(val);
+        result[e] = val;
     }
     return result;
 }
 
 std::vector<double> Mesh2D::GetSmoothness()
 {
-    std::vector<double> result;
-    result.reserve(GetNumEdges());
-    for (UInt e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result(GetNumEdges());
+    const auto numEdges = GetNumEdges();
+    for (UInt e = 0; e < numEdges; e++)
     {
         auto val = constants::missing::doubleValue;
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
+        const auto firstFaceIndex = m_edgesFaces[e][0];
+        const auto secondFaceIndex = m_edgesFaces[e][1];
 
-        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue && !IsEdgeOnBoundary(e))
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            firstFaceIndex != constants::missing::uintValue &&
+            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
         {
-            const auto leftFace = m_edgesFaces[e][0];
-            const auto rightFace = m_edgesFaces[e][1];
-            const auto leftFaceArea = m_faceArea[leftFace];
-            const auto rightFaceArea = m_faceArea[rightFace];
+            const auto leftFaceArea = m_faceArea[firstFaceIndex];
+            const auto rightFaceArea = m_faceArea[secondFaceIndex];
 
             if (leftFaceArea < m_minimumCellArea || rightFaceArea < m_minimumCellArea)
             {
@@ -1043,7 +1054,7 @@ std::vector<double> Mesh2D::GetSmoothness()
                 val = 1.0 / val;
             }
         }
-        result.emplace_back(val);
+        result[e] = val;
     }
     return result;
 }
@@ -1933,4 +1944,70 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
         }
     }
     return nodeMask;
+}
+
+meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) const
+{
+    if (m_numFacesNodes[faceId] != 4)
+    {
+        throw NotImplemented("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
+                             m_numFacesNodes[faceId]);
+    }
+
+    UInt position = constants::missing::uintValue;
+
+    // Find the corresponding position of edge
+    for (UInt i = 0; i < m_numFacesNodes[faceId]; ++i)
+    {
+        if (m_facesEdges[faceId][i] == edgeId)
+        {
+            position = i;
+            break;
+        }
+    }
+
+    UInt opposite;
+
+    switch (position)
+    {
+    case 0:
+        opposite = 2;
+        break;
+    case 1:
+        opposite = 3;
+        break;
+    case 2:
+        opposite = 0;
+        break;
+    case 3:
+        opposite = 1;
+        break;
+    default:
+        opposite = constants::missing::uintValue;
+    }
+
+    if (opposite != constants::missing::uintValue)
+    {
+        return m_facesEdges[faceId][opposite];
+    }
+
+    return constants::missing::uintValue;
+}
+
+meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
+{
+    if (faceId != constants::missing::uintValue)
+    {
+        if (m_edgesFaces[edgeId][0] == faceId)
+        {
+            return m_edgesFaces[edgeId][1];
+        }
+
+        if (m_edgesFaces[edgeId][1] == faceId)
+        {
+            return m_edgesFaces[edgeId][0];
+        }
+    }
+
+    return constants::missing::uintValue;
 }

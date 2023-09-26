@@ -30,7 +30,10 @@ set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
+  ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
+  ${SRC_DIR}/Definitions.cpp
+  ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
@@ -45,6 +48,7 @@ set(
   ${SRC_DIR}/Polygon.cpp
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
+  ${SRC_DIR}/RemoveDisconnectedRegions.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -93,12 +97,14 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Definitions.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
+  ${DOMAIN_INC_DIR}/Formatting.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
@@ -115,6 +121,8 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/RangeCheck.hpp
+  ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
@@ -158,6 +166,7 @@ set(
 set(
   UTILITIES_INC_LIST
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
+  ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
 )
 

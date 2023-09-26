@@ -27,12 +27,13 @@
 
 #pragma once
 
+#include <iostream>
 #include <numeric>
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 #include "MeshKernel/Vector.hpp"
 
@@ -517,13 +518,13 @@ namespace meshkernel
     /// @param[in] numM                 The number of columns to generate (horizontal direction).
     /// @param[in] numN                 The number of rows to generate (vertical direction).
     /// @returns The resulting dicretization (expressed as number of points).
-    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
-                                                                        const std::vector<Point>& rightDiscretization,
-                                                                        const std::vector<Point>& bottomDiscretization,
-                                                                        const std::vector<Point>& upperDiscretization,
-                                                                        const Projection& projection,
-                                                                        UInt numM,
-                                                                        UInt numN);
+    [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
+                                                               const std::vector<Point>& rightDiscretization,
+                                                               const std::vector<Point>& bottomDiscretization,
+                                                               const std::vector<Point>& upperDiscretization,
+                                                               const Projection& projection,
+                                                               UInt numM,
+                                                               UInt numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
@@ -586,5 +587,10 @@ namespace meshkernel
     /// @brief matCoefficients [in] To be detailed
     /// @returns The computed matrix norm
     [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
+
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
 
 } // namespace meshkernel

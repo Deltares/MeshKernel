@@ -183,7 +183,6 @@ namespace meshkernel
         LandBoundary m_landBoundary;                              ///< The nodes on the land boundary
         std::vector<Point> m_polygonNodesCache;                   ///< Array of points (e.g. points of a face)
         std::vector<std::pair<UInt, UInt>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
-        std::vector<std::vector<double>> m_nodesLand;             ///< Node to land boundary segment mapping
         std::vector<UInt> m_nodeFaceIndices;                      ///< For each node, the indices of the faces including them
 
         std::vector<UInt> m_nodeMask; ///< Node mask
