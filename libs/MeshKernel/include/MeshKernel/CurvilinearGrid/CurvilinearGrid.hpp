@@ -73,12 +73,12 @@ namespace meshkernel
         CurvilinearGrid() = default;
 
         /// @brief Constructor taking only a projection
-        CurvilinearGrid(Projection projection);
+        CurvilinearGrid(Projection::Type projection);
 
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection);
+        CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection::Type projection);
 
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons

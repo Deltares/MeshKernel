@@ -29,6 +29,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Projection.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <memory>
@@ -45,7 +46,7 @@ namespace meshkernel
         /// @brief Class constructor
         ///
         /// @param[in] projection The projection to use
-        CurvilinearGridCreateUniform(Projection projection);
+        CurvilinearGridCreateUniform(Projection::Type projection);
 
         /// @brief Compute an uniform curvilinear grid, given the origin and the number of rows, columns and block size
         /// @param[in] numColumns The number of columns in x direction
@@ -142,8 +143,8 @@ namespace meshkernel
         static int ComputeNumRows(double minY,
                                   double maxY,
                                   double blockSizeY,
-                                  Projection projection);
+                                  Projection::Type projection);
 
-        Projection m_projection; ///< The projection to use
+        Projection::Type m_projection; ///< The projection to use
     };
 } // namespace meshkernel

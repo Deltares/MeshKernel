@@ -53,7 +53,7 @@ namespace meshkernel
         /// @param[in] polygon The polygon nodes
         /// @param[in] projection The projection to use
         Polygons(const std::vector<Point>& polygon,
-                 Projection projection);
+                 Projection::Type projection);
 
         /// @brief Get index of the polygon, and map the start- and end-index to the start- and end-index of the local polygon nodes
         // This is bollocks
@@ -130,7 +130,7 @@ namespace meshkernel
 
         /// @brief Gets the projection
         /// @return The projection
-        [[nodiscard]] Projection GetProjection() const { return m_projection; }
+        [[nodiscard]] Projection::Type GetProjection() const { return m_projection; }
 
         /// @brief Gets the nodes of all enclosures.
         [[nodiscard]] std::vector<Point> GatherAllEnclosureNodes() const;
@@ -141,18 +141,8 @@ namespace meshkernel
         [[nodiscard]] BoundingBox GetBoundingBox(UInt polygonIndex) const;
 
     private:
-        /// @brief Computes the perimeter of a closed polygon
-        /// @param[in] polygonNodes The polygon nodes to use in the computation
-        /// @return perimeter The computed polygon perimeter
-        double PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const;
-
-        /// @brief Computes the lengths of the polygon edges
-        /// @param[in] polygonNodes The polygon nodes to use in the computation
-        /// @return edgeLengths The length of each polygon edge
-        std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
-
         std::vector<PolygonalEnclosure> m_enclosures;                ///< List of polygons
-        Projection m_projection;                                     ///< The current projection
+        Projection::Type m_projection = Projection::Unknown;         ///< The current projection
         std::vector<std::pair<UInt, UInt>> m_outer_polygons_indices; ///< Start-end indices of each outer polygon in m_nodes
         UInt m_numberOfNodes = 0;                                    ///< The number of nodes when constructing the Polygons
     };

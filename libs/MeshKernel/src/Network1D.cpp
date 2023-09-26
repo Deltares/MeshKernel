@@ -31,10 +31,10 @@
 
 using namespace meshkernel;
 
-Network1D::Network1D(Projection projection) : m_projection(projection) {}
+Network1D::Network1D(Projection::Type projection) : m_projection(projection) {}
 
 Network1D::Network1D(std::vector<std::vector<Point>> const& polyLines,
-                     Projection projection) : m_projection(projection), m_polyLines(polyLines)
+                     Projection::Type projection) : m_projection(projection), m_polyLines(polyLines)
 {
     m_chainages.resize(m_polyLines.size());
 

@@ -209,7 +209,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    Projection const polygonProjection = m_polygon.GetProjection();
+    Projection::Type const polygonProjection = m_polygon.GetProjection();
 
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
                                               polygonProjection, numMNodes - 1, numNNodes - 1);
@@ -325,7 +325,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     lin_alg::Matrix<Point> gridNodes(n1 + n3 + 1, n2 + n3 + 1);
 
-    Projection const polygonProjection = m_polygon.GetProjection();
+    Projection::Type const polygonProjection = m_polygon.GetProjection();
 
     for (UInt t = 0; t < Mesh::m_numNodesInTriangle; ++t)
     {

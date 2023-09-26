@@ -11,7 +11,7 @@
 TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::spherical);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Spherical);
 
     std::vector<meshkernel::Sample> samples{
         {1.5, 1.5, 2.0},
@@ -27,8 +27,8 @@ TEST(Averaging, AveragingInterpolation_OnNodesWithSphericalCoordinates_Shouldint
     // Execute
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -73,8 +73,8 @@ TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -114,8 +114,8 @@ TEST(Averaging, InterpolateOnNodesSimpleAveraging)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -155,8 +155,8 @@ TEST(Averaging, InterpolateOnFacesSimpleAveraging)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Faces,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Faces,
                                                  1.01,
                                                  false,
                                                  false,
@@ -197,8 +197,8 @@ TEST(Averaging, InterpolateOnEdgesClosestPoint)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Closest,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Closest,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -238,8 +238,8 @@ TEST(Averaging, InterpolateOnNodesClosestPoint)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Closest,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Closest,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -277,8 +277,8 @@ TEST(Averaging, InterpolateOnFacesClosestPoint)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Closest,
-                                                 meshkernel::Mesh::Location::Faces,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Closest,
+                                                 meshkernel::MeshLocation::Faces,
                                                  1.01,
                                                  false,
                                                  false,
@@ -309,8 +309,8 @@ TEST(Averaging, InterpolateOnEdgesMax)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Max,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Max,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -350,8 +350,8 @@ TEST(Averaging, InterpolateOnNodesMax)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Max,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Max,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -389,8 +389,8 @@ TEST(Averaging, InterpolateOnFacesMax)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Max,
-                                                 meshkernel::Mesh::Location::Faces,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Max,
+                                                 meshkernel::MeshLocation::Faces,
                                                  1.01,
                                                  false,
                                                  false,
@@ -421,8 +421,8 @@ TEST(Averaging, InterpolateOnEdgesMin)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Min,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Min,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -462,8 +462,8 @@ TEST(Averaging, InterpolateOnNodesMin)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Min,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Min,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -501,8 +501,8 @@ TEST(Averaging, InterpolateOnFacesMin)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::Min,
-                                                 meshkernel::Mesh::Location::Faces,
+                                                 meshkernel::AveragingInterpolationMethod::Method::Min,
+                                                 meshkernel::MeshLocation::Faces,
                                                  1.01,
                                                  false,
                                                  false,
@@ -533,8 +533,8 @@ TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::InverseWeightedDistance,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -574,8 +574,8 @@ TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::InverseWeightedDistance,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -613,8 +613,8 @@ TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
-                                                 meshkernel::Mesh::Location::Faces,
+                                                 meshkernel::AveragingInterpolationMethod::Method::InverseWeightedDistance,
+                                                 meshkernel::MeshLocation::Faces,
                                                  1.01,
                                                  false,
                                                  false,
@@ -645,8 +645,8 @@ TEST(Averaging, InterpolateOnEdgesMinAbsValue)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::MinAbsValue,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -686,8 +686,8 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                 meshkernel::Mesh::Location::Nodes,
+                                                 meshkernel::AveragingInterpolationMethod::Method::MinAbsValue,
+                                                 meshkernel::MeshLocation::Nodes,
                                                  1.01,
                                                  false,
                                                  false,
@@ -719,7 +719,7 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
 TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Sample> samples{
         {2.5, 1.0, 1.0},
@@ -740,8 +740,8 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
     // Execute averaging
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,
@@ -770,7 +770,7 @@ TEST(Averaging, Interpolate_WithSamplesOnEdges_ShouldNotExtendSampleCoverage)
 TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 1.0, meshkernel::Projection::Cartesian);
 
     std::vector<meshkernel::Sample> samples{
         {2.0, 1.0, 1.0},
@@ -788,8 +788,8 @@ TEST(Averaging, Interpolate_WithSamplesOnNodes_ShouldNotExtendSampleCoverage)
     // Execute averaging, this time the minimum number of samples should at least be 2
     meshkernel::AveragingInterpolation averaging(*mesh,
                                                  samples,
-                                                 meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                 meshkernel::Mesh::Location::Edges,
+                                                 meshkernel::AveragingInterpolationMethod::Method::SimpleAveraging,
+                                                 meshkernel::MeshLocation::Edges,
                                                  1.01,
                                                  false,
                                                  false,

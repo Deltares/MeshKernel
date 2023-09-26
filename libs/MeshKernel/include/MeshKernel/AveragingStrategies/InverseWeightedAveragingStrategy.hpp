@@ -29,6 +29,7 @@
 
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Projection.hpp>
 
 namespace meshkernel::averaging
 {
@@ -42,7 +43,7 @@ namespace meshkernel::averaging
         /// @param[in] projection         The projection used in calculating the distance.
         InverseWeightedAveragingStrategy(Point const& interpolationPoint,
                                          size_t minNumSamples,
-                                         Projection projection);
+                                         Projection::Type projection);
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
@@ -61,6 +62,6 @@ namespace meshkernel::averaging
         size_t m_minNumSamples;
 
         /// @brief The projection used to calculate the distance.
-        Projection const m_projection;
+        Projection::Type const m_projection;
     };
 } // namespace meshkernel::averaging

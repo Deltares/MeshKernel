@@ -341,7 +341,7 @@ namespace meshkernelapi
     /// @returns The generated curvilinear grid
     static meshkernel::CurvilinearGrid CreateUniformCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
                                                                     const GeometryList& geometryList,
-                                                                    const meshkernel::Projection& projection)
+                                                                    const meshkernel::Projection::Type& projection)
     {
         meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
 
@@ -375,7 +375,7 @@ namespace meshkernelapi
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
     static meshkernel::CurvilinearGrid CreateUniformCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                               const meshkernel::Projection& projection)
+                                                                               const meshkernel::Projection::Type& projection)
     {
         meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
 

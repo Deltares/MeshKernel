@@ -29,7 +29,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
                             {3, 2},
                             {3, 1}};
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -39,7 +39,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
     // Execute
-    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::cartesian);
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Cartesian);
     auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
     auto smoother = std::make_shared<Smoother>(mesh);
     auto polygon = std::make_shared<Polygons>();
@@ -79,7 +79,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -138,7 +138,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -195,7 +195,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -218,7 +218,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto smoother = std::make_shared<Smoother>(mesh);
 
     std::vector<Point> landBoundary;
-    auto polygon = std::make_shared<Polygons>(nodes, Projection::cartesian);
+    auto polygon = std::make_shared<Polygons>(nodes, Projection::Cartesian);
     auto landboundaries = std::make_shared<LandBoundaries>(landBoundary, mesh, polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
@@ -264,7 +264,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -318,9 +318,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::Cartesian);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -368,7 +368,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                     {missing::doubleValue, missing::doubleValue}};
 
     // snap to land boundaries
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::OuterMeshBoundaryToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -423,9 +423,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::Spherical, {41.1, 41.1});
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -511,9 +511,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                             {2, 1},
                             {0, 2}};
 
-    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::Spherical);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    const auto projectToLandBoundaryOption = ProjectionToLandBoundary::None;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;

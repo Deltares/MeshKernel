@@ -32,7 +32,6 @@ set(
   ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
-  ${SRC_DIR}/Definitions.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
@@ -95,6 +94,7 @@ set(
 set(
   INC_LIST
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
+  ${DOMAIN_INC_DIR}/AveragingInterpolationMethod.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
@@ -111,7 +111,9 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
+  ${DOMAIN_INC_DIR}/MeshLocation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
+  ${DOMAIN_INC_DIR}/MeshRefinementType.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
@@ -121,6 +123,8 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/Projection.hpp
+  ${DOMAIN_INC_DIR}/ProjectionToLandBoundary.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
@@ -168,6 +172,7 @@ set(
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
   ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
+  ${UTILITIES_INC_DIR}/UnderlyingType.hpp
 )
 
 set(

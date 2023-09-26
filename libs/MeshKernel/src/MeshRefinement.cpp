@@ -43,7 +43,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = static_cast<MeshRefinementType::Type>(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -56,7 +56,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = static_cast<MeshRefinementType::Type>(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -81,7 +81,7 @@ void MeshRefinement::Compute()
     // get bounding box
     Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
-    if (m_mesh->m_projection == Projection::spherical)
+    if (m_mesh->m_projection == Projection::Spherical)
     {
         const auto boundingBox = BoundingBox(m_mesh->m_nodes);
         lowerLeft = boundingBox.lowerLeft();
@@ -497,7 +497,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
         const auto secondNode = m_mesh->m_nodes[secondNodeIndex];
 
         Point middle{(firstNode.x + secondNode.x) * 0.5, (firstNode.y + secondNode.y) * 0.5};
-        if (m_mesh->m_projection == Projection::spherical)
+        if (m_mesh->m_projection == Projection::Spherical)
         {
 
             middle.y = (firstNode.y + secondNode.y) / 2.0;
@@ -641,7 +641,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
             splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                                                            localEdgesNumFaces);
 
-            if (m_mesh->m_projection == Projection::spherical)
+            if (m_mesh->m_projection == Projection::Spherical)
             {
                 auto miny = std::numeric_limits<double>::max();
                 auto maxy = std::numeric_limits<double>::lowest();
@@ -884,7 +884,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 
     switch (m_refinementType)
     {
-    case RefinementType::RefinementLevels:
+    case MeshRefinementType::RefinementLevels:
         if (m_interpolant->GetFaceResult(face) <= 0)
         {
             return;
@@ -895,7 +895,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
             m_refineEdgeCache[i] = 1;
         }
         break;
-    case RefinementType::WaveCourant:
+    case MeshRefinementType::WaveCourant:
         if (m_useNodalRefinement)
         {
             ComputeFaceLocationTypes();

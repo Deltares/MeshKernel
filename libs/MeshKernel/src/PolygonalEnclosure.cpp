@@ -4,7 +4,7 @@
 #include "MeshKernel/Operations.hpp"
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
-                                                   Projection projection)
+                                                   Projection::Type projection)
 {
     // The inner polygon indices, the first interval corresponds to the outer polygon
     const IndexRangeArray innerIndices = FindIndices(points, 0, points.size() - 1, constants::missing::innerOuterSeparator);
@@ -20,7 +20,7 @@ meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& poi
 meshkernel::Polygon meshkernel::PolygonalEnclosure::ConstructPolygon(const std::vector<Point>& points,
                                                                      size_t start,
                                                                      size_t end,
-                                                                     Projection projection)
+                                                                     Projection::Type projection)
 {
     if (start > end)
     {
@@ -49,7 +49,7 @@ void meshkernel::PolygonalEnclosure::ConstructOuterPolygon(const std::vector<Poi
                                                            size_t start,
                                                            size_t end,
                                                            const IndexRangeArray& innerIndices,
-                                                           Projection projection)
+                                                           Projection::Type projection)
 {
 
     const size_t outerStartIndex = start;
@@ -65,7 +65,7 @@ void meshkernel::PolygonalEnclosure::ConstructOuterPolygon(const std::vector<Poi
 
 void meshkernel::PolygonalEnclosure::ConstructInnerPolygons(const std::vector<Point>& points,
                                                             const IndexRangeArray& innerIndices,
-                                                            Projection projection)
+                                                            Projection::Type projection)
 {
     if (innerIndices.size() <= 1)
     {

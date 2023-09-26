@@ -5,7 +5,7 @@
 meshkernel::LandBoundary::LandBoundary(const std::vector<Point>& landBoundary) : m_nodes(landBoundary) {}
 
 void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
-                                                const Projection& projection,
+                                                const Projection::Type& projection,
                                                 Point& nearestPoint,
                                                 double& minimumDistance,
                                                 UInt& segmentStartIndex,
@@ -40,7 +40,7 @@ void meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
 }
 
 meshkernel::Point meshkernel::LandBoundary::FindNearestPoint(const Point& samplePoint,
-                                                             const Projection& projection) const
+                                                             const Projection::Type& projection) const
 {
     Point nearestPoint;
     [[maybe_unused]] double minimumDistance;
@@ -86,7 +86,7 @@ std::vector<bool> meshkernel::LandBoundary::GetNodeMask(const Polygons& polygons
     return nodeMask;
 }
 
-meshkernel::Point meshkernel::LandBoundary::ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection projection) const
+meshkernel::Point meshkernel::LandBoundary::ClosestPoint(const Point& point, const size_t point1Index, const size_t point2Index, const Projection::Type projection) const
 {
 
     if (ComputeSquaredDistance(point, m_nodes[point1Index], projection) <= ComputeSquaredDistance(point, m_nodes[point2Index], projection))

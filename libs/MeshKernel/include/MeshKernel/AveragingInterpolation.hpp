@@ -29,9 +29,11 @@
 
 #include "MeshInterpolation.hpp"
 
+#include <MeshKernel/AveragingInterpolationMethod.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshLocation.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>
 
 namespace meshkernel
@@ -42,10 +44,11 @@ namespace meshkernel
 
     /// @brief The class used to interpolate based on averaging
     ///
-    /// The averaging interpolation operates on three specific \ref Mesh::Location - Faces
-    /// (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to
+    /// The averaging interpolation operates on three specific \ref MeshLocation::Type
+    /// - Faces (m_facesMassCenters), Nodes, and Edges (m_edgesCenters). The idea is to
     /// collect all samples close to the locations and perform a mathematical
-    /// operation on their values. The \ref Method enum describes available operations.
+    /// operation on their values. The \ref AveragingInterpolationMethod::Method enum
+    /// describes the available operations.
     ///
     /// The algorithm operates as follow:
     ///
@@ -58,7 +61,7 @@ namespace meshkernel
     ///         (relativeSearchRadius > 1 increased, relativeSearchRadius < 1
     ///         decreased).
     ///
-    ///     2.  For \ref Mesh::Location Nodes and \ref Mesh::Location Edges locations, the dual face around the node is
+    ///     2.  For \ref MeshLocation Nodes and \ref MeshLocation Edges locations, the dual face around the node is
     ///         constructed by connecting the mid-points of all edges connected
     ///         to the node. As above, the resulting polygon can be
     ///         increased/decreased by the relativeSearchRadius parameter.
@@ -71,22 +74,11 @@ namespace meshkernel
     ///
     /// -   The operations described above are executed on the found samples.
     ///
-    /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
+    /// -   For the \ref MeshLocation Edges location, the interpolated values at the node are
     ///     averaged.
     class AveragingInterpolation : public MeshInterpolation
     {
     public:
-        /// @brief Averaging methods
-        enum class Method
-        {
-            SimpleAveraging = 1,         ///< Computes a simple mean
-            Closest = 2,                 ///< Takes the value of the closest sample to the interpolation location
-            Max = 3,                     ///< Takes the maximum sample value
-            Min = 4,                     ///< Takes the minimum sample value
-            InverseWeightedDistance = 5, ///< Computes the inverse weighted sample mean
-            MinAbsValue = 6              ///< Computes the minimum absolute value
-        };
-
         /// @brief Interpolation based on averaging
         /// @param[in] mesh                            The input mesh
         /// @param[in] samples                         The samples with x,y locations and values
@@ -98,8 +90,8 @@ namespace meshkernel
         /// @param[in] minNumSamples                   The minimum a of samples used for certain interpolation algorithms
         AveragingInterpolation(Mesh2D& mesh,
                                std::vector<Sample>& samples,
-                               Method method,
-                               Mesh::Location locationType,
+                               AveragingInterpolationMethod::Method method,
+                               MeshLocation::Type locationType,
                                double relativeSearchRadius,
                                bool useClosestSampleIfNoneAvailable,
                                bool subtractSampleValues,
@@ -115,9 +107,6 @@ namespace meshkernel
         /// @returns The resulting value
         double ComputeOnPolygon(const std::vector<Point>& polygon,
                                 const Point& interpolationPoint);
-
-        /// @brief Decreases the values of samples
-        void DecreaseValueOfSamples();
 
         /// @brief Generate the search polygon from an input polygon
         /// @param[in]  polygon            The input polygon
@@ -145,8 +134,8 @@ namespace meshkernel
 
         Mesh2D& m_mesh;                                 ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
-        Method m_method;                                ///< The method to use for the interpolation
-        Mesh::Location m_interpolationLocation;         ///< Interpolation location
+        AveragingInterpolationMethod::Method m_method;  ///< The method to use for the interpolation
+        MeshLocation::Type m_interpolationLocation;     ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples

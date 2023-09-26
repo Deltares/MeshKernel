@@ -27,39 +27,22 @@
 
 #pragma once
 
-#include <cstdint>
-
-#include <algorithm>
-#include <string>
-#include <vector>
-
-#include "MeshKernel/Formatting.hpp"
+#include <type_traits>
 
 namespace meshkernel
 {
-    /// @brief Integer type used when indexing mesh graph entities.
-    using UInt = std::uint32_t;
 
-    /// @brief Indicator for traversal direction of the points specifying a polygon
-    // PolygonTraversalDirection? too long
-    // PolygonOrientation
-    enum class TraversalDirection
+    /// @brief Converts an enumeration to its underlying type
+    /// @tparam Enum Enumeration type
+    /// @param e Enumeration value
+    /// @return The integer value of the underlying type of Enum, converted from e
+    //
+    // Note: replace by std::to_underlying when c++23 is supported
+    //
+    template <typename Enum>
+    inline static constexpr auto to_underlying(Enum e) noexcept
     {
-        Clockwise,    ///< Points define a clockwise traversal of the polygon
-        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
-    };
-
-    template <typename T>
-    inline static std::string MakeValidValuesString()
-    {
-        std::vector<std::string> ValidValuesStrVec;
-        auto const& ValidValues = T::ValidValues();
-        std::transform(ValidValues.cbegin(),
-                       ValidValues.cend(),
-                       std::back_inserter(ValidValuesStrVec),
-                       [](int const value)
-                       { return T::ToString(value); });
-        return fmt_ns::format("{}", ValidValuesStrVec);
+        return static_cast<std::underlying_type_t<Enum>>(e);
     }
 
 } // namespace meshkernel

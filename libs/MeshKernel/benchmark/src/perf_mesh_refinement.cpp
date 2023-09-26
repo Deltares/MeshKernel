@@ -22,7 +22,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
                                           static_cast<UInt>(state.range(1)),
                                           10.0,
                                           15.0,
-                                          Projection::cartesian);
+                                          Projection::Cartesian);
 
         // sample points
         std::vector<Sample> samples;
@@ -37,8 +37,8 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         auto const interpolator = std::make_shared<AveragingInterpolation>(
             *mesh,
             samples,
-            AveragingInterpolation::Method::MinAbsValue,
-            Mesh::Location::Faces,
+            AveragingInterpolationMethod::Method::MinAbsValue,
+            MeshLocation::Faces,
             1.0,
             false,
             false,
@@ -84,7 +84,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
                                           static_cast<UInt>(state.range(1)),
                                           10.0,
                                           15.0,
-                                          Projection::cartesian);
+                                          Projection::Cartesian);
 
         std::vector<meshkernel::Point> polygon_points{
             {2.21527777777778, 5.08143004115226},

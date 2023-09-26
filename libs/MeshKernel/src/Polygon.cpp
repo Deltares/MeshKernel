@@ -8,13 +8,13 @@
 #include "MeshKernel/Vector.hpp"
 
 meshkernel::Polygon::Polygon(const std::vector<Point>& points,
-                             Projection projection) : m_nodes(points), m_projection(projection)
+                             Projection::Type projection) : m_nodes(points), m_projection(projection)
 {
     Initialise();
 }
 
 meshkernel::Polygon::Polygon(std::vector<Point>&& points,
-                             Projection projection) : m_nodes(points), m_projection(projection)
+                             Projection::Type projection) : m_nodes(points), m_projection(projection)
 {
     Initialise();
 }
@@ -37,7 +37,7 @@ void meshkernel::Polygon::Initialise()
         throw ConstraintError("Polygon nodes contains invalid nodes");
     }
 
-    if (m_projection == Projection::spherical)
+    if (m_projection == Projection::Spherical)
     {
         // TODO SHould this be called for spherical accurate too?
         TranslateSphericalCoordinates(m_nodes);
@@ -71,7 +71,7 @@ meshkernel::Polygon& meshkernel::Polygon::operator=(Polygon&& copy)
 }
 
 void meshkernel::Polygon::Reset(const std::vector<Point>& points,
-                                Projection projection)
+                                Projection::Type projection)
 {
     m_projection = projection;
     m_nodes = points;
@@ -87,7 +87,7 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
         // TODO always Cartesian
         // So Dx and Dy can be simplified (no branching)
         // Then for 2 or more points, return multiple cross product values
-        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::cartesian);
+        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::Cartesian);
 
         if (IsEqual(crossProductValue, 0.0))
         {
@@ -204,13 +204,13 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
         return false;
     }
 
-    if (m_projection == Projection::cartesian || m_projection == Projection::spherical)
+    if (m_projection == Projection::Cartesian || m_projection == Projection::Spherical)
     {
         return ContainsCartesian(pnt);
     }
     else
     {
-        // projection = Projection::sphericalAccurate
+        // projection = Projection::SphericalAccurate
         return ContainsSphericalAccurate(pnt);
     }
 }
@@ -233,7 +233,7 @@ void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size
         }
     }
 
-    if (m_projection == Projection::spherical)
+    if (m_projection == Projection::Spherical)
     {
         // TODO Should this be called for spherical accurate too?
         // TODO WHere did I find this? Is it correct?
@@ -334,7 +334,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection)
+std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection::Type projection)
 {
 
     if (polygon.size() < Mesh::m_numNodesInTriangle)
@@ -372,7 +372,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     centreOfMass *= 1.0 / (3.0 * area);
 
     // TODO SHould this also apply to spheciral accurate?
-    if (projection == Projection::spherical)
+    if (projection == Projection::Spherical)
     {
         centreOfMass.y /= (constants::geometric::earth_radius * constants::conversion::degToRad);
         centreOfMass.x /= (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((centreOfMass.y + reference.y) * constants::conversion::degToRad));
@@ -447,7 +447,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distanc
     // The perhaps should either:
     // 1. a function to determine if m_projection is a spherical kind (either spherical or spherical-accurate, or any other spherical type)
     // 2. IFF projection will only include the current 3 types (check it is not cartesian) (should really add an uninitialised value)
-    if (m_projection == Projection::spherical)
+    if (m_projection == Projection::Spherical)
     {
         distance = distance / (constants::geometric::earth_radius * constants::conversion::degToRad);
     }
@@ -457,7 +457,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distanc
         Vector normal = distance * normalVectors[i];
 
         // TODO should this be for spherical accurate too.
-        if (m_projection == Projection::spherical)
+        if (m_projection == Projection::Spherical)
         {
             // TODO is it worth having a special function for this, it must be elsewhere in the code too.
             normal.x() /= std::cos((m_nodes[i].y + 0.5 * normal.y()) * constants::conversion::degToRad);

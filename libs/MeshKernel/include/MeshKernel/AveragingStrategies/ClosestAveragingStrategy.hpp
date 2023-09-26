@@ -29,6 +29,7 @@
 
 #include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Projection.hpp>
 
 namespace meshkernel::averaging
 {
@@ -40,7 +41,7 @@ namespace meshkernel::averaging
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used to calculate distances with.
         ClosestAveragingStrategy(Point const& interpolationPoint,
-                                 Projection projection);
+                                 Projection::Type projection);
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
@@ -56,6 +57,6 @@ namespace meshkernel::averaging
         Point const& m_interpolationPoint;
 
         /// @brief The projection used to calculate the squared distance.
-        Projection const m_projection;
+        Projection::Type const m_projection;
     };
 } // namespace meshkernel::averaging

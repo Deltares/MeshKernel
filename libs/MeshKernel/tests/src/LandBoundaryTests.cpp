@@ -25,7 +25,7 @@ TEST(LandBoundaries, OneLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
+    landboundaries->FindNearestMeshBoundary(meshkernel::ProjectionToLandBoundary::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -62,7 +62,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary);
+    landboundaries->FindNearestMeshBoundary(meshkernel::ProjectionToLandBoundary::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -94,7 +94,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
+    landboundaries->FindNearestMeshBoundary(meshkernel::ProjectionToLandBoundary::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -130,7 +130,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
+    landboundaries->FindNearestMeshBoundary(meshkernel::ProjectionToLandBoundary::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -209,7 +209,7 @@ TEST(LandBoundaries, LandBoundaryConstructorTestFindClosestPoint)
                                                  {10.0, 10.0}};
 
     meshkernel::LandBoundary landBoundary(controlPoints);
-    meshkernel::Projection projection = meshkernel::Projection::cartesian;
+    meshkernel::Projection::Type projection = meshkernel::Projection::Cartesian;
 
     // Expect  this point to be closest to the first point (0, 0)
     meshkernel::Point samplePoint({1.0, 1.0});

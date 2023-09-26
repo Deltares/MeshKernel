@@ -29,6 +29,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Projection.hpp>
 
 namespace meshkernel::averaging
 {
@@ -41,9 +42,9 @@ namespace meshkernel::averaging
         /// @param[in] interpolationPoint The interpolation point
         /// @param[in] projection  The projection to use
         /// @return The interpolation strategy to use
-        [[nodiscard]] std::unique_ptr<AveragingStrategy> static GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
+        [[nodiscard]] std::unique_ptr<AveragingStrategy> static GetAveragingStrategy(AveragingInterpolationMethod::Method averagingMethod,
                                                                                      size_t minNumSamples,
                                                                                      Point const& interpolationPoint,
-                                                                                     Projection projection);
+                                                                                     Projection::Type projection);
     };
 } // namespace meshkernel::averaging
