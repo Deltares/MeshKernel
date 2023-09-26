@@ -1985,7 +1985,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        std::strncpy(errorMessage, exceptionMessage, maxCharsToCopy);
+        std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
         return lastExitCode;
     }
 
@@ -2069,7 +2069,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_version(char* version)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        std::strncpy(version, versionString, sizeof(versionString) - 1);
+        std::memcpy(version, versionString, sizeof versionString);
         return lastExitCode;
     }
 
