@@ -530,6 +530,56 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(char* errorMessage);
 
+        /// @brief Gets the success exit code
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_success(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type MeshKernelError
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_meshkernel_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type NotImplementedCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_not_implemented(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type AlgorithmErrorCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_algorithm_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type ConstraintErrorCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_constraint_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type MeshGeometryErrorCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_mesh_geometry_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type LinearAlgebraErrorCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_linear_algebra_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type RangeErrorCode
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_range_error(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of type std::exception
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_stdlib_exception(int& errorCode);
+
+        /// @brief Gets the exit code of an exception of unknown type
+        /// @param[in,out] The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_unknown_exception(int& errorCode);
+
         /// @brief Checks if last error is geomtric
         /// @param[in,out] errorIsGemetric True if error is geometric, false otherwise
         /// @return Error code

@@ -1989,6 +1989,66 @@ namespace meshkernelapi
         return meshkernel::ExitCode::Success;
     }
 
+    MKERNEL_API int mkernel_get_exit_code_success(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::Success;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_meshkernel_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::MeshKernelErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_not_implemented(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::NotImplementedCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_algorithm_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::AlgorithmErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_constraint_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::ConstraintErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_mesh_geometry_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::MeshGeometryErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_linear_algebra_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::LinearAlgebraErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_range_error(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::RangeErrorCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_stdlib_exception(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::StdLibExceptionCode;
+        return meshkernel::ExitCode::Success;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_unknown_exception(int& errorCode)
+    {
+        errorCode = meshkernel::ExitCode::UnknownExceptionCode;
+        return meshkernel::ExitCode::Success;
+    }
+
     MKERNEL_API int mkernel_check_error_is_geometric(bool& errorIsGemetric)
     {
         errorIsGemetric = (lastExitCode == meshkernel::ExitCode::MeshGeometryErrorCode);
