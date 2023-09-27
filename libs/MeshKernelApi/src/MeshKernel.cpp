@@ -2059,13 +2059,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_check_error_is_geometric(bool& errorIsGemetric)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        errorIsGemetric = (lastExitCode == meshkernel::ExitCode::MeshGeometryErrorCode);
-        return lastExitCode;
-    }
-
     MKERNEL_API int mkernel_get_version(char* version)
     {
         lastExitCode = meshkernel::ExitCode::Success;

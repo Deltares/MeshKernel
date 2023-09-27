@@ -580,11 +580,6 @@ namespace meshkernelapi
         /// @return Error code
         MKERNEL_API int mkernel_get_exit_code_unknown_exception(int& exitCode);
 
-        /// @brief Checks if last error is geomtric
-        /// @param[in,out] errorIsGemetric True if error is geometric, false otherwise
-        /// @return Error code
-        MKERNEL_API int mkernel_check_error_is_geometric(bool& errorIsGemetric);
-
         /// @brief Gets an int indicating the faces location type
         /// @param[out] type The int indicating the face location type
         /// @returns Error code
