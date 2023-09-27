@@ -34,23 +34,16 @@
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
-// namespace lin_alg
-// {
-//     /// @brief Row major dynamic matrix
-//     /// @tparam T Data type
-//     template <class T>
-//     using MatrixRowMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-
-//     /// @brief Column major dynamic matrix
-//     /// @tparam T Data type
-//     template <class T>
-//     using MatrixColMajor = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
-
 namespace meshkernel
 {
 
+    /// @brief Array containing dimensions of the hessian
     using HessianDimension = std::array<UInt, 3>;
 
+    /// @brief The hessian values
+    ///
+    /// Implemented as an array of matrices.
+    /// Not sure what is the best implementation yet for performance.
     class Hessian
     {
     public:
@@ -65,13 +58,16 @@ namespace meshkernel
         /// @param [in] dim For which dimension is the size required, dim in range [0,2]
         UInt size(const UInt dim) const;
 
+        /// @brief Get all the Hessian dimensions
         const HessianDimension& size() const;
 
         /// @brief Get the 1-dimension index of
         UInt get1DIndex(const UInt dim2, const UInt dim3) const;
 
+        /// @brief Get the value of the hessian
         double operator()(const UInt dim1, const UInt dim2, const UInt dim3) const;
 
+        /// @brief Get the value of the hessian
         double& operator()(const UInt dim1, const UInt dim2, const UInt dim3);
 
         /// @brief Access the matrix in 'dim1' as though it were a 1 dimensional array
@@ -79,8 +75,10 @@ namespace meshkernel
         /// dim2 = i + size(1) * j?
         double operator()(const UInt dim1, const UInt dim2) const;
 
+        /// @brief Get the matrix for a dimension
         const lin_alg::MatrixColMajor<double>& getMatrix(const UInt dim) const;
 
+        /// @brief Get the matrix for a dimension
         lin_alg::MatrixColMajor<double>& getMatrix(const UInt dim);
 
         /// @brief Set all entries to zero.
@@ -96,25 +94,33 @@ namespace meshkernel
     class RidgeRefinement final
     {
     public:
+        /// @brief Intended to be the computation of the Hessian
         void Compute(const std::vector<Point>& rawSamplePoints,
                      const std::vector<double>& rawSampleData,
                      const Projection projection,
                      const UInt numX, const UInt numY) const;
 
-        // void Compute(Mesh2D& mesh,
-        //              const std::vector<Point>& rawSamplePoints,
-        //              const std::vector<double>& rawSampleData,
-        //              const Projection projection,
-        //              const UInt numX, const UInt numY) const;
+        /// @brief Tidy the sample points.
+        ///
+        /// Remove invlalid points and duplicate points.
+        /// From (tidysample.f90)
+        void TidySamples(std::vector<Point>& samplePoints, std::vector<double>& sampleData) const;
 
     private:
+        /// @brief Remove invalid points
         void GetValidPoints(const std::vector<Point>& samplePoints, std::vector<Point>& validSamplePoints, std::vector<UInt>& iperm) const;
 
-        void smoothSamples(const std::vector<double>& sampleData,
+        /// @brief Smooth sample data
+        ///
+        /// From (smooth_samples.f90)
+        void SmoothSamples(const std::vector<double>& sampleData,
                            const UInt numberOfSmoothingIterations,
                            Hessian& hessian) const;
 
-        void computeGradient(const std::vector<Point>& samplePoints,
+        /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
+        ///
+        /// From (comp_grad.f90)
+        void ComputeGradient(const std::vector<Point>& samplePoints,
                              const std::vector<double>& sampleData,
                              const Projection projection,
                              const Hessian& hessian,
@@ -129,7 +135,10 @@ namespace meshkernel
                              double& dareaL,
                              double& dareaR) const;
 
-        void computeSampleGradient(const std::vector<Point>& samplePoints,
+        /// @brief Compute the gradient of the sample data along an edge
+        ///
+        /// From (comp_samplegradi.f90)
+        void ComputeSampleGradient(const std::vector<Point>& samplePoints,
                                    const std::vector<double>& sampleData,
                                    const Projection projection,
                                    const Hessian& hessian,
@@ -141,7 +150,10 @@ namespace meshkernel
                                    double& dareaL,
                                    double& dareaR) const;
 
-        void computeHessian(const std::vector<Point>& samplePoints,
+        /// @brief Compute the Hessian
+        ///
+        /// From (comp_samplehessian.f90)
+        void ComputeHessian(const std::vector<Point>& samplePoints,
                             const std::vector<double>& sampleData,
                             const Projection projection,
                             Hessian& hessian) const;
@@ -149,12 +161,13 @@ namespace meshkernel
         /// @brief Remove in-valid and duplicate sample points and data.
         void RemoveDuplicates(std::vector<Point>& samplePoints, std::vector<double>& sampleData, std::vector<UInt>& sampleIndices /*ipsam*/) const;
 
-        void prepareSampleForHessian(const std::vector<Point>& samplePoints,
+        /// @brief Prepare the sample data for the Hessian computation.
+        ///
+        /// From (prepare_samplehessian.f90)
+        void PrepareSampleForHessian(const std::vector<Point>& samplePoints,
                                      const std::vector<double>& sampleData,
                                      const Projection projection,
                                      Hessian& hessian) const;
-
-        void TidySamples(std::vector<Point>& samplePoints, std::vector<double>& sampleData) const;
     };
 
 } // namespace meshkernel

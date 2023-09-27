@@ -63,16 +63,12 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
 
     kdTree.BuildTree(validSamplePoints);
 
-    std::cout << " kdtree size  " << kdTree.Size() << std::endl;
-
     bool duplicatesFound = true;
-    UInt nummerged = 0;
+    UInt numberOfDuplicates = 0; // nummerged
     UInt sampleCount = samplePoints.size();
 
     double tolerance = 1.0e-4;
     double searchRadius = tolerance * tolerance;
-
-    std::cout.precision(10);
 
     while (duplicatesFound)
     {
@@ -98,20 +94,25 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
                     UInt j = iperm[jj];
 
                     // Which point comparison to use == or IsEqual (wth a tolerance)
-                    if (j != i && j != constants::missing::uintValue && IsEqual(samplePoints[j], samplePoints[i], tolerance))
+                    if (j != i && j != constants::missing::uintValue && IsEqual(samplePoints[i], samplePoints[j], tolerance))
                     {
                         iperm[jj] = constants::missing::uintValue;
+                        // TODO check this index. In dflowfm the 'j' index is used
+                        // this results in, seemingly, the incorrect point being invalidated.
+                        // Using the 'i' index does not give this
+                        // However, using 'i' results in the points being in a slightly different order.
+                        // REVERTING to 'j'
+                        // SEE not below for newSize
                         samplePoints[j].SetInvalid();
                         duplicatesFound = true;
-                        ++nummerged;
+                        ++numberOfDuplicates;
                     }
                 }
             }
         }
 
-        std::cout << "Duplicates found: " << std::boolalpha << duplicatesFound << std::endl;
-
         UInt count = 0;
+        std::ranges::fill(newNode, constants::missing::uintValue);
 
         // Removed duplicates
         for (UInt i = 0; i < sampleCount; ++i)
@@ -141,7 +142,9 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
         sampleCount = k;
     }
 
-    UInt newSize = samplePoints.size() - nummerged;
+    // See note above.
+    // Seems that there is a small problem in the duplicate node removal
+    UInt newSize = samplePoints.size() - numberOfDuplicates + 1;
 
     samplePoints.resize(newSize);
     sampleData.resize(newSize);
@@ -161,7 +164,7 @@ void meshkernel::RidgeRefinement::TidySamples(std::vector<Point>& samplePoints, 
     RemoveDuplicates(samplePoints, sampleData, sampleIndices);
 }
 
-void meshkernel::RidgeRefinement::smoothSamples(const std::vector<double>& sampleData,
+void meshkernel::RidgeRefinement::SmoothSamples(const std::vector<double>& sampleData,
                                                 const UInt numberOfSmoothingIterations,
                                                 Hessian& hessian) const
 {
@@ -241,7 +244,7 @@ void meshkernel::RidgeRefinement::smoothSamples(const std::vector<double>& sampl
     }
 }
 
-void meshkernel::RidgeRefinement::computeGradient(const std::vector<Point>& samplePoints,
+void meshkernel::RidgeRefinement::ComputeGradient(const std::vector<Point>& samplePoints,
                                                   const std::vector<double>& sampleData,
                                                   const Projection projection,
                                                   const Hessian& hessian,
@@ -332,7 +335,7 @@ void meshkernel::RidgeRefinement::computeGradient(const std::vector<Point>& samp
     dareaR = 0.5 * std::abs(OuterProductTwoSegments(x1, rightPoint, x1, leftPoint, projection));
 }
 
-void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>& samplePoints,
+void meshkernel::RidgeRefinement::ComputeSampleGradient(const std::vector<Point>& samplePoints,
                                                         const std::vector<double>& sampleData,
                                                         const Projection projection,
                                                         const Hessian& hessian,
@@ -381,7 +384,7 @@ void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>
         // UInt ip0R = i + dimension[1] * (std::max(j - 1, 1U) - 1);               // ! pointer to (i,j-1)
         // UInt ip1L = i + 1 + dimension[1] * (std::min(j + 1, dimension[2]) - 1); // ! pointer to (i+1,j+1)
         // UInt ip1R = i + 1 + dimension[1] * (std::max(j - 1, 1U) - 1);           // ! pointer to (i+1,j-1)
-        computeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
+        ComputeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
     else if (direction == 1)
     {
@@ -409,17 +412,15 @@ void meshkernel::RidgeRefinement::computeSampleGradient(const std::vector<Point>
         // UInt ip0R = std::min(i + 1, dimension[1]) + dimension[1] * (j - 1); //              ! pointer to (i+1,j)
         // UInt ip1L = std::max(i - 1, 1U) + dimension[1] * (j);               //              ! pointer to (i-1,j+1)
         // UInt ip1R = std::min(i + 1, dimension[1]) + dimension[1] * (j);     //              ! pointer to (i+1,j+1)
-        computeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
+        ComputeGradient(samplePoints, sampleData, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
 }
 
-void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& samplePoints,
+void meshkernel::RidgeRefinement::ComputeHessian(const std::vector<Point>& samplePoints,
                                                  const std::vector<double>& sampleData,
                                                  const Projection projection,
                                                  Hessian& hessian) const
 {
-    // double dh = std::min(ComputeDistance(samplePoints[0], samplePoints[1], projection),
-    //                      ComputeDistance(samplePoints[hessian.size(1) - 1], samplePoints[hessian.size(1) - 1], projection));
 
     if (hessian.size(1) < 3 || hessian.size(2) < 3)
     {
@@ -458,34 +459,30 @@ void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& sampl
             double dareaiR = 0.0;
             double dareajL = 0.0;
             double dareajR = 0.0;
-            double dum;
+            double dum; // unused value
 
-            // bool hasRidge = false;
-
-            // (void)hasRidge;
-
-            computeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i, j, gradientiR, SniR, dareaiR, dum);
+            ComputeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i, j, gradientiR, SniR, dareaiR, dum);
 
             if (gradientiR[0] == constants::missing::doubleValue)
             {
                 continue;
             }
 
-            computeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i - 1, j, gradientiL, SniL, dum, dareaiL);
+            ComputeSampleGradient(samplePoints, sampleData, projection, hessian, 0, i - 1, j, gradientiL, SniL, dum, dareaiL);
 
             if (gradientiL[0] == constants::missing::doubleValue)
             {
                 continue;
             }
 
-            computeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j, gradientjR, SnjR, dareajR, dum);
+            ComputeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j, gradientjR, SnjR, dareajR, dum);
 
             if (gradientjR[0] == constants::missing::doubleValue)
             {
                 continue;
             }
 
-            computeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j - 1, gradientjL, SnjL, dum, dareajL);
+            ComputeSampleGradient(samplePoints, sampleData, projection, hessian, 1, i, j - 1, gradientjL, SnjL, dum, dareajL);
 
             if (gradientjL[0] == constants::missing::doubleValue)
             {
@@ -523,7 +520,7 @@ void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& sampl
     }
 }
 
-void meshkernel::RidgeRefinement::prepareSampleForHessian(const std::vector<Point>& samplePoints,
+void meshkernel::RidgeRefinement::PrepareSampleForHessian(const std::vector<Point>& samplePoints,
                                                           const std::vector<double>& sampleData,
                                                           const Projection projection,
                                                           Hessian& hessian) const
@@ -531,8 +528,8 @@ void meshkernel::RidgeRefinement::prepareSampleForHessian(const std::vector<Poin
 
     UInt numberOfSmoothingIterations = 1;
 
-    smoothSamples(sampleData, numberOfSmoothingIterations, hessian);
-    computeHessian(samplePoints, sampleData, projection, hessian);
+    SmoothSamples(sampleData, numberOfSmoothingIterations, hessian);
+    ComputeHessian(samplePoints, sampleData, projection, hessian);
 }
 
 void meshkernel::RidgeRefinement::Compute(const std::vector<Point>& rawSamplePoints,
@@ -550,35 +547,5 @@ void meshkernel::RidgeRefinement::Compute(const std::vector<Point>& rawSamplePoi
     kdTree.BuildTree(samplePoints);
 
     Hessian hessian(5, numX, numY);
-    prepareSampleForHessian(samplePoints, sampleData, projection, hessian);
+    PrepareSampleForHessian(samplePoints, sampleData, projection, hessian);
 }
-
-// void meshkernel::RidgeRefinement::FindLinkBrothers(Mesh2D& mesh, std::vector<UInt>& linkBrothers) const
-// {
-// }
-
-// void meshkernel::RidgeRefinement::refineMesh(Mesh2D& mesh, const Hessian& hessian) const
-// {
-//     // DeleteDryPointsAndAreas(mesh);
-//     FindLinkBrothers(mesh, linkBrothers);
-// }
-
-// void meshkernel::RidgeRefinement::Compute(Mesh2D& mesh,
-//                                           const std::vector<Point>& rawSamplePoints,
-//                                           const std::vector<double>& rawSampleData,
-//                                           const Projection projection,
-//                                           const UInt numX, const UInt numY) const
-// {
-//     std::vector<Point> samplePoints(rawSamplePoints);
-//     std::vector<double> sampleData(rawSampleData);
-
-//     TidySamples(samplePoints, sampleData);
-//     BoundingBox boundingBox(samplePoints);
-
-//     RTree kdTree;
-//     kdTree.BuildTree(samplePoints);
-
-//     Hessian hessian(5, numX, numY);
-//     prepareSampleForHessian(samplePoints, sampleData, projection, hessian);
-//     refineMesh(mesh, hessian);
-// }
