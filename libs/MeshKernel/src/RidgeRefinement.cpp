@@ -421,10 +421,7 @@ void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& sampl
     // double dh = std::min(ComputeDistance(samplePoints[0], samplePoints[1], projection),
     //                      ComputeDistance(samplePoints[hessian.size(1) - 1], samplePoints[hessian.size(1) - 1], projection));
 
-    (void)sampleData;
-    (void)projection;
-
-    if (hessian.size(1) < 3 || hessian.size(2) < 2)
+    if (hessian.size(1) < 3 || hessian.size(2) < 3)
     {
         return;
     }
@@ -496,26 +493,25 @@ void meshkernel::RidgeRefinement::computeHessian(const std::vector<Point>& sampl
             }
 
             double area = dareaiL + dareaiR + dareajL + dareajR;
+            double areaInv = 1.0 / area;
 
             double zx = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[0] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[0] +
-                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[0] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[0]) /
-                        area;
+                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[0] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[0]) *
+                        areaInv;
             double zy = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[1] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[1] +
-                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[1] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[1]) /
-                        area;
+                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[1] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[1]) *
+                        areaInv;
 
-            VV(0, 0) = (gradientiR[0] * SniR[0] - gradientiL[0] * SniL[0] + gradientjR[0] * SnjR[0] - gradientjL[0] * SnjL[0]) / area;
-            VV(0, 1) = (gradientiR[0] * SniR[1] - gradientiL[0] * SniL[1] + gradientjR[0] * SnjR[1] - gradientjL[0] * SnjL[1]) / area;
-            VV(1, 0) = (gradientiR[1] * SniR[0] - gradientiL[1] * SniL[0] + gradientjR[1] * SnjR[0] - gradientjL[1] * SnjL[0]) / area;
-            VV(1, 1) = (gradientiR[1] * SniR[1] - gradientiL[1] * SniL[1] + gradientjR[1] * SnjR[1] - gradientjL[1] * SnjL[1]) / area;
+            VV(0, 0) = (gradientiR[0] * SniR[0] - gradientiL[0] * SniL[0] + gradientjR[0] * SnjR[0] - gradientjL[0] * SnjL[0]) * areaInv;
+            VV(0, 1) = (gradientiR[0] * SniR[1] - gradientiL[0] * SniL[1] + gradientjR[0] * SnjR[1] - gradientjL[0] * SnjL[1]) * areaInv;
+            VV(1, 0) = (gradientiR[1] * SniR[0] - gradientiL[1] * SniL[0] + gradientjR[1] * SnjR[0] - gradientjL[1] * SnjL[0]) * areaInv;
+            VV(1, 1) = (gradientiR[1] * SniR[1] - gradientiL[1] * SniL[1] + gradientjR[1] * SnjR[1] - gradientjL[1] * SnjL[1]) * areaInv;
 
             // Eigendecompostion
             Eigen::EigenSolver<Eigen::Matrix2d> eigensolver(VV);
-            // eigensolver.compute(VV);
 
-            auto eigenvectors = eigensolver.eigenvectors();
-            auto eigenvalues = eigensolver.eigenvalues();
-            // Eigen::EigenvectorsType<Eigen::Matrix2d> eigenvectors = eigensolver.eigenvectors();
+            const auto& eigenvectors = eigensolver.eigenvectors();
+            const auto& eigenvalues = eigensolver.eigenvalues();
 
             UInt k = std::abs(eigenvalues[0].real()) > std::abs(eigenvalues[1].real()) ? 0U : 1u;
 
