@@ -165,8 +165,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_network1_d.html">Network1D</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing a network 1d.  <a href="classmeshkernel_1_1_network1_d.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_not_implemented.html">NotImplemented</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for throwing not implemented exceptions.  <a href="classmeshkernel_1_1_not_implemented.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_not_implemented_error.html">NotImplementedError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for throwing not implemented exceptions.  <a href="classmeshkernel_1_1_not_implemented_error.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html">OrthogonalizationAndSmoothing</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).  <a href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#details">More...</a><br /></td></tr>
@@ -246,17 +246,17 @@ Enumerations</h2></td></tr>
 <tr class="separator:a74432f6294d6952b6f3b363b0f85a3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4a157c357776039bdda49e4e84640701">NotImplementedCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306">AlgorithmErrorCode</a>, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba730f17cf6f651e9630f4e6196debe58c">NotImplementedErrorCode</a> = 2, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306">AlgorithmErrorCode</a> = 3, 
 <br />
-&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486">ConstraintErrorCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce">MeshGeometryErrorCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44">LinearAlgebraErrorCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba949be9b10f2ff8307a87fa276eb523d9">RangeErrorCode</a>, 
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaf9afc414d44ed26910bf46e733229486">ConstraintErrorCode</a> = 4, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba05a2932e3ba779b0a569eb0969494cce">MeshGeometryErrorCode</a> = 5, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44">LinearAlgebraErrorCode</a> = 6, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba949be9b10f2ff8307a87fa276eb523d9">RangeErrorCode</a> = 7, 
 <br />
-&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a>, 
-<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a>
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003">StdLibExceptionCode</a> = 8, 
+<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653">UnknownExceptionCode</a> = 9
 <br />
  }</td></tr>
 <tr class="memdesc:a25feb926a55573977c6c4f410ece8fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of exit codes.  <a href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">More...</a><br /></td></tr>
@@ -584,7 +584,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1"></a>MeshKernelErrorCode&#160;</td><td class="fielddoc"><p>MehKernel error. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba4a157c357776039bdda49e4e84640701"></a>NotImplementedCode&#160;</td><td class="fielddoc"><p>Not implemented error. </p>
+<tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba730f17cf6f651e9630f4e6196debe58c"></a>NotImplementedErrorCode&#160;</td><td class="fielddoc"><p>Not implemented error. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306"></a>AlgorithmErrorCode&#160;</td><td class="fielddoc"><p>Algorithm error. </p>
 </td></tr>
