@@ -14,11 +14,12 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_LIST 
     ${SRC_DIR}/ApiTest.cpp
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
-    )
+    ${SRC_DIR}/ErrorHandlingTests.cpp
+)
 
 set(INC_LIST 
     ${INC_DIR}/CartesianApiTestFixture.hpp
-    )
+)
 
 # add sources to target
 target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST} ${INC_LIST})
