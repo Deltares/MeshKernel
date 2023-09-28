@@ -83,10 +83,11 @@ namespace meshkernelapi
     static size_t constexpr bufferSize = 512;
     static size_t constexpr maxCharsToCopy = bufferSize - 1; // make sure destination string is null-terminated when strncpy is used
     static char exceptionMessage[bufferSize] = "";
+    static meshkernel::ExitCode lastExitCode = meshkernel::ExitCode::Success;
     static meshkernel::UInt invalidMeshIndex{0};
     static meshkernel::Mesh::Location invalidMeshLocation{meshkernel::Mesh::Location::Unknown};
 
-    static int HandleExceptions(std::exception_ptr exception_ptr = std::current_exception())
+    static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
         try
         {
@@ -118,15 +119,16 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         meshKernelId = meshKernelStateCounter++;
         auto const projection = static_cast<meshkernel::Projection>(projectionType);
         meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -137,14 +139,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, int invertDeletion)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -164,14 +166,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -215,15 +217,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh1d_set(int meshKernelId,
                                        const Mesh1D& mesh1d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -241,14 +243,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_network1d_set(int meshKernelId, const GeometryList& polylines)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -263,14 +265,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_network1d_compute_fixed_chainages(int meshKernelId, double* fixedChainages, int sizeFixedChainages, double minFaceSize, double fixedChainagesOffset)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -290,14 +292,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_network1d_compute_offsetted_chainages(int meshKernelId, double offset)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -310,14 +312,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_network1d_to_mesh1d(int meshKernelId, double minFaceSize)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -330,14 +332,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -349,14 +351,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -368,14 +370,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -388,15 +390,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh1d_get_data(int meshKernelId,
                                             Mesh1D& mesh1d)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -408,14 +410,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -427,15 +429,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId,
                                                  CurvilinearGrid& curvilinearGrid)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -447,14 +449,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -465,14 +467,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_get_data(int meshKernelId, Contacts& contacts)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -490,14 +492,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numHangingEdges)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -510,14 +512,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -532,14 +534,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -550,9 +552,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
@@ -561,7 +563,7 @@ namespace meshkernelapi
                                                              const GeometryList& selectingPolygon,
                                                              const GeometryList& landBoundaries)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -597,9 +599,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_initialize_orthogonalization(int meshKernelId,
@@ -608,7 +610,7 @@ namespace meshkernelapi
                                                                 const GeometryList& selectingPolygon,
                                                                 const GeometryList& landBoundaries)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -618,7 +620,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             // build the selecting polygon
@@ -644,14 +646,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_prepare_outer_iteration_orthogonalization(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -661,21 +663,21 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization->PrepareOuterIteration();
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -685,21 +687,21 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization->Solve();
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_finalize_inner_ortogonalization_iteration(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -709,21 +711,21 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization->FinalizeOuterIteration();
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_orthogonalization(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -733,21 +735,21 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization.reset();
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -757,7 +759,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
@@ -774,14 +776,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -791,7 +793,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
-                return exitCode;
+                return lastExitCode;
             }
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
@@ -803,16 +805,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn,
                                         GeometryList& geometryListOut,
                                         int numberOfPointsBetweenNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (geometryListIn.num_coordinates == 0)
@@ -876,14 +878,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -903,14 +905,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -925,16 +927,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
                                                 const meshkernel::MakeGridParameters& makeGridParameters,
                                                 const GeometryList& geometryList)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -950,15 +952,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
                                                              const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -974,14 +976,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -996,14 +998,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1017,9 +1019,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
@@ -1033,7 +1035,7 @@ namespace meshkernelapi
                                                                int* faceNumEdges,
                                                                int* faceEdgeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1081,14 +1083,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1104,9 +1106,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_count_refine(int meshKernelId,
@@ -1116,7 +1118,7 @@ namespace meshkernelapi
                                                  double distance,
                                                  int& numberOfPolygonNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1134,14 +1136,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1157,14 +1159,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_merge_two_nodes(int meshKernelId, int firstNode, int secondNode)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1175,9 +1177,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_nodes_in_polygons(int meshKernelId,
@@ -1185,7 +1187,7 @@ namespace meshkernelapi
                                                          int inside,
                                                          int* selectedNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1212,9 +1214,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_nodes_in_polygons(int meshKernelId,
@@ -1222,7 +1224,7 @@ namespace meshkernelapi
                                                            int inside,
                                                            int& numberOfMeshNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1247,14 +1249,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1266,14 +1268,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1287,14 +1289,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_node(int meshKernelId, int nodeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1306,14 +1308,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_move_node(int meshKernelId, double xCoordinate, double yCoordinate, int nodeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1327,9 +1329,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_edge(int meshKernelId,
@@ -1340,7 +1342,7 @@ namespace meshkernelapi
                                                double xUpperRightBoundingBox,
                                                double yUpperRightBoundingBox)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1359,9 +1361,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_edge(int meshKernelId,
@@ -1373,7 +1375,7 @@ namespace meshkernelapi
                                             double yUpperRightBoundingBox,
                                             int& edgeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1391,14 +1393,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, int inWard, double distance, GeometryList& geometryListOut)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1417,14 +1419,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_count_offset(int meshKernelId, const GeometryList& geometryListIn, int innerPolygon, double distance, int& numberOfPolygonNodes)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1441,9 +1443,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
@@ -1452,7 +1454,7 @@ namespace meshkernelapi
                                                            int minimumNumSamples,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1493,9 +1495,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
@@ -1503,7 +1505,7 @@ namespace meshkernelapi
                                                                    const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1566,16 +1568,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_polygon(int meshKernelId,
                                                            const GeometryList& geometryList,
                                                            const meshkernel::MeshRefinementParameters& meshRefinementParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1596,14 +1598,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_remove_disconnected_regions(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1620,9 +1622,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_node_index(int meshKernelId,
@@ -1635,7 +1637,7 @@ namespace meshkernelapi
                                                   double yUpperRightBoundingBox,
                                                   int& nodeIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1654,9 +1656,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_closest_node(int meshKernelId,
@@ -1670,19 +1672,19 @@ namespace meshkernelapi
                                                     double& xCoordinateOut,
                                                     double& yCoordinateOut)
     {
-        int exitCode;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             int nodeIndex;
-            exitCode = mkernel_mesh2d_get_node_index(meshKernelId,
-                                                     xCoordinateIn,
-                                                     yCoordinateIn,
-                                                     searchRadius,
-                                                     xLowerLeftBoundingBox,
-                                                     yLowerLeftBoundingBox,
-                                                     xUpperRightBoundingBox,
-                                                     yUpperRightBoundingBox,
-                                                     nodeIndex);
+            lastExitCode = static_cast<meshkernel::ExitCode>(mkernel_mesh2d_get_node_index(meshKernelId,
+                                                                                           xCoordinateIn,
+                                                                                           yCoordinateIn,
+                                                                                           searchRadius,
+                                                                                           xLowerLeftBoundingBox,
+                                                                                           yLowerLeftBoundingBox,
+                                                                                           xUpperRightBoundingBox,
+                                                                                           yUpperRightBoundingBox,
+                                                                                           nodeIndex));
 
             // Set the node coordinate
             const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
@@ -1691,14 +1693,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_get_included_points(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& polygonToSelect, GeometryList& selectionResults)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1718,9 +1720,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_splines_snap_to_landboundary(int meshKernelId,
@@ -1729,7 +1731,7 @@ namespace meshkernelapi
                                                          int startSplineIndex,
                                                          int endSplineIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
 
         try
         {
@@ -1812,9 +1814,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_polygon_snap_to_landboundary(int meshKernelId,
@@ -1823,7 +1825,7 @@ namespace meshkernelapi
                                                          int startIndex,
                                                          int endIndex)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
 
         try
         {
@@ -1895,9 +1897,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_flip_edges(int meshKernelId,
@@ -1906,7 +1908,7 @@ namespace meshkernelapi
                                               const GeometryList& selectingPolygon,
                                               const GeometryList& landBoundaries)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1932,14 +1934,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1953,14 +1955,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1975,33 +1977,106 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_error(char* errorMessage)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         std::memcpy(errorMessage, exceptionMessage, sizeof exceptionMessage);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_success(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::Success;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_meshkernel_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::MeshKernelErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_not_implemented_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::NotImplementedErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_algorithm_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::AlgorithmErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_constraint_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::ConstraintErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_mesh_geometry_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::MeshGeometryErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_linear_algebra_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::LinearAlgebraErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_range_error(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::RangeErrorCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_stdlib_exception(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::StdLibExceptionCode;
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_exit_code_unknown_exception(int& exitCode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        exitCode = meshkernel::ExitCode::UnknownExceptionCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_version(char* version)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         std::memcpy(version, versionString, sizeof versionString);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_geometry_error(int& meshIndex, int& meshLocation)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         meshIndex = static_cast<int>(invalidMeshIndex);
         meshLocation = static_cast<int>(invalidMeshLocation);
-        return 0;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_count_obtuse_triangles(int meshKernelId, int& numObtuseTriangles)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2015,14 +2090,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_get_obtuse_triangles_mass_centers(int meshKernelId, GeometryList& result)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2036,14 +2111,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_delete_small_flow_edges_and_small_triangles(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2056,9 +2131,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_compute_single(int meshKernelId,
@@ -2066,7 +2141,7 @@ namespace meshkernelapi
                                                     const GeometryList& polygons,
                                                     double projectionFactor)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2089,15 +2164,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_compute_multiple(int meshKernelId,
                                                       const int* oneDNodeMask)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2115,16 +2190,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_compute_with_polygons(int meshKernelId,
                                                            const int* oneDNodeMask,
                                                            const GeometryList& polygons)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2148,15 +2223,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
     MKERNEL_API int mkernel_contacts_compute_with_points(int meshKernelId,
                                                          const int* oneDNodeMask,
                                                          const GeometryList& points)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2176,14 +2251,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2196,9 +2271,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_contacts_compute_boundary(int meshKernelId,
@@ -2206,7 +2281,7 @@ namespace meshkernelapi
                                                       const GeometryList& polygons,
                                                       double searchRadius)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2227,9 +2302,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId,
@@ -2239,7 +2314,7 @@ namespace meshkernelapi
                                                double yUpperRightCorner,
                                                int refinement)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2256,9 +2331,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
@@ -2267,7 +2342,7 @@ namespace meshkernelapi
                                                  double xUpperRightCorner,
                                                  double yUpperRightCorner)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2287,16 +2362,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_splines(int meshKernelId,
                                                                          const GeometryList& splines,
                                                                          const meshkernel::CurvilinearParameters& curvilinearParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2319,9 +2394,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_polygon(int meshKernelId,
@@ -2331,7 +2406,7 @@ namespace meshkernelapi
                                                                          int thirdNode,
                                                                          int useFourthSide)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2353,9 +2428,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_compute_transfinite_from_triangle(int meshKernelId,
@@ -2364,7 +2439,7 @@ namespace meshkernelapi
                                                                           int secondNode,
                                                                           int thirdNode)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2385,9 +2460,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_compute_orthogonal_grid_from_splines(int meshKernelId,
@@ -2395,7 +2470,7 @@ namespace meshkernelapi
                                                                              const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                              const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2414,9 +2489,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
@@ -2424,7 +2499,7 @@ namespace meshkernelapi
                                                                                 const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                 const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2441,14 +2516,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_iterate_orthogonal_grid_from_splines(int meshKernelId, int layer)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2464,14 +2539,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2490,14 +2565,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2514,16 +2589,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                      const meshkernel::MakeGridParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2538,15 +2613,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
                                                                   const meshkernel::MakeGridParameters& makeGridParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2559,15 +2634,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
                                                                  const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2580,9 +2655,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
@@ -2591,7 +2666,7 @@ namespace meshkernelapi
                                                                 double xUpperRightCorner,
                                                                 double yUpperRightCorner)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2612,9 +2687,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
@@ -2624,7 +2699,7 @@ namespace meshkernelapi
                                                                        double ySecondGridLineNode)
 
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2645,14 +2720,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2670,14 +2745,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2694,9 +2769,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
@@ -2707,7 +2782,7 @@ namespace meshkernelapi
                                                   double yUpperRightCorner)
 
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2737,9 +2812,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_smoothing_directional(int meshKernelId,
@@ -2753,7 +2828,7 @@ namespace meshkernelapi
                                                               double xUpperRightCornerSmootingArea,
                                                               double yUpperRightCornerSmootingArea)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2786,15 +2861,15 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_initialize_line_shift(int meshKernelId)
     {
 
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2816,9 +2891,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set_line_line_shift(int meshKernelId,
@@ -2827,7 +2902,7 @@ namespace meshkernelapi
                                                             double xSecondGridLineNode,
                                                             double ySecondGridLineNode)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2842,14 +2917,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set(int meshKernelId, const CurvilinearGrid& grid)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2874,9 +2949,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_set_block_line_shift(int meshKernelId,
@@ -2885,7 +2960,7 @@ namespace meshkernelapi
                                                              double xUpperRightCorner,
                                                              double yUpperRightCorner)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2900,9 +2975,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_move_node_line_shift(int meshKernelId,
@@ -2911,7 +2986,7 @@ namespace meshkernelapi
                                                              double xToCoordinate,
                                                              double yToCoordinate)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2924,14 +2999,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2948,14 +3023,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2967,14 +3042,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_insert_face(int meshKernelId, double xCoordinate, double yCoordinate)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -2998,14 +3073,14 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3027,9 +3102,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_line_attraction_repulsion(int meshKernelId,
@@ -3043,7 +3118,7 @@ namespace meshkernelapi
                                                                   double xUpperRightCorner,
                                                                   double yUpperRightCorner)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3065,9 +3140,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_line_mirror(int meshKernelId,
@@ -3077,7 +3152,7 @@ namespace meshkernelapi
                                                     double xSecondGridLineNode,
                                                     double ySecondGridLineNode)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3103,16 +3178,16 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_delete_node(int meshKernelId,
                                                     double xPointCoordinate,
                                                     double yPointCoordinate)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3134,9 +3209,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_move_node(int meshKernelId,
@@ -3145,7 +3220,7 @@ namespace meshkernelapi
                                                   double xToPoint,
                                                   double yToPoint)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3165,9 +3240,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API double mkernel_get_separator()
@@ -3188,7 +3263,7 @@ namespace meshkernelapi
                                                            size_t minNumSamples,
                                                            GeometryList& results)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3236,9 +3311,9 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,
@@ -3246,7 +3321,7 @@ namespace meshkernelapi
                                                                int locationType,
                                                                GeometryList& results)
     {
-        int exitCode = meshkernel::ExitCode::Success;
+        lastExitCode = meshkernel::ExitCode::Success;
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -3274,78 +3349,98 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            lastExitCode = HandleException();
         }
-        return exitCode;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_edges_location_type(int& type)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Mesh::Location::Edges);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
     MKERNEL_API int mkernel_get_nodes_location_type(int& type)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Mesh::Location::Nodes);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
     MKERNEL_API int mkernel_get_faces_location_type(int& type)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Mesh::Location::Faces);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_simple_averaging(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::SimpleAveraging);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_averaging_method_closest_point(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Closest);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_averaging_method_max(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Max);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_averaging_method_min(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::Min);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_averaging_method_inverse_distance_weighting(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::InverseWeightedDistance);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_averaging_method_min_absolute_value(int& method)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         method = static_cast<int>(meshkernel::AveragingInterpolation::Method::MinAbsValue);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_projection_cartesian(int& projection)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         projection = static_cast<int>(meshkernel::Projection::cartesian);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_projection_spherical(int& projection)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         projection = static_cast<int>(meshkernel::Projection::spherical);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_projection_spherical_accurate(int& projection)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         projection = static_cast<int>(meshkernel::Projection::sphericalAccurate);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
+
     MKERNEL_API int mkernel_get_projection(int meshKernelId, int& projection)
     {
+        lastExitCode = meshkernel::ExitCode::Success;
         projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
-        return meshkernel::ExitCode::Success;
+        return lastExitCode;
     }
 
 } // namespace meshkernelapi
