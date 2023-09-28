@@ -380,7 +380,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
 
     centreOfMass += reference;
 
-    return {area, centreOfMass, direction};
+    return {std::abs(area), centreOfMass, direction};
 }
 
 std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass() const

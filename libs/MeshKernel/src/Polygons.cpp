@@ -105,7 +105,6 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
     std::vector<std::vector<Point>> generatedPoints(GetNumPolygons(), std::vector<Point>());
-    std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
 
     for (UInt polygonIndex = 0; polygonIndex < m_enclosures.size(); ++polygonIndex)
