@@ -2015,6 +2015,26 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
 
 meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 {
+    if (mesh1.m_projection != mesh2.m_projection)
+    {
+        throw MeshKernelError("The two meshes cannot be merged: they have different projections");
+    }
+
+    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0))
+    {
+        throw MeshKernelError("The two meshes cannot be merged: both meshes are empty");
+    }
+
+    if ((mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0) && (mesh2.GetNumNodes() > 0 || mesh2.GetNumEdges() > 0))
+    {
+        return mesh2;
+    }
+
+    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() > 0 || mesh1.GetNumEdges() > 0))
+    {
+        return mesh1;
+    }
+
     // Initialise with mesh1,
     Mesh2D mergedMesh(mesh1);
 
