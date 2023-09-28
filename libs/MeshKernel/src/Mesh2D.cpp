@@ -2107,7 +2107,7 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 
     //--------------------------------
 
-    // Merge face-nedge arrays
+    // Merge face-edge arrays
     mergedMesh.m_facesEdges.insert(mergedMesh.m_facesEdges.end(), mesh2.m_facesEdges.begin(), mesh2.m_facesEdges.end());
 
     for (size_t i = 0; i < mesh2.m_facesEdges.size(); ++i)
@@ -2133,7 +2133,6 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());
     mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
     mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
-    // mergedMesh.AdministrateNodesEdges();
 
     return mergedMesh;
 }
