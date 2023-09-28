@@ -7,14 +7,13 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 void CheckConnectGrids(const std::string& unconnectedGridName, const std::string& connectedGridName)
 {
     static const std::string testDataDir = TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/";
-
-    meshkernel::ConnectMeshes connectCurviliearMeshes;
 
     // Grid to connect hanging node across the DD boundary.
     auto unconnectedGrid = ReadLegacyMesh2DFromFile(testDataDir + unconnectedGridName);
@@ -23,6 +22,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
 
     // Connect hanging nodes
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
     connectCurviliearMeshes.Compute(*unconnectedGrid);
 
     // Check mesh entity counts are the same
@@ -58,6 +58,46 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     {
         EXPECT_EQ(unconnectedGrid->m_numFacesNodes[i], connectedGrid->m_numFacesNodes[i]);
     }
+}
+
+meshkernel::Mesh2D generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
+{
+
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<meshkernel::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            indicesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = {origin.x + i * delta.x(), origin.y + j * delta.y()};
+            nodeIndex++;
+        }
+    }
+
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+    for (auto j = 0; j < m; ++j)
+    {
+        for (auto i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
+            edgeIndex++;
+        }
+    }
+
+    for (auto j = 0; j < m - 1; ++j)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
+            edgeIndex++;
+        }
+    }
+
+    return meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 }
 
 // Tests are separated on number of hanging nodes (1-, 2-, 3- or 4-irregular mesh) or the complexity.
@@ -121,4 +161,34 @@ TEST(Mesh2DConnectDD, ConnectGridSimple2HangingNodes)
 {
     // Test connecting edges with 2 hanging nodes along irregular edge
     CheckConnectGrids("unmatched_2_hanging_nodes.nc", "matched_2_hanging_nodes.nc");
+}
+
+TEST(Mesh2DConnectDD, MergeMeshes)
+{
+
+    // 3 nodes were removed because they are shared between both meshes
+    // 2 node were added in order to free the hanginig nodes
+    const meshkernel::UInt NodeDifference = 3 - 2;
+
+    // 18 faces were added when freeing the hanging nodes
+    // 4 faces were removed and replaced by the new 18 faces.
+    const meshkernel::UInt ExtraFaces = 18 - 4;
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
+
+    origin.x += 10.0 * delta.x();
+    origin.y += delta.y();
+
+    delta = meshkernel::Vector{2.5, 2.5};
+    meshkernel::Mesh2D mesh2 = generateMesh(origin, delta, 9, 9);
+
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2);
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
+    connectCurviliearMeshes.Compute(mergedMesh);
+
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1.GetNumFaces() + mesh2.GetNumFaces() + ExtraFaces);
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1.GetNumNodes() + mesh2.GetNumNodes() - NodeDifference);
 }

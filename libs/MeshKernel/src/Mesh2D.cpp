@@ -351,6 +351,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
 
         // we need to add a face when at least one edge has no faces
         auto oneEdgeHasNoFace = false;
+
         for (const auto& edge : edges)
         {
             if (m_edgesNumFaces[edge] == 0)
@@ -2010,4 +2011,109 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
     }
 
     return constants::missing::uintValue;
+}
+
+meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
+{
+    // Initialise with mesh1,
+    Mesh2D mergedMesh(mesh1);
+
+    size_t mesh1NodeOffset = mesh1.m_nodes.size();
+    size_t mesh1EdgeOffset = mesh1.m_edges.size();
+    size_t mesh1FaceOffset = mesh1.m_numFacesNodes.size();
+
+    // Merge node arrays
+    mergedMesh.m_nodes.insert(mergedMesh.m_nodes.end(), mesh2.m_nodes.begin(), mesh2.m_nodes.end());
+
+    // Merge edge arrays
+    mergedMesh.m_edges.insert(mergedMesh.m_edges.end(), mesh2.m_edges.begin(), mesh2.m_edges.end());
+
+    // Update edge-node indices
+    for (size_t i = 0; i < mesh2.m_edges.size(); ++i)
+    {
+        IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].first, mesh1NodeOffset);
+        IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].second, mesh1NodeOffset);
+    }
+
+    //--------------------------------
+
+    // Merge node-edge arrays
+    mergedMesh.m_nodesEdges.insert(mergedMesh.m_nodesEdges.end(), mesh2.m_nodesEdges.begin(), mesh2.m_nodesEdges.end());
+
+    for (size_t i = 0; i < mesh2.m_nodesEdges.size(); ++i)
+    {
+        for (size_t j = 0; j < mesh2.m_nodesEdges[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_nodesEdges[i + mesh1NodeOffset][j], mesh1EdgeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge node-node arrays
+    mergedMesh.m_nodesNodes.insert(mergedMesh.m_nodesNodes.end(), mesh2.m_nodesNodes.begin(), mesh2.m_nodesNodes.end());
+
+    for (size_t i = 0; i < mesh2.m_nodesNodes.size(); ++i)
+    {
+        for (size_t j = 0; j < mesh2.m_nodesNodes[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_nodesNodes[i + mesh1NodeOffset][j], mesh1NodeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge face-node arrays
+    mergedMesh.m_facesNodes.insert(mergedMesh.m_facesNodes.end(), mesh2.m_facesNodes.begin(), mesh2.m_facesNodes.end());
+
+    for (size_t i = 0; i < mesh2.m_facesNodes.size(); ++i)
+    {
+        for (size_t j = 0; j < mesh2.m_facesNodes[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_facesNodes[i + mesh1FaceOffset][j], mesh1NodeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge edge-face arrays
+    mergedMesh.m_edgesFaces.insert(mergedMesh.m_edgesFaces.end(), mesh2.m_edgesFaces.begin(), mesh2.m_edgesFaces.end());
+
+    for (size_t i = 0; i < mesh2.m_edgesFaces.size(); ++i)
+    {
+        IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][0], mesh1FaceOffset);
+        IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][1], mesh1FaceOffset);
+    }
+
+    //--------------------------------
+
+    // Merge face-nedge arrays
+    mergedMesh.m_facesEdges.insert(mergedMesh.m_facesEdges.end(), mesh2.m_facesEdges.begin(), mesh2.m_facesEdges.end());
+
+    for (size_t i = 0; i < mesh2.m_facesEdges.size(); ++i)
+    {
+        for (size_t j = 0; j < mesh2.m_facesEdges[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_facesEdges[i + mesh1FaceOffset][j], mesh1EdgeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Now merge remaining arrays
+
+    mergedMesh.m_nodesNumEdges.insert(mergedMesh.m_nodesNumEdges.end(), mesh2.m_nodesNumEdges.begin(), mesh2.m_nodesNumEdges.end());
+    mergedMesh.m_nodesTypes.insert(mergedMesh.m_nodesTypes.end(), mesh2.m_nodesTypes.begin(), mesh2.m_nodesTypes.end());
+
+    mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
+    mergedMesh.m_edgeLengths.insert(mergedMesh.m_edgeLengths.end(), mesh2.m_edgeLengths.begin(), mesh2.m_edgeLengths.end());
+    mergedMesh.m_edgesCenters.insert(mergedMesh.m_edgesCenters.end(), mesh2.m_edgesCenters.begin(), mesh2.m_edgesCenters.end());
+
+    mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
+    mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());
+    mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
+    mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
+    // mergedMesh.AdministrateNodesEdges();
+
+    return mergedMesh;
 }
