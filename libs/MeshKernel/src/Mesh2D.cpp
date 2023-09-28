@@ -2025,12 +2025,12 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
         throw MeshKernelError("The two meshes cannot be merged: both meshes are empty");
     }
 
-    if ((mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0) && (mesh2.GetNumNodes() > 0 || mesh2.GetNumEdges() > 0))
+    if ((mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0) && (mesh2.GetNumNodes() > 0 && mesh2.GetNumEdges() > 0))
     {
         return mesh2;
     }
 
-    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() > 0 || mesh1.GetNumEdges() > 0))
+    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() > 0 && mesh1.GetNumEdges() > 0))
     {
         return mesh1;
     }
