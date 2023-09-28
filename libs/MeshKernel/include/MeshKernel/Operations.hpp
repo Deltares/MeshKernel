@@ -593,7 +593,7 @@ namespace meshkernel
     /// Only nodes and node connectivity need be printed to visualise the graph.
     void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
 
-    /// @brief Increment a vaild value by an increment
+    /// @brief Increment a valid value by an increment
     inline void IncrementValidValue(UInt& value, const UInt increment)
     {
         if (value != constants::missing::uintValue) [[likely]]

@@ -2049,7 +2049,7 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_edges.insert(mergedMesh.m_edges.end(), mesh2.m_edges.begin(), mesh2.m_edges.end());
 
     // Update edge-node indices
-    for (size_t i = 0; i < mesh2.m_edges.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_edges.size(); ++i)
     {
         IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].first, mesh1NodeOffset);
         IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].second, mesh1NodeOffset);
@@ -2060,9 +2060,9 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Merge node-edge arrays
     mergedMesh.m_nodesEdges.insert(mergedMesh.m_nodesEdges.end(), mesh2.m_nodesEdges.begin(), mesh2.m_nodesEdges.end());
 
-    for (size_t i = 0; i < mesh2.m_nodesEdges.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_nodesEdges.size(); ++i)
     {
-        for (size_t j = 0; j < mesh2.m_nodesEdges[i].size(); ++j)
+        for (UInt j = 0; j < mesh2.m_nodesEdges[i].size(); ++j)
         {
             IncrementValidValue(mergedMesh.m_nodesEdges[i + mesh1NodeOffset][j], mesh1EdgeOffset);
         }
@@ -2073,9 +2073,9 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Merge node-node arrays
     mergedMesh.m_nodesNodes.insert(mergedMesh.m_nodesNodes.end(), mesh2.m_nodesNodes.begin(), mesh2.m_nodesNodes.end());
 
-    for (size_t i = 0; i < mesh2.m_nodesNodes.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_nodesNodes.size(); ++i)
     {
-        for (size_t j = 0; j < mesh2.m_nodesNodes[i].size(); ++j)
+        for (UInt j = 0; j < mesh2.m_nodesNodes[i].size(); ++j)
         {
             IncrementValidValue(mergedMesh.m_nodesNodes[i + mesh1NodeOffset][j], mesh1NodeOffset);
         }
@@ -2086,9 +2086,9 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Merge face-node arrays
     mergedMesh.m_facesNodes.insert(mergedMesh.m_facesNodes.end(), mesh2.m_facesNodes.begin(), mesh2.m_facesNodes.end());
 
-    for (size_t i = 0; i < mesh2.m_facesNodes.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_facesNodes.size(); ++i)
     {
-        for (size_t j = 0; j < mesh2.m_facesNodes[i].size(); ++j)
+        for (UInt j = 0; j < mesh2.m_facesNodes[i].size(); ++j)
         {
             IncrementValidValue(mergedMesh.m_facesNodes[i + mesh1FaceOffset][j], mesh1NodeOffset);
         }
@@ -2099,7 +2099,7 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Merge edge-face arrays
     mergedMesh.m_edgesFaces.insert(mergedMesh.m_edgesFaces.end(), mesh2.m_edgesFaces.begin(), mesh2.m_edgesFaces.end());
 
-    for (size_t i = 0; i < mesh2.m_edgesFaces.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_edgesFaces.size(); ++i)
     {
         IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][0], mesh1FaceOffset);
         IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][1], mesh1FaceOffset);
@@ -2110,9 +2110,9 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Merge face-edge arrays
     mergedMesh.m_facesEdges.insert(mergedMesh.m_facesEdges.end(), mesh2.m_facesEdges.begin(), mesh2.m_facesEdges.end());
 
-    for (size_t i = 0; i < mesh2.m_facesEdges.size(); ++i)
+    for (UInt i = 0; i < mesh2.m_facesEdges.size(); ++i)
     {
-        for (size_t j = 0; j < mesh2.m_facesEdges[i].size(); ++j)
+        for (UInt j = 0; j < mesh2.m_facesEdges[i].size(); ++j)
         {
             IncrementValidValue(mergedMesh.m_facesEdges[i + mesh1FaceOffset][j], mesh1EdgeOffset);
         }
