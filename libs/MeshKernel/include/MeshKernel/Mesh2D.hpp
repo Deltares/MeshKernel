@@ -298,7 +298,7 @@ namespace meshkernel
 
         /// @brief Find edge on the opposite side of the element
         /// @note Currently only valid of quadrilateral elements.
-        /// Will throw exception NotImplemented for non-quadrilateral element shapes.
+        /// Will throw exception NotImplementedError for non-quadrilateral element shapes.
         UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
 
         /// @brief Get the next face adjacent to the edge on the opposite side.

@@ -328,7 +328,7 @@ void OrthogonalizationAndSmoothing::ComputeCoordinates() const
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
     }
-    throw NotImplemented("This functionality is not implemented yet.");
+    throw NotImplementedError("This functionality is not implemented yet.");
 }
 
 void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)

@@ -47,18 +47,20 @@ namespace meshkernel
 {
 
     /// @brief Enumeration of exit codes
+    // Note: Do not change the values. This has an impact on the front-end.
+    //       To add a new code, append and set to the highest existing value incremented by 1.
     enum ExitCode
     {
-        Success = 0,            ///< Success
-        MeshKernelErrorCode,    ///< MehKernel error
-        NotImplementedCode,     ///< Not implemented error
-        AlgorithmErrorCode,     ///< Algorithm error
-        ConstraintErrorCode,    ///< Constraint error
-        MeshGeometryErrorCode,  ///< Geometry error
-        LinearAlgebraErrorCode, ///< Linear algebra error
-        RangeErrorCode,         ///< Range error
-        StdLibExceptionCode,    ///< Standrad library exception
-        UnknownExceptionCode    ///< Unknown exception
+        Success = 0,                 ///< Success
+        MeshKernelErrorCode = 1,     ///< MehKernel error
+        NotImplementedErrorCode = 2, ///< Not implemented error
+        AlgorithmErrorCode = 3,      ///< Algorithm error
+        ConstraintErrorCode = 4,     ///< Constraint error
+        MeshGeometryErrorCode = 5,   ///< Geometry error
+        LinearAlgebraErrorCode = 6,  ///< Linear algebra error
+        RangeErrorCode = 7,          ///< Range error
+        StdLibExceptionCode = 8,     ///< Standrad library exception
+        UnknownExceptionCode = 9     ///< Unknown exception
     };
 
     /// @brief Contains error category information
@@ -227,7 +229,7 @@ namespace meshkernel
     };
 
     /// @brief A class for throwing not implemented exceptions
-    class NotImplemented final : public MeshKernelError
+    class NotImplementedError final : public MeshKernelError
     {
     public:
         /// @brief Class constructor
@@ -238,7 +240,7 @@ namespace meshkernel
         /// @return The  error category.
         [[nodiscard]] ErrorCategory Category() const override
         {
-            return {"NotImplemented", ExitCode::NotImplementedCode};
+            return {"NotImplementedError", ExitCode::NotImplementedErrorCode};
         }
     };
 

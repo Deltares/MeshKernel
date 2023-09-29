@@ -1951,8 +1951,8 @@ meshkernel::UInt Mesh2D::FindOppositeEdge(const UInt faceId, const UInt edgeId) 
 {
     if (m_numFacesNodes[faceId] != 4)
     {
-        throw NotImplemented("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
-                             m_numFacesNodes[faceId]);
+        throw NotImplementedError("FindOppositeEdge only works for quadrilateral elements, request is for element with {} edges",
+                                  m_numFacesNodes[faceId]);
     }
 
     UInt position = constants::missing::uintValue;

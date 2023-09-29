@@ -527,9 +527,59 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_edges_location_type(int& type);
 
         /// @brief Gets pointer to error message.
-        /// @param[out] error_message The pointer to the latest error message
+        /// @param[out] errorMessage The pointer to the latest error message
         /// @returns Error code
-        MKERNEL_API int mkernel_get_error(char* error_message);
+        MKERNEL_API int mkernel_get_error(char* errorMessage);
+
+        /// @brief Gets the success exit code
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_success(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type MeshKernelError
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_meshkernel_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type NotImplementedCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_not_implemented_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type AlgorithmexitCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_algorithm_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type ConstraintexitCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_constraint_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type MeshGeometryexitCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_mesh_geometry_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type LinearAlgebraexitCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_linear_algebra_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type RangeexitCode
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_range_error(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of type std::exception
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_stdlib_exception(int& exitCode);
+
+        /// @brief Gets the exit code of an exception of unknown type
+        /// @param[in,out] exitCode The exit code
+        /// @return Error code
+        MKERNEL_API int mkernel_get_exit_code_unknown_exception(int& exitCode);
 
         /// @brief Gets an int indicating the faces location type
         /// @param[out] type The int indicating the face location type

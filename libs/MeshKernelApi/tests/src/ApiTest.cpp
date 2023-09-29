@@ -3163,3 +3163,33 @@ TEST(MeshState, PolygonSnapToLandboundary_ShouldSnapPolygonToLandBoundary)
         EXPECT_NEAR(polygonGeometry.coordinates_y[i], expectedSnappedPointY[i], tolerance);
     }
 }
+
+TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi_OnClockWisePolygon_ShouldComputeValidTriangles)
+{
+    // Prepare
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector xCoordinates{0.0, 0.0, 1.0, 1.0, 0.0};
+    std::vector yCoordinates{0.0, 1.0, 1.0, 0.0, 0.0};
+    std::vector zCoordinates(yCoordinates.size(), 0.0);
+
+    geometryListIn.coordinates_x = xCoordinates.data();
+    geometryListIn.coordinates_y = yCoordinates.data();
+    geometryListIn.values = zCoordinates.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
+
+    // Execute
+    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Get the new state
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(5, mesh2d.num_nodes);
+    ASSERT_EQ(8, mesh2d.num_edges);
+}
