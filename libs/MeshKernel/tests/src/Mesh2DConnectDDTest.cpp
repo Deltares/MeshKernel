@@ -192,3 +192,56 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1.GetNumFaces() + mesh2.GetNumFaces() + ExtraFaces);
     EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1.GetNumNodes() + mesh2.GetNumNodes() - NodeDifference);
 }
+
+TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
+{
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
+    meshkernel::Mesh2D mesh2;
+
+    // The projection needs to be set, as there is no default
+    mesh2.m_projection = meshkernel::Projection::cartesian;
+
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2);
+
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1.GetNumFaces());
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1.GetNumNodes());
+
+    // This time with the parameters reversed
+    meshkernel::Mesh2D anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, mesh1);
+
+    EXPECT_EQ(anotherMergedMesh.GetNumFaces(), mesh1.GetNumFaces());
+    EXPECT_EQ(anotherMergedMesh.GetNumNodes(), mesh1.GetNumNodes());
+}
+
+TEST(Mesh2DConnectDD, MergeTwoEmptyMeshes)
+{
+
+    meshkernel::Mesh2D mesh1;
+    meshkernel::Mesh2D mesh2;
+
+    mesh1.m_projection = meshkernel::Projection::cartesian;
+    mesh2.m_projection = meshkernel::Projection::cartesian;
+
+    meshkernel::Mesh2D mergedMesh;
+
+    EXPECT_THROW(mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2), meshkernel::MeshKernelError);
+}
+
+TEST(Mesh2DConnectDD, MergeTwoIncompatibleMeshes)
+{
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
+    meshkernel::Mesh2D mesh2 = generateMesh(origin, delta, 11, 11);
+
+    // change projection on mesh2.
+    mesh2.m_projection = meshkernel::Projection::spherical;
+
+    EXPECT_THROW([[maybe_unused]] meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2), meshkernel::MeshKernelError);
+}
