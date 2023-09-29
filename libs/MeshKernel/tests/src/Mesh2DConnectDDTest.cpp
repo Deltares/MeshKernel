@@ -167,7 +167,7 @@ TEST(Mesh2DConnectDD, MergeMeshes)
 {
 
     // 3 nodes were removed because they are shared between both meshes
-    // 2 node were added in order to free the hanginig nodes
+    // 2 node were added in order to free the hanging nodes
     const meshkernel::UInt NodeDifference = 3 - 2;
 
     // 18 faces were added when freeing the hanging nodes

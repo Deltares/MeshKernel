@@ -2134,5 +2134,10 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
     mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
 
+    // Indicate that the mesh state has changed and the r-trees will need to be re-computed when reuired.
+    mergedMesh.m_nodesRTreeRequiresUpdate = true;
+    mergedMesh.m_edgesRTreeRequiresUpdate = true;
+    mergedMesh.m_facesRTreeRequiresUpdate = true;
+
     return mergedMesh;
 }
