@@ -498,7 +498,7 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
     throw AlgorithmError("Could not find the closest edge to a point.");
 }
 
-#if 1
+#if 0
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
     if (nodeindex >= m_nodes.size())
@@ -512,20 +512,14 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
     const auto distanceNodeToMoveFromNewPointSquared = dx * dx + dy * dy;
-
-    // const Vector delta = GetDelta(nodeToMove, newPoint, m_projection);
-    // const double distanceNodeToMoveFromNewPointSquared = delta.lengthSquared();
     const double distanceNodeToMoveFromNewPointSquaredInv = 1.0 / distanceNodeToMoveFromNewPointSquared;
 
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
-        // const Vector pointDelta = GetDelta(m_nodes[n], nodeToMove, m_projection);
 
         const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
         const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
         const double distanceCurrentNodeFromNewPointSquared = nodeDx * nodeDx + nodeDy * nodeDy;
-
-        // const double distanceCurrentNodeFromNewPointSquared = pointDelta.lengthSquared();
 
         if (distanceCurrentNodeFromNewPointSquared <= distanceNodeToMoveFromNewPointSquared)
         {
@@ -533,7 +527,6 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 
             m_nodes[n].x += dx * factor;
             m_nodes[n].y += dy * factor;
-            // m_nodes[n] += factor * delta;
         }
     }
 

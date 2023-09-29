@@ -334,10 +334,7 @@ TEST(Mesh2D, MillionQuads)
         }
     }
 
-    meshkernel::Point centrePoint = nodes[indicesValues[n / 2][m / 2]];
-    meshkernel::Point toMove = centrePoint;
-    toMove.x += 2.0;
-    toMove.y += 2.0;
+    std::vector<meshkernel::UInt> pointsToPick{100, 200, 300, 400, 500, 600, 700, 800, 900};
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
@@ -364,10 +361,16 @@ TEST(Mesh2D, MillionQuads)
 
     auto start(std::chrono::steady_clock::now());
 
-    for (int i = 1; i <= 50; ++i)
+    for (meshkernel::UInt i = 0; i < pointsToPick.size(); ++i)
     {
-        mesh.MoveNode(toMove, indicesValues[n / 2][m / 2]);
-        mesh.MoveNode(centrePoint, indicesValues[n / 2][m / 2]);
+        for (meshkernel::UInt j = 0; j < pointsToPick.size(); ++j)
+        {
+            meshkernel::Point centrePoint = nodes[indicesValues[pointsToPick[i]][pointsToPick[j]]];
+            meshkernel::Point toMove = centrePoint;
+            toMove.x += 2.0;
+            toMove.y += 2.0;
+            mesh.MoveNode(toMove, indicesValues[pointsToPick[i]][pointsToPick[j]]);
+        }
     }
 
     auto end(std::chrono::steady_clock::now());
