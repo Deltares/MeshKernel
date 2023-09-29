@@ -498,6 +498,73 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
     throw AlgorithmError("Could not find the closest edge to a point.");
 }
 
+#if 0
+void Mesh::MoveNode(Point newPoint, UInt nodeindex)
+{
+    if (nodeindex >= m_nodes.size())
+    {
+        throw ConstraintError("Invalid node index: {}", nodeindex);
+    }
+
+    const Point nodeToMove = m_nodes[nodeindex];
+    const Vector delta = GetDelta(nodeToMove, newPoint, m_projection);
+    const double distanceNodeToMoveFromNewPointSquared = delta.lengthSquared();
+    const double distanceNodeToMoveFromNewPointSquaredInv = 1.0 / distanceNodeToMoveFromNewPointSquared;
+
+    for (UInt n = 0; n < GetNumNodes(); ++n)
+    {
+        const Vector pointDelta = GetDelta(m_nodes[n], nodeToMove, m_projection);
+        const double distanceCurrentNodeFromNewPointSquared = pointDelta.lengthSquared();
+
+        if (distanceCurrentNodeFromNewPointSquared <= distanceNodeToMoveFromNewPointSquared)
+        {
+            const auto factor = 0.5 * (1.0 + std::cos(distanceCurrentNodeFromNewPointSquared * distanceNodeToMoveFromNewPointSquaredInv) * M_PI);
+
+            m_nodes[n] += factor * delta;
+        }
+    }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+#elif 1
+void Mesh::MoveNode(Point newPoint, UInt nodeindex)
+{
+    if (nodeindex >= m_nodes.size())
+    {
+        throw ConstraintError("Invalid node index: {}", nodeindex);
+    }
+
+    const Point nodeToMove = m_nodes.at(nodeindex);
+    const auto dx = GetDx(nodeToMove, newPoint, m_projection);
+    const auto dy = GetDy(nodeToMove, newPoint, m_projection);
+    const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+    const auto distanceNodeToMoveFromNewPointInv = 1.0 / distanceNodeToMoveFromNewPoint;
+
+    BuildTree(Location::Nodes);
+    m_nodesRTree.SearchPoints(nodeToMove, distanceNodeToMoveFromNewPoint * distanceNodeToMoveFromNewPoint);
+
+    if (m_nodesRTree.HasQueryResults())
+    {
+        for (UInt n = 0; n < m_nodesRTree.GetQueryResultSize(); ++n)
+        {
+            const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
+            const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
+            const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+
+            const auto factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint * distanceNodeToMoveFromNewPointInv, 1.0) * M_PI));
+
+            m_nodes[n].x += dx * factor;
+            m_nodes[n].y += dy * factor;
+        }
+
+        m_nodesRTreeRequiresUpdate = true;
+        m_edgesRTreeRequiresUpdate = true;
+    }
+}
+
+#else
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
     const Point nodeToMove = m_nodes.at(nodeindex);
@@ -506,6 +573,7 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
     const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
         const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
@@ -521,6 +589,8 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 }
+
+#endif
 
 bool Mesh::IsFaceOnBoundary(UInt face) const
 {

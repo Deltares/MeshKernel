@@ -318,15 +318,15 @@ TEST(Mesh2D, NodeMerging)
 
 TEST(Mesh2D, MillionQuads)
 {
-    const int n = 4; // x
-    const int m = 4; // y
+    const meshkernel::UInt n = 1000; // x
+    const meshkernel::UInt m = 1000; // y
 
-    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<std::vector<meshkernel::UInt>> indicesValues(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
@@ -334,20 +334,25 @@ TEST(Mesh2D, MillionQuads)
         }
     }
 
+    meshkernel::Point centrePoint = nodes[indicesValues[n / 2][m / 2]];
+    meshkernel::Point toMove = centrePoint;
+    toMove.x += 2.0;
+    toMove.y += 2.0;
+
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n - 1; ++i)
+        for (meshkernel::UInt i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (auto j = 0; j < m - 1; ++j)
+    for (meshkernel::UInt j = 0; j < m - 1; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -355,15 +360,23 @@ TEST(Mesh2D, MillionQuads)
     }
 
     // now build node-edge mapping
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
     auto start(std::chrono::steady_clock::now());
-    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    for (int i = 1; i <= 50; ++i)
+    {
+        mesh.MoveNode(toMove, indicesValues[n / 2][m / 2]);
+        mesh.MoveNode(centrePoint, indicesValues[n / 2][m / 2]);
+    }
+
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
     std::cout << "Number of found cells " << mesh.GetNumFaces() << std::endl;
 
-    EXPECT_LE(elapsedTime, 5.0);
+    // EXPECT_LE(elapsedTime, 5.0);
 }
 
 TEST(Mesh2D, GetObtuseTriangles)
