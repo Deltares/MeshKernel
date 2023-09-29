@@ -570,6 +570,46 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
     }
 }
 
+#elif 1
+void Mesh::MoveNode(Point newPoint, UInt nodeindex)
+{
+    const Point nodeToMove = m_nodes.at(nodeindex);
+
+    const auto dx = GetDx(nodeToMove, newPoint, m_projection);
+    const auto dy = GetDy(nodeToMove, newPoint, m_projection);
+
+    const auto distanceNodeToMoveFromNewPointSquared = dx * dx + dy * dy;
+    const auto distanceNodeToMoveFromNewPoint = std::sqrt(distanceNodeToMoveFromNewPointSquared);
+    const auto distanceNodeToMoveFromNewPointInv = 1.0 / distanceNodeToMoveFromNewPoint;
+
+    auto comp = [this, nodeToMove, distanceNodeToMoveFromNewPointSquared](size_t i)
+    {
+        const auto nodeDx = GetDx(m_nodes[i], nodeToMove, m_projection);
+        const auto nodeDy = GetDy(m_nodes[i], nodeToMove, m_projection);
+        const double distanceCurrentNodeFromNewPointSquared = nodeDx * nodeDx + nodeDy * nodeDy;
+        return distanceCurrentNodeFromNewPointSquared <= distanceNodeToMoveFromNewPointSquared;
+    };
+
+    std::vector<size_t> indices(m_nodes.size());
+    std::iota(indices.begin(), indices.end(), 0u);
+    auto inRadiusIt = std::partition(indices.begin(), indices.end(), comp);
+
+    for (UInt n = 0; n < std::distance(indices.begin(), inRadiusIt); ++n)
+    {
+        const auto nodeDx = GetDx(m_nodes[indices[n]], nodeToMove, m_projection);
+        const auto nodeDy = GetDy(m_nodes[indices[n]], nodeToMove, m_projection);
+        const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+
+        const auto factor = 0.5 * (1.0 + std::cos(distanceCurrentNodeFromNewPoint * distanceNodeToMoveFromNewPointInv * M_PI));
+
+        m_nodes[indices[n]].x += dx * factor;
+        m_nodes[indices[n]].y += dy * factor;
+    }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+}
+
 #else
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
