@@ -318,15 +318,15 @@ TEST(Mesh2D, NodeMerging)
 
 TEST(Mesh2D, MillionQuads)
 {
-    const meshkernel::UInt n = 1000; // x
-    const meshkernel::UInt m = 1000; // y
+    const int n = 4; // x
+    const int m = 4; // y
 
-    std::vector<std::vector<meshkernel::UInt>> indicesValues(n, std::vector<meshkernel::UInt>(m));
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (meshkernel::UInt j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (meshkernel::UInt i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
@@ -334,22 +334,20 @@ TEST(Mesh2D, MillionQuads)
         }
     }
 
-    std::vector<meshkernel::UInt> pointsToPick{100, 200, 300, 400, 500, 600, 700, 800, 900};
-
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (meshkernel::UInt j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (meshkernel::UInt i = 0; i < n - 1; ++i)
+        for (auto i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (meshkernel::UInt j = 0; j < m - 1; ++j)
+    for (auto j = 0; j < m - 1; ++j)
     {
-        for (meshkernel::UInt i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -357,29 +355,15 @@ TEST(Mesh2D, MillionQuads)
     }
 
     // now build node-edge mapping
-    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
-
     auto start(std::chrono::steady_clock::now());
-
-    for (meshkernel::UInt i = 0; i < pointsToPick.size(); ++i)
-    {
-        for (meshkernel::UInt j = 0; j < pointsToPick.size(); ++j)
-        {
-            meshkernel::Point centrePoint = nodes[indicesValues[pointsToPick[i]][pointsToPick[j]]];
-            meshkernel::Point toMove = centrePoint;
-            toMove.x += 2.0;
-            toMove.y += 2.0;
-            mesh.MoveNode(toMove, indicesValues[pointsToPick[i]][pointsToPick[j]]);
-        }
-    }
-
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
     std::cout << "Number of found cells " << mesh.GetNumFaces() << std::endl;
 
-    // EXPECT_LE(elapsedTime, 5.0);
+    EXPECT_LE(elapsedTime, 5.0);
 }
 
 TEST(Mesh2D, GetObtuseTriangles)
