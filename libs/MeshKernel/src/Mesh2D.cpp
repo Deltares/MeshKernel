@@ -307,6 +307,94 @@ void Mesh2D::DeleteDegeneratedTriangles()
     Administrate();
 }
 
+bool Mesh2D::HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& nodes, std::vector<UInt>& sortedNodes) const
+{
+
+    if (numClosingEdges == 3)
+    {
+        if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[1] == nodes[2])
+        {
+            return true;
+        }
+    }
+    else if (numClosingEdges == 4)
+    {
+        if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[0] == nodes[3] ||
+            nodes[1] == nodes[2] || nodes[1] == nodes[3] ||
+            nodes[2] == nodes[3])
+        {
+            return true;
+        }
+    }
+    else
+    {
+        sortedNodes.clear();
+        sortedNodes.reserve(nodes.size());
+        std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
+        std::sort(sortedNodes.begin(), sortedNodes.end());
+        for (UInt n = 0; n < sortedNodes.size() - 1; n++)
+        {
+            if (sortedNodes[n + 1] == sortedNodes[n])
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Mesh2D::HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const
+{
+
+    (void)numClosingEdges;
+
+    if (numClosingEdges == 3)
+    {
+        // TODO is it the same to check only edges, rather than m_edgesFaces[edges[1]]?
+        if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0])
+        {
+            return true;
+        }
+    }
+    else if (numClosingEdges == 4)
+    {
+        if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[3]][0] ||
+
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[3]][0] ||
+
+            m_edgesFaces[edges[2]][0] == m_edgesFaces[edges[3]][0])
+        {
+            return true;
+        }
+    }
+    else
+    {
+        sortedEdgesFaces.clear();
+        sortedEdgesFaces.reserve(edges.size());
+        // is an internal face only if all edges have a different face
+        for (UInt ee = 0; ee < edges.size(); ee++)
+        {
+            sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
+        }
+
+        std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
+
+        for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
+        {
+            if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
+                return true;
+        }
+    }
+
+    return false;
+}
+
 void Mesh2D::FindFacesRecursive(UInt startNode,
                                 UInt node,
                                 UInt previousEdge,
@@ -337,36 +425,9 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     if (otherNode == startNode && nodes.size() == numClosingEdges)
     {
         // no duplicated nodes allowed
-
-        if (numClosingEdges == 3)
+        if (HasDuplicateNodes(numClosingEdges, nodes, sortedNodes))
         {
-            if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[1] == nodes[2])
-            {
-                return;
-            }
-        }
-        else if (numClosingEdges == 4)
-        {
-            if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[0] == nodes[3] ||
-                nodes[1] == nodes[2] || nodes[1] == nodes[3] ||
-                nodes[2] == nodes[3])
-            {
-                return;
-            }
-        }
-        else
-        {
-            sortedNodes.clear();
-            sortedNodes.reserve(nodes.size());
-            std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
-            std::sort(sortedNodes.begin(), sortedNodes.end());
-            for (UInt n = 0; n < sortedNodes.size() - 1; n++)
-            {
-                if (sortedNodes[n + 1] == sortedNodes[n])
-                {
-                    return;
-                }
-            }
+            return;
         }
 
         // we need to add a face when at least one edge has no faces
@@ -380,51 +441,10 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
             }
         }
 
-        // check if least one edge has no face
-        if (!oneEdgeHasNoFace)
+        // check if least one edge has no face and there are no duplicate edge-faces.
+        if (!oneEdgeHasNoFace && HasDuplicateEdgeFaces(numClosingEdges, edges, sortedEdgesFaces))
         {
-
-            if (numClosingEdges == 3)
-            {
-                if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
-                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
-                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0])
-                {
-                    return;
-                }
-            }
-            else if (numClosingEdges == 4)
-            {
-                if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
-                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
-                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[3]][0] ||
-
-                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0] ||
-                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[3]][0] ||
-
-                    m_edgesFaces[edges[2]][0] == m_edgesFaces[edges[3]][0])
-                {
-                    return;
-                }
-            }
-            else
-            {
-                sortedEdgesFaces.clear();
-                sortedEdgesFaces.reserve(edges.size());
-                // is an internal face only if all edges have a different face
-                for (UInt ee = 0; ee < edges.size(); ee++)
-                {
-                    sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
-                }
-
-                std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
-
-                for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
-                {
-                    if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
-                        return;
-                }
-            }
+            return;
         }
 
         // the order of the edges in a new face must be counterclockwise
@@ -523,7 +543,6 @@ void Mesh2D::FindFaces()
 
 void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
 {
-
     auto const numFaces = static_cast<int>(GetNumFaces());
     m_facesCircumcenters.resize(numFaces);
     m_faceArea.resize(numFaces);
@@ -1336,7 +1355,6 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
 
 std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 {
-
     const auto numEdges = m_nodesNumEdges[node];
     std::vector<UInt> result;
     for (UInt e = 0; e < numEdges; ++e)
@@ -1388,7 +1406,6 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 
 std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
 {
-
     Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
@@ -1698,7 +1715,6 @@ std::tuple<std::vector<meshkernel::Mesh::EdgeMeshPolylineIntersection>,
            std::vector<meshkernel::Mesh::FaceMeshPolylineIntersection>>
 Mesh2D::GetPolylineIntersections(const std::vector<Point>& polyLine)
 {
-
     std::vector<EdgeMeshPolylineIntersection> edgesIntersectionsResult(GetNumEdges());
     std::vector<FaceMeshPolylineIntersection> faceIntersectionsResult(GetNumFaces());
 

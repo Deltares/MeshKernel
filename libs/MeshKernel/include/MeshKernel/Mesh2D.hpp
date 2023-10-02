@@ -346,6 +346,12 @@ namespace meshkernel
         /// @returns If triangle has an acute triangle
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
 
+        /// @brief Determine if there are duplicate node id's on the node array
+        bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
+
+        /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
+
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()
         {

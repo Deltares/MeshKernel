@@ -108,6 +108,9 @@ namespace meshkernel
         static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection);
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction
+        ///
+        /// This version uses an indirect indexing of the set of nodes, this can be used to
+        /// reduce the need to copy nodes to a separate array.
         static std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass(const std::vector<Point>& nodes,
                                                                                      const std::vector<UInt>& nodeIndices,
                                                                                      const Projection projection,

@@ -367,7 +367,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
         double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
 
-        area += 0.5 * (xds1 + xds2 + xds3);
+        area = 0.5 * (xds1 + xds2 + xds3);
 
         centreOfMass += xds1 * middle1;
         centreOfMass += xds2 * middle2;
@@ -395,7 +395,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
         double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
 
-        area += 0.5 * (xds1 + xds2 + xds3 + xds4);
+        area = 0.5 * (xds1 + xds2 + xds3 + xds4);
 
         centreOfMass += xds1 * middle1;
         centreOfMass += xds2 * middle2;
@@ -476,7 +476,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
         double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
 
-        area += 0.5 * (xds1 + xds2 + xds3);
+        area = 0.5 * (xds1 + xds2 + xds3);
 
         centreOfMass.x = xds1 * middle1.x();
         centreOfMass.y = xds1 * middle1.y();
@@ -505,7 +505,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
         double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
 
-        area += 0.5 * (xds1 + xds2 + xds3 + xds4);
+        area = 0.5 * (xds1 + xds2 + xds3 + xds4);
 
         centreOfMass.x = xds1 * middle1.x();
         centreOfMass.y = xds1 * middle1.y();
