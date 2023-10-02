@@ -361,10 +361,10 @@ namespace meshkernel
 
     double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
-        const double delta = secondPoint.x - firstPoint.x;
 
         if (projection == Projection::cartesian)
         {
+            const double delta = secondPoint.x - firstPoint.x;
             return delta;
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
@@ -399,10 +399,10 @@ namespace meshkernel
 
     double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
-        const double delta = secondPoint.y - firstPoint.y;
 
         if (projection == Projection::cartesian)
         {
+            const double delta = secondPoint.y - firstPoint.y;
             return delta;
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
