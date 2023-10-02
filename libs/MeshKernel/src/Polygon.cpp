@@ -349,21 +349,78 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     const Point reference = ReferencePoint(polygon, projection);
     const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
 
-    for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
+    if (numberOfPointsOpenedPolygon == 3)
     {
-        const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
+        Vector delta1 = GetDelta(reference, polygon[0], projection);
+        Vector delta2 = GetDelta(reference, polygon[1], projection);
+        Vector delta3 = GetDelta(reference, polygon[2], projection);
 
-        Vector delta = GetDelta(reference, polygon[n], projection);
-        Vector deltaNext = GetDelta(reference, polygon[nextNode], projection);
-        Vector middle = 0.5 * (delta + deltaNext);
-        delta = GetDelta(polygon[n], polygon[nextNode], projection);
+        Vector middle1 = 0.5 * (delta1 + delta2);
+        Vector middle2 = 0.5 * (delta2 + delta3);
+        Vector middle3 = 0.5 * (delta3 + delta1);
 
-        // Rotate by 3pi/2
-        Vector normal(delta.y(), -delta.x());
-        double xds = dot(normal, middle);
-        area += 0.5 * xds;
+        delta1 = GetDelta(polygon[0], polygon[1], projection);
+        delta2 = GetDelta(polygon[1], polygon[2], projection);
+        delta3 = GetDelta(polygon[2], polygon[0], projection);
 
-        centreOfMass += xds * middle;
+        double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+        double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+        double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+
+        area += 0.5 * (xds1 + xds2 + xds3);
+
+        centreOfMass += xds1 * middle1;
+        centreOfMass += xds2 * middle2;
+        centreOfMass += xds3 * middle3;
+    }
+    else if (numberOfPointsOpenedPolygon == 4)
+    {
+        Vector delta1 = GetDelta(reference, polygon[0], projection);
+        Vector delta2 = GetDelta(reference, polygon[1], projection);
+        Vector delta3 = GetDelta(reference, polygon[2], projection);
+        Vector delta4 = GetDelta(reference, polygon[3], projection);
+
+        Vector middle1 = 0.5 * (delta1 + delta2);
+        Vector middle2 = 0.5 * (delta2 + delta3);
+        Vector middle3 = 0.5 * (delta3 + delta4);
+        Vector middle4 = 0.5 * (delta4 + delta1);
+
+        delta1 = GetDelta(polygon[0], polygon[1], projection);
+        delta2 = GetDelta(polygon[1], polygon[2], projection);
+        delta3 = GetDelta(polygon[2], polygon[3], projection);
+        delta4 = GetDelta(polygon[3], polygon[0], projection);
+
+        double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+        double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+        double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+        double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
+
+        area += 0.5 * (xds1 + xds2 + xds3 + xds4);
+
+        centreOfMass += xds1 * middle1;
+        centreOfMass += xds2 * middle2;
+        centreOfMass += xds3 * middle3;
+        centreOfMass += xds4 * middle4;
+    }
+    else
+    {
+
+        for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
+
+            Vector delta = GetDelta(reference, polygon[n], projection);
+            Vector deltaNext = GetDelta(reference, polygon[nextNode], projection);
+            Vector middle = 0.5 * (delta + deltaNext);
+            delta = GetDelta(polygon[n], polygon[nextNode], projection);
+
+            // Rotate by 3pi/2
+            Vector normal(delta.y(), -delta.x());
+            double xds = dot(normal, middle);
+            area += 0.5 * xds;
+
+            centreOfMass += xds * middle;
+        }
     }
 
     TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
