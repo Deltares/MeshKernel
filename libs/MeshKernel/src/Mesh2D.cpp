@@ -513,24 +513,7 @@ void Mesh2D::FindFaces()
     std::vector<UInt> edgesPerface(m_maximumNumberOfEdgesPerFace - 2);
     const bool quadDominantMesh = false;
 
-#if 0
-    if (quadDominantMesh)
-    {
-        edgesPerface[0] = 3;
-        edgesPerface[1] = 4;
-    }
-    else
-    {
-        edgesPerface[0] = 4;
-        edgesPerface[1] = 3;
-    }
-
-    // The reminaing element shapes are done in increasing order of number of edges.
-    for (UInt i = 5; i <= m_maximumNumberOfEdgesPerFace; ++i)
-    {
-        edgesPerface[i - 3] = i;
-    }
-#else
+    // Fill array with 3, 4, 5, ..., m_maximumNumberOfEdgesPerFace
     std::iota(edgesPerface.begin(), edgesPerface.end(), 3);
 
     if (quadDominantMesh)
@@ -538,7 +521,6 @@ void Mesh2D::FindFaces()
         // Swap positions 0 and 1 (values 3 and 4) to find quadrilaterals first.
         std::swap(edgesPerface[0], edgesPerface[1]);
     }
-#endif
 
     for (UInt numEdgesPerFace : edgesPerface)
     {
