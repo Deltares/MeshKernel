@@ -190,7 +190,7 @@ namespace meshkernel
         }
 
         const auto currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < Mesh::m_numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }

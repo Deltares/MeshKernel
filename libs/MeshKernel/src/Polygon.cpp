@@ -21,7 +21,7 @@ meshkernel::Polygon::Polygon(std::vector<Point>&& points,
 
 void meshkernel::Polygon::Initialise()
 {
-    if (0 < m_nodes.size() && m_nodes.size() < 4)
+    if (0 < m_nodes.size() && m_nodes.size() < constants::geometric::numNodesInTriangle + 1)
     {
         throw ConstraintError("Insufficient nodes in the polygon: {}, require at least 3 (+1, making 4, to close)",
                               m_nodes.size());
@@ -194,7 +194,7 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
         return true;
     }
 
-    if (m_nodes.size() < Mesh::m_numNodesInTriangle)
+    if (m_nodes.size() < constants::geometric::numNodesInTriangle)
     {
         return false;
     }
@@ -337,7 +337,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection)
 {
 
-    if (polygon.size() < Mesh::m_numNodesInTriangle)
+    if (polygon.size() < constants::geometric::numNodesInTriangle)
     {
         throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
     }
@@ -349,7 +349,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     const Point reference = ReferencePoint(polygon, projection);
     const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
 
-    if (numberOfPointsOpenedPolygon == 3)
+    if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInTriangle)
     {
         Vector delta1 = GetDelta(reference, polygon[0], projection);
         Vector delta2 = GetDelta(reference, polygon[1], projection);
@@ -373,7 +373,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         centreOfMass += xds2 * middle2;
         centreOfMass += xds3 * middle3;
     }
-    else if (numberOfPointsOpenedPolygon == 4)
+    else if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInQuadrilateral)
     {
         Vector delta1 = GetDelta(reference, polygon[0], projection);
         Vector delta2 = GetDelta(reference, polygon[1], projection);
@@ -446,7 +446,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
                                                                                                                    const bool isClosed)
 {
 
-    if (nodeIndices.size() < Mesh::m_numNodesInTriangle)
+    if (nodeIndices.size() < constants::geometric::numNodesInTriangle)
     {
         throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
     }
@@ -458,7 +458,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     const Point reference = ReferencePoint(nodes, nodeIndices, projection);
     const auto numberOfPointsOpenedPolygon = static_cast<UInt>(nodeIndices.size()) - (isClosed ? 1 : 0);
 
-    if (numberOfPointsOpenedPolygon == 3)
+    if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInTriangle)
     {
         Vector delta1 = GetDelta(reference, nodes[nodeIndices[0]], projection);
         Vector delta2 = GetDelta(reference, nodes[nodeIndices[1]], projection);
@@ -483,7 +483,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
         centreOfMass += xds2 * middle2;
         centreOfMass += xds3 * middle3;
     }
-    else if (numberOfPointsOpenedPolygon == 4)
+    else if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInQuadrilateral)
     {
         Vector delta1 = GetDelta(reference, nodes[nodeIndices[0]], projection);
         Vector delta2 = GetDelta(reference, nodes[nodeIndices[1]], projection);
