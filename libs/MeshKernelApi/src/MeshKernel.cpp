@@ -933,8 +933,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                const meshkernel::MakeGridParameters& makeGridParameters,
-                                                const GeometryList& geometryList)
+                                                const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -945,7 +944,32 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, geometryList, projection);
+            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, projection);
+
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygons(int meshKernelId,
+                                                              const meshkernel::MakeGridParameters& makeGridParameters,
+                                                              const GeometryList& geometryList)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            const auto curvilinearGrid = CreateUniformCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
@@ -2595,8 +2619,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                     const meshkernel::MakeGridParameters& makeGridParameters,
-                                                     const GeometryList& geometryList)
+                                                     const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2606,10 +2629,31 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto projection = meshKernelState[meshKernelId].m_projection;
             *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters,
-                                                                                            geometryList,
-                                                                                            projection);
+                                                                                            meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_make_uniform_from_polygons(int meshKernelId,
+                                                                   const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                   const GeometryList& geometryList)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridFromPolygons(makeGridParameters,
+                                                                                                        geometryList,
+                                                                                                        meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2629,8 +2673,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto projection = meshKernelState[meshKernelId].m_projection;
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters,
+                                                                                                       meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {

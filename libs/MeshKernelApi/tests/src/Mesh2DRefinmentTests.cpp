@@ -303,8 +303,7 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalC
 
     const auto makeGridParameters = GebcoMakeGridParameters();
 
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -352,8 +351,7 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalC
 
     const auto makeGridParameters = GebcoMakeGridParameters();
 
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");

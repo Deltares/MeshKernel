@@ -336,12 +336,30 @@ namespace meshkernelapi
 
     /// @brief Generate a uniform curvilinear grid
     /// @param[in] makeGridParameters The parameters for creating a uniform curvilinear grid are as follows
-    /// @param[in] geometryList       The polygon inside which generating the curvilinear grid
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
     static meshkernel::CurvilinearGrid CreateUniformCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                    const GeometryList& geometryList,
                                                                     const meshkernel::Projection& projection)
+    {
+        meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
+
+        return curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
+                                                    makeGridParameters.num_rows,
+                                                    makeGridParameters.origin_x,
+                                                    makeGridParameters.origin_y,
+                                                    makeGridParameters.angle,
+                                                    makeGridParameters.block_size_x,
+                                                    makeGridParameters.block_size_y);
+    }
+
+    /// @brief Generate a uniform curvilinear grid from polygons
+    /// @param[in] makeGridParameters The parameters for creating a uniform curvilinear grid are as follows
+    /// @param[in] geometryList       The polygon inside which generating the curvilinear grid
+    /// @param[in] projection         The projection tu use
+    /// @returns The generated curvilinear grid
+    static meshkernel::CurvilinearGrid CreateUniformCurvilinearGridFromPolygons(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                const GeometryList& geometryList,
+                                                                                const meshkernel::Projection& projection)
     {
         meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
 
@@ -349,25 +367,11 @@ namespace meshkernelapi
 
         const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, projection);
 
-        if (!polygon->IsEmpty())
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y,
-                                                        polygon,
-                                                        0);
-        }
-        if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
-                                                        makeGridParameters.num_rows,
-                                                        makeGridParameters.origin_x,
-                                                        makeGridParameters.origin_y,
-                                                        makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y);
-        }
-        throw meshkernel::AlgorithmError("The num_columns or num_rows in MakeGridParameters must be larger than 0. Consider using curvilinear_make_uniform_on_extension instead");
+        return curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
+                                                    makeGridParameters.block_size_x,
+                                                    makeGridParameters.block_size_y,
+                                                    polygon,
+                                                    0);
     }
 
     /// @brief Generate a uniform curvilinear grid based on extension

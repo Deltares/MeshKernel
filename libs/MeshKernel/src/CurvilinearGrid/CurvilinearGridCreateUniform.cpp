@@ -230,14 +230,16 @@ namespace meshkernel
         range_check::CheckGreater(blockSizeX, 0.0, "X block size");
         range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
 
-        if (polygons->GetProjection() != m_projection)
-        {
-            throw std::invalid_argument("Polygon projection is not equal to CurvilinearGridCreateUniform projection ");
-        }
-
         if (polygons->IsEmpty())
         {
-            return {};
+            throw AlgorithmError("Enclosures list is empty.");
+        }
+
+        if (polygons->GetProjection() != m_projection)
+        {
+            throw AlgorithmError("Polygon projection ({}) is not equal to curvilinear grid projection ({})",
+                                 ToString(polygons->GetProjection()),
+                                 ToString(m_projection));
         }
 
         // Compute the bounding box
