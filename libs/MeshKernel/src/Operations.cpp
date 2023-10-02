@@ -833,6 +833,38 @@ namespace meshkernel
         return Point{minX, minY};
     }
 
+    Point ReferencePoint(const std::vector<Point>& nodes,
+                         const std::vector<UInt>& polygonIndices,
+                         const Projection& projection)
+    {
+        double minX = std::numeric_limits<double>::max();
+        // Used only in spherical coordinate system, but quicker to compute at the same time as the minX
+        double maxX = std::numeric_limits<double>::lowest();
+        double minY = std::numeric_limits<double>::max();
+        const auto numPoints = static_cast<UInt>(polygonIndices.size());
+
+        for (UInt i = 0; i < numPoints; ++i)
+        {
+            minX = std::min(nodes[polygonIndices[i]].x, minX);
+            maxX = std::max(nodes[polygonIndices[i]].x, maxX);
+
+            if (abs(nodes[polygonIndices[i]].y) < abs(minY))
+            {
+                minY = nodes[polygonIndices[i]].y;
+            }
+        }
+
+        if (projection == Projection::spherical)
+        {
+            if (maxX - minX > 180.0)
+            {
+                minX += 360.0;
+            }
+        }
+
+        return Point{minX, minY};
+    }
+
     double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
 

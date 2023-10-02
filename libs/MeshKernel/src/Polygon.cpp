@@ -440,6 +440,117 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     return {std::abs(area), centreOfMass, direction};
 }
 
+std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& nodes,
+                                                                                                                   const std::vector<UInt>& nodeIndices,
+                                                                                                                   const Projection projection,
+                                                                                                                   const bool isClosed)
+{
+
+    if (nodeIndices.size() < Mesh::m_numNodesInTriangle)
+    {
+        throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
+    }
+
+    Point centreOfMass(0.0, 0.0);
+    double area = 0.0;
+
+    const double minArea = 1e-8;
+    const Point reference = ReferencePoint(nodes, nodeIndices, projection);
+    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(nodeIndices.size()) - (isClosed ? 1 : 0);
+
+    if (numberOfPointsOpenedPolygon == 3)
+    {
+        Vector delta1 = GetDelta(reference, nodes[nodeIndices[0]], projection);
+        Vector delta2 = GetDelta(reference, nodes[nodeIndices[1]], projection);
+        Vector delta3 = GetDelta(reference, nodes[nodeIndices[2]], projection);
+
+        Vector middle1 = 0.5 * (delta1 + delta2);
+        Vector middle2 = 0.5 * (delta2 + delta3);
+        Vector middle3 = 0.5 * (delta3 + delta1);
+
+        delta1 = GetDelta(nodes[nodeIndices[0]], nodes[nodeIndices[1]], projection);
+        delta2 = GetDelta(nodes[nodeIndices[1]], nodes[nodeIndices[2]], projection);
+        delta3 = GetDelta(nodes[nodeIndices[2]], nodes[nodeIndices[0]], projection);
+
+        double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+        double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+        double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+
+        area += 0.5 * (xds1 + xds2 + xds3);
+
+        centreOfMass.x = xds1 * middle1.x();
+        centreOfMass.y = xds1 * middle1.y();
+        centreOfMass += xds2 * middle2;
+        centreOfMass += xds3 * middle3;
+    }
+    else if (numberOfPointsOpenedPolygon == 4)
+    {
+        Vector delta1 = GetDelta(reference, nodes[nodeIndices[0]], projection);
+        Vector delta2 = GetDelta(reference, nodes[nodeIndices[1]], projection);
+        Vector delta3 = GetDelta(reference, nodes[nodeIndices[2]], projection);
+        Vector delta4 = GetDelta(reference, nodes[nodeIndices[3]], projection);
+
+        Vector middle1 = 0.5 * (delta1 + delta2);
+        Vector middle2 = 0.5 * (delta2 + delta3);
+        Vector middle3 = 0.5 * (delta3 + delta4);
+        Vector middle4 = 0.5 * (delta4 + delta1);
+
+        delta1 = GetDelta(nodes[nodeIndices[0]], nodes[nodeIndices[1]], projection);
+        delta2 = GetDelta(nodes[nodeIndices[1]], nodes[nodeIndices[2]], projection);
+        delta3 = GetDelta(nodes[nodeIndices[2]], nodes[nodeIndices[3]], projection);
+        delta4 = GetDelta(nodes[nodeIndices[3]], nodes[nodeIndices[0]], projection);
+
+        double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+        double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+        double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+        double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
+
+        area += 0.5 * (xds1 + xds2 + xds3 + xds4);
+
+        centreOfMass.x = xds1 * middle1.x();
+        centreOfMass.y = xds1 * middle1.y();
+        centreOfMass += xds2 * middle2;
+        centreOfMass += xds3 * middle3;
+        centreOfMass += xds4 * middle4;
+    }
+    else
+    {
+
+        for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
+
+            Vector delta = GetDelta(reference, nodes[nodeIndices[n]], projection);
+            Vector deltaNext = GetDelta(reference, nodes[nodeIndices[nextNode]], projection);
+            Vector middle = 0.5 * (delta + deltaNext);
+            delta = GetDelta(nodes[nodeIndices[n]], nodes[nodeIndices[nextNode]], projection);
+
+            // Rotate by 3pi/2
+            Vector normal(delta.y(), -delta.x());
+            double xds = dot(normal, middle);
+            area += 0.5 * xds;
+
+            centreOfMass += xds * middle;
+        }
+    }
+
+    TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
+
+    area = std::abs(area) < minArea ? minArea : area;
+    centreOfMass *= 1.0 / (3.0 * area);
+
+    // TODO SHould this also apply to spheciral accurate?
+    if (projection == Projection::spherical)
+    {
+        centreOfMass.y /= (constants::geometric::earth_radius * constants::conversion::degToRad);
+        centreOfMass.x /= (constants::geometric::earth_radius * constants::conversion::degToRad * std::cos((centreOfMass.y + reference.y) * constants::conversion::degToRad));
+    }
+
+    centreOfMass += reference;
+
+    return {std::abs(area), centreOfMass, direction};
+}
+
 std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass() const
 {
     return FaceAreaAndCenterOfMass(m_nodes, m_projection);

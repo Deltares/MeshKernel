@@ -337,15 +337,35 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     if (otherNode == startNode && nodes.size() == numClosingEdges)
     {
         // no duplicated nodes allowed
-        sortedNodes.clear();
-        sortedNodes.reserve(nodes.size());
-        std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
-        std::sort(sortedNodes.begin(), sortedNodes.end());
-        for (UInt n = 0; n < sortedNodes.size() - 1; n++)
+
+        if (numClosingEdges == 3)
         {
-            if (sortedNodes[n + 1] == sortedNodes[n])
+            if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[1] == nodes[2])
             {
                 return;
+            }
+        }
+        else if (numClosingEdges == 4)
+        {
+            if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[0] == nodes[3] ||
+                nodes[1] == nodes[2] || nodes[1] == nodes[3] ||
+                nodes[2] == nodes[3])
+            {
+                return;
+            }
+        }
+        else
+        {
+            sortedNodes.clear();
+            sortedNodes.reserve(nodes.size());
+            std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
+            std::sort(sortedNodes.begin(), sortedNodes.end());
+            for (UInt n = 0; n < sortedNodes.size() - 1; n++)
+            {
+                if (sortedNodes[n + 1] == sortedNodes[n])
+                {
+                    return;
+                }
             }
         }
 
@@ -363,25 +383,54 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         // check if least one edge has no face
         if (!oneEdgeHasNoFace)
         {
-            sortedEdgesFaces.clear();
-            sortedEdgesFaces.reserve(edges.size());
-            // is an internal face only if all edges have a different face
-            for (UInt ee = 0; ee < edges.size(); ee++)
-            {
-                sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
-            }
 
-            std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
-
-            for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
+            if (numClosingEdges == 3)
             {
-                if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
+                if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0])
+                {
                     return;
+                }
+            }
+            else if (numClosingEdges == 4)
+            {
+                if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+                    m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[3]][0] ||
+
+                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0] ||
+                    m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[3]][0] ||
+
+                    m_edgesFaces[edges[2]][0] == m_edgesFaces[edges[3]][0])
+                {
+                    return;
+                }
+            }
+            else
+            {
+                sortedEdgesFaces.clear();
+                sortedEdgesFaces.reserve(edges.size());
+                // is an internal face only if all edges have a different face
+                for (UInt ee = 0; ee < edges.size(); ee++)
+                {
+                    sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
+                }
+
+                std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
+
+                for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
+                {
+                    if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
+                        return;
+                }
             }
         }
 
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
+
+#if 0
         nodalValues.clear();
         for (const auto& n : nodes)
         {
@@ -390,6 +439,9 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         nodalValues.emplace_back(nodalValues.front());
 
         auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(nodalValues, m_projection);
+#else
+        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, false);
+#endif
 
         if (direction == TraversalDirection::Clockwise)
         {
