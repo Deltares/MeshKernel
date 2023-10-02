@@ -152,7 +152,9 @@ TEST(PolygonTests, AreaCentreAndDirectionTest)
     mk::Point centre;
     mk::TraversalDirection direction;
 
-    std::tie(area, centre, direction) = polygon.FaceAreaAndCenterOfMass();
+    for (int i = 0; i < 5000000; ++i) {
+      std::tie(area, centre, direction) = polygon.FaceAreaAndCenterOfMass();
+    }
 
     EXPECT_EQ(area, 450.0);
     EXPECT_EQ(centre.x, 5.0);
