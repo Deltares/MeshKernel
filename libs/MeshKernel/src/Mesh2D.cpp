@@ -350,7 +350,6 @@ bool Mesh2D::HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector
     // The number of edges is the same as the number of nodes for both triangles and quadrilateral
     if (numClosingEdges == constants::geometric::numNodesInTriangle)
     {
-        // TODO is it the same to check only edges, rather than m_edgesFaces[edges[1]]?
         if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
             m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
             m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0])
@@ -449,7 +448,8 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
 
-        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, false);
+        // The nodes array does not represent a closed polygon.
+        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, /* isClosed = */ false );
 
         if (direction == TraversalDirection::Clockwise)
         {

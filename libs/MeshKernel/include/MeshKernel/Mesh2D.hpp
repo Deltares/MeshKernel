@@ -349,9 +349,13 @@ namespace meshkernel
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// @brief Determine if there are duplicate node id's on the node array
+        ///
+        /// The parameter sortedNodes, is a temporary array, that reduces the need to re-allocate any memory locally to this funciton
         bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
 
         /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        ///
+        /// The parameter sortedEdgesFaces, is a temporary array, that reduces the need to re-allocate any memory locally to this funciton
         bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
 
         /// @brief Resizes and initializes face vectors
