@@ -106,7 +106,7 @@ if ($IsWindows) {
         $WebClient.DownloadFile($M4BinURL, $M4BinDownloadPath)
     }
 
-    # Dependencies URL 
+    # Dependencies URL
     $M4DepFileName = 'm4-1.4.14-1-dep.zip'
     $M4DepURL = (@($M4BaseURL; $M4DepFileName) -Join '/')
     $M4DepDownloadPath = (Join-Path $DownloadDir $M4DepFileName)
@@ -148,7 +148,7 @@ Function Invoke-CloneRepoAndCheckoutTag {
     if (-not(Test-Path -Path $Destination)) {
         #Remove-Item -Recurse -Force $Destination
         New-Item $Destination -Type Directory
-    
+
         # clone the repo to the specified destination
         $Clone = ('git clone {0} {1}' -f $Repo, $Destination)
         Write-Host $Clone
@@ -230,7 +230,7 @@ Function Invoke-BuildAndInstall {
         [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs,
         [Parameter(Mandatory = $false)] [string[]] $Options = @()
     )
-    
+
     if (-not(Test-Path -Path $BuildDir)) {
         New-Item $BuildDir -Type Directory
     }
@@ -238,7 +238,7 @@ Function Invoke-BuildAndInstall {
     if (-not(Test-Path -Path $InstallDir)) {
         New-Item $InstallDir -Type Directory
     }
-  
+
     # Configure
     $ConfigArgs = @('-S {0}' -f $SrcDir)
     $ConfigArgs += ('-B {0}' -f $BuildDir)
@@ -364,11 +364,11 @@ Invoke-BuildAndInstall `
     -Options $NetCDFCMakeBuildOptions
 
 # Some post-build manual installations... and arguably a terrible idea. This might break in future HDF5 or NetCDF releases.
-# 
+#
 # Under WIN32, NetCDF links with -lhdf5-static -lhdf5_hl-static -lzlib. See:
 # $NetCDFInstallDir/lib/libnetcdf.settings and $NetCDFInstallDir/lib/pkgconfig/netxdf.pc
 # So we copy the static ZLIB and HDF5 lib dependnecies to $NetCDFInstallDir and rename them accordingly,
-# and finally edit the list of public interface libararies in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake.
+# and finally edit the list of public interface libraries in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake.
 # Under Linux, we simply copy static and shared libs without renaming.
 Function Invoke-Post-Build-Steps() {
     # Copy all necessary static libraries from the local instalaltion directory to the netcdf lib dir
@@ -405,7 +405,7 @@ Function Invoke-Post-Build-Steps() {
         Exit
     }
 
-    # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
+    # Replace the line above to list the public interface libraries in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
     if ($IsLinux) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
     }
