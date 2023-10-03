@@ -323,7 +323,6 @@ namespace meshkernelapi
         /// @brief Makes a new uniform curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
-        /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                          const meshkernel::MakeGridParameters& makeGridParameters);

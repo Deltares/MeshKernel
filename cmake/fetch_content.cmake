@@ -50,7 +50,7 @@ if(ENABLE_BENCHMARKING)
     set(ENABLE_BENCHMARKING_MEM_REPORT OFF)
     message(
       WARNING
-      "The benchmarks and their depenedencies can be built only if the build is configured "
+      "The benchmarks and their dependencies can be built only if the build is configured "
       "with CMAKE_BUILD_TYPE set to Release or RelWithDebInfo. "
       "The current build is configured with CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}."
       "All benchmarking configuration options are ignored."
