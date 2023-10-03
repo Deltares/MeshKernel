@@ -500,22 +500,31 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
 
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
-    const Point nodeToMove = m_nodes.at(nodeindex);
+    if (nodeindex >= m_nodes.size())
+    {
+        throw ConstraintError("Invalid node index: {}", nodeindex);
+    }
 
+    const Point nodeToMove = m_nodes[nodeindex];
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
-    const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+    const double distanceNodeToMoveFromNewPointSquared = dx * dx + dy * dy;
+    const double distanceNodeToMoveFromNewPointSquaredInv = 1.0 / distanceNodeToMoveFromNewPointSquared;
+
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
         const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
         const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
-        const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+        const double distanceCurrentNodeFromNewPointSquared = nodeDx * nodeDx + nodeDy * nodeDy;
 
-        const auto factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint / distanceNodeToMoveFromNewPoint, 1.0) * M_PI));
+        if (distanceCurrentNodeFromNewPointSquared <= distanceNodeToMoveFromNewPointSquared)
+        {
+            const auto factor = 0.5 * (1.0 + std::cos(std::sqrt(distanceCurrentNodeFromNewPointSquared * distanceNodeToMoveFromNewPointSquaredInv) * M_PI));
 
-        m_nodes[n].x += dx * factor;
-        m_nodes[n].y += dy * factor;
+            m_nodes[n].x += dx * factor;
+            m_nodes[n].y += dy * factor;
+        }
     }
 
     m_nodesRTreeRequiresUpdate = true;

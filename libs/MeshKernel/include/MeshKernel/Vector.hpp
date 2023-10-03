@@ -95,6 +95,11 @@ namespace meshkernel
         /// @return \f$ l = \sqrt (x^2 + y^2) \f$
         double length() const;
 
+        /// @brief Compute the length squared of the vector
+        ///
+        /// @return \f$ l = x^2 + y^2 \f$
+        double lengthSquared() const;
+
     private:
         double m_x; ///< The x coordinate of the vector
         double m_y; ///< The y coordinate of the vector
@@ -164,6 +169,11 @@ inline double meshkernel::Vector::length() const
 {
     // TODO check implementation of hypot.
     return std::hypot(m_x, m_y);
+}
+
+inline double meshkernel::Vector::lengthSquared() const
+{
+    return m_x * m_x + m_y * m_y;
 }
 
 inline meshkernel::Vector meshkernel::normalise(const Vector& vec)
