@@ -368,7 +368,7 @@ Invoke-BuildAndInstall `
 # Under WIN32, NetCDF links with -lhdf5-static -lhdf5_hl-static -lzlib. See:
 # $NetCDFInstallDir/lib/libnetcdf.settings and $NetCDFInstallDir/lib/pkgconfig/netxdf.pc
 # So we copy the static ZLIB and HDF5 lib dependnecies to $NetCDFInstallDir and rename them accordingly,
-# and finally edit the list of public interface libararies in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake.
+# and finally edit the list of public interface libraries in $NetCDFInstallDir/lib/cmake/netCDF/netCDFTargets.cmake.
 # Under Linux, we simply copy static and shared libs without renaming.
 Function Invoke-Post-Build-Steps() {
     # Copy all necessary static libraries from the local instalaltion directory to the netcdf lib dir
@@ -405,7 +405,7 @@ Function Invoke-Post-Build-Steps() {
         Exit
     }
 
-    # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
+    # Replace the line above to list the public interface libraries in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
     if ($IsLinux) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
     }
