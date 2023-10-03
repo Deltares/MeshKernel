@@ -829,7 +829,6 @@ TEST(MeshRefinement, RefineElongatedFaces)
     ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[position].y, tolerance);
     ++position;
     ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[position].y, tolerance);
-
 }
 
 TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefine)

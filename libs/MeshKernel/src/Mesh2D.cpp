@@ -449,7 +449,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
         // in order to evaluate the clockwise order, the signed face area is computed
 
         // The nodes array does not represent a closed polygon.
-        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, /* isClosed = */ false );
+        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, /* isClosed = */ false);
 
         if (direction == TraversalDirection::Clockwise)
         {
@@ -550,7 +550,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     std::vector<UInt> numEdgeFacesCache;
     numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
-    //#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
+#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
     {
         // need to account for spherical coordinates. Build a polygon around a face
