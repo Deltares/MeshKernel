@@ -131,13 +131,13 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
 void Mesh2D::Administrate()
 {
-    AdministrateNodesEdges();
+    bool isQuadrilateralDominated = AdministrateNodesEdges();
 
     // face administration
     ResizeAndInitializeFaceVectors();
 
     // find faces
-    FindFaces();
+    FindFaces(isQuadrilateralDominated);
 
     // find mesh circumcenters
     ComputeCircumcentersMassCentersAndFaceAreas();
@@ -502,7 +502,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     FindFacesRecursive(startNode, otherNode, edge, numClosingEdges, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 
-void Mesh2D::FindFaces()
+void Mesh2D::FindFaces(const bool findQuadrilateralsFirst)
 {
     std::vector<UInt> sortedEdgesFaces(m_maximumNumberOfEdgesPerFace);
     std::vector<UInt> sortedNodes(m_maximumNumberOfEdgesPerFace);
@@ -511,12 +511,11 @@ void Mesh2D::FindFaces()
     std::vector<UInt> nodes(m_maximumNumberOfEdgesPerFace);
 
     std::vector<UInt> edgesPerface(m_maximumNumberOfEdgesPerFace - 2);
-    const bool quadDominantMesh = false;
 
-    // Fill array with 3, 4, 5, ..., m_maximumNumberOfEdgesPerFace
-    std::iota(edgesPerface.begin(), edgesPerface.end(), 3);
+    // Fill array with 3 (triangle), 4, 5, ..., m_maximumNumberOfEdgesPerFace
+    std::iota(edgesPerface.begin(), edgesPerface.end(), constants::geometric::numNodesInTriangle);
 
-    if (quadDominantMesh)
+    if (findQuadrilateralsFirst)
     {
         // Swap positions 0 and 1 (values 3 and 4) to find quadrilaterals first.
         std::swap(edgesPerface[0], edgesPerface[1]);
@@ -551,7 +550,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     std::vector<UInt> numEdgeFacesCache;
     numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
-#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
+    //#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
     {
         // need to account for spherical coordinates. Build a polygon around a face

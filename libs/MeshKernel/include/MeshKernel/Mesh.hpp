@@ -253,7 +253,8 @@ namespace meshkernel
         void ComputeEdgesCenters();
 
         /// @brief Node administration (setnodadmin)
-        void NodeAdministration();
+        /// @return An estimated indicator for a quadrilateral dominated mesh.
+        bool NodeAdministration();
 
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
@@ -262,7 +263,8 @@ namespace meshkernel
         virtual void Administrate();
 
         /// @brief Perform node and edges administration
-        void AdministrateNodesEdges();
+        /// @return An estimated indicator for a quadrilateral dominated mesh.
+        bool AdministrateNodesEdges();
 
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
