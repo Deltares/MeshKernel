@@ -783,31 +783,51 @@ TEST(MeshRefinement, RefineElongatedFaces)
     constexpr double tolerance = 1e-6;
 
     // Compare the x-location of the circumcentre.
-    ASSERT_NEAR(1673.0860169014584, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1660.6851354957175, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1660.5667704694627, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1672.0912775041329, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1659.9354211078053, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1659.8248648846848, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1671.1074693287451, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1659.1859707978906, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1659.0828479935451, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
-    ASSERT_NEAR(1670.1135380487042, mesh->m_facesCircumcenters[position].x, tolerance); ++position;
+    ASSERT_NEAR(1673.0860169014584, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1660.6851354957175, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1660.5667704694627, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1672.0912775041329, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1659.9354211078053, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1659.8248648846848, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1671.1074693287451, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1659.1859707978906, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1659.0828479935451, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
+    ASSERT_NEAR(1670.1135380487042, mesh->m_facesCircumcenters[position].x, tolerance);
+    ++position;
     ASSERT_NEAR(1658.4375379474418, mesh->m_facesCircumcenters[position].x, tolerance);
 
     // Reset to the start of the triangles for comparing the y-location of the circumcentre.
     position = triangleStart;
 
-    ASSERT_NEAR(645.10565853980427, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(646.20173898461292, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(654.66978646149676, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(662.96936808193914, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(664.17198930960728, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(672.49588595953537, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(680.82566423059006, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(682.12720924968505, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(690.31918193748425, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
-    ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[position].y, tolerance); ++position;
+    ASSERT_NEAR(645.10565853980427, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(646.20173898461292, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(654.66978646149676, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(662.96936808193914, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(664.17198930960728, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(672.49588595953537, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(680.82566423059006, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(682.12720924968505, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(690.31918193748425, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
+    ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[position].y, tolerance);
+    ++position;
     ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[position].y, tolerance);
 
 }
