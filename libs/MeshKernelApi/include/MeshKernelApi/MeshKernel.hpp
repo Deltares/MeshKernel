@@ -328,14 +328,14 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
                                                          const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes a new uniform curvilinear grid from polygons
+        /// @brief Makes a new uniform curvilinear grid from polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_uniform_from_polygons(int meshKernelId,
-                                                                       const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                       const GeometryList& geometryList);
+        MKERNEL_API int mkernel_curvilinear_make_uniform_from_polygon(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                      const GeometryList& geometryList);
 
         /// @brief Makes a new uniform curvilinear grid on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
@@ -1044,14 +1044,14 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
                                                     const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes uniform meshes from a series of polygons
+        /// @brief Makes uniform meshes from a polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygons(int meshKernelId,
-                                                                  const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                  const GeometryList& geometryList);
+        MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygon(int meshKernelId,
+                                                                 const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                 const GeometryList& geometryList);
 
         /// @brief Makes uniform mesh on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state

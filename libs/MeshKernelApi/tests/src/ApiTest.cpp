@@ -2877,7 +2877,7 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     geometryList.coordinates_y = coordinates_y.data();
     geometryList.num_coordinates = static_cast<int>(coordinates_x.size());
 
-    errorCode = mkernel_curvilinear_make_uniform_from_polygons(meshKernelId, makeGridParameters, geometryList);
+    errorCode = mkernel_curvilinear_make_uniform_from_polygon(meshKernelId, makeGridParameters, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;

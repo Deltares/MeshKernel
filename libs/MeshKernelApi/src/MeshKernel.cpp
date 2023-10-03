@@ -956,9 +956,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygons(int meshKernelId,
-                                                              const meshkernel::MakeGridParameters& makeGridParameters,
-                                                              const GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygon(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters,
+                                                             const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2639,9 +2639,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_uniform_from_polygons(int meshKernelId,
-                                                                   const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                   const GeometryList& geometryList)
+    MKERNEL_API int mkernel_curvilinear_make_uniform_from_polygon(int meshKernelId,
+                                                                  const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                  const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
