@@ -24,7 +24,7 @@ if(ENABLE_BENCHMARKING)
   # upcase the build type to make the option case-insensitive
   string(TOUPPER "${CMAKE_BUILD_TYPE}" UPCASED_CMAKE_BUILD_TYPE)
   if(UPCASED_CMAKE_BUILD_TYPE IN_LIST VALID_BUILD_TYPES)
-    # Fetch google benchmark    
+    # Fetch google benchmark
     FetchContent_Declare(
       googlebenchmark
       GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -50,7 +50,7 @@ if(ENABLE_BENCHMARKING)
     set(ENABLE_BENCHMARKING_MEM_REPORT OFF)
     message(
       WARNING
-      "The benchmarks and their depenedencies can be built only if the build is configured "
+      "The benchmarks and their dependencies can be built only if the build is configured "
       "with CMAKE_BUILD_TYPE set to Release or RelWithDebInfo. "
       "The current build is configured with CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}."
       "All benchmarking configuration options are ignored."
@@ -63,12 +63,12 @@ if(${USE_LIBFMT})
   set(LIBFMT_VERSION 10.0.0)
 
   message(
-    STATUS 
+    STATUS
     "${CMAKE_CXX_COMPILER_ID} v.${CMAKE_CXX_COMPILER_VERSION} does not support std::format, "
     "libfmt v.${LIBFMT_VERSION} will be used instead."
   )
 
-  
+
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -83,7 +83,7 @@ if(${USE_LIBFMT})
   endif()
 
   endif()
-  
+
 # Eigen
 # Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so the head master will be used here.
 FetchContent_Declare(

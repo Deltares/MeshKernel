@@ -327,7 +327,7 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
 
     Projection const polygonProjection = m_polygon.GetProjection();
 
-    for (UInt t = 0; t < Mesh::m_numNodesInTriangle; ++t)
+    for (UInt t = 0; t < constants::geometric::numNodesInTriangle; ++t)
     {
         std::ranges::fill(sideOne, Point());
         std::ranges::fill(sideTwo, Point());

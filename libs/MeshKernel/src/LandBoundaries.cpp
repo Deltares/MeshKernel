@@ -577,7 +577,7 @@ void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<
         else
         {
             // Face is crossed
-            if (m_mesh->GetNumFaces() < Mesh::m_numNodesInTriangle)
+            if (m_mesh->GetNumFaces() < constants::geometric::numNodesInTriangle)
             {
                 continue;
             }
