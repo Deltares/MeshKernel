@@ -176,6 +176,9 @@ Static Public Member Functions</h2></td></tr>
 static std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#ac03f1b7d0f76277823d0d966e50013ff">FaceAreaAndCenterOfMass</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:ac03f1b7d0f76277823d0d966e50013ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of the polygon, its centre of mass and the direction. <br /></td></tr>
 <tr class="separator:ac03f1b7d0f76277823d0d966e50013ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad93d40d1de52fc71984c60a4bf2e84cf"><td class="memItemLeft" align="right" valign="top">static std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#ad93d40d1de52fc71984c60a4bf2e84cf">FaceAreaAndCenterOfMass</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;nodeIndices, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, bool isClosed)</td></tr>
+<tr class="memdesc:ad93d40d1de52fc71984c60a4bf2e84cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of the polygon, its centre of mass and the direction.  <a href="classmeshkernel_1_1_polygon.html#ad93d40d1de52fc71984c60a4bf2e84cf">More...</a><br /></td></tr>
+<tr class="separator:ad93d40d1de52fc71984c60a4bf2e84cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A closed polygon. </p>
@@ -230,6 +233,57 @@ static std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html
 
 <p>Computes the edge lengths of the polygon. </p>
 <dl class="section return"><dt>Returns</dt><dd>edgeLengths The length of each polygon edge </dd></dl>
+
+</div>
+</div>
+<a id="ad93d40d1de52fc71984c60a4bf2e84cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad93d40d1de52fc71984c60a4bf2e84cf">&#9670;&nbsp;</a></span>FaceAreaAndCenterOfMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::tuple&lt;double, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a>&gt; meshkernel::Polygon::FaceAreaAndCenterOfMass </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodeIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isClosed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the area of the polygon, its centre of mass and the direction. </p>
+<p>This version uses an indirect indexing of the set of nodes, this can be used to reduce the need to copy nodes to a separate array. </p>
 
 </div>
 </div>

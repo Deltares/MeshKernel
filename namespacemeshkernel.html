@@ -401,6 +401,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a306b7eba0486c93d5cf8573ee73c7b44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a306b7eba0486c93d5cf8573ee73c7b44">ReferencePoint</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a306b7eba0486c93d5cf8573ee73c7b44"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given polygon compute a reference point.  <a href="namespacemeshkernel.html#a306b7eba0486c93d5cf8573ee73c7b44">More...</a><br /></td></tr>
 <tr class="separator:a306b7eba0486c93d5cf8573ee73c7b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc52d25c9beff3d412b4dd69f0147ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#afcc52d25c9beff3d412b4dd69f0147ba">ReferencePoint</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;polygonIndices, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:afcc52d25c9beff3d412b4dd69f0147ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given polygon compute a reference point.  <a href="namespacemeshkernel.html#afcc52d25c9beff3d412b4dd69f0147ba">More...</a><br /></td></tr>
+<tr class="separator:afcc52d25c9beff3d412b4dd69f0147ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a358b556c559ed3109e2e5688794655d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a358b556c559ed3109e2e5688794655d5">ComputeSquaredDistance</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a358b556c559ed3109e2e5688794655d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the squared distance between two points This is faster than ComputeDistance because it does not take the square root.  <a href="namespacemeshkernel.html#a358b556c559ed3109e2e5688794655d5">More...</a><br /></td></tr>
 <tr class="separator:a358b556c559ed3109e2e5688794655d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3429,8 +3432,53 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="afcc52d25c9beff3d412b4dd69f0147ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcc52d25c9beff3d412b4dd69f0147ba">&#9670;&nbsp;</a></span>ReferencePoint() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::ReferencePoint </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>polygonIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>For a given polygon compute a reference point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodes</td><td>The input nodes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndices</td><td>The polygon node indices. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The reference point </dd></dl>
+
+</div>
+</div>
 <a id="a306b7eba0486c93d5cf8573ee73c7b44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a306b7eba0486c93d5cf8573ee73c7b44">&#9670;&nbsp;</a></span>ReferencePoint()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a306b7eba0486c93d5cf8573ee73c7b44">&#9670;&nbsp;</a></span>ReferencePoint() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

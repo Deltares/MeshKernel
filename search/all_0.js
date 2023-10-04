@@ -7,7 +7,7 @@ var searchData=
   ['addspline_4',['AddSpline',['../classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines, UInt start, UInt size)'],['../classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines)']]],
   ['adimensionalpolylinesegmentdistance_5',['adimensionalPolylineSegmentDistance',['../structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html#a66496d13661f5406531be68b3d3819ce',1,'meshkernel::Mesh::EdgeMeshPolylineIntersection']]],
   ['administrate_6',['Administrate',['../classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73',1,'meshkernel::LandBoundaries::Administrate()'],['../classmeshkernel_1_1_mesh.html#a6086621c1275f2f98a5a84125ff4d405',1,'meshkernel::Mesh::Administrate()'],['../classmeshkernel_1_1_mesh2_d.html#af19223d2ef844428f5858291f588ad47',1,'meshkernel::Mesh2D::Administrate()']]],
-  ['administratenodesedges_7',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],
+  ['administratenodesedges_7',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#aa5dadae0733347a228cf9ef0334c81ea',1,'meshkernel::Mesh']]],
   ['algorithmerror_8',['AlgorithmError',['../classmeshkernel_1_1_algorithm_error.html',1,'meshkernel']]],
   ['algorithmerrorcode_9',['AlgorithmErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306',1,'meshkernel']]],
   ['angle_10',['angle',['../structmeshkernel_1_1_make_grid_parameters.html#a4d9ed1f2b5553e0246b117bfc6e92651',1,'meshkernel::MakeGridParameters']]],
