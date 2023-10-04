@@ -1164,7 +1164,7 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
     makeGridParameters.block_size_y = 1.0;
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_make_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
@@ -2834,7 +2834,7 @@ TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGr
     auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_make_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;
@@ -2877,7 +2877,7 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     geometryList.coordinates_y = coordinates_y.data();
     geometryList.num_coordinates = static_cast<int>(coordinates_x.size());
 
-    errorCode = mkernel_curvilinear_make_uniform_from_polygon(meshKernelId, makeGridParameters, geometryList);
+    errorCode = mkernel_curvilinear_make_rectangular_grid_from_polygon(meshKernelId, makeGridParameters, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;
@@ -2906,7 +2906,7 @@ TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_Shoul
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_make_rectangular_grid_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;

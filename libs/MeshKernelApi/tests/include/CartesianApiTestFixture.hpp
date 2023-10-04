@@ -66,7 +66,7 @@ public:
         makeGridParameters.block_size_x = blockSizeX;
         makeGridParameters.block_size_y = blockSizeY;
 
-        auto const errorCode = meshkernelapi::mkernel_curvilinear_make_uniform(m_meshKernelId, makeGridParameters);
+        auto const errorCode = meshkernelapi::mkernel_curvilinear_make_rectangular_grid(m_meshKernelId, makeGridParameters);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not create uniform curvilinear grid");
