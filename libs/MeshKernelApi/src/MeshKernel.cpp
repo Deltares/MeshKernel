@@ -32,7 +32,7 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -944,7 +944,7 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, projection);
+            const auto curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
@@ -969,7 +969,7 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            const auto curvilinearGrid = CreateUniformCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
+            const auto curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
@@ -993,7 +993,7 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            auto const curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
+            auto const curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
@@ -2629,8 +2629,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters,
-                                                                                            meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters,
+                                                                                                meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2651,9 +2651,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridFromPolygons(makeGridParameters,
-                                                                                                        geometryList,
-                                                                                                        meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
+                                                                                                            geometryList,
+                                                                                                            meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2673,8 +2673,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters,
-                                                                                                       meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
+                                                                                                           meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {

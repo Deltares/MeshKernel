@@ -1,7 +1,7 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp"
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -13,7 +13,7 @@
 
 using namespace meshkernel;
 
-static void BM_CurvilinearUniform(benchmark::State& state)
+static void BM_CurvilinearRectangular(benchmark::State& state)
 {
     for (auto _ : state)
     {
@@ -50,16 +50,16 @@ static void BM_CurvilinearUniform(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        CurvilinearGridCreateRectangular const curvilinear_grid_create_rectangular(Projection::cartesian);
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
-            curvilinear_grid_create_uniform.Compute(make_grid_parameters.angle,
-                                                    make_grid_parameters.block_size_x,
-                                                    make_grid_parameters.block_size_y,
-                                                    polygons,
-                                                    0));
+            curvilinear_grid_create_rectangular.Compute(make_grid_parameters.angle,
+                                                        make_grid_parameters.block_size_x,
+                                                        make_grid_parameters.block_size_y,
+                                                        polygons,
+                                                        0));
     }
 }
-BENCHMARK(BM_CurvilinearUniform)
+BENCHMARK(BM_CurvilinearRectangular)
     ->ArgNames({"x-nodes", "y-nodes"})
     ->Args({500, 500})
     ->Args({1000, 1000})
@@ -67,7 +67,7 @@ BENCHMARK(BM_CurvilinearUniform)
     ->Args({4000, 4000})
     ->Args({5000, 5000});
 
-static void BM_CurvilinearUniform_add_faces_to_left_boundary(benchmark::State& state)
+static void BM_CurvilinearRectangular_add_faces_to_left_boundary(benchmark::State& state)
 {
     for (auto _ : state)
     {
@@ -85,15 +85,15 @@ static void BM_CurvilinearUniform_add_faces_to_left_boundary(benchmark::State& s
         const double blockSizeX = block_size;
         const double blockSizeY = block_size;
 
-        CurvilinearGridCreateUniform const curvilinear_grid_create_uniform(Projection::cartesian);
+        CurvilinearGridCreateRectangular const curvilinear_grid_create_rectangular(Projection::cartesian);
         const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
-            curvilinear_grid_create_uniform.Compute(numColumns,
-                                                    numRows,
-                                                    origin_x,
-                                                    origin_y,
-                                                    angle,
-                                                    blockSizeX,
-                                                    blockSizeY));
+            curvilinear_grid_create_rectangular.Compute(numColumns,
+                                                        numRows,
+                                                        origin_x,
+                                                        origin_y,
+                                                        angle,
+                                                        blockSizeX,
+                                                        blockSizeY));
 
         int const faces_to_add = static_cast<int>(state.range(2));
 
@@ -108,7 +108,7 @@ static void BM_CurvilinearUniform_add_faces_to_left_boundary(benchmark::State& s
         }
     }
 }
-BENCHMARK(BM_CurvilinearUniform_add_faces_to_left_boundary)
+BENCHMARK(BM_CurvilinearRectangular_add_faces_to_left_boundary)
     ->ArgNames({"x-nodes", "y-nodes", "faces_to_add"})
     ->Args({500, 500, 10})
     ->Args({1000, 1000, 100});

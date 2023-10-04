@@ -1323,7 +1323,7 @@ TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(3, 3);
+    MakeRectangularCurvilinearGrid(3, 3);
 
     auto errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId, 10.0, 20.0, 20.0, 20.0, 10);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1341,7 +1341,7 @@ TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId, 10.0, 20.0, 30.0, 20.0);
@@ -1360,7 +1360,7 @@ TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonaliz
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(3, 3);
+    MakeRectangularCurvilinearGrid(3, 3);
     // Move a node to make the grid non orthogonal
     auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, 10.0, 20.0, 18.0, 12.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1402,7 +1402,7 @@ TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
@@ -1421,7 +1421,7 @@ TEST_F(CartesianApiTestFixture, ComputedDirectionalSmooth_CurvilinearGrid_Should
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing_directional(meshKernelId,
@@ -1450,7 +1450,7 @@ TEST_F(CartesianApiTestFixture, ComputedLineShift_CurvilinearGrid_ShouldShift)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     meshkernelapi::mkernel_curvilinear_initialize_line_shift(meshKernelId);
 
@@ -2186,7 +2186,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearComputeOrthogonalGridFromSplines_Shou
 TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
@@ -2203,7 +2203,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
 TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
@@ -2220,7 +2220,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
 TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
@@ -2248,7 +2248,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
@@ -2370,7 +2370,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttract
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(5, 5);
+    MakeRectangularCurvilinearGrid(5, 5);
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_line_attraction_repulsion(meshKernelId,
@@ -2403,7 +2403,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteNode_ShouldDeleteNode)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
-    MakeUniformCurvilinearGrid(5, 5);
+    MakeRectangularCurvilinearGrid(5, 5);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     auto errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -2737,7 +2737,7 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     ASSERT_EQ(faceEdgeIndex[3], 15);
     ASSERT_EQ(faceEdgeIndex[4], meshkernel::constants::missing::intValue);
 }
-TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
+TEST(Mesh2D, CurvilinearMakeRectangularOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
 {
     // Setup
     auto makeGridParameters = meshkernel::MakeGridParameters();
@@ -2818,7 +2818,7 @@ TEST(Mesh2D, RemoveMultipleIslands)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -2844,7 +2844,7 @@ TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGr
     ASSERT_EQ(12, curvilinearGridResults.num_m);
     ASSERT_EQ(9, curvilinearGridResults.num_n);
 }
-TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
 {
     // Setup
     const double lonMin = -6.0;
@@ -2889,7 +2889,7 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     ASSERT_EQ(61, curvilinearGridResults.num_n);
 }
 
-TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangularOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     // Setup
     meshkernel::MakeGridParameters makeGridParameters;

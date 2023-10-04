@@ -50,12 +50,12 @@ public:
         }
     }
 
-    void MakeUniformCurvilinearGrid(meshkernel::UInt numberOfColumns = 4,
-                                    meshkernel::UInt numberOfRows = 4,
-                                    double blockSizeX = 10.0,
-                                    double blockSizeY = 10.0,
-                                    double originX = 0.0,
-                                    double originY = 0.0) const
+    void MakeRectangularCurvilinearGrid(meshkernel::UInt numberOfColumns = 4,
+                                        meshkernel::UInt numberOfRows = 4,
+                                        double blockSizeX = 10.0,
+                                        double blockSizeY = 10.0,
+                                        double originX = 0.0,
+                                        double originY = 0.0) const
     {
         meshkernel::MakeGridParameters makeGridParameters{};
         makeGridParameters.num_columns = static_cast<int>(numberOfColumns);
@@ -69,7 +69,7 @@ public:
         auto const errorCode = meshkernelapi::mkernel_curvilinear_make_rectangular_grid(m_meshKernelId, makeGridParameters);
         if (errorCode != 0)
         {
-            throw std::runtime_error("Could not create uniform curvilinear grid");
+            throw std::runtime_error("Could not create rectangular curvilinear grid");
         }
     }
 
