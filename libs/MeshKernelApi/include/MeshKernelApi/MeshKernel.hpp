@@ -320,14 +320,14 @@ namespace meshkernelapi
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId);
 
-        /// @brief Makes a new uniform curvilinear grid
+        /// @brief Makes a new rectangular curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_make_rectangular_grid(int meshKernelId,
                                                                   const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes a new uniform curvilinear grid from polygon
+        /// @brief Makes a new rectangular curvilinear grid from polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
@@ -336,7 +336,7 @@ namespace meshkernelapi
                                                                                const meshkernel::MakeGridParameters& makeGridParameters,
                                                                                const GeometryList& geometryList);
 
-        /// @brief Makes a new uniform curvilinear grid on a defined extension
+        /// @brief Makes a new rectangular curvilinear grid on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
@@ -1036,14 +1036,14 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_samples(int meshKernelId, const GeometryList& samples);
 
-        /// @brief Makes uniform meshes
+        /// @brief Makes a rectangular mesh
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
                                                              const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes uniform meshes from a polygon
+        /// @brief Makes a rectangular meshe from a polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
@@ -1052,7 +1052,7 @@ namespace meshkernelapi
                                                                           const meshkernel::MakeGridParameters& makeGridParameters,
                                                                           const GeometryList& geometryList);
 
-        /// @brief Makes uniform mesh on a defined extension
+        /// @brief Makes a rectangular mesh on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
