@@ -60,8 +60,9 @@ namespace meshkernelapi
 
         /// @brief Connect two or more disconnected regions along boundary
         /// @param[in]  meshKernelId  The id of the mesh states
+        /// @param[in]  mesh2d  The mesh we want to connect to the main mesh
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId);
+        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
