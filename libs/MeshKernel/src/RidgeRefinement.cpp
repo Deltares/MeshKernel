@@ -38,7 +38,7 @@ void meshkernel::RidgeRefinement::GetValidPoints(const std::vector<Point>& sampl
     size_t validCount = 0;
 
     // Do not copy invalid points.
-    for (size_t i = 0; i < samplePoints.size(); ++i)
+    for (UInt i = 0; i < samplePoints.size(); ++i)
     {
         if (samplePoints[i].IsValid())
         {
@@ -65,7 +65,7 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
 
     bool duplicatesFound = true;
     UInt numberOfDuplicates = 0; // nummerged
-    UInt sampleCount = samplePoints.size();
+    size_t sampleCount = samplePoints.size();
 
     double tolerance = 1.0e-4;
     double searchRadius = tolerance * tolerance;
@@ -115,7 +115,7 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
         std::ranges::fill(newNode, constants::missing::uintValue);
 
         // Removed duplicates
-        for (UInt i = 0; i < sampleCount; ++i)
+        for (size_t i = 0; i < sampleCount; ++i)
         {
             if (samplePoints[i].IsValid() && sampleData[i] != constants::missing::doubleValue)
             {
@@ -126,10 +126,10 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
             }
         }
 
-        UInt k = 0;
+        size_t k = 0;
 
         // Update permutation
-        for (UInt i = 0; i < sampleCount; ++i)
+        for (size_t i = 0; i < sampleCount; ++i)
         {
             UInt j = sampleIndices[i];
             if (newNode[j] != constants::missing::uintValue)
