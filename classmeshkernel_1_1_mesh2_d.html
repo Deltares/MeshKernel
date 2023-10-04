@@ -76,6 +76,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_mesh2_d-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -381,6 +382,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:abae11e12a202c2e4d2ee57fae97f9881 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">operator+=</a> (<a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> const &amp;rhs)</td></tr>
 <tr class="memdesc:abae11e12a202c2e4d2ee57fae97f9881 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh.  <a href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">More...</a><br /></td></tr>
 <tr class="separator:abae11e12a202c2e4d2ee57fae97f9881 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a39ba7bcb74e60c8c8a38d31c7f2cedc8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a39ba7bcb74e60c8c8a38d31c7f2cedc8">Merge</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh1, const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2)</td></tr>
+<tr class="memdesc:a39ba7bcb74e60c8c8a38d31c7f2cedc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges mesh connectivity.  <a href="classmeshkernel_1_1_mesh2_d.html#a39ba7bcb74e60c8c8a38d31c7f2cedc8">More...</a><br /></td></tr>
+<tr class="separator:a39ba7bcb74e60c8c8a38d31c7f2cedc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -1276,6 +1283,45 @@ Coincide circumcenter</div></div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The edge mask </dd></dl>
+
+</div>
+</div>
+<a id="a39ba7bcb74e60c8c8a38d31c7f2cedc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39ba7bcb74e60c8c8a38d31c7f2cedc8">&#9670;&nbsp;</a></span>Merge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> meshkernel::Mesh2D::Merge </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Merges mesh connectivity. </p>
+<p>Only merges the mesh connectivity graphs and updates indices. </p><dl class="section note"><dt>Note</dt><dd>Does not do any administration on the node, edges or elements, it may be required to call Administrate after merging </dd></dl>
 
 </div>
 </div>
