@@ -507,8 +507,8 @@ void meshkernel::RidgeRefinement::ComputeHessian(const std::vector<Point>& sampl
             // Eigendecompostion
             Eigen::EigenSolver<Eigen::Matrix2d> eigensolver(VV);
 
-            const auto& eigenvectors = eigensolver.eigenvectors();
-            const auto& eigenvalues = eigensolver.eigenvalues();
+            const Eigen::EigenSolver<Eigen::Matrix2d>::EigenvectorsType& eigenvectors = eigensolver.eigenvectors();
+            Eigen::EigenSolver<Eigen::Matrix2d>::EigenvalueType eigenvalues = eigensolver.eigenvalues();
 
             UInt k = std::abs(eigenvalues[0].real()) > std::abs(eigenvalues[1].real()) ? 0U : 1u;
 

@@ -1,7 +1,10 @@
 #pragma once
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
+#pragma GCC diagnostic pop
 
 namespace lin_alg
 {
