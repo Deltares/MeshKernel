@@ -60,44 +60,11 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     }
 }
 
-meshkernel::Mesh2D generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
+std::shared_ptr<meshkernel::Mesh2D> generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
 {
-
-    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
-    std::vector<meshkernel::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-
-    for (int j = 0; j < m; ++j)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            indicesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = {origin.x + i * delta.x(), origin.y + j * delta.y()};
-            nodeIndex++;
-        }
-    }
-
-    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-    for (auto j = 0; j < m; ++j)
-    {
-        for (auto i = 0; i < n - 1; ++i)
-        {
-            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
-            edgeIndex++;
-        }
-    }
-
-    for (auto j = 0; j < m - 1; ++j)
-    {
-        for (auto i = 0; i < n; ++i)
-        {
-            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
-            edgeIndex++;
-        }
-    }
-
-    return meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    double dimX = static_cast<double>(n - 1) * delta.x();
+    double dimY = static_cast<double>(n - 1) * delta.y();
+    return MakeRectangularMeshForTesting(n, m, dimX, dimY, meshkernel::Projection::cartesian, origin);
 }
 
 // Tests are separated on number of hanging nodes (1-, 2-, 3- or 4-irregular mesh) or the complexity.
@@ -177,20 +144,20 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     meshkernel::Point origin{0.0, 0.0};
     meshkernel::Vector delta{10.0, 10.0};
 
-    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
 
     origin.x += 10.0 * delta.x();
     origin.y += delta.y();
 
     delta = meshkernel::Vector{2.5, 2.5};
-    meshkernel::Mesh2D mesh2 = generateMesh(origin, delta, 9, 9);
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 9, 9);
 
-    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2);
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
     meshkernel::ConnectMeshes connectCurviliearMeshes;
     connectCurviliearMeshes.Compute(mergedMesh);
 
-    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1.GetNumFaces() + mesh2.GetNumFaces() + ExtraFaces);
-    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1.GetNumNodes() + mesh2.GetNumNodes() - NodeDifference);
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
 }
 
 TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
@@ -199,22 +166,22 @@ TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
     meshkernel::Point origin{0.0, 0.0};
     meshkernel::Vector delta{10.0, 10.0};
 
-    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
     meshkernel::Mesh2D mesh2;
 
     // The projection needs to be set, as there is no default
     mesh2.m_projection = meshkernel::Projection::cartesian;
 
-    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2);
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, mesh2);
 
-    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1.GetNumFaces());
-    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1.GetNumNodes());
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1->GetNumFaces());
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1->GetNumNodes());
 
     // This time with the parameters reversed
-    meshkernel::Mesh2D anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, mesh1);
+    meshkernel::Mesh2D anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, *mesh1);
 
-    EXPECT_EQ(anotherMergedMesh.GetNumFaces(), mesh1.GetNumFaces());
-    EXPECT_EQ(anotherMergedMesh.GetNumNodes(), mesh1.GetNumNodes());
+    EXPECT_EQ(anotherMergedMesh.GetNumFaces(), mesh1->GetNumFaces());
+    EXPECT_EQ(anotherMergedMesh.GetNumNodes(), mesh1->GetNumNodes());
 }
 
 TEST(Mesh2DConnectDD, MergeTwoEmptyMeshes)
@@ -237,11 +204,11 @@ TEST(Mesh2DConnectDD, MergeTwoIncompatibleMeshes)
     meshkernel::Point origin{0.0, 0.0};
     meshkernel::Vector delta{10.0, 10.0};
 
-    meshkernel::Mesh2D mesh1 = generateMesh(origin, delta, 11, 11);
-    meshkernel::Mesh2D mesh2 = generateMesh(origin, delta, 11, 11);
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 11, 11);
 
     // change projection on mesh2.
-    mesh2.m_projection = meshkernel::Projection::spherical;
+    mesh2->m_projection = meshkernel::Projection::spherical;
 
-    EXPECT_THROW([[maybe_unused]] meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2), meshkernel::MeshKernelError);
+    EXPECT_THROW([[maybe_unused]] meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2), meshkernel::MeshKernelError);
 }
