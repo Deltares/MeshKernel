@@ -1028,36 +1028,36 @@ namespace meshkernelapi
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
+        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
 
         /// @brief Makes a triangular mesh from  a set of samples, triangulating the sample points.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] samples The samples where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples);
+        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_samples(int meshKernelId, const GeometryList& samples);
 
         /// @brief Makes uniform meshes
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                    const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters);
 
         /// @brief Makes uniform meshes from a polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygon(int meshKernelId,
-                                                                 const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                 const GeometryList& geometryList);
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_from_polygon(int meshKernelId,
+                                                                          const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                          const GeometryList& geometryList);
 
         /// @brief Makes uniform mesh on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
-                                                                 const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_on_extension(int meshKernelId,
+                                                                          const meshkernel::MakeGridParameters& makeGridParameters);
 
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
@@ -1255,7 +1255,7 @@ namespace meshkernelapi
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
-        /// The function is often used before `mkernel_mesh2d_make_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
+        /// The function is often used before `mkernel_mesh2d_make_triangular_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  polygonToRefine    The input polygon to refine
         /// @param[in]  firstNodeIndex     The first index of the refinement interval

@@ -883,7 +883,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -910,7 +910,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -932,8 +932,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
+                                                         const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -956,9 +956,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform_from_polygon(int meshKernelId,
-                                                             const meshkernel::MakeGridParameters& makeGridParameters,
-                                                             const GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_from_polygon(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                      const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -981,8 +981,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
-                                                             const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_on_extension(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try

@@ -349,7 +349,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 
@@ -399,7 +399,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridFromSamplesThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_samples(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_samples(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
@@ -2662,7 +2662,7 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     makeMeshParameters.angle = 0.0;
 
     // Creates an unstructured grid from mesh parameters
-    errorCode = meshkernelapi::mkernel_mesh2d_make_uniform(meshKernelId, makeMeshParameters);
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, makeMeshParameters);
 
     // Get the mesh dimensions
     meshkernelapi::Mesh2D mesh2dDimensions{};
@@ -2754,7 +2754,7 @@ TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGener
     auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d;
@@ -3173,7 +3173,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi_OnClockWisePoly
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 
