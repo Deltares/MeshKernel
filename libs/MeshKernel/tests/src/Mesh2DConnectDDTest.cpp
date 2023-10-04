@@ -7,14 +7,13 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 void CheckConnectGrids(const std::string& unconnectedGridName, const std::string& connectedGridName)
 {
     static const std::string testDataDir = TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/";
-
-    meshkernel::ConnectMeshes connectCurviliearMeshes;
 
     // Grid to connect hanging node across the DD boundary.
     auto unconnectedGrid = ReadLegacyMesh2DFromFile(testDataDir + unconnectedGridName);
@@ -23,6 +22,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
 
     // Connect hanging nodes
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
     connectCurviliearMeshes.Compute(*unconnectedGrid);
 
     // Check mesh entity counts are the same
@@ -58,6 +58,13 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     {
         EXPECT_EQ(unconnectedGrid->m_numFacesNodes[i], connectedGrid->m_numFacesNodes[i]);
     }
+}
+
+std::shared_ptr<meshkernel::Mesh2D> generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
+{
+    double dimX = static_cast<double>(n - 1) * delta.x();
+    double dimY = static_cast<double>(n - 1) * delta.y();
+    return MakeRectangularMeshForTesting(n, m, dimX, dimY, meshkernel::Projection::cartesian, origin);
 }
 
 // Tests are separated on number of hanging nodes (1-, 2-, 3- or 4-irregular mesh) or the complexity.
@@ -121,4 +128,87 @@ TEST(Mesh2DConnectDD, ConnectGridSimple2HangingNodes)
 {
     // Test connecting edges with 2 hanging nodes along irregular edge
     CheckConnectGrids("unmatched_2_hanging_nodes.nc", "matched_2_hanging_nodes.nc");
+}
+
+TEST(Mesh2DConnectDD, MergeMeshes)
+{
+
+    // 3 nodes were removed because they are shared between both meshes
+    // 2 node were added in order to free the hanging nodes
+    const meshkernel::UInt NodeDifference = 3 - 2;
+
+    // 18 faces were added when freeing the hanging nodes
+    // 4 faces were removed and replaced by the new 18 faces.
+    const meshkernel::UInt ExtraFaces = 18 - 4;
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
+
+    origin.x += 10.0 * delta.x();
+    origin.y += delta.y();
+
+    delta = meshkernel::Vector{2.5, 2.5};
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 9, 9);
+
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
+    connectCurviliearMeshes.Compute(mergedMesh);
+
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
+}
+
+TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
+{
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
+    meshkernel::Mesh2D mesh2;
+
+    // The projection needs to be set, as there is no default
+    mesh2.m_projection = meshkernel::Projection::cartesian;
+
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, mesh2);
+
+    EXPECT_EQ(mergedMesh.GetNumFaces(), mesh1->GetNumFaces());
+    EXPECT_EQ(mergedMesh.GetNumNodes(), mesh1->GetNumNodes());
+
+    // This time with the parameters reversed
+    meshkernel::Mesh2D anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, *mesh1);
+
+    EXPECT_EQ(anotherMergedMesh.GetNumFaces(), mesh1->GetNumFaces());
+    EXPECT_EQ(anotherMergedMesh.GetNumNodes(), mesh1->GetNumNodes());
+}
+
+TEST(Mesh2DConnectDD, MergeTwoEmptyMeshes)
+{
+
+    meshkernel::Mesh2D mesh1;
+    meshkernel::Mesh2D mesh2;
+
+    mesh1.m_projection = meshkernel::Projection::cartesian;
+    mesh2.m_projection = meshkernel::Projection::cartesian;
+
+    meshkernel::Mesh2D mergedMesh;
+
+    EXPECT_THROW(mergedMesh = meshkernel::Mesh2D::Merge(mesh1, mesh2), meshkernel::MeshKernelError);
+}
+
+TEST(Mesh2DConnectDD, MergeTwoIncompatibleMeshes)
+{
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 11, 11);
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 11, 11);
+
+    // change projection on mesh2.
+    mesh2->m_projection = meshkernel::Projection::spherical;
+
+    EXPECT_THROW([[maybe_unused]] meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2), meshkernel::MeshKernelError);
 }
