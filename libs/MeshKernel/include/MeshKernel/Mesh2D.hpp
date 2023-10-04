@@ -110,7 +110,9 @@ namespace meshkernel
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
-        void FindFaces();
+        ///
+        /// @param [in] findQuadrilateralsFirst Indicates whether triangles or quadrilaterals should be sought first.
+        void FindFaces(const bool findQuadrilateralsFirst);
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -352,6 +354,16 @@ namespace meshkernel
         /// @param[in] nodes The node coordinates
         /// @returns If triangle has an acute triangle
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
+
+        /// @brief Determine if there are duplicate node id's on the node array
+        ///
+        /// The parameter sortedNodes, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
+
+        /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        ///
+        /// The parameter sortedEdgesFaces, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
 
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()

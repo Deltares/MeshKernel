@@ -386,6 +386,15 @@ namespace meshkernel
     /// @return The reference point
     [[nodiscard]] Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection);
 
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] nodes    The input nodes
+    /// @param[in] polygonIndices  The polygon node indices.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The reference point
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& nodes,
+                                       const std::vector<UInt>& polygonIndices,
+                                       const Projection& projection);
+
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root
     /// @param[in] firstPoint  The first point.

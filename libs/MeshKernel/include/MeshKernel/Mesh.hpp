@@ -253,7 +253,8 @@ namespace meshkernel
         void ComputeEdgesCenters();
 
         /// @brief Node administration (setnodadmin)
-        void NodeAdministration();
+        /// @return An estimated indicator for a quadrilateral dominated mesh.
+        bool NodeAdministration();
 
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
@@ -262,7 +263,8 @@ namespace meshkernel
         virtual void Administrate();
 
         /// @brief Perform node and edges administration
-        void AdministrateNodesEdges();
+        /// @return An estimated indicator for a quadrilateral dominated mesh.
+        bool AdministrateNodesEdges();
 
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
@@ -363,8 +365,6 @@ namespace meshkernel
         static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
         static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-        static constexpr UInt m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
-        static constexpr UInt m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate

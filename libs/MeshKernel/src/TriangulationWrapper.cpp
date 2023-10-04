@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/TriangulationWrapper.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 
@@ -82,7 +83,7 @@ void TriangulationWrapper::BuildTriangulation()
     for (int f = 0; f < m_numFaces; ++f)
     {
 
-        for (UInt n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < constants::geometric::numNodesInTriangle; ++n)
         {
             auto const edge = static_cast<UInt>(m_faceEdgesFlat[edgeCounter] - 1);
             edgeCounter++;
