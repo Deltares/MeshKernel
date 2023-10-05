@@ -64,7 +64,7 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
     kdTree.BuildTree(validSamplePoints);
 
     bool duplicatesFound = true;
-    UInt numberOfDuplicates = 0; // nummerged
+    size_t numberOfDuplicates = 0; // nummerged
     size_t sampleCount = samplePoints.size();
 
     double tolerance = 1.0e-4;
@@ -144,7 +144,7 @@ void meshkernel::RidgeRefinement::RemoveDuplicates(std::vector<Point>& samplePoi
 
     // See note above.
     // Seems that there is a small problem in the duplicate node removal
-    UInt newSize = samplePoints.size() - numberOfDuplicates + 1;
+    size_t newSize = samplePoints.size() - numberOfDuplicates + 1u;
 
     samplePoints.resize(newSize);
     sampleData.resize(newSize);
