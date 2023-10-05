@@ -110,9 +110,7 @@ namespace meshkernel
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
-        ///
-        /// @param [in] findQuadrilateralsFirst Indicates whether triangles or quadrilaterals should be sought first.
-        void FindFaces(const bool findQuadrilateralsFirst);
+        void FindFaces();
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx

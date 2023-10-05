@@ -263,8 +263,7 @@ namespace meshkernel
         virtual void Administrate();
 
         /// @brief Perform node and edges administration
-        /// @return An estimated indicator for a quadrilateral dominated mesh.
-        bool AdministrateNodesEdges();
+        void AdministrateNodesEdges();
 
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.

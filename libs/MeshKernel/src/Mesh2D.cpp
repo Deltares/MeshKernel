@@ -131,13 +131,13 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
 void Mesh2D::Administrate()
 {
-    bool isQuadrilateralDominated = AdministrateNodesEdges();
+    AdministrateNodesEdges();
 
     // face administration
     ResizeAndInitializeFaceVectors();
 
     // find faces
-    FindFaces(isQuadrilateralDominated);
+    FindFaces();
 
     // find mesh circumcenters
     ComputeCircumcentersMassCentersAndFaceAreas();
@@ -503,7 +503,7 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     FindFacesRecursive(startNode, otherNode, edge, numClosingEdges, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 
-void Mesh2D::FindFaces(const bool findQuadrilateralsFirst)
+void Mesh2D::FindFaces()
 {
     std::vector<UInt> sortedEdgesFaces(m_maximumNumberOfEdgesPerFace);
     std::vector<UInt> sortedNodes(m_maximumNumberOfEdgesPerFace);
@@ -511,18 +511,7 @@ void Mesh2D::FindFaces(const bool findQuadrilateralsFirst)
     std::vector<UInt> edges(m_maximumNumberOfEdgesPerFace);
     std::vector<UInt> nodes(m_maximumNumberOfEdgesPerFace);
 
-    std::vector<UInt> edgesPerface(m_maximumNumberOfEdgesPerFace - 2);
-
-    // Fill array with 3 (triangle), 4, 5, ..., m_maximumNumberOfEdgesPerFace
-    std::iota(edgesPerface.begin(), edgesPerface.end(), constants::geometric::numNodesInTriangle);
-
-    if (findQuadrilateralsFirst)
-    {
-        // Swap positions 0 and 1 (values 3 and 4) to find quadrilaterals first.
-        std::swap(edgesPerface[0], edgesPerface[1]);
-    }
-
-    for (UInt numEdgesPerFace : edgesPerface)
+    for (UInt numEdgesPerFace = constants::geometric::numNodesInTriangle; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; ++numEdgesPerFace)
     {
         for (UInt n = 0; n < GetNumNodes(); n++)
         {

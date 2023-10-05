@@ -268,30 +268,10 @@ std::vector<double> meshkernel::Polygon::EdgeLengths() const
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
 {
 
-    // UInt polygonIndex;
-
     if (startIndex > endIndex || endIndex >= m_nodes.size())
     {
         throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
-
-    //--------------------------------
-
-    // const auto& [outerStart, outerEnd] = m_outer_polygons_indices[polygonIndex];
-
-    // const auto edgeLengths = EdgeLengths();
-    // std::vector<double> nodeLengthCoordinate(edgeLengths.size());
-    // nodeLengthCoordinate[0] = 0.0;
-
-    // for (UInt i = 1; i < edgeLengths.size(); ++i)
-    // {
-    //     nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
-    // }
-
-    // Approximate number of nodes in the refined sections.
-    // const UInt numNodesRefinedPart = static_cast<UInt>(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance)) + endIndex - startIndex;
-    // UInt numNodesNotRefinedPart = startIndex - outerStart + outerEnd - endIndex;
-    // Approximate the number of nodes in the refined polygon.
 
     std::vector<Point> refinedPolygon;
     refinedPolygon.reserve(m_nodes.size());

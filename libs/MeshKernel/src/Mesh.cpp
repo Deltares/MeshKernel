@@ -801,14 +801,14 @@ void Mesh::Administrate()
     AdministrateNodesEdges();
 }
 
-bool Mesh::AdministrateNodesEdges()
+void Mesh::AdministrateNodesEdges()
 {
     DeleteInvalidNodesAndEdges();
 
     // return if there are no nodes or no edges
     if (m_nodes.empty() || m_edges.empty())
     {
-        return false;
+        return;
     }
 
     m_nodesEdges.resize(m_nodes.size());
@@ -817,10 +817,9 @@ bool Mesh::AdministrateNodesEdges()
     m_nodesNumEdges.resize(m_nodes.size());
     std::ranges::fill(m_nodesNumEdges, 0);
 
-    bool isQuadDominated = NodeAdministration();
+    NodeAdministration();
 
     SortEdgesInCounterClockWiseOrder(0, GetNumNodes() - 1);
-    return isQuadDominated;
 }
 
 double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
