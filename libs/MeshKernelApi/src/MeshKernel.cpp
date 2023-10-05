@@ -32,7 +32,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -40,6 +39,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -2656,8 +2656,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_rectangular_grid(int meshKernelId,
-                                                              const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid(int meshKernelId,
+                                                                 const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2677,9 +2677,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_rectangular_grid_from_polygon(int meshKernelId,
-                                                                           const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                           const GeometryList& geometryList)
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_from_polygon(int meshKernelId,
+                                                                              const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                              const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2700,8 +2700,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_rectangular_grid_on_extension(int meshKernelId,
-                                                                           const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_on_extension(int meshKernelId,
+                                                                              const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try

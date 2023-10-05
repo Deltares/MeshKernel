@@ -39,13 +39,13 @@ namespace meshkernel
     class CurvilinearGrid;
 
     /// @brief A class implementing the generation of a rectangular curvilinear grid
-    class CurvilinearGridCreateRectangular
+    class CurvilinearGridRectangular
     {
     public:
         /// @brief Class constructor
         ///
         /// @param[in] projection The projection to use
-        CurvilinearGridCreateRectangular(Projection projection);
+        CurvilinearGridRectangular(Projection projection);
 
         /// @brief Compute a rectangular curvilinear grid, given the origin and the number of rows, columns and block size
         /// @param[in] numColumns The number of columns in x direction

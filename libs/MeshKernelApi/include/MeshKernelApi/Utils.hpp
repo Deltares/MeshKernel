@@ -341,7 +341,7 @@ namespace meshkernelapi
     static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
                                                                         const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridCreateRectangular grid(projection);
+        meshkernel::CurvilinearGridRectangular grid(projection);
 
         return grid.Compute(makeGridParameters.num_columns,
                             makeGridParameters.num_rows,
@@ -361,7 +361,7 @@ namespace meshkernelapi
                                                                                     const GeometryList& geometryList,
                                                                                     const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridCreateRectangular grid(projection);
+        meshkernel::CurvilinearGridRectangular grid(projection);
 
         auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
 
@@ -381,7 +381,7 @@ namespace meshkernelapi
     static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
                                                                                    const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridCreateRectangular grid(projection);
+        meshkernel::CurvilinearGridRectangular grid(projection);
 
         if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
         {

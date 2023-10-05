@@ -28,7 +28,7 @@
 #include "MeshKernel/Exceptions.hpp"
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateRectangular.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 
@@ -37,7 +37,7 @@
 namespace meshkernel
 {
 
-    CurvilinearGridCreateRectangular::CurvilinearGridCreateRectangular(Projection projection) : m_projection(projection)
+    CurvilinearGridRectangular::CurvilinearGridRectangular(Projection projection) : m_projection(projection)
     {
         if (m_projection != Projection::cartesian && m_projection != Projection::spherical)
         {
@@ -45,13 +45,13 @@ namespace meshkernel
         }
     }
 
-    CurvilinearGrid CurvilinearGridCreateRectangular::Compute(const int numColumns,
-                                                              const int numRows,
-                                                              const double originX,
-                                                              const double originY,
-                                                              const double angle,
-                                                              const double blockSizeX,
-                                                              const double blockSizeY) const
+    CurvilinearGrid CurvilinearGridRectangular::Compute(const int numColumns,
+                                                        const int numRows,
+                                                        const double originX,
+                                                        const double originY,
+                                                        const double angle,
+                                                        const double blockSizeX,
+                                                        const double blockSizeY) const
     {
         range_check::CheckGreater(numColumns, 0, "Number of columns");
         range_check::CheckGreater(numRows, 0, "Number of rows");
@@ -84,13 +84,13 @@ namespace meshkernel
         throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
-    lin_alg::Matrix<Point> CurvilinearGridCreateRectangular::ComputeCartesian(const int numColumns,
-                                                                              const int numRows,
-                                                                              const double originX,
-                                                                              const double originY,
-                                                                              const double angle,
-                                                                              const double blockSizeX,
-                                                                              const double blockSizeY)
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeCartesian(const int numColumns,
+                                                                        const int numRows,
+                                                                        const double originX,
+                                                                        const double originY,
+                                                                        const double angle,
+                                                                        const double blockSizeX,
+                                                                        const double blockSizeY)
 
     {
         const auto angleInRad = angle * constants::conversion::degToRad;
@@ -117,13 +117,13 @@ namespace meshkernel
         return result;
     }
 
-    lin_alg::Matrix<Point> CurvilinearGridCreateRectangular::ComputeSpherical(const int numColumns,
-                                                                              const int numRows,
-                                                                              const double originX,
-                                                                              const double originY,
-                                                                              const double angle,
-                                                                              const double blockSizeX,
-                                                                              const double blockSizeY)
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeSpherical(const int numColumns,
+                                                                        const int numRows,
+                                                                        const double originX,
+                                                                        const double originY,
+                                                                        const double angle,
+                                                                        const double blockSizeX,
+                                                                        const double blockSizeY)
     {
         lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
                                                          numRows,
@@ -164,7 +164,7 @@ namespace meshkernel
         return result;
     }
 
-    double CurvilinearGridCreateRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude)
+    double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude)
     {
         constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
         constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
@@ -185,10 +185,10 @@ namespace meshkernel
         return result;
     }
 
-    int CurvilinearGridCreateRectangular::ComputeNumRows(double minY,
-                                                         double maxY,
-                                                         double blockSizeY,
-                                                         Projection projection)
+    int CurvilinearGridRectangular::ComputeNumRows(double minY,
+                                                   double maxY,
+                                                   double blockSizeY,
+                                                   Projection projection)
     {
         if (blockSizeY > std::abs(maxY - minY))
         {
@@ -219,11 +219,11 @@ namespace meshkernel
         return result;
     }
 
-    CurvilinearGrid CurvilinearGridCreateRectangular::Compute(const double angle,
-                                                              const double blockSizeX,
-                                                              const double blockSizeY,
-                                                              std::shared_ptr<Polygons> polygons,
-                                                              UInt polygonIndex) const
+    CurvilinearGrid CurvilinearGridRectangular::Compute(const double angle,
+                                                        const double blockSizeX,
+                                                        const double blockSizeY,
+                                                        std::shared_ptr<Polygons> polygons,
+                                                        UInt polygonIndex) const
     {
 
         range_check::CheckInOpenInterval(angle, {-90.0, 90.0}, "Grid angle");
@@ -297,12 +297,12 @@ namespace meshkernel
         return curvilinearGrid;
     }
 
-    CurvilinearGrid CurvilinearGridCreateRectangular::Compute(const double originX,
-                                                              const double originY,
-                                                              const double blockSizeX,
-                                                              const double blockSizeY,
-                                                              const double upperRightX,
-                                                              const double upperRightY) const
+    CurvilinearGrid CurvilinearGridRectangular::Compute(const double originX,
+                                                        const double originY,
+                                                        const double blockSizeX,
+                                                        const double blockSizeY,
+                                                        const double upperRightX,
+                                                        const double upperRightY) const
     {
         range_check::CheckGreater(blockSizeX, 0.0, "X block size");
         range_check::CheckGreater(blockSizeY, 0.0, "Y block size");

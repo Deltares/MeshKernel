@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateRectangular.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -8,7 +8,7 @@
 
 using namespace meshkernel;
 
-TEST(CurvilinearGridRectangular, CurvilinearGridCreateRectangular_WithPolygon_ShouldComputeCurvilinearGrid)
+TEST(CurvilinearGridRectangular, CurvilinearGridRectangular_WithPolygon_ShouldComputeCurvilinearGrid)
 {
     // Setup
     std::vector<Point> polygonNodes{{0.5, 2.5},
@@ -24,7 +24,7 @@ TEST(CurvilinearGridRectangular, CurvilinearGridCreateRectangular_WithPolygon_Sh
     const double blockSizeY = 1.0;
 
     // Execution
-    CurvilinearGridCreateRectangular const grid(Projection::cartesian);
+    CurvilinearGridRectangular const grid(Projection::cartesian);
     const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid.Compute(angle,
                                                                                 blockSizeX,
                                                                                 blockSizeY,
@@ -53,7 +53,7 @@ TEST(CurvilinearGridRectangular, MakeCurvilinearInPolygonSpherical)
     const double blockSizeY = 500.0;
 
     // Execution: function not producing grid points because too large block size
-    CurvilinearGridCreateRectangular const grid(Projection::spherical);
+    CurvilinearGridRectangular const grid(Projection::spherical);
     const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid.Compute(angle,
                                                                                 blockSizeX,
                                                                                 blockSizeY,
@@ -77,7 +77,7 @@ TEST(CurvilinearGridRectangular, MakeCurvilinearInEmptyPolygonSpherical)
     const double blockSizeY = 0.1;
 
     // 2 Execution
-    CurvilinearGridCreateRectangular const grid(Projection::spherical);
+    CurvilinearGridRectangular const grid(Projection::spherical);
     const auto [nodes, edges, gridIndices] = grid.Compute(numColumns,
                                                           numRows,
                                                           originX,

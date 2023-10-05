@@ -144,7 +144,7 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
-        /// @brief Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
+        /// @brief Computes a curvilinear grid in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygons      The input polygons
         /// @param[in] firstNode     The first selected node
@@ -168,7 +168,7 @@ namespace meshkernelapi
                                                                              const GeometryList& splines,
                                                                              const meshkernel::CurvilinearParameters& curvilinearParameters);
 
-        /// @brief Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
+        /// @brief Computes a curvilinear grid in a triangle. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] polygon      The input polygons
         /// @param[in] firstNode    The first selected node
@@ -321,28 +321,28 @@ namespace meshkernelapi
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId);
 
-        /// @brief Makes a new rectangular curvilinear grid
+        /// @brief Computes a rectangular curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_rectangular_grid(int meshKernelId,
-                                                                  const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid(int meshKernelId,
+                                                                     const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes a new rectangular curvilinear grid from polygon
+        /// @brief Computes a rectangular curvilinear grid from polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_rectangular_grid_from_polygon(int meshKernelId,
-                                                                               const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                               const GeometryList& geometryList);
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_from_polygon(int meshKernelId,
+                                                                                  const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                  const GeometryList& geometryList);
 
-        /// @brief Makes a new rectangular curvilinear grid on a defined extension
+        /// @brief Computes a rectangular curvilinear grid on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_rectangular_grid_on_extension(int meshKernelId,
-                                                                               const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_on_extension(int meshKernelId,
+                                                                                  const meshkernel::MakeGridParameters& makeGridParameters);
 
         /// @brief Moves a point of a curvilinear grid from one location to another
         /// @param meshKernelId The id of the mesh state
