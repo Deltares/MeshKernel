@@ -1044,7 +1044,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
                                                              const meshkernel::MakeGridParameters& makeGridParameters);
 
-        /// @brief Makes a rectangular meshe from a polygon
+        /// @brief Makes a rectangular mesh from a polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
