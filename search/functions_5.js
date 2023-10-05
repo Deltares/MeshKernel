@@ -5,7 +5,7 @@ var searchData=
   ['findcommonnode_767',['FindCommonNode',['../classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28',1,'meshkernel::Mesh']]],
   ['findedge_768',['FindEdge',['../classmeshkernel_1_1_mesh.html#adca9e46fe37ed14e5b42ca498c8f9c42',1,'meshkernel::Mesh']]],
   ['findedgeclosetoapoint_769',['FindEdgeCloseToAPoint',['../classmeshkernel_1_1_mesh.html#ac5810ef8ef2bf0707d27f37119e3fe87',1,'meshkernel::Mesh']]],
-  ['findfaces_770',['FindFaces',['../classmeshkernel_1_1_mesh2_d.html#ab3115bb270fb022937203259ea8c0eb6',1,'meshkernel::Mesh2D']]],
+  ['findfaces_770',['FindFaces',['../classmeshkernel_1_1_mesh2_d.html#a5b94a7acb30a64061a8767efec60811b',1,'meshkernel::Mesh2D']]],
   ['findfunctionrootwithgoldensectionsearch_771',['FindFunctionRootWithGoldenSectionSearch',['../namespacemeshkernel.html#aa72d2c72f71ee69084ae3a53bd98f29e',1,'meshkernel']]],
   ['findindex_772',['FindIndex',['../namespacemeshkernel.html#a50cc69c0d5487b9830dbca2b4c384048',1,'meshkernel']]],
   ['findindices_773',['FindIndices',['../namespacemeshkernel.html#a2660ec780010f4b491663683bd6f66f5',1,'meshkernel']]],
