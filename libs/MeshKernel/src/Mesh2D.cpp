@@ -1774,17 +1774,17 @@ Mesh2D::GetPolygonIntersections(const Polygons& polygon)
     std::vector<EdgeMeshPolylineIntersection> edgesIntersectionsResult(GetNumEdges());
     std::vector<FaceMeshPolylineIntersection> faceIntersectionsResult(GetNumFaces());
 
-    // Nothing crossed
+    // No polygon, nothing is crossed
     if (polygon.IsEmpty())
     {
         return {edgesIntersectionsResult, faceIntersectionsResult};
     }
 
-    // Local caches
+    // Declare local caches
     std::vector<EdgeMeshPolylineIntersection> edgesIntersectionsCache(GetNumEdges());
     std::vector<FaceMeshPolylineIntersection> facesIntersectionsCache(GetNumFaces());
 
-    // Make sure faces are built
+    // Make sure face information is available
     Administrate();
 
     // Multiple polygons here

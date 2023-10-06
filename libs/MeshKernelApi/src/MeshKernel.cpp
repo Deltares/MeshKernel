@@ -1023,16 +1023,16 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
-                                                               const GeometryList& boundaryPolyLine,
-                                                               int* edgeNodes,
-                                                               int* edgeIndex,
-                                                               double* edgeDistances,
-                                                               double* segmentDistances,
-                                                               int* segmentIndexes,
-                                                               int* faceIndexes,
-                                                               int* faceNumEdges,
-                                                               int* faceEdgeIndex)
+    MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
+                                                              const GeometryList& boundaryPolyLine,
+                                                              int* edgeNodes,
+                                                              int* edgeIndex,
+                                                              double* edgeDistances,
+                                                              double* segmentDistances,
+                                                              int* segmentIndexes,
+                                                              int* faceIndexes,
+                                                              int* faceNumEdges,
+                                                              int* faceEdgeIndex)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1048,8 +1048,8 @@ namespace meshkernelapi
 
             auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolygonIntersections(boundaryPolygon);
 
-            meshkernel::EdgeMeshPolylineIntersection::sort(edgeIntersections);
-            meshkernel::FaceMeshPolylineIntersection::sort(faceIntersections);
+            meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
+            meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;

@@ -510,7 +510,10 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 
     // 2. Execute
     const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
-    const auto [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
+    auto [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
+
+    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
 
     // 3. Assert
 
@@ -642,14 +645,23 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     // 1. Setup
     auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
 
-    std::vector<meshkernel::Point> boundaryPolygonNodes;
-    boundaryPolygonNodes.emplace_back(3.9, 0.0);
-    boundaryPolygonNodes.emplace_back(0.0, 3.9);
-
-    const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
+    std::vector<meshkernel::Point> polyLine;
+    polyLine.emplace_back(3.9, 0.0);
+    polyLine.emplace_back(0.0, 3.9);
 
     // 2. Execute
-    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
+    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgesIntersectionsCache(mesh->GetNumEdges());
+    std::vector<meshkernel::FaceMeshPolylineIntersection> facesIntersectionsCache(mesh->GetNumFaces());
+    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgeIntersections(mesh->GetNumEdges());
+    std::vector<meshkernel::FaceMeshPolylineIntersection> faceIntersections(mesh->GetNumFaces());
+    mesh->GetPolylineIntersection(polyLine,
+                                  edgesIntersectionsCache,
+                                  facesIntersectionsCache,
+                                  edgeIntersections,
+                                  faceIntersections);
+
+    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
 
     // 3. Assert
 
@@ -774,22 +786,31 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     const meshkernel::Point origin{78.0, 45.0};
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian, origin);
 
-    std::vector<meshkernel::Point> boundaryPolygonNodes;
-    boundaryPolygonNodes.emplace_back(80.6623, 50.0074);
-    boundaryPolygonNodes.emplace_back(81.4075, 49.3843);
-    boundaryPolygonNodes.emplace_back(81.845, 48.885);
-    boundaryPolygonNodes.emplace_back(82.1464, 48.3577);
-    boundaryPolygonNodes.emplace_back(82.3599, 47.7658);
-    boundaryPolygonNodes.emplace_back(82.4847, 47.1451);
-    boundaryPolygonNodes.emplace_back(82.5261, 46.556);
-    boundaryPolygonNodes.emplace_back(82.5038, 46.0853);
-    boundaryPolygonNodes.emplace_back(82.0738, 45.8102);
-    boundaryPolygonNodes.emplace_back(81.0887, 45.2473);
-
-    const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
+    std::vector<meshkernel::Point> boundaryPolyline;
+    boundaryPolyline.emplace_back(80.6623, 50.0074);
+    boundaryPolyline.emplace_back(81.4075, 49.3843);
+    boundaryPolyline.emplace_back(81.845, 48.885);
+    boundaryPolyline.emplace_back(82.1464, 48.3577);
+    boundaryPolyline.emplace_back(82.3599, 47.7658);
+    boundaryPolyline.emplace_back(82.4847, 47.1451);
+    boundaryPolyline.emplace_back(82.5261, 46.556);
+    boundaryPolyline.emplace_back(82.5038, 46.0853);
+    boundaryPolyline.emplace_back(82.0738, 45.8102);
+    boundaryPolyline.emplace_back(81.0887, 45.2473);
 
     // 2. Execute
-    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
+    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgesIntersectionsCache(mesh->GetNumEdges());
+    std::vector<meshkernel::FaceMeshPolylineIntersection> facesIntersectionsCache(mesh->GetNumFaces());
+    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgeIntersections(mesh->GetNumEdges());
+    std::vector<meshkernel::FaceMeshPolylineIntersection> faceIntersections(mesh->GetNumFaces());
+    mesh->GetPolylineIntersection(boundaryPolyline,
+                                  edgesIntersectionsCache,
+                                  facesIntersectionsCache,
+                                  edgeIntersections,
+                                  faceIntersections);
+
+    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
 
     // 3. Assert
 

@@ -192,9 +192,8 @@ namespace meshkernel
         UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
         UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
         double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
-        //bool isCrossed{false};                                                       ///< If the edge is crossed
 
-        static void sort(std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult)
+        static void sortAndErease(std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult)
         {
             std::ranges::sort(edgesIntersectionsResult,
                               [](const EdgeMeshPolylineIntersection& first, const EdgeMeshPolylineIntersection& second)
@@ -212,9 +211,8 @@ namespace meshkernel
         UInt faceIndex{constants::missing::uintValue};            ///< The face index
         std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
         std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
-        //bool isCrossed{false};                                    ///< If the face is crossed
 
-        static void sort(std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult)
+        static void sortAndErease(std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult)
         {
             std::ranges::sort(faceIntersectionsResult,
                               [](const FaceMeshPolylineIntersection& first, const FaceMeshPolylineIntersection& second)

@@ -1006,7 +1006,7 @@ namespace meshkernelapi
         /// @param[out] faceNumEdges For each intersection, the number of intersections
         /// @param[out] faceEdgeIndex For each intersection, the index of the intersected edge
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
+        MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
                                                                    const GeometryList& boundaryPolyLine,
                                                                    int* edgeNodes,
                                                                    int* edgeIndex,
