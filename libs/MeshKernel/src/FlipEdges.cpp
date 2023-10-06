@@ -106,21 +106,16 @@ void FlipEdges::Compute() const
 
             // Check if the quadrilateral composed by the two adjacent triangles is concave,
             // in which case the diagonals crosses
-            Point intersection;
-            double crossProduct;
-            double firstRatio;
-            double secondRatio;
-
-            const auto areEdgesCrossing = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
-                                                              m_mesh->m_nodes[secondNode],
-                                                              m_mesh->m_nodes[nodeLeft],
-                                                              m_mesh->m_nodes[nodeRight],
-                                                              false,
-                                                              m_mesh->m_projection,
-                                                              intersection,
-                                                              crossProduct,
-                                                              firstRatio,
-                                                              secondRatio);
+            const auto [areEdgesCrossing,
+                        intersection,
+                        crossProduct,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
+                                                           m_mesh->m_nodes[secondNode],
+                                                           m_mesh->m_nodes[nodeLeft],
+                                                           m_mesh->m_nodes[nodeRight],
+                                                           false,
+                                                           m_mesh->m_projection);
 
             if (!areEdgesCrossing)
             {

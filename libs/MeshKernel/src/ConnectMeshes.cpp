@@ -562,22 +562,16 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
     UInt startNode = mesh.m_edges[oppositeEdgeId].first;
     UInt endNode = mesh.m_edges[oppositeEdgeId].second;
 
-    double crossProduct;
-    double normalisedPolylineSegmentDistance;
-    double normalisedEdgeDistance;
-    Point intersectionPoint;
-
-    const bool segmentsCross = AreSegmentsCrossing(mesh.m_nodes[boundaryEdge.first],
-                                                   mesh.m_nodes[startNode],
-                                                   mesh.m_nodes[boundaryEdge.second],
-                                                   mesh.m_nodes[endNode],
-                                                   false,
-                                                   mesh.m_projection,
-                                                   intersectionPoint,
-                                                   crossProduct,
-                                                   normalisedPolylineSegmentDistance,
-                                                   normalisedEdgeDistance);
-
+    const auto [segmentsCross,
+                intersectionPoint,
+                crossProduct,
+                normalisedPolylineSegmentDistance,
+                normalisedEdgeDistance] = AreSegmentsCrossing(mesh.m_nodes[boundaryEdge.first],
+                                                              mesh.m_nodes[startNode],
+                                                              mesh.m_nodes[boundaryEdge.second],
+                                                              mesh.m_nodes[endNode],
+                                                              false,
+                                                              mesh.m_projection);
     if (segmentsCross)
     {
         std::swap(startNode, endNode);

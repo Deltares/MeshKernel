@@ -762,11 +762,13 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
     for (UInt n = 0; n < numNodes; n++)
     {
         const auto nextNode = NextCircularForwardIndex(n, numNodes);
-        Point intersection;
-        double crossProduct;
-        double firstRatio;
-        double secondRatio;
-        const auto areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
+
+        const auto [areLineCrossing,
+                    intersection,
+                    crossProduct,
+                    firstRatio,
+                    secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection);
+
         if (areLineCrossing)
         {
             result = intersection;
@@ -1599,20 +1601,16 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> Mesh2D::IsSegmentCrossingABoundar
             continue;
         }
 
-        Point intersectionPoint;
-        double crossProduct;
-        double ratioFirstSegment;
-        double ratioSecondSegment;
-        const auto areSegmentCrossing = AreSegmentsCrossing(firstPoint,
-                                                            secondPoint,
-                                                            m_nodes[m_edges[e].first],
-                                                            m_nodes[m_edges[e].second],
-                                                            false,
-                                                            m_projection,
-                                                            intersectionPoint,
-                                                            crossProduct,
-                                                            ratioFirstSegment,
-                                                            ratioSecondSegment);
+        const auto [areSegmentCrossing,
+                    intersectionPoint,
+                    crossProduct,
+                    ratioFirstSegment,
+                    ratioSecondSegment] = AreSegmentsCrossing(firstPoint,
+                                                              secondPoint,
+                                                              m_nodes[m_edges[e].first],
+                                                              m_nodes[m_edges[e].second],
+                                                              false,
+                                                              m_projection);
 
         if (areSegmentCrossing && ratioFirstSegment < intersectionRatio)
         {
@@ -1631,6 +1629,15 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                                      std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult,
                                      std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult) const
 {
+    // 1. Find the intersection of any segment of the polyline with the mesh return if nothing is found
+    // for (UInt segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
+    //{
+    //    for (UInt e = 0; e < GetNumEdges(); ++e)
+    //    {
+
+    //    }
+    //}
+
     std::vector<double> cumulativeLength(polyLine.size(), 0.0);
     for (UInt i = 1; i < polyLine.size(); ++i)
     {
@@ -1655,20 +1662,16 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                     continue;
                 }
 
-                Point intersectionPoint;
-                double crossProductValue;
-                double adimensionalPolylineSegmentDistance;
-                double adimensionalEdgeDistance;
-                const auto isEdgeCrossed = AreSegmentsCrossing(polyLine[segmentIndex],
-                                                               polyLine[segmentIndex + 1],
-                                                               m_nodes[m_edges[edgeIndex].first],
-                                                               m_nodes[m_edges[edgeIndex].second],
-                                                               false,
-                                                               m_projection,
-                                                               intersectionPoint,
-                                                               crossProductValue,
-                                                               adimensionalPolylineSegmentDistance,
-                                                               adimensionalEdgeDistance);
+                const auto [isEdgeCrossed,
+                            intersectionPoint,
+                            crossProductValue,
+                            adimensionalPolylineSegmentDistance,
+                            adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
+                                                                            polyLine[segmentIndex + 1],
+                                                                            m_nodes[m_edges[edgeIndex].first],
+                                                                            m_nodes[m_edges[edgeIndex].second],
+                                                                            false,
+                                                                            m_projection);
 
                 if (isEdgeCrossed)
                 {
