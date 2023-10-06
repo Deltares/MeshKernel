@@ -55,9 +55,8 @@ namespace meshkernel
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
-            AllNodesInside = 0,
-            FacesWithIncludedCircumcenters = 1,
-            FacesCompletelyIncluded = 2
+            IncludedNotIntersected = 0,
+            IncludedAndIntersected = 1
         };
 
         /// Enumerator describing the different node types
@@ -272,11 +271,24 @@ namespace meshkernel
         [[nodiscard]] std::tuple<UInt, UInt> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
         /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
+        /// @param[in] polygon An input polygon
+        /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
+        [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
+                                 std::vector<FaceMeshPolylineIntersection>>
+        GetPolygonIntersections(const Polygons& polygon);
+
+        void GetPolylineIntersection(const std::vector<Point>& polyLine,
+                                     std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsCache,
+                                     std::vector<FaceMeshPolylineIntersection>& facesIntersectionsCache,
+                                     std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult,
+                                     std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult) const;
+
+        /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
         /// @param[in] polyLine An input polyline, defined as a series of points
         /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
         [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
                                  std::vector<FaceMeshPolylineIntersection>>
-        GetPolylineIntersections(const std::vector<Point>& polyLine);
+        GetPolylineIntersectionsImproved(const std::vector<Point>& polyLine);
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon

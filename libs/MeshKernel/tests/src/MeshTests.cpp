@@ -612,12 +612,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, 16},
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, 2},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, true, 6},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, 2}
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedNotIntersected, false, 16},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, 14},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedNotIntersected, true, 0},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, 6}
 
         };
     }
@@ -685,10 +683,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, firstPolygon_, 9},
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, firstPolygon_, 40},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, secondPolygon_, 41},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, secondPolygon_, 24}};
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, firstPolygon_, 9},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, firstPolygon_, 48},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, secondPolygon_, 8},
+            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, secondPolygon_, 49}};
     }
 };
 
@@ -699,6 +697,8 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
 
     // Setup
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian);
+
+    const auto numNodesMesh = mesh->GetNumNodes();
 
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 

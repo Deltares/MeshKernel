@@ -182,4 +182,47 @@ namespace meshkernel
         return result;
     }
 
+    /// edge-segment intersection
+    struct EdgeMeshPolylineIntersection
+    {
+        int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
+        double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
+        double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+        UInt edgeIndex{constants::missing::uintValue};                               ///< The edge index
+        UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
+        UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
+        double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
+        //bool isCrossed{false};                                                       ///< If the edge is crossed
+
+        static void sort(std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult)
+        {
+            std::ranges::sort(edgesIntersectionsResult,
+                              [](const EdgeMeshPolylineIntersection& first, const EdgeMeshPolylineIntersection& second)
+                              { return first.polylineDistance < second.polylineDistance; });
+
+            std::erase_if(edgesIntersectionsResult, [](const EdgeMeshPolylineIntersection& v)
+                          { return v.polylineDistance < 0; });
+        }
+    };
+
+    /// face-segment intersection
+    struct FaceMeshPolylineIntersection
+    {
+        double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
+        UInt faceIndex{constants::missing::uintValue};            ///< The face index
+        std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
+        std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
+        //bool isCrossed{false};                                    ///< If the face is crossed
+
+        static void sort(std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult)
+        {
+            std::ranges::sort(faceIntersectionsResult,
+                              [](const FaceMeshPolylineIntersection& first, const FaceMeshPolylineIntersection& second)
+                              { return first.polylineDistance < second.polylineDistance; });
+
+            std::erase_if(faceIntersectionsResult, [](const FaceMeshPolylineIntersection& v)
+                          { return v.polylineDistance < 0; });
+        }
+    };
+
 } // namespace meshkernel

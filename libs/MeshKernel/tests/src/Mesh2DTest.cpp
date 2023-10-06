@@ -501,15 +501,16 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
     // 1. Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
 
-    std::vector<meshkernel::Point> boundaryLines;
-    boundaryLines.emplace_back(0.5, 0.5);
-    boundaryLines.emplace_back(2.5, 0.5);
-    boundaryLines.emplace_back(2.5, 2.5);
-    boundaryLines.emplace_back(0.5, 2.5);
-    boundaryLines.emplace_back(0.5, 0.5);
+    std::vector<meshkernel::Point> boundaryPolygonNodes;
+    boundaryPolygonNodes.emplace_back(0.5, 0.5);
+    boundaryPolygonNodes.emplace_back(2.5, 0.5);
+    boundaryPolygonNodes.emplace_back(2.5, 2.5);
+    boundaryPolygonNodes.emplace_back(0.5, 2.5);
+    boundaryPolygonNodes.emplace_back(0.5, 0.5);
 
     // 2. Execute
-    const auto [edgeIntersections, faceIntersections] = mesh->GetPolylineIntersections(boundaryLines);
+    const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
+    const auto [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
 
     // 3. Assert
 
@@ -641,12 +642,14 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     // 1. Setup
     auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
 
-    std::vector<meshkernel::Point> boundaryLines;
-    boundaryLines.emplace_back(3.9, 0.0);
-    boundaryLines.emplace_back(0.0, 3.9);
+    std::vector<meshkernel::Point> boundaryPolygonNodes;
+    boundaryPolygonNodes.emplace_back(3.9, 0.0);
+    boundaryPolygonNodes.emplace_back(0.0, 3.9);
+
+    const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
 
     // 2. Execute
-    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolylineIntersections(boundaryLines);
+    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
 
     // 3. Assert
 
@@ -771,20 +774,22 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     const meshkernel::Point origin{78.0, 45.0};
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian, origin);
 
-    std::vector<meshkernel::Point> boundaryLines;
-    boundaryLines.emplace_back(80.6623, 50.0074);
-    boundaryLines.emplace_back(81.4075, 49.3843);
-    boundaryLines.emplace_back(81.845, 48.885);
-    boundaryLines.emplace_back(82.1464, 48.3577);
-    boundaryLines.emplace_back(82.3599, 47.7658);
-    boundaryLines.emplace_back(82.4847, 47.1451);
-    boundaryLines.emplace_back(82.5261, 46.556);
-    boundaryLines.emplace_back(82.5038, 46.0853);
-    boundaryLines.emplace_back(82.0738, 45.8102);
-    boundaryLines.emplace_back(81.0887, 45.2473);
+    std::vector<meshkernel::Point> boundaryPolygonNodes;
+    boundaryPolygonNodes.emplace_back(80.6623, 50.0074);
+    boundaryPolygonNodes.emplace_back(81.4075, 49.3843);
+    boundaryPolygonNodes.emplace_back(81.845, 48.885);
+    boundaryPolygonNodes.emplace_back(82.1464, 48.3577);
+    boundaryPolygonNodes.emplace_back(82.3599, 47.7658);
+    boundaryPolygonNodes.emplace_back(82.4847, 47.1451);
+    boundaryPolygonNodes.emplace_back(82.5261, 46.556);
+    boundaryPolygonNodes.emplace_back(82.5038, 46.0853);
+    boundaryPolygonNodes.emplace_back(82.0738, 45.8102);
+    boundaryPolygonNodes.emplace_back(81.0887, 45.2473);
+
+    const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
 
     // 2. Execute
-    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolylineIntersections(boundaryLines);
+    const auto& [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
 
     // 3. Assert
 

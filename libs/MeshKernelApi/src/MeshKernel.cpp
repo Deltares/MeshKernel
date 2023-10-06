@@ -32,7 +32,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -1043,9 +1042,14 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
+            auto const boundaryPolygonPoints = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto& [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
+            const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
+
+            auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolygonIntersections(boundaryPolygon);
+
+            meshkernel::EdgeMeshPolylineIntersection::sort(edgeIntersections);
+            meshkernel::FaceMeshPolylineIntersection::sort(faceIntersections);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;

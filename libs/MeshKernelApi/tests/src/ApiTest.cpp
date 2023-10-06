@@ -2676,16 +2676,16 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dDimensions);
 
     // Set the polyLine
-    std::vector xCoordinates{0.6, 0.6};
-    std::vector yCoordinates{2.5, 0.5};
+    std::vector xCoordinates{0.6, 0.6, 0.6};
+    std::vector yCoordinates{2.5, 0.5, 2.5};
 
-    meshkernelapi::GeometryList boundaryPolyLine{};
-    boundaryPolyLine.geometry_separator = meshkernel::constants::missing::doubleValue;
-    boundaryPolyLine.coordinates_x = xCoordinates.data();
-    boundaryPolyLine.coordinates_y = yCoordinates.data();
-    boundaryPolyLine.values = nullptr;
+    meshkernelapi::GeometryList boundaryPolygon{};
+    boundaryPolygon.geometry_separator = meshkernel::constants::missing::doubleValue;
+    boundaryPolygon.coordinates_x = xCoordinates.data();
+    boundaryPolygon.coordinates_y = yCoordinates.data();
+    boundaryPolygon.values = nullptr;
 
-    boundaryPolyLine.num_coordinates = 2;
+    boundaryPolygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
 
@@ -2700,7 +2700,7 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     std::vector<int> faceIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
 
     errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
-                                                           boundaryPolyLine,
+                                                           boundaryPolygon,
                                                            edgeNodes.data(),
                                                            edgeIndex.data(),
                                                            edgeDistances.data(),
