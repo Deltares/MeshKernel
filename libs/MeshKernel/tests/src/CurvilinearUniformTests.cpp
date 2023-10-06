@@ -2,6 +2,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
@@ -234,4 +235,116 @@ TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
     // The number of nodes was 45 now is 44
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
     ASSERT_EQ(numValidNodes, 44);
+}
+
+void TestDeleteInteriorNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
+                             const meshkernel::CurvilinearGridNodeIndices first,
+                             const meshkernel::CurvilinearGridNodeIndices second)
+{
+
+    // Check first, that all nodes are valid
+    for (meshkernel::UInt i = 0; i < curvilinearGrid->m_numN; ++i)
+    {
+        for (meshkernel::UInt j = 0; j < curvilinearGrid->m_numM; ++j)
+        {
+            EXPECT_TRUE(curvilinearGrid->GetNode(i, j).IsValid());
+        }
+    }
+
+    meshkernel::UInt lowerLimitI = std::min(first.m_n, second.m_n) + 1;
+    meshkernel::UInt upperLimitI = std::max(first.m_n, second.m_n) - 1;
+
+    meshkernel::UInt lowerLimitJ = std::min(first.m_m, second.m_m) + 1;
+    meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
+
+    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
+    meshkernel::UInt initialSize = CurvilinearGridCountValidNodes(curvilinearGrid);
+
+    // Delete the nodes interior to a block
+    curvilinearGrid->DeleteInterior(first, second);
+
+    auto inRange = [](const meshkernel::UInt v, const meshkernel::UInt l, const meshkernel::UInt u)
+    { return l <= v && v <= u; };
+
+    EXPECT_EQ(initialSize - expectedInvalidated, CurvilinearGridCountValidNodes(curvilinearGrid));
+
+    // Check that these nodes have been set to invalid.
+    for (meshkernel::UInt i = 0; i < curvilinearGrid->m_numN; ++i)
+    {
+        for (meshkernel::UInt j = 0; j < curvilinearGrid->m_numM; ++j)
+        {
+            if (inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ))
+            {
+                EXPECT_FALSE(curvilinearGrid->GetNode(i, j).IsValid()) << "node should be false: " << i << "  " << j;
+            }
+            else
+            {
+                EXPECT_TRUE(curvilinearGrid->GetNode(i, j).IsValid()) << "node should be true: " << i << "  " << j;
+            }
+        }
+    }
+}
+
+TEST(CurvilinearGridUniform, DeleteInteriorNodesTest)
+{
+    // Basic, testing of setting nodes inside a box to invalid
+    meshkernel::UInt nx = 10;
+    meshkernel::UInt ny = 10;
+    std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {1, 1}, {4, 4});
+
+    // Reset the mesh
+    curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {2, 1}, {5, 4});
+
+    // Reset the mesh
+    curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {4, 3}, {7, 8});
+}
+
+TEST(CurvilinearGridUniform, DeleteInteriorNodesReverseTest)
+{
+    // testing of setting nodes inside a box to invalid, with lower and upper reversed
+
+    meshkernel::UInt nx = 10;
+    meshkernel::UInt ny = 10;
+
+    // Prepare
+    std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {5, 6}, {1, 2});
+
+    // Reset the mesh
+    curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {5, 6}, {0, 4});
+}
+
+TEST(CurvilinearGridUniform, DeleteInteriorNodesMixedTest)
+{
+    // testing of setting nodes inside a box to invalid, with lower and upper reversed for any of i and j index
+
+    meshkernel::UInt nx = 100;
+    meshkernel::UInt ny = 100;
+
+    std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {5, 1}, {1, 6});
+
+    // Reset grid
+    curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    TestDeleteInteriorNodes(curvilinearGrid, {1, 6}, {5, 2});
+}
+
+TEST(CurvilinearGridUniform, DeleteInteriorNodesFailureTest)
+{
+    // testing of setting nodes inside a box to invalid with invalid or out of range indices.
+
+    meshkernel::UInt nx = 10;
+    meshkernel::UInt ny = 10;
+
+    // Prepare
+    std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+
+    EXPECT_THROW(curvilinearGrid->DeleteInterior({1, meshkernel::constants::missing::uintValue}, {nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->DeleteInterior({1, 1}, {meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->DeleteInterior({1, 1}, {nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->DeleteInterior({nx, 1}, {4, 4}), meshkernel::ConstraintError);
 }

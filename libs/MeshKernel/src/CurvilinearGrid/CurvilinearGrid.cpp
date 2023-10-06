@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
@@ -868,6 +869,39 @@ void CurvilinearGrid::DeleteNode(Point const& point)
         // Re-compute quantities
         ComputeGridNodeTypes();
         SetFlatCopies();
+    }
+}
+
+void CurvilinearGrid::DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode)
+{
+
+    if (!firstNode.IsValid() || !secondNode.IsValid())
+    {
+        throw ConstraintError("Invalid index: first node {{{}, {}}} {{{}, {}}}", firstNode.m_m, firstNode.m_n, secondNode.m_m, secondNode.m_n);
+    }
+
+    if (firstNode.m_m >= m_numM || firstNode.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", firstNode.m_m, firstNode.m_n, m_numM, m_numN);
+    }
+
+    if (secondNode.m_m >= m_numM || secondNode.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_m, secondNode.m_n, m_numM, m_numN);
+    }
+
+    UInt lowerLimitI = std::min(firstNode.m_n, secondNode.m_n);
+    UInt upperLimitI = std::max(firstNode.m_n, secondNode.m_n);
+
+    UInt lowerLimitJ = std::min(firstNode.m_m, secondNode.m_m);
+    UInt upperLimitJ = std::max(firstNode.m_m, secondNode.m_m);
+
+    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
+    {
+        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
+        {
+            m_gridNodes(n, m).SetInvalid();
+        }
     }
 }
 
