@@ -210,6 +210,10 @@ namespace meshkernel
         /// @note If any index is the null value or is out of range a ConstraintError will be thrown
         void DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
 
+        /// @brief Set all the nodes oustide of the block to be invalid.
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
+        void DeleteExterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
+
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used
         /// @param[in] toPoint The coordinates of the new position
