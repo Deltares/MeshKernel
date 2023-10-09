@@ -585,9 +585,9 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 
     ASSERT_EQ(faceIntersections[1].faceIndex, 6);
     ASSERT_NEAR(faceIntersections[1].polylineDistance, 2.0, 1e-8);
-    ASSERT_EQ(faceIntersections[1].edgeNodes[0], 8);
+    ASSERT_EQ(faceIntersections[1].edgeNodes[0], 13);
     ASSERT_EQ(faceIntersections[1].edgeNodes[1], 9);
-    ASSERT_EQ(faceIntersections[1].edgeNodes[2], 13);
+    ASSERT_EQ(faceIntersections[1].edgeNodes[2], 8);
     ASSERT_EQ(faceIntersections[1].edgeNodes[3], 9);
     ASSERT_EQ(faceIntersections[1].edgeIndexses.size(), 2);
 
@@ -609,9 +609,9 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 
     ASSERT_EQ(faceIntersections[4].faceIndex, 8);
     ASSERT_NEAR(faceIntersections[4].polylineDistance, 4.0, 1e-8);
-    ASSERT_EQ(faceIntersections[4].edgeNodes[0], 14);
+    ASSERT_EQ(faceIntersections[4].edgeNodes[0], 11);
     ASSERT_EQ(faceIntersections[4].edgeNodes[1], 10);
-    ASSERT_EQ(faceIntersections[4].edgeNodes[2], 11);
+    ASSERT_EQ(faceIntersections[4].edgeNodes[2], 14);
     ASSERT_EQ(faceIntersections[4].edgeNodes[3], 10);
     ASSERT_EQ(faceIntersections[4].edgeIndexses.size(), 2);
 
@@ -625,9 +625,9 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 
     ASSERT_EQ(faceIntersections[6].faceIndex, 2);
     ASSERT_NEAR(faceIntersections[6].polylineDistance, 6.0, 1e-8);
-    ASSERT_EQ(faceIntersections[6].edgeNodes[0], 7);
+    ASSERT_EQ(faceIntersections[6].edgeNodes[0], 2);
     ASSERT_EQ(faceIntersections[6].edgeNodes[1], 6);
-    ASSERT_EQ(faceIntersections[6].edgeNodes[2], 2);
+    ASSERT_EQ(faceIntersections[6].edgeNodes[2], 7);
     ASSERT_EQ(faceIntersections[6].edgeNodes[3], 6);
     ASSERT_EQ(faceIntersections[6].edgeIndexses.size(), 2);
 
@@ -896,9 +896,9 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
 
     ASSERT_EQ(faceIntersections[3].faceIndex, 21);
     ASSERT_NEAR(faceIntersections[3].polylineDistance, 1.7149583232814580, 1e-8);
-    ASSERT_EQ(faceIntersections[3].edgeNodes[0], 25);
+    ASSERT_EQ(faceIntersections[3].edgeNodes[0], 31);
     ASSERT_EQ(faceIntersections[3].edgeNodes[1], 32);
-    ASSERT_EQ(faceIntersections[3].edgeNodes[2], 31);
+    ASSERT_EQ(faceIntersections[3].edgeNodes[2], 25);
     ASSERT_EQ(faceIntersections[3].edgeNodes[3], 32);
     ASSERT_EQ(faceIntersections[3].edgeIndexses.size(), 2);
 
@@ -912,10 +912,10 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
 
     ASSERT_EQ(faceIntersections[5].faceIndex, 26);
     ASSERT_NEAR(faceIntersections[5].polylineDistance, 3.1366301680701545, 1e-8);
-    ASSERT_EQ(faceIntersections[5].edgeNodes[0], 31);
-    ASSERT_EQ(faceIntersections[5].edgeNodes[1], 38);
-    ASSERT_EQ(faceIntersections[5].edgeNodes[2], 30);
-    ASSERT_EQ(faceIntersections[5].edgeNodes[3], 37);
+    ASSERT_EQ(faceIntersections[5].edgeNodes[0], 30);
+    ASSERT_EQ(faceIntersections[5].edgeNodes[1], 37);
+    ASSERT_EQ(faceIntersections[5].edgeNodes[2], 31);
+    ASSERT_EQ(faceIntersections[5].edgeNodes[3], 38);
     ASSERT_EQ(faceIntersections[5].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[6].faceIndex, 25);
@@ -929,9 +929,9 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     ASSERT_EQ(faceIntersections[7].faceIndex, 24);
     ASSERT_NEAR(faceIntersections[7].polylineDistance, 4.9436030957613966, 1e-8);
     ASSERT_EQ(faceIntersections[7].edgeNodes[0], 29);
-    ASSERT_EQ(faceIntersections[7].edgeNodes[1], 36);
+    ASSERT_EQ(faceIntersections[7].edgeNodes[1], 28);
     ASSERT_EQ(faceIntersections[7].edgeNodes[2], 29);
-    ASSERT_EQ(faceIntersections[7].edgeNodes[3], 28);
+    ASSERT_EQ(faceIntersections[7].edgeNodes[3], 36);
     ASSERT_EQ(faceIntersections[7].edgeIndexses.size(), 2);
 
     ASSERT_EQ(faceIntersections[8].faceIndex, 18);

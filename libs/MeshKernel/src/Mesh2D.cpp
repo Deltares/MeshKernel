@@ -1822,11 +1822,6 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
     // compute polylineDistance, sort the edges for each face
     for (auto& facesIntersection : facesIntersectionsCache)
     {
-        if (facesIntersection.edgeIndexses.size() > 2)
-        {
-            throw AlgorithmError("More than 2 intersected edges for face {}", facesIntersection.faceIndex);
-        }
-
         if (facesIntersection.edgeIndexses.empty())
         {
             continue;

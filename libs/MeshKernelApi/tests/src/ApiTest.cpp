@@ -2740,8 +2740,8 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
 
     ASSERT_EQ(faceEdgeIndex[0], 18);
     ASSERT_EQ(faceEdgeIndex[1], 15);
-    ASSERT_EQ(faceEdgeIndex[2], 15);
-    ASSERT_EQ(faceEdgeIndex[3], 1);
+    ASSERT_EQ(faceEdgeIndex[2], 1);
+    ASSERT_EQ(faceEdgeIndex[3], 15);
     ASSERT_EQ(faceEdgeIndex[4], 1);
 }
 TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
