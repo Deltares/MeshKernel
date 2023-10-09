@@ -877,7 +877,7 @@ void CurvilinearGrid::DeleteInterior(const CurvilinearGridNodeIndices& firstNode
 
     if (!firstNode.IsValid() || !secondNode.IsValid())
     {
-        throw ConstraintError("Invalid index: first node {{{}, {}}} {{{}, {}}}", firstNode.m_m, firstNode.m_n, secondNode.m_m, secondNode.m_n);
+        throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", firstNode.m_m, firstNode.m_n, secondNode.m_m, secondNode.m_n);
     }
 
     if (firstNode.m_m >= m_numM || firstNode.m_n >= m_numN)

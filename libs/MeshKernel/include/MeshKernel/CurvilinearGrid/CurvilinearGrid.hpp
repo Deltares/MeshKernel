@@ -207,7 +207,7 @@ namespace meshkernel
         void DeleteNode(Point const& point);
 
         /// @brief Set all the nodes interior to the block to be invalid.
-        /// @note If any index is the null value or os out of range a ConstraintError will be thrown
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
         void DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
 
         /// @brief Moves a node from one position to another
