@@ -28,7 +28,6 @@
 #pragma once
 
 #include <MeshKernel/AveragingInterpolation.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Utilities/RTree.hpp>

@@ -1687,7 +1687,6 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_projection);
     }
 
-    UInt maxSteps = 5;
     std::queue<std::array<UInt, 3>> crossingEdges;
     std::vector<bool> vistedEdges(GetNumEdges(), false);
     std::vector<bool> vistedFace(GetNumEdges(), false);
@@ -1748,7 +1747,7 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                     if (!intersectionFound)
                     {
                         UInt numForwardSteps = 0;
-                        while (!intersectionFound && firstIndex < polylineSize - 2 && numForwardSteps < maxSteps)
+                        while (!intersectionFound && firstIndex < polylineSize - 2 && numForwardSteps < m_maxSteps)
                         {
                             firstIndex = secondIndex;
                             secondIndex = firstIndex + 1;
@@ -1769,7 +1768,7 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                         firstIndex = segmentIndex;
                         secondIndex = nextSegmentIndex;
                         UInt numBackwardSteps = 0;
-                        while (!intersectionFound && firstIndex >= 1 && numBackwardSteps < maxSteps)
+                        while (!intersectionFound && firstIndex >= 1 && numBackwardSteps < m_maxSteps)
                         {
                             secondIndex = firstIndex;
                             firstIndex = firstIndex - 1;
