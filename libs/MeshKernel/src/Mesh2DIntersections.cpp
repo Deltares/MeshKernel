@@ -242,25 +242,25 @@ void Mesh2DIntersections::GetPolylineIntersection(const Mesh2D& mesh, const std:
     // edge intersections are unique
     for (UInt e = 0; e < mesh.GetNumEdges(); ++e)
     {
-        if (m_edgesIntersectionsResult[e].polylineDistance < 0)
+        if (m_edgesIntersections[e].polylineDistance < 0)
         {
-            m_edgesIntersectionsResult[e] = m_edgesIntersectionsCache[e];
+            m_edgesIntersections[e] = m_edgesIntersectionsCache[e];
         }
     }
 
     // face intersections are not unique and a face could have been intersected already
     for (UInt f = 0; f < mesh.GetNumFaces(); ++f)
     {
-        if (!m_faceIntersectionsResult[f].edgeNodes.empty() &&
+        if (!m_faceIntersections[f].edgeNodes.empty() &&
             !m_facesIntersectionsCache[f].edgeNodes.empty())
         {
-            m_faceIntersectionsResult[f].edgeIndexses.insert(m_faceIntersectionsResult[f].edgeIndexses.end(), m_facesIntersectionsCache[f].edgeIndexses.begin(), m_facesIntersectionsCache[f].edgeIndexses.end());
-            m_faceIntersectionsResult[f].edgeNodes.insert(m_faceIntersectionsResult[f].edgeNodes.end(), m_facesIntersectionsCache[f].edgeNodes.begin(), m_facesIntersectionsCache[f].edgeNodes.end());
-            m_faceIntersectionsResult[f].polylineDistance = 0.5 * (m_faceIntersectionsResult[f].polylineDistance + m_facesIntersectionsCache[f].polylineDistance);
+            m_faceIntersections[f].edgeIndexses.insert(m_faceIntersections[f].edgeIndexses.end(), m_facesIntersectionsCache[f].edgeIndexses.begin(), m_facesIntersectionsCache[f].edgeIndexses.end());
+            m_faceIntersections[f].edgeNodes.insert(m_faceIntersections[f].edgeNodes.end(), m_facesIntersectionsCache[f].edgeNodes.begin(), m_facesIntersectionsCache[f].edgeNodes.end());
+            m_faceIntersections[f].polylineDistance = 0.5 * (m_faceIntersections[f].polylineDistance + m_facesIntersectionsCache[f].polylineDistance);
         }
         else if (!m_facesIntersectionsCache[f].edgeNodes.empty())
         {
-            m_faceIntersectionsResult[f] = m_facesIntersectionsCache[f];
+            m_faceIntersections[f] = m_facesIntersectionsCache[f];
         }
     }
 }
@@ -274,8 +274,8 @@ void Mesh2DIntersections::Compute(Mesh2D& mesh, const Polygons& polygon)
     }
 
     // Intersection results
-    m_edgesIntersectionsResult.resize(mesh.GetNumEdges());
-    m_faceIntersectionsResult.resize(mesh.GetNumFaces());
+    m_edgesIntersections.resize(mesh.GetNumEdges());
+    m_faceIntersections.resize(mesh.GetNumFaces());
 
     // Declare local caches
     m_edgesIntersectionsCache.resize(mesh.GetNumEdges());

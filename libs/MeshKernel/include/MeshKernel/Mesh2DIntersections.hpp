@@ -43,6 +43,9 @@ namespace meshkernel
         /// @brief compute the edges and faces intersected by a polygon, with additional information on the intersections
         void Compute(Mesh2D& mesh, const Polygons& polygon);
 
+        const auto& EdgeIntersections() const { return m_edgesIntersections; }
+        const auto& FaceIntersections() const { return m_faceIntersections; }
+
     private:
         /// @brief Gets the intersection from a single polyline
         /// @param[in] polyLine An input polyline
@@ -50,10 +53,10 @@ namespace meshkernel
 
         std::tuple<UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh, const std::vector<Point>& polyLine, const std::vector<bool>& vistedEdges) const;
 
-        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache;  ///< A cache for saving the local edge intersections
-        std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache;  ///< A cache for saving the local face intersections
-        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsResult; ///< A vector collecting all edge intersection results
-        std::vector<FaceMeshPolylineIntersection> m_faceIntersectionsResult;  ///< A vector collecting all face intersection results
+        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer 
+        std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer 
+        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
+        std::vector<FaceMeshPolylineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
     };
 
 } // namespace meshkernel

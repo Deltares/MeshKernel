@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Mesh2DIntersections.hpp"
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
@@ -1046,7 +1048,10 @@ namespace meshkernelapi
 
             const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 
-            auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolygonIntersections(boundaryPolygon);
+            meshkernel::Mesh2DIntersections mesh2DIntersections;
+            mesh2DIntersections.Compute(*meshKernelState[meshKernelId].m_mesh2d, boundaryPolygon);
+            auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
+            auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
             meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
             meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
