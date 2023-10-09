@@ -22,10 +22,10 @@ set(
   ${SRC_DIR}/CurvilinearGridLineMirrorTests.cpp
   ${SRC_DIR}/CurvilinearGridLineShiftTests.cpp
   ${SRC_DIR}/CurvilinearGridOrthogonalizationTests.cpp
+  ${SRC_DIR}/CurvilinearGridRectangularTests.cpp
   ${SRC_DIR}/CurvilinearGridRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridSmoothingTests.cpp
   ${SRC_DIR}/CurvilinearGridSnappingTests.cpp
-  ${SRC_DIR}/CurvilinearUniformTests.cpp
   ${SRC_DIR}/FlipEdgesTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
   ${SRC_DIR}/FormattingTests.cpp

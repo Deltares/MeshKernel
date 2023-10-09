@@ -32,7 +32,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -40,6 +39,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -883,7 +883,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -910,7 +910,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_samples(int meshKernelId, const GeometryList& samples)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -932,9 +932,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                const meshkernel::MakeGridParameters& makeGridParameters,
-                                                const GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
+                                                         const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -945,7 +944,7 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            const auto curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters, geometryList, projection);
+            const auto curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
@@ -957,8 +956,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
-                                                             const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_from_polygon(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                      const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -969,7 +969,31 @@ namespace meshkernelapi
             }
 
             const auto projection = meshKernelState[meshKernelId].m_projection;
-            auto const curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
+            const auto curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
+
+            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_on_extension(int meshKernelId,
+                                                                      const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const auto projection = meshKernelState[meshKernelId].m_projection;
+            auto const curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters, projection);
 
             auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
@@ -2632,9 +2656,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                     const meshkernel::MakeGridParameters& makeGridParameters,
-                                                     const GeometryList& geometryList)
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid(int meshKernelId,
+                                                                 const meshkernel::MakeGridParameters& makeGridParameters)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2644,10 +2667,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto projection = meshKernelState[meshKernelId].m_projection;
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGrid(makeGridParameters,
-                                                                                            geometryList,
-                                                                                            projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters,
+                                                                                                meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2656,8 +2677,9 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
-                                                                  const meshkernel::MakeGridParameters& makeGridParameters)
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_from_polygon(int meshKernelId,
+                                                                              const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                              const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2667,8 +2689,30 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto projection = meshKernelState[meshKernelId].m_projection;
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateUniformCurvilinearGridOnExtension(makeGridParameters, projection);
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
+                                                                                                            geometryList,
+                                                                                                            meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_on_extension(int meshKernelId,
+                                                                              const meshkernel::MakeGridParameters& makeGridParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
+                                                                                                           meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
