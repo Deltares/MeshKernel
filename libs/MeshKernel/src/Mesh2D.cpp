@@ -1690,6 +1690,7 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
     UInt maxSteps = 5;
     std::queue<std::array<UInt, 3>> crossingEdges;
     std::vector<bool> vistedEdges(GetNumEdges(), false);
+    std::vector<bool> vistedFace(GetNumEdges(), false);
 
     // keep traversing the polyline as long crossed edges are found
     while (true)
@@ -1728,7 +1729,7 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                 for (UInt e = 0; e < m_facesEdges[currentFaceIndex].size(); ++e)
                 {
                     const auto edgeIndex = m_facesEdges[currentFaceIndex][e];
-                    if (vistedEdges[edgeIndex])
+                    if (vistedEdges[edgeIndex] && vistedFace[currentFaceIndex])
                     {
                         continue;
                     }
@@ -1813,6 +1814,7 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                     }
                     vistedEdges[edgeIndex] = true;
                 }
+                vistedFace[currentFaceIndex] = true;
             }
         }
     }
