@@ -55,8 +55,8 @@ namespace meshkernel
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
-            IncludedNotIntersected = 0,
-            IncludedAndIntersected = 1
+            InsideNotIntersected = 0,
+            InsideAndIntersected = 1
         };
 
         /// Enumerator describing the different node types
@@ -288,6 +288,9 @@ namespace meshkernel
                                      std::vector<FaceMeshPolylineIntersection>& facesIntersectionsCache,
                                      std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult,
                                      std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult) const;
+
+        std::tuple<UInt, UInt> GetIntersectionSeed(const std::vector<Point>& polyLine,
+                                                   const std::vector<bool>& vistedEdges) const;
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon

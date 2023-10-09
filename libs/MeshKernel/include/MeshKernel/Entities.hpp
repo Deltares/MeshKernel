@@ -193,14 +193,33 @@ namespace meshkernel
         UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
         double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
 
-        static void sortAndErease(std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsResult)
+        static void sortAndEraseIntersections(std::vector<EdgeMeshPolylineIntersection>& intersections)
         {
-            std::ranges::sort(edgesIntersectionsResult,
+            std::ranges::sort(intersections,
                               [](const EdgeMeshPolylineIntersection& first, const EdgeMeshPolylineIntersection& second)
                               { return first.polylineDistance < second.polylineDistance; });
 
-            std::erase_if(edgesIntersectionsResult, [](const EdgeMeshPolylineIntersection& v)
+            std::erase_if(intersections, [](const EdgeMeshPolylineIntersection& v)
                           { return v.polylineDistance < 0; });
+        }
+        static void updateIntersections(const UInt segmentIndex,
+                                        const UInt edgeIndex,
+                                        const UInt edgeFirstNode,
+                                        const UInt edgeSecondNode,
+                                        const std::vector<double>& cumulativeLength,
+                                        const double crossProductValue,
+                                        const double adimensionalEdgeDistance,
+                                        const double adimensionalPolylineSegmentDistance,
+                                        std::vector<EdgeMeshPolylineIntersection>& intersections)
+        {
+            intersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
+            intersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
+                                                        adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
+            intersections[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
+            intersections[edgeIndex].edgeFirstNode = crossProductValue < 0 ? edgeSecondNode : edgeFirstNode;
+            intersections[edgeIndex].edgeSecondNode = crossProductValue < 0 ? edgeFirstNode : edgeSecondNode;
+            intersections[edgeIndex].edgeDistance = adimensionalEdgeDistance;
+            intersections[edgeIndex].edgeIndex = edgeIndex;
         }
     };
 
@@ -212,7 +231,7 @@ namespace meshkernel
         std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
         std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
 
-        static void sortAndErease(std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult)
+        static void sortAndEraseIntersections(std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult)
         {
             std::ranges::sort(faceIntersectionsResult,
                               [](const FaceMeshPolylineIntersection& first, const FaceMeshPolylineIntersection& second)
@@ -220,6 +239,14 @@ namespace meshkernel
 
             std::erase_if(faceIntersectionsResult, [](const FaceMeshPolylineIntersection& v)
                           { return v.polylineDistance < 0; });
+        }
+
+        static void updateIntersections(const UInt faceIndex,
+                                        const UInt edgeIndex,
+                                        std::vector<FaceMeshPolylineIntersection>& intersections)
+        {
+            intersections[faceIndex].faceIndex = faceIndex;
+            intersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
         }
     };
 

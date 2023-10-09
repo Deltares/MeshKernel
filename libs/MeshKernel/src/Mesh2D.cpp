@@ -1497,22 +1497,22 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     }
 
     std::function<bool(UInt)> excludedFace;
-    if (deletionOption == IncludedNotIntersected && !invertDeletion)
+    if (deletionOption == InsideNotIntersected && !invertDeletion)
     {
         excludedFace = [&](UInt f)
         { return !isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
-    else if (deletionOption == IncludedNotIntersected && invertDeletion)
+    else if (deletionOption == InsideNotIntersected && invertDeletion)
     {
         excludedFace = [&](UInt f)
         { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
-    else if (deletionOption == IncludedAndIntersected && !invertDeletion)
+    else if (deletionOption == InsideAndIntersected && !invertDeletion)
     {
         excludedFace = [&](UInt f)
         { return !isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
-    else if (deletionOption == IncludedAndIntersected && invertDeletion)
+    else if (deletionOption == InsideAndIntersected && invertDeletion)
     {
         excludedFace = [&](UInt f)
         { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
@@ -1623,6 +1623,52 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> Mesh2D::IsSegmentCrossingABoundar
     return {intersectedFace, intersectedEdge};
 }
 
+std::tuple<meshkernel::UInt, meshkernel::UInt> Mesh2D::GetIntersectionSeed(const std::vector<Point>& polyLine,
+                                                                           const std::vector<bool>& vistedEdges) const
+{
+    UInt crossedSegmentIndex = constants::missing::uintValue;
+    UInt crossedEdgeIndex = constants::missing::uintValue;
+
+    // Find starting edge and segment
+    for (UInt segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
+    {
+        for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); ++edgeIndex)
+        {
+            // edge already crossed, nothing to do
+            if (vistedEdges[edgeIndex])
+            {
+                continue;
+            }
+
+            const auto [isEdgeCrossed,
+                        intersectionPoint,
+                        crossProductValue,
+                        adimensionalPolylineSegmentDistance,
+                        adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
+                                                                        polyLine[segmentIndex + 1],
+                                                                        m_nodes[m_edges[edgeIndex].first],
+                                                                        m_nodes[m_edges[edgeIndex].second],
+                                                                        false,
+                                                                        m_projection);
+            if (!isEdgeCrossed)
+            {
+                continue;
+            }
+
+            crossedSegmentIndex = segmentIndex;
+            crossedEdgeIndex = edgeIndex;
+            break;
+        }
+
+        if (crossedSegmentIndex != constants::missing::uintValue)
+        {
+            break;
+        }
+    }
+
+    return {crossedEdgeIndex, crossedSegmentIndex};
+}
+
 void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                                      std::vector<EdgeMeshPolylineIntersection>& edgesIntersectionsCache,
                                      std::vector<FaceMeshPolylineIntersection>& facesIntersectionsCache,
@@ -1630,141 +1676,199 @@ void Mesh2D::GetPolylineIntersection(const std::vector<Point>& polyLine,
                                      std::vector<FaceMeshPolylineIntersection>& faceIntersectionsResult) const
 {
     // 1. Find the intersection of any segment of the polyline with the mesh return if nothing is found
-    // for (UInt segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
-    //{
-    //    for (UInt e = 0; e < GetNumEdges(); ++e)
-    //    {
+    std::ranges::fill(edgesIntersectionsCache, EdgeMeshPolylineIntersection());
+    std::ranges::fill(facesIntersectionsCache, FaceMeshPolylineIntersection());
 
-    //    }
-    //}
+    const auto polylineSize = static_cast<UInt>(polyLine.size());
 
     std::vector<double> cumulativeLength(polyLine.size(), 0.0);
-    for (UInt i = 1; i < polyLine.size(); ++i)
+    for (UInt i = 1; i < polylineSize; ++i)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_projection);
     }
+    std::queue<std::array<UInt, 3>> crossingEdges;
+    std::vector<bool> vistedEdges(GetNumEdges(), false);
 
-    for (UInt segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
+    // keep traversing the polyline as long crossed edges are found
+    while (true)
     {
-        std::ranges::fill(edgesIntersectionsCache, EdgeMeshPolylineIntersection());
-        std::ranges::fill(facesIntersectionsCache, FaceMeshPolylineIntersection());
+        // find a crossed edge on a non-visited segment
+        const auto intersectionSeed = GetIntersectionSeed(polyLine,
+                                                          vistedEdges);
 
-        for (UInt faceIndex = 0; faceIndex < GetNumFaces(); ++faceIndex)
+        const auto crossedEdgeIndex = std::get<0>(intersectionSeed);
+
+        // no valid seed found in the entire mesh, we are done
+        if (crossedEdgeIndex == constants::missing::uintValue)
         {
-            for (UInt e = 0; e < m_numFacesNodes[faceIndex]; ++e)
-            {
-                const auto edgeIndex = m_facesEdges[faceIndex][e];
+            break;
+        }
 
-                if (edgesIntersectionsCache[edgeIndex].adimensionalPolylineSegmentDistance >= 0.0)
+        const auto crossingSegmentIndex = std::get<1>(intersectionSeed);
+        const auto crossingNextSegmentIndex = NextCircularForwardIndex(crossingSegmentIndex, polylineSize);
+        crossingEdges.push({crossedEdgeIndex, crossingSegmentIndex, crossingNextSegmentIndex});
+
+        // use breath search along the current polyline
+        while (!crossingEdges.empty())
+        {
+            auto [currentCrossingEdge, segmentIndex, nextSegmentIndex] = crossingEdges.front();
+            crossingEdges.pop();
+
+            for (UInt f = 0; f < m_edgesFaces[currentCrossingEdge].size(); ++f)
+            {
+                const auto currentFaceIndex = m_edgesFaces[currentCrossingEdge][f];
+
+                if (currentFaceIndex == constants::missing::uintValue)
                 {
-                    facesIntersectionsCache[faceIndex].edgeIndexses.emplace_back(edgeIndex);
-                    facesIntersectionsCache[faceIndex].faceIndex = faceIndex;
                     continue;
                 }
 
-                const auto [isEdgeCrossed,
-                            intersectionPoint,
-                            crossProductValue,
-                            adimensionalPolylineSegmentDistance,
-                            adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
-                                                                            polyLine[segmentIndex + 1],
-                                                                            m_nodes[m_edges[edgeIndex].first],
-                                                                            m_nodes[m_edges[edgeIndex].second],
-                                                                            false,
-                                                                            m_projection);
-
-                if (isEdgeCrossed)
+                for (UInt e = 0; e < m_facesEdges[currentFaceIndex].size(); ++e)
                 {
-                    auto edgeFirstNode = m_edges[edgeIndex].first;
-                    auto edgeSecondNode = m_edges[edgeIndex].second;
-
-                    if (crossProductValue < 0)
+                    const auto edgeIndex = m_facesEdges[currentFaceIndex][e];
+                    if (vistedEdges[edgeIndex])
                     {
-                        edgeFirstNode = m_edges[edgeIndex].second;
-                        edgeSecondNode = m_edges[edgeIndex].first;
+                        continue;
                     }
 
-                    edgesIntersectionsCache[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
-                    edgesIntersectionsCache[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
-                                                                          adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
-                    edgesIntersectionsCache[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
-                    edgesIntersectionsCache[edgeIndex].edgeFirstNode = edgeFirstNode;
-                    edgesIntersectionsCache[edgeIndex].edgeSecondNode = edgeSecondNode;
-                    edgesIntersectionsCache[edgeIndex].edgeDistance = adimensionalEdgeDistance;
-                    edgesIntersectionsCache[edgeIndex].edgeIndex = edgeIndex;
+                    UInt firstIndex = segmentIndex;
+                    UInt secondIndex = nextSegmentIndex;
 
-                    facesIntersectionsCache[faceIndex].faceIndex = faceIndex;
-                    facesIntersectionsCache[faceIndex].edgeIndexses.emplace_back(edgeIndex);
+                    auto intersection = AreSegmentsCrossing(polyLine[firstIndex],
+                                                            polyLine[secondIndex],
+                                                            m_nodes[m_edges[edgeIndex].first],
+                                                            m_nodes[m_edges[edgeIndex].second],
+                                                            false,
+                                                            m_projection);
+
+                    bool intersectionFound = std::get<0>(intersection);
+
+                    if (!intersectionFound)
+                    {
+                        firstIndex = NextCircularForwardIndex(segmentIndex, polylineSize);
+                        secondIndex = NextCircularForwardIndex(firstIndex, polylineSize);
+                        intersection = AreSegmentsCrossing(polyLine[firstIndex],
+                                                           polyLine[secondIndex],
+                                                           m_nodes[m_edges[edgeIndex].first],
+                                                           m_nodes[m_edges[edgeIndex].second],
+                                                           false,
+                                                           m_projection);
+
+                        intersectionFound = std::get<0>(intersection);
+                    }
+
+                    if (!intersectionFound)
+                    {
+                        firstIndex = NextCircularBackwardIndex(segmentIndex, polylineSize);
+                        secondIndex = NextCircularBackwardIndex(firstIndex, polylineSize);
+                        intersection = AreSegmentsCrossing(polyLine[firstIndex],
+                                                           polyLine[secondIndex],
+                                                           m_nodes[m_edges[edgeIndex].first],
+                                                           m_nodes[m_edges[edgeIndex].second],
+                                                           false,
+                                                           m_projection);
+                        intersectionFound = std::get<0>(intersection);
+                    }
+
+                    // none of the polyline intersect the current edge
+                    if (!intersectionFound)
+                    {
+                        continue;
+                    }
+
+                    const double crossProductSign = firstIndex > secondIndex ? 1.0 : -1.0;
+                    const double crossProductValue = std::get<2>(intersection) * crossProductSign;
+                    const double adimensionalPolylineSegmentDistance = std::get<3>(intersection);
+                    const double adimensionalEdgeDistance = std::get<4>(intersection);
+
+                    EdgeMeshPolylineIntersection::updateIntersections(
+                        segmentIndex,
+                        edgeIndex,
+                        m_edges[edgeIndex].first,
+                        m_edges[edgeIndex].second,
+                        cumulativeLength,
+                        crossProductValue,
+                        adimensionalEdgeDistance,
+                        adimensionalPolylineSegmentDistance,
+                        edgesIntersectionsCache);
+
+                    FaceMeshPolylineIntersection::updateIntersections(currentFaceIndex, edgeIndex, facesIntersectionsCache);
+
+                    if (edgeIndex != currentCrossingEdge)
+                    {
+                        crossingEdges.push({crossedEdgeIndex, firstIndex, secondIndex});
+                    }
+                    vistedEdges[edgeIndex] = true;
                 }
             }
         }
+    }
 
-        // compute polylineDistance, sort the edges for each face
-        for (auto& facesIntersection : facesIntersectionsCache)
+    // compute polylineDistance, sort the edges for each face
+    for (auto& facesIntersection : facesIntersectionsCache)
+    {
+        if (facesIntersection.edgeIndexses.size() > 2)
         {
-            if (facesIntersection.edgeIndexses.size() > 2)
-            {
-                throw AlgorithmError("More than 2 intersected edges for face {}", facesIntersection.faceIndex);
-            }
-
-            if (facesIntersection.edgeIndexses.empty())
-            {
-                continue;
-            }
-
-            if (facesIntersection.edgeIndexses.size() == 1)
-            {
-                const auto edgeIndex = facesIntersection.edgeIndexses[0];
-                facesIntersection.polylineDistance = edgesIntersectionsCache[edgeIndex].polylineDistance;
-            }
-
-            if (facesIntersection.edgeIndexses.size() == 2)
-            {
-                const auto firstEdgeIndex = facesIntersection.edgeIndexses[0];
-                const auto secondEdgeIndex = facesIntersection.edgeIndexses[1];
-
-                // swap the edge indexes if needed
-                if (edgesIntersectionsCache[firstEdgeIndex].adimensionalPolylineSegmentDistance > edgesIntersectionsCache[secondEdgeIndex].adimensionalPolylineSegmentDistance)
-                {
-                    std::swap(facesIntersection.edgeIndexses[0], facesIntersection.edgeIndexses[1]);
-                }
-
-                // compute the polylineDistance for the face
-                facesIntersection.polylineDistance = 0.5 * (edgesIntersectionsCache[firstEdgeIndex].polylineDistance + edgesIntersectionsCache[secondEdgeIndex].polylineDistance);
-            }
-
-            // push back the face intersection edge nodes
-            for (UInt e = 0; e < facesIntersection.edgeIndexses.size(); ++e)
-            {
-                const auto edgeIndex = facesIntersection.edgeIndexses[e];
-                facesIntersection.edgeNodes.emplace_back(edgesIntersectionsCache[edgeIndex].edgeFirstNode);
-                facesIntersection.edgeNodes.emplace_back(edgesIntersectionsCache[edgeIndex].edgeSecondNode);
-            }
+            throw AlgorithmError("More than 2 intersected edges for face {}", facesIntersection.faceIndex);
         }
 
-        // edge intersections are unique
-        for (UInt e = 0; e < GetNumEdges(); ++e)
+        if (facesIntersection.edgeIndexses.empty())
         {
-            if (edgesIntersectionsResult[e].polylineDistance < 0)
-            {
-                edgesIntersectionsResult[e] = edgesIntersectionsCache[e];
-            }
+            continue;
         }
 
-        // face intersections are not unique and a face could have been intersected already
-        for (UInt f = 0; f < GetNumFaces(); ++f)
+        if (facesIntersection.edgeIndexses.size() == 1)
         {
-            if (!faceIntersectionsResult[f].edgeNodes.empty() &&
-                !facesIntersectionsCache[f].edgeNodes.empty())
+            const auto edgeIndex = facesIntersection.edgeIndexses[0];
+            facesIntersection.polylineDistance = edgesIntersectionsCache[edgeIndex].polylineDistance;
+        }
+
+        if (facesIntersection.edgeIndexses.size() == 2)
+        {
+            const auto firstEdgeIndex = facesIntersection.edgeIndexses[0];
+            const auto secondEdgeIndex = facesIntersection.edgeIndexses[1];
+
+            // swap the edge indexes if needed
+            if (edgesIntersectionsCache[firstEdgeIndex].adimensionalPolylineSegmentDistance > edgesIntersectionsCache[secondEdgeIndex].adimensionalPolylineSegmentDistance)
             {
-                faceIntersectionsResult[f].edgeIndexses.insert(faceIntersectionsResult[f].edgeIndexses.end(), facesIntersectionsCache[f].edgeIndexses.begin(), facesIntersectionsCache[f].edgeIndexses.end());
-                faceIntersectionsResult[f].edgeNodes.insert(faceIntersectionsResult[f].edgeNodes.end(), facesIntersectionsCache[f].edgeNodes.begin(), facesIntersectionsCache[f].edgeNodes.end());
-                faceIntersectionsResult[f].polylineDistance = 0.5 * (faceIntersectionsResult[f].polylineDistance + facesIntersectionsCache[f].polylineDistance);
+                std::swap(facesIntersection.edgeIndexses[0], facesIntersection.edgeIndexses[1]);
             }
-            else if (!facesIntersectionsCache[f].edgeNodes.empty())
-            {
-                faceIntersectionsResult[f] = facesIntersectionsCache[f];
-            }
+
+            // compute the polylineDistance for the face
+            facesIntersection.polylineDistance = 0.5 * (edgesIntersectionsCache[firstEdgeIndex].polylineDistance + edgesIntersectionsCache[secondEdgeIndex].polylineDistance);
+        }
+
+        // push back the face intersection edge nodes
+        for (UInt e = 0; e < facesIntersection.edgeIndexses.size(); ++e)
+        {
+            const auto edgeIndex = facesIntersection.edgeIndexses[e];
+            facesIntersection.edgeNodes.emplace_back(edgesIntersectionsCache[edgeIndex].edgeFirstNode);
+            facesIntersection.edgeNodes.emplace_back(edgesIntersectionsCache[edgeIndex].edgeSecondNode);
+        }
+    }
+
+    // edge intersections are unique
+    for (UInt e = 0; e < GetNumEdges(); ++e)
+    {
+        if (edgesIntersectionsResult[e].polylineDistance < 0)
+        {
+            edgesIntersectionsResult[e] = edgesIntersectionsCache[e];
+        }
+    }
+
+    // face intersections are not unique and a face could have been intersected already
+    for (UInt f = 0; f < GetNumFaces(); ++f)
+    {
+        if (!faceIntersectionsResult[f].edgeNodes.empty() &&
+            !facesIntersectionsCache[f].edgeNodes.empty())
+        {
+            faceIntersectionsResult[f].edgeIndexses.insert(faceIntersectionsResult[f].edgeIndexses.end(), facesIntersectionsCache[f].edgeIndexses.begin(), facesIntersectionsCache[f].edgeIndexses.end());
+            faceIntersectionsResult[f].edgeNodes.insert(faceIntersectionsResult[f].edgeNodes.end(), facesIntersectionsCache[f].edgeNodes.begin(), facesIntersectionsCache[f].edgeNodes.end());
+            faceIntersectionsResult[f].polylineDistance = 0.5 * (faceIntersectionsResult[f].polylineDistance + facesIntersectionsCache[f].polylineDistance);
+        }
+        else if (!facesIntersectionsCache[f].edgeNodes.empty())
+        {
+            faceIntersectionsResult[f] = facesIntersectionsCache[f];
         }
     }
 }

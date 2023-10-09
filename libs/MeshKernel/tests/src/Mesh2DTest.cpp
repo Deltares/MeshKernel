@@ -512,8 +512,8 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
     const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
     auto [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
+    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 
@@ -660,8 +660,8 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
                                   edgeIntersections,
                                   faceIntersections);
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
+    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 
@@ -809,8 +809,8 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
                                   edgeIntersections,
                                   faceIntersections);
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
+    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 

@@ -1048,8 +1048,8 @@ namespace meshkernelapi
 
             auto [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolygonIntersections(boundaryPolygon);
 
-            meshkernel::EdgeMeshPolylineIntersection::sortAndErease(edgeIntersections);
-            meshkernel::FaceMeshPolylineIntersection::sortAndErease(faceIntersections);
+            meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
+            meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;

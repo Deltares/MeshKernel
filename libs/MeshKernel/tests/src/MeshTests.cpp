@@ -612,10 +612,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedNotIntersected, false, 16},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedNotIntersected, true, 0},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, 6}
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, 16},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, 14},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 0},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 6}
 
         };
     }
@@ -683,10 +683,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, firstPolygon_, 9},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, firstPolygon_, 48},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, false, secondPolygon_, 8},
-            {meshkernel::Mesh2D::DeleteMeshOptions::IncludedAndIntersected, true, secondPolygon_, 49}};
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, firstPolygon_, 9},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, firstPolygon_, 48},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, secondPolygon_, 8},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, secondPolygon_, 49}};
     }
 };
 
