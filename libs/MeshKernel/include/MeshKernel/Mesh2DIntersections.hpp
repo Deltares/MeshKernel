@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <algorithm>
 #include <vector>
 
 #include "MeshKernel/Definitions.hpp"
@@ -34,29 +35,100 @@
 
 namespace meshkernel
 {
+    /// An intersection with a mesh edge
+    struct EdgeMeshPolylineIntersection
+    {
+        int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
+        double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
+        double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
+        UInt edgeIndex{constants::missing::uintValue};                               ///< The edge index
+        UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
+        UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
+        double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
+    };
+
+    /// An intersection with a mesh face
+    struct FaceMeshPolylineIntersection
+    {
+        double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
+        UInt faceIndex{constants::missing::uintValue};            ///< The face index
+        std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
+        std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
+    };
+
     /// @brief Compute the intersections of polygon inner and outer perimeters
     ///
     /// @note Uses a breadth first algorithm to reduce runtime complexity
     class Mesh2DIntersections final
     {
     public:
-        /// @brief compute the edges and faces intersected by a polygon, with additional information on the intersections
-        void Compute(Mesh2D& mesh, const Polygons& polygon);
+        /// @brief Constructor
+        Mesh2DIntersections(Mesh2D& mesh);
 
-        const auto& EdgeIntersections() const { return m_edgesIntersections; }
-        const auto& FaceIntersections() const { return m_faceIntersections; }
+        /// @brief Compute intersection with a polygon (multiple polylines)
+        /// @param[in] polyLine An input polygon
+        void Compute(const Polygons& polygon);
+
+        /// @brief Compute intersection with a single polyline
+        /// @param[in] polyLine An input polyline
+        void Compute(const std::vector<Point>& polyLine);
+
+        /// @brief Gets the edge intersections
+        /// @returns The edges intersections
+        [[nodiscard]] const auto& EdgeIntersections() const { return m_edgesIntersections; }
+
+        /// @brief  Gets the face intersections
+        /// @returns The faces intersections
+        [[nodiscard]] const auto& FaceIntersections() const { return m_faceIntersections; }
+
+        static void updateEdgeIntersections(const UInt segmentIndex,
+                                            const UInt edgeIndex,
+                                            const UInt edgeFirstNode,
+                                            const UInt edgeSecondNode,
+                                            const std::vector<double>& cumulativeLength,
+                                            const double crossProductValue,
+                                            const double adimensionalEdgeDistance,
+                                            const double adimensionalPolylineSegmentDistance,
+                                            std::vector<EdgeMeshPolylineIntersection>& intersections)
+        {
+            intersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
+            intersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
+                                                        adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
+            intersections[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
+            intersections[edgeIndex].edgeFirstNode = crossProductValue < 0 ? edgeSecondNode : edgeFirstNode;
+            intersections[edgeIndex].edgeSecondNode = crossProductValue < 0 ? edgeFirstNode : edgeSecondNode;
+            intersections[edgeIndex].edgeDistance = adimensionalEdgeDistance;
+            intersections[edgeIndex].edgeIndex = edgeIndex;
+        }
+
+        static void updateFaceIntersections(const UInt faceIndex,
+                                            const UInt edgeIndex,
+                                            std::vector<FaceMeshPolylineIntersection>& intersections)
+        {
+            intersections[faceIndex].faceIndex = faceIndex;
+            intersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
+        }
+
+        template <typename T>
+        static void sortAndEraseIntersections(std::vector<T>& intersections)
+        {
+            std::ranges::sort(intersections,
+                              [](const T& first, const T& second)
+                              { return first.polylineDistance < second.polylineDistance; });
+
+            std::erase_if(intersections, [](const T& v)
+                          { return v.polylineDistance < 0; });
+        }
 
     private:
-        /// @brief Gets the intersection from a single polyline
-        /// @param[in] polyLine An input polyline
-        void GetPolylineIntersection(const Mesh2D& mesh, const std::vector<Point>& polyLine);
+        std::tuple<bool, UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh, const std::vector<Point>& polyLine, const std::vector<bool>& vistedEdges) const;
 
-        std::tuple<UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh, const std::vector<Point>& polyLine, const std::vector<bool>& vistedEdges) const;
-
-        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer 
-        std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer 
+        Mesh2D& m_mesh;
+        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer
+        std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
         std::vector<EdgeMeshPolylineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
         std::vector<FaceMeshPolylineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
+        static constexpr UInt maxSearchSegments = 10;                        ///< mex number of steps in polyline intersection algorithm
     };
 
 } // namespace meshkernel

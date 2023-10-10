@@ -1,3 +1,5 @@
+#include "MeshKernel/Mesh2DIntersections.hpp"
+
 #include <chrono>
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
@@ -510,10 +512,13 @@ TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectInters
 
     // 2. Execute
     const meshkernel::Polygons boundaryPolygon(boundaryPolygonNodes, mesh->m_projection);
-    auto [edgeIntersections, faceIntersections] = mesh->GetPolygonIntersections(boundaryPolygon);
+    meshkernel::Mesh2DIntersections mesh2DIntersections(*mesh);
+    mesh2DIntersections.Compute(boundaryPolygon);
+    auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
+    auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 
@@ -650,18 +655,13 @@ TEST(Mesh2D, GetPolylineIntersectionsFromObliqueLineShouldReturnCorrectIntersect
     polyLine.emplace_back(0.0, 3.9);
 
     // 2. Execute
-    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgesIntersectionsCache(mesh->GetNumEdges());
-    std::vector<meshkernel::FaceMeshPolylineIntersection> facesIntersectionsCache(mesh->GetNumFaces());
-    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgeIntersections(mesh->GetNumEdges());
-    std::vector<meshkernel::FaceMeshPolylineIntersection> faceIntersections(mesh->GetNumFaces());
-    mesh->GetPolylineIntersection(polyLine,
-                                  edgesIntersectionsCache,
-                                  facesIntersectionsCache,
-                                  edgeIntersections,
-                                  faceIntersections);
+    meshkernel::Mesh2DIntersections mesh2DIntersections(*mesh);
+    mesh2DIntersections.Compute(polyLine);
+    auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
+    auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 
@@ -799,18 +799,13 @@ TEST(Mesh2D, GetPolylineIntersectionsFromComplexPolylineShouldReturnCorrectInter
     boundaryPolyline.emplace_back(81.0887, 45.2473);
 
     // 2. Execute
-    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgesIntersectionsCache(mesh->GetNumEdges());
-    std::vector<meshkernel::FaceMeshPolylineIntersection> facesIntersectionsCache(mesh->GetNumFaces());
-    std::vector<meshkernel::EdgeMeshPolylineIntersection> edgeIntersections(mesh->GetNumEdges());
-    std::vector<meshkernel::FaceMeshPolylineIntersection> faceIntersections(mesh->GetNumFaces());
-    mesh->GetPolylineIntersection(boundaryPolyline,
-                                  edgesIntersectionsCache,
-                                  facesIntersectionsCache,
-                                  edgeIntersections,
-                                  faceIntersections);
+    meshkernel::Mesh2DIntersections mesh2DIntersections(*mesh);
+    mesh2DIntersections.Compute(boundaryPolyline);
+    auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
+    auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
-    meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
-    meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(edgeIntersections);
+    meshkernel::Mesh2DIntersections::sortAndEraseIntersections(faceIntersections);
 
     // 3. Assert
 

@@ -344,7 +344,6 @@ namespace meshkernel
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
         static constexpr UInt m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
         static constexpr UInt m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
-        static constexpr UInt m_maxSteps = 5;                                                      ///< mex number of steps in polyline intersection algorithm
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate

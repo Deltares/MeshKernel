@@ -1048,13 +1048,13 @@ namespace meshkernelapi
 
             const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 
-            meshkernel::Mesh2DIntersections mesh2DIntersections;
-            mesh2DIntersections.Compute(*meshKernelState[meshKernelId].m_mesh2d, boundaryPolygon);
+            meshkernel::Mesh2DIntersections mesh2DIntersections(*meshKernelState[meshKernelId].m_mesh2d);
+            mesh2DIntersections.Compute(boundaryPolygon);
             auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
             auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
-            meshkernel::EdgeMeshPolylineIntersection::sortAndEraseIntersections(edgeIntersections);
-            meshkernel::FaceMeshPolylineIntersection::sortAndEraseIntersections(faceIntersections);
+            meshkernel::Mesh2DIntersections::sortAndEraseIntersections(edgeIntersections);
+            meshkernel::Mesh2DIntersections::sortAndEraseIntersections(faceIntersections);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;

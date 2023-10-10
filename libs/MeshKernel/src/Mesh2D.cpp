@@ -1471,8 +1471,8 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
 void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion)
 {
     // Find crossed faces
-    Mesh2DIntersections mesh2DIntersections;
-    mesh2DIntersections.Compute(*this, polygon);
+    Mesh2DIntersections mesh2DIntersections(*this);
+    mesh2DIntersections.Compute(polygon);
     const auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
     const auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
