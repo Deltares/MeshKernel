@@ -63,7 +63,7 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor
-        Mesh2DIntersections(Mesh2D& mesh);
+        explicit Mesh2DIntersections(Mesh2D& mesh);
 
         /// @brief Compute intersection with a polygon, possibly containing multiple polylines
         /// @param[in] polygon An input polygon

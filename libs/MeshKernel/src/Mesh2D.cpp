@@ -1531,8 +1531,8 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     // Find crossed faces
     Mesh2DIntersections mesh2DIntersections(*this);
     mesh2DIntersections.Compute(polygon);
-    const auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
-    const auto faceIntersections = mesh2DIntersections.FaceIntersections();
+    const auto& edgeIntersections = mesh2DIntersections.EdgeIntersections();
+    const auto& faceIntersections = mesh2DIntersections.FaceIntersections();
 
     // Find faces with all nodes inside the polygon
     std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
@@ -1562,22 +1562,22 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     std::function<bool(UInt)> excludedFace;
     if (deletionOption == InsideNotIntersected && !invertDeletion)
     {
-        excludedFace = [&](UInt f)
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
         { return !isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
     else if (deletionOption == InsideNotIntersected && invertDeletion)
     {
-        excludedFace = [&](UInt f)
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
         { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
     else if (deletionOption == InsideAndIntersected && !invertDeletion)
     {
-        excludedFace = [&](UInt f)
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
         { return !isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
     else if (deletionOption == InsideAndIntersected && invertDeletion)
     {
-        excludedFace = [&](UInt f)
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
         { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
 

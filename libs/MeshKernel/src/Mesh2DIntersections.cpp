@@ -182,10 +182,8 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
             auto [currentCrossingEdge, segmentIndex, nextSegmentIndex] = crossingEdges.front();
             crossingEdges.pop();
 
-            for (UInt f = 0; f < m_mesh.m_edgesFaces[currentCrossingEdge].size(); ++f)
+            for (const auto currentFaceIndex : m_mesh.m_edgesFaces[currentCrossingEdge])
             {
-                const auto currentFaceIndex = m_mesh.m_edgesFaces[currentCrossingEdge][f];
-
                 if (currentFaceIndex == constants::missing::uintValue)
                 {
                     continue;
