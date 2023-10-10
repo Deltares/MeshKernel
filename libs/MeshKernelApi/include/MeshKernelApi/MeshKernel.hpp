@@ -1015,15 +1015,15 @@ namespace meshkernelapi
         /// @param[out] faceEdgeIndex For each intersection, the index of the intersected edge
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
-                                                                   const GeometryList& boundaryPolyLine,
-                                                                   int* edgeNodes,
-                                                                   int* edgeIndex,
-                                                                   double* edgeDistances,
-                                                                   double* segmentDistances,
-                                                                   int* segmentIndexes,
-                                                                   int* faceIndexes,
-                                                                   int* faceNumEdges,
-                                                                   int* faceEdgeIndex);
+                                                                  const GeometryList& boundaryPolyLine,
+                                                                  int* edgeNodes,
+                                                                  int* edgeIndex,
+                                                                  double* edgeDistances,
+                                                                  double* segmentDistances,
+                                                                  int* segmentIndexes,
+                                                                  int* faceIndexes,
+                                                                  int* faceNumEdges,
+                                                                  int* faceEdgeIndex);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
