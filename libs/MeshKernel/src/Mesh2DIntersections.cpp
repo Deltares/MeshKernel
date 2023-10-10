@@ -78,16 +78,83 @@ std::tuple<bool, UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh
     return {isSeedFound, crossedEdgeIndex, crossedSegmentIndex};
 }
 
+std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNextEdgeIntersection(const std::vector<Point>& polyLine,
+                                                                                                  UInt edgeIndex,
+                                                                                                  UInt firstIndex,
+                                                                                                  UInt secondIndex,
+                                                                                                  int direction) const
+{
+    if (direction != 1 && direction != -1)
+    {
+        throw AlgorithmError("Invalid direction");
+    }
+
+    UInt numSteps = 0;
+    bool intersectionFound = false;
+    double crossProductValue = constants::missing::doubleValue;
+    double adimensionalPolylineSegmentDistance = constants::missing::doubleValue;
+    double adimensionalEdgeDistance = constants::missing::doubleValue;
+    const auto polyLineSize = static_cast<UInt>(polyLine.size());
+
+    const auto checkPolyLineIndex = [&]
+    {
+        // forward
+        if (direction == 1)
+        {
+            return firstIndex < polyLineSize - 2;
+        }
+        // backward
+        if (direction == -1)
+        {
+            return firstIndex >= 1;
+        }
+        return false;
+    };
+
+    while (!intersectionFound && checkPolyLineIndex() && numSteps < maxSearchSegments)
+    {
+        // forward
+        if (direction == 1)
+        {
+            firstIndex = secondIndex;
+            secondIndex = firstIndex + 1;
+        }
+
+        // backward
+        if (direction == -1)
+        {
+            secondIndex = firstIndex;
+            firstIndex = firstIndex - 1;
+        }
+
+        auto intersection = AreSegmentsCrossing(polyLine[firstIndex],
+                                                polyLine[secondIndex],
+                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
+                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].second],
+                                                false,
+                                                m_mesh.m_projection);
+
+        intersectionFound = std::get<0>(intersection);
+        crossProductValue = std::get<2>(intersection);
+        adimensionalPolylineSegmentDistance = std::get<3>(intersection);
+        adimensionalEdgeDistance = std::get<4>(intersection);
+
+        numSteps++;
+    }
+
+    return {intersectionFound, firstIndex, secondIndex, crossProductValue, adimensionalPolylineSegmentDistance, adimensionalEdgeDistance};
+}
+
 void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
 {
     // 1. Find the intersection of any segment of the polyline with the mesh return if nothing is found
     std::ranges::fill(m_edgesIntersectionsCache, EdgeMeshPolylineIntersection());
     std::ranges::fill(m_facesIntersectionsCache, FaceMeshPolylineIntersection());
 
-    const auto polylineSize = static_cast<UInt>(polyLine.size());
+    const auto polyLineSize = static_cast<UInt>(polyLine.size());
 
     std::vector<double> cumulativeLength(polyLine.size(), 0.0);
-    for (UInt i = 1; i < polylineSize; ++i)
+    for (UInt i = 1; i < polyLineSize; ++i)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_mesh.m_projection);
     }
@@ -147,45 +214,31 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                                                             false,
                                                             m_mesh.m_projection);
 
-                    auto intersectionFound = std::get<0>(intersection);
+                    bool intersectionFound = std::get<0>(intersection);
+                    double crossProductValue = std::get<2>(intersection);
+                    double adimensionalPolylineSegmentDistance = std::get<3>(intersection);
+                    double adimensionalEdgeDistance = std::get<4>(intersection);
+
                     if (!intersectionFound)
                     {
-                        UInt numForwardSteps = 0;
-                        while (!intersectionFound && firstIndex < polylineSize - 2 && numForwardSteps < maxSearchSegments)
-                        {
-                            firstIndex = secondIndex;
-                            secondIndex = firstIndex + 1;
-                            intersection = AreSegmentsCrossing(polyLine[firstIndex],
-                                                               polyLine[secondIndex],
-                                                               m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
-                                                               m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].second],
-                                                               false,
-                                                               m_mesh.m_projection);
-
-                            intersectionFound = std::get<0>(intersection);
-                            numForwardSteps++;
-                        }
+                        const auto segmentIntersection = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, 1);
+                        intersectionFound = std::get<0>(segmentIntersection);
+                        firstIndex = std::get<1>(segmentIntersection);
+                        secondIndex = std::get<2>(segmentIntersection);
+                        crossProductValue = std::get<3>(segmentIntersection);
+                        adimensionalPolylineSegmentDistance = std::get<4>(segmentIntersection);
+                        adimensionalEdgeDistance = std::get<5>(segmentIntersection);
                     }
 
                     if (!intersectionFound)
                     {
-                        firstIndex = segmentIndex;
-                        secondIndex = nextSegmentIndex;
-                        UInt numBackwardSteps = 0;
-                        while (!intersectionFound && firstIndex >= 1 && numBackwardSteps < maxSearchSegments)
-                        {
-                            secondIndex = firstIndex;
-                            firstIndex = firstIndex - 1;
-                            intersection = AreSegmentsCrossing(polyLine[firstIndex],
-                                                               polyLine[secondIndex],
-                                                               m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
-                                                               m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].second],
-                                                               false,
-                                                               m_mesh.m_projection);
-
-                            intersectionFound = std::get<0>(intersection);
-                            numBackwardSteps++;
-                        }
+                        const auto segmentIntersection = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, -1);
+                        intersectionFound = std::get<0>(segmentIntersection);
+                        firstIndex = std::get<1>(segmentIntersection);
+                        secondIndex = std::get<2>(segmentIntersection);
+                        crossProductValue = std::get<3>(segmentIntersection);
+                        adimensionalPolylineSegmentDistance = std::get<4>(segmentIntersection);
+                        adimensionalEdgeDistance = std::get<5>(segmentIntersection);
                     }
 
                     // none of the polyline intersect the current edge
@@ -193,10 +246,6 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                     {
                         continue;
                     }
-
-                    const double crossProductValue = std::get<2>(intersection);
-                    const double adimensionalPolylineSegmentDistance = std::get<3>(intersection);
-                    const double adimensionalEdgeDistance = std::get<4>(intersection);
 
                     updateEdgeIntersections(
                         firstIndex,
@@ -222,7 +271,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
         }
     }
 
-    // compute polylineDistance, sort the edges for each face
+    // Sort the edges for each face
     for (auto& facesIntersection : m_facesIntersectionsCache)
     {
         if (facesIntersection.edgeIndexses.empty())
@@ -297,16 +346,16 @@ void Mesh2DIntersections::Compute(const Polygons& polygon)
     // Multiple polygons here
     for (auto outer = 0u; outer < polygon.GetNumPolygons(); ++outer)
     {
-        std::vector<std::vector<Point>> allPolylines;
+        std::vector<std::vector<Point>> polygonPolylines;
 
-        allPolylines.emplace_back(polygon.Enclosure(outer).Outer().Nodes());
+        polygonPolylines.emplace_back(polygon.Enclosure(outer).Outer().Nodes());
 
         for (auto inner = 0u; inner < polygon.Enclosure(outer).NumberOfInner(); ++inner)
         {
-            allPolylines.emplace_back(polygon.Enclosure(outer).Inner(inner).Nodes());
+            polygonPolylines.emplace_back(polygon.Enclosure(outer).Inner(inner).Nodes());
         }
 
-        for (const auto& polyLine : allPolylines)
+        for (const auto& polyLine : polygonPolylines)
         {
             Compute(polyLine);
         }

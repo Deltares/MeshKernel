@@ -121,9 +121,21 @@ namespace meshkernel
         }
 
     private:
-        std::tuple<bool, UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh, const std::vector<Point>& polyLine, const std::vector<bool>& vistedEdges) const;
+        /// @brief Gets one edge intersection
+        /// @returns The intersection seed
+        std::tuple<bool, UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh,
+                                                         const std::vector<Point>& polyLine,
+                                                         const std::vector<bool>& vistedEdges) const;
 
-        Mesh2D& m_mesh;
+        /// @brief Gets the next edge intersection
+        /// @returns The intersection seed
+        std::tuple<bool, UInt, UInt, double, double, double> GetNextEdgeIntersection(const std::vector<Point>& polyLine,
+                                                                                     UInt edgeIndex,
+                                                                                     UInt firstIndex,
+                                                                                     UInt secondIndex,
+                                                                                     int direction) const;
+
+        Mesh2D& m_mesh;                                                      ///< The mesh where the edges should be found
         std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer
         std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
         std::vector<EdgeMeshPolylineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
