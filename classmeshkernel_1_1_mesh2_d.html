@@ -100,9 +100,8 @@ Inheritance diagram for meshkernel::Mesh2D:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memItemLeft" align="right" valign="top"><a id="a41e7c8bf5e92fec3f46ba18204e8cc6e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> { <b>AllNodesInside</b> = 0, 
-<b>FacesWithIncludedCircumcenters</b> = 1, 
-<b>FacesCompletelyIncluded</b> = 2
+<tr class="memitem:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memItemLeft" align="right" valign="top"><a id="a41e7c8bf5e92fec3f46ba18204e8cc6e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> { <b>InsideNotIntersected</b> = 0, 
+<b>InsideAndIntersected</b> = 1
  }</td></tr>
 <tr class="memdesc:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different options to delete a mesh. <br /></td></tr>
 <tr class="separator:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,9 +240,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">IsSegmentCrossingABoundaryEdge</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint) const</td></tr>
 <tr class="memdesc:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a segment is crossing a face.  <a href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">More...</a><br /></td></tr>
 <tr class="separator:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2aca39594f2a68e3717829f98ba04d0"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a> &gt;, std::vector&lt; <a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">GetPolylineIntersections</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polyLine)</td></tr>
-<tr class="memdesc:ad2aca39594f2a68e3717829f98ba04d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges and faces intersected by a polyline, with additional information on the intersections.  <a href="classmeshkernel_1_1_mesh2_d.html#ad2aca39594f2a68e3717829f98ba04d0">More...</a><br /></td></tr>
-<tr class="separator:ad2aca39594f2a68e3717829f98ba04d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7decde6c1988555f70610c313e68342a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7decde6c1988555f70610c313e68342a">MaskEdgesOfFacesInPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, bool invertSelection, bool includeIntersected) const</td></tr>
 <tr class="memdesc:a7decde6c1988555f70610c313e68342a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Masks the edges of all faces entirely included in all polygons.  <a href="classmeshkernel_1_1_mesh2_d.html#a7decde6c1988555f70610c313e68342a">More...</a><br /></td></tr>
 <tr class="separator:a7decde6c1988555f70610c313e68342a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1100,33 +1096,6 @@ Coincide circumcenter</div></div>
 
 <p>Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters. </p>
 <dl class="section return"><dt>Returns</dt><dd>The edge orthogonality </dd></dl>
-
-</div>
-</div>
-<a id="ad2aca39594f2a68e3717829f98ba04d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2aca39594f2a68e3717829f98ba04d0">&#9670;&nbsp;</a></span>GetPolylineIntersections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::tuple&lt;std::vector&lt;<a class="el" href="structmeshkernel_1_1_mesh_1_1_edge_mesh_polyline_intersection.html">EdgeMeshPolylineIntersection</a>&gt;, std::vector&lt;<a class="el" href="structmeshkernel_1_1_mesh_1_1_face_mesh_polyline_intersection.html">FaceMeshPolylineIntersection</a>&gt; &gt; meshkernel::Mesh2D::GetPolylineIntersections </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>polyLine</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the edges and faces intersected by a polyline, with additional information on the intersections. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polyLine</td><td>An input polyline, defined as a series of points </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections </dd></dl>
 
 </div>
 </div>

@@ -111,8 +111,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_curvilinear_parameters.html">CurvilinearParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner.  <a href="structmeshkernel_1_1_curvilinear_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_edge_mesh_poly_line_intersection.html">EdgeMeshPolyLineIntersection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An intersection with a mesh edge.  <a href="structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_error_category.html">ErrorCategory</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains error category information.  <a href="classmeshkernel_1_1_error_category.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_face_mesh_poly_line_intersection.html">FaceMeshPolyLineIntersection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An intersection with a mesh face.  <a href="structmeshkernel_1_1_face_mesh_poly_line_intersection.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to improve mesh connectivity.  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a><br /></td></tr>
@@ -146,6 +152,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class derived from <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a>, which describes unstructures 2d meshes.  <a href="classmeshkernel_1_1_mesh2_d.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d_intersections.html">Mesh2DIntersections</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the intersections of polygon inner and outer perimeters.  <a href="classmeshkernel_1_1_mesh2_d_intersections.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_geometry_error.html">MeshGeometryError</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for throwing mesh geometry errors.  <a href="classmeshkernel_1_1_mesh_geometry_error.html#details">More...</a><br /></td></tr>
@@ -422,9 +431,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a7dfde423e91be0793af4c40e98d6a5a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1">CircumcenterOfTriangle</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondNode, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;thirdNode, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a7dfde423e91be0793af4c40e98d6a5a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the circumcenter of a triangle.  <a href="namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1">More...</a><br /></td></tr>
 <tr class="separator:a7dfde423e91be0793af4c40e98d6a5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e6599abbdb4526ff034afb5f278f6a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a6e6599abbdb4526ff034afb5f278f6a0">AreSegmentsCrossing</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;<a class="el" href="namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136">crossProduct</a>, double &amp;ratioFirstSegment, double &amp;ratioSecondSegment)</td></tr>
-<tr class="memdesc:a6e6599abbdb4526ff034afb5f278f6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if two segments are crossing (cross, cross3D)  <a href="namespacemeshkernel.html#a6e6599abbdb4526ff034afb5f278f6a0">More...</a><br /></td></tr>
-<tr class="separator:a6e6599abbdb4526ff034afb5f278f6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c24792eb7e1bc1bb3393f33a1a374e"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; bool, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, double, double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25c24792eb7e1bc1bb3393f33a1a374e">AreSegmentsCrossing</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a25c24792eb7e1bc1bb3393f33a1a374e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if two segments are crossing (cross, cross3D)  <a href="namespacemeshkernel.html#a25c24792eb7e1bc1bb3393f33a1a374e">More...</a><br /></td></tr>
+<tr class="separator:a25c24792eb7e1bc1bb3393f33a1a374e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">ComputePointOnSplineAtAdimensionalDistance</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate)</td></tr>
 <tr class="memdesc:a8d3640a26ce227c47cc0dc382e1174c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)  <a href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">More...</a><br /></td></tr>
@@ -737,14 +746,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 
 </div>
 </div>
-<a id="a6e6599abbdb4526ff034afb5f278f6a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e6599abbdb4526ff034afb5f278f6a0">&#9670;&nbsp;</a></span>AreSegmentsCrossing()</h2>
+<a id="a25c24792eb7e1bc1bb3393f33a1a374e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25c24792eb7e1bc1bb3393f33a1a374e">&#9670;&nbsp;</a></span>AreSegmentsCrossing()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool meshkernel::AreSegmentsCrossing </td>
+          <td class="memname">std::tuple&lt;bool, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, double, double, double&gt; meshkernel::AreSegmentsCrossing </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
           <td class="paramname"><em>firstSegmentFirstPoint</em>, </td>
@@ -777,31 +786,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
-          <td class="paramname"><em>projection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>intersectionPoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>crossProduct</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>ratioFirstSegment</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>ratioSecondSegment</em>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -820,14 +805,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
     <tr><td class="paramdir">[in]</td><td class="paramname">secondSegmentSecondPoint</td><td>The second point of the second segment </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">adimensionalCrossProduct</td><td>Whether to compute the dimensionless cross product </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">intersectionPoint</td><td>The intersection point </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">crossProduct</td><td>The cross product of the intersection </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ratioFirstSegment</td><td>The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ratioSecondSegment</td><td>The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>If the two segments are crossing </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple with: If the two segments are crossing The intersection point The cross product of the intersection The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length </dd></dl>
 
 </div>
 </div>
