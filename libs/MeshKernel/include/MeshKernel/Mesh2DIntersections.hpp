@@ -117,6 +117,17 @@ namespace meshkernel
                                                                                      UInt secondIndex,
                                                                                      Direction direction) const;
 
+        /// @brief Gets the next edge intersection
+        /// @returns The intersection seed
+        void IntersectFaceEdges(const std::vector<Point>& polyLine,
+                                const std::vector<double>& cumulativeLength,
+                                UInt currentCrossingEdge,
+                                UInt currentFaceIndex,
+                                UInt segmentIndex,
+                                std::vector<bool>& vistedEdges,
+                                std::vector<bool>& vistedFace,
+                                std::queue<std::array<UInt, 2>>& crossingEdges);
+
         /// @brief Update edge intersections
         static void updateEdgeIntersections(const UInt segmentIndex,
                                             const UInt edgeIndex,
