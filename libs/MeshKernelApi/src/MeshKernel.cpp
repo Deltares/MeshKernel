@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Mesh2DIntersections.hpp"
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
@@ -1048,16 +1050,16 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
-                                                               const GeometryList& boundaryPolyLine,
-                                                               int* edgeNodes,
-                                                               int* edgeIndex,
-                                                               double* edgeDistances,
-                                                               double* segmentDistances,
-                                                               int* segmentIndexes,
-                                                               int* faceIndexes,
-                                                               int* faceNumEdges,
-                                                               int* faceEdgeIndex)
+    MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
+                                                              const GeometryList& boundaryPolyLine,
+                                                              int* edgeNodes,
+                                                              int* edgeIndex,
+                                                              double* edgeDistances,
+                                                              double* segmentDistances,
+                                                              int* segmentIndexes,
+                                                              int* faceIndexes,
+                                                              int* faceNumEdges,
+                                                              int* faceEdgeIndex)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1067,9 +1069,17 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const boundaryLines = ConvertGeometryListToPointVector(boundaryPolyLine);
+            auto const boundaryPolygonPoints = ConvertGeometryListToPointVector(boundaryPolyLine);
 
-            const auto& [edgeIntersections, faceIntersections] = meshKernelState[meshKernelId].m_mesh2d->GetPolylineIntersections(boundaryLines);
+            const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
+
+            meshkernel::Mesh2DIntersections mesh2DIntersections(*meshKernelState[meshKernelId].m_mesh2d);
+            mesh2DIntersections.Compute(boundaryPolygon);
+            auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
+            auto faceIntersections = mesh2DIntersections.FaceIntersections();
+
+            meshkernel::Mesh2DIntersections::sortAndEraseIntersections(edgeIntersections);
+            meshkernel::Mesh2DIntersections::sortAndEraseIntersections(faceIntersections);
 
             int edgeNodesCount = 0;
             int edgeCount = 0;
@@ -1095,12 +1105,12 @@ namespace meshkernelapi
             int faceCount = 0;
             for (const auto& intersection : faceIntersections)
             {
-                faceNumEdges[faceCount] = static_cast<int>(intersection.edgeIndexses.size());
+                faceNumEdges[faceCount] = static_cast<int>(intersection.edgeIndices.size());
                 faceCount++;
-                for (size_t i = 0; i < intersection.edgeIndexses.size(); ++i)
+                for (size_t i = 0; i < intersection.edgeIndices.size(); ++i)
                 {
                     faceIndexes[faceEdgesCount] = static_cast<int>(intersection.faceIndex);
-                    faceEdgeIndex[faceEdgesCount] = static_cast<int>(intersection.edgeIndexses[i]);
+                    faceEdgeIndex[faceEdgesCount] = static_cast<int>(intersection.edgeIndices[i]);
                     faceEdgesCount++;
                 }
             }

@@ -30,7 +30,6 @@
 #include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Polygons.hpp"
 
 namespace meshkernel

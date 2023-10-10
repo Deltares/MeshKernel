@@ -140,21 +140,16 @@ bool Splines::GetSplinesIntersection(UInt first,
     {
         for (UInt nn = 0; nn < numNodesSecondSpline - 1; nn++)
         {
-            Point intersection;
-            double crossProduct;
-            double firstRatio;
-            double secondRatio;
-            const bool areCrossing = AreSegmentsCrossing(m_splineNodes[first][n],
-                                                         m_splineNodes[first][n + 1],
-                                                         m_splineNodes[second][nn],
-                                                         m_splineNodes[second][nn + 1],
-                                                         false,
-                                                         m_projection,
-                                                         intersection,
-                                                         crossProduct,
-                                                         firstRatio,
-                                                         secondRatio);
-
+            const auto [areCrossing,
+                        intersection,
+                        crossProduct,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(m_splineNodes[first][n],
+                                                           m_splineNodes[first][n + 1],
+                                                           m_splineNodes[second][nn],
+                                                           m_splineNodes[second][nn + 1],
+                                                           false,
+                                                           m_projection);
             if (areCrossing)
             {
                 if (numNodesFirstSpline == 2)
@@ -252,19 +247,18 @@ bool Splines::GetSplinesIntersection(UInt first,
 
         Point oldIntersection = closestIntersection;
 
-        double crossProduct;
-        double firstRatio = constants::missing::doubleValue;
-        double secondRatio = constants::missing::doubleValue;
-        const bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
-                                                     firstRightSplinePoint,
-                                                     secondLeftSplinePoint,
-                                                     secondRightSplinePoint,
-                                                     true,
-                                                     m_projection,
-                                                     closestIntersection,
-                                                     crossProduct,
-                                                     firstRatio,
-                                                     secondRatio);
+        const auto [areCrossing,
+                    intersectionPoint,
+                    crossProduct,
+                    firstRatio,
+                    secondRatio] = AreSegmentsCrossing(firstLeftSplinePoint,
+                                                       firstRightSplinePoint,
+                                                       secondLeftSplinePoint,
+                                                       secondRightSplinePoint,
+                                                       true,
+                                                       m_projection);
+
+        closestIntersection = intersectionPoint;
 
         // search close by
         if (firstRatio > -2.0 && firstRatio < 3.0 && secondRatio > -2.0 && secondRatio < 3.0)
