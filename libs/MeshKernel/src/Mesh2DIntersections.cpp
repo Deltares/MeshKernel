@@ -29,9 +29,9 @@ Mesh2DIntersections::Mesh2DIntersections(Mesh2D& mesh) : m_mesh(mesh)
     m_facesIntersectionsCache.resize(mesh.GetNumFaces());
 }
 
-std::tuple<bool, UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& mesh,
-                                                                      const std::vector<Point>& polyLine,
-                                                                      const std::vector<bool>& vistedEdges) const
+std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& mesh,
+                                                                const std::vector<Point>& polyLine,
+                                                                const std::vector<bool>& vistedEdges) const
 {
     UInt crossedSegmentIndex = constants::missing::uintValue;
     UInt crossedEdgeIndex = constants::missing::uintValue;
@@ -75,20 +75,15 @@ std::tuple<bool, UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh
         }
     }
 
-    return {isSeedFound, crossedEdgeIndex, crossedSegmentIndex};
+    return {crossedEdgeIndex, crossedSegmentIndex};
 }
 
 std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNextEdgeIntersection(const std::vector<Point>& polyLine,
                                                                                                   UInt edgeIndex,
                                                                                                   UInt firstIndex,
                                                                                                   UInt secondIndex,
-                                                                                                  int direction) const
+                                                                                                  Direction direction) const
 {
-    if (direction != 1 && direction != -1)
-    {
-        throw AlgorithmError("Invalid direction");
-    }
-
     UInt numSteps = 0;
     bool intersectionFound = false;
     double crossProductValue = constants::missing::doubleValue;
@@ -99,12 +94,12 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
     const auto checkPolyLineIndex = [&]
     {
         // forward
-        if (direction == 1)
+        if (direction == Direction::Forward)
         {
             return firstIndex < polyLineSize - 2;
         }
         // backward
-        if (direction == -1)
+        if (direction == Direction::Backward)
         {
             return firstIndex >= 1;
         }
@@ -114,14 +109,14 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
     while (!intersectionFound && checkPolyLineIndex() && numSteps < maxSearchSegments)
     {
         // forward
-        if (direction == 1)
+        if (direction == Direction::Forward)
         {
             firstIndex = secondIndex;
             secondIndex = firstIndex + 1;
         }
 
         // backward
-        if (direction == -1)
+        if (direction == Direction::Backward)
         {
             secondIndex = firstIndex;
             firstIndex = firstIndex - 1;
@@ -167,13 +162,13 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     while (true)
     {
         // find the seed
-        const auto [isSeedFound, crossedEdgeIndex, crossedSegmentIndex] = GetIntersectionSeed(
+        const auto [crossedEdgeIndex, crossedSegmentIndex] = GetIntersectionSeed(
             m_mesh,
             polyLine,
             vistedEdges);
 
         // no valid seed found in the entire mesh, we are done
-        if (!isSeedFound)
+        if (crossedEdgeIndex == constants::missing::uintValue)
         {
             break;
         }
@@ -226,7 +221,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                                  secondIndex,
                                  crossProductValue,
                                  adimensionalPolylineSegmentDistance,
-                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, 1);
+                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, Direction::Forward);
                     }
 
                     if (!intersectionFound)
@@ -236,7 +231,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                                  secondIndex,
                                  crossProductValue,
                                  adimensionalPolylineSegmentDistance,
-                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, -1);
+                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, Direction::Backward);
                     }
 
                     // none of the polyline intersect the current edge
@@ -271,29 +266,29 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     // Sort the edges for each face
     for (auto& facesIntersection : m_facesIntersectionsCache)
     {
-        if (facesIntersection.edgeIndexses.empty())
+        if (facesIntersection.edgeIndices.empty())
         {
             continue;
         }
 
         // sort edge indices based on polyline segment distance
-        std::ranges::sort(facesIntersection.edgeIndexses, [&](auto first, auto second)
+        std::ranges::sort(facesIntersection.edgeIndices, [&](auto first, auto second)
                           { return m_edgesIntersectionsCache[first].adimensionalPolylineSegmentDistance <
                                    m_edgesIntersectionsCache[second].adimensionalPolylineSegmentDistance; });
 
         // compute the polylineDistance for the face
         double distanceSum = 0.0;
-        for (const auto& edgeIndex : facesIntersection.edgeIndexses)
+        for (const auto& edgeIndex : facesIntersection.edgeIndices)
         {
             distanceSum += m_edgesIntersectionsCache[edgeIndex].polylineDistance;
         }
 
-        facesIntersection.polylineDistance = distanceSum / static_cast<double>(facesIntersection.edgeIndexses.size());
+        facesIntersection.polylineDistance = distanceSum / static_cast<double>(facesIntersection.edgeIndices.size());
 
         // push back the face intersection edge nodes
-        for (UInt e = 0; e < facesIntersection.edgeIndexses.size(); ++e)
+        for (UInt e = 0; e < facesIntersection.edgeIndices.size(); ++e)
         {
-            const auto edgeIndex = facesIntersection.edgeIndexses[e];
+            const auto edgeIndex = facesIntersection.edgeIndices[e];
             facesIntersection.edgeNodes.emplace_back(m_edgesIntersectionsCache[edgeIndex].edgeFirstNode);
             facesIntersection.edgeNodes.emplace_back(m_edgesIntersectionsCache[edgeIndex].edgeSecondNode);
         }
@@ -314,7 +309,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
         if (!m_faceIntersections[f].edgeNodes.empty() &&
             !m_facesIntersectionsCache[f].edgeNodes.empty())
         {
-            m_faceIntersections[f].edgeIndexses.insert(m_faceIntersections[f].edgeIndexses.end(), m_facesIntersectionsCache[f].edgeIndexses.begin(), m_facesIntersectionsCache[f].edgeIndexses.end());
+            m_faceIntersections[f].edgeIndices.insert(m_faceIntersections[f].edgeIndices.end(), m_facesIntersectionsCache[f].edgeIndices.begin(), m_facesIntersectionsCache[f].edgeIndices.end());
             m_faceIntersections[f].edgeNodes.insert(m_faceIntersections[f].edgeNodes.end(), m_facesIntersectionsCache[f].edgeNodes.begin(), m_facesIntersectionsCache[f].edgeNodes.end());
             m_faceIntersections[f].polylineDistance = 0.5 * (m_faceIntersections[f].polylineDistance + m_facesIntersectionsCache[f].polylineDistance);
         }

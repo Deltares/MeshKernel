@@ -1105,12 +1105,12 @@ namespace meshkernelapi
             int faceCount = 0;
             for (const auto& intersection : faceIntersections)
             {
-                faceNumEdges[faceCount] = static_cast<int>(intersection.edgeIndexses.size());
+                faceNumEdges[faceCount] = static_cast<int>(intersection.edgeIndices.size());
                 faceCount++;
-                for (size_t i = 0; i < intersection.edgeIndexses.size(); ++i)
+                for (size_t i = 0; i < intersection.edgeIndices.size(); ++i)
                 {
                     faceIndexes[faceEdgesCount] = static_cast<int>(intersection.faceIndex);
-                    faceEdgeIndex[faceEdgesCount] = static_cast<int>(intersection.edgeIndexses[i]);
+                    faceEdgeIndex[faceEdgesCount] = static_cast<int>(intersection.edgeIndices[i]);
                     faceEdgesCount++;
                 }
             }

@@ -52,7 +52,7 @@ namespace meshkernel
     {
         double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
         UInt faceIndex{constants::missing::uintValue};            ///< The face index
-        std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
+        std::vector<UInt> edgeIndices;                            ///< The indexes of crossed edges
         std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
     };
 
@@ -65,8 +65,8 @@ namespace meshkernel
         /// @brief Constructor
         Mesh2DIntersections(Mesh2D& mesh);
 
-        /// @brief Compute intersection with a polygon (multiple polylines)
-        /// @param[in] polyLine An input polygon
+        /// @brief Compute intersection with a polygon, possibly containing multiple polylines
+        /// @param[in] polygon An input polygon
         void Compute(const Polygons& polygon);
 
         /// @brief Compute intersection with a single polyline
@@ -93,11 +93,18 @@ namespace meshkernel
         }
 
     private:
+        /// @brief Enumeration defining the directions for searching the next segment index
+        enum class Direction
+        {
+            Forward,
+            Backward
+        };
+
         /// @brief Gets one edge intersection
         /// @returns The intersection seed
-        std::tuple<bool, UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh,
-                                                         const std::vector<Point>& polyLine,
-                                                         const std::vector<bool>& vistedEdges) const;
+        std::tuple<UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh,
+                                                   const std::vector<Point>& polyLine,
+                                                   const std::vector<bool>& vistedEdges) const;
 
         /// @brief Gets the next edge intersection
         /// @returns The intersection seed
@@ -105,7 +112,7 @@ namespace meshkernel
                                                                                      UInt edgeIndex,
                                                                                      UInt firstIndex,
                                                                                      UInt secondIndex,
-                                                                                     int direction) const;
+                                                                                     Direction direction) const;
 
         /// @brief Update edge intersections
         static void updateEdgeIntersections(const UInt segmentIndex,
@@ -135,7 +142,7 @@ namespace meshkernel
                                             std::vector<FaceMeshPolylineIntersection>& intersections)
         {
             intersections[faceIndex].faceIndex = faceIndex;
-            intersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
+            intersections[faceIndex].edgeIndices.emplace_back(edgeIndex);
         }
 
         Mesh2D& m_mesh;                                                      ///< The mesh where the edges should be found
