@@ -40,7 +40,7 @@ Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
            Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection) {}
 
-void Mesh::NodeAdministration()
+bool Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (UInt e = 0; e < static_cast<UInt>(GetNumEdges()); e++)
@@ -96,6 +96,20 @@ void Mesh::NodeAdministration()
     {
         m_nodesEdges[n].resize(m_nodesNumEdges[n]);
     }
+
+    UInt quadrilateralCount = 0;
+
+    for (UInt n = 0; n < GetNumNodes(); n++)
+    {
+        if (m_nodesNumEdges[n] == constants::geometric::numNodesInQuadrilateral)
+        {
+            // It is assumed that a node of a quadrilateral will have four connected edges.
+            // most of the time this assumption is true.
+            ++quadrilateralCount;
+        }
+    }
+
+    return quadrilateralCount > GetNumNodes() / 2;
 }
 
 void Mesh::DeleteInvalidNodesAndEdges()

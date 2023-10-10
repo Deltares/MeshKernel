@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp"
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -336,62 +334,66 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Generate a uniform curvilinear grid
-    /// @param[in] makeGridParameters The parameters for creating a uniform curvilinear grid are as follows
+    /// @brief Generate a rectangular curvilinear grid
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
+    /// @param[in] projection         The projection tu use
+    /// @returns The generated curvilinear grid
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                        const meshkernel::Projection& projection)
+    {
+        meshkernel::CurvilinearGridRectangular grid(projection);
+
+        return grid.Compute(makeGridParameters.num_columns,
+                            makeGridParameters.num_rows,
+                            makeGridParameters.origin_x,
+                            makeGridParameters.origin_y,
+                            makeGridParameters.angle,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y);
+    }
+
+    /// @brief Generate a rectangular curvilinear grid from polygons
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
     /// @param[in] geometryList       The polygon inside which generating the curvilinear grid
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
-    static meshkernel::CurvilinearGrid CreateUniformCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                    const GeometryList& geometryList,
-                                                                    const meshkernel::Projection& projection)
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridFromPolygons(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                    const GeometryList& geometryList,
+                                                                                    const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
+        meshkernel::CurvilinearGridRectangular grid(projection);
 
         auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
 
         const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, projection);
 
-        if (!polygon->IsEmpty())
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y,
-                                                        polygon,
-                                                        0);
-        }
-        if (makeGridParameters.num_columns > 0 && makeGridParameters.num_rows > 0)
-        {
-            return curvilinearGridCreateUniform.Compute(makeGridParameters.num_columns,
-                                                        makeGridParameters.num_rows,
-                                                        makeGridParameters.origin_x,
-                                                        makeGridParameters.origin_y,
-                                                        makeGridParameters.angle,
-                                                        makeGridParameters.block_size_x,
-                                                        makeGridParameters.block_size_y);
-        }
-        throw meshkernel::AlgorithmError("The num_columns or num_rows in MakeGridParameters must be larger than 0. Consider using curvilinear_make_uniform_on_extension instead");
+        return grid.Compute(makeGridParameters.angle,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y,
+                            polygon,
+                            0);
     }
 
-    /// @brief Generate a uniform curvilinear grid based on extension
-    /// @param[in] makeGridParameters The parameters for creating a uniform curvilinear grid are as follows
+    /// @brief Generate a rectangular curvilinear grid based on extension
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
-    static meshkernel::CurvilinearGrid CreateUniformCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                               const meshkernel::Projection& projection)
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                   const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(projection);
+        meshkernel::CurvilinearGridRectangular grid(projection);
 
         if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
         {
             throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
         }
 
-        return curvilinearGridCreateUniform.Compute(makeGridParameters.origin_x,
-                                                    makeGridParameters.origin_y,
-                                                    makeGridParameters.block_size_x,
-                                                    makeGridParameters.block_size_y,
-                                                    makeGridParameters.upper_right_x,
-                                                    makeGridParameters.upper_right_y);
+        return grid.Compute(makeGridParameters.origin_x,
+                            makeGridParameters.origin_y,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y,
+                            makeGridParameters.upper_right_x,
+                            makeGridParameters.upper_right_y);
     }
 
 } // namespace meshkernelapi

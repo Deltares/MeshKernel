@@ -183,7 +183,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         }
 
         // mark all edges of this triangle as good ones
-        for (UInt j = 0; j < m_numNodesInTriangle; ++j)
+        for (UInt j = 0; j < constants::geometric::numNodesInTriangle; ++j)
         {
             edgeNodesFlag[triangulationWrapper.GetFaceEdge(i, j)] = true;
         }
@@ -256,7 +256,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
     for (UInt f = 0; f < GetNumFaces(); ++f)
     {
         const auto numFaceNodes = m_numFacesNodes[f];
-        if (numFaceNodes != m_numNodesInTriangle)
+        if (numFaceNodes != constants::geometric::numNodesInTriangle)
         {
             continue;
         }
@@ -284,7 +284,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
         if (IsEqual(den, 0.0))
         {
             // Flag edges to remove
-            for (UInt e = 0; e < m_numNodesInTriangle; ++e)
+            for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
                 m_edges[edge] = {constants::missing::uintValue, constants::missing::uintValue};
@@ -307,6 +307,92 @@ void Mesh2D::DeleteDegeneratedTriangles()
     }
 
     Administrate();
+}
+
+bool Mesh2D::HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& nodes, std::vector<UInt>& sortedNodes) const
+{
+
+    if (numClosingEdges == constants::geometric::numNodesInTriangle)
+    {
+        if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[1] == nodes[2])
+        {
+            return true;
+        }
+    }
+    else if (numClosingEdges == constants::geometric::numNodesInQuadrilateral)
+    {
+        if (nodes[0] == nodes[1] || nodes[0] == nodes[2] || nodes[0] == nodes[3] ||
+            nodes[1] == nodes[2] || nodes[1] == nodes[3] ||
+            nodes[2] == nodes[3])
+        {
+            return true;
+        }
+    }
+    else
+    {
+        sortedNodes.clear();
+        sortedNodes.reserve(nodes.size());
+        std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
+        std::sort(sortedNodes.begin(), sortedNodes.end());
+        for (UInt n = 0; n < sortedNodes.size() - 1; n++)
+        {
+            if (sortedNodes[n + 1] == sortedNodes[n])
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Mesh2D::HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const
+{
+
+    // The number of edges is the same as the number of nodes for both triangles and quadrilateral
+    if (numClosingEdges == constants::geometric::numNodesInTriangle)
+    {
+        if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0])
+        {
+            return true;
+        }
+    }
+    else if (numClosingEdges == constants::geometric::numNodesInQuadrilateral)
+    {
+        if (m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[1]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[0]][0] == m_edgesFaces[edges[3]][0] ||
+
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[2]][0] ||
+            m_edgesFaces[edges[1]][0] == m_edgesFaces[edges[3]][0] ||
+
+            m_edgesFaces[edges[2]][0] == m_edgesFaces[edges[3]][0])
+        {
+            return true;
+        }
+    }
+    else
+    {
+        sortedEdgesFaces.clear();
+        sortedEdgesFaces.reserve(edges.size());
+        // is an internal face only if all edges have a different face
+        for (UInt ee = 0; ee < edges.size(); ee++)
+        {
+            sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
+        }
+
+        std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
+
+        for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
+        {
+            if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
+                return true;
+        }
+    }
+
+    return false;
 }
 
 void Mesh2D::FindFacesRecursive(UInt startNode,
@@ -339,20 +425,14 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
     if (otherNode == startNode && nodes.size() == numClosingEdges)
     {
         // no duplicated nodes allowed
-        sortedNodes.clear();
-        sortedNodes.reserve(nodes.size());
-        std::copy(nodes.begin(), nodes.end(), std::back_inserter(sortedNodes));
-        std::sort(sortedNodes.begin(), sortedNodes.end());
-        for (UInt n = 0; n < sortedNodes.size() - 1; n++)
+        if (HasDuplicateNodes(numClosingEdges, nodes, sortedNodes))
         {
-            if (sortedNodes[n + 1] == sortedNodes[n])
-            {
-                return;
-            }
+            return;
         }
 
         // we need to add a face when at least one edge has no faces
         auto oneEdgeHasNoFace = false;
+
         for (const auto& edge : edges)
         {
             if (m_edgesNumFaces[edge] == 0)
@@ -362,36 +442,17 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
             }
         }
 
-        // check if least one edge has no face
-        if (!oneEdgeHasNoFace)
+        // check if least one edge has no face and there are no duplicate edge-faces.
+        if (!oneEdgeHasNoFace && HasDuplicateEdgeFaces(numClosingEdges, edges, sortedEdgesFaces))
         {
-            sortedEdgesFaces.clear();
-            sortedEdgesFaces.reserve(edges.size());
-            // is an internal face only if all edges have a different face
-            for (UInt ee = 0; ee < edges.size(); ee++)
-            {
-                sortedEdgesFaces.push_back(m_edgesFaces[edges[ee]][0]);
-            }
-
-            std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
-
-            for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
-            {
-                if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
-                    return;
-            }
+            return;
         }
 
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
-        nodalValues.clear();
-        for (const auto& n : nodes)
-        {
-            nodalValues.emplace_back(m_nodes[n]);
-        }
-        nodalValues.emplace_back(nodalValues.front());
 
-        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(nodalValues, m_projection);
+        // The nodes array does not represent a closed polygon.
+        auto const [area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(m_nodes, nodes, m_projection, /* isClosed = */ false);
 
         if (direction == TraversalDirection::Clockwise)
         {
@@ -452,7 +513,7 @@ void Mesh2D::FindFaces()
     std::vector<UInt> edges(m_maximumNumberOfEdgesPerFace);
     std::vector<UInt> nodes(m_maximumNumberOfEdgesPerFace);
 
-    for (UInt numEdgesPerFace = 3; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    for (UInt numEdgesPerFace = constants::geometric::numNodesInTriangle; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; ++numEdgesPerFace)
     {
         for (UInt n = 0; n < GetNumNodes(); n++)
         {
@@ -473,7 +534,6 @@ void Mesh2D::FindFaces()
 
 void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
 {
-
     auto const numFaces = static_cast<int>(GetNumFaces());
     m_facesCircumcenters.resize(numFaces);
     m_faceArea.resize(numFaces);
@@ -695,7 +755,7 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
     centerOfMass /= static_cast<double>(numNodes);
 
     auto result = centerOfMass;
-    if (numNodes == m_numNodesInTriangle)
+    if (numNodes == constants::geometric::numNodesInTriangle)
     {
         result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
     }
@@ -870,7 +930,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
     std::vector<std::vector<UInt>> smallTrianglesNodes;
     for (UInt face = 0; face < GetNumFaces(); ++face)
     {
-        if (m_numFacesNodes[face] != m_numNodesInTriangle || m_faceArea[face] <= 0.0 || !IsFaceOnBoundary(face))
+        if (m_numFacesNodes[face] != constants::geometric::numNodesInTriangle || m_faceArea[face] <= 0.0 || !IsFaceOnBoundary(face))
         {
             continue;
         }
@@ -878,7 +938,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
         // compute the average area of neighboring faces
         double averageOtherFacesArea = 0.0;
         UInt numNonBoundaryFaces = 0;
-        for (UInt e = 0; e < m_numNodesInTriangle; ++e)
+        for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
         {
             // the edge must not be at the boundary, otherwise there is no "other" face
             const auto edge = m_facesEdges[face][e];
@@ -887,7 +947,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
                 continue;
             }
             const auto otherFace = NextFace(face, edge);
-            if (m_numFacesNodes[otherFace] > m_numNodesInTriangle)
+            if (m_numFacesNodes[otherFace] > constants::geometric::numNodesInTriangle)
             {
                 averageOtherFacesArea += m_faceArea[otherFace];
                 numNonBoundaryFaces++;
@@ -905,10 +965,10 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
         UInt firstNodeToMerge = constants::missing::uintValue;
         UInt secondNodeToMerge = constants::missing::uintValue;
         UInt thirdEdgeSmallTriangle = constants::missing::uintValue;
-        for (UInt e = 0; e < m_numNodesInTriangle; ++e)
+        for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
         {
-            const auto previousEdge = NextCircularBackwardIndex(e, m_numNodesInTriangle);
-            const auto nextEdge = NextCircularForwardIndex(e, m_numNodesInTriangle);
+            const auto previousEdge = NextCircularBackwardIndex(e, constants::geometric::numNodesInTriangle);
+            const auto nextEdge = NextCircularForwardIndex(e, constants::geometric::numNodesInTriangle);
 
             const auto k0 = m_facesNodes[face][previousEdge];
             const auto k1 = m_facesNodes[face][e];
@@ -1116,12 +1176,12 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
     for (UInt f = 0; f < GetNumFaces(); f++)
     {
         const auto numberOfFaceNodes = GetNumFaceEdges(f);
-        if (numberOfFaceNodes < m_numNodesInTriangle)
+        if (numberOfFaceNodes < constants::geometric::numNodesInTriangle)
             continue;
 
         for (UInt n = 0; n < numberOfFaceNodes; n++)
         {
-            if (numberOfFaceNodes != m_numNodesQuads)
+            if (numberOfFaceNodes != constants::geometric::numNodesInQuadrilateral)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
             const auto edgeIndex = m_facesEdges[f][n];
 
@@ -1137,7 +1197,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
             }
 
             // quads
-            if (numberOfFaceNodes == m_numNodesQuads)
+            if (numberOfFaceNodes == constants::geometric::numNodesInQuadrilateral)
             {
                 UInt kkp2 = n + 2;
                 if (kkp2 >= numberOfFaceNodes)
@@ -1288,7 +1348,6 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
 
 std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 {
-
     const auto numEdges = m_nodesNumEdges[node];
     std::vector<UInt> result;
     for (UInt e = 0; e < numEdges; ++e)
@@ -1340,7 +1399,6 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 
 std::vector<meshkernel::Point> Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
 {
-
     Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
@@ -1836,4 +1894,133 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
     }
 
     return constants::missing::uintValue;
+}
+
+meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
+{
+    if (mesh1.m_projection != mesh2.m_projection)
+    {
+        throw MeshKernelError("The two meshes cannot be merged: they have different projections");
+    }
+
+    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0))
+    {
+        throw MeshKernelError("The two meshes cannot be merged: both meshes are empty");
+    }
+
+    if ((mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0) && (mesh2.GetNumNodes() > 0 && mesh2.GetNumEdges() > 0))
+    {
+        return mesh2;
+    }
+
+    if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() > 0 && mesh1.GetNumEdges() > 0))
+    {
+        return mesh1;
+    }
+
+    // Initialise with mesh1,
+    Mesh2D mergedMesh(mesh1);
+
+    UInt mesh1NodeOffset = static_cast<UInt>(mesh1.m_nodes.size());
+    UInt mesh1EdgeOffset = static_cast<UInt>(mesh1.m_edges.size());
+    UInt mesh1FaceOffset = static_cast<UInt>(mesh1.m_numFacesNodes.size());
+
+    // Merge node arrays
+    mergedMesh.m_nodes.insert(mergedMesh.m_nodes.end(), mesh2.m_nodes.begin(), mesh2.m_nodes.end());
+
+    // Merge edge arrays
+    mergedMesh.m_edges.insert(mergedMesh.m_edges.end(), mesh2.m_edges.begin(), mesh2.m_edges.end());
+
+    // Update edge-node indices
+    for (UInt i = 0; i < mesh2.m_edges.size(); ++i)
+    {
+        IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].first, mesh1NodeOffset);
+        IncrementValidValue(mergedMesh.m_edges[i + mesh1EdgeOffset].second, mesh1NodeOffset);
+    }
+
+    //--------------------------------
+
+    // Merge node-edge arrays
+    mergedMesh.m_nodesEdges.insert(mergedMesh.m_nodesEdges.end(), mesh2.m_nodesEdges.begin(), mesh2.m_nodesEdges.end());
+
+    for (UInt i = 0; i < mesh2.m_nodesEdges.size(); ++i)
+    {
+        for (UInt j = 0; j < mesh2.m_nodesEdges[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_nodesEdges[i + mesh1NodeOffset][j], mesh1EdgeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge node-node arrays
+    mergedMesh.m_nodesNodes.insert(mergedMesh.m_nodesNodes.end(), mesh2.m_nodesNodes.begin(), mesh2.m_nodesNodes.end());
+
+    for (UInt i = 0; i < mesh2.m_nodesNodes.size(); ++i)
+    {
+        for (UInt j = 0; j < mesh2.m_nodesNodes[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_nodesNodes[i + mesh1NodeOffset][j], mesh1NodeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge face-node arrays
+    mergedMesh.m_facesNodes.insert(mergedMesh.m_facesNodes.end(), mesh2.m_facesNodes.begin(), mesh2.m_facesNodes.end());
+
+    for (UInt i = 0; i < mesh2.m_facesNodes.size(); ++i)
+    {
+        for (UInt j = 0; j < mesh2.m_facesNodes[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_facesNodes[i + mesh1FaceOffset][j], mesh1NodeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Merge edge-face arrays
+    mergedMesh.m_edgesFaces.insert(mergedMesh.m_edgesFaces.end(), mesh2.m_edgesFaces.begin(), mesh2.m_edgesFaces.end());
+
+    for (UInt i = 0; i < mesh2.m_edgesFaces.size(); ++i)
+    {
+        IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][0], mesh1FaceOffset);
+        IncrementValidValue(mergedMesh.m_edgesFaces[i + mesh1EdgeOffset][1], mesh1FaceOffset);
+    }
+
+    //--------------------------------
+
+    // Merge face-edge arrays
+    mergedMesh.m_facesEdges.insert(mergedMesh.m_facesEdges.end(), mesh2.m_facesEdges.begin(), mesh2.m_facesEdges.end());
+
+    for (UInt i = 0; i < mesh2.m_facesEdges.size(); ++i)
+    {
+        for (UInt j = 0; j < mesh2.m_facesEdges[i].size(); ++j)
+        {
+            IncrementValidValue(mergedMesh.m_facesEdges[i + mesh1FaceOffset][j], mesh1EdgeOffset);
+        }
+    }
+
+    //--------------------------------
+
+    // Now merge remaining arrays
+
+    mergedMesh.m_nodesNumEdges.insert(mergedMesh.m_nodesNumEdges.end(), mesh2.m_nodesNumEdges.begin(), mesh2.m_nodesNumEdges.end());
+    mergedMesh.m_nodesTypes.insert(mergedMesh.m_nodesTypes.end(), mesh2.m_nodesTypes.begin(), mesh2.m_nodesTypes.end());
+
+    mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
+    mergedMesh.m_edgeLengths.insert(mergedMesh.m_edgeLengths.end(), mesh2.m_edgeLengths.begin(), mesh2.m_edgeLengths.end());
+    mergedMesh.m_edgesCenters.insert(mergedMesh.m_edgesCenters.end(), mesh2.m_edgesCenters.begin(), mesh2.m_edgesCenters.end());
+
+    mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
+    mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());
+    mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
+    mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
+
+    // Indicate that the mesh state has changed and the r-trees will need to be re-computed when required.
+    mergedMesh.m_nodesRTreeRequiresUpdate = true;
+    mergedMesh.m_edgesRTreeRequiresUpdate = true;
+    mergedMesh.m_facesRTreeRequiresUpdate = true;
+
+    return mergedMesh;
 }

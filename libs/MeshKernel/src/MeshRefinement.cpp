@@ -366,7 +366,7 @@ void MeshRefinement::ConnectHangingNodes()
             continue;
 
         // Quads
-        if (numNonHangingNodes == Mesh::m_numNodesQuads)
+        if (numNonHangingNodes == constants::geometric::numNodesInQuadrilateral)
         {
             switch (numHangingNodes)
             {
@@ -632,7 +632,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
 
         // quads
         Point splittingNode(m_mesh->m_facesMassCenters[f]);
-        if (localEdgesNumFaces.size() == Mesh::m_numNodesQuads && m_meshRefinementParameters.use_mass_center_when_refining == 0)
+        if (localEdgesNumFaces.size() == constants::geometric::numNodesInQuadrilateral && m_meshRefinementParameters.use_mass_center_when_refining == 0)
         {
             // close the polygon before computing the face circumcenter
             facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
@@ -660,7 +660,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
             }
         }
 
-        if (localEdgesNumFaces.size() >= Mesh::m_numNodesQuads)
+        if (localEdgesNumFaces.size() >= constants::geometric::numNodesInQuadrilateral)
         {
             if (notHangingFaceNodes.size() > 2)
             {
@@ -1048,7 +1048,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
     bool repeat = true;
     UInt iter = 0;
     const UInt numMaxIterations = 6;
-    std::vector<int> isQuadEdge(Mesh::m_numNodesQuads);
+    std::vector<int> isQuadEdge(constants::geometric::numNodesInQuadrilateral);
     std::vector<UInt> numOfEdges(Mesh::m_maximumNumberOfEdgesPerFace);
 
     while (repeat && iter < numMaxIterations)
@@ -1069,7 +1069,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
 
             // non-quads
             const auto numNodesEffective = numFaceNodes - numHangingNodes;
-            if (numNodesEffective != Mesh::m_numNodesQuads)
+            if (numNodesEffective != constants::geometric::numNodesInQuadrilateral)
             {
                 for (UInt n = 0; n < numFaceNodes; n++)
                 {
@@ -1088,7 +1088,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     }
                 }
             }
-            if (numNodesEffective == Mesh::m_numNodesQuads)
+            if (numNodesEffective == constants::geometric::numNodesInQuadrilateral)
             {
                 // number the links in the cell, links that share a hanging node will have the same number
                 UInt num = 0;
@@ -1116,7 +1116,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     }
                 }
 
-                if (num + 1 != Mesh::m_numNodesQuads)
+                if (num + 1 != constants::geometric::numNodesInQuadrilateral)
                 {
                     throw AlgorithmError("The number the links in the cell is not equal to 3.");
                 }
@@ -1124,7 +1124,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                 UInt numEdgesToRefine = 0;
                 UInt firstEdgeIndex = 0;
                 UInt secondEdgeIndex = 0;
-                for (UInt i = 0; i < Mesh::m_numNodesQuads; i++)
+                for (UInt i = 0; i < constants::geometric::numNodesInQuadrilateral; i++)
                 {
                     if (isQuadEdge[i] != 0)
                     {

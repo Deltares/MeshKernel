@@ -11,10 +11,10 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(
   SRC_LIST
   ${SRC_DIR}/main.cpp
-  ${SRC_DIR}/perf_rtree.cpp
+  ${SRC_DIR}/perf_curvilinear_rectangular.cpp
   ${SRC_DIR}/perf_mesh_refinement.cpp
   ${SRC_DIR}/perf_orthogonalization.cpp
-  ${SRC_DIR}/perf_curvilinear_uniform.cpp
+  ${SRC_DIR}/perf_rtree.cpp
 )
 
 # add sources to target

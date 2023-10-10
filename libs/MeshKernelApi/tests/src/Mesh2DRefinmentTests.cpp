@@ -303,8 +303,7 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalC
 
     const auto makeGridParameters = GebcoMakeGridParameters();
 
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -352,8 +351,7 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalC
 
     const auto makeGridParameters = GebcoMakeGridParameters();
 
-    meshkernelapi::GeometryList geometryList{};
-    auto errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    auto errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
@@ -409,7 +407,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     makeGridParameters.block_size_x = 0.5;
     makeGridParameters.block_size_y = 0.5;
 
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
@@ -466,7 +464,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     makeGridParameters.block_size_x = 0.5;
     makeGridParameters.block_size_y = 0.5;
 
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);

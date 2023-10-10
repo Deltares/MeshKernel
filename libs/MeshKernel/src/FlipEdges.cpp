@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -86,7 +87,8 @@ void FlipEdges::Compute() const
 
             const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
-            if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
+            if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||
+                NumEdgesRightFace != constants::geometric::numNodesInTriangle)
             {
                 return;
             }
@@ -283,7 +285,8 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
-    if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
+    if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||
+        NumEdgesRightFace != constants::geometric::numNodesInTriangle)
     {
         return largeTopologyFunctionalValue;
     }

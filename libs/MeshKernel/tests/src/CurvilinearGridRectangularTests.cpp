@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -8,7 +8,7 @@
 
 using namespace meshkernel;
 
-TEST(CurvilinearGridUniform, CurvilinearGridCreateUniform_WithPolygon_ShouldComputeCurvilinearGrid)
+TEST(CurvilinearGridRectangular, CurvilinearGridRectangular_WithPolygon_ShouldComputeCurvilinearGrid)
 {
     // Setup
     std::vector<Point> polygonNodes{{0.5, 2.5},
@@ -24,19 +24,19 @@ TEST(CurvilinearGridUniform, CurvilinearGridCreateUniform_WithPolygon_ShouldComp
     const double blockSizeY = 1.0;
 
     // Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::cartesian);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
-                                                                                                        blockSizeX,
-                                                                                                        blockSizeY,
-                                                                                                        polygons,
-                                                                                                        0));
+    CurvilinearGridRectangular const grid(Projection::cartesian);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid.Compute(angle,
+                                                                                blockSizeX,
+                                                                                blockSizeY,
+                                                                                polygons,
+                                                                                0));
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
     ASSERT_EQ(9, numValidNodes);
 }
 
-TEST(CurvilinearGridUniform, MakeCurvilinearInPolygonSpherical)
+TEST(CurvilinearGridRectangular, MakeCurvilinearInPolygonSpherical)
 {
     // Setup
     std::vector<Point> polygonNodes{{302.002502, 472.130371},
@@ -53,19 +53,19 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInPolygonSpherical)
     const double blockSizeY = 500.0;
 
     // Execution: function not producing grid points because too large block size
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(curvilinearGridCreateUniform.Compute(angle,
-                                                                                                        blockSizeX,
-                                                                                                        blockSizeY,
-                                                                                                        polygons,
-                                                                                                        0));
+    CurvilinearGridRectangular const grid(Projection::spherical);
+    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid.Compute(angle,
+                                                                                blockSizeX,
+                                                                                blockSizeY,
+                                                                                polygons,
+                                                                                0));
 
     // Assert
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
     ASSERT_EQ(0, numValidNodes);
 }
 
-TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
+TEST(CurvilinearGridRectangular, MakeCurvilinearInEmptyPolygonSpherical)
 {
     // 1 Setup
     const double angle = 0.0;
@@ -77,14 +77,14 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
     const double blockSizeY = 0.1;
 
     // 2 Execution
-    CurvilinearGridCreateUniform const curvilinearGridCreateUniform(Projection::spherical);
-    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute(numColumns,
-                                                                                  numRows,
-                                                                                  originX,
-                                                                                  originY,
-                                                                                  angle,
-                                                                                  blockSizeX,
-                                                                                  blockSizeY)
+    CurvilinearGridRectangular const grid(Projection::spherical);
+    const auto [nodes, edges, gridIndices] = grid.Compute(numColumns,
+                                                          numRows,
+                                                          originX,
+                                                          originY,
+                                                          angle,
+                                                          blockSizeX,
+                                                          blockSizeY)
                                                  .ConvertCurvilinearToNodesAndEdges();
 
     Mesh2D mesh(edges, nodes, Projection::spherical);
@@ -116,7 +116,7 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(90.0, mesh.m_nodes[7].y);
 }
 
-TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_ShouldInsertFace)
+TEST(CurvilinearGridRectangularCurvilinearGridRectangular, InsertFace_OnBottomLeft_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -135,7 +135,7 @@ TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_Shoul
     ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(0, 2).y, tolerance);
 }
 
-TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
+TEST(CurvilinearGridRectangular, InsertFace_OnBottomRight_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -154,7 +154,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
     ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 2).y, tolerance);
 }
 
-TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
+TEST(CurvilinearGridRectangular, InsertFace_OnTopLeft_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -173,7 +173,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
     ASSERT_NEAR(367626.58734840894, curvilinearGrid->m_gridNodes(0, 8).y, tolerance);
 }
 
-TEST(CurvilinearGridUniform, InsertFace_OnTopRight_ShouldInsertFace)
+TEST(CurvilinearGridRectangular, InsertFace_OnTopRight_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -192,7 +192,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnTopRight_ShouldInsertFace)
     ASSERT_NEAR(366327.01674911042, curvilinearGrid->m_gridNodes(5, 8).y, tolerance);
 }
 
-TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
+TEST(CurvilinearGridRectangular, InsertFace_OnGridWithHoles_ShouldInsertFace)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
@@ -223,7 +223,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
     ASSERT_NEAR(366718.10475241451, curvilinearGrid->m_gridNodes(3, 8).y, tolerance);
 }
 
-TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
+TEST(CurvilinearGridRectangular, DeleteNode_OnRectangularGrid_ShouldDeleteNode)
 {
     // Prepare
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();

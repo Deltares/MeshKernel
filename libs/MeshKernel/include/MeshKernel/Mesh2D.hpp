@@ -301,6 +301,13 @@ namespace meshkernel
 
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
+        /// @brief Merges mesh connectivity.
+        ///
+        /// Only merges the mesh connectivity graphs and updates indices.
+        /// @note Does not do any administration on the node, edges or elements,
+        /// it may be required to call Administrate after merging
+        static Mesh2D Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -337,6 +344,16 @@ namespace meshkernel
         /// @param[in] nodes The node coordinates
         /// @returns If triangle has an acute triangle
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
+
+        /// @brief Determine if there are duplicate node id's on the node array
+        ///
+        /// The parameter sortedNodes, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
+
+        /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        ///
+        /// The parameter sortedEdgesFaces, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
 
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()
