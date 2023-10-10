@@ -110,14 +110,15 @@ namespace meshkernel
         /// @brief Update edge intersections
         static void updateEdgeIntersections(const UInt segmentIndex,
                                             const UInt edgeIndex,
-                                            const UInt edgeFirstNode,
-                                            const UInt edgeSecondNode,
+                                            const Edge edge,
                                             const std::vector<double>& cumulativeLength,
                                             const double crossProductValue,
                                             const double adimensionalEdgeDistance,
                                             const double adimensionalPolylineSegmentDistance,
                                             std::vector<EdgeMeshPolylineIntersection>& intersections)
         {
+            const auto [edgeFirstNode, edgeSecondNode] = edge;
+
             intersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
             intersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
                                                         adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);

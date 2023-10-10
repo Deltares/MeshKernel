@@ -221,24 +221,22 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
 
                     if (!intersectionFound)
                     {
-                        const auto segmentIntersection = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, 1);
-                        intersectionFound = std::get<0>(segmentIntersection);
-                        firstIndex = std::get<1>(segmentIntersection);
-                        secondIndex = std::get<2>(segmentIntersection);
-                        crossProductValue = std::get<3>(segmentIntersection);
-                        adimensionalPolylineSegmentDistance = std::get<4>(segmentIntersection);
-                        adimensionalEdgeDistance = std::get<5>(segmentIntersection);
+                        std::tie(intersectionFound,
+                                 firstIndex,
+                                 secondIndex,
+                                 crossProductValue,
+                                 adimensionalPolylineSegmentDistance,
+                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, 1);
                     }
 
                     if (!intersectionFound)
                     {
-                        const auto segmentIntersection = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, -1);
-                        intersectionFound = std::get<0>(segmentIntersection);
-                        firstIndex = std::get<1>(segmentIntersection);
-                        secondIndex = std::get<2>(segmentIntersection);
-                        crossProductValue = std::get<3>(segmentIntersection);
-                        adimensionalPolylineSegmentDistance = std::get<4>(segmentIntersection);
-                        adimensionalEdgeDistance = std::get<5>(segmentIntersection);
+                        std::tie(intersectionFound,
+                                 firstIndex,
+                                 secondIndex,
+                                 crossProductValue,
+                                 adimensionalPolylineSegmentDistance,
+                                 adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, nextSegmentIndex, -1);
                     }
 
                     // none of the polyline intersect the current edge
@@ -250,8 +248,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                     updateEdgeIntersections(
                         firstIndex,
                         edgeIndex,
-                        m_mesh.m_edges[edgeIndex].first,
-                        m_mesh.m_edges[edgeIndex].second,
+                        m_mesh.m_edges[edgeIndex],
                         cumulativeLength,
                         crossProductValue,
                         adimensionalEdgeDistance,
