@@ -36,7 +36,7 @@
 namespace meshkernel
 {
     /// An intersection with a mesh edge
-    struct EdgeMeshPolylineIntersection
+    struct EdgeMeshPolyLineIntersection
     {
         int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
         double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
@@ -48,7 +48,7 @@ namespace meshkernel
     };
 
     /// An intersection with a mesh face
-    struct FaceMeshPolylineIntersection
+    struct FaceMeshPolyLineIntersection
     {
         double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
         UInt faceIndex{constants::missing::uintValue};            ///< The face index
@@ -81,6 +81,9 @@ namespace meshkernel
         /// @returns The faces intersections
         [[nodiscard]] const auto& FaceIntersections() const { return m_faceIntersections; }
 
+        /// @brief  Sort intersections by polyline distance and erase entries with no intersections
+        /// @tparam T An intersection type, \ref EdgeMeshPolyLineIntersection or \ref FaceMeshPolyLineIntersection
+        /// @param intersections a vector containing the intersections
         template <typename T>
         static void sortAndEraseIntersections(std::vector<T>& intersections)
         {
@@ -122,7 +125,7 @@ namespace meshkernel
                                             const double crossProductValue,
                                             const double adimensionalEdgeDistance,
                                             const double adimensionalPolylineSegmentDistance,
-                                            std::vector<EdgeMeshPolylineIntersection>& intersections)
+                                            std::vector<EdgeMeshPolyLineIntersection>& intersections)
         {
             const auto [edgeFirstNode, edgeSecondNode] = edge;
 
@@ -139,17 +142,17 @@ namespace meshkernel
         /// @brief Update face intersections
         static void updateFaceIntersections(const UInt faceIndex,
                                             const UInt edgeIndex,
-                                            std::vector<FaceMeshPolylineIntersection>& intersections)
+                                            std::vector<FaceMeshPolyLineIntersection>& intersections)
         {
             intersections[faceIndex].faceIndex = faceIndex;
             intersections[faceIndex].edgeIndices.emplace_back(edgeIndex);
         }
 
         Mesh2D& m_mesh;                                                      ///< The mesh where the edges should be found
-        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer
-        std::vector<FaceMeshPolylineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
-        std::vector<EdgeMeshPolylineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
-        std::vector<FaceMeshPolylineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
+        std::vector<EdgeMeshPolyLineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer
+        std::vector<FaceMeshPolyLineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
+        std::vector<EdgeMeshPolyLineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
+        std::vector<FaceMeshPolyLineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
         static constexpr UInt maxSearchSegments = 10;                        ///< mex number of steps in polyline intersection algorithm
     };
 

@@ -143,8 +143,8 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
 void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
 {
     // 1. Find the intersection of any segment of the polyline with the mesh return if nothing is found
-    std::ranges::fill(m_edgesIntersectionsCache, EdgeMeshPolylineIntersection());
-    std::ranges::fill(m_facesIntersectionsCache, FaceMeshPolylineIntersection());
+    std::ranges::fill(m_edgesIntersectionsCache, EdgeMeshPolyLineIntersection());
+    std::ranges::fill(m_facesIntersectionsCache, FaceMeshPolyLineIntersection());
 
     const auto polyLineSize = static_cast<UInt>(polyLine.size());
 
