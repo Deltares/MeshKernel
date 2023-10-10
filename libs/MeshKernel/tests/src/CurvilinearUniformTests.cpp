@@ -258,7 +258,7 @@ void TestDeleteInteriorNodes(std::shared_ptr<meshkernel::CurvilinearGrid> curvil
     meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
 
     meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
-    meshkernel::UInt initialSize = static_cast<meshkernel::UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
+    auto initialSize = static_cast<meshkernel::UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
 
     // Delete the nodes interior to a block
     curvilinearGrid->DeleteInterior(first, second);
