@@ -698,8 +698,6 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian);
 
-    const auto numNodesMesh = mesh->GetNumNodes();
-
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
