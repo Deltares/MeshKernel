@@ -276,26 +276,19 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
             continue;
         }
 
-        if (facesIntersection.edgeIndexses.size() == 1)
+        // sort edge indices based on polyline segment distance
+        std::ranges::sort(facesIntersection.edgeIndexses, [&](auto first, auto second)
+                          { return m_edgesIntersectionsCache[first].adimensionalPolylineSegmentDistance <
+                                   m_edgesIntersectionsCache[second].adimensionalPolylineSegmentDistance; });
+
+        // compute the polylineDistance for the face
+        double distanceSum = 0.0;
+        for (const auto& edgeIndex : facesIntersection.edgeIndexses)
         {
-            const auto edgeIndex = facesIntersection.edgeIndexses[0];
-            facesIntersection.polylineDistance = m_edgesIntersectionsCache[edgeIndex].polylineDistance;
+            distanceSum += m_edgesIntersectionsCache[edgeIndex].polylineDistance;
         }
 
-        if (facesIntersection.edgeIndexses.size() == 2)
-        {
-            const auto firstEdgeIndex = facesIntersection.edgeIndexses[0];
-            const auto secondEdgeIndex = facesIntersection.edgeIndexses[1];
-
-            // swap the edge indexes if needed
-            if (m_edgesIntersectionsCache[firstEdgeIndex].adimensionalPolylineSegmentDistance > m_edgesIntersectionsCache[secondEdgeIndex].adimensionalPolylineSegmentDistance)
-            {
-                std::swap(facesIntersection.edgeIndexses[0], facesIntersection.edgeIndexses[1]);
-            }
-
-            // compute the polylineDistance for the face
-            facesIntersection.polylineDistance = 0.5 * (m_edgesIntersectionsCache[firstEdgeIndex].polylineDistance + m_edgesIntersectionsCache[secondEdgeIndex].polylineDistance);
-        }
+        facesIntersection.polylineDistance = distanceSum / static_cast<double>(facesIntersection.edgeIndexses.size());
 
         // push back the face intersection edge nodes
         for (UInt e = 0; e < facesIntersection.edgeIndexses.size(); ++e)
