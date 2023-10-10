@@ -81,34 +81,6 @@ namespace meshkernel
         /// @returns The faces intersections
         [[nodiscard]] const auto& FaceIntersections() const { return m_faceIntersections; }
 
-        static void updateEdgeIntersections(const UInt segmentIndex,
-                                            const UInt edgeIndex,
-                                            const UInt edgeFirstNode,
-                                            const UInt edgeSecondNode,
-                                            const std::vector<double>& cumulativeLength,
-                                            const double crossProductValue,
-                                            const double adimensionalEdgeDistance,
-                                            const double adimensionalPolylineSegmentDistance,
-                                            std::vector<EdgeMeshPolylineIntersection>& intersections)
-        {
-            intersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
-            intersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
-                                                        adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
-            intersections[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
-            intersections[edgeIndex].edgeFirstNode = crossProductValue < 0 ? edgeSecondNode : edgeFirstNode;
-            intersections[edgeIndex].edgeSecondNode = crossProductValue < 0 ? edgeFirstNode : edgeSecondNode;
-            intersections[edgeIndex].edgeDistance = adimensionalEdgeDistance;
-            intersections[edgeIndex].edgeIndex = edgeIndex;
-        }
-
-        static void updateFaceIntersections(const UInt faceIndex,
-                                            const UInt edgeIndex,
-                                            std::vector<FaceMeshPolylineIntersection>& intersections)
-        {
-            intersections[faceIndex].faceIndex = faceIndex;
-            intersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
-        }
-
         template <typename T>
         static void sortAndEraseIntersections(std::vector<T>& intersections)
         {
@@ -134,6 +106,36 @@ namespace meshkernel
                                                                                      UInt firstIndex,
                                                                                      UInt secondIndex,
                                                                                      int direction) const;
+
+        /// @brief Update edge intersections
+        static void updateEdgeIntersections(const UInt segmentIndex,
+                                            const UInt edgeIndex,
+                                            const UInt edgeFirstNode,
+                                            const UInt edgeSecondNode,
+                                            const std::vector<double>& cumulativeLength,
+                                            const double crossProductValue,
+                                            const double adimensionalEdgeDistance,
+                                            const double adimensionalPolylineSegmentDistance,
+                                            std::vector<EdgeMeshPolylineIntersection>& intersections)
+        {
+            intersections[edgeIndex].polylineSegmentIndex = static_cast<int>(segmentIndex);
+            intersections[edgeIndex].polylineDistance = cumulativeLength[segmentIndex] +
+                                                        adimensionalPolylineSegmentDistance * (cumulativeLength[segmentIndex + 1] - cumulativeLength[segmentIndex]);
+            intersections[edgeIndex].adimensionalPolylineSegmentDistance = adimensionalPolylineSegmentDistance;
+            intersections[edgeIndex].edgeFirstNode = crossProductValue < 0 ? edgeSecondNode : edgeFirstNode;
+            intersections[edgeIndex].edgeSecondNode = crossProductValue < 0 ? edgeFirstNode : edgeSecondNode;
+            intersections[edgeIndex].edgeDistance = adimensionalEdgeDistance;
+            intersections[edgeIndex].edgeIndex = edgeIndex;
+        }
+
+        /// @brief Update face intersections
+        static void updateFaceIntersections(const UInt faceIndex,
+                                            const UInt edgeIndex,
+                                            std::vector<FaceMeshPolylineIntersection>& intersections)
+        {
+            intersections[faceIndex].faceIndex = faceIndex;
+            intersections[faceIndex].edgeIndexses.emplace_back(edgeIndex);
+        }
 
         Mesh2D& m_mesh;                                                      ///< The mesh where the edges should be found
         std::vector<EdgeMeshPolylineIntersection> m_edgesIntersectionsCache; ///< A cache for saving the edge intersections of one inner or outer
