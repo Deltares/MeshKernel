@@ -45,10 +45,14 @@ namespace meshkernel
     class ConnectMeshes final
     {
     public:
+        /// @brief The default value of the fraction of the edge length used to determine if edges are adjacent.
+        static constexpr double DefaultSeparationFraction = 0.4;
+
         /// @brief Connect grids.
         ///
         /// @param [in,out] mesh The mesh
-        void Compute(Mesh2D& mesh) const;
+        /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
+        void Compute(Mesh2D& mesh, const double separationFraction = DefaultSeparationFraction) const;
 
     private:
         /// @brief The maximum number of hanging nodes along a single element edge
@@ -91,12 +95,14 @@ namespace meshkernel
         /// @brief Determine if the edges are adjacent, if so then return the start and end points (adjacent.f90)
         ///
         /// @param [in] mesh The mesh
+        /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @param [in] edge1 One of the edges for adjacency check
         /// @param [in] edge2 Another of the edges for adjacency check
         /// @param [out] areAdjacent Indicates is edge1 and edge2 are adjacent
         /// @param [out] startNode End point nodes, if not nullvalue then node is hanging node
         /// @param [out] endNode End point nodes, if not nullvalue then node is hanging node
         void AreEdgesAdjacent(const Mesh2D& mesh,
+                              const double separationFraction,
                               const UInt edge1,
                               const UInt edge2,
                               bool& areAdjacent,
@@ -208,9 +214,11 @@ namespace meshkernel
         /// @brief Find and retain any hanging node id's
         ///
         /// @param [in] mesh The mesh
+        /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @param [in] edgesOnDomainBoundary List of edges along domain boundary, more specifically edges with only a single element attached
         /// @param [in,out] irregularEdges List of irregular edges with hanging nodes
         void GatherHangingNodeIds(const Mesh2D& mesh,
+                                  const double separationFraction,
                                   const std::vector<UInt>& edgesOnDomainBoundary,
                                   IrregularEdgeInfoArray& irregularEdges) const;
 
