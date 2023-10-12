@@ -1051,7 +1051,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
-                                                              const GeometryList& boundaryPolyLine,
+                                                              const GeometryList& boundaryPolygon,
                                                               int* edgeNodes,
                                                               int* edgeIndex,
                                                               double* edgeDistances,
@@ -1069,7 +1069,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const boundaryPolygonPoints = ConvertGeometryListToPointVector(boundaryPolyLine);
+            auto const boundaryPolygonPoints = ConvertGeometryListToPointVector(boundaryPolygon);
 
             const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 

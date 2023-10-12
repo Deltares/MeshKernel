@@ -1002,20 +1002,20 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex);
 
-        /// @brief Gets the edges intersected by a polyline, with additional information on the intersections
+        /// @brief Gets the edges intersected by a polygon, with additional information on the intersections
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] boundaryPolyLine An input polyline, defined as a series of points
+        /// @param[in] boundaryPolygon An input polygon, defined as a series of points
         /// @param[out] edgeNodes The indices of the intersected edge nodes. The first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node)
         /// @param[out] edgeIndex For each intersected edge, the edge index
         /// @param[out] edgeDistances For each intersection, the location of the intersection expressed as adimensional distance from the edge starting node
-        /// @param[out] segmentDistances For each intersection, the location of the intersection expressed as adimensional distance from the polyline segment start
+        /// @param[out] segmentDistances For each intersection, the location of the intersection expressed as adimensional distance from the polygon segment start
         /// @param[out] segmentIndexes For each intersection, the segment index
         /// @param[out] faceIndexes For each intersection, the face index
         /// @param[out] faceNumEdges For each intersection, the number of intersections
         /// @param[out] faceEdgeIndex For each intersection, the index of the intersected edge
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
-                                                                  const GeometryList& boundaryPolyLine,
+                                                                  const GeometryList& boundaryPolygon,
                                                                   int* edgeNodes,
                                                                   int* edgeIndex,
                                                                   double* edgeDistances,
