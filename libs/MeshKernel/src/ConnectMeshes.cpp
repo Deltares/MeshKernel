@@ -272,12 +272,14 @@ void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<Nodes
 
     for (const auto& [coincidingNodeFirst, coincidingNodeSecond] : nodesToMerge)
     {
-        if (mergeIndicator[coincidingNodeSecond] != MergeIndicator::DoNotMerge)
+        using enum MergeIndicator;
+
+        if (mergeIndicator[coincidingNodeSecond] != DoNotMerge)
         {
             mesh.MergeTwoNodes(coincidingNodeFirst, coincidingNodeSecond);
             // Set to MergeIndicator::DoNotMerge so it will not be processed again.
-            mergeIndicator[coincidingNodeFirst] = MergeIndicator::DoNotMerge;
-            mergeIndicator[coincidingNodeSecond] = MergeIndicator::DoNotMerge;
+            mergeIndicator[coincidingNodeFirst] = DoNotMerge;
+            mergeIndicator[coincidingNodeSecond] = DoNotMerge;
         }
     }
 }
