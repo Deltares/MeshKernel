@@ -539,3 +539,30 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
         }
     }
 }
+
+TEST(Mesh2DConnectDD, MergeTwoMeshesErrorInSeparationFraction)
+{
+    // The test checks that the meshkernel::ConnectMeshes::Compute function
+    // fails when passed a separation fraction that is bout of a valid range
+
+    const int nx = 3;
+    const int ny = 3;
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, nx, ny);
+
+    origin.x += delta.x() * static_cast<double>(nx - 1);
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
+
+    meshkernel::Mesh2D mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::ConnectMeshes connectCurviliearMeshes;
+
+    EXPECT_THROW(connectCurviliearMeshes.Compute(mergedMesh, 0.5), meshkernel::RangeError);
+    EXPECT_THROW(connectCurviliearMeshes.Compute(mergedMesh, 1.5), meshkernel::RangeError);
+    EXPECT_THROW(connectCurviliearMeshes.Compute(mergedMesh, -0.5), meshkernel::RangeError);
+    EXPECT_THROW(connectCurviliearMeshes.Compute(mergedMesh, 0.0), meshkernel::RangeError);
+}

@@ -1,6 +1,7 @@
 #include "MeshKernel/ConnectMeshes.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/RangeCheck.hpp"
 
 #include <ranges>
 
@@ -182,6 +183,9 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
 
 void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction) const
 {
+    // Check that the separationFraction is in correct range (0.0, max]
+    range_check::CheckInLeftHalfOpenInterval(separationFraction, 0.0, DefaultMaximumSeparationFraction, "Separation Fraction");
+
     // Only here to shorten several of the initialisations below
     static constexpr UInt missingValue = constants::missing::uintValue;
     const UInt numberOfEdges = mesh.GetNumEdges();

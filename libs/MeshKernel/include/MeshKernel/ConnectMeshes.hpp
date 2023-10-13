@@ -45,14 +45,16 @@ namespace meshkernel
     class ConnectMeshes final
     {
     public:
-        /// @brief The default value of the fraction of the edge length used to determine if edges are adjacent.
-        static constexpr double DefaultSeparationFraction = 0.4;
+        /// @brief The default and maximum value of the fraction of the edge length used to determine if edges are adjacent.
+        static constexpr double DefaultMaximumSeparationFraction = 0.4;
 
         /// @brief Connect grids.
         ///
         /// @param [in,out] mesh The mesh
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
-        void Compute(Mesh2D& mesh, const double separationFraction = DefaultSeparationFraction) const;
+        /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
+        /// If the value is outside of this range then a RangeError will be thrown.
+        void Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction) const;
 
     private:
         /// @brief The maximum number of hanging nodes along a single element edge
