@@ -1175,7 +1175,32 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
+    MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
+
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
+
+            const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, minEdgeLength * 0.001);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_merge_nodes_with_merging_distance(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
