@@ -172,14 +172,6 @@ set(
   ${UTILITIES_INC_DIR}/RTree.hpp
 )
 
-set(
-  HEADERS
-  ${INC_LIST}
-  ${AVERAGING_STRATEGIES_INC_LIST}
-  ${CURVILINEAR_GRID_INC_LIST}
-  ${UTILITIES_INC_LIST}
-)
-
 # add sources to target
 target_sources(
   ${TARGET_NAME}
@@ -193,14 +185,14 @@ target_sources(
       BASE_DIRS
         ${INC_DIR}
       FILES
-        ${HEADERS}
+        ${INC_LIST}
+        ${AVERAGING_STRATEGIES_INC_LIST}
+        ${CURVILINEAR_GRID_INC_LIST}
+        ${UTILITIES_INC_LIST}
 )
 
-# set the public headers
-set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-
 # Expose the interface of the static lib
-target_include_directories(  ${TARGET_NAME} PUBLIC ${INC_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Add target link dependencies
 
@@ -261,7 +253,7 @@ target_precompile_headers(
     <vector>
 )
 
-install(TARGETS ${TARGET_NAME} PUBLIC_HEADER DESTINATION "include/MeshKernel")
+install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})

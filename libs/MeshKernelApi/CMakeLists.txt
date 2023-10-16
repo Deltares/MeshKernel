@@ -50,9 +50,6 @@ target_sources(
         ${INC_LIST} 
 )
 
-# define the public header
-set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${INC_LIST}")
-
 # Expose the interface of the shared lib
 target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
@@ -83,7 +80,7 @@ target_precompile_headers(
     <vector> 
 )
 
-install(TARGETS ${TARGET_NAME} PUBLIC_HEADER DESTINATION "include/MeshKernelApi")
+install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})
