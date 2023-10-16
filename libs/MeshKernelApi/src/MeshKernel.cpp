@@ -1071,10 +1071,10 @@ namespace meshkernelapi
 
             auto const boundaryPolygonPoints = ConvertGeometryListToPointVector(boundaryPolygon);
 
-            const meshkernel::Polygons boundaryPolygon(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
+            const meshkernel::Polygons polygons(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 
             meshkernel::Mesh2DIntersections mesh2DIntersections(*meshKernelState[meshKernelId].m_mesh2d);
-            mesh2DIntersections.Compute(boundaryPolygon);
+            mesh2DIntersections.Compute(polygons);
             auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
             auto faceIntersections = mesh2DIntersections.FaceIntersections();
 
