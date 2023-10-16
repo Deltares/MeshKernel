@@ -200,7 +200,7 @@ var searchData=
   ['mkernel_5fmesh2d_5finitialize_5forthogonalization_443',['mkernel_mesh2d_initialize_orthogonalization',['../namespacemeshkernelapi.html#ac6d921edc9c4cd6801d8d5522d7aa809',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5finsert_5fedge_444',['mkernel_mesh2d_insert_edge',['../namespacemeshkernelapi.html#aa38c500f59b002ad798c50b8dbf66b4b',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5finsert_5fnode_445',['mkernel_mesh2d_insert_node',['../namespacemeshkernelapi.html#a90f687ae29333b6400a412b82629c4ef',1,'meshkernelapi']]],
-  ['mkernel_5fmesh2d_5fintersections_5ffrom_5fpolygon_446',['mkernel_mesh2d_intersections_from_polygon',['../namespacemeshkernelapi.html#a43ddba9457a9f1d4fc87e8c6fbb2c672',1,'meshkernelapi']]],
+  ['mkernel_5fmesh2d_5fintersections_5ffrom_5fpolygon_446',['mkernel_mesh2d_intersections_from_polygon',['../namespacemeshkernelapi.html#a43a38a425a4c575cd1de377a5ecad354',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_447',['mkernel_mesh2d_make_rectangular_mesh',['../namespacemeshkernelapi.html#a68a432823c03f75fefa35669bb712e0d',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_5ffrom_5fpolygon_448',['mkernel_mesh2d_make_rectangular_mesh_from_polygon',['../namespacemeshkernelapi.html#a66b026000339c8b861a465a968794c24',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_5fon_5fextension_449',['mkernel_mesh2d_make_rectangular_mesh_on_extension',['../namespacemeshkernelapi.html#a6d559487b89e3bde2ed59bb1c8b00031',1,'meshkernelapi']]],
