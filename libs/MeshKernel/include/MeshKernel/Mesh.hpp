@@ -228,6 +228,12 @@ namespace meshkernel
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
 
+        /// @brief Compute the minimum edge length of the edges included in the polygon.
+        /// An edge is considered included if one of the two nodes is inside the polygon.
+        /// @param[in] polygon The polygon for considering an edge included
+        /// @return The minimum edge length
+        double ComputeMinEdgeLength(const Polygons& polygon) const;
+
         /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 

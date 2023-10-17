@@ -1190,8 +1190,9 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
 
-            const double fractionalDistance = 1e-6;
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, fractionalDistance);
+            const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
+            const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius);
         }
         catch (...)
         {
