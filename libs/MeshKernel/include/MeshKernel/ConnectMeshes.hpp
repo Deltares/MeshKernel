@@ -84,10 +84,10 @@ namespace meshkernel
         {
             ///@brief Hanging node indices
             BoundedIntegerArray hangingNodes{constants::missing::uintValue,
-                constants::missing::uintValue,
-                constants::missing::uintValue,
-                constants::missing::uintValue,
-                constants::missing::uintValue};
+                                             constants::missing::uintValue,
+                                             constants::missing::uintValue,
+                                             constants::missing::uintValue,
+                                             constants::missing::uintValue};
             /// @brief Number of hanging nodes along single irregular edge.
             UInt edgeCount = 0;
             /// @brief Start node of the irregular edge
