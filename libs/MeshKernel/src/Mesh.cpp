@@ -278,17 +278,24 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
     const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
 
-    UInt index = 0;
+    UInt filteredNodeCount = 0;
     for (UInt i = 0; i < GetNumNodes(); ++i)
     {
         if (isNodeInPolygon[i])
         {
-            filteredNodes[index] = m_nodes[i];
-            originalNodeIndices[index] = i;
-            index++;
+            filteredNodes[filteredNodeCount] = m_nodes[i];
+            originalNodeIndices[filteredNodeCount] = i;
+            filteredNodeCount++;
         }
     }
-    filteredNodes.resize(index);
+
+    // no node to merge
+    if (filteredNodeCount == 0)
+    {
+        return;
+    }
+
+    filteredNodes.resize(filteredNodeCount);
 
     // Update the R-Tree of the mesh nodes
     RTree nodesRtree;
