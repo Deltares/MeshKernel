@@ -885,10 +885,7 @@ std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location lo
     std::vector<bool> result(locations.size(), false);
     for (UInt i = 0; i < result.size(); ++i)
     {
-        if (polygon.IsPointInPolygon(locations[i], 0))
-        {
-            result[i] = true;
-        }
+        result[i] = polygon.IsPointInPolygon(locations[i], 0);
     }
 
     return result;
