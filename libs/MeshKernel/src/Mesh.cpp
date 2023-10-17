@@ -276,7 +276,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
     std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
-    const auto isNodeInPolygon = ComputeLocationInPolygon(polygon, Location::Nodes);
+    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
 
     UInt index = 0;
     for (UInt i = 0; i < GetNumNodes(); ++i)
@@ -401,7 +401,7 @@ double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
     auto const numEdges = GetNumEdges();
     auto result = std::numeric_limits<double>::max();
 
-    const auto isNodeInPolygon = ComputeLocationInPolygon(polygon, Location::Nodes);
+    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
     for (UInt e = 0; e < numEdges; e++)
     {
         const auto& [firstNode, secondNode] = m_edges[e];
@@ -897,7 +897,7 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
     return result;
 }
 
-std::vector<bool> Mesh::ComputeLocationInPolygon(const Polygons& polygon, Location location) const
+std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
 {
     const auto locations = ComputeLocations(location);
     std::vector<bool> result(locations.size());

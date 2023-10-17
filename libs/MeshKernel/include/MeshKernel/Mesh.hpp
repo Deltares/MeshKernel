@@ -306,10 +306,10 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
 
         /// @brief Computes if a location is in polygon.
-        /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @param[in] polygon The input polygon.
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        [[nodiscard]] std::vector<bool> ComputeLocationInPolygon(const Polygons& polygon, Location location) const;
+        [[nodiscard]] std::vector<bool> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
