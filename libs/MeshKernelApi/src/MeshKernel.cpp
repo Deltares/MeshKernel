@@ -1190,8 +1190,8 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
 
-            const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, minEdgeLength * 0.01);
+            const double fractionalDistance = 1e-6;
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, fractionalDistance);
         }
         catch (...)
         {

@@ -396,24 +396,6 @@ void Mesh::ComputeEdgesLengths()
     }
 }
 
-double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
-{
-    auto const numEdges = GetNumEdges();
-    auto result = std::numeric_limits<double>::max();
-
-    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        const auto& [firstNode, secondNode] = m_edges[e];
-        if (!isNodeInPolygon[firstNode] && !isNodeInPolygon[secondNode])
-        {
-            continue;
-        }
-        result = std::min(result, m_edgeLengths[e]);
-    }
-    return result;
-}
-
 void Mesh::ComputeEdgesCenters()
 {
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
@@ -901,7 +883,7 @@ std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location lo
 {
     const auto locations = ComputeLocations(location);
     std::vector<bool> result(locations.size());
-    for (UInt i = 0; i < GetNumNodes(); ++i)
+    for (UInt i = 0; i < locations.size(); ++i)
     {
         if (polygon.IsPointInPolygon(locations[i], 0))
         {
