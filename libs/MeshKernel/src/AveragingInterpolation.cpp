@@ -246,3 +246,30 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
 
     return constants::missing::doubleValue;
 }
+
+void meshkernel::HessianAveragingInterpolation::computeHessianSamples(Mesh2D& mesh,
+                                                                      const std::vector<Sample>& samples,
+                                                                      UInt numX,
+                                                                      UInt numY,
+                                                                      Hessian& hessian)
+{
+    HessianCalculator hessianCalculator;
+    hessianCalculator.Compute(samples, mesh.m_projection, numX, numY, hessian);
+}
+
+meshkernel::HessianAveragingInterpolation::HessianAveragingInterpolation(Mesh2D& mesh,
+                                                                         const std::vector<Sample>& samples,
+                                                                         UInt numX,
+                                                                         UInt numY,
+                                                                         Method method,
+                                                                         Mesh::Location locationType,
+                                                                         double relativeSearchRadius,
+                                                                         bool useClosestSampleIfNoneAvailable,
+                                                                         bool subtractSampleValues,
+                                                                         UInt minNumSamples)
+    : AveragingInterpolation(mesh, m_hessianSamples, method, locationType, relativeSearchRadius, useClosestSampleIfNoneAvailable, subtractSampleValues, minNumSamples),
+      m_hessianSamples(samples.size())
+{
+    Hessian hessian(5, numX, numY);
+    computeHessianSamples(mesh, samples, numX, numY, hessian);
+}

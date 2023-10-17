@@ -27,12 +27,14 @@
 
 #pragma once
 
-#include "MeshInterpolation.hpp"
+#include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshInterpolation.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
-#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/RidgeRefinement.hpp"
 
 namespace meshkernel
 {
@@ -156,4 +158,32 @@ namespace meshkernel
 
         RTree m_samplesRtree; ///< The samples tree
     };
+
+    //--------------------------------
+
+    class HessianAveragingInterpolation : public AveragingInterpolation
+    {
+    public:
+        HessianAveragingInterpolation(Mesh2D& mesh,
+                                      const std::vector<Sample>& samples,
+                                      UInt numX,
+                                      UInt numY,
+                                      Method method,
+                                      Mesh::Location locationType,
+                                      double relativeSearchRadius,
+                                      bool useClosestSampleIfNoneAvailable,
+                                      bool subtractSampleValues,
+                                      UInt minNumSamples);
+
+    private:
+        void computeHessianSamples(Mesh2D& mesh,
+                                   const std::vector<Sample>& samples,
+                                   UInt numX,
+                                   UInt numY,
+                                   Hessian& hessian);
+
+        Hessian m_hessian;
+        std::vector<Sample> m_hessianSamples;
+    };
+
 } // namespace meshkernel

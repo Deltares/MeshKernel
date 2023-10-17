@@ -170,6 +170,70 @@ namespace meshkernel
                                      Hessian& hessian) const;
     };
 
+    class HessianCalculator final
+    {
+    public:
+        /// @brief Intended to be the computation of the Hessian
+        void Compute(const std::vector<Sample>& rawSamplePoints,
+                     const Projection projection,
+                     const UInt numX,
+                     const UInt numY,
+                     Hessian& hessian) const;
+
+    private:
+        /// @brief Smooth sample data
+        ///
+        /// From (smooth_samples.f90)
+        void SmoothSamples(const std::vector<Sample>& sampleData,
+                           const UInt numberOfSmoothingIterations,
+                           Hessian& hessian) const;
+
+        /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
+        ///
+        /// From (comp_grad.f90)
+        void ComputeGradient(const std::vector<Sample>& samplePoints,
+                             const Projection projection,
+                             const Hessian& hessian,
+                             const UInt ip0,
+                             const UInt ip1,
+                             const UInt ip0L,
+                             const UInt ip0R,
+                             const UInt ip1L,
+                             const UInt ip1R,
+                             meshkernel::Vector& gradient,
+                             meshkernel::Vector& S,
+                             double& dareaL,
+                             double& dareaR) const;
+
+        /// @brief Compute the gradient of the sample data along an edge
+        ///
+        /// From (comp_samplegradi.f90)
+        void ComputeSampleGradient(const std::vector<Sample>& samplePoints,
+                                   const Projection projection,
+                                   const Hessian& hessian,
+                                   const UInt direction,
+                                   const UInt i,
+                                   const UInt j,
+                                   meshkernel::Vector& gradient,
+                                   meshkernel::Vector& sn,
+                                   double& dareaL,
+                                   double& dareaR) const;
+
+        /// @brief Compute the Hessian
+        ///
+        /// From (comp_samplehessian.f90)
+        void ComputeHessian(const std::vector<Sample>& samplePoints,
+                            const Projection projection,
+                            Hessian& hessian) const;
+
+        /// @brief Prepare the sample data for the Hessian computation.
+        ///
+        /// From (prepare_samplehessian.f90)
+        void PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
+                                     const Projection projection,
+                                     Hessian& hessian) const;
+    };
+
 } // namespace meshkernel
 
 inline meshkernel::UInt meshkernel::Hessian::size(const UInt dim) const

@@ -5,10 +5,15 @@
 #include <random>
 #include <vector>
 
+#include "MeshKernel/AveragingInterpolation.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/RidgeRefinement.hpp"
+
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/SampleFileReader.hpp"
 
 namespace mk = meshkernel;
 
@@ -119,4 +124,67 @@ TEST(HessianTests, TidyPointsTest)
         EXPECT_TRUE(std::find(samplePoints.begin(), samplePoints.end(), point) != samplePoints.end());
     }
 #endif
+}
+
+std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
+{
+    meshkernel::UInt size = nx * nx;
+    std::vector<meshkernel::Sample> sampleData(size);
+
+    double centreX = (static_cast<double>((nx - 1) / 2) * deltaX);
+    double centreY = (static_cast<double>((ny - 1) / 2) * deltaY);
+
+    double x = 0.0;
+    double y = 0.0;
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < nx; ++i)
+    {
+        y = 0.0;
+
+        for (meshkernel::UInt j = 0; j < ny; ++j)
+        {
+            double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            double sample = std::exp(-0.2 * centre);
+            sampleData[count] = {x, y, sample};
+            y += deltaY;
+            ++count;
+        }
+
+        x += deltaX;
+    }
+
+    return sampleData;
+}
+
+TEST(HessianTests, CheckHessian)
+{
+    meshkernel::UInt nx = 11;
+    meshkernel::UInt ny = 11;
+
+    double deltaX = 1.0;
+    double deltaY = 1.0;
+
+    double dimX = (nx - 1) * deltaX;
+    double dimY = (ny - 1) * deltaY;
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh = MakeRectangularMeshForTesting(nx, ny, dimX, dimY, meshkernel::Projection::cartesian);
+
+    meshkernel::UInt superSample = 3;
+
+    meshkernel::UInt sampleNx = (nx - 1) * superSample + 1;
+    meshkernel::UInt sampleNy = (ny - 1) * superSample + 1;
+
+    double sampleDeltaX = deltaX / static_cast<double>(superSample);
+    double sampleDeltaY = deltaY / static_cast<double>(superSample);
+
+    double radius = 2.0 * sampleDeltaX;
+
+    std::vector<meshkernel::Sample> sampleData = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
+    meshkernel::HessianAveragingInterpolation hessian(*mesh, sampleData,
+                                                      sampleNx, sampleNy,
+                                                      meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                      meshkernel::Mesh::Location::Nodes,
+                                                      radius, false, false, 1);
 }
