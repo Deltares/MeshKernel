@@ -2290,7 +2290,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2338,7 +2338,7 @@ namespace meshkernelapi
 
             meshkernel::Mesh2D mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, meshToConnect);
             meshkernel::ConnectMeshes connectMeshes;
-            connectMeshes.Compute(mergedMeshes);
+            connectMeshes.Compute(mergedMeshes, searchFraction);
             *meshKernelState[meshKernelId].m_mesh2d = mergedMeshes;
         }
         catch (...)
