@@ -404,6 +404,11 @@ double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
     const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
     for (UInt e = 0; e < numEdges; e++)
     {
+        const auto& [firstNode, secondNode] = m_edges[e];
+        if (!isNodeInPolygon[firstNode] && !isNodeInPolygon[secondNode])
+        {
+            continue;
+        }
         result = std::min(result, m_edgeLengths[e]);
     }
     return result;
