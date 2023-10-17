@@ -48,13 +48,18 @@ namespace meshkernel
         /// @brief The default and maximum value of the fraction of the edge length used to determine if edges are adjacent.
         static constexpr double DefaultMaximumSeparationFraction = 0.4;
 
+        /// @brief The cos of the minimum angle between two lines to be considered parallel or almost parallel.
+        ///
+        /// The angle may be close to 0 or pi.
+        static constexpr double minimumParallelDeviation = 0.9;
+
         /// @brief Connect grids.
         ///
         /// @param [in,out] mesh The mesh
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
         /// If the value is outside of this range then a RangeError will be thrown.
-        void Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction) const;
+        static void Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
 
     private:
         /// @brief The maximum number of hanging nodes along a single element edge
@@ -79,10 +84,10 @@ namespace meshkernel
         {
             ///@brief Hanging node indices
             BoundedIntegerArray hangingNodes{constants::missing::uintValue,
-                                             constants::missing::uintValue,
-                                             constants::missing::uintValue,
-                                             constants::missing::uintValue,
-                                             constants::missing::uintValue};
+                constants::missing::uintValue,
+                constants::missing::uintValue,
+                constants::missing::uintValue,
+                constants::missing::uintValue};
             /// @brief Number of hanging nodes along single irregular edge.
             UInt edgeCount = 0;
             /// @brief Start node of the irregular edge
@@ -103,22 +108,22 @@ namespace meshkernel
         /// @param [out] areAdjacent Indicates is edge1 and edge2 are adjacent
         /// @param [out] startNode End point nodes, if not nullvalue then node is hanging node
         /// @param [out] endNode End point nodes, if not nullvalue then node is hanging node
-        void AreEdgesAdjacent(const Mesh2D& mesh,
-                              const double separationFraction,
-                              const UInt edge1,
-                              const UInt edge2,
-                              bool& areAdjacent,
-                              UInt& startNode,
-                              UInt& endNode) const;
+        static void AreEdgesAdjacent(const Mesh2D& mesh,
+                                     const double separationFraction,
+                                     const UInt edge1,
+                                     const UInt edge2,
+                                     bool& areAdjacent,
+                                     UInt& startNode,
+                                     UInt& endNode);
 
         /// @brief Find all quadrilateral elements that do no have a neighbour across any of edges.
         ///
         /// @param [in] mesh The mesh
         /// @param [in,out] elementsOnDomainBoundary List of elements that do not have neighbour
         /// @param [in,out] edgesOnDomainBoundary List of edges that do have elements on one side only
-        void GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
-                                                      std::vector<UInt>& elementsOnDomainBoundary,
-                                                      std::vector<UInt>& edgesOnDomainBoundary) const;
+        static void GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
+                                                             std::vector<UInt>& elementsOnDomainBoundary,
+                                                             std::vector<UInt>& edgesOnDomainBoundary);
 
         /// @brief Get list of node id's ordered with distance from given point.
         ///
@@ -127,18 +132,18 @@ namespace meshkernel
         /// @param [in] numberOfNodes Number of nodes to have distance computed
         /// @param [in] point Start point from which node distances are to be computed
         /// @param [out] nearestNeighbours List of nearest nodes in order of distance from point
-        void GetOrderedDistanceFromPoint(const Mesh2D& mesh,
-                                         const std::vector<UInt>& nodeIndices,
-                                         const UInt numberOfNodes,
-                                         const Point& point,
-                                         BoundedIntegerArray& nearestNeighbours) const;
+        static void GetOrderedDistanceFromPoint(const Mesh2D& mesh,
+                                                const std::vector<UInt>& nodeIndices,
+                                                const UInt numberOfNodes,
+                                                const Point& point,
+                                                BoundedIntegerArray& nearestNeighbours);
 
         /// @brief Merge coincident nodes
         ///
         /// @param [in,out] mesh The mesh
         /// @param [in] nodesToMerge List of nodes to be merged
         /// @param [in,out] mergeIndicator Indicates if node needs to be merged.
-        void MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator) const;
+        static void MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator);
 
         /// @brief Free one hanging node along an irregular edge.
         ///
@@ -146,10 +151,10 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging node will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging node will be connected
-        void FreeOneHangingNode(Mesh2D& mesh,
-                                const BoundedIntegerArray& hangingNodes,
-                                const UInt startNode,
-                                const UInt endNode) const;
+        static void FreeOneHangingNode(Mesh2D& mesh,
+                                       const BoundedIntegerArray& hangingNodes,
+                                       const UInt startNode,
+                                       const UInt endNode);
 
         /// @brief Free two hanging nodes along an irregular edge.
         ///
@@ -159,12 +164,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        void FreeTwoHangingNodes(Mesh2D& mesh,
-                                 const UInt faceId,
-                                 const UInt edgeId,
-                                 const BoundedIntegerArray& hangingNodes,
-                                 const UInt startNode,
-                                 const UInt endNode) const;
+        static void FreeTwoHangingNodes(Mesh2D& mesh,
+                                        const UInt faceId,
+                                        const UInt edgeId,
+                                        const BoundedIntegerArray& hangingNodes,
+                                        const UInt startNode,
+                                        const UInt endNode);
 
         /// @brief Free three hanging nodes along an irregular edge.
         ///
@@ -174,12 +179,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        void FreeThreeHangingNodes(Mesh2D& mesh,
-                                   const UInt faceId,
-                                   const UInt edgeId,
-                                   const BoundedIntegerArray& hangingNodes,
-                                   const UInt startNode,
-                                   const UInt endNode) const;
+        static void FreeThreeHangingNodes(Mesh2D& mesh,
+                                          const UInt faceId,
+                                          const UInt edgeId,
+                                          const BoundedIntegerArray& hangingNodes,
+                                          const UInt startNode,
+                                          const UInt endNode);
 
         /// @brief Free four hanging nodes along an irregular edge.
         ///
@@ -189,12 +194,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        void FreeFourHangingNodes(Mesh2D& mesh,
-                                  const UInt faceId,
-                                  const UInt edgeId,
-                                  const BoundedIntegerArray& hangingNodes,
-                                  const UInt startNode,
-                                  const UInt endNode) const;
+        static void FreeFourHangingNodes(Mesh2D& mesh,
+                                         const UInt faceId,
+                                         const UInt edgeId,
+                                         const BoundedIntegerArray& hangingNodes,
+                                         const UInt startNode,
+                                         const UInt endNode);
 
         /// @brief Free any hanging nodes along an irregular edge.
         ///
@@ -205,13 +210,13 @@ namespace meshkernel
         /// @brief [in] boundaryEdge The irregular edge
         /// @brief [in] boundaryNode End point of erregular edge, required to order the hanging nodes
         /// @brief [in] edgeId Edge along opposite side of irregular edge, required to get next adjacent element
-        void FreeHangingNodes(Mesh2D& mesh,
-                              const UInt numberOfHangingNodes,
-                              const std::vector<UInt>& hangingNodesOnEdge,
-                              const UInt faceId,
-                              const Edge& boundaryEdge,
-                              const Point& boundaryNode,
-                              const UInt edgeId) const;
+        static void FreeHangingNodes(Mesh2D& mesh,
+                                     const UInt numberOfHangingNodes,
+                                     const std::vector<UInt>& hangingNodesOnEdge,
+                                     const UInt faceId,
+                                     const Edge& boundaryEdge,
+                                     const Point& boundaryNode,
+                                     const UInt edgeId);
 
         /// @brief Find and retain any hanging node id's
         ///
@@ -219,10 +224,10 @@ namespace meshkernel
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @param [in] edgesOnDomainBoundary List of edges along domain boundary, more specifically edges with only a single element attached
         /// @param [in,out] irregularEdges List of irregular edges with hanging nodes
-        void GatherHangingNodeIds(const Mesh2D& mesh,
-                                  const double separationFraction,
-                                  const std::vector<UInt>& edgesOnDomainBoundary,
-                                  IrregularEdgeInfoArray& irregularEdges) const;
+        static void GatherHangingNodeIds(const Mesh2D& mesh,
+                                         const double separationFraction,
+                                         const std::vector<UInt>& edgesOnDomainBoundary,
+                                         IrregularEdgeInfoArray& irregularEdges);
 
         /// @brief Gather all the nodes that need to be merged.
         ///
@@ -233,11 +238,11 @@ namespace meshkernel
         /// @param [in,out] mergeIndicator List of indicators, indicating if node has been processed and should be merged or not
         ///
         /// Before merging there may be 2 or more nodes that are at the same point.
-        void GatherNodesToMerge(const UInt startNode,
-                                const UInt endNode,
-                                const Edge& boundaryEdge,
-                                std::vector<NodesToMerge>& nodesToMerge,
-                                std::vector<MergeIndicator>& mergeIndicator) const;
+        static void GatherNodesToMerge(const UInt startNode,
+                                       const UInt endNode,
+                                       const Edge& boundaryEdge,
+                                       std::vector<NodesToMerge>& nodesToMerge,
+                                       std::vector<MergeIndicator>& mergeIndicator);
 
         /// @brief Gather hanging nodes along the irregular edge.
         ///
@@ -247,12 +252,12 @@ namespace meshkernel
         /// @param [in,out] hangingNodesOnEdge List of hanging node along edge
         /// @param [in,out] numberOfHangingNodes Number of hanging nodes along edge
         /// @param [in,out] mergeIndicator List of indicators, indicating if node has been processed and should be merged or not
-        void GatherHangingNodes(const UInt primaryStartNode,
-                                const UInt primaryEndNode,
-                                const Edge& irregularEdge,
-                                std::vector<UInt>& hangingNodesOnEdge,
-                                UInt& numberOfHangingNodes,
-                                std::vector<MergeIndicator>& mergeIndicator) const;
+        static void GatherHangingNodes(const UInt primaryStartNode,
+                                       const UInt primaryEndNode,
+                                       const Edge& irregularEdge,
+                                       std::vector<UInt>& hangingNodesOnEdge,
+                                       UInt& numberOfHangingNodes,
+                                       std::vector<MergeIndicator>& mergeIndicator);
     };
 
 } // namespace meshkernel
