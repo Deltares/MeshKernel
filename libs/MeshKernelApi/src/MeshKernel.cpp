@@ -1191,7 +1191,7 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
 
             const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, minEdgeLength * 0.001);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, minEdgeLength * 0.01);
         }
         catch (...)
         {
