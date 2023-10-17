@@ -1,15 +1,17 @@
 #include "MeshKernel/ConnectMeshes.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/RangeCheck.hpp"
 
 #include <ranges>
 
 void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
+                                                 const double separationFraction,
                                                  const UInt edge1,
                                                  const UInt edge2,
                                                  bool& areAdjacent,
                                                  UInt& startNode,
-                                                 UInt& endNode) const
+                                                 UInt& endNode)
 {
     const Point edge1Start = mesh.m_nodes[mesh.m_edges[edge1].first];
     const Point edge1End = mesh.m_nodes[mesh.m_edges[edge1].second];
@@ -27,7 +29,7 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
 
     const double edge1Length = ComputeDistance(edge1Start, edge1End, mesh.m_projection);
     const double edge2Length = ComputeDistance(edge2Start, edge2End, mesh.m_projection);
-    const double minimumLength = 0.4 * std::min(edge1Length, edge2Length);
+    const double minimumLength = separationFraction * std::min(edge1Length, edge2Length);
 
     if (edge1Length <= edge2Length)
     {
@@ -63,12 +65,15 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
         {
             endNode = mesh.m_edges[edge2].second;
         }
+
+        double absCosPhi = std::abs(NormalizedInnerProductTwoSegments(edge1Start, edge1End, edge2Start, edge2End, mesh.m_projection));
+        areAdjacent = (absCosPhi > minimumParallelDeviation);
     }
 }
 
 void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
                                                                          std::vector<UInt>& elementsOnDomainBoundary,
-                                                                         std::vector<UInt>& edgesOnDomainBoundary) const
+                                                                         std::vector<UInt>& edgesOnDomainBoundary)
 {
     for (UInt i = 0; i < mesh.m_edges.size(); ++i)
     {
@@ -87,8 +92,9 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
 }
 
 void meshkernel::ConnectMeshes::GatherHangingNodeIds(const Mesh2D& mesh,
+                                                     const double separationFraction,
                                                      const std::vector<UInt>& edgesOnDomainBoundary,
-                                                     IrregularEdgeInfoArray& irregularEdges) const
+                                                     IrregularEdgeInfoArray& irregularEdges)
 {
     for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
     {
@@ -108,7 +114,7 @@ void meshkernel::ConnectMeshes::GatherHangingNodeIds(const Mesh2D& mesh,
             bool areAdjacent = false;
             IrregularEdgeInfo& edgeInfo = irregularEdges[i];
 
-            AreEdgesAdjacent(mesh, edgeI, edgeJ, areAdjacent, startNode, endNode);
+            AreEdgesAdjacent(mesh, separationFraction, edgeI, edgeJ, areAdjacent, startNode, endNode);
 
             if (!areAdjacent)
             {
@@ -135,7 +141,7 @@ void meshkernel::ConnectMeshes::GatherNodesToMerge(const UInt startNode,
                                                    const UInt endNode,
                                                    const Edge& boundaryEdge,
                                                    std::vector<NodesToMerge>& nodesToMerge,
-                                                   std::vector<MergeIndicator>& mergeIndicator) const
+                                                   std::vector<MergeIndicator>& mergeIndicator)
 {
     if (startNode != constants::missing::uintValue && mergeIndicator[boundaryEdge.first] == MergeIndicator::Initial)
     {
@@ -155,7 +161,7 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
                                                    const Edge& irregularEdge,
                                                    std::vector<UInt>& hangingNodesOnEdge,
                                                    UInt& numberOfHangingNodes,
-                                                   std::vector<MergeIndicator>& mergeIndicator) const
+                                                   std::vector<MergeIndicator>& mergeIndicator)
 {
     const UInt secondaryStartNode = irregularEdge.first;
     const UInt secondaryEndNode = irregularEdge.second;
@@ -175,8 +181,11 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
     }
 }
 
-void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh) const
+void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction)
 {
+    // Check that the separationFraction is in correct range (0.0, max]
+    range_check::CheckInLeftHalfOpenInterval(separationFraction, 0.0, DefaultMaximumSeparationFraction, "Separation Fraction");
+
     // Only here to shorten several of the initialisations below
     static constexpr UInt missingValue = constants::missing::uintValue;
     const UInt numberOfEdges = mesh.GetNumEdges();
@@ -192,7 +201,7 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh) const
     GetQuadrilateralElementsOnDomainBoundary(mesh, elementsOnDomainBoundary, edgesOnDomainBoundary);
 
     IrregularEdgeInfoArray irregularEdges(numberOfEdges);
-    GatherHangingNodeIds(mesh, edgesOnDomainBoundary, irregularEdges);
+    GatherHangingNodeIds(mesh, separationFraction, edgesOnDomainBoundary, irregularEdges);
 
     std::vector<bool> adjacentEdgeIndicator(numberOfEdges, true);
     std::vector<NodesToMerge> nodesToMerge;
@@ -258,16 +267,19 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh) const
     mesh.Administrate();
 }
 
-void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator) const
+void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator)
 {
 
     for (const auto& [coincidingNodeFirst, coincidingNodeSecond] : nodesToMerge)
     {
-        if (mergeIndicator[coincidingNodeSecond] != MergeIndicator::DoNotMerge)
+        using enum MergeIndicator;
+
+        if (mergeIndicator[coincidingNodeSecond] != DoNotMerge)
         {
             mesh.MergeTwoNodes(coincidingNodeFirst, coincidingNodeSecond);
             // Set to MergeIndicator::DoNotMerge so it will not be processed again.
-            mergeIndicator[coincidingNodeSecond] = MergeIndicator::DoNotMerge;
+            mergeIndicator[coincidingNodeFirst] = DoNotMerge;
+            mergeIndicator[coincidingNodeSecond] = DoNotMerge;
         }
     }
 }
@@ -276,7 +288,7 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
                                                             const std::vector<UInt>& nodeIndices,
                                                             const UInt numberOfNodes,
                                                             const Point& point,
-                                                            BoundedIntegerArray& nearestNeighbours) const
+                                                            BoundedIntegerArray& nearestNeighbours)
 {
     std::array<double, m_maximumNumberOfIrregularElementsAlongEdge> distance;
     BoundedIntegerArray distanceIndex;
@@ -301,7 +313,7 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
     }
 }
 
-void meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode) const
+void meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode)
 {
     //
     // 2------+------+
@@ -321,7 +333,7 @@ void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
                                                     const UInt edgeId,
                                                     const BoundedIntegerArray& hangingNodes,
                                                     const UInt startNode,
-                                                    const UInt endNode) const
+                                                    const UInt endNode)
 {
     //
     // 2------4------+------+
@@ -367,7 +379,7 @@ void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
                                                       const UInt edgeId,
                                                       const BoundedIntegerArray& hangingNodes,
                                                       const UInt startNode,
-                                                      const UInt endNode) const
+                                                      const UInt endNode)
 {
     //
     // 2------4------+------+
@@ -412,7 +424,7 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
                                                      const UInt edgeId,
                                                      const BoundedIntegerArray& hangingNodes,
                                                      const UInt startNode,
-                                                     const UInt endNode) const
+                                                     const UInt endNode)
 {
     //
     //  +------+------+------+------+
@@ -542,7 +554,7 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
                                                  const UInt faceId,
                                                  const Edge& boundaryEdge,
                                                  const Point& boundaryNode,
-                                                 const UInt edgeId) const
+                                                 const UInt edgeId)
 {
     if (numberOfHangingNodes == 0)
     {
