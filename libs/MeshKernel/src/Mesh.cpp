@@ -882,8 +882,8 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
 std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
 {
     const auto locations = ComputeLocations(location);
-    std::vector<bool> result(locations.size());
-    for (UInt i = 0; i < locations.size(); ++i)
+    std::vector<bool> result(locations.size(), false);
+    for (UInt i = 0; i < result.size(); ++i)
     {
         if (polygon.IsPointInPolygon(locations[i], 0))
         {
