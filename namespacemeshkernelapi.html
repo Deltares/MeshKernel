@@ -109,9 +109,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a8e737d3ce03b109b6aaff17396f63aac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">mkernel_allocate_state</a> (int projectionType, int &amp;meshKernelId)</td></tr>
 <tr class="memdesc:a8e737d3ce03b109b6aaff17396f63aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">More...</a><br /></td></tr>
 <tr class="separator:a8e737d3ce03b109b6aaff17396f63aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39828fb2f05ddd122e39012787aa390f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a39828fb2f05ddd122e39012787aa390f">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
-<tr class="memdesc:a39828fb2f05ddd122e39012787aa390f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two or more disconnected regions along boundary.  <a href="namespacemeshkernelapi.html#a39828fb2f05ddd122e39012787aa390f">More...</a><br /></td></tr>
-<tr class="separator:a39828fb2f05ddd122e39012787aa390f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23418612b67e544a81b53b49da588b8c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a23418612b67e544a81b53b49da588b8c">mkernel_contacts_compute_boundary</a> (int meshKernelId, const int *oneDNodeMask, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, double searchRadius)</td></tr>
 <tr class="memdesc:a23418612b67e544a81b53b49da588b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)  <a href="namespacemeshkernelapi.html#a23418612b67e544a81b53b49da588b8c">More...</a><br /></td></tr>
 <tr class="separator:a23418612b67e544a81b53b49da588b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -343,6 +340,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="separator:af0a396a0ad56ec345564e4ae9db73e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156192886c65dcffa89cad36a5c78045"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045">mkernel_mesh2d_compute_orthogonalization</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">meshkernel::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="separator:a156192886c65dcffa89cad36a5c78045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf9d548882516ac652fd0f01a08c88bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction)</td></tr>
+<tr class="memdesc:acf9d548882516ac652fd0f01a08c88bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two or more disconnected regions along boundary.  <a href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">More...</a><br /></td></tr>
+<tr class="separator:acf9d548882516ac652fd0f01a08c88bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00ba5182f31ea1567bc258bb95cad221"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">mkernel_mesh2d_count_hanging_edges</a> (int meshKernelId, int &amp;numEdges)</td></tr>
 <tr class="memdesc:a00ba5182f31ea1567bc258bb95cad221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">More...</a><br /></td></tr>
 <tr class="separator:a00ba5182f31ea1567bc258bb95cad221"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3637,8 +3637,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a39828fb2f05ddd122e39012787aa390f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39828fb2f05ddd122e39012787aa390f">&#9670;&nbsp;</a></span>mkernel_mesh2d_connect_meshes()</h2>
+<a id="acf9d548882516ac652fd0f01a08c88bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf9d548882516ac652fd0f01a08c88bd">&#9670;&nbsp;</a></span>mkernel_mesh2d_connect_meshes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3653,7 +3653,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh2d</em>&#160;</td>
+          <td class="paramname"><em>mesh2d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>searchFraction</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -3668,6 +3674,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh states </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The mesh we want to connect to the main mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchFraction</td><td>Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness </td></tr>
   </table>
   </dd>
 </dl>

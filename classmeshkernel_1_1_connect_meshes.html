@@ -75,7 +75,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_connect_meshes-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::ConnectMeshes Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -87,39 +88,95 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="_connect_meshes_8hpp_source.html">ConnectMeshes.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:aa5bd748f0a7aebe22649b49147745813"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#aa5bd748f0a7aebe22649b49147745813">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh) const</td></tr>
-<tr class="memdesc:aa5bd748f0a7aebe22649b49147745813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <a href="classmeshkernel_1_1_connect_meshes.html#aa5bd748f0a7aebe22649b49147745813">More...</a><br /></td></tr>
-<tr class="separator:aa5bd748f0a7aebe22649b49147745813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#a499002ea3f0dd5c4a46bc0f199c1b4c8">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const double separationFraction=<a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a>)</td></tr>
+<tr class="memdesc:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <a href="classmeshkernel_1_1_connect_meshes.html#a499002ea3f0dd5c4a46bc0f199c1b4c8">More...</a><br /></td></tr>
+<tr class="separator:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:afb1fd3338a7412c67e52e15d8f389441"><td class="memItemLeft" align="right" valign="top"><a id="afb1fd3338a7412c67e52e15d8f389441"></a>
+static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a> = 0.4</td></tr>
+<tr class="memdesc:afb1fd3338a7412c67e52e15d8f389441"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default and maximum value of the fraction of the edge length used to determine if edges are adjacent. <br /></td></tr>
+<tr class="separator:afb1fd3338a7412c67e52e15d8f389441"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09a6db013dece330edf2cd2ff88c03f8"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#a09a6db013dece330edf2cd2ff88c03f8">minimumParallelDeviation</a> = 0.9</td></tr>
+<tr class="memdesc:a09a6db013dece330edf2cd2ff88c03f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The cos of the minimum angle between two lines to be considered parallel or almost parallel.  <a href="classmeshkernel_1_1_connect_meshes.html#a09a6db013dece330edf2cd2ff88c03f8">More...</a><br /></td></tr>
+<tr class="separator:a09a6db013dece330edf2cd2ff88c03f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Connects grids across element faces. </p>
 <p>Can be connected with upto 5 elements or 4 hanging nodes along an edge. </p><dl class="section note"><dt>Note</dt><dd>Currently only works for quadrilateral elements. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa5bd748f0a7aebe22649b49147745813"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5bd748f0a7aebe22649b49147745813">&#9670;&nbsp;</a></span>Compute()</h2>
+<a id="a499002ea3f0dd5c4a46bc0f199c1b4c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a499002ea3f0dd5c4a46bc0f199c1b4c8">&#9670;&nbsp;</a></span>Compute()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::ConnectMeshes::Compute </td>
+          <td class="memname">static void meshkernel::ConnectMeshes::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>separationFraction</em> = <code><a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Connect grids. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td>The mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">separationFraction</td><td>The fraction of the shortest edge to use when determining neighbour edge closeness </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction, If the value is outside of this range then a <a class="el" href="classmeshkernel_1_1_range_error.html" title="A class for throwing range error exceptions.">RangeError</a> will be thrown. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a09a6db013dece330edf2cd2ff88c03f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09a6db013dece330edf2cd2ff88c03f8">&#9670;&nbsp;</a></span>minimumParallelDeviation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr double meshkernel::ConnectMeshes::minimumParallelDeviation = 0.9</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The cos of the minimum angle between two lines to be considered parallel or almost parallel. </p>
+<p>The angle may be close to 0 or pi. </p>
 
 </div>
 </div>
