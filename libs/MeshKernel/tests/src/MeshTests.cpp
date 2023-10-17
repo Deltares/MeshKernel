@@ -69,10 +69,10 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
 
     // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::constants::missing::sizetValue)
-    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[0][1]);
-    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[1][1]);
-    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[2][1]);
-    ASSERT_EQ(meshkernel::constants::missing::sizetValue, mesh.m_edgesFaces[3][1]);
+    ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[0][1]);
+    ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[1][1]);
+    ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[2][1]);
+    ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[3][1]);
 }
 
 TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
@@ -224,7 +224,7 @@ TEST(Mesh, NodeMerging)
 
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
+    meshkernel::UInt nodeIndex = 0;
     for (auto j = 0; j < m; ++j)
     {
         for (auto i = 0; i < n; ++i)
@@ -267,10 +267,10 @@ TEST(Mesh, NodeMerging)
 
     nodes.resize(mesh.GetNumNodes() * 2);
     edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
-    int originalNodeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    meshkernel::UInt originalNodeIndex = 0;
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
@@ -308,33 +308,33 @@ TEST(Mesh, MillionQuads)
     const int n = 4; // x
     const int m = 4; // y
 
-    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<std::vector<meshkernel::UInt>> indicesValues(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = {(double)i, (double)j};
+            nodes[nodeIndex] = {static_cast<double>(i), static_cast<double>(j)};
             nodeIndex++;
         }
     }
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (auto j = 0; j < m; ++j)
+    for (meshkernel::UInt j = 0; j < m; ++j)
     {
-        for (auto i = 0; i < n - 1; ++i)
+        for (meshkernel::UInt i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (auto j = 0; j < m - 1; ++j)
+    for (meshkernel::UInt j = 0; j < m - 1; ++j)
     {
-        for (auto i = 0; i < n; ++i)
+        for (meshkernel::UInt i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -369,10 +369,11 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate();
 
-    ASSERT_EQ(5, mesh->m_nodesRTree.Size());
+    // builds edges RTree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(0, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(5, mesh->m_edgesRTree.Size());
 }
 
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
@@ -387,9 +388,13 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     mesh->DeleteNode(0);
 
-    // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    // when m_nodesRTreeRequiresUpdate
     mesh->Administrate();
 
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+
+    // After deleting a node, the nodes RTree is reduced
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
 }
 
@@ -397,7 +402,6 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
     meshkernel::Point newPoint{10.0, 10.0};
 
@@ -406,16 +410,17 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
     mesh->ConnectNodes(0, newNodeIndex);
 
-    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    // re-do mesh adminstration
     mesh->Administrate();
 
-    // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(0, mesh->m_nodesRTree.Size());
+    // re-build tree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
 
+    // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(5, mesh->m_edgesRTree.Size());
 }
 
-TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
+TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
@@ -424,9 +429,13 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     mesh->DeleteEdge(0);
 
-    // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
+    // re-do mesh administration
     mesh->Administrate();
 
+    // re-build tree
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+
+    // deleting an edge produces an edges rtree of size 3
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
 }
 
@@ -439,6 +448,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
+    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
     const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
 
@@ -455,6 +465,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
+    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
     const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
 
@@ -601,12 +612,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, 16},
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, 2},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters, true, 6},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, 2}
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, 16},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, 14},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 0},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 6}
 
         };
     }
@@ -674,10 +683,10 @@ public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, false, firstPolygon_, 9},
-            {meshkernel::Mesh2D::DeleteMeshOptions::AllNodesInside, true, firstPolygon_, 40},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, true, secondPolygon_, 41},
-            {meshkernel::Mesh2D::DeleteMeshOptions::FacesCompletelyIncluded, false, secondPolygon_, 24}};
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, firstPolygon_, 9},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, firstPolygon_, 48},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, secondPolygon_, 8},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, secondPolygon_, 49}};
     }
 };
 

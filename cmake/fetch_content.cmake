@@ -5,7 +5,7 @@ if(ENABLE_UNIT_TESTING)
   FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.11.0)
+  GIT_TAG v1.13.0)
 
   FetchContent_GetProperties(googletest)
   if(NOT googletest_POPULATED)
@@ -24,11 +24,11 @@ if(ENABLE_BENCHMARKING)
   # upcase the build type to make the option case-insensitive
   string(TOUPPER "${CMAKE_BUILD_TYPE}" UPCASED_CMAKE_BUILD_TYPE)
   if(UPCASED_CMAKE_BUILD_TYPE IN_LIST VALID_BUILD_TYPES)
-    # Fetch google benchmark    
+    # Fetch google benchmark
     FetchContent_Declare(
       googlebenchmark
       GIT_REPOSITORY https://github.com/google/benchmark.git
-      GIT_TAG v1.7.1
+      GIT_TAG v1.8.2
     )
 
     FetchContent_GetProperties(benchmark)
@@ -50,7 +50,7 @@ if(ENABLE_BENCHMARKING)
     set(ENABLE_BENCHMARKING_MEM_REPORT OFF)
     message(
       WARNING
-      "The benchmarks and their depenedencies can be built only if the build is configured "
+      "The benchmarks and their dependencies can be built only if the build is configured "
       "with CMAKE_BUILD_TYPE set to Release or RelWithDebInfo. "
       "The current build is configured with CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}."
       "All benchmarking configuration options are ignored."
@@ -60,15 +60,15 @@ endif()
 
 
 if(${USE_LIBFMT})
-  set(LIBFMT_VERSION 9.1.0)
+  set(LIBFMT_VERSION 10.0.0)
 
   message(
-    STATUS 
+    STATUS
     "${CMAKE_CXX_COMPILER_ID} v.${CMAKE_CXX_COMPILER_VERSION} does not support std::format, "
     "libfmt v.${LIBFMT_VERSION} will be used instead."
   )
 
-  
+
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -83,4 +83,20 @@ if(${USE_LIBFMT})
   endif()
 
   endif()
-  
+
+# Eigen
+# Note: v3.4.0 seems to have a problem detecting c++11 when MSVC is used, so the head master will be used here.
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        21cd3fe20990a5ac1d683806f605110962aac3f1
+)
+
+FetchContent_GetProperties(Eigen)
+
+set(BUILD_TESTING OFF)
+
+if(NOT eigen_POPULATED)
+  FetchContent_Populate(Eigen)
+  add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()

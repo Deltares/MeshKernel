@@ -26,10 +26,14 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <array>
 #include <ranges>
+#include <utility>
+#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Polygon.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -51,9 +55,8 @@ namespace meshkernel
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
-            AllNodesInside = 0,
-            FacesWithIncludedCircumcenters = 1,
-            FacesCompletelyIncluded = 2
+            InsideNotIntersected = 0,
+            InsideAndIntersected = 1
         };
 
         /// Enumerator describing the different node types
@@ -89,8 +92,8 @@ namespace meshkernel
         /// @param[in] projection The mesh projection
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
-               const std::vector<std::vector<size_t>>& faceNodes,
-               const std::vector<size_t>& numFaceNodes,
+               const std::vector<std::vector<UInt>>& faceNodes,
+               const std::vector<UInt>& numFaceNodes,
                Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
@@ -99,8 +102,8 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// @brief Perform mesh administration
-        void Administrate();
+        /// @brief Perform complete administration
+        void Administrate() override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -118,22 +121,22 @@ namespace meshkernel
         /// @param[out] polygonNodesCache      The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache  The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
-        void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
+        void ComputeFaceClosedPolygonWithLocalMappings(UInt faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
-                                                       std::vector<size_t>& localNodeIndicesCache,
-                                                       std::vector<size_t>& globalEdgeIndicesCache) const;
+                                                       std::vector<UInt>& localNodeIndicesCache,
+                                                       std::vector<UInt>& globalEdgeIndicesCache) const;
 
         /// @brief For a face create a closed polygon
         /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
+        void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
         /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges
         /// @returns       The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                   const std::vector<size_t>& edgesNumFaces) const;
+                                                   const std::vector<UInt>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of obtuse triangles
@@ -142,12 +145,12 @@ namespace meshkernel
         /// @brief Gets the edges crossing the small flow edges
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @returns The indices of the edges crossing small flow edges
-        [[nodiscard]] std::vector<size_t> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
+        [[nodiscard]] std::vector<UInt> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Gets the flow edges centers from the crossing edges
         /// @param[in] edges The crossing edges indices
         /// @returns The centers of the flow edges
-        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<size_t>& edges) const;
+        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<UInt>& edges) const;
 
         /// @brief Deletes small flow edges (removesmallflowlinks, part 1)
         ///
@@ -220,12 +223,12 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(size_t node, double enlargementFactor, std::vector<Point>& dualFace);
+        void MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
         /// @return The face indexses
-        [[nodiscard]] std::vector<size_t> SortedFacesAroundNode(size_t node) const;
+        [[nodiscard]] std::vector<UInt> SortedFacesAroundNode(UInt node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed
@@ -233,18 +236,18 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygon);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygonNodes The input mesh
-        /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] currentNode the current node
+        /// @param[in] polygon The input polygon
+        /// @param[in,out] isVisited the visited mesh nodes
+        /// @param[in,out] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
+        void WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
-                                  size_t& currentNode,
+                                  UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
-        [[nodiscard]] std::vector<size_t> GetHangingEdges() const;
+        [[nodiscard]] std::vector<UInt> GetHangingEdges() const;
 
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
@@ -252,7 +255,7 @@ namespace meshkernel
         /// @brief For a collection of points, compute the face indices including them.
         /// @param[in] points The input point vector.
         /// @return The face indices including the points.
-        [[nodiscard]] std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
+        [[nodiscard]] std::vector<UInt> PointFaceIndices(const std::vector<Point>& points);
 
         /// @brief Deletes a mesh in a polygon, using several options (delnet)
         /// @param[in] polygon        The polygon where to perform the operation
@@ -265,21 +268,14 @@ namespace meshkernel
         /// @param[in] firstPoint The first point of the segment
         /// @param[in] secondPoint The second point of the segment
         /// @return A tuple with the intersectedFace face index and intersected  edge index
-        [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
-
-        /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
-        /// @param[in] polyLine An input polyline, defined as a series of points
-        /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
-        [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
-                                 std::vector<FaceMeshPolylineIntersection>>
-        GetPolylineIntersections(const std::vector<Point>& polyLine);
+        [[nodiscard]] std::tuple<UInt, UInt> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
         /// @param[in] invertSelection Invert selection
         /// @param[in] includeIntersected Included the edges intersected by the polygon
         /// @return The edge mask
-        [[nodiscard]] std::vector<int> EdgesMaskOfFacesInPolygons(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
+        [[nodiscard]] std::vector<int> MaskEdgesOfFacesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected) const;
 
         /// @brief From the edge mask compute the node mask
         /// @param[in] edgeMask The edge mask
@@ -292,14 +288,36 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
-        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
+        /// @brief Find edge on the opposite side of the element
+        /// @note Currently only valid of quadrilateral elements.
+        /// Will throw exception NotImplementedError for non-quadrilateral element shapes.
+        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
+
+        /// @brief Get the next face adjacent to the edge on the opposite side.
+        /// @param [in] faceId The starting face
+        /// @param [in] edgeId The starting edge
+        /// @return Id of neighbour face along the edge
+        UInt NextFace(const UInt faceId, const UInt edgeId) const;
+
+        UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
+
+        /// @brief Merges mesh connectivity.
+        ///
+        /// Only merges the mesh connectivity graphs and updates indices.
+        /// @note Does not do any administration on the node, edges or elements,
+        /// it may be required to call Administrate after merging
+        static Mesh2D Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
 
     private:
         // orthogonalization
-        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
-        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+        static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
+        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
+
+        /// @brief Bounded array for storing hanging node indices.
+        using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -311,21 +329,31 @@ namespace meshkernel
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
         /// @param[in,out] nodalValues The nodal values building a closed polygon
-        void FindFacesRecursive(size_t startNode,
-                                size_t node,
-                                size_t previousEdge,
-                                size_t numClosingEdges,
-                                std::vector<size_t>& edges,
-                                std::vector<size_t>& nodes,
-                                std::vector<size_t>& sortedEdges,
-                                std::vector<size_t>& sortedNodes,
+        void FindFacesRecursive(UInt startNode,
+                                UInt node,
+                                UInt previousEdge,
+                                UInt numClosingEdges,
+                                std::vector<UInt>& edges,
+                                std::vector<UInt>& nodes,
+                                std::vector<UInt>& sortedEdges,
+                                std::vector<UInt>& sortedNodes,
                                 std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes The face nodes composing the triangles
         /// @param[in] nodes The node coordinates
         /// @returns If triangle has an acute triangle
-        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
+        [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
+
+        /// @brief Determine if there are duplicate node id's on the node array
+        ///
+        /// The parameter sortedNodes, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
+
+        /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        ///
+        /// The parameter sortedEdgesFaces, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
 
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()
@@ -335,7 +363,7 @@ namespace meshkernel
             std::ranges::fill(m_edgesNumFaces, 0);
 
             m_edgesFaces.resize(m_edges.size());
-            std::ranges::fill(m_edgesFaces, std::vector(2, constants::missing::sizetValue));
+            std::ranges::fill(m_edgesFaces, std::array{constants::missing::uintValue, constants::missing::uintValue});
 
             m_facesMassCenters.clear();
             m_faceArea.clear();
@@ -352,4 +380,5 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
     };
+
 } // namespace meshkernel

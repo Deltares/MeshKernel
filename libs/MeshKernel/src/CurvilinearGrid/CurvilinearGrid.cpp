@@ -35,21 +35,21 @@ using meshkernel::CurvilinearGridNodeIndices;
 
 CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
 
-CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection) : m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_gridNodes(grid)
 {
     if (!IsValid())
     {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid ");
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
 
     m_projection = projection;
-    m_numM = m_gridNodes.size();
-    m_numN = m_gridNodes[0].size();
+    m_numM = static_cast<UInt>(m_gridNodes.rows());
+    m_numN = static_cast<UInt>(m_gridNodes.cols());
 
     SetFlatCopies();
 }
 
-void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonIndex)
+void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonIndex)
 {
     // no polygons available
     if (polygons->IsEmpty())
@@ -58,69 +58,73 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
     }
 
     // no grid, return
-    if (m_gridNodes.empty())
+    if (lin_alg::MatrixIsEmpty(m_gridNodes))
     {
         return;
     }
 
-    const auto numN = m_gridNodes.size();
-    const auto numM = m_gridNodes[0].size();
+    const auto numN = static_cast<UInt>(m_gridNodes.rows());
+    const auto numM = static_cast<UInt>(m_gridNodes.cols());
 
-    std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
-    std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, true));
+    lin_alg::Matrix<bool> nodeBasedMask(numN, numM);
+    nodeBasedMask.fill(false);
+
+    lin_alg::Matrix<bool> faceBasedMask(numN - 1, numM - 1);
+    faceBasedMask.fill(true);
+
     // Mark points inside a polygonIndex
-    for (size_t n = 0; n < numN; ++n)
+    for (UInt n = 0; n < numN; ++n)
     {
-        for (size_t m = 0; m < numM; ++m)
+        for (UInt m = 0; m < numM; ++m)
         {
-            const auto isInPolygon = polygons->IsPointInPolygon(m_gridNodes[n][m], polygonIndex);
+            const auto isInPolygon = polygons->IsPointInPolygon(m_gridNodes(n, m), polygonIndex);
             if (isInPolygon)
             {
-                nodeBasedMask[n][m] = true;
+                nodeBasedMask(n, m) = true;
             }
         }
     }
 
     // Mark faces when all nodes are inside
-    for (size_t n = 0; n < numN - 1; ++n)
+    for (UInt n = 0; n < numN - 1; ++n)
     {
-        for (size_t m = 0; m < numM - 1; ++m)
+        for (UInt m = 0; m < numM - 1; ++m)
         {
-            if (!nodeBasedMask[n][m] ||
-                !nodeBasedMask[n + 1][m] ||
-                !nodeBasedMask[n][m + 1] ||
-                !nodeBasedMask[n + 1][m + 1])
+            if (!nodeBasedMask(n, m) ||
+                !nodeBasedMask(n + 1, m) ||
+                !nodeBasedMask(n, m + 1) ||
+                !nodeBasedMask(n + 1, m + 1))
             {
-                faceBasedMask[n][m] = false;
+                faceBasedMask(n, m) = false;
             }
         }
     }
 
     // Mark only the nodes of faces completely included in the polygonIndex
-    std::fill(nodeBasedMask.begin(), nodeBasedMask.end(), std::vector<bool>(numM, false));
-    for (size_t n = 0; n < numN - 1; ++n)
+    nodeBasedMask.fill(false);
+    for (UInt n = 0; n < numN - 1; ++n)
     {
-        for (size_t m = 0; m < numM - 1; ++m)
+        for (UInt m = 0; m < numM - 1; ++m)
         {
-            if (faceBasedMask[n][m])
+            if (faceBasedMask(n, m))
             {
-                nodeBasedMask[n][m] = true;
-                nodeBasedMask[n + 1][m] = true;
-                nodeBasedMask[n][m + 1] = true;
-                nodeBasedMask[n + 1][m + 1] = true;
+                nodeBasedMask(n, m) = true;
+                nodeBasedMask(n + 1, m) = true;
+                nodeBasedMask(n, m + 1) = true;
+                nodeBasedMask(n + 1, m + 1) = true;
             }
         }
     }
 
     // mark points inside a polygonIndex
-    for (size_t n = 0; n < numN; ++n)
+    for (UInt n = 0; n < numN; ++n)
     {
-        for (size_t m = 0; m < numM; ++m)
+        for (UInt m = 0; m < numM; ++m)
         {
-            if (!nodeBasedMask[n][m])
+            if (!nodeBasedMask(n, m))
             {
-                m_gridNodes[n][m].x = constants::missing::doubleValue;
-                m_gridNodes[n][m].y = constants::missing::doubleValue;
+                m_gridNodes(n, m).x = constants::missing::doubleValue;
+                m_gridNodes(n, m).y = constants::missing::doubleValue;
             }
         }
     }
@@ -128,65 +132,74 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, size_t polygonI
 
 void CurvilinearGrid::SetFlatCopies()
 {
-    if (m_gridNodes.empty())
+    if (lin_alg::MatrixIsEmpty(m_gridNodes))
     {
         return;
     }
 
-    m_numM = m_gridNodes.size();
-    m_numN = m_gridNodes[0].size();
+    m_numM = static_cast<UInt>(m_gridNodes.rows());
+    m_numN = static_cast<UInt>(m_gridNodes.cols());
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
     m_edges = edges;
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<CurvilinearGridNodeIndices>> CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>,
+           std::vector<CurvilinearGridNodeIndices>>
+CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
 {
     if (!IsValid())
     {
         throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: Invalid curvilinear grid ");
     }
 
-    std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
-    std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
-    std::vector<std::vector<size_t>> nodeIndices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), constants::missing::sizetValue));
-    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(), CurvilinearGridNodeIndices{constants::missing::sizetValue, constants::missing::sizetValue});
+    std::vector<Point> nodes(m_gridNodes.rows() * m_gridNodes.cols());
+    std::vector<Edge> edges(m_gridNodes.rows() * (m_gridNodes.cols() - 1) +
+                            (m_gridNodes.rows() - 1) * m_gridNodes.cols());
+    lin_alg::Matrix<UInt> nodeIndices(m_gridNodes.rows(), m_gridNodes.cols());
+    nodeIndices.setConstant(constants::missing::uintValue);
+    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(),
+                                                        CurvilinearGridNodeIndices{constants::missing::uintValue,
+                                                                                   constants::missing::uintValue});
 
-    size_t ind = 0;
-    for (size_t m = 0; m < m_gridNodes.size(); m++)
+    UInt ind = 0;
+    for (UInt m = 0; m < m_gridNodes.rows(); m++)
     {
-        for (size_t n = 0; n < m_gridNodes[0].size(); n++)
+        for (UInt n = 0; n < m_gridNodes.cols(); n++)
         {
-            nodes[ind] = m_gridNodes[m][n];
-            nodeIndices[m][n] = ind;
+            nodes[ind] = m_gridNodes(m, n);
+            nodeIndices(m, n) = ind;
             gridIndices[ind] = {m, n};
             ind++;
         }
     }
 
     ind = 0;
-    for (size_t m = 0; m < m_gridNodes.size() - 1; m++)
+    for (UInt m = 0; m < m_gridNodes.rows() - 1; m++)
     {
-        for (size_t n = 0; n < m_gridNodes[0].size(); n++)
+        for (UInt n = 0; n < m_gridNodes.cols(); n++)
         {
-            if (nodeIndices[m][n] != constants::missing::sizetValue && nodeIndices[m + 1][n] != constants::missing::sizetValue)
+            if (nodeIndices(m, n) != constants::missing::uintValue &&
+                nodeIndices(m + 1, n) != constants::missing::uintValue)
             {
-                edges[ind].first = nodeIndices[m][n];
-                edges[ind].second = nodeIndices[m + 1][n];
+                edges[ind].first = nodeIndices(m, n);
+                edges[ind].second = nodeIndices(m + 1, n);
                 ind++;
             }
         }
     }
 
-    for (size_t m = 0; m < m_gridNodes.size(); m++)
+    for (UInt m = 0; m < m_gridNodes.rows(); m++)
     {
-        for (size_t n = 0; n < m_gridNodes[0].size() - 1; n++)
+        for (UInt n = 0; n < m_gridNodes.cols() - 1; n++)
         {
-            if (nodeIndices[m][n] != constants::missing::sizetValue && nodeIndices[m][n + 1] != constants::missing::sizetValue)
+            if (nodeIndices(m, n) != constants::missing::uintValue &&
+                nodeIndices(m, n + 1) != constants::missing::uintValue)
             {
-                edges[ind].first = nodeIndices[m][n];
-                edges[ind].second = nodeIndices[m][n + 1];
+                edges[ind].first = nodeIndices(m, n);
+                edges[ind].second = nodeIndices(m, n + 1);
                 ind++;
             }
         }
@@ -198,19 +211,15 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
 
 bool CurvilinearGrid::IsValid() const
 {
-    if (m_gridNodes.empty())
+    if (m_gridNodes.size() == 0)
     {
         return false;
     }
-    if (m_gridNodes[0].empty())
+    if (m_gridNodes.rows() < 2)
     {
         return false;
     }
-    if (m_gridNodes.size() < 2)
-    {
-        return false;
-    }
-    if (m_gridNodes[0].size() < 2)
+    if (m_gridNodes.cols() < 2)
     {
         return false;
     }
@@ -220,37 +229,39 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    SearchNearestLocation(point, Mesh::Location::Nodes);
-    if (GetNumLocations(Mesh::Location::Nodes) == 0)
+    BuildTree(Location::Nodes);
+    SearchNearestLocation(point, Location::Nodes);
+    if (GetNumLocations(Location::Nodes) == 0)
     {
-        return {constants::missing::sizetValue, constants::missing::sizetValue};
+        return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Mesh::Location::Nodes);
+    const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
     return m_gridIndices[nodeIndex];
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
-    SearchNearestLocation(point, Mesh::Location::Edges);
-    if (GetNumLocations(Mesh::Location::Edges) == 0)
+    BuildTree(Location::Edges);
+    SearchNearestLocation(point, Location::Edges);
+    if (GetNumLocations(Location::Edges) == 0)
     {
         return {{}, {}};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Mesh::Location::Edges);
+    const auto nodeIndex = GetLocationsIndices(0, Location::Edges);
     auto const firstNode = m_edges[nodeIndex].first;
     auto const secondNode = m_edges[nodeIndex].second;
 
     return {m_gridIndices[firstNode], m_gridIndices[secondNode]};
 }
 
-bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
+bool CurvilinearGrid::IsValidFace(UInt m, UInt n) const
 {
-    return m_gridNodes[m][n].IsValid() &&
-           m_gridNodes[m + 1][n].IsValid() &&
-           m_gridNodes[m][n + 1].IsValid() &&
-           m_gridNodes[m + 1][n + 1].IsValid();
+    return m_gridNodes(m, n).IsValid() &&
+           m_gridNodes(m + 1, n).IsValid() &&
+           m_gridNodes(m, n + 1).IsValid() &&
+           m_gridNodes(m + 1, n + 1).IsValid();
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
@@ -273,17 +284,17 @@ CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& 
 void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
-    ResizeAndFill2DVector(m_gridFacesMask, m_numM - 1, m_numN - 1, true, false);
-    for (size_t m = 0; m < m_numM - 1; ++m)
+    lin_alg::ResizeAndFillMatrix(m_gridFacesMask, m_numM - 1, m_numN - 1, false, false);
+    for (UInt m = 0; m < m_numM - 1; ++m)
     {
-        for (size_t n = 0; n < m_numN - 1; ++n)
+        for (UInt n = 0; n < m_numN - 1; ++n)
         {
             // Only if all grid nodes of the face are valid, the face is valid
             if (!IsValidFace(m, n))
             {
                 continue;
             }
-            m_gridFacesMask[m][n] = true;
+            m_gridFacesMask(m, n) = true;
         }
     }
 }
@@ -301,45 +312,45 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 
     invalidNodesToRemove = false;
     // Flag nodes not connected to valid faces
-    for (size_t m = 1; m < m_numM - 1; ++m)
+    for (UInt m = 1; m < m_numM - 1; ++m)
     {
-        for (size_t n = 1; n < m_numN - 1; ++n)
+        for (UInt n = 1; n < m_numN - 1; ++n)
         {
-            if (m_gridNodes[m][n].IsValid() &&
-                !m_gridFacesMask[m][n] &&
-                !m_gridFacesMask[m - 1][n] &&
-                !m_gridFacesMask[m - 1][n - 1] &&
-                !m_gridFacesMask[m][n - 1])
+            if (m_gridNodes(m, n).IsValid() &&
+                !m_gridFacesMask(m, n) &&
+                !m_gridFacesMask(m - 1, n) &&
+                !m_gridFacesMask(m - 1, n - 1) &&
+                !m_gridFacesMask(m, n - 1))
             {
-                m_gridNodes[m][n] = {constants::missing::doubleValue, constants::missing::doubleValue};
+                m_gridNodes(m, n) = {constants::missing::doubleValue, constants::missing::doubleValue};
                 invalidNodesToRemove = true;
             }
         }
     }
 
-    for (size_t m = 1; m < m_numM - 1; ++m)
+    for (UInt m = 1; m < m_numM - 1; ++m)
     {
-        if (m_gridNodes[m][0].IsValid() &&
-            !m_gridFacesMask[m - 1][0] &&
-            !m_gridFacesMask[m][0])
+        if (m_gridNodes(m, 0).IsValid() &&
+            !m_gridFacesMask(m - 1, 0) &&
+            !m_gridFacesMask(m, 0))
         {
-            m_gridNodes[m][0] = {constants::missing::doubleValue, constants::missing::doubleValue};
+            m_gridNodes(m, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
         }
     }
 
-    for (size_t n = 1; n < m_numN - 1; ++n)
+    for (UInt n = 1; n < m_numN - 1; ++n)
     {
-        if (m_gridNodes[0][n].IsValid() &&
-            !m_gridFacesMask[0][n - 1] &&
-            !m_gridFacesMask[0][n])
+        if (m_gridNodes(0, n).IsValid() &&
+            !m_gridFacesMask(0, n - 1) &&
+            !m_gridFacesMask(0, n))
         {
-            m_gridNodes[0][n] = {constants::missing::doubleValue, constants::missing::doubleValue};
+            m_gridNodes(0, n) = {constants::missing::doubleValue, constants::missing::doubleValue};
         }
     }
 
-    if (m_gridNodes[0][0].IsValid() && !m_gridFacesMask[0][0])
+    if (m_gridNodes(0, 0).IsValid() && !m_gridFacesMask(0, 0))
     {
-        m_gridNodes[0][0] = {constants::missing::doubleValue, constants::missing::doubleValue};
+        m_gridNodes(0, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
     RemoveInvalidNodes(invalidNodesToRemove);
@@ -348,15 +359,15 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
-    ResizeAndFill2DVector(m_gridNodesTypes, m_numM, m_numN, true, NodeType::Invalid);
+    lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, m_numM, m_numN, false, NodeType::Invalid);
 
     // Flag faces based on boundaries
-    for (size_t m = 0; m < m_numM; ++m)
+    for (UInt m = 0; m < m_numM; ++m)
     {
-        for (size_t n = 0; n < m_numN; ++n)
+        for (UInt n = 0; n < m_numN; ++n)
         {
 
-            if (!m_gridNodes[m][n].IsValid())
+            if (!m_gridNodes(m, n).IsValid())
             {
                 continue;
             }
@@ -364,99 +375,99 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             // Left side
             if (m == 0 && n == 0)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                 continue;
             }
             if (m == 0 && n == m_numN - 1)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                 continue;
             }
-            if (m == 0 && !m_gridNodes[m][n - 1].IsValid())
+            if (m == 0 && !m_gridNodes(m, n - 1).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                 continue;
             }
-            if (m == 0 && !m_gridNodes[m][n + 1].IsValid())
+            if (m == 0 && !m_gridNodes(m, n + 1).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                 continue;
             }
             if (m == 0)
             {
-                m_gridNodesTypes[m][n] = NodeType::Left;
+                m_gridNodesTypes(m, n) = NodeType::Left;
                 continue;
             }
             // Right side
             if (m == m_numM - 1 && n == 0)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                m_gridNodesTypes(m, n) = NodeType::BottomRight;
                 continue;
             }
             if (m == m_numM - 1 && n == m_numN - 1)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                m_gridNodesTypes(m, n) = NodeType::UpperRight;
                 continue;
             }
-            if (m == m_numM - 1 && !m_gridNodes[m][n - 1].IsValid())
+            if (m == m_numM - 1 && !m_gridNodes(m, n - 1).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                m_gridNodesTypes(m, n) = NodeType::BottomRight;
                 continue;
             }
-            if (m == m_numM - 1 && !m_gridNodes[m][n + 1].IsValid())
+            if (m == m_numM - 1 && !m_gridNodes(m, n + 1).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                m_gridNodesTypes(m, n) = NodeType::UpperRight;
                 continue;
             }
             if (m == m_numM - 1)
             {
-                m_gridNodesTypes[m][n] = NodeType::Right;
+                m_gridNodesTypes(m, n) = NodeType::Right;
                 continue;
             }
             // Bottom side
-            if (n == 0 && !m_gridNodes[m - 1][n].IsValid())
+            if (n == 0 && !m_gridNodes(m - 1, n).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                 continue;
             }
-            if (n == 0 && !m_gridNodes[m + 1][n].IsValid())
+            if (n == 0 && !m_gridNodes(m + 1, n).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                m_gridNodesTypes(m, n) = NodeType::BottomRight;
                 continue;
             }
             if (n == 0)
             {
-                m_gridNodesTypes[m][n] = NodeType::Bottom;
+                m_gridNodesTypes(m, n) = NodeType::Bottom;
                 continue;
             }
             // Upper side
-            if (n == m_numN - 1 && !m_gridNodes[m - 1][n].IsValid())
+            if (n == m_numN - 1 && !m_gridNodes(m - 1, n).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                 continue;
             }
-            if (n == m_numN - 1 && !m_gridNodes[m + 1][n].IsValid())
+            if (n == m_numN - 1 && !m_gridNodes(m + 1, n).IsValid())
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                m_gridNodesTypes(m, n) = NodeType::UpperRight;
                 continue;
             }
             if (n == m_numN - 1)
             {
-                m_gridNodesTypes[m][n] = NodeType::Up;
+                m_gridNodesTypes(m, n) = NodeType::Up;
                 continue;
             }
 
-            auto const isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
-            auto const isTopRightFaceValid = m_gridFacesMask[m][n];
-            auto const isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
-            auto const isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
+            auto const isTopLeftFaceValid = m_gridFacesMask(m - 1, n);
+            auto const isTopRightFaceValid = m_gridFacesMask(m, n);
+            auto const isBottomLeftFaceValid = m_gridFacesMask(m - 1, n - 1);
+            auto const isBottomRightFaceValid = m_gridFacesMask(m, n - 1);
 
             if (isTopRightFaceValid &&
                 isTopLeftFaceValid &&
                 isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::InternalValid;
+                m_gridNodesTypes(m, n) = NodeType::InternalValid;
                 continue;
             }
             if (!isTopRightFaceValid &&
@@ -464,7 +475,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                 continue;
             }
             if (isTopRightFaceValid &&
@@ -472,7 +483,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                m_gridNodesTypes(m, n) = NodeType::BottomRight;
                 continue;
             }
             if (isTopRightFaceValid &&
@@ -480,7 +491,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                m_gridNodesTypes(m, n) = NodeType::UpperRight;
                 continue;
             }
             if (isTopRightFaceValid &&
@@ -488,7 +499,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                m_gridNodesTypes(m, n) = NodeType::UpperLeft;
                 continue;
             }
 
@@ -497,7 +508,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::Bottom;
+                m_gridNodesTypes(m, n) = NodeType::Bottom;
                 continue;
             }
             if (isTopRightFaceValid &&
@@ -505,7 +516,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::Left;
+                m_gridNodesTypes(m, n) = NodeType::Left;
                 continue;
             }
 
@@ -514,7 +525,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::Up;
+                m_gridNodesTypes(m, n) = NodeType::Up;
                 continue;
             }
 
@@ -523,7 +534,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::Right;
+                m_gridNodesTypes(m, n) = NodeType::Right;
                 continue;
             }
 
@@ -532,7 +543,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomLeft;
+                m_gridNodesTypes(m, n) = NodeType::BottomLeft;
                 continue;
             }
 
@@ -541,7 +552,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::BottomRight;
+                m_gridNodesTypes(m, n) = NodeType::BottomRight;
                 continue;
             }
 
@@ -550,7 +561,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 isBottomLeftFaceValid &&
                 !isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperRight;
+                m_gridNodesTypes(m, n) = NodeType::UpperRight;
                 continue;
             }
 
@@ -559,7 +570,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 !isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesTypes[m][n] = NodeType::UpperLeft;
+                m_gridNodesTypes(m, n) = NodeType::UpperLeft;
             }
         }
     }
@@ -591,39 +602,48 @@ void CurvilinearGrid::InsertFace(Point const& point)
     SetFlatCopies();
 }
 
-bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
+bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                            CurvilinearGridNodeIndices const& secondNode)
 {
     // If both nodes are invalid, we can substitute the invalid values. New allocation is not needed.
-    bool const areNodesValid = m_gridNodes[firstNode.m_m][firstNode.m_n].IsValid() && m_gridNodes[secondNode.m_m][secondNode.m_n].IsValid();
+    bool const areNodesValid = m_gridNodes(firstNode.m_m, firstNode.m_n).IsValid() &&
+                               m_gridNodes(secondNode.m_m, secondNode.m_n).IsValid();
 
     // Allocation depends on directions
     bool gridSizeChanged = false;
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
-    if (gridLineType == BoundaryGridLineType::Left && areNodesValid)
+
+    if (areNodesValid)
     {
-        m_gridNodes.emplace(m_gridNodes.begin(), std::vector<Point>(m_gridNodes[0].size()));
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Right && areNodesValid)
-    {
-        m_gridNodes.emplace_back(std::vector<Point>(m_gridNodes[0].size()));
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Up && areNodesValid)
-    {
-        for (auto& gridNodes : m_gridNodes)
+
+        if (gridLineType == BoundaryGridLineType::Left)
         {
-            gridNodes.emplace_back();
+            lin_alg::InsertRow(m_gridNodes,
+                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
+                               0);
+            gridSizeChanged = true;
         }
-        gridSizeChanged = true;
-    }
-    if (gridLineType == BoundaryGridLineType::Bottom && areNodesValid)
-    {
-        for (auto& gridNodes : m_gridNodes)
+        if (gridLineType == BoundaryGridLineType::Right)
         {
-            gridNodes.emplace(gridNodes.begin());
+            lin_alg::InsertRow(m_gridNodes,
+                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
+                               m_gridNodes.rows());
+            gridSizeChanged = true;
         }
-        gridSizeChanged = true;
+        if (gridLineType == BoundaryGridLineType::Up)
+        {
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
+                               m_gridNodes.cols());
+            gridSizeChanged = true;
+        }
+        if (gridLineType == BoundaryGridLineType::Bottom)
+        {
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
+                               0);
+            gridSizeChanged = true;
+        }
     }
 
     return gridSizeChanged;
@@ -631,8 +651,8 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
 
 CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const
 {
-    auto const firstNodeType = m_gridNodesTypes[firstNode.m_m][firstNode.m_n];
-    auto const secondNodeType = m_gridNodesTypes[secondNode.m_m][secondNode.m_n];
+    auto const firstNodeType = m_gridNodesTypes(firstNode.m_m, firstNode.m_n);
+    auto const secondNodeType = m_gridNodesTypes(secondNode.m_m, secondNode.m_n);
 
     if (firstNodeType == NodeType::InternalValid || firstNodeType == NodeType::Invalid ||
         secondNodeType == NodeType::InternalValid || secondNodeType == NodeType::Invalid)
@@ -676,54 +696,54 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     // Allocation depends on directions
     if (gridLineType == BoundaryGridLineType::Left)
     {
-        auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m + 1][firstNode.m_n];
-        auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m + 1][secondNode.m_n];
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_m, firstNode.m_n) * 2.0 - m_gridNodes(firstNode.m_m + 1, firstNode.m_n);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_m, secondNode.m_n) * 2.0 - m_gridNodes(secondNode.m_m + 1, secondNode.m_n);
         auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
-            m_gridNodes.front()[firstNode.m_n] = firstNewNodeCoordinates;
-            m_gridNodes.front()[secondNode.m_n] = secondNewNodeCoordinates;
+            m_gridNodes(0, firstNode.m_n) = firstNewNodeCoordinates;
+            m_gridNodes(0, secondNode.m_n) = secondNewNodeCoordinates;
             return;
         }
 
-        m_gridNodes[firstNode.m_m - 1][firstNode.m_n] = firstNewNodeCoordinates;
-        m_gridNodes[secondNode.m_m - 1][secondNode.m_n] = secondNewNodeCoordinates;
+        m_gridNodes(firstNode.m_m - 1, firstNode.m_n) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_m - 1, secondNode.m_n) = secondNewNodeCoordinates;
         return;
     }
     if (gridLineType == BoundaryGridLineType::Right)
     {
-        auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m - 1][firstNode.m_n];
-        auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m - 1][secondNode.m_n];
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_m, firstNode.m_n) * 2.0 - m_gridNodes(firstNode.m_m - 1, firstNode.m_n);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_m, secondNode.m_n) * 2.0 - m_gridNodes(secondNode.m_m - 1, secondNode.m_n);
         AddGridLineAtBoundary(firstNode, secondNode);
-        m_gridNodes[firstNode.m_m + 1][firstNode.m_n] = firstNewNodeCoordinates;
-        m_gridNodes[secondNode.m_m + 1][secondNode.m_n] = secondNewNodeCoordinates;
+        m_gridNodes(firstNode.m_m + 1, firstNode.m_n) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_m + 1, secondNode.m_n) = secondNewNodeCoordinates;
 
         return;
     }
     if (gridLineType == BoundaryGridLineType::Bottom)
     {
-        auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m][firstNode.m_n + 1];
-        auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m][secondNode.m_n + 1];
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_m, firstNode.m_n) * 2.0 - m_gridNodes(firstNode.m_m, firstNode.m_n + 1);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_m, secondNode.m_n) * 2.0 - m_gridNodes(secondNode.m_m, secondNode.m_n + 1);
         auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
             // Assign the new coordinates
-            m_gridNodes[firstNode.m_m].front() = firstNewNodeCoordinates;
-            m_gridNodes[secondNode.m_m].front() = secondNewNodeCoordinates;
+            m_gridNodes(firstNode.m_m, 0) = firstNewNodeCoordinates;
+            m_gridNodes(secondNode.m_m, 0) = secondNewNodeCoordinates;
             return;
         }
 
-        m_gridNodes[firstNode.m_m][firstNode.m_n - 1] = firstNewNodeCoordinates;
-        m_gridNodes[secondNode.m_m][secondNode.m_n - 1] = secondNewNodeCoordinates;
+        m_gridNodes(firstNode.m_m, firstNode.m_n - 1) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_m, secondNode.m_n - 1) = secondNewNodeCoordinates;
     }
 
     if (gridLineType == BoundaryGridLineType::Up)
     {
-        auto const firstNewNodeCoordinates = m_gridNodes[firstNode.m_m][firstNode.m_n] * 2.0 - m_gridNodes[firstNode.m_m][firstNode.m_n - 1];
-        auto const secondNewNodeCoordinates = m_gridNodes[secondNode.m_m][secondNode.m_n] * 2.0 - m_gridNodes[secondNode.m_m][secondNode.m_n - 1];
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_m, firstNode.m_n) * 2.0 - m_gridNodes(firstNode.m_m, firstNode.m_n - 1);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_m, secondNode.m_n) * 2.0 - m_gridNodes(secondNode.m_m, secondNode.m_n - 1);
         AddGridLineAtBoundary(firstNode, secondNode);
-        m_gridNodes[firstNode.m_m][firstNode.m_n + 1] = firstNewNodeCoordinates;
-        m_gridNodes[secondNode.m_m][secondNode.m_n + 1] = secondNewNodeCoordinates;
+        m_gridNodes(firstNode.m_m, firstNode.m_n + 1) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_m, secondNode.m_n + 1) = secondNewNodeCoordinates;
     }
 }
 
@@ -734,8 +754,11 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
                                                     const CurvilinearGridNodeIndices& upperRightIndices)
 {
     // horizontal smoothing factor
+    // integer
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
+    // integer
     const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
+    // double
     const auto mSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor
@@ -756,7 +779,7 @@ CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
 
 double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)
 {
-    if (index.m_m > m_gridNodes.size() || index.m_n > m_gridNodes[0].size())
+    if (index.m_m > m_gridNodes.rows() || index.m_n > m_gridNodes.cols())
     {
         throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: invalid index coordinates");
     }
@@ -770,14 +793,14 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
         double numEdges = 0.0;
         double leftDistance = 0.0;
         double rightDistance = 0.0;
-        if (index.m_m > 0 && m_gridNodes[index.m_m - 1][index.m_n].IsValid())
+        if (index.m_m > 0 && m_gridNodes(index.m_m - 1, index.m_n).IsValid())
         {
-            leftDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m - 1][index.m_n], m_projection);
+            leftDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m - 1, index.m_n), m_projection);
             numEdges += 1;
         }
-        if (index.m_m + 1 < m_gridNodes.size() && m_gridNodes[index.m_m + 1][index.m_n].IsValid())
+        if (index.m_m + 1 < m_gridNodes.rows() && m_gridNodes(index.m_m + 1, index.m_n).IsValid())
         {
-            rightDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m + 1][index.m_n], m_projection);
+            rightDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m + 1, index.m_n), m_projection);
             numEdges += 1;
         }
         return numEdges == 0 ? 0.0 : (leftDistance + rightDistance) / numEdges;
@@ -787,14 +810,14 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
         double numEdges = 0.0;
         double bottomDistance = 0.0;
         double upDistance = 0.0;
-        if (index.m_n > 0 && m_gridNodes[index.m_m][index.m_n - 1].IsValid())
+        if (index.m_n > 0 && m_gridNodes(index.m_m, index.m_n - 1).IsValid())
         {
-            bottomDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n - 1], m_projection);
+            bottomDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m, index.m_n - 1), m_projection);
             numEdges += 1;
         }
-        if (index.m_n + 1 < m_gridNodes[0].size() && m_gridNodes[index.m_m][index.m_n + 1].IsValid())
+        if (index.m_n + 1 < m_gridNodes.cols() && m_gridNodes(index.m_m, index.m_n + 1).IsValid())
         {
-            upDistance = ComputeDistance(m_gridNodes[index.m_m][index.m_n], m_gridNodes[index.m_m][index.m_n + 1], m_projection);
+            upDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m, index.m_n + 1), m_projection);
             numEdges += 1;
         }
         return numEdges == 0 ? 0.0 : (bottomDistance + upDistance) / numEdges;
@@ -805,15 +828,15 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
 
 meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const
 {
-    Point left = m_gridNodes[node.m_m][node.m_n];
+    Point left = m_gridNodes(node.m_m, node.m_n);
     Point right = left;
-    if (node.m_m < m_numM - 1 && m_gridNodes[node.m_m + 1][node.m_n].IsValid())
+    if (node.m_m < m_numM - 1 && m_gridNodes(node.m_m + 1, node.m_n).IsValid())
     {
-        right = m_gridNodes[node.m_m + 1][node.m_n];
+        right = m_gridNodes(node.m_m + 1, node.m_n);
     }
-    if (node.m_m > 0 && m_gridNodes[node.m_m - 1][node.m_n].IsValid())
+    if (node.m_m > 0 && m_gridNodes(node.m_m - 1, node.m_n).IsValid())
     {
-        left = m_gridNodes[node.m_m - 1][node.m_n];
+        left = m_gridNodes(node.m_m - 1, node.m_n);
     }
 
     const auto horizontalDistance = ComputeDistance(right, left, m_projection);
@@ -841,7 +864,7 @@ void CurvilinearGrid::DeleteNode(Point const& point)
     if (nodeToDelete.IsValid())
     {
         // Invalidate gridnodes
-        m_gridNodes[nodeToDelete.m_m][nodeToDelete.m_n] = {constants::missing::doubleValue, constants::missing::doubleValue};
+        m_gridNodes(nodeToDelete.m_m, nodeToDelete.m_n) = {constants::missing::doubleValue, constants::missing::doubleValue};
         // Re-compute quantities
         ComputeGridNodeTypes();
         SetFlatCopies();
@@ -860,5 +883,56 @@ void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
     }
 
     // move fromPoint to toPoint
-    m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = toPoint;
+    m_gridNodes(nodeIndex.m_m, nodeIndex.m_n) = toPoint;
+}
+
+meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
+{
+
+    Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
+    size_t last = m_gridNodes.rows() - 1;
+
+    // Only need to loop over boundary nodes
+
+    // First loop over lower boundary (i,0)
+    for (Eigen::Index i = 0; i < m_gridNodes.rows(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, 0).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, 0).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(i, 0).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(i, 0).y);
+    }
+
+    // First loop over right boundary (last,i)
+    for (Eigen::Index i = 0; i < m_gridNodes.cols(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(last, i).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(last, i).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(last, i).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(last, i).y);
+    }
+
+    // This assumes that each column has the same number of points
+    last = m_gridNodes.cols() - 1;
+
+    // First loop over upper boundary (i,last)
+    for (Eigen::Index i = 0; i < m_gridNodes.rows(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, last).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, last).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(i, last).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(i, last).y);
+    }
+
+    // First loop over left boundary (0,i)
+    for (Eigen::Index i = 0; i < m_gridNodes.cols(); ++i)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(0, i).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(0, i).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(0, i).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(0, i).y);
+    }
+
+    return BoundingBox(lowerLeft, upperRight);
 }

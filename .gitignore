@@ -20,6 +20,9 @@ build_*
 .vs
 .vscode
 
+# Emacs
+*~
+
 # User specific
 post_build.bat
 tools/test_utils/include/TestUtils/Definitions.hpp

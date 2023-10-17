@@ -1,244 +1,177 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
+#include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/LandBoundary.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Polygon.hpp"
 
-TEST(Polygons, MeshBoundaryToPolygon)
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
+
+namespace mk = meshkernel;
+
+TEST(PolygonTests, BasicConstruction)
 {
-    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+    std::vector<mk::Point> polygonPoints{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0}};
 
-    std::vector<meshkernel::Point> polygonNodes;
-    const auto meshBoundaryPolygon = mesh->MeshBoundaryToPolygon(polygonNodes);
+    mk::Polygon polygon(polygonPoints, mk::Projection::cartesian);
 
-    ASSERT_EQ(8, meshBoundaryPolygon.size());
+    EXPECT_EQ(polygon.Size(), polygonPoints.size());
+    EXPECT_EQ(polygon.Nodes(), polygonPoints);
+    EXPECT_EQ(polygon.GetProjection(), mk::Projection::cartesian);
 
-    constexpr double tolerance = 1e-5;
+    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    {
+        EXPECT_TRUE(polygonPoints[i] == polygon.Node(i))
+            << "Expected points to be same, expected: " << polygonPoints[i].x << ", " << polygonPoints[i].y
+            << ", actual: " << polygon.Node(i).x << ", " << polygon.Node(i).y;
+    }
 
-    ASSERT_NEAR(227.00204467773401, meshBoundaryPolygon[0].x, tolerance);
-    ASSERT_NEAR(259.25222778320301, meshBoundaryPolygon[1].x, tolerance);
-    ASSERT_NEAR(428.00329589843801, meshBoundaryPolygon[2].x, tolerance);
-    ASSERT_NEAR(536.00396728515602, meshBoundaryPolygon[3].x, tolerance);
-    ASSERT_NEAR(503.75378417968801, meshBoundaryPolygon[4].x, tolerance);
-    ASSERT_NEAR(350.75280761718801, meshBoundaryPolygon[5].x, tolerance);
-    ASSERT_NEAR(322.25262451171898, meshBoundaryPolygon[6].x, tolerance);
-    ASSERT_NEAR(227.00204467773401, meshBoundaryPolygon[7].x, tolerance);
+    // Test copy constructor
+    mk::Polygon polygonCopy(polygon);
 
-    ASSERT_NEAR(360.37924194335898, meshBoundaryPolygon[0].y, tolerance);
-    ASSERT_NEAR(241.87805175781301, meshBoundaryPolygon[1].y, tolerance);
-    ASSERT_NEAR(210.37774658203099, meshBoundaryPolygon[2].y, tolerance);
-    ASSERT_NEAR(310.87875366210898, meshBoundaryPolygon[3].y, tolerance);
-    ASSERT_NEAR(432.37997436523398, meshBoundaryPolygon[4].y, tolerance);
-    ASSERT_NEAR(458.63024902343801, meshBoundaryPolygon[5].y, tolerance);
-    ASSERT_NEAR(454.88018798828102, meshBoundaryPolygon[6].y, tolerance);
-    ASSERT_NEAR(360.37924194335898, meshBoundaryPolygon[7].y, tolerance);
+    EXPECT_EQ(polygonCopy.Size(), polygonPoints.size());
+    EXPECT_EQ(polygonCopy.Nodes(), polygonPoints);
+    EXPECT_EQ(polygonCopy.GetProjection(), mk::Projection::cartesian);
+
+    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    {
+        EXPECT_TRUE(polygonPoints[i] == polygonCopy.Node(i))
+            << "Expected points to be same, expected: " << polygonPoints[i].x << ", " << polygonPoints[i].y
+            << ", actual: " << polygonCopy.Node(i).x << ", " << polygonCopy.Node(i).y;
+    }
+
+    mk::Polygon polygonAssign;
+
+    EXPECT_EQ(polygonAssign.Size(), 0);
+
+    // Test copy assignment
+    polygonAssign = polygon;
+
+    EXPECT_EQ(polygonAssign.Size(), polygonPoints.size());
+    EXPECT_EQ(polygonAssign.Nodes(), polygonPoints);
+    EXPECT_EQ(polygonAssign.GetProjection(), mk::Projection::cartesian);
+
+    for (size_t i = 0; i < polygonPoints.size(); ++i)
+    {
+        EXPECT_TRUE(polygonPoints[i] == polygonAssign.Node(i))
+            << "Expected points to be same, expected: " << polygonPoints[i].x << ", " << polygonPoints[i].y
+            << ", actual: " << polygonAssign.Node(i).x << ", " << polygonAssign.Node(i).y;
+    }
 }
 
-TEST(Polygons, CreatePointsInPolygons)
+TEST(PolygonTests, BoundingBoxTest)
 {
-    // Prepare
+    std::vector<mk::Point> polygonPointsSquare{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0}};
 
-    std::vector<meshkernel::Point> nodes;
+    mk::Polygon polygon(polygonPointsSquare, mk::Projection::cartesian);
+    mk::BoundingBox boundingBox = polygon.GetBoundingBox();
 
-    nodes.push_back({302.002502, 472.130371});
-    nodes.push_back({144.501526, 253.128174});
-    nodes.push_back({368.752930, 112.876755});
-    nodes.push_back({707.755005, 358.879242});
-    nodes.push_back({301.252502, 471.380371});
-    nodes.push_back({302.002502, 472.130371});
+    constexpr double tolerance = 1.0e-10;
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    EXPECT_NEAR(boundingBox.lowerLeft().x, 0.0, tolerance);
+    EXPECT_NEAR(boundingBox.lowerLeft().y, 0.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().x, 10.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().y, 10.0, tolerance);
 
-    // Execute
-    const auto generatedPoints = polygons.ComputePointsInPolygons();
+    std::vector<mk::Point> polygonPointsLargerSquare{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {-10.0, -5.0}};
+    polygon.Reset(polygonPointsLargerSquare, mk::Projection::cartesian);
 
-    // Assert
-    const double tolerance = 1e-5;
+    boundingBox = polygon.GetBoundingBox();
+    // The boundingbox should be reset too
+    EXPECT_NEAR(boundingBox.lowerLeft().x, -10.0, tolerance);
+    EXPECT_NEAR(boundingBox.lowerLeft().y, -5.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().x, 20.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().y, 10.0, tolerance);
 
-    ASSERT_NEAR(302.00250199999999, generatedPoints[0][0].x, tolerance);
-    ASSERT_NEAR(472.13037100000003, generatedPoints[0][0].y, tolerance);
+    std::vector<mk::Point> polygonPointsPentagon{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {5.0, 15.0}, {-10.0, 10.0}, {-10.0, -5.0}};
+    polygon.Reset(polygonPointsPentagon, mk::Projection::cartesian);
 
-    ASSERT_NEAR(144.50152600000001, generatedPoints[0][1].x, tolerance);
-    ASSERT_NEAR(253.12817400000000, generatedPoints[0][1].y, tolerance);
-
-    ASSERT_NEAR(368.75292999999999, generatedPoints[0][2].x, tolerance);
-    ASSERT_NEAR(112.87675500000000, generatedPoints[0][2].y, tolerance);
-
-    ASSERT_NEAR(707.75500499999998, generatedPoints[0][3].x, tolerance);
-    ASSERT_NEAR(358.87924199999998, generatedPoints[0][3].y, tolerance);
-
-    ASSERT_NEAR(301.25250199999999, generatedPoints[0][4].x, tolerance);
-    ASSERT_NEAR(471.38037100000003, generatedPoints[0][4].y, tolerance);
+    boundingBox = polygon.GetBoundingBox();
+    // The boundingbox should be reset too
+    EXPECT_NEAR(boundingBox.lowerLeft().x, -10.0, tolerance);
+    EXPECT_NEAR(boundingBox.lowerLeft().y, -5.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().x, 20.0, tolerance);
+    EXPECT_NEAR(boundingBox.upperRight().y, 15.0, tolerance);
 }
 
-TEST(Polygons, RefinePolygon)
+TEST(PolygonTests, ContainsTest)
 {
-    // Prepare
-    std::vector<meshkernel::Point> nodes;
+    constexpr double min = 0.0;
+    constexpr double max = 10.0;
+    constexpr double extension = 2.0;
 
-    nodes.push_back({0, 0});
-    nodes.push_back({3, 0});
-    nodes.push_back({3, 3});
-    nodes.push_back({0, 3});
-    nodes.push_back({0, 0});
+    std::vector<mk::Point> polygonPoints{{min, min}, {max, min}, {max, max}, {min, max}, {min, min}};
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    mk::Polygon polygon(polygonPoints, mk::Projection::cartesian);
 
-    // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
+    int numberOfSteps = 100;
+    double delta = ((max + extension) - (min - extension)) / static_cast<double>(numberOfSteps - 1);
 
-    ASSERT_EQ(13, refinedPolygon.size());
-    const double tolerance = 1e-5;
+    double y = min - extension;
 
-    ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[5].x, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[6].x, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[7].x, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[8].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[9].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[10].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[11].x, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[12].x, tolerance);
+    for (int i = 0; i < numberOfSteps; ++i)
+    {
+        double x = min - extension;
 
-    ASSERT_NEAR(0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[5].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[6].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[7].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[8].y, tolerance);
-    ASSERT_NEAR(3, refinedPolygon[9].y, tolerance);
-    ASSERT_NEAR(2, refinedPolygon[10].y, tolerance);
-    ASSERT_NEAR(1, refinedPolygon[11].y, tolerance);
-    ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
+        for (int j = 0; j < numberOfSteps; ++j)
+        {
+            mk::Point p(x, y);
+
+            // Any point that lies outside of the interval (min..max) for x- or the y-dimension
+            // is outside the polygon.
+            if (x < min || y < min || x > max || y > max)
+            {
+                EXPECT_FALSE(polygon.Contains(p));
+            }
+            else
+            {
+                EXPECT_TRUE(polygon.Contains(p));
+            }
+
+            x += delta;
+        }
+
+        y += delta;
+    }
+
+    // Check that contains for an invlid point throws an exception.
+    mk::Point invalidPoint(mk::constants::missing::doubleValue, mk::constants::missing::doubleValue);
+    EXPECT_THROW(polygon.Contains(invalidPoint), mk::ConstraintError);
 }
 
-TEST(Polygons, RefinePolygonOneSide)
+TEST(PolygonTests, AreaCentreAndDirectionTest)
 {
-    // Prepare
-    std::vector<meshkernel::Point> nodes;
+    std::vector<mk::Point> polygonPointsLargerSquare{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {-10.0, -5.0}};
+    mk::Polygon polygon(polygonPointsLargerSquare, mk::Projection::cartesian);
 
-    nodes.push_back({0, 0});
-    nodes.push_back({3, 0});
-    nodes.push_back({3, 3});
-    nodes.push_back({0, 3});
-    nodes.push_back({0, 0});
+    double area = 0.0;
+    mk::Point centre;
+    mk::TraversalDirection direction;
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    std::tie(area, centre, direction) = polygon.FaceAreaAndCenterOfMass();
 
-    // Execute
-    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
+    EXPECT_EQ(area, 450.0);
+    EXPECT_EQ(centre.x, 5.0);
+    EXPECT_EQ(centre.y, 2.5);
+    EXPECT_EQ(direction, mk::TraversalDirection::AntiClockwise);
 
-    ASSERT_EQ(7, refinedPolygon.size());
-    const double tolerance = 1e-5;
-
-    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[5].x, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[6].x, tolerance);
-
-    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[5].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[6].y, tolerance);
+    // Check the polygon perimeter
+    double perimeter = polygon.PerimeterLength();
+    EXPECT_EQ(perimeter, 90.0);
 }
 
-TEST(Polygons, RefinePolygonLongerSquare)
+TEST(PolygonTests, FailureConstructionTests)
 {
-    // Prepare
-    std::vector<meshkernel::Point> nodes;
+    std::vector<mk::Point> openPolygon{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}};
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(openPolygon, mk::Projection::cartesian), mk::ConstraintError);
 
-    nodes.push_back({0, 0});
-    nodes.push_back({3, 0});
-    nodes.push_back({3, 3});
-    nodes.push_back({3.5, 0});
-    nodes.push_back({0, 0});
+    std::vector<mk::Point> twoPoints{{0.0, 0.0}, {10.0, 0.0}};
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(twoPoints, mk::Projection::cartesian), mk::ConstraintError);
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
-
-    // Execute
-    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
-
-    ASSERT_EQ(15, refinedPolygon.size());
-    const double tolerance = 1e-5;
-
-    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[5].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[6].x, tolerance);
-    ASSERT_NEAR(3.1643989873053573, refinedPolygon[7].x, tolerance);
-    ASSERT_NEAR(3.3287979746107146, refinedPolygon[8].x, tolerance);
-    ASSERT_NEAR(3.4931969619160719, refinedPolygon[9].x, tolerance);
-    ASSERT_NEAR(3.5, refinedPolygon[10].x, tolerance);
-    ASSERT_NEAR(2.5, refinedPolygon[11].x, tolerance);
-    ASSERT_NEAR(1.5, refinedPolygon[12].x, tolerance);
-    ASSERT_NEAR(0.5, refinedPolygon[13].x, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[14].x, tolerance);
-
-    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[5].y, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[6].y, tolerance);
-    ASSERT_NEAR(2.0136060761678563, refinedPolygon[7].y, tolerance);
-    ASSERT_NEAR(1.0272121523357125, refinedPolygon[8].y, tolerance);
-    ASSERT_NEAR(0.040818228503568754, refinedPolygon[9].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[10].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[11].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[12].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[13].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[14].y, tolerance);
-}
-
-TEST(Polygons, OffsetCopy)
-{
-    std::vector<meshkernel::Point> nodes;
-    nodes.push_back({296.752472, 397.879639});
-    nodes.push_back({294.502472, 256.128204});
-    nodes.push_back({578.754211, 244.128082});
-    nodes.push_back({587.754272, 400.129639});
-    nodes.push_back({308.002533, 397.879639});
-    nodes.push_back({296.752472, 397.879639});
-
-    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
-
-    double distance = 10.0;
-    bool innerAndOuter = false;
-    const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
-
-    const double tolerance = 1e-5;
-
-    ASSERT_NEAR(newPolygon.Node(0).x, 286.75373149966771, tolerance);
-    ASSERT_NEAR(newPolygon.Node(1).x, 284.34914611880089, tolerance);
-    ASSERT_NEAR(newPolygon.Node(2).x, 588.17047010011993, tolerance);
-    ASSERT_NEAR(newPolygon.Node(3).x, 598.35275776004642, tolerance);
-    ASSERT_NEAR(newPolygon.Node(4).x, 307.96231942308754, tolerance);
-    ASSERT_NEAR(newPolygon.Node(5).x, 296.75247200000001, tolerance);
-
-    ASSERT_NEAR(newPolygon.Node(0).y, 398.03834755999270, tolerance);
-    ASSERT_NEAR(newPolygon.Node(1).y, 246.54793497426144, tolerance);
-    ASSERT_NEAR(newPolygon.Node(2).y, 233.72165300742589, tolerance);
-    ASSERT_NEAR(newPolygon.Node(3).y, 410.21520441451258, tolerance);
-    ASSERT_NEAR(newPolygon.Node(4).y, 407.87963900000000, tolerance);
-    ASSERT_NEAR(newPolygon.Node(5).y, 407.87963900000000, tolerance);
+    std::vector<mk::Point> closedPolygonWithNull{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {mk::constants::missing::doubleValue, mk::constants::missing::doubleValue}, {-10.0, -5.0}};
+    EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::cartesian), mk::ConstraintError);
 }

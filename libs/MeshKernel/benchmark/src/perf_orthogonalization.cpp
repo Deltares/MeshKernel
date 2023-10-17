@@ -1,3 +1,4 @@
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
@@ -24,13 +25,13 @@ static void BM_Orthogonalization(benchmark::State& state)
         state.PauseTiming();
 
         // create a rectangular grid
-        size_t const n = state.range(0);
-        size_t const m = state.range(1);
+        UInt const n = static_cast<UInt>(state.range(0));
+        UInt const m = static_cast<UInt>(state.range(1));
         double const dim_x = 10.0;
         double const dim_y = 12.0;
         std::shared_ptr<Mesh2D> mesh =
-            MakeRectangularMeshForTesting(state.range(0),
-                                          state.range(1),
+            MakeRectangularMeshForTesting(n,
+                                          m,
                                           dim_x,
                                           dim_y,
                                           Projection::cartesian);
@@ -38,7 +39,7 @@ static void BM_Orthogonalization(benchmark::State& state)
         // move nodes to skew the mesh
         double const delta_x = dim_x / static_cast<double>(n - 1);
         double const delta_y = dim_y / static_cast<double>(m - 1);
-        for (size_t i = 0; i < mesh->m_nodes.size(); ++i)
+        for (UInt i = 0; i < mesh->m_nodes.size(); ++i)
         {
             // only move inetrnal nodes
             if (!mesh->IsNodeOnBoundary(i))

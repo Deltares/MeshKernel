@@ -70,7 +70,8 @@ namespace meshkernel
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
-        void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons);
+        /// @param[in] projectionFactor     The projection factor used for generating contacts when 1d nodes are not inside mesh2d
+        void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons, double projectionFactor);
 
         /// @brief Computes 1d-2d contacts,
         /// where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll).
@@ -119,7 +120,7 @@ namespace meshkernel
         /// The algorithms works as follows:
         /// - For each oned node, find the closest 2d boundary faces within the search radius.
         /// - If a boundary face can be connected to multiple oned nodes, choose the closest one.
-        /// - Generate the 1d-2d contacts.
+        /// - Generate the 1d-2d contacts.Index m_numM = 0;                                     ///< Number of columns in the curvilinear grid
         /// \image html ComputeBoundaryContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.
         /// The mesh 2d boundary faces are connected to the closest 1d nodes."
         ///
@@ -132,28 +133,34 @@ namespace meshkernel
 
         /// @brief Gets the 1d mesh indices
         /// @return Vector of 1d mesh indices
-        std::vector<size_t> const& Mesh1dIndices() const { return m_mesh1dIndices; }
+        std::vector<UInt> const& Mesh1dIndices() const { return m_mesh1dIndices; }
 
         /// @brief Gets the 2d mesh indices
         /// @return Vector of 2d mesh indices
-        std::vector<size_t> const& Mesh2dIndices() const { return m_mesh2dIndices; }
+        std::vector<UInt> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
         /// @param[in] node The 1d node index (start of the contact)
         /// @param[in] face The 2d face index (end of the contact)
         /// @return True if the contact is crossing a 1d mesh edge
-        [[nodiscard]] bool IsContactIntersectingMesh1d(size_t node, size_t face) const;
+        [[nodiscard]] bool IsContactIntersectingMesh1d(UInt node, UInt face) const;
 
         /// @brief Asserts if a contact is crossing an existing contact
         /// @param[in] node The 1d node index (start of the contact)
         /// @param[in] face The 2d face index (end of the contact)
         /// @return True if the contact is crossing an existing contact
-        [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
+        [[nodiscard]] bool IsContactIntersectingContact(UInt node, UInt face) const;
 
-        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
+        /// @brief Connect the current 1D line segment with the faces that intersect a semiline originating from the current node and perpendicular to the current 1D edge.
+        /// @param[in] node The 1d node index (start of the contact)
+        /// @param[in] projectionFactor The semiline length, as a multiplier of the current ad edge length
+        void Connect1dNodesWithCrossingFaces(UInt node,
+                                             double projectionFactor);
+
+        std::shared_ptr<Mesh1D> m_mesh1d;  ///< The 1-d mesh to connect
+        std::shared_ptr<Mesh2D> m_mesh2d;  ///< The 2-d mesh to connect
+        std::vector<UInt> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
+        std::vector<UInt> m_mesh2dIndices; ///< The indices of the connected 2-d faces
     };
 } // namespace meshkernel

@@ -225,7 +225,10 @@ namespace meshkernelapi
 
         const auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-        const auto indices = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::constants::missing::doubleValue);
+        const auto indices = FindIndices(splineCornerPoints,
+                                         0,
+                                         static_cast<meshkernel::UInt>(splineCornerPoints.size()),
+                                         meshkernel::constants::missing::doubleValue);
 
         for (const auto& index : indices)
         {
@@ -273,6 +276,11 @@ namespace meshkernelapi
             mesh2dApi.edge_y[edgeIndex] = mesh2d->m_edgesCenters[edgeIndex].y;
             mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d->m_edges[edgeIndex].first);
             mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d->m_edges[edgeIndex].second);
+
+            const auto& firstEdgeFace = mesh2d->m_edgesFaces[edgeIndex][0];
+            mesh2dApi.edge_faces[edgeIndex * 2] = firstEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(firstEdgeFace);
+            const auto& secondEdgeFace = mesh2d->m_edgesFaces[edgeIndex][1];
+            mesh2dApi.edge_faces[edgeIndex * 2 + 1] = secondEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(secondEdgeFace);
         }
 
         int faceIndex = 0;
@@ -284,6 +292,7 @@ namespace meshkernelapi
             for (size_t n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
             {
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
+                mesh2dApi.face_edges[faceIndex] = static_cast<int>(mesh2d->m_facesEdges[f][n]);
                 faceIndex++;
             }
         }
@@ -323,6 +332,68 @@ namespace meshkernelapi
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].second);
             edgeIndex++;
         }
+    }
+
+    /// @brief Generate a rectangular curvilinear grid
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
+    /// @param[in] projection         The projection tu use
+    /// @returns The generated curvilinear grid
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                        const meshkernel::Projection& projection)
+    {
+        meshkernel::CurvilinearGridRectangular grid(projection);
+
+        return grid.Compute(makeGridParameters.num_columns,
+                            makeGridParameters.num_rows,
+                            makeGridParameters.origin_x,
+                            makeGridParameters.origin_y,
+                            makeGridParameters.angle,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y);
+    }
+
+    /// @brief Generate a rectangular curvilinear grid from polygons
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
+    /// @param[in] geometryList       The polygon inside which generating the curvilinear grid
+    /// @param[in] projection         The projection tu use
+    /// @returns The generated curvilinear grid
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridFromPolygons(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                    const GeometryList& geometryList,
+                                                                                    const meshkernel::Projection& projection)
+    {
+        meshkernel::CurvilinearGridRectangular grid(projection);
+
+        auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
+
+        const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, projection);
+
+        return grid.Compute(makeGridParameters.angle,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y,
+                            polygon,
+                            0);
+    }
+
+    /// @brief Generate a rectangular curvilinear grid based on extension
+    /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
+    /// @param[in] projection         The projection tu use
+    /// @returns The generated curvilinear grid
+    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                   const meshkernel::Projection& projection)
+    {
+        meshkernel::CurvilinearGridRectangular grid(projection);
+
+        if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+        {
+            throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+        }
+
+        return grid.Compute(makeGridParameters.origin_x,
+                            makeGridParameters.origin_y,
+                            makeGridParameters.block_size_x,
+                            makeGridParameters.block_size_y,
+                            makeGridParameters.upper_right_x,
+                            makeGridParameters.upper_right_y);
     }
 
 } // namespace meshkernelapi

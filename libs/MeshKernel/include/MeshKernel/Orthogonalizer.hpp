@@ -48,7 +48,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the left hand side, the linear system
-        [[nodiscard]] double GetWeight(size_t node, size_t connectedNode)
+        [[nodiscard]] double GetWeight(UInt node, UInt connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -57,7 +57,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the right hand size
-        [[nodiscard]] double GetRightHandSide(size_t node, size_t connectedNode)
+        [[nodiscard]] double GetRightHandSide(UInt node, UInt connectedNode)
         {
             return m_rhs[node][connectedNode];
         }

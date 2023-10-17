@@ -28,6 +28,9 @@
 #pragma once
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/PolygonalEnclosure.hpp"
 
 #include <concepts>
 
@@ -53,7 +56,6 @@ namespace meshkernel
                            double trisize);
     }
 
-    class Point;
     class Sample;
 
     /// @brief Wrapper around the Triangle library
@@ -79,11 +81,11 @@ namespace meshkernel
         void Compute(const std::vector<T>& inputNodes,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
-                     size_t estimatedNumberOfTriangles)
+                     UInt estimatedNumberOfTriangles)
         {
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
-            for (size_t i = 0; i < inputNodes.size(); ++i)
+            for (UInt i = 0; i < inputNodes.size(); ++i)
             {
                 xLocalPolygon[i] = inputNodes[i].x;
                 yLocalPolygon[i] = inputNodes[i].y;
@@ -98,7 +100,7 @@ namespace meshkernel
 
             if (estimatedNumberOfTriangles == 0)
             {
-                estimatedNumberOfTriangles = inputNodes.size() * 6 + 10;
+                estimatedNumberOfTriangles = static_cast<UInt>(inputNodes.size()) * 6 + 10;
             }
 
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
@@ -141,6 +143,9 @@ namespace meshkernel
             }
         }
 
+        /// @brief From the set of computed points, select those that are contained within the enclosure
+        std::vector<Point> SelectNodes(const PolygonalEnclosure& enclosure) const;
+
         /// @brief Build the internal triangulation from the flat triangulation
         void BuildTriangulation();
 
@@ -175,7 +180,7 @@ namespace meshkernel
         /// @brief Gets the nodes of a triangulated face
         /// @param faceIndex The face index
         /// @return The triangulated nodes
-        [[nodiscard]] const std::vector<size_t>& GetFaceNodes(const size_t faceIndex) const
+        [[nodiscard]] const std::vector<UInt>& GetFaceNodes(const UInt faceIndex) const
         {
             return m_faceNodes[faceIndex];
         }
@@ -184,7 +189,7 @@ namespace meshkernel
         /// @param faceIndex The index of the face to retrieve the node from
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the node with the specified index for the specified face
-        [[nodiscard]] size_t GetFaceNode(const size_t faceIndex, const size_t nodeIndex) const
+        [[nodiscard]] UInt GetFaceNode(const UInt faceIndex, const UInt nodeIndex) const
         {
             return m_faceNodes[faceIndex][nodeIndex];
         }
@@ -193,7 +198,7 @@ namespace meshkernel
         /// @param faceIndex The index of the face to retrieve the edge from
         /// @param edgeIndex The index of the edge to retrieve
         /// @return const reference to the edge with the specified index for the specified face
-        [[nodiscard]] size_t GetFaceEdge(const size_t faceIndex, const size_t edgeIndex) const
+        [[nodiscard]] UInt GetFaceEdge(const UInt faceIndex, const UInt edgeIndex) const
         {
             return m_faceEdges[faceIndex][edgeIndex];
         }
@@ -202,7 +207,7 @@ namespace meshkernel
         /// @param edgeIndex The index of the edge to retrieve the node from
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the node with the specified index for the specified face
-        [[nodiscard]] size_t GetEdgeNode(const size_t edgeIndex, const size_t nodeIndex) const
+        [[nodiscard]] UInt GetEdgeNode(const UInt edgeIndex, const UInt nodeIndex) const
         {
             return m_edgeNodes[edgeIndex][nodeIndex];
         }
@@ -211,7 +216,7 @@ namespace meshkernel
         /// @param edgeIndex The index of the edge to retrieve the node from
         /// @param faceIndex The index of the face to retrieve
         /// @return const reference to the edge with the specified index for the specified face
-        [[nodiscard]] size_t GetEdgeFace(const size_t edgeIndex, const size_t faceIndex) const
+        [[nodiscard]] UInt GetEdgeFace(const UInt edgeIndex, const UInt faceIndex) const
         {
             return m_edgesFaces[edgeIndex][faceIndex];
         }
@@ -219,7 +224,7 @@ namespace meshkernel
         /// @brief Retrieves the x coordinate of a triangulated node
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the x coordinate
-        [[nodiscard]] double GetXCoord(const size_t nodeIndex) const
+        [[nodiscard]] double GetXCoord(const UInt nodeIndex) const
         {
             return m_xCoordFlat[nodeIndex];
         }
@@ -227,9 +232,17 @@ namespace meshkernel
         /// @brief Retrieves the y coordinate of a triangulated node
         /// @param nodeIndex The index of the node to retrieve
         /// @return const reference to the y coordinate
-        [[nodiscard]] double GetYCoord(const size_t nodeIndex) const
+        [[nodiscard]] double GetYCoord(const UInt nodeIndex) const
         {
             return m_yCoordFlat[nodeIndex];
+        }
+
+        /// @brief Retrieves the (x,y) coordinate of a triangulated node
+        /// @param nodeIndex The index of the node to retrieve
+        /// @return Point
+        Point GetCoord(const UInt nodeIndex) const
+        {
+            return Point(m_xCoordFlat[nodeIndex], m_yCoordFlat[nodeIndex]);
         }
 
     private:
@@ -242,11 +255,11 @@ namespace meshkernel
         int m_numEdges{0};                ///< Initial number of triangulated edges
         int m_numFaces{0};                ///< Initial number of triangulated faces
 
-        std::vector<Point> m_nodes;                    ///< Reconstructed vector of nodes
-        std::vector<std::vector<size_t>> m_faceNodes;  ///< Reconstructed vector of face nodes
-        std::vector<std::vector<size_t>> m_faceEdges;  ///< Reconstructed vector of face edges
-        std::vector<std::vector<size_t>> m_edgeNodes;  ///< Reconstructed vector of edge nodes
-        std::vector<std::vector<size_t>> m_edgesFaces; ///< Reconstructed vector of edge faces
+        std::vector<Point> m_nodes;                  ///< Reconstructed vector of nodes
+        std::vector<std::vector<UInt>> m_faceNodes;  ///< Reconstructed vector of face nodes
+        std::vector<std::vector<UInt>> m_faceEdges;  ///< Reconstructed vector of face edges
+        std::vector<std::vector<UInt>> m_edgeNodes;  ///< Reconstructed vector of edge nodes
+        std::vector<std::vector<UInt>> m_edgesFaces; ///< Reconstructed vector of edge faces
     };
 
 } // namespace meshkernel

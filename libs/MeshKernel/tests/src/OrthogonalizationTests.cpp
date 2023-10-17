@@ -211,7 +211,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                              {569.274841, 294.483765},
                              {568.673035, 379.943695},
                              {515.712158, 458.783478},
-                             {343.288422, 471.722809}};
+                             {343.288422, 471.722809},
+                             {342.987518, 471.121002}};
 
     auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
     auto smoother = std::make_shared<Smoother>(mesh);

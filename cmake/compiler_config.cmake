@@ -15,7 +15,7 @@ if (UNIX)
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux.")
+    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 elseif(WIN32)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -23,8 +23,9 @@ elseif(WIN32)
     add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:/Od;/DEBUG>")
     add_compile_definitions("_USE_MATH_DEFINES")
+    add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows.")
+    message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 else()
     message(FATAL_ERROR "Unsupported platform. Only Linux and Windows are supported.")
@@ -32,6 +33,9 @@ endif()
 
 # CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur
 add_compile_definitions(CMAKE_SRC_DIR=${CMAKE_SOURCE_DIR})
+
+# Show the source location in the exception message?
+add_compile_definitions(HAVE_SRC_LOC_IN_ERR_MSGS=$<BOOL:${HAVE_SRC_LOC_IN_ERR_MSGS}>)
 
 # format library: from the standard lib or third-party?
 # When supported, std::format is preferred. Otherwise, fmtlib should be used.

@@ -25,12 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Constants.hpp"
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
+#include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::TriangulationInterpolation;
 
@@ -48,7 +49,7 @@ void TriangulationInterpolation::Compute()
     // no samples available, return
     if (m_samples.empty())
     {
-        throw AlgorithmError("TriangulationInterpolation::Compute: No samples available.");
+        throw AlgorithmError("No samples available.");
     }
 
     // triangulate samples
@@ -63,18 +64,19 @@ void TriangulationInterpolation::Compute()
     // no triangles formed, return
     if (triangulationWrapper.GetNumFaces() < 1)
     {
-        throw AlgorithmError("TriangulationInterpolation::Compute: Triangulation of samples produced no triangles.");
+        throw AlgorithmError("Triangulation of samples produced no triangles.");
     }
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.GetNumFaces(), {constants::missing::doubleValue, constants::missing::doubleValue});
+    // TODO can the inner vectors be replaced with std::array?
     std::vector<std::vector<Point>> triangles(triangulationWrapper.GetNumFaces(), std::vector<Point>(4));
     std::vector<std::vector<double>> values(triangulationWrapper.GetNumFaces(), std::vector<double>(4, constants::missing::doubleValue));
 
     for (auto f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
-        for (size_t n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < constants::geometric::numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.GetFaceNode(f, n);
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -90,12 +92,12 @@ void TriangulationInterpolation::Compute()
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
-    const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
+    const auto boundingBox = BoundingBox(m_samples);
 
     // loop over locations
-    for (size_t n = 0; n < m_locations.size(); ++n)
+    for (UInt n = 0; n < m_locations.size(); ++n)
     {
-        if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
+        if (!boundingBox.Contains(m_locations[n]) ||
             !IsEqual(m_results[n], constants::missing::doubleValue))
         {
             continue;
@@ -112,7 +114,7 @@ void TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         int numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.GetNumFaces() && triangle != constants::missing::uintValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -125,7 +127,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (size_t i = 0; i < Mesh::m_numNodesInTriangle; ++i)
+            for (UInt i = 0; i < constants::geometric::numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
                 if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)
@@ -137,20 +139,17 @@ void TriangulationInterpolation::Compute()
                 const auto otherTriangle = triangle == triangulationWrapper.GetEdgeFace(edge, 0) ? triangulationWrapper.GetEdgeFace(edge, 1) : triangulationWrapper.GetEdgeFace(edge, 0);
                 const auto k1 = triangulationWrapper.GetEdgeNode(edge, 0);
                 const auto k2 = triangulationWrapper.GetEdgeNode(edge, 1);
-                Point intersection;
-                double crossProduct;
-                double firstRatio;
-                double secondRatio;
-                const auto areCrossing = AreSegmentsCrossing(trianglesCircumcenters[triangle],
-                                                             m_locations[n],
-                                                             {m_samples[k1].x, m_samples[k1].y},
-                                                             {m_samples[k2].x, m_samples[k2].y},
-                                                             false,
-                                                             m_projection,
-                                                             intersection,
-                                                             crossProduct,
-                                                             firstRatio,
-                                                             secondRatio);
+
+                const auto [areCrossing,
+                            intersection,
+                            crossProduct,
+                            firstRatio,
+                            secondRatio] = AreSegmentsCrossing(trianglesCircumcenters[triangle],
+                                                               m_locations[n],
+                                                               {m_samples[k1].x, m_samples[k1].y},
+                                                               {m_samples[k2].x, m_samples[k2].y},
+                                                               false,
+                                                               m_projection);
 
                 if (areCrossing)
                 {
@@ -160,7 +159,7 @@ void TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle != constants::missing::sizetValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
+        if (isInTriangle && triangle != constants::missing::uintValue && static_cast<int>(triangle) < triangulationWrapper.GetNumFaces())
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

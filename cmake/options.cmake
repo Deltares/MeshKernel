@@ -26,7 +26,14 @@ cmake_dependent_option(
 if(LINUX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   option(
     ENABLE_CODE_COVERAGE
-    "Generates code coverage files under GNU compilers"
+    "Generates code coverage files under GNU compilers."
     OFF
   )
 endif()
+
+# error messages
+option(
+  HAVE_SRC_LOC_IN_ERR_MSGS
+  "Includes source location information in customized exceptions."
+  OFF
+)

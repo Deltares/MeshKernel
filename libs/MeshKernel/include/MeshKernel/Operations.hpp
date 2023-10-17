@@ -27,11 +27,15 @@
 
 #pragma once
 
+#include <iostream>
 #include <numeric>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/RTree.hpp>
+#include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
@@ -43,7 +47,7 @@ namespace meshkernel
     /// @param[in] fill Whatever fill or not fill the vector with missing values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, size_t const& firstDimension, size_t const& secondDimension, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill2DVector(std::vector<std::vector<T>>& v, UInt const& firstDimension, UInt const& secondDimension, bool fill = false, const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
@@ -65,7 +69,7 @@ namespace meshkernel
     /// @param[in] fill Whatever fill or not fill the vector with missing values
     /// @param[in] fillValue The fill value
     template <typename T>
-    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, size_t const& firstDimension, size_t const& secondDimension, size_t const& thirdDim, bool fill = false, const T& fillValue = {})
+    void ResizeAndFill3DVector(std::vector<std::vector<std::vector<T>>>& v, UInt const& firstDimension, UInt const& secondDimension, UInt const& thirdDim, bool fill = false, const T& fillValue = {})
     {
         v.resize(firstDimension);
         for (auto& e : v)
@@ -123,13 +127,13 @@ namespace meshkernel
     /// @param[in] el The element to search for
     /// @returns The index of element
     template <typename T>
-    [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] T FindIndex(const std::vector<T>& vec, T el)
     {
-        for (size_t n = 0; n < vec.size(); n++)
+        for (UInt n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
-                return n;
+                return static_cast<T>(n);
             }
         }
 
@@ -142,17 +146,26 @@ namespace meshkernel
     /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
-    std::vector<std::pair<size_t, size_t>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
+    std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec, size_t start, size_t end, double separator);
+
+    /// @brief Determine if the number of invalid points in the point array.
+    UInt InvalidPointCount(const std::vector<Point>& points);
+
+    /// @brief Determine if the number of invalid points in the section of the point array.
+    /// @param[in] points The array of points
+    /// @param[in] start The start of the range in which to search
+    /// @param[in] end The end of the range in which to search
+    UInt InvalidPointCount(const std::vector<Point>& points, size_t start, size_t end);
 
     /// @brief Sort a vector and return the sorted indices
     /// @param[in] v The vector to sort
     /// @returns The indices of elements
     template <typename T>
-    [[nodiscard]] std::vector<size_t> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<UInt> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<size_t> indices(v.size());
+        std::vector<UInt> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
-        std::ranges::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2)
+        std::ranges::stable_sort(indices.begin(), indices.end(), [&v](UInt i1, UInt i2)
                                  { return v[i1] < v[i2]; });
         return indices;
     }
@@ -162,7 +175,7 @@ namespace meshkernel
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
-    auto ReorderVector(const std::vector<T>& v, const std::vector<size_t>& order)
+    auto ReorderVector(const std::vector<T>& v, const std::vector<UInt>& order)
     {
         std::vector<T> ordered;
         ordered.reserve(v.size());
@@ -232,13 +245,13 @@ namespace meshkernel
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
-    [[nodiscard]] size_t NextCircularForwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] UInt NextCircularForwardIndex(UInt currentIndex, UInt size);
 
     /// @brief Get the next backward index.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
-    [[nodiscard]] size_t NextCircularBackwardIndex(size_t currentIndex, size_t size);
+    [[nodiscard]] UInt NextCircularBackwardIndex(UInt currentIndex, UInt size);
 
     /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
     /// @param[in] point The current point.
@@ -259,11 +272,11 @@ namespace meshkernel
     /// @brief Computes the cross product between two segments (duitpl)
     /// @param[in] firstSegmentFirstPoint   The first point of the first segment
     /// @param[in] firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in] secondSegmentFistPoint   The second point of the second segment
+    /// @param[in] secondSegmentFirstPoint   The second point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
     /// @param[in] projection               The coordinate system projection
     /// @return The cross product value
-    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
+    [[nodiscard]] double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
     /// @param[in] point The point to check
@@ -277,8 +290,8 @@ namespace meshkernel
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
-                                             size_t startNode = constants::missing::sizetValue,
-                                             size_t endNode = constants::missing::sizetValue);
+                                             UInt startNode = constants::missing::uintValue,
+                                             UInt endNode = constants::missing::uintValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -291,6 +304,20 @@ namespace meshkernel
     /// @param[in] secondPoint
     /// @param[in] projection The coordinate system projection.
     [[nodiscard]] double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the delta (dx, dy) for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection The coordinate system projection.
+    Vector GetDelta(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+
+    /// @brief Get the normal to the line described by the two points.
+    ///
+    /// The vector is normalised.
+    /// @param[in] start Point at the start of the line
+    /// @param[in] end Point at the end of the line
+    /// @param[in] projection The coordinate system projection.
+    Vector ComputeNormalToline(const Point& start, const Point& end, const Projection projection);
 
     /// @brief Gets dy for the given projection
     /// @param[in] firstPoint
@@ -348,11 +375,25 @@ namespace meshkernel
     /// @param[in,out] point The point to be incremented.
     void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point);
 
-    /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
+    /// @brief For a given polygon the function may shift the input coordinates
     /// @param[in,out] polygon    The input polygon.
+    /// @note To be called for spherical coordinate system only
+    void TranslateSphericalCoordinates(std::vector<Point>& polygon);
+
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] polygon    The input polygon.
     /// @param[in]     projection The coordinate system projection.
     /// @return The reference point
-    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection);
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection);
+
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] nodes    The input nodes
+    /// @param[in] polygonIndices  The polygon node indices.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The reference point
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& nodes,
+                                       const std::vector<UInt>& polygonIndices,
+                                       const Projection& projection);
 
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root
@@ -406,31 +447,22 @@ namespace meshkernel
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment
     /// @param[in]  firstSegmentSecondPoint  The second point of the first segment
-    /// @param[in]  secondSegmentFistPoint   The first point of the second segment
+    /// @param[in]  secondSegmentFirstPoint   The first point of the second segment
     /// @param[in]  secondSegmentSecondPoint The second point of the second segment
     /// @param[in]  adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in]  projection               The coordinate system projection
-    /// @param[out] intersectionPoint        The intersection point
-    /// @param[out] crossProduct             The cross product of the intersection
-    /// @param[out] ratioFirstSegment        The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
-    /// @param[out] ratioSecondSegment       The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
-    /// @return If the two segments are crossing
-    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                                           const Point& firstSegmentSecondPoint,
-                                           const Point& secondSegmentFistPoint,
-                                           const Point& secondSegmentSecondPoint,
-                                           bool adimensionalCrossProduct,
-                                           const Projection& projection,
-                                           Point& intersectionPoint,
-                                           double& crossProduct,
-                                           double& ratioFirstSegment,
-                                           double& ratioSecondSegment);
-
-    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
-    /// @param[in]  polygon            The input vector containing the nodes of the polygon (must be closed)
-    /// @param[in]  projection         The projection to use.
-    /// @return A tuple containing the resulting area, the resulting center of mass, and the orientation of the edges (counterclockwise/clockwise)
-    std::tuple<double, Point, bool> FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection);
+    /// @return A tuple with:
+    ///  If the two segments are crossing
+    ///  The intersection point
+    ///  The cross product of the intersection
+    ///  The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    ///  The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    [[nodiscard]] std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                                      const Point& firstSegmentSecondPoint,
+                                                                                      const Point& secondSegmentFirstPoint,
+                                                                                      const Point& secondSegmentSecondPoint,
+                                                                                      bool adimensionalCrossProduct,
+                                                                                      const Projection& projection);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates
@@ -453,11 +485,11 @@ namespace meshkernel
         const auto coordinate = std::floor(pointAdimensionalCoordinate);
         if (pointAdimensionalCoordinate - coordinate < eps)
         {
-            return pointCoordinate = coordinates[static_cast<size_t>(coordinate)];
+            return pointCoordinate = coordinates[static_cast<UInt>(coordinate)];
         }
 
-        const size_t low = static_cast<size_t>(coordinate);
-        const size_t high = low + 1;
+        const UInt low = static_cast<UInt>(coordinate);
+        const UInt high = low + 1;
         const double a = high - pointAdimensionalCoordinate;
         const double b = pointAdimensionalCoordinate - low;
 
@@ -465,20 +497,6 @@ namespace meshkernel
                           (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
         return pointCoordinate;
-    }
-
-    /// @brief Swap the elements of a vector, such as the last elements becomes the first elements
-    /// @tparam T A type
-    /// @param[in] v The vector
-    template <class T>
-    void SwapVectorElements(std::vector<T>& v)
-    {
-        for (size_t i = 0; i < v.size() / 2; ++i)
-        {
-            const auto a = v[i];
-            v[i] = v[i + 1];
-            v[i + 1] = a;
-        }
     }
 
     /// @brief Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.
@@ -506,13 +524,13 @@ namespace meshkernel
     /// @param[in] numM                 The number of columns to generate (horizontal direction).
     /// @param[in] numN                 The number of rows to generate (vertical direction).
     /// @returns The resulting dicretization (expressed as number of points).
-    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
-                                                                        const std::vector<Point>& rightDiscretization,
-                                                                        const std::vector<Point>& bottomDiscretization,
-                                                                        const std::vector<Point>& upperDiscretization,
-                                                                        const Projection& projection,
-                                                                        size_t numM,
-                                                                        size_t numN);
+    [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
+                                                               const std::vector<Point>& rightDiscretization,
+                                                               const std::vector<Point>& bottomDiscretization,
+                                                               const std::vector<Point>& upperDiscretization,
+                                                               const Projection& projection,
+                                                               UInt numM,
+                                                               UInt numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
@@ -527,20 +545,6 @@ namespace meshkernel
     /// @param[in] projection         The projection to use.
     /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection);
-
-    /// @brief Checks if value is inside a bounding box
-    /// @tparam    T          Requires IsCoordinate<T>
-    /// @param[in] point      The point to inquire
-    /// @param[in] lowerLeft  The lower left corner of the bounding box
-    /// @param[in] upperRight The upper right corner of the bounding box
-    /// @returns If the point is in the bounding box
-    template <typename T>
-    bool IsValueInBoundingBox(T point, const Point& lowerLeft, const Point& upperRight)
-    {
-
-        return point.x >= lowerLeft.x && point.x <= upperRight.x &&
-               point.y >= lowerLeft.y && point.y <= upperRight.y;
-    }
 
     /// @brief Given a series of point computes the average coordinate
     /// @param[in] points The point series.
@@ -558,36 +562,11 @@ namespace meshkernel
                                                                   Point const& secondNode,
                                                                   Point const& pointToProject);
 
-    /// @brief Given a vector of coordinates, get the lowest upper and right points
-    /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] points The point values
-    /// @returns A tuple with bottom left and upper right corners of the bounding box
-    template <typename T>
-    [[nodiscard]] std::tuple<Point, Point> GetBoundingBox(const std::vector<T>& points)
-    {
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::lowest();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::lowest();
-
-        for (const auto& point : points)
-        {
-            if (point.IsValid())
-            {
-                minx = std::min(minx, point.x);
-                maxx = std::max(maxx, point.x);
-                miny = std::min(miny, point.y);
-                maxy = std::max(maxy, point.y);
-            }
-        }
-        return {{minx, miny}, {maxx, maxy}};
-    }
-
-    /// @brief Calculates the absolute difference between to `size_t` numbers.
+    /// @brief Calculates the absolute difference between to `Index` numbers.
     ///
     /// @param[in] number_1 The first number
     /// @param[in] number_2 The second number
-    size_t AbsoluteDifference(size_t number_1, size_t number_2);
+    UInt AbsoluteDifference(UInt number_1, UInt number_2);
 
     /// @brief Computes the discretization points along a polyline
     /// @param polyline A polyline described by its nodes
@@ -614,5 +593,19 @@ namespace meshkernel
     /// @brief matCoefficients [in] To be detailed
     /// @returns The computed matrix norm
     [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
+
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
+
+    /// @brief Increment a valid value by an increment
+    inline void IncrementValidValue(UInt& value, const UInt increment)
+    {
+        if (value != constants::missing::uintValue) [[likely]]
+        {
+            value += increment;
+        }
+    }
 
 } // namespace meshkernel

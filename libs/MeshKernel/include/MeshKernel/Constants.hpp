@@ -27,28 +27,35 @@
 
 #pragma once
 
+#include "MeshKernel/Definitions.hpp"
+
 #include <cmath>
 #include <limits>
 #include <math.h>
 
+#include <Eigen/Core>
+
 namespace meshkernel
 {
+
     namespace constants
     {
         // missing values
         namespace missing
         {
-            constexpr double innerOuterSeparator = -998.0;                    ///< Double value used to separate the inner part of a polygon from its outer part
-            constexpr double doubleValue = -999.0;                            ///< Double value used as missing value
-            constexpr int intValue = -999;                                    ///< Integer value used as missing value
-            constexpr size_t sizetValue = std::numeric_limits<size_t>::max(); ///< std::size_t missing value used for invalid indices
-        }                                                                     // namespace missing
+            constexpr double innerOuterSeparator = -998.0;                                     ///< Double value used to separate the inner part of a polygon from its outer part
+            constexpr double doubleValue = -999.0;                                             ///< Double value used as missing value
+            constexpr int intValue = -999;                                                     ///< Integer value used as missing value
+            constexpr UInt uintValue = std::numeric_limits<UInt>::max();                       ///< missing value used for invalid indices
+            constexpr Eigen::Index EigenIndexValue = std::numeric_limits<Eigen::Index>::max(); ///< missing value used for invalid eigen indices
+        }                                                                                      // namespace missing
 
         // often used values
         namespace numeric
         {
             static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
             constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
+            constexpr int defaultSnappingIterations = 5;            ///< Default number of iterations to take in the spline snapping algorithm
         }                                                           // namespace numeric
 
         // unit conversion constants
@@ -64,6 +71,9 @@ namespace meshkernel
             constexpr double earth_radius = 6378137.0;                  ///< Earth radius(m)
             constexpr double inverse_earth_radius = 1.0 / earth_radius; ///< One over constants::geometric::earth_radius(m-1);
             constexpr double absLatitudeAtPoles = 0.0001;               ///< Pole tolerance in degrees
+            constexpr double refinementTolerance = 1.0e-2;              ///< Relative size of refinement.
+            constexpr UInt numNodesInQuadrilateral = 4;                 ///< Number of nodes in a quadrilateral
+            constexpr UInt numNodesInTriangle = 3;                      ///< Number of nodes in a triangle
         }                                                               // namespace geometric
 
         namespace physical

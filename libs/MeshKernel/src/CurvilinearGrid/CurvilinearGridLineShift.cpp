@@ -49,17 +49,17 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
 
     /// The first delta
     auto const previousNodeIndex = m_lines[0].m_startNode;
-    auto previousDelta = m_grid.m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n] -
-                         m_originalGrid->m_gridNodes[previousNodeIndex.m_m][previousNodeIndex.m_n];
+    auto previousDelta = m_grid.m_gridNodes(previousNodeIndex.m_m, previousNodeIndex.m_n) -
+                         m_originalGrid->m_gridNodes(previousNodeIndex.m_m, previousNodeIndex.m_n);
 
     const double eps = 1e-5;
     auto previousCoordinate = m_lines[0].m_startCoordinate;
-    for (size_t i = 1; i <= m_lines[0].m_endCoordinate; ++i)
+    for (UInt i = 1; i <= m_lines[0].m_endCoordinate; ++i)
     {
         auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
-        auto const currentDelta = m_grid.m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
-                                  m_originalGrid->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
+        auto const currentDelta = m_grid.m_gridNodes(currentNodeIndex.m_m, currentNodeIndex.m_n) -
+                                  m_originalGrid->m_gridNodes(currentNodeIndex.m_m, currentNodeIndex.m_n);
 
         if (std::abs(currentDelta.x) < eps && std::abs(currentDelta.y) < eps && i != m_lines[0].m_endCoordinate)
         {
@@ -69,7 +69,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
         /// On the original algorithm currentDelta is distributed on the nodes above the current i,
         /// except for the last node m_endCoordinate, where currentDelta is distributed on the entire grid line
         const auto currentLastCoordinate = i == m_lines[0].m_endCoordinate ? i : i - 1;
-        for (size_t j = previousCoordinate; j <= currentLastCoordinate; ++j)
+        for (UInt j = previousCoordinate; j <= currentLastCoordinate; ++j)
         {
 
             auto const nodeIndex = m_lines[0].GetNodeIndexFromCoordinate(j);
@@ -78,7 +78,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
             auto const secondFactor = 1.0 - firstFactor;
 
             // Now distribute the shifting
-            m_grid.m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_originalGrid->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
+            m_grid.m_gridNodes(nodeIndex.m_m, nodeIndex.m_n) = m_originalGrid->m_gridNodes(nodeIndex.m_m, nodeIndex.m_n) +
                                                                previousDelta * secondFactor + currentDelta * firstFactor;
             // Field transformation on the influence area
             TransformGrid(nodeIndex);
@@ -92,7 +92,7 @@ CurvilinearGrid CurvilinearGridLineShift::Compute()
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& node)
 {
-    auto delta = m_grid.m_gridNodes[node.m_m][node.m_n] - m_originalGrid->m_gridNodes[node.m_m][node.m_n];
+    auto delta = m_grid.m_gridNodes(node.m_m, node.m_n) - m_originalGrid->m_gridNodes(node.m_m, node.m_n);
     delta = m_originalGrid->TransformDisplacement(delta, node, true);
 
     auto const start = m_lines[0].IsMGridLine() ? m_lowerLeft.m_n : m_lowerLeft.m_m;
@@ -103,7 +103,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& n
         CurvilinearGridNodeIndices currentNode{m_lines[0].IsMGridLine() ? node.m_m : i,
                                                m_lines[0].IsMGridLine() ? i : node.m_n};
 
-        if (!m_originalGrid->m_gridNodes[currentNode.m_m][currentNode.m_n].IsValid())
+        if (!m_originalGrid->m_gridNodes(currentNode.m_m, currentNode.m_n).IsValid())
         {
             continue;
         }
@@ -120,7 +120,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& n
         }
 
         currentDelta = m_originalGrid->TransformDisplacement(currentDelta, currentNode, false);
-        m_grid.m_gridNodes[currentNode.m_m][currentNode.m_n] = m_originalGrid->m_gridNodes[currentNode.m_m][currentNode.m_n] + currentDelta;
+        m_grid.m_gridNodes(currentNode.m_m, currentNode.m_n) = m_originalGrid->m_gridNodes(currentNode.m_m, currentNode.m_n) + currentDelta;
     }
 }
 

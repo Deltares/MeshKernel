@@ -27,36 +27,38 @@
 
 #pragma once
 
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Parameters.hpp>
-
-#include <memory>
+#include <cstdint>
+#include <string>
 
 namespace meshkernel
 {
-    class Polygons;
-    class CurvilinearGrid;
+    /// @brief Integer type used when indexing mesh graph entities.
+    using UInt = std::uint32_t;
 
-    /// @brief A class implementing the generation of a uniform curvilinear grid
-    class CurvilinearGridCreateUniform
+    /// @brief Enumerator describing the supported projections
+    enum class Projection
     {
-    public:
-        /// @brief Class constructor
-        ///
-        /// @param[in] MakeGridParameters The structure containing the make grid parameters
-        /// @param[in] projection The projection to use
-        CurvilinearGridCreateUniform(const MakeGridParameters& MakeMeshParameters, Projection projection);
-
-        /// @brief Compute an uniform curvilinear grid using the make mesh parameters
-        CurvilinearGrid Compute() const;
-
-        /// @brief Compute an uniform curvilinear grid in one polygon
-        /// @param[in] polygons The input polygons
-        /// @param[in] polygonIndex The polygon index
-        CurvilinearGrid Compute(std::shared_ptr<Polygons> polygons, size_t polygonIndex) const;
-
-    private:
-        MakeGridParameters m_makeGridParameters; ///< A copy of the structure containing the parameters used for making the grid
-        Projection m_projection;                 ///< The projection to use
+        cartesian = 0,        // jsferic  = 0
+        spherical = 1,        // jsferic  = 1
+        sphericalAccurate = 2 // jasfer3D = 1
     };
+
+    /// @brief Convert an integer value to the Projection enumeration type
+    ///
+    /// If the integer projection value does not correspond to an enumeration
+    /// value then a ConstraintError will be thrown
+    Projection GetProjectionValue(int projection);
+
+    /// @brief Get the string representation of the Projection enumeration values.
+    const std::string& ToString(Projection projection);
+
+    /// @brief Indicator for traversal direction of the points specifying a polygon
+    // PolygonTraversalDirection? too long
+    // PolygonOrientation
+    enum class TraversalDirection
+    {
+        Clockwise,    ///< Points define a clockwise traversal of the polygon
+        AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
+    };
+
 } // namespace meshkernel

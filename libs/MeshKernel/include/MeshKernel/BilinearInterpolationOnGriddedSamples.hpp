@@ -38,14 +38,14 @@ namespace meshkernel
     public:
         /// @brief Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
-        /// @param[in] numColumns The number of grid columns
-        /// @param[in] numRows The number of grid rows
+        /// @param[in] numXCoord The number of x coordinates of the gridded data
+        /// @param[in] numYCoord The number of y coordinates of the gridded data
         /// @param[in] origin The coordinate of the grid origin
         /// @param[in] cellSize The grid cell size
         /// @param[in] values The values of the gridded samples
         BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                              size_t numColumns,
-                                              size_t numRows,
+                                              UInt numXCoord,
+                                              UInt numYCoord,
                                               const Point& origin,
                                               double cellSize,
                                               const std::vector<double>& values);
@@ -64,7 +64,7 @@ namespace meshkernel
         void Compute() override;
 
     private:
-        /// @brief Performs bilinear interpolation
+        /// @brief Performs bi-linear interpolation
         /// @param[in] point The input point
         /// @return The result of bilinear interpolation at the point
         double Interpolation(const Point& point) const;
@@ -81,18 +81,17 @@ namespace meshkernel
 
         /// @brief Gets the sample value at specific row and column
         /// @return The sample value
-        [[nodiscard]] double getGriddedValue(size_t columnIndex, size_t rowIndex) const
+        [[nodiscard]] double getGriddedValue(UInt columnIndex, UInt rowIndex) const
         {
-            const auto index = rowIndex * (m_numColumns + 1) + columnIndex;
+            const auto index = rowIndex * m_numXCoord + columnIndex;
             return m_values[index];
         }
 
-        const Mesh2D& m_mesh; ///< Pointer to the mesh
-
-        size_t m_numColumns; ///< The number of grid columns
-        size_t m_numRows;    ///< The number of grid rows
-        Point m_origin;      ///< The coordinate of the origin
-        double m_cellSize;   ///< The grid cell size
+        const Mesh2D& m_mesh; ///< Reference to the mesh
+        UInt m_numXCoord;     ///< The number of x coordinates of the gridded data
+        UInt m_numYCoord;     ///< The number of y coordinates of the gridded data
+        Point m_origin;       ///< The coordinate of the origin
+        double m_cellSize;    ///< The grid cell size
 
         std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
         std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
