@@ -274,12 +274,13 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
 void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
     // first filter the nodes in polygon
-    std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
+    const auto numNodes = GetNumNodes();
+    std::vector<Point> filteredNodes(numNodes);
+    std::vector<UInt> originalNodeIndices(numNodes, constants::missing::uintValue);
     const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
 
     UInt filteredNodeCount = 0;
-    for (UInt i = 0; i < GetNumNodes(); ++i)
+    for (UInt i = 0; i < numNodes; ++i)
     {
         if (isNodeInPolygon[i])
         {
@@ -412,11 +413,10 @@ double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
     for (UInt e = 0; e < numEdges; e++)
     {
         const auto& [firstNode, secondNode] = m_edges[e];
-        if (!isNodeInPolygon[firstNode] && !isNodeInPolygon[secondNode])
+        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
         {
-            continue;
+            result = std::min(result, m_edgeLengths[e]);
         }
-        result = std::min(result, m_edgeLengths[e]);
     }
     return result;
 }
