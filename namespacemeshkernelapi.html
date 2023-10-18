@@ -445,9 +445,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a6d559487b89e3bde2ed59bb1c8b00031"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6d559487b89e3bde2ed59bb1c8b00031">mkernel_mesh2d_make_rectangular_mesh_on_extension</a> (int meshKernelId, const <a class="el" href="structmeshkernel_1_1_make_grid_parameters.html">meshkernel::MakeGridParameters</a> &amp;makeGridParameters)</td></tr>
 <tr class="memdesc:a6d559487b89e3bde2ed59bb1c8b00031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a rectangular mesh on a defined extension.  <a href="namespacemeshkernelapi.html#a6d559487b89e3bde2ed59bb1c8b00031">More...</a><br /></td></tr>
 <tr class="separator:a6d559487b89e3bde2ed59bb1c8b00031"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a014ef0883dd95104bf8290f2ad0e78bc"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a014ef0883dd95104bf8290f2ad0e78bc">mkernel_mesh2d_merge_nodes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double mergingDistance)</td></tr>
-<tr class="memdesc:a014ef0883dd95104bf8290f2ad0e78bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges.  <a href="namespacemeshkernelapi.html#a014ef0883dd95104bf8290f2ad0e78bc">More...</a><br /></td></tr>
-<tr class="separator:a014ef0883dd95104bf8290f2ad0e78bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06ff49944a2e931a0bf54b8cd7fe610e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a06ff49944a2e931a0bf54b8cd7fe610e">mkernel_mesh2d_merge_nodes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn)</td></tr>
+<tr class="memdesc:a06ff49944a2e931a0bf54b8cd7fe610e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges.  <a href="namespacemeshkernelapi.html#a06ff49944a2e931a0bf54b8cd7fe610e">More...</a><br /></td></tr>
+<tr class="separator:a06ff49944a2e931a0bf54b8cd7fe610e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae177d47f9f0ae7eee4e51e7dfb47217"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aae177d47f9f0ae7eee4e51e7dfb47217">mkernel_mesh2d_merge_nodes_with_merging_distance</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double mergingDistance)</td></tr>
+<tr class="memdesc:aae177d47f9f0ae7eee4e51e7dfb47217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges.  <a href="namespacemeshkernelapi.html#aae177d47f9f0ae7eee4e51e7dfb47217">More...</a><br /></td></tr>
+<tr class="separator:aae177d47f9f0ae7eee4e51e7dfb47217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c0c58950912873ea5540775cb1c3b89"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4c0c58950912873ea5540775cb1c3b89">mkernel_mesh2d_merge_two_nodes</a> (int meshKernelId, int firstNode, int secondNode)</td></tr>
 <tr class="memdesc:a4c0c58950912873ea5540775cb1c3b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges two mesh2d nodes into one.  <a href="namespacemeshkernelapi.html#a4c0c58950912873ea5540775cb1c3b89">More...</a><br /></td></tr>
 <tr class="separator:a4c0c58950912873ea5540775cb1c3b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5319,14 +5322,52 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a014ef0883dd95104bf8290f2ad0e78bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a014ef0883dd95104bf8290f2ad0e78bc">&#9670;&nbsp;</a></span>mkernel_mesh2d_merge_nodes()</h2>
+<a id="a06ff49944a2e931a0bf54b8cd7fe610e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ff49944a2e931a0bf54b8cd7fe610e">&#9670;&nbsp;</a></span>mkernel_mesh2d_merge_nodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_merge_nodes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryListIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The polygon defining the area where the operation will be performed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aae177d47f9f0ae7eee4e51e7dfb47217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae177d47f9f0ae7eee4e51e7dfb47217">&#9670;&nbsp;</a></span>mkernel_mesh2d_merge_nodes_with_merging_distance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_merge_nodes_with_merging_distance </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
