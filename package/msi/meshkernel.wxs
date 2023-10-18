@@ -1,12 +1,8 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Name='meshkernel' Id='c96503ef-bd13-4c4c-863a-2daa93d48aab' UpgradeCode='bb3bb63a-1887-4094-ab68-046240b888c8'
-    Language='1033' Codepage='1252' Version='3.16.5' Manufacturer='Deltares'>
+  <Product Name='meshkernel' Id='c96503ef-bd13-4c4c-863a-2daa93d48aab' UpgradeCode='bb3bb63a-1887-4094-ab68-046240b888c8' Language='1033' Codepage='1252' Version='3.16.5' Manufacturer='Deltares'>
 
-    <Package Id='*' Keywords='Installer'
-      Description="meshkernel, Windows installer created by Deltares"
-      Comments='Deltares copyright?' Manufacturer='Deltares'
-      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+    <Package Id='*' Keywords='Installer' Description="meshkernel, Windows installer created by Deltares" Comments='Deltares copyright?' Manufacturer='Deltares' InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
     <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
     <Property Id='DiskPrompt' Value="meshkernel Installation [1]" />
@@ -16,213 +12,257 @@
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
         <Directory Id='INSTALLDIR' Name='MeshKernel'>
 
-            <Component Id='cId_readme.txt1158be' Guid='1158be48-ddf7-4b11-9215-234b04485da9'>
-                <File Id='fId_readme.txt1158be' Name='readme.txt' DiskId='1' Source='package\msi\meshkernel\readme.txt' KeyPath='yes' />               
-            </Component>
+          <Component Id='cId_readme.txt1158be' Guid='1158be48-ddf7-4b11-9215-234b04485da9'>
+            <File Id='fId_readme.txt1158be' Name='readme.txt' DiskId='1' Source='package\msi\meshkernel\readme.txt' KeyPath='yes' />
+          </Component>
 
-            <Directory Id="dir6C5F07B659DD5E2B75D23C16FA4C787C" Name="bin">
-                    <Component Id="cmp58C871DEE4AEF057030A13A1E1A4EC10" Guid="8F83D26B-45AD-4822-894E-64874D601B17">
-                        <File Id="fil2D8A060891130D3F24F45B132CE49317" KeyPath="yes" Source="meshkernel\bin\MeshKernelApi.dll" />
-                    </Component>
-                    <Component Id="cmp1FD651EA15D1310C42E06833E42F6959" Guid="EF924423-BD9A-4F94-ACBE-C409086D149B">
-                        <File Id="fil7DEFE5062DEA4E2DF7B6D0870C331999" KeyPath="yes" Source="meshkernel\bin\MeshKernelApid.dll" />
-                    </Component>
+          <Directory Id="dir86FFEC96F085C4DACAED242019AC2960" Name="bin">
+            <Component Id="cmpA46A85FE588D49B502C57F26FC33CC6D" Guid="317D33FF-64B9-4BDF-8647-F1138137BAE5">
+              <File Id="fil6E25B21B8FE485FFA916CF044446DF42" KeyPath="yes" Source="meshkernel\bin\MeshKernelApi.dll" />
+            </Component>
+          </Directory>
+          <Directory Id="dir8126D8FB19559CDC158DF15AD56D1418" Name="include">
+            <Directory Id="dir539B589106B8F7804F4503C602D27670" Name="MeshKernel">
+              <Component Id="cmpA33FE6F55D365228AE322B0501E84019" Guid="C6848E06-ED15-406D-B31F-AA8BD5627BBD">
+                <File Id="fil1F03C3074526F6D3D28FBCC32C7476FE" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingInterpolation.hpp" />
+              </Component>
+              <Component Id="cmpDF722CEE38D77FC11E77DAA84AC0DA24" Guid="CE642917-684E-4649-A71B-8F1328D43458">
+                <File Id="fil17EE2CB70850DF36923AF03FAAED0D76" KeyPath="yes" Source="meshkernel\include\MeshKernel\BilinearInterpolationOnGriddedSamples.hpp" />
+              </Component>
+              <Component Id="cmp9D66767375ABFA0C4318728AB3A9821F" Guid="56220F6E-173E-4F55-BCE6-6F874B4D4E25">
+                <File Id="fil613B591283317A814135B5FD7D619CA3" KeyPath="yes" Source="meshkernel\include\MeshKernel\BoundingBox.hpp" />
+              </Component>
+              <Component Id="cmpB2C13CD3E1E8A7B1DA7E82382902D3C7" Guid="A0EC71BD-C093-4B60-96A7-E23B29B74B37">
+                <File Id="filBF392A42DF13267C2AC17F110C7CA992" KeyPath="yes" Source="meshkernel\include\MeshKernel\ConnectMeshes.hpp" />
+              </Component>
+              <Component Id="cmpCAF58E7B16F8F762AB058C2ED68C50EE" Guid="D45BF0B6-94F3-426D-8673-735044B5EC99">
+                <File Id="fil51B498B4D86BBB89105ABBA94A978354" KeyPath="yes" Source="meshkernel\include\MeshKernel\Constants.hpp" />
+              </Component>
+              <Component Id="cmp2ED791785B7432A010E12CADA56F9571" Guid="76821219-8073-4D1A-BA4E-89CD1DA2D634">
+                <File Id="filF56C767BB45B4AF8595A22222CE6A1F9" KeyPath="yes" Source="meshkernel\include\MeshKernel\Contacts.hpp" />
+              </Component>
+              <Component Id="cmp160F93DBECA2BDE46797470E75DAFE7F" Guid="18698CA1-F201-422A-8D4D-9956F71326AD">
+                <File Id="fil8B217CD2997D067E0678CEA111C05481" KeyPath="yes" Source="meshkernel\include\MeshKernel\Definitions.hpp" />
+              </Component>
+              <Component Id="cmpE1534E3DBCBCA43DD0BD03F71EB71428" Guid="B6BE34DA-A528-4D37-BEBE-E632C4E2204E">
+                <File Id="fil86650219F730E5AB494230D251E4C7E3" KeyPath="yes" Source="meshkernel\include\MeshKernel\Entities.hpp" />
+              </Component>
+              <Component Id="cmp03D27B89953A0E9788F179ECEEFB1C50" Guid="488699CB-CC8F-4E7F-9D8F-2F02584DAAC4">
+                <File Id="fil5DF5D783A6A7273A76720C3590BF505E" KeyPath="yes" Source="meshkernel\include\MeshKernel\Exceptions.hpp" />
+              </Component>
+              <Component Id="cmp1104353E7061812054689594406CAC4E" Guid="720EBAC9-9028-4B5D-B327-2CBF1C3E5E70">
+                <File Id="fil604A3092CE5B3A3976C42899F1ED4C8C" KeyPath="yes" Source="meshkernel\include\MeshKernel\FlipEdges.hpp" />
+              </Component>
+              <Component Id="cmp10F3B88E09D62C5CE13A2BC44592DFF6" Guid="D9AEDD45-FE56-4B0E-983A-44B2B4426E39">
+                <File Id="fil50502B340A1C91912B4931C5EDE02730" KeyPath="yes" Source="meshkernel\include\MeshKernel\Formatting.hpp" />
+              </Component>
+              <Component Id="cmpB68DE4150AD8B54CBE0FE8CE8CDB53D2" Guid="588B89A2-671A-49C4-9F02-D3787CAC8B27">
+                <File Id="fil1E34793DD34647A76879837D6F05F91A" KeyPath="yes" Source="meshkernel\include\MeshKernel\LandBoundaries.hpp" />
+              </Component>
+              <Component Id="cmpB899FA8503C67F00E67A28D3A31CE8B2" Guid="274E3292-D6D5-49B8-BA85-70364C16B5C3">
+                <File Id="fil2BFFFD2CF31CD6FFFF057A9462EB9AE2" KeyPath="yes" Source="meshkernel\include\MeshKernel\LandBoundary.hpp" />
+              </Component>
+              <Component Id="cmp60D257B08548E16946D26AAEF98610DD" Guid="035D712F-DE76-4490-8B21-D265F5324C7D">
+                <File Id="filED7B173CD3BAEE911BCA1C9CEFB15652" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh.hpp" />
+              </Component>
+              <Component Id="cmp6B27A1EFD1D8DB27A217BF319D55EC61" Guid="56E77EE3-197D-465C-B9B2-9AB3DA6A1277">
+                <File Id="fil0D228F325455943074871E76EAA9C8B7" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh1D.hpp" />
+              </Component>
+              <Component Id="cmpE4CD81C72326911EED37BFFE3157FBFD" Guid="264E75C6-4045-44E3-853B-A842266187CB">
+                <File Id="fil36CA947531A6E18B9AFABC44F2B36E61" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh2D.hpp" />
+              </Component>
+              <Component Id="cmpDC21E12FA6857E37995488B15807924B" Guid="8CECC1DC-69AA-42D5-8CB4-6401DAE35B0E">
+                <File Id="fil2E1A90FB8DFBB4A6B02EA24091B0493D" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh2DIntersections.hpp" />
+              </Component>
+              <Component Id="cmp730A6145BFC3A6EB3A6A97379BB1521C" Guid="DEFF656E-837F-49E3-8A0E-3A7B40B8E88C">
+                <File Id="fil8EA3F913BB4AF1BFC8956EDC5BE0F346" KeyPath="yes" Source="meshkernel\include\MeshKernel\MeshInterpolation.hpp" />
+              </Component>
+              <Component Id="cmp6EEACD8C0C56A4E80E2378F8B9613FD4" Guid="F63CEA4B-5511-404D-B94E-3E81BDB2EF7F">
+                <File Id="fil2F611E15A8C7AA5A0551E87C9B9ADAD2" KeyPath="yes" Source="meshkernel\include\MeshKernel\MeshRefinement.hpp" />
+              </Component>
+              <Component Id="cmpB4BA75ECA0322D55629EA1B29705887C" Guid="5EDB8170-815D-4633-B716-12BAEF385B4B">
+                <File Id="fil2F5B482F67D9F6A156F03C8EC4522888" KeyPath="yes" Source="meshkernel\include\MeshKernel\Network1D.hpp" />
+              </Component>
+              <Component Id="cmp22B5A8CD33E66DA41F4F4A997C7472E6" Guid="79A4ED41-B0C9-40D8-9E61-00E953CC763E">
+                <File Id="fil7258A1DC7818CD1B7107F9A06346BD76" KeyPath="yes" Source="meshkernel\include\MeshKernel\Operations.hpp" />
+              </Component>
+              <Component Id="cmp0B34CBE6D0384650233592A534BB153C" Guid="F9B3A240-4694-4EC5-B9BC-25F2FBF4157E">
+                <File Id="filA302D083966A14E3A9D1A020889C087E" KeyPath="yes" Source="meshkernel\include\MeshKernel\OrthogonalizationAndSmoothing.hpp" />
+              </Component>
+              <Component Id="cmpBE150BD84E571F14233AAA5B1CF4353F" Guid="6434B7CD-C7CB-4F61-9AD4-1CD1726B598E">
+                <File Id="fil93F1091899ECCAD32F20F443597C18A3" KeyPath="yes" Source="meshkernel\include\MeshKernel\Orthogonalizer.hpp" />
+              </Component>
+              <Component Id="cmpF22254F3531F62C57E390F9AEF5FC62A" Guid="B7287359-57BA-4A47-903C-111654FAEA5E">
+                <File Id="fil02D76A68E4FE7536294F92AB7AB1F2AA" KeyPath="yes" Source="meshkernel\include\MeshKernel\Parameters.hpp" />
+              </Component>
+              <Component Id="cmp3497863DF0AF2378F59E051F0BB215BE" Guid="3E84D009-3B22-499A-94ED-4ADA33BCB7F6">
+                <File Id="filC93475267C4C8EE8718A0B392D8A6CD0" KeyPath="yes" Source="meshkernel\include\MeshKernel\Point.hpp" />
+              </Component>
+              <Component Id="cmp0A765A7A422030F1790B8522E662AC65" Guid="73B9E683-1D6B-4326-9D28-2A17BF727F72">
+                <File Id="fil35E6BF7CE3C67675E08894A5FE96A630" KeyPath="yes" Source="meshkernel\include\MeshKernel\Polygon.hpp" />
+              </Component>
+              <Component Id="cmp05E7D565A5079187A0917B09B2DF77E7" Guid="4FCE93C8-F4BD-4FC6-81DB-C055C23096BD">
+                <File Id="fil54B0421289609C4D4890D513B95C016B" KeyPath="yes" Source="meshkernel\include\MeshKernel\PolygonalEnclosure.hpp" />
+              </Component>
+              <Component Id="cmpFA07291C29473F84F9F55A295176B3BF" Guid="ABE37934-3E7D-40DD-9FD7-4FCB56C19356">
+                <File Id="filB90897EAC2F29C7D3000C9392551E084" KeyPath="yes" Source="meshkernel\include\MeshKernel\Polygons.hpp" />
+              </Component>
+              <Component Id="cmpFFB2E011CC40D54F9F5A11C2146786BE" Guid="88076052-FA30-4F62-A4C7-D48E0CEC6494">
+                <File Id="fil7C32E13C84132155771C8B74BF5AC64A" KeyPath="yes" Source="meshkernel\include\MeshKernel\RangeCheck.hpp" />
+              </Component>
+              <Component Id="cmp6765ABDE86E3D50A071C51D86754FF4A" Guid="B3DA6103-DB5E-4FB7-9919-334F7141CB15">
+                <File Id="filE25A91889D96FD49D80DD65B32A870E8" KeyPath="yes" Source="meshkernel\include\MeshKernel\RemoveDisconnectedRegions.hpp" />
+              </Component>
+              <Component Id="cmp7A99D01B00C04D452606D52EE5555049" Guid="551C8FE7-1F2F-4ACA-8A84-6A7AFDB6E3C0">
+                <File Id="fil5C56C41F86FE227A61CE44AD548FC073" KeyPath="yes" Source="meshkernel\include\MeshKernel\Smoother.hpp" />
+              </Component>
+              <Component Id="cmp8F9DFA9CCB9176DE2BCCEC288A3C7794" Guid="EC10EFF1-F493-47A3-8842-231356BD598C">
+                <File Id="filF4F11B8E9E4F17188C930FFFB24D8BF5" KeyPath="yes" Source="meshkernel\include\MeshKernel\SplineAlgorithms.hpp" />
+              </Component>
+              <Component Id="cmp0F719243F1740E571C8099A51E292972" Guid="4FC97BE0-F581-49AB-A6D4-87F81E1E3B00">
+                <File Id="fil4326095EC7AE8B0770F52C011B35CB18" KeyPath="yes" Source="meshkernel\include\MeshKernel\Splines.hpp" />
+              </Component>
+              <Component Id="cmpCA8B107A65C11F98B15860A3EF1A8B08" Guid="1A7AA256-8F0A-4F97-A895-DDDEA2BF3C10">
+                <File Id="fil892057217EE4F45C593273FCCDEE6F10" KeyPath="yes" Source="meshkernel\include\MeshKernel\TriangulationInterpolation.hpp" />
+              </Component>
+              <Component Id="cmp03E347EFA79F6E722B6147F943132813" Guid="E8085E0F-0F88-4DC3-88F6-778D05E8579B">
+                <File Id="fil854E475FABB9F481B6E9039DAA3B4DF1" KeyPath="yes" Source="meshkernel\include\MeshKernel\TriangulationWrapper.hpp" />
+              </Component>
+              <Component Id="cmp7AD0F0832A53910F96F21C9EE396834E" Guid="4274055A-1638-4785-996E-F47A4BF60809">
+                <File Id="fil4043FB259E7992555165241EAF8528F1" KeyPath="yes" Source="meshkernel\include\MeshKernel\Vector.hpp" />
+              </Component>
+              <Directory Id="dirA3A5FCEA1596E4102D23E3BB5C8A8219" Name="AveragingStrategies">
+                <Component Id="cmpF3527948FBFC35A3BFEF4ED3061CABCD" Guid="EF01C5F2-BAA8-400B-8DED-6ABB61BEE81A">
+                  <File Id="fil4F80D30180D0315AE1FCADFD4A664EAF" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmp033A01B7E080FDEDBDEF0EF778634531" Guid="9D43779A-6105-4E6D-9B4C-5A58FCFCC479">
+                  <File Id="filBC563BA26150BB00FBF28F37F7F00B81" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategyFactory.hpp" />
+                </Component>
+                <Component Id="cmpE36641702D8E5BFA8B54492DA988D5F9" Guid="541044B9-BD73-48C3-B629-E65D1666D319">
+                  <File Id="fil4B47B87FA026A7A645BF7B8C9A0990D6" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\ClosestAveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmpEF06D8D554FFE8FA9EB985E6312E6342" Guid="C544EB87-4ED6-454D-A236-23E3E14678CF">
+                  <File Id="filAB45F8D7810AAC7A851A91C24CD0DC22" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\InverseWeightedAveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmpDC9A0CF745B375C80B6999CD1666B70E" Guid="2DC71736-448F-4987-9738-04CA91D69EE8">
+                  <File Id="fil7B25CCABF191EEEAFACDE368F2CC98D2" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MaxAveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmpB2078128AAA5E07706CB27F2FC03A009" Guid="6D08FF75-DE4E-47AC-AE61-2E8B0835E8E8">
+                  <File Id="fil7913877DE205D885D03D090929DE1557" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MinAbsAveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmp836A3DBAD66EA39761444A721A774516" Guid="3129EC5A-18D7-402D-873C-F58254EEE60D">
+                  <File Id="fil70C3188A3B8964A4B0BA250A26B17C77" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MinAveragingStrategy.hpp" />
+                </Component>
+                <Component Id="cmp4FB54CF5DBEA2BC578501E1B02184305" Guid="545E83AF-3A4E-41AB-ABC2-54B5BA92D49C">
+                  <File Id="fil9DF8C54A34EFB9B90956F49B27E7CB98" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\SimpleAveragingStrategy.hpp" />
+                </Component>
+              </Directory>
+              <Directory Id="dir23CFEB4BC49A9C18AEC90EAB8EEA498B" Name="CurvilinearGrid">
+                <Component Id="cmpB907897E4418EF018A7E31BCA7DCF16F" Guid="CC096B1F-87A0-43C9-80E4-F06D231E2A28">
+                  <File Id="filD0326DF85411231027E14A634190E3F8" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGrid.hpp" />
+                </Component>
+                <Component Id="cmpD4979C344523C628C0E0C7835DDF2383" Guid="795C9220-B1F5-4714-A2B8-E511A08BE2ED">
+                  <File Id="filEBA3408169D0866A6B58FE92FC0FB203" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridAlgorithm.hpp" />
+                </Component>
+                <Component Id="cmp1F58936AE553416FE4689DBCC3732874" Guid="48F5E9D6-A761-4297-B31B-697A16148C1B">
+                  <File Id="fil9CE5DC9B1CE921ED73672FF266C6EDC8" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridDeRefinement.hpp" />
+                </Component>
+                <Component Id="cmp8F4B4BE64793EE7C98D301C78A29EED5" Guid="962BC933-A8B1-43C6-896B-8F625922124C">
+                  <File Id="filB15F1E50C43D42869E054E2E263A52DB" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromPolygon.hpp" />
+                </Component>
+                <Component Id="cmp6054F7D144E03BFA075F6C315E094FF6" Guid="B75D7CE4-CB30-460B-812A-750B836A2F72">
+                  <File Id="fil88E353DE83359277ED266C22133DA1CE" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplines.hpp" />
+                </Component>
+                <Component Id="cmp51153BA7D3C2B3938A7353D833A0E3DD" Guid="0C0C36EF-9D42-4266-9946-A892F01AAA70">
+                  <File Id="fil9DC9D9E2377B19B5EB6F706A4584CD36" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplinesTransfinite.hpp" />
+                </Component>
+                <Component Id="cmp8928488D81960C4EA7D7CA3AE393E50B" Guid="905C4B69-E2B3-4165-A6A6-AF075D852828">
+                  <File Id="fil2A20E8BD105994E737AFE195041B6B4B" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLine.hpp" />
+                </Component>
+                <Component Id="cmp7413BDAA8D80AE8583EC77F6AB129185" Guid="F989CAC8-9F5F-4AE5-B66D-08671E0AA25C">
+                  <File Id="fil4673C6CFBFBA40CEFDA06F34674933AB" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineAttractionRepulsion.hpp" />
+                </Component>
+                <Component Id="cmp2FC303F62DC05057642A7FA7833EB8D8" Guid="BAE7CFB7-8F6A-4658-B66C-EF44231B42AD">
+                  <File Id="fil5916A8B856D547C6E1B57AED1CE3535E" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineMirror.hpp" />
+                </Component>
+                <Component Id="cmp8D4C0C4B7874A5C26B73092977F43263" Guid="744CA90B-4D8C-4A84-B560-029F323C9941">
+                  <File Id="filBD26B2589DEE31630F1C8615C1E04E58" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineShift.hpp" />
+                </Component>
+                <Component Id="cmpE5C8D34B152B3A9F7850211616333C29" Guid="7275ED75-E3ED-4C4E-B643-7AA50ABDF0CA">
+                  <File Id="filFE82DFED2054274A9D7E8BA6AED2F7B8" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridNodeIndices.hpp" />
+                </Component>
+                <Component Id="cmp6AEF9CD4F181261D844B00F5C659346D" Guid="7668AE13-98F4-45D4-B8FF-EA7C733FA358">
+                  <File Id="fil60CDBAFF5651B3C6378D005F683DE13F" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridOrthogonalization.hpp" />
+                </Component>
+                <Component Id="cmpBDC6D2AC80181AC00F5C0DEC37901655" Guid="8C2129F6-1999-4E5D-AF77-067D4197C8EB">
+                  <File Id="filDCA2930F1DF455D2B5FE8C46F4FBA591" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridRectangular.hpp" />
+                </Component>
+                <Component Id="cmpB86391990F8DF88C3BEEC564CC0B0D30" Guid="46C490FA-DA4E-431A-AF4D-C094953740BD">
+                  <File Id="filB3F8E3A1F65E22499C3167EAA9CBCF90" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridRefinement.hpp" />
+                </Component>
+                <Component Id="cmpE9D439149DFE9295493442D4A5E5DB9F" Guid="35574C4C-398C-47D9-B653-7FBFA898865A">
+                  <File Id="fil85CDAA39FA57794DC087F9FE64DE17AE" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridSmoothing.hpp" />
+                </Component>
+                <Component Id="cmp285DEC29213448A902EDFC5FA1A58CCC" Guid="1A1BFE23-EABD-406B-89E5-CD08B9C2005E">
+                  <File Id="fil8B0C49055C165E1EE13D17224FCEC4C7" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridSnapping.hpp" />
+                </Component>
+              </Directory>
+              <Directory Id="dir4CCBE94879419B01F2F8DC4BB7DADEC1" Name="Utilities">
+                <Component Id="cmpC9ED58930B84388E95C57DB2FF994AA1" Guid="2E8C3C8B-45D0-4C44-90B4-8FF3899D6753">
+                  <File Id="fil71A6616DD1B3527D1B362A17664C9408" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\LinearAlgebra.hpp" />
+                </Component>
+                <Component Id="cmp0581C2BBDCE885462F80CB27B6286608" Guid="7E22E92B-9DE1-48E6-A5B5-9193D44DEBC4">
+                  <File Id="fil6E8F5754FFD03B9567EB1680AF6A45BF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\NumericFunctions.hpp" />
+                </Component>
+                <Component Id="cmp621E30D0978E7F46F1276D7771FFB60F" Guid="8E738386-8394-4A71-8196-BCCF7B3CD6EF">
+                  <File Id="fil1535D02ABE3906D5C9D032C4680D21EC" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\RTree.hpp" />
+                </Component>
+              </Directory>
             </Directory>
-            <Directory Id="dir78FAA7F13C7837E2A2B5C2A22C77484C" Name="include">
-                    <Directory Id="dirB04BD73E270274FFF4C50D929D6EDACE" Name="MeshKernel">
-                        <Component Id="cmp3B954A79A7C1C49F3F3A3F537C96A004" Guid="96DFA1FD-6524-4C1E-9E3C-AA65A0A4ADB2">
-                            <File Id="fil35C6314C654FC2F7E43A3B15C53D3751" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingInterpolation.hpp" />
-                        </Component>
-                        <Component Id="cmpBC1003F3DA5178A63E4A3063C62086DE" Guid="EA06AF11-63EA-4772-9812-64A10135FECD">
-                            <File Id="fil44414D33A770ED723795257FDDABBE56" KeyPath="yes" Source="meshkernel\include\MeshKernel\BilinearInterpolationOnGriddedSamples.hpp" />
-                        </Component>
-                        <Component Id="cmp291F283E1F03DECBEF1D3C57A94305F5" Guid="36A9D1F1-F425-4B00-AE8B-A10BE041F4A5">
-                            <File Id="filC5ECC8817EB70030F094451B87CF17B8" KeyPath="yes" Source="meshkernel\include\MeshKernel\Constants.hpp" />
-                        </Component>
-                        <Component Id="cmpE6361178AD77A73EF7A3641B3E5E82B4" Guid="A9045ED7-880F-4705-A4C1-3E3DC9B18E9C">
-                            <File Id="fil502564006EF2FA7826AA6B88420620A1" KeyPath="yes" Source="meshkernel\include\MeshKernel\Contacts.hpp" />
-                        </Component>
-                        <Component Id="cmp2CECF97C56533CED520F9F9882D2DD7F" Guid="7F00A89A-A32A-49D9-BEE9-57B17AFB47F2">
-                            <File Id="filE592129173EF064D7188EF5E698A2715" KeyPath="yes" Source="meshkernel\include\MeshKernel\Entities.hpp" />
-                        </Component>
-                        <Component Id="cmp05D21B2CE07965877E49D8BD15A4519B" Guid="BCC74DCC-A9E2-4A7D-B198-F3E7FEB70198">
-                            <File Id="fil90551494DF6B84AD1F2A73C9EB6F8316" KeyPath="yes" Source="meshkernel\include\MeshKernel\Exceptions.hpp" />
-                        </Component>
-                        <Component Id="cmpEB74441D4E02E9D13A36ACECDEE95907" Guid="6E726825-68B8-4E95-9DD1-F33A6F8CFA4B">
-                            <File Id="filFF1C8DF62F97718A37A69BFE7793A37D" KeyPath="yes" Source="meshkernel\include\MeshKernel\FlipEdges.hpp" />
-                        </Component>
-                        <Component Id="cmp600C3124B2648A6C2FF384FA259454C2" Guid="FACA7858-C631-4736-A6AB-521F23DC4339">
-                            <File Id="fil9499C0749B3BDD91029178EFE563C8FE" KeyPath="yes" Source="meshkernel\include\MeshKernel\LandBoundaries.hpp" />
-                        </Component>
-                        <Component Id="cmpF310A2B47040D07AF4D19AAFD38156DB" Guid="E7F586CC-DEF1-4379-9E36-6199EE8F2534">
-                            <File Id="fil1D1089F65168E0EA5190F3758E034D4E" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh.hpp" />
-                        </Component>
-                        <Component Id="cmp42CDBC7489788C7EF509B1F8E0F046FA" Guid="F1AE6C9F-CCB9-4F7B-9D5D-E09B31685FF2">
-                            <File Id="filCB109B35009C9CEDA704D0A140C4E18E" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh1D.hpp" />
-                        </Component>
-                        <Component Id="cmpA76E0C9D5FA921E2BD7FE193DD51BFE6" Guid="69CCFA26-F48B-4545-8D9E-6772BF95E989">
-                            <File Id="filFA077E311516CF8E67EDAA9EFBCC6062" KeyPath="yes" Source="meshkernel\include\MeshKernel\Mesh2D.hpp" />
-                        </Component>
-                        <Component Id="cmpF1CBB5A8453EFDE90688F272A88B8ABF" Guid="3A4C5B5D-20E8-42F2-8EB6-37343DC1A7C7">
-                            <File Id="fil61C41F6A97A82BF060CBC390239A64A4" KeyPath="yes" Source="meshkernel\include\MeshKernel\MeshInterpolation.hpp" />
-                        </Component>
-                        <Component Id="cmp520EA65A47941D4904B3CE9686044146" Guid="D6F540D5-2750-490E-8591-7012827616DB">
-                            <File Id="filBD62370F959E90B797803559ECB1E2D1" KeyPath="yes" Source="meshkernel\include\MeshKernel\MeshRefinement.hpp" />
-                        </Component>
-                        <Component Id="cmp67C3D3C081694991E6E72BF608CAE923" Guid="574B2AE1-3638-41C5-96EA-9CE3FEA4B647">
-                            <File Id="fil72A679453908867D146B7BA6ED8A4533" KeyPath="yes" Source="meshkernel\include\MeshKernel\Network1D.hpp" />
-                        </Component>
-                        <Component Id="cmp5721AA1CE74E5D3E3B85D0C58C19AB00" Guid="EB898514-96E2-4F71-904E-BD2DEF4459D6">
-                            <File Id="filF8E6482CB3BF0F358E5706475592B70A" KeyPath="yes" Source="meshkernel\include\MeshKernel\Operations.hpp" />
-                        </Component>
-                        <Component Id="cmpCC3BE2A3F269CF56241754ED98EE5158" Guid="CC953257-2CF1-4906-BE48-BB788D797012">
-                            <File Id="fil9592F7E9D1EC418FA036293178F722BB" KeyPath="yes" Source="meshkernel\include\MeshKernel\OrthogonalizationAndSmoothing.hpp" />
-                        </Component>
-                        <Component Id="cmpB0F7AB547064928F9FA5D5A04972556D" Guid="6DD0A516-1F88-44FA-8D8F-2F269E7E4F87">
-                            <File Id="filD516F49B12D31FDAD7FE22283A5F66AF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Orthogonalizer.hpp" />
-                        </Component>
-                        <Component Id="cmpE02DFBA8394266320153B3BE6E6FEFA5" Guid="208B5558-4577-4CF1-A65C-8A4DD6D94AD1">
-                            <File Id="fil211BD955B103491450AE9173589E2B22" KeyPath="yes" Source="meshkernel\include\MeshKernel\Parameters.hpp" />
-                        </Component>
-                        <Component Id="cmp7D2F2CBBAD10599EFD4741513387C4A5" Guid="94E22C07-EA23-4852-8744-52BA97645C9D">
-                            <File Id="filD45EF6AB2AED41F63E2280DCE8C7A0D2" KeyPath="yes" Source="meshkernel\include\MeshKernel\Polygons.hpp" />
-                        </Component>
-                        <Component Id="cmpB499DA38D9FD803AD117C5B97E87BBDE" Guid="7664246B-3B6F-436C-8959-5C2E961FDFCD">
-                            <File Id="fil35FA0E3B2E9462BA1F02384F6186B84D" KeyPath="yes" Source="meshkernel\include\MeshKernel\Smoother.hpp" />
-                        </Component>
-                        <Component Id="cmp4B26A6362B9EE3DD272C2721E21EBDC8" Guid="C38AF6AB-BCC2-40C4-A427-3C3E863072F4">
-                            <File Id="fil5635F38340D37BAE0133484E8136D575" KeyPath="yes" Source="meshkernel\include\MeshKernel\Splines.hpp" />
-                        </Component>
-                        <Component Id="cmp2AF68CEFCFFE098F250AF72FED961C3B" Guid="D456BEA3-3BA8-493F-BBB9-0D2BF0FEB711">
-                            <File Id="filE44F0395A0320C121F058B6917F46005" KeyPath="yes" Source="meshkernel\include\MeshKernel\TriangulationInterpolation.hpp" />
-                        </Component>
-                        <Component Id="cmpF9B6FD14AB94FBB11641695AD9D16E1D" Guid="76CA8AA5-20C4-4D4C-AE57-598D8B3FAE71">
-                            <File Id="fil2E3C365E06BF74143B38D71C7C32179E" KeyPath="yes" Source="meshkernel\include\MeshKernel\TriangulationWrapper.hpp" />
-                        </Component>
-                        <Directory Id="dir5A5A2ECAB28A9EE02140530F4A3A8C1A" Name="AveragingStrategies">
-                            <Component Id="cmp3EAC52563A1303715086A6AF11FDC3C3" Guid="C38AE9F8-8153-4F93-9D4F-7458E23DDC14">
-                                <File Id="fil98F008F5AFFA7B091BE341A91FFE8FF5" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmpCE3A13847CBCD811B7B69C9B17FF53DE" Guid="0F8B73CC-4421-40CD-99B3-0960A13B527E">
-                                <File Id="fil59A15BC96BFBF4D9FD6D1F63D8C3C1E0" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\AveragingStrategyFactory.hpp" />
-                            </Component>
-                            <Component Id="cmp1ED2A84A58A21FD9B5A34318F15FDE4B" Guid="DD2EDC5D-6B76-4BD2-9F58-8FE7A8CFF708">
-                                <File Id="filD17094A71755BAE3748311C8447AC8C7" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\ClosestAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmp53879FEDCE3BE66F8EEBB9970C0F18B6" Guid="70A15877-4E65-41B7-960A-260F5EE67937">
-                                <File Id="filCB7A2848A62E62186C796AB4E7C562C4" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\InverseWeightedAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmp4EFE3AA3EB4939D81D80BEB22ED6A3F2" Guid="A0FEF039-4965-42BD-9B4C-AAA24691C080">
-                                <File Id="fil82F32D96C43A40C68BC4AB869FE619BD" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MaxAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmpE18C60CDA7E87A1E1146AEDBF8A69B1C" Guid="941CAA92-4EBF-4954-8DCB-250B831475D8">
-                                <File Id="fil27B3C7192D5B6AB2519751903A1F4E47" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MinAbsAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmp3E292D63502AB6EB936C09F0659870BB" Guid="2AF963BA-8055-4A3F-915B-2460CA621761">
-                                <File Id="fil65E9F5EF58B27D4189E03FE07D344B10" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\MinAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmp5F2CBEF1CA996B38393D14B47AA9C01F" Guid="C8486C5B-C923-4733-B99D-E22749B6D28C">
-                                <File Id="fil5D0F43C4FDD672189EF022CF0591BEFB" KeyPath="yes" Source="meshkernel\include\MeshKernel\AveragingStrategies\SimpleAveragingStrategy.hpp" />
-                            </Component>
-                            <Component Id="cmpDC25AD44A099C180E98DBC0BF5AF1387" Guid="D4CAF589-9BA9-4BF7-8BCA-3E466E7E7FA0">
-                                <File Id="fil927439DEB8B164CBDA819E6AE423ACBF" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\RTree.hpp" />
-                            </Component>
-                            <Component Id="cmp76376BAC0A694B038D8768F5D18190A2" Guid="7D753EED-8B1E-480D-9448-4920B53BE0B2">
-                                <File Id="fil29CD4F1A3B274840A6A3BE85F86C4429" KeyPath="yes" Source="meshkernel\include\MeshKernel\Utilities\LinearAlgebra.hpp" />
-                            </Component>
-                        </Directory>
-                        <Directory Id="dirB07CC972EDEE3DD94D9084A2869C6981" Name="CurvilinearGrid">
-                            <Component Id="cmpF4A47259A1E8C6DF04458DE05659776A" Guid="EE179F3F-29D7-4754-B81C-CAF9F4A49D9D">
-                                <File Id="filFCC39EE941CC2B1A2C8F10DAF894870C" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGrid.hpp" />
-                            </Component>
-                            <Component Id="cmp479872BE3D0E47575DBF4BD9428CB68A" Guid="46B69D8F-1FEC-47B5-BA2B-989D051E7E40">
-                                <File Id="fil83C577D29601FB1009DFC28F966155AA" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridAlgorithm.hpp" />
-                            </Component>
-                            <Component Id="cmp47DCCB32061879F5AE2223B6CF318279" Guid="CB9DB222-0466-455B-BA9C-D26C72069ABA">
-                                <File Id="filA84C6D8567CAB3B2E0A80C84EFABF842" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridCreateUniform.hpp" />
-                            </Component>
-                            <Component Id="cmp9C04C5A4212446565DA17610FA75C36E" Guid="0FFD13AF-A245-4C25-BA13-28BB2D0C09C5">
-                                <File Id="fil652AB86FC595ED1D1073D6FAB9C855F6" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridDeRefinement.hpp" />
-                            </Component>
-                            <Component Id="cmpB2C36F0D2E14F0A9AC6D1020077E81FD" Guid="36115327-5172-49A2-9AE5-07586F35AB2F">
-                                <File Id="fil3CDAD8883192EA1EB1318EE12A665A1E" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromPolygon.hpp" />
-                            </Component>
-                            <Component Id="cmp294C23C48B54CB29ED64BE2E9F410BA1" Guid="8311B277-F4CF-410D-8433-3576EBB8777F">
-                                <File Id="fil4DE9DC772B0568E668898D9572275699" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplines.hpp" />
-                            </Component>
-                            <Component Id="cmp61BB7F878037462CBB47E87F7F4B80D9" Guid="BD09B461-6F8E-41C2-BF3C-4BEEEDE68A21">
-                                <File Id="fil8253A87EA7714D357467FB60BCCB82BD" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridFromSplinesTransfinite.hpp" />
-                            </Component>
-                            <Component Id="cmpA4FF4484EC2B664BB05D3671DBE5259C" Guid="0783AD1C-88D3-4E92-80ED-D60D7DC60FAE">
-                                <File Id="fil84D1B9DF721660BC0FE5198B59DED571" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLine.hpp" />
-                            </Component>
-                            <Component Id="cmpFA75B93F188FC7A85C33F3C6140057D1" Guid="BEFD5950-7A9C-41D3-9924-9D20A55948DE">
-                                <File Id="fil98DBFA0E38C23B79F9C1A97692BA9C20" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineAttractionRepulsion.hpp" />
-                            </Component>
-                            <Component Id="cmp250ABD70271BA2D22225E2DC330C08F1" Guid="445B55DB-C6B6-4202-A1F4-75EE101F5F55">
-                                <File Id="fil5C697C336C33DE424209C99B11F64804" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineMirror.hpp" />
-                            </Component>
-                            <Component Id="cmpD4EAE315DBE01EB15BE33581612A7676" Guid="8AB06B73-9B17-47A3-BF3D-E5346082C1B5">
-                                <File Id="filF3D5EFE2D93F0C85D93AEE4EEC9DB644" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridLineShift.hpp" />
-                            </Component>
-                            <Component Id="cmp19B4CF58FD97C01930E2D20F69A23997" Guid="19C415C0-F216-4961-87BB-2BB4DBC1402D">
-                                <File Id="fil0D0832E42DA6356F4FBF86FE4F12A378" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridNodeIndices.hpp" />
-                            </Component>
-                            <Component Id="cmp4941DF3C7009BCD5A05FC5AD85AC4C69" Guid="462A081F-B751-462A-88B1-29BB35FEC89B">
-                                <File Id="filBEF842C4C09CD8D327F118D329F972E1" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridOrthogonalization.hpp" />
-                            </Component>
-                            <Component Id="cmp7E255FE11536E880D11D2DDD44592779" Guid="D3D4D65B-F842-4280-BF25-1E50E282917A">
-                                <File Id="fil366D9E50708464E5E9C99F8D0503B8EB" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridRefinement.hpp" />
-                            </Component>
-                            <Component Id="cmpE141800CEE10B48642129DB132A9256F" Guid="A3D6F3F7-412E-43E5-ADA4-CEAF3A314D9A">
-                                <File Id="fil3B45456941AC61D43343F5ED99F3FFD0" KeyPath="yes" Source="meshkernel\include\MeshKernel\CurvilinearGrid\CurvilinearGridSmoothing.hpp" />
-                            </Component>
-                        </Directory>
-                    </Directory>
-                    <Directory Id="dir1CFE89FE482CAC1759DC5C9BAF903A52" Name="MeshKernelApi">
-                        <Component Id="cmp384F615A1D9C53054EE12BEC2F9B9C3A" Guid="00AF72B5-C6F9-4791-8BC4-7C74640B2814">
-                            <File Id="filCE6C35A4443BB2ADF1C55C273F3549DE" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Contacts.hpp" />
-                        </Component>
-                        <Component Id="cmp500A4CD2CEDEF6D705071DB9FC8B2DEE" Guid="A7A4A38F-CC31-416C-8110-3EF7BFAED377">
-                            <File Id="fil0E2C66B3B122B24DDA25C38E69E4A644" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\CurvilinearGrid.hpp" />
-                        </Component>
-                        <Component Id="cmp234720691A199A4240196F48D704FE71" Guid="31416110-13BB-4BC2-A285-1D1DEFFBF38D">
-                            <File Id="filDAFE55E8FEDE6B47F8D7F8C9AFF58072" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\GeometryList.hpp" />
-                        </Component>
-                        <Component Id="cmp239951CE531D3AD4EA7F7AE9A72DAA6C" Guid="7055D0A4-C106-4377-BEDF-37F4FB3B4F80">
-                            <File Id="filF3F07CD57F245EFF760219272A2DBBE5" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\GriddedSamples.hpp" />
-                        </Component>
-                        <Component Id="cmp648EB0B07AB87978D28EC94536130D23" Guid="C3DA7F00-7C1D-4106-8F86-677BEC9EC730">
-                            <File Id="filEBBC031FA859DBA2C1CC5877EA8595E3" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Mesh1D.hpp" />
-                        </Component>
-                        <Component Id="cmp45DAC680EC579BD5B71A6495DC92789B" Guid="A4C9DDAA-F943-44F9-BB1B-66F612937087">
-                            <File Id="filF75A9C4984FFC131E05206826321E587" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Mesh2D.hpp" />
-                        </Component>
-                        <Component Id="cmp7E49DF4AB0477D2148DE250F3E290639" Guid="394D4A10-9BF9-481B-B049-630755023709">
-                            <File Id="fil0A62D70D787590862CCF35F7A3BE396E" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\MeshKernel.hpp" />
-                        </Component>
-                        <Component Id="cmpEC7689335A738EEA2A89CFD18CD8FB91" Guid="2B806C7B-1FAF-42E9-9BAE-B13461DEEF9E">
-                            <File Id="filF209A3F5A3B9D9E748096F904250A206" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\State.hpp" />
-                        </Component>
-                        <Component Id="cmp412B6F757C24A0C4E89AC7AA2D4F64EB" Guid="887957EE-5210-43C6-A9C4-6FCF9FB26B6D">
-                            <File Id="filA70396DC45D5EA372DC6D23C1DDFDD00" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Utils.hpp" />
-                        </Component>
-                    </Directory>
+            <Directory Id="dir01B227EE1813F50FDED7D18026E0469A" Name="MeshKernelApi">
+              <Component Id="cmp54BC0C372E8DD0C58C4B831F0AF19CFD" Guid="D11A6BEC-327E-4D46-B859-7EFA3BB26FA1">
+                <File Id="fil8CCD8EB3769D29539A5C1CDBEAA0AFF3" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Contacts.hpp" />
+              </Component>
+              <Component Id="cmpFF37B22DA5A608F72CDD77241527436F" Guid="F3D563F4-6B99-4B0B-88E8-187CC606D8B6">
+                <File Id="filE2EF9205FB452F38AE27BA84D168E80C" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\CurvilinearGrid.hpp" />
+              </Component>
+              <Component Id="cmp18EC53651C4E39B0AA6BF01A046FD126" Guid="A17988D6-F06C-489E-9348-A894A6DBF922">
+                <File Id="filFD4DA680527CF9218D8F30AA1FA570BA" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\GeometryList.hpp" />
+              </Component>
+              <Component Id="cmp82FC5B1ADEFD6AD5D58F5815A0872237" Guid="6FED5241-65B3-45FE-ACD0-820C400A746E">
+                <File Id="fil59CE8F8EEA84FE9695A476A65949557B" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\GriddedSamples.hpp" />
+              </Component>
+              <Component Id="cmp7E2E665570A53CABDCA83C52015A46D1" Guid="8A8BF39A-04E1-4049-873D-10D454B3DD71">
+                <File Id="filEC43FEEF3072D4B96618CAAE6F16A57E" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Mesh1D.hpp" />
+              </Component>
+              <Component Id="cmpCD70FB6FF8600CC5C7A41E36ACB11A41" Guid="2C7C42C2-8F4C-4402-87BA-6234CB2BB873">
+                <File Id="fil4ACF675308363E917BB095991FDE5928" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Mesh2D.hpp" />
+              </Component>
+              <Component Id="cmp81448812E2AF01D00C1D20F9C2598E7F" Guid="F6DA6607-5403-4128-AA60-1DA9E0EBEAA5">
+                <File Id="fil84F1726D99DDD86350C7CF410F043EAC" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\MeshKernel.hpp" />
+              </Component>
+              <Component Id="cmp55922D4B5B602E27B077C3FD4B41E740" Guid="13ED1051-96A3-481C-A2E2-C628B1F6F7BF">
+                <File Id="filCBB3FCF42CC7D478EB49134D7FED8D8E" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\State.hpp" />
+              </Component>
+              <Component Id="cmpE8F685607421A7D7BE7F23A6DCD5E56C" Guid="359BA986-62BD-4A47-A370-25E1A9A9B3AA">
+                <File Id="fil674B5928722D51E2BB4C35BFC4299F9D" KeyPath="yes" Source="meshkernel\include\MeshKernelApi\Utils.hpp" />
+              </Component>
             </Directory>
-            <Directory Id="dir3146B0F133A096D769AE87D7E93C2A8C" Name="lib">
-                    <Component Id="cmpCDC4B824014119207A30D3E06D32B0F4" Guid="6B41D129-C463-42B9-944A-ED439D265157">
-                        <File Id="fil7977487711095D52DDD95310D93E7646" KeyPath="yes" Source="meshkernel\lib\MeshKernel.lib" />
-                    </Component>
-                    <Component Id="cmpFBFB7AB9A935B2678E4A8996DBE4632C" Guid="598D779D-2515-4851-9BA5-E2526641C923">
-                        <File Id="fil7B4774ADFD05E0AD717F2C7BD029F323" KeyPath="yes" Source="meshkernel\lib\MeshKernelApi.lib" />
-                    </Component>
-                    <Component Id="cmp2E06F56AA60E912D98D6AED7CD7EBD4B" Guid="32F9E6D9-122A-4467-B24B-AD9D362AEA23">
-                        <File Id="fil6F5E3BE1F5F7DC4C0EA101FC590CAF83" KeyPath="yes" Source="meshkernel\lib\MeshKernelApid.lib" />
-                    </Component>
-                    <Component Id="cmpD9F82E5BAFBAB20BDC63881A58F30DB2" Guid="8CA33388-9B36-40B9-A620-3A91AB3F194B">
-                        <File Id="filD54BCCEC479BE6E148718469E38F326B" KeyPath="yes" Source="meshkernel\lib\MeshKerneld.lib" />
-                    </Component>
+            <Directory Id="dir23352FECA9085F891E6638B099825CC2" Name="Version">
+              <Component Id="cmp0DA6C5DC100F5F273C179B7629385E77" Guid="78558543-7A61-4E04-B813-6AA7445F5C85">
+                <File Id="fil6D3A1301627B9AF22B6D04BD2CCCF03B" KeyPath="yes" Source="meshkernel\include\Version\Version.hpp" />
+              </Component>
             </Directory>
+          </Directory>
+          <Directory Id="dir8D007A0B564F5A5CA8980256CBD49B4B" Name="lib">
+            <Component Id="cmpA33DB2A1E5E3165A99D9764984A60891" Guid="4D8F4CED-FECA-4A59-A67A-15F0E8154920">
+              <File Id="filEE829EAB0B2F2C6BE2F4AA07B2E22CDF" KeyPath="yes" Source="meshkernel\lib\MeshKernel.lib" />
+            </Component>
+            <Component Id="cmpD8D20E522861F9C0BE849875F314E5C8" Guid="13B2C0B8-E05D-472E-8FFF-B9854AB8AA58">
+              <File Id="filC591DFFB1EFBC9AD0480DDA75CA4205D" KeyPath="yes" Source="meshkernel\lib\MeshKernelApi.lib" />
+            </Component>
+          </Directory>
+
         </Directory>
       </Directory>
 
@@ -252,79 +292,87 @@
     </Directory>
 
 
-    <Feature Id='Complete' Title='meshkernel' Description='The complete package.'
-      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+    <Feature Id='Complete' Title='meshkernel' Description='The complete package.' Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
       <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
 
-            <ComponentRef Id='cId_readme.txt1158be' />
+        <ComponentRef Id='cId_readme.txt1158be' />
 
-            <ComponentRef Id="cmp58C871DEE4AEF057030A13A1E1A4EC10" />
-            <ComponentRef Id="cmp1FD651EA15D1310C42E06833E42F6959" />
-            <ComponentRef Id="cmp3B954A79A7C1C49F3F3A3F537C96A004" />
-            <ComponentRef Id="cmpBC1003F3DA5178A63E4A3063C62086DE" />
-            <ComponentRef Id="cmp291F283E1F03DECBEF1D3C57A94305F5" />
-            <ComponentRef Id="cmpE6361178AD77A73EF7A3641B3E5E82B4" />
-            <ComponentRef Id="cmp2CECF97C56533CED520F9F9882D2DD7F" />
-            <ComponentRef Id="cmp05D21B2CE07965877E49D8BD15A4519B" />
-            <ComponentRef Id="cmpEB74441D4E02E9D13A36ACECDEE95907" />
-            <ComponentRef Id="cmp600C3124B2648A6C2FF384FA259454C2" />
-            <ComponentRef Id="cmpF310A2B47040D07AF4D19AAFD38156DB" />
-            <ComponentRef Id="cmp42CDBC7489788C7EF509B1F8E0F046FA" />
-            <ComponentRef Id="cmpA76E0C9D5FA921E2BD7FE193DD51BFE6" />
-            <ComponentRef Id="cmpF1CBB5A8453EFDE90688F272A88B8ABF" />
-            <ComponentRef Id="cmp520EA65A47941D4904B3CE9686044146" />
-            <ComponentRef Id="cmp67C3D3C081694991E6E72BF608CAE923" />
-            <ComponentRef Id="cmp5721AA1CE74E5D3E3B85D0C58C19AB00" />
-            <ComponentRef Id="cmpCC3BE2A3F269CF56241754ED98EE5158" />
-            <ComponentRef Id="cmpB0F7AB547064928F9FA5D5A04972556D" />
-            <ComponentRef Id="cmpE02DFBA8394266320153B3BE6E6FEFA5" />
-            <ComponentRef Id="cmp7D2F2CBBAD10599EFD4741513387C4A5" />
-            <ComponentRef Id="cmpDC25AD44A099C180E98DBC0BF5AF1387" />
-            <ComponentRef Id="cmp76376BAC0A694B038D8768F5D18190A2" />
-            <ComponentRef Id="cmpB499DA38D9FD803AD117C5B97E87BBDE" />
-            <ComponentRef Id="cmp4B26A6362B9EE3DD272C2721E21EBDC8" />
-            <ComponentRef Id="cmp2AF68CEFCFFE098F250AF72FED961C3B" />
-            <ComponentRef Id="cmpF9B6FD14AB94FBB11641695AD9D16E1D" />
-            <ComponentRef Id="cmp3EAC52563A1303715086A6AF11FDC3C3" />
-            <ComponentRef Id="cmpCE3A13847CBCD811B7B69C9B17FF53DE" />
-            <ComponentRef Id="cmp1ED2A84A58A21FD9B5A34318F15FDE4B" />
-            <ComponentRef Id="cmp53879FEDCE3BE66F8EEBB9970C0F18B6" />
-            <ComponentRef Id="cmp4EFE3AA3EB4939D81D80BEB22ED6A3F2" />
-            <ComponentRef Id="cmpE18C60CDA7E87A1E1146AEDBF8A69B1C" />
-            <ComponentRef Id="cmp3E292D63502AB6EB936C09F0659870BB" />
-            <ComponentRef Id="cmp5F2CBEF1CA996B38393D14B47AA9C01F" />
-            <ComponentRef Id="cmpF4A47259A1E8C6DF04458DE05659776A" />
-            <ComponentRef Id="cmp479872BE3D0E47575DBF4BD9428CB68A" />
-            <ComponentRef Id="cmp47DCCB32061879F5AE2223B6CF318279" />
-            <ComponentRef Id="cmp9C04C5A4212446565DA17610FA75C36E" />
-            <ComponentRef Id="cmpB2C36F0D2E14F0A9AC6D1020077E81FD" />
-            <ComponentRef Id="cmp294C23C48B54CB29ED64BE2E9F410BA1" />
-            <ComponentRef Id="cmp61BB7F878037462CBB47E87F7F4B80D9" />
-            <ComponentRef Id="cmpA4FF4484EC2B664BB05D3671DBE5259C" />
-            <ComponentRef Id="cmpFA75B93F188FC7A85C33F3C6140057D1" />
-            <ComponentRef Id="cmp250ABD70271BA2D22225E2DC330C08F1" />
-            <ComponentRef Id="cmpD4EAE315DBE01EB15BE33581612A7676" />
-            <ComponentRef Id="cmp19B4CF58FD97C01930E2D20F69A23997" />
-            <ComponentRef Id="cmp4941DF3C7009BCD5A05FC5AD85AC4C69" />
-            <ComponentRef Id="cmp7E255FE11536E880D11D2DDD44592779" />
-            <ComponentRef Id="cmpE141800CEE10B48642129DB132A9256F" />
-            <ComponentRef Id="cmp384F615A1D9C53054EE12BEC2F9B9C3A" />
-            <ComponentRef Id="cmp500A4CD2CEDEF6D705071DB9FC8B2DEE" />
-            <ComponentRef Id="cmp234720691A199A4240196F48D704FE71" />
-            <ComponentRef Id="cmp239951CE531D3AD4EA7F7AE9A72DAA6C" />
-            <ComponentRef Id="cmp648EB0B07AB87978D28EC94536130D23" />
-            <ComponentRef Id="cmp45DAC680EC579BD5B71A6495DC92789B" />
-            <ComponentRef Id="cmp7E49DF4AB0477D2148DE250F3E290639" />
-            <ComponentRef Id="cmpEC7689335A738EEA2A89CFD18CD8FB91" />
-            <ComponentRef Id="cmp412B6F757C24A0C4E89AC7AA2D4F64EB" />
-            <ComponentRef Id="cmpCDC4B824014119207A30D3E06D32B0F4" />
-            <ComponentRef Id="cmpFBFB7AB9A935B2678E4A8996DBE4632C" />
-            <ComponentRef Id="cmp2E06F56AA60E912D98D6AED7CD7EBD4B" />
-            <ComponentRef Id="cmpD9F82E5BAFBAB20BDC63881A58F30DB2" />
-
-        
-
-
+        <ComponentRef Id="cmpA46A85FE588D49B502C57F26FC33CC6D" />
+        <ComponentRef Id="cmpA33FE6F55D365228AE322B0501E84019" />
+        <ComponentRef Id="cmpDF722CEE38D77FC11E77DAA84AC0DA24" />
+        <ComponentRef Id="cmp9D66767375ABFA0C4318728AB3A9821F" />
+        <ComponentRef Id="cmpB2C13CD3E1E8A7B1DA7E82382902D3C7" />
+        <ComponentRef Id="cmpCAF58E7B16F8F762AB058C2ED68C50EE" />
+        <ComponentRef Id="cmp2ED791785B7432A010E12CADA56F9571" />
+        <ComponentRef Id="cmp160F93DBECA2BDE46797470E75DAFE7F" />
+        <ComponentRef Id="cmpE1534E3DBCBCA43DD0BD03F71EB71428" />
+        <ComponentRef Id="cmp03D27B89953A0E9788F179ECEEFB1C50" />
+        <ComponentRef Id="cmp1104353E7061812054689594406CAC4E" />
+        <ComponentRef Id="cmp10F3B88E09D62C5CE13A2BC44592DFF6" />
+        <ComponentRef Id="cmpB68DE4150AD8B54CBE0FE8CE8CDB53D2" />
+        <ComponentRef Id="cmpB899FA8503C67F00E67A28D3A31CE8B2" />
+        <ComponentRef Id="cmp60D257B08548E16946D26AAEF98610DD" />
+        <ComponentRef Id="cmp6B27A1EFD1D8DB27A217BF319D55EC61" />
+        <ComponentRef Id="cmpE4CD81C72326911EED37BFFE3157FBFD" />
+        <ComponentRef Id="cmpDC21E12FA6857E37995488B15807924B" />
+        <ComponentRef Id="cmp730A6145BFC3A6EB3A6A97379BB1521C" />
+        <ComponentRef Id="cmp6EEACD8C0C56A4E80E2378F8B9613FD4" />
+        <ComponentRef Id="cmpB4BA75ECA0322D55629EA1B29705887C" />
+        <ComponentRef Id="cmp22B5A8CD33E66DA41F4F4A997C7472E6" />
+        <ComponentRef Id="cmp0B34CBE6D0384650233592A534BB153C" />
+        <ComponentRef Id="cmpBE150BD84E571F14233AAA5B1CF4353F" />
+        <ComponentRef Id="cmpF22254F3531F62C57E390F9AEF5FC62A" />
+        <ComponentRef Id="cmp3497863DF0AF2378F59E051F0BB215BE" />
+        <ComponentRef Id="cmp0A765A7A422030F1790B8522E662AC65" />
+        <ComponentRef Id="cmp05E7D565A5079187A0917B09B2DF77E7" />
+        <ComponentRef Id="cmpFA07291C29473F84F9F55A295176B3BF" />
+        <ComponentRef Id="cmpFFB2E011CC40D54F9F5A11C2146786BE" />
+        <ComponentRef Id="cmp6765ABDE86E3D50A071C51D86754FF4A" />
+        <ComponentRef Id="cmp7A99D01B00C04D452606D52EE5555049" />
+        <ComponentRef Id="cmp8F9DFA9CCB9176DE2BCCEC288A3C7794" />
+        <ComponentRef Id="cmp0F719243F1740E571C8099A51E292972" />
+        <ComponentRef Id="cmpCA8B107A65C11F98B15860A3EF1A8B08" />
+        <ComponentRef Id="cmp03E347EFA79F6E722B6147F943132813" />
+        <ComponentRef Id="cmp7AD0F0832A53910F96F21C9EE396834E" />
+        <ComponentRef Id="cmpF3527948FBFC35A3BFEF4ED3061CABCD" />
+        <ComponentRef Id="cmp033A01B7E080FDEDBDEF0EF778634531" />
+        <ComponentRef Id="cmpE36641702D8E5BFA8B54492DA988D5F9" />
+        <ComponentRef Id="cmpEF06D8D554FFE8FA9EB985E6312E6342" />
+        <ComponentRef Id="cmpDC9A0CF745B375C80B6999CD1666B70E" />
+        <ComponentRef Id="cmpB2078128AAA5E07706CB27F2FC03A009" />
+        <ComponentRef Id="cmp836A3DBAD66EA39761444A721A774516" />
+        <ComponentRef Id="cmp4FB54CF5DBEA2BC578501E1B02184305" />
+        <ComponentRef Id="cmpB907897E4418EF018A7E31BCA7DCF16F" />
+        <ComponentRef Id="cmpD4979C344523C628C0E0C7835DDF2383" />
+        <ComponentRef Id="cmp1F58936AE553416FE4689DBCC3732874" />
+        <ComponentRef Id="cmp8F4B4BE64793EE7C98D301C78A29EED5" />
+        <ComponentRef Id="cmp6054F7D144E03BFA075F6C315E094FF6" />
+        <ComponentRef Id="cmp51153BA7D3C2B3938A7353D833A0E3DD" />
+        <ComponentRef Id="cmp8928488D81960C4EA7D7CA3AE393E50B" />
+        <ComponentRef Id="cmp7413BDAA8D80AE8583EC77F6AB129185" />
+        <ComponentRef Id="cmp2FC303F62DC05057642A7FA7833EB8D8" />
+        <ComponentRef Id="cmp8D4C0C4B7874A5C26B73092977F43263" />
+        <ComponentRef Id="cmpE5C8D34B152B3A9F7850211616333C29" />
+        <ComponentRef Id="cmp6AEF9CD4F181261D844B00F5C659346D" />
+        <ComponentRef Id="cmpBDC6D2AC80181AC00F5C0DEC37901655" />
+        <ComponentRef Id="cmpB86391990F8DF88C3BEEC564CC0B0D30" />
+        <ComponentRef Id="cmpE9D439149DFE9295493442D4A5E5DB9F" />
+        <ComponentRef Id="cmp285DEC29213448A902EDFC5FA1A58CCC" />
+        <ComponentRef Id="cmpC9ED58930B84388E95C57DB2FF994AA1" />
+        <ComponentRef Id="cmp0581C2BBDCE885462F80CB27B6286608" />
+        <ComponentRef Id="cmp621E30D0978E7F46F1276D7771FFB60F" />
+        <ComponentRef Id="cmp54BC0C372E8DD0C58C4B831F0AF19CFD" />
+        <ComponentRef Id="cmpFF37B22DA5A608F72CDD77241527436F" />
+        <ComponentRef Id="cmp18EC53651C4E39B0AA6BF01A046FD126" />
+        <ComponentRef Id="cmp82FC5B1ADEFD6AD5D58F5815A0872237" />
+        <ComponentRef Id="cmp7E2E665570A53CABDCA83C52015A46D1" />
+        <ComponentRef Id="cmpCD70FB6FF8600CC5C7A41E36ACB11A41" />
+        <ComponentRef Id="cmp81448812E2AF01D00C1D20F9C2598E7F" />
+        <ComponentRef Id="cmp55922D4B5B602E27B077C3FD4B41E740" />
+        <ComponentRef Id="cmpE8F685607421A7D7BE7F23A6DCD5E56C" />
+        <ComponentRef Id="cmp0DA6C5DC100F5F273C179B7629385E77" />
+        <ComponentRef Id="cmpA33DB2A1E5E3165A99D9764984A60891" />
+        <ComponentRef Id="cmpD8D20E522861F9C0BE849875F314E5C8" />
 
         <!-- Menu plus ENV -->
         <ComponentRef Id='ProgramMenuDir' />
@@ -340,7 +388,7 @@
 
       <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
       <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="9" Bold="yes" />
-      <TextStyle Id="WixUI_Font_Title"  FaceName="Tahoma" Size="9" Bold="yes" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
 
       <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
 
