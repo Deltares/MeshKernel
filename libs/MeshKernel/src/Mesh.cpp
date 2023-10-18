@@ -40,7 +40,7 @@ Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
            Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection) {}
 
-void Mesh::NodeAdministration()
+bool Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (UInt e = 0; e < static_cast<UInt>(GetNumEdges()); e++)
@@ -96,6 +96,20 @@ void Mesh::NodeAdministration()
     {
         m_nodesEdges[n].resize(m_nodesNumEdges[n]);
     }
+
+    UInt quadrilateralCount = 0;
+
+    for (UInt n = 0; n < GetNumNodes(); n++)
+    {
+        if (m_nodesNumEdges[n] == constants::geometric::numNodesInQuadrilateral)
+        {
+            // It is assumed that a node of a quadrilateral will have four connected edges.
+            // most of the time this assumption is true.
+            ++quadrilateralCount;
+        }
+    }
+
+    return quadrilateralCount > GetNumNodes() / 2;
 }
 
 void Mesh::DeleteInvalidNodesAndEdges()
@@ -500,22 +514,31 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
 
 void Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
-    const Point nodeToMove = m_nodes.at(nodeindex);
+    if (nodeindex >= m_nodes.size())
+    {
+        throw ConstraintError("Invalid node index: {}", nodeindex);
+    }
 
+    const Point nodeToMove = m_nodes[nodeindex];
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
     const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
-    const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+    const double distanceNodeToMoveFromNewPointSquared = dx * dx + dy * dy;
+    const double distanceNodeToMoveFromNewPointSquaredInv = 1.0 / distanceNodeToMoveFromNewPointSquared;
+
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
         const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
         const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
-        const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+        const double distanceCurrentNodeFromNewPointSquared = nodeDx * nodeDx + nodeDy * nodeDy;
 
-        const auto factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint / distanceNodeToMoveFromNewPoint, 1.0) * M_PI));
+        if (distanceCurrentNodeFromNewPointSquared <= distanceNodeToMoveFromNewPointSquared)
+        {
+            const auto factor = 0.5 * (1.0 + std::cos(std::sqrt(distanceCurrentNodeFromNewPointSquared * distanceNodeToMoveFromNewPointSquaredInv) * M_PI));
 
-        m_nodes[n].x += dx * factor;
-        m_nodes[n].y += dy * factor;
+            m_nodes[n].x += dx * factor;
+            m_nodes[n].y += dy * factor;
+        }
     }
 
     m_nodesRTreeRequiresUpdate = true;
@@ -773,6 +796,11 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
     }
 }
 
+void Mesh::Administrate()
+{
+    AdministrateNodesEdges();
+}
+
 void Mesh::AdministrateNodesEdges()
 {
     DeleteInvalidNodesAndEdges();
@@ -888,7 +916,7 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    AdministrateNodesEdges();
+    Administrate();
 
     return *this;
 }

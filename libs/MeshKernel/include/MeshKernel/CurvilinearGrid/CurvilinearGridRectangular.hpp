@@ -29,6 +29,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <memory>
 
@@ -37,16 +38,16 @@ namespace meshkernel
     class Polygons;
     class CurvilinearGrid;
 
-    /// @brief A class implementing the generation of a uniform curvilinear grid
-    class CurvilinearGridCreateUniform
+    /// @brief A class implementing the generation of a rectangular curvilinear grid
+    class CurvilinearGridRectangular
     {
     public:
         /// @brief Class constructor
         ///
         /// @param[in] projection The projection to use
-        CurvilinearGridCreateUniform(Projection projection);
+        CurvilinearGridRectangular(Projection projection);
 
-        /// @brief Compute an uniform curvilinear grid, given the origin and the number of rows, columns and block size
+        /// @brief Compute a rectangular curvilinear grid, given the origin and the number of rows, columns and block size
         /// @param[in] numColumns The number of columns in x direction
         /// @param[in] numRows The number of columns in y direction
         /// @param[in] originX The x coordinate of the origin, located at the bottom left corner
@@ -63,7 +64,7 @@ namespace meshkernel
                                 const double blockSizeX,
                                 const double blockSizeY) const;
 
-        /// @brief Compute an uniform curvilinear grid in one polygon, given an angle and the block sizes
+        /// @brief Compute a rectangular curvilinear grid in one polygon, given an angle and the block sizes
         /// @param[in] angle The grid angle
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
@@ -74,7 +75,7 @@ namespace meshkernel
                                 std::shared_ptr<Polygons> polygons,
                                 UInt polygonIndex) const;
 
-        /// @brief Compute an uniform curvilinear grid in one polygon, given the block size and the extension. The grid angle is 0
+        /// @brief Compute a rectangular curvilinear grid in one polygon, given the block size and the extension. The grid angle is 0
         /// @param[in] originX The x coordinate of the origin, located at the bottom left corner
         /// @param[in] originY The y coordinate of the origin, located at the bottom left corner
         /// @param[in] blockSizeX The grid block size in x dimension
@@ -90,7 +91,7 @@ namespace meshkernel
                                 const double upperRightY) const;
 
     private:
-        /// @brief Compute an uniform curvilinear grid on cartesian coordinates.
+        /// @brief Compute a rectangular curvilinear grid on cartesian coordinates.
         /// @param[in] numColumns The number of columns in x direction
         /// @param[in] numRows The number of columns in y direction
         /// @param[in] originX The x coordinate of the origin, located at the bottom left corner
@@ -99,15 +100,15 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
-        static std::vector<std::vector<Point>> ComputeCartesian(const int numColumns,
-                                                                const int numRows,
-                                                                const double originX,
-                                                                const double originY,
-                                                                const double angle,
-                                                                const double blockSizeX,
-                                                                const double blockSizeY);
+        static lin_alg::Matrix<Point> ComputeCartesian(const int numColumns,
+                                                       const int numRows,
+                                                       const double originX,
+                                                       const double originY,
+                                                       const double angle,
+                                                       const double blockSizeX,
+                                                       const double blockSizeY);
 
-        /// @brief Compute an uniform curvilinear grid on spherical coordinates.
+        /// @brief Compute a rectangular curvilinear grid on spherical coordinates.
         /// A correction to the longitudinal discretization is applied to preserve an aspect ratio ds/dy = 1 on real distances.
         /// For preventing the creation of small edges, the correction stops when the distance is less than 2000 meters and the grid is generated around the poles.
         /// This is a customized fix for GTSM models.
@@ -119,13 +120,13 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
-        static std::vector<std::vector<Point>> ComputeSpherical(const int numColumns,
-                                                                const int numRows,
-                                                                const double originX,
-                                                                const double originY,
-                                                                const double angle,
-                                                                const double blockSizeX,
-                                                                const double blockSizeY);
+        static lin_alg::Matrix<Point> ComputeSpherical(const int numColumns,
+                                                       const int numRows,
+                                                       const double originX,
+                                                       const double originY,
+                                                       const double angle,
+                                                       const double blockSizeX,
+                                                       const double blockSizeY);
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension

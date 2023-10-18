@@ -22,23 +22,28 @@ set(
   ${SRC_DIR}/CurvilinearGridLineMirrorTests.cpp
   ${SRC_DIR}/CurvilinearGridLineShiftTests.cpp
   ${SRC_DIR}/CurvilinearGridOrthogonalizationTests.cpp
+  ${SRC_DIR}/CurvilinearGridRectangularTests.cpp
   ${SRC_DIR}/CurvilinearGridRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridSmoothingTests.cpp
   ${SRC_DIR}/CurvilinearGridSnappingTests.cpp
-  ${SRC_DIR}/CurvilinearUniformTests.cpp
   ${SRC_DIR}/FlipEdgesTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
   ${SRC_DIR}/HessianTests.cpp
+  ${SRC_DIR}/FormattingTests.cpp
   ${SRC_DIR}/LandBoundaryTests.cpp
+  ${SRC_DIR}/LinearAlgebraTests.cpp
   ${SRC_DIR}/Mesh1DTest.cpp
+  ${SRC_DIR}/Mesh2DConnectDDTest.cpp
   ${SRC_DIR}/Mesh2DTest.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
   ${SRC_DIR}/OrthogonalizationTests.cpp
+  ${SRC_DIR}/ParametersTests.cpp
   ${SRC_DIR}/PointTests.cpp
   ${SRC_DIR}/PolygonalEnclosureTests.cpp
   ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/PolygonsTests.cpp
+  ${SRC_DIR}/RangeCheckTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp

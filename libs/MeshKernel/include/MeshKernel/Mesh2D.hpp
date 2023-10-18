@@ -26,7 +26,10 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <array>
 #include <ranges>
+#include <utility>
+#include <vector>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -52,9 +55,8 @@ namespace meshkernel
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
-            AllNodesInside = 0,
-            FacesWithIncludedCircumcenters = 1,
-            FacesCompletelyIncluded = 2
+            InsideNotIntersected = 0,
+            InsideAndIntersected = 1
         };
 
         /// Enumerator describing the different node types
@@ -100,8 +102,8 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// @brief Perform mesh administration
-        void Administrate();
+        /// @brief Perform complete administration
+        void Administrate() override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -268,13 +270,6 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<UInt, UInt> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
-        /// @brief Gets the edges and faces intersected by a polyline, with additional information on the intersections
-        /// @param[in] polyLine An input polyline, defined as a series of points
-        /// @return A tuple containing a vector of EdgeMeshPolylineIntersections and FaceMeshPolylineIntersections
-        [[nodiscard]] std::tuple<std::vector<EdgeMeshPolylineIntersection>,
-                                 std::vector<FaceMeshPolylineIntersection>>
-        GetPolylineIntersections(const std::vector<Point>& polyLine);
-
         /// @brief Masks the edges of all faces entirely included in all polygons
         /// @param[in] polygons The selection polygon
         /// @param[in] invertSelection Invert selection
@@ -293,14 +288,36 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
+        /// @brief Find edge on the opposite side of the element
+        /// @note Currently only valid of quadrilateral elements.
+        /// Will throw exception NotImplementedError for non-quadrilateral element shapes.
+        UInt FindOppositeEdge(const UInt faceId, const UInt edgeId) const;
+
+        /// @brief Get the next face adjacent to the edge on the opposite side.
+        /// @param [in] faceId The starting face
+        /// @param [in] edgeId The starting edge
+        /// @return Id of neighbour face along the edge
+        UInt NextFace(const UInt faceId, const UInt edgeId) const;
+
         UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
+
+        /// @brief Merges mesh connectivity.
+        ///
+        /// Only merges the mesh connectivity graphs and updates indices.
+        /// @note Does not do any administration on the node, edges or elements,
+        /// it may be required to call Administrate after merging
+        static Mesh2D Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
 
     private:
         // orthogonalization
-        static constexpr double m_minimumEdgeLength = 1e-4;           ///< Minimum edge length
-        static constexpr double m_curvilinearToOrthogonalRatio = 0.5; ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
-        static constexpr double m_minimumCellArea = 1e-12;            ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;           ///< Weight circum center
+        static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
+        static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
+        static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
+        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
+        static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
+
+        /// @brief Bounded array for storing hanging node indices.
+        using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -328,6 +345,16 @@ namespace meshkernel
         /// @returns If triangle has an acute triangle
         [[nodiscard]] bool HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const;
 
+        /// @brief Determine if there are duplicate node id's on the node array
+        ///
+        /// The parameter sortedNodes, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& node, std::vector<UInt>& sortedNodes) const;
+
+        /// @brief Determine if there are duplicate edge-facw id's on the edges array
+        ///
+        /// The parameter sortedEdgesFaces, is a temporary array, that reduces the need to re-allocate any memory locally to this function
+        bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
+
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors()
         {
@@ -353,4 +380,5 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
     };
+
 } // namespace meshkernel

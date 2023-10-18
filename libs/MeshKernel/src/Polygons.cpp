@@ -105,7 +105,6 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
     std::vector<std::vector<Point>> generatedPoints(GetNumPolygons(), std::vector<Point>());
-    std::vector<Point> localPolygon(GetNumNodes());
     TriangulationWrapper triangulationWrapper;
 
     for (UInt polygonIndex = 0; polygonIndex < m_enclosures.size(); ++polygonIndex)
@@ -183,7 +182,7 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
     return m_enclosures[polygonIndex].Outer().Refine(startIndex, endIndex, refinementDistance);
 }
 
-Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
+meshkernel::Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
 {
     UInt totalNumberOfPoints = GetNumNodes();
     // TODO Should the invalid points between enclosures be added too.
@@ -320,6 +319,7 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
         {
             return {true, i};
         }
+
         if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
         {
             // Point can be found in an hole in the polygon

@@ -175,6 +175,10 @@ namespace meshkernel
                                       bool subtractSampleValues,
                                       UInt minNumSamples);
 
+        const std::vector<Sample>& hessianSamples () const {
+            return m_hessianSamples;
+        }
+
     private:
         void computeHessianSamples(Mesh2D& mesh,
                                    const std::vector<Sample>& samples,

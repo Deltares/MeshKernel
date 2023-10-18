@@ -109,27 +109,6 @@ namespace meshkernel
             {Location::Edges, "Edges"},
             {Location::Unknown, "Unknown"}};
 
-        /// edge-segment intersection
-        struct EdgeMeshPolylineIntersection
-        {
-            int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
-            double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
-            double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            UInt edgeIndex{constants::missing::uintValue};                               ///< The edge index
-            UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
-            UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
-            double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
-        };
-
-        /// face-segment intersection
-        struct FaceMeshPolylineIntersection
-        {
-            double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
-            UInt faceIndex{constants::missing::uintValue};            ///< The face index
-            std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
-            std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
-        };
-
         /// @brief Default constructor
         Mesh() = default;
 
@@ -253,10 +232,14 @@ namespace meshkernel
         void ComputeEdgesCenters();
 
         /// @brief Node administration (setnodadmin)
-        void NodeAdministration();
+        /// @return An estimated indicator for a quadrilateral dominated mesh.
+        bool NodeAdministration();
 
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
+
+        /// @brief Perform complete administration
+        virtual void Administrate();
 
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
@@ -356,12 +339,10 @@ namespace meshkernel
         BoundingBox m_boundingBoxCache;         ///< Caches the last bounding box used for selecting the locations
 
         // constants
-        static constexpr UInt m_maximumNumberOfEdgesPerNode = 12;                                  ///< Maximum number of edges per node
+        static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node
         static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
-        static constexpr UInt m_maximumNumberOfNodesPerFace = 8;                                   ///< Maximum number of nodes per face
+        static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-        static constexpr UInt m_numNodesQuads = 4;                                                 ///< Number of nodes in a quadrilateral
-        static constexpr UInt m_numNodesInTriangle = 3;                                            ///< Number of nodes in a triangle
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate

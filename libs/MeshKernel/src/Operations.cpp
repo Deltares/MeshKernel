@@ -26,10 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/Operations.hpp"
-#include "MeshKernel/Constants.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
 
 namespace meshkernel
 {
@@ -193,7 +190,7 @@ namespace meshkernel
         }
 
         const auto currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < Mesh::m_numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -364,10 +361,10 @@ namespace meshkernel
 
     double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
-        const double delta = secondPoint.x - firstPoint.x;
 
         if (projection == Projection::cartesian)
         {
+            const double delta = secondPoint.x - firstPoint.x;
             return delta;
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
@@ -402,10 +399,10 @@ namespace meshkernel
 
     double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
-        const double delta = secondPoint.y - firstPoint.y;
 
         if (projection == Projection::cartesian)
         {
+            const double delta = secondPoint.y - firstPoint.y;
             return delta;
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
@@ -836,6 +833,38 @@ namespace meshkernel
         return Point{minX, minY};
     }
 
+    Point ReferencePoint(const std::vector<Point>& nodes,
+                         const std::vector<UInt>& polygonIndices,
+                         const Projection& projection)
+    {
+        double minX = std::numeric_limits<double>::max();
+        // Used only in spherical coordinate system, but quicker to compute at the same time as the minX
+        double maxX = std::numeric_limits<double>::lowest();
+        double minY = std::numeric_limits<double>::max();
+        const auto numPoints = static_cast<UInt>(polygonIndices.size());
+
+        for (UInt i = 0; i < numPoints; ++i)
+        {
+            minX = std::min(nodes[polygonIndices[i]].x, minX);
+            maxX = std::max(nodes[polygonIndices[i]].x, maxX);
+
+            if (abs(nodes[polygonIndices[i]].y) < abs(minY))
+            {
+                minY = nodes[polygonIndices[i]].y;
+            }
+        }
+
+        if (projection == Projection::spherical)
+        {
+            if (maxX - minX > 180.0)
+            {
+                minX += 360.0;
+            }
+        }
+
+        return Point{minX, minY};
+    }
+
     double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
 
@@ -894,8 +923,8 @@ namespace meshkernel
                          GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
                         squaredDistance;
                 const auto correctedRatio = std::max(std::min(1.0, ratio), 0.0);
-                normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
-                normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
+
+                normalPoint = firstNode + correctedRatio * (secondNode - firstNode);
                 distance = ComputeDistance(point, normalPoint, projection);
             }
         }
@@ -1096,21 +1125,18 @@ namespace meshkernel
         return circumcenter;
     }
 
-    bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                             const Point& firstSegmentSecondPoint,
-                             const Point& secondSegmentFirstPoint,
-                             const Point& secondSegmentSecondPoint,
-                             bool adimensionalCrossProduct,
-                             const Projection& projection,
-                             Point& intersectionPoint,
-                             double& crossProduct,
-                             double& ratioFirstSegment,
-                             double& ratioSecondSegment)
+    std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                        const Point& firstSegmentSecondPoint,
+                                                                        const Point& secondSegmentFirstPoint,
+                                                                        const Point& secondSegmentSecondPoint,
+                                                                        bool adimensionalCrossProduct,
+                                                                        const Projection& projection)
     {
         bool isCrossing = false;
-        ratioFirstSegment = constants::missing::doubleValue;
-        ratioSecondSegment = constants::missing::doubleValue;
-        crossProduct = constants::missing::doubleValue;
+        Point intersectionPoint;
+        double ratioFirstSegment = constants::missing::doubleValue;
+        double ratioSecondSegment = constants::missing::doubleValue;
+        double crossProduct = constants::missing::doubleValue;
 
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
@@ -1126,12 +1152,13 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            std::vector<double> values{std::abs(x21), std::abs(y21), std::abs(x43), std::abs(y43)};
-            const double eps = std::max(0.00001 * *std::max_element(values.begin(), values.end()), std::numeric_limits<double>::denorm_min());
+            double maxValue = std::max(std::max(std::abs(x21), std::abs(y21)),
+                                       std::max(std::abs(x43), std::abs(y43)));
+            const double eps = std::max(0.00001 * maxValue, std::numeric_limits<double>::denorm_min());
 
             if (std::abs(det) < eps)
             {
-                return isCrossing;
+                return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
             }
 
             ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
@@ -1211,7 +1238,7 @@ namespace meshkernel
             }
         }
 
-        return isCrossing;
+        return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
     }
 
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection)
@@ -1237,13 +1264,13 @@ namespace meshkernel
         return {result, totalDistance};
     }
 
-    std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
-                                                          const std::vector<Point>& rightDiscretization,
-                                                          const std::vector<Point>& bottomDiscretization,
-                                                          const std::vector<Point>& upperDiscretization,
-                                                          const Projection& projection,
-                                                          UInt numM,
-                                                          UInt numN)
+    lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
+                                                 const std::vector<Point>& rightDiscretization,
+                                                 const std::vector<Point>& bottomDiscretization,
+                                                 const std::vector<Point>& upperDiscretization,
+                                                 const Projection& projection,
+                                                 UInt numM,
+                                                 UInt numN)
     {
         const auto [sideOneAdimensional, totalLengthOne] = ComputeAdimensionalDistancesFromPointSerie(leftDiscretization, projection);
         const auto [sideTwoAdimensional, totalLengthTwo] = ComputeAdimensionalDistancesFromPointSerie(rightDiscretization, projection);
@@ -1254,8 +1281,9 @@ namespace meshkernel
         const auto numMPoints = numM + 1;
         const auto numNPoints = numN + 1;
 
-        std::vector<std::vector<double>> iWeightFactor(numMPoints, std::vector<double>(numNPoints));
-        std::vector<std::vector<double>> jWeightFactor(numMPoints, std::vector<double>(numNPoints));
+        lin_alg::Matrix<double> iWeightFactor(numMPoints, numNPoints);
+        lin_alg::Matrix<double> jWeightFactor(numMPoints, numNPoints);
+
         for (UInt m = 0; m < numMPoints; m++)
         {
             for (UInt n = 0; n < numNPoints; n++)
@@ -1263,41 +1291,31 @@ namespace meshkernel
                 const double mWeight = double(m) / double(numM);
                 const double nWeight = double(n) / double(numN);
 
-                iWeightFactor[m][n] = (1.0 - nWeight) * sideThreeAdimensional[m] + nWeight * sideFourAdimensional[m];
-                jWeightFactor[m][n] = (1.0 - mWeight) * sideOneAdimensional[n] + mWeight * sideTwoAdimensional[n];
+                iWeightFactor(m, n) = (1.0 - nWeight) * sideThreeAdimensional[m] + nWeight * sideFourAdimensional[m];
+                jWeightFactor(m, n) = (1.0 - mWeight) * sideOneAdimensional[n] + mWeight * sideTwoAdimensional[n];
             }
         }
 
-        std::vector<std::vector<double>> weightOne(numMPoints, std::vector<double>(numNPoints));
-        std::vector<std::vector<double>> weightTwo(numMPoints, std::vector<double>(numNPoints));
-        std::vector<std::vector<double>> weightThree(numMPoints, std::vector<double>(numNPoints));
-        std::vector<std::vector<double>> weightFour(numMPoints, std::vector<double>(numNPoints));
-        for (UInt m = 0; m < numMPoints; m++)
-        {
-            for (UInt n = 0; n < numNPoints; n++)
-            {
-
-                weightOne[m][n] = (1.0 - jWeightFactor[m][n]) * totalLengthThree + jWeightFactor[m][n] * totalLengthFour;
-                weightTwo[m][n] = (1.0 - iWeightFactor[m][n]) * totalLengthOne + iWeightFactor[m][n] * totalLengthTwo;
-                weightThree[m][n] = weightTwo[m][n] / weightOne[m][n];
-                weightFour[m][n] = weightOne[m][n] / weightTwo[m][n];
-                const double wa = 1.0 / (weightThree[m][n] + weightFour[m][n]);
-                weightOne[m][n] = wa * weightThree[m][n];
-                weightTwo[m][n] = wa * weightFour[m][n];
-            }
-        }
+        lin_alg::Matrix<double> ones = lin_alg::Matrix<double>::Ones(numMPoints, numNPoints);
+        lin_alg::Matrix<double> weightOne = (ones - jWeightFactor) * totalLengthThree + jWeightFactor * totalLengthFour;
+        lin_alg::Matrix<double> weightTwo = (ones - iWeightFactor) * totalLengthOne + iWeightFactor * totalLengthTwo;
+        lin_alg::Matrix<double> weightThree = weightTwo.cwiseQuotient(weightOne);
+        lin_alg::Matrix<double> weightFour = weightThree.cwiseInverse();
+        lin_alg::Matrix<double> const wa = (weightThree + weightFour).cwiseInverse();
+        weightOne = wa.cwiseProduct(weightThree);
+        weightTwo = wa.cwiseProduct(weightFour);
 
         // border points
-        std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
+        lin_alg::Matrix<Point> result(numMPoints, numNPoints);
         for (UInt m = 0; m < numMPoints; m++)
         {
-            result[m][0] = bottomDiscretization[m];
-            result[m][numN] = upperDiscretization[m];
+            result(m, 0) = bottomDiscretization[m];
+            result(m, numN) = upperDiscretization[m];
         }
         for (UInt n = 0; n < numNPoints; n++)
         {
-            result[0][n] = leftDiscretization[n];
-            result[numM][n] = rightDiscretization[n];
+            result(0, n) = leftDiscretization[n];
+            result(numM, n) = rightDiscretization[n];
         }
 
         // first interpolation
@@ -1306,11 +1324,19 @@ namespace meshkernel
             for (UInt n = 1; n < numN; n++)
             {
 
-                result[m][n].x = (leftDiscretization[n].x * (1.0 - iWeightFactor[m][n]) + rightDiscretization[n].x * iWeightFactor[m][n]) * weightOne[m][n] +
-                                 (bottomDiscretization[m].x * (1.0 - jWeightFactor[m][n]) + upperDiscretization[m].x * jWeightFactor[m][n]) * weightTwo[m][n];
+                result(m, n).x = (leftDiscretization[n].x * (1.0 - iWeightFactor(m, n)) +
+                                  rightDiscretization[n].x * iWeightFactor(m, n)) *
+                                     weightOne(m, n) +
+                                 (bottomDiscretization[m].x * (1.0 - jWeightFactor(m, n)) +
+                                  upperDiscretization[m].x * jWeightFactor(m, n)) *
+                                     weightTwo(m, n);
 
-                result[m][n].y = (leftDiscretization[n].y * (1.0 - iWeightFactor[m][n]) + rightDiscretization[n].y * iWeightFactor[m][n]) * weightOne[m][n] +
-                                 (bottomDiscretization[m].y * (1.0 - jWeightFactor[m][n]) + upperDiscretization[m].y * jWeightFactor[m][n]) * weightTwo[m][n];
+                result(m, n).y = (leftDiscretization[n].y * (1.0 - iWeightFactor(m, n)) +
+                                  rightDiscretization[n].y * iWeightFactor(m, n)) *
+                                     weightOne(m, n) +
+                                 (bottomDiscretization[m].y * (1.0 - jWeightFactor(m, n)) +
+                                  upperDiscretization[m].y * jWeightFactor(m, n)) *
+                                     weightTwo(m, n);
             }
         }
 
@@ -1319,10 +1345,10 @@ namespace meshkernel
         {
             for (UInt n = 0; n < numNPoints; n++)
             {
-                weightOne[m][n] = (1.0 - jWeightFactor[m][n]) * sideThreeAdimensional[m] * totalLengthThree +
-                                  jWeightFactor[m][n] * sideFourAdimensional[m] * totalLengthFour;
-                weightTwo[m][n] = (1.0 - iWeightFactor[m][n]) * sideOneAdimensional[n] * totalLengthOne +
-                                  iWeightFactor[m][n] * sideTwoAdimensional[n] * totalLengthTwo;
+                weightOne(m, n) = (1.0 - jWeightFactor(m, n)) * sideThreeAdimensional[m] * totalLengthThree +
+                                  jWeightFactor(m, n) * sideFourAdimensional[m] * totalLengthFour;
+                weightTwo(m, n) = (1.0 - iWeightFactor(m, n)) * sideOneAdimensional[n] * totalLengthOne +
+                                  iWeightFactor(m, n) * sideTwoAdimensional[n] * totalLengthTwo;
             }
         }
 
@@ -1330,7 +1356,7 @@ namespace meshkernel
         {
             for (UInt n = 0; n < numNPoints; n++)
             {
-                weightThree[m][n] = weightOne[m][n] - weightOne[m - 1][n];
+                weightThree(m, n) = weightOne(m, n) - weightOne(m - 1, n);
             }
         }
 
@@ -1338,7 +1364,7 @@ namespace meshkernel
         {
             for (UInt n = 1; n < numNPoints; n++)
             {
-                weightFour[m][n] = weightTwo[m][n] - weightTwo[m][n - 1];
+                weightFour(m, n) = weightTwo(m, n) - weightTwo(m, n - 1);
             }
         }
 
@@ -1346,7 +1372,12 @@ namespace meshkernel
         {
             for (UInt n = 1; n < numNPoints - 1; n++)
             {
-                weightOne[m][n] = 0.25 * (weightFour[m][n] + weightFour[m][n + 1] + weightFour[m - 1][n] + weightFour[m - 1][n + 1]) / weightThree[m][n];
+                weightOne(m, n) = 0.25 *
+                                  (weightFour(m, n) +
+                                   weightFour(m, n + 1) +
+                                   weightFour(m - 1, n) +
+                                   weightFour(m - 1, n + 1)) /
+                                  weightThree(m, n);
             }
         }
 
@@ -1354,12 +1385,19 @@ namespace meshkernel
         {
             for (UInt n = 1; n < numNPoints; n++)
             {
-                weightTwo[m][n] = 0.25 * (weightThree[m][n] + weightThree[m][n - 1] + weightThree[m + 1][n] + weightThree[m + 1][n - 1]) / weightFour[m][n];
+                weightTwo(m, n) = 0.25 *
+                                  (weightThree(m, n) +
+                                   weightThree(m, n - 1) +
+                                   weightThree(m + 1, n) +
+                                   weightThree(m + 1, n - 1)) /
+                                  weightFour(m, n);
             }
         }
 
         // Iterate several times over
-        const UInt numIterations = 25;
+        // Move to constants
+        static UInt constexpr numIterations = 25;
+
         for (UInt iter = 0; iter < numIterations; iter++)
         {
             // re-assign the weights
@@ -1367,8 +1405,8 @@ namespace meshkernel
             {
                 for (UInt n = 0; n < numNPoints; n++)
                 {
-                    weightThree[m][n] = result[m][n].x;
-                    weightFour[m][n] = result[m][n].y;
+                    weightThree(m, n) = result(m, n).x;
+                    weightFour(m, n) = result(m, n).y;
                 }
             }
 
@@ -1377,13 +1415,22 @@ namespace meshkernel
                 for (UInt n = 1; n < numN; n++)
                 {
 
-                    const double wa = 1.0 / (weightOne[m][n] + weightOne[m + 1][n] + weightTwo[m][n] + weightTwo[m][n + 1]);
+                    const double wa = 1.0 /
+                                      (weightOne(m, n) +
+                                       weightOne(m + 1, n) +
+                                       weightTwo(m, n) +
+                                       weightTwo(m, n + 1));
 
-                    result[m][n].x = wa * (weightThree[m - 1][n] * weightOne[m][n] + weightThree[m + 1][n] * weightOne[m + 1][n] +
-                                           weightThree[m][n - 1] * weightTwo[m][n] + weightThree[m][n + 1] * weightTwo[m][n + 1]);
+                    result(m, n).x = wa *
+                                     (weightThree(m - 1, n) * weightOne(m, n) +
+                                      weightThree(m + 1, n) * weightOne(m + 1, n) +
+                                      weightThree(m, n - 1) * weightTwo(m, n) +
+                                      weightThree(m, n + 1) * weightTwo(m, n + 1));
 
-                    result[m][n].y = wa * (weightFour[m - 1][n] * weightOne[m][n] + weightFour[m + 1][n] * weightOne[m + 1][n] +
-                                           weightFour[m][n - 1] * weightTwo[m][n] + weightFour[m][n + 1] * weightTwo[m][n + 1]);
+                    result(m, n).y = wa * (weightFour(m - 1, n) * weightOne(m, n) +
+                                           weightFour(m + 1, n) * weightOne(m + 1, n) +
+                                           weightFour(m, n - 1) * weightTwo(m, n) +
+                                           weightFour(m, n + 1) * weightTwo(m, n + 1));
                 }
             }
         }
@@ -1558,6 +1605,31 @@ namespace meshkernel
     double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients)
     {
         return (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
+    }
+
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
+    {
+        out << "nodex = zeros ( " << nodes.size() << ", 1);" << std::endl;
+        out << "nodey = zeros ( " << nodes.size() << ", 1);" << std::endl;
+        out << "edges = zeros ( " << edges.size() << ", 2);" << std::endl;
+
+        for (UInt i = 0; i < nodes.size(); ++i)
+        {
+            out << "nodex (" << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
+        }
+
+        for (UInt i = 0; i < nodes.size(); ++i)
+        {
+            out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
+        }
+
+        out << "edges = zeros ( " << edges.size() << ", 2 );" << std::endl;
+
+        for (UInt i = 0; i < edges.size(); ++i)
+        {
+            out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
+            out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+        }
     }
 
 } // namespace meshkernel

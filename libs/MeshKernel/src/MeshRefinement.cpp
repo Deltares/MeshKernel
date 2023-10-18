@@ -39,9 +39,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
-      m_interpolant(interpolant),
-      m_meshRefinementParameters(meshRefinementParameters)
+      m_interpolant(interpolant)
 {
+    CheckMeshRefinementParameters(meshRefinementParameters);
+    m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
 
@@ -51,9 +52,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                bool useNodalRefinement)
     : m_mesh(mesh),
       m_interpolant(interpolant),
-      m_meshRefinementParameters(meshRefinementParameters),
       m_useNodalRefinement(useNodalRefinement)
 {
+    CheckMeshRefinementParameters(meshRefinementParameters);
+    m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
 
@@ -61,8 +63,11 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
                                const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
-      m_polygons(polygon),
-      m_meshRefinementParameters(meshRefinementParameters) {}
+      m_polygons(polygon)
+{
+    CheckMeshRefinementParameters(meshRefinementParameters);
+    m_meshRefinementParameters = meshRefinementParameters;
+}
 
 void MeshRefinement::Compute()
 {
@@ -361,7 +366,7 @@ void MeshRefinement::ConnectHangingNodes()
             continue;
 
         // Quads
-        if (numNonHangingNodes == Mesh::m_numNodesQuads)
+        if (numNonHangingNodes == constants::geometric::numNodesInQuadrilateral)
         {
             switch (numHangingNodes)
             {
@@ -627,7 +632,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
 
         // quads
         Point splittingNode(m_mesh->m_facesMassCenters[f]);
-        if (localEdgesNumFaces.size() == Mesh::m_numNodesQuads && m_meshRefinementParameters.use_mass_center_when_refining == 0)
+        if (localEdgesNumFaces.size() == constants::geometric::numNodesInQuadrilateral && m_meshRefinementParameters.use_mass_center_when_refining == 0)
         {
             // close the polygon before computing the face circumcenter
             facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
@@ -655,7 +660,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
             }
         }
 
-        if (localEdgesNumFaces.size() >= Mesh::m_numNodesQuads)
+        if (localEdgesNumFaces.size() >= constants::geometric::numNodesInQuadrilateral)
         {
             if (notHangingFaceNodes.size() > 2)
             {
@@ -1032,11 +1037,10 @@ void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 
 bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const
 {
-    const double maxDtCourant = 120.0;
+    const double maxDtCourant = m_meshRefinementParameters.max_courant_time;
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
     const double waveCourant = celerity * maxDtCourant / m_mesh->m_edgeLengths[edge];
-    bool doRefinement = waveCourant < 1.0;
-    return doRefinement;
+    return waveCourant < 1.0;
 }
 
 void MeshRefinement::ComputeEdgesRefinementMask()
@@ -1044,7 +1048,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
     bool repeat = true;
     UInt iter = 0;
     const UInt numMaxIterations = 6;
-    std::vector<int> isQuadEdge(Mesh::m_numNodesQuads);
+    std::vector<int> isQuadEdge(constants::geometric::numNodesInQuadrilateral);
     std::vector<UInt> numOfEdges(Mesh::m_maximumNumberOfEdgesPerFace);
 
     while (repeat && iter < numMaxIterations)
@@ -1065,7 +1069,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
 
             // non-quads
             const auto numNodesEffective = numFaceNodes - numHangingNodes;
-            if (numNodesEffective != Mesh::m_numNodesQuads)
+            if (numNodesEffective != constants::geometric::numNodesInQuadrilateral)
             {
                 for (UInt n = 0; n < numFaceNodes; n++)
                 {
@@ -1084,7 +1088,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     }
                 }
             }
-            if (numNodesEffective == Mesh::m_numNodesQuads)
+            if (numNodesEffective == constants::geometric::numNodesInQuadrilateral)
             {
                 // number the links in the cell, links that share a hanging node will have the same number
                 UInt num = 0;
@@ -1112,7 +1116,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                     }
                 }
 
-                if (num + 1 != Mesh::m_numNodesQuads)
+                if (num + 1 != constants::geometric::numNodesInQuadrilateral)
                 {
                     throw AlgorithmError("The number the links in the cell is not equal to 3.");
                 }
@@ -1120,7 +1124,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
                 UInt numEdgesToRefine = 0;
                 UInt firstEdgeIndex = 0;
                 UInt secondEdgeIndex = 0;
-                for (UInt i = 0; i < Mesh::m_numNodesQuads; i++)
+                for (UInt i = 0; i < constants::geometric::numNodesInQuadrilateral; i++)
                 {
                     if (isQuadEdge[i] != 0)
                     {

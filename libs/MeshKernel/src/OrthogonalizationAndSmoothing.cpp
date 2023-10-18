@@ -50,9 +50,10 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mes
       m_orthogonalizer(orthogonalizer),
       m_polygons(polygon),
       m_landBoundaries(landBoundaries),
-      m_projectToLandBoundaryOption(projectToLandBoundaryOption),
-      m_orthogonalizationParameters(orthogonalizationParameters)
+      m_projectToLandBoundaryOption(projectToLandBoundaryOption)
 {
+    CheckOrthogonalizationParameters(orthogonalizationParameters);
+    m_orthogonalizationParameters = orthogonalizationParameters;
 }
 
 void OrthogonalizationAndSmoothing::Initialize()
@@ -327,7 +328,7 @@ void OrthogonalizationAndSmoothing::ComputeCoordinates() const
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
     }
-    throw NotImplemented("This functionality is not implemented yet.");
+    throw NotImplementedError("This functionality is not implemented yet.");
 }
 
 void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)

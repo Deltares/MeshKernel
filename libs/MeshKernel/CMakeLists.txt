@@ -30,13 +30,17 @@ set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
+  ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
+  ${SRC_DIR}/Definitions.cpp
+  ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
+  ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
@@ -46,6 +50,7 @@ set(
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/RidgeRefinement.cpp
+  ${SRC_DIR}/RemoveDisconnectedRegions.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -68,7 +73,6 @@ set(
   CURVILINEAR_GRID_SRC_LIST
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridCreateUniform.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromPolygon.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplines.cpp
@@ -78,6 +82,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineMirror.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineShift.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
@@ -94,17 +99,20 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Definitions.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
+  ${DOMAIN_INC_DIR}/Formatting.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
@@ -116,6 +124,8 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/RangeCheck.hpp
+  ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/RidgeRefinement.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
@@ -141,7 +151,6 @@ set(
   CURVILINEAR_GRID_INC_LIST
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridCreateUniform.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromPolygon.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplines.hpp
@@ -152,6 +161,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridLineShift.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridNodeIndices.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
@@ -160,15 +170,8 @@ set(
 set(
   UTILITIES_INC_LIST
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
+  ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
-)
-
-set(
-  HEADERS
-  ${INC_LIST}
-  ${AVERAGING_STRATEGIES_INC_LIST}
-  ${CURVILINEAR_GRID_INC_LIST}
-  ${UTILITIES_INC_LIST}
 )
 
 # add sources to target
@@ -184,14 +187,14 @@ target_sources(
       BASE_DIRS
         ${INC_DIR}
       FILES
-        ${HEADERS}
+        ${INC_LIST}
+        ${AVERAGING_STRATEGIES_INC_LIST}
+        ${CURVILINEAR_GRID_INC_LIST}
+        ${UTILITIES_INC_LIST}
 )
 
-# set the public headers
-set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${HEADERS}")
-
 # Expose the interface of the static lib
-target_include_directories(  ${TARGET_NAME} PUBLIC ${INC_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Add target link dependencies
 
@@ -252,7 +255,7 @@ target_precompile_headers(
     <vector>
 )
 
-install(TARGETS ${TARGET_NAME} PUBLIC_HEADER DESTINATION "include/MeshKernel")
+install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})

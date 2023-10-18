@@ -172,7 +172,7 @@ void meshkernel::RidgeRefinement::SmoothSamples(const std::vector<double>& sampl
     const double sigma = 0.5;
 
     // Check the dimension are correct.
-    lin_alg::MatrixColMajor<double> zsdum(hessian.size(1), hessian.size(2));
+    MatrixColMajor zsdum(hessian.size(1), hessian.size(2));
     zsdum.setZero();
 
     // May be better to reorder the loop (j, then i), can then use a count for the sampleData.
@@ -286,7 +286,7 @@ void meshkernel::RidgeRefinement::ComputeGradient(const std::vector<Point>& samp
     Point x0 = samplePoints[ip0];
     double z0 = sampleData[ip0];
 
-    const lin_alg::MatrixColMajor<double>& zss = hessian.getMatrix(0);
+    const MatrixColMajor& zss = hessian.getMatrix(0);
 
     Point x1 = samplePoints[ip1];
     double z1 = zss(ip1); // zss(1, ip1);
@@ -560,7 +560,7 @@ void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sam
     const double sigma = 0.5;
 
     // Check the dimension are correct.
-    lin_alg::MatrixColMajor<double> zsdum(hessian.size(1), hessian.size(2));
+    MatrixColMajor zsdum(hessian.size(1), hessian.size(2));
     zsdum.setZero();
 
     // May be better to reorder the loop (j, then i), can then use a count for the sampleData.
@@ -673,7 +673,7 @@ void meshkernel::HessianCalculator::ComputeGradient(const std::vector<Sample>& s
     Point x0 = samplePoints[ip0];
     double z0 = samplePoints[ip0].value;
 
-    const lin_alg::MatrixColMajor<double>& zss = hessian.getMatrix(0);
+    const MatrixColMajor& zss = hessian.getMatrix(0);
 
     Point x1 = samplePoints[ip1];
     double z1 = zss(ip1); // zss(1, ip1);

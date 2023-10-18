@@ -40,6 +40,8 @@ namespace meshkernel
     /// @brief Array containing dimensions of the hessian
     using HessianDimension = std::array<UInt, 3>;
 
+    using MatrixColMajor = lin_alg::Matrix<double, Eigen::ColMajor>;
+
     /// @brief The hessian values
     ///
     /// Implemented as an array of matrices.
@@ -47,6 +49,7 @@ namespace meshkernel
     class Hessian
     {
     public:
+
         Hessian() = default;
 
         Hessian(const UInt dim1, const UInt dim2, const UInt dim3);
@@ -76,10 +79,10 @@ namespace meshkernel
         double operator()(const UInt dim1, const UInt dim2) const;
 
         /// @brief Get the matrix for a dimension
-        const lin_alg::MatrixColMajor<double>& getMatrix(const UInt dim) const;
+        const MatrixColMajor& getMatrix(const UInt dim) const;
 
         /// @brief Get the matrix for a dimension
-        lin_alg::MatrixColMajor<double>& getMatrix(const UInt dim);
+        MatrixColMajor& getMatrix(const UInt dim);
 
         /// @brief Set all entries to zero.
         void zero();
@@ -87,7 +90,7 @@ namespace meshkernel
     private:
         // Since the size of the first index will be 5, and most accesses are vary the first index fastest
         // try: std::vector<lin_alg::MatrixColMajor<std::array<double,5>>> m_hessian
-        std::vector<lin_alg::MatrixColMajor<double>> m_hessian;
+        std::vector<MatrixColMajor> m_hessian;
         HessianDimension m_dimensions{0, 0, 0};
     };
 
@@ -266,12 +269,12 @@ inline double meshkernel::Hessian::operator()(const UInt dim1, const UInt dim2) 
     return m_hessian[dim1](dim2);
 }
 
-inline const lin_alg::MatrixColMajor<double>& meshkernel::Hessian::getMatrix(const UInt dim) const
+inline const meshkernel::MatrixColMajor& meshkernel::Hessian::getMatrix(const UInt dim) const
 {
     return m_hessian[dim];
 }
 
-inline lin_alg::MatrixColMajor<double>& meshkernel::Hessian::getMatrix(const UInt dim)
+inline meshkernel::MatrixColMajor& meshkernel::Hessian::getMatrix(const UInt dim)
 {
     return m_hessian[dim];
 }

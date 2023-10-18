@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Constants.hpp"
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -75,7 +76,7 @@ void TriangulationInterpolation::Compute()
     for (auto f = 0; f < triangulationWrapper.GetNumFaces(); ++f)
     {
         // compute triangle polygons
-        for (UInt n = 0; n < Mesh::m_numNodesInTriangle; ++n)
+        for (UInt n = 0; n < constants::geometric::numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.GetFaceNode(f, n);
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -126,7 +127,7 @@ void TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (UInt i = 0; i < Mesh::m_numNodesInTriangle; ++i)
+            for (UInt i = 0; i < constants::geometric::numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.GetFaceEdge(triangle, i);
                 if (triangulationWrapper.GetEdgeFace(edge, 1) == 0)
@@ -138,20 +139,17 @@ void TriangulationInterpolation::Compute()
                 const auto otherTriangle = triangle == triangulationWrapper.GetEdgeFace(edge, 0) ? triangulationWrapper.GetEdgeFace(edge, 1) : triangulationWrapper.GetEdgeFace(edge, 0);
                 const auto k1 = triangulationWrapper.GetEdgeNode(edge, 0);
                 const auto k2 = triangulationWrapper.GetEdgeNode(edge, 1);
-                Point intersection;
-                double crossProduct;
-                double firstRatio;
-                double secondRatio;
-                const auto areCrossing = AreSegmentsCrossing(trianglesCircumcenters[triangle],
-                                                             m_locations[n],
-                                                             {m_samples[k1].x, m_samples[k1].y},
-                                                             {m_samples[k2].x, m_samples[k2].y},
-                                                             false,
-                                                             m_projection,
-                                                             intersection,
-                                                             crossProduct,
-                                                             firstRatio,
-                                                             secondRatio);
+
+                const auto [areCrossing,
+                            intersection,
+                            crossProduct,
+                            firstRatio,
+                            secondRatio] = AreSegmentsCrossing(trianglesCircumcenters[triangle],
+                                                               m_locations[n],
+                                                               {m_samples[k1].x, m_samples[k1].y},
+                                                               {m_samples[k2].x, m_samples[k2].y},
+                                                               false,
+                                                               m_projection);
 
                 if (areCrossing)
                 {

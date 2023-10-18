@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -86,7 +87,8 @@ void FlipEdges::Compute() const
 
             const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
-            if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
+            if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||
+                NumEdgesRightFace != constants::geometric::numNodesInTriangle)
             {
                 return;
             }
@@ -106,21 +108,16 @@ void FlipEdges::Compute() const
 
             // Check if the quadrilateral composed by the two adjacent triangles is concave,
             // in which case the diagonals crosses
-            Point intersection;
-            double crossProduct;
-            double firstRatio;
-            double secondRatio;
-
-            const auto areEdgesCrossing = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
-                                                              m_mesh->m_nodes[secondNode],
-                                                              m_mesh->m_nodes[nodeLeft],
-                                                              m_mesh->m_nodes[nodeRight],
-                                                              false,
-                                                              m_mesh->m_projection,
-                                                              intersection,
-                                                              crossProduct,
-                                                              firstRatio,
-                                                              secondRatio);
+            const auto [areEdgesCrossing,
+                        intersection,
+                        crossProduct,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
+                                                           m_mesh->m_nodes[secondNode],
+                                                           m_mesh->m_nodes[nodeLeft],
+                                                           m_mesh->m_nodes[nodeRight],
+                                                           false,
+                                                           m_mesh->m_projection);
 
             if (!areEdgesCrossing)
             {
@@ -288,7 +285,8 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
-    if (NumEdgesLeftFace != Mesh::m_numNodesInTriangle || NumEdgesRightFace != Mesh::m_numNodesInTriangle)
+    if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||
+        NumEdgesRightFace != constants::geometric::numNodesInTriangle)
     {
         return largeTopologyFunctionalValue;
     }

@@ -8,8 +8,10 @@
 #include "MeshKernel/AveragingInterpolation.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/RidgeRefinement.hpp"
+#include "MeshKernel/Operations.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -134,8 +136,11 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
     double centreX = (static_cast<double>((nx - 1) / 2) * deltaX);
     double centreY = (static_cast<double>((ny - 1) / 2) * deltaY);
 
+    std::cout << "centre: "  << centreX << "  " << centreY << std::endl;
+
     double x = 0.0;
     double y = 0.0;
+    double r = (nx/5)*deltaX;
 
     meshkernel::UInt count = 0;
 
@@ -146,7 +151,15 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
         for (meshkernel::UInt j = 0; j < ny; ++j)
         {
             double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            double sample = std::exp(-0.2 * centre);
+            // double sample = 100.0 * std::exp(-0.025 * centre);
+            double sample = std::atan (20.0 * ( r * r - centre))+M_PI/2.0;
+
+            if ( sample > M_PI - 0.5 ) {
+                sample = M_PI;
+            } else if ( sample < 0.1 ) {
+                sample = 0.0;
+            }
+
             sampleData[count] = {x, y, sample};
             y += deltaY;
             ++count;
@@ -160,11 +173,11 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
 
 TEST(HessianTests, CheckHessian)
 {
-    meshkernel::UInt nx = 11;
-    meshkernel::UInt ny = 11;
+    meshkernel::UInt nx = 21;//101;
+    meshkernel::UInt ny = 21;//101;
 
-    double deltaX = 1.0;
-    double deltaY = 1.0;
+    double deltaX = 10.0;
+    double deltaY = 10.0;
 
     double dimX = (nx - 1) * deltaX;
     double dimY = (ny - 1) * deltaY;
@@ -182,9 +195,60 @@ TEST(HessianTests, CheckHessian)
     double radius = 2.0 * sampleDeltaX;
 
     std::vector<meshkernel::Sample> sampleData = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
-    meshkernel::HessianAveragingInterpolation hessian(*mesh, sampleData,
-                                                      sampleNx, sampleNy,
-                                                      meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                      meshkernel::Mesh::Location::Nodes,
-                                                      radius, false, false, 1);
+
+    std::shared_ptr<meshkernel::HessianAveragingInterpolation> hessian = std::make_shared<meshkernel::HessianAveragingInterpolation> (*mesh,
+                                                                                                                                      sampleData,
+                                                                                                                                      sampleNx,
+                                                                                                                                      sampleNy,
+                                                                                                                                      meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                                                                                                      meshkernel::Mesh::Location::Faces,
+                                                                                                                                      radius,
+                                                                                                                                      false,
+                                                                                                                                      false,
+                                                                                                                                      1);
+
+    // std::shared_ptr<meshkernel::HessianAveragingInterpolation> hessian = std::make_shared<meshkernel::HessianAveragingInterpolation> (*mesh, sampleData,
+    //                                                                                                                                   sampleNx, sampleNy,
+    //                                                                                                                                   meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+    //                                                                                                                                   meshkernel::Mesh::Location::Nodes,
+    //                                                                                                                                   radius, false, false, 1);
+
+    std::vector<meshkernel::Sample> samples = hessian->hessianSamples ();
+
+    const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
+                                                                                   samples,
+                                                                                   meshkernel::AveragingInterpolation::Method::Closest,
+                                                                                   // meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                                                   meshkernel::Mesh::Location::Faces,
+                                                                                   1.0,
+                                                                                   false,
+                                                                                   false,
+                                                                                   1);
+
+
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+
+    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 2.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+
+    meshkernel::Print (mesh->m_nodes, mesh->m_edges);
+
+    // Execute
+    meshRefinement.Compute();
+
+    std::cout << std::endl;
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << std::endl;
+
+    meshkernel::Print (mesh->m_nodes, mesh->m_edges);
+
 }

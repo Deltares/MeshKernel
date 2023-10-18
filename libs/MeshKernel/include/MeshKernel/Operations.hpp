@@ -27,12 +27,13 @@
 
 #pragma once
 
+#include <iostream>
 #include <numeric>
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 #include "MeshKernel/Vector.hpp"
 
@@ -385,6 +386,15 @@ namespace meshkernel
     /// @return The reference point
     [[nodiscard]] Point ReferencePoint(const std::vector<Point>& polygon, const Projection& projection);
 
+    /// @brief For a given polygon compute a reference point
+    /// @param[in] nodes    The input nodes
+    /// @param[in] polygonIndices  The polygon node indices.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The reference point
+    [[nodiscard]] Point ReferencePoint(const std::vector<Point>& nodes,
+                                       const std::vector<UInt>& polygonIndices,
+                                       const Projection& projection);
+
     /// @brief Computes the squared distance between two points
     ///        This is faster than ComputeDistance because it does not take the square root
     /// @param[in] firstPoint  The first point.
@@ -441,21 +451,18 @@ namespace meshkernel
     /// @param[in]  secondSegmentSecondPoint The second point of the second segment
     /// @param[in]  adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in]  projection               The coordinate system projection
-    /// @param[out] intersectionPoint        The intersection point
-    /// @param[out] crossProduct             The cross product of the intersection
-    /// @param[out] ratioFirstSegment        The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
-    /// @param[out] ratioSecondSegment       The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
-    /// @return If the two segments are crossing
-    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                                           const Point& firstSegmentSecondPoint,
-                                           const Point& secondSegmentFirstPoint,
-                                           const Point& secondSegmentSecondPoint,
-                                           bool adimensionalCrossProduct,
-                                           const Projection& projection,
-                                           Point& intersectionPoint,
-                                           double& crossProduct,
-                                           double& ratioFirstSegment,
-                                           double& ratioSecondSegment);
+    /// @return A tuple with:
+    ///  If the two segments are crossing
+    ///  The intersection point
+    ///  The cross product of the intersection
+    ///  The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    ///  The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    [[nodiscard]] std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                                      const Point& firstSegmentSecondPoint,
+                                                                                      const Point& secondSegmentFirstPoint,
+                                                                                      const Point& secondSegmentSecondPoint,
+                                                                                      bool adimensionalCrossProduct,
+                                                                                      const Projection& projection);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates
@@ -517,13 +524,13 @@ namespace meshkernel
     /// @param[in] numM                 The number of columns to generate (horizontal direction).
     /// @param[in] numN                 The number of rows to generate (vertical direction).
     /// @returns The resulting dicretization (expressed as number of points).
-    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
-                                                                        const std::vector<Point>& rightDiscretization,
-                                                                        const std::vector<Point>& bottomDiscretization,
-                                                                        const std::vector<Point>& upperDiscretization,
-                                                                        const Projection& projection,
-                                                                        UInt numM,
-                                                                        UInt numN);
+    [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
+                                                               const std::vector<Point>& rightDiscretization,
+                                                               const std::vector<Point>& bottomDiscretization,
+                                                               const std::vector<Point>& upperDiscretization,
+                                                               const Projection& projection,
+                                                               UInt numM,
+                                                               UInt numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
@@ -586,5 +593,19 @@ namespace meshkernel
     /// @brief matCoefficients [in] To be detailed
     /// @returns The computed matrix norm
     [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
+
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
+
+    /// @brief Increment a valid value by an increment
+    inline void IncrementValidValue(UInt& value, const UInt increment)
+    {
+        if (value != constants::missing::uintValue) [[likely]]
+        {
+            value += increment;
+        }
+    }
 
 } // namespace meshkernel

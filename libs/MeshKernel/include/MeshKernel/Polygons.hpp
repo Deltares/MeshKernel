@@ -27,11 +27,9 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/PolygonalEnclosure.hpp>
