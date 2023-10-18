@@ -250,7 +250,7 @@
             </Directory>
             <Directory Id="dir23352FECA9085F891E6638B099825CC2" Name="Version">
               <Component Id="cmp0DA6C5DC100F5F273C179B7629385E77" Guid="78558543-7A61-4E04-B813-6AA7445F5C85">
-                <File Id="fil6D3A1301627B9AF22B6D04BD2CCCF03B" KeyPath="yes" Source="tools\Version\Version.hpp" />
+                <File Id="fil6D3A1301627B9AF22B6D04BD2CCCF03B" KeyPath="yes" Source="meshkernel\include\Version\Version.hpp" />
               </Component>
             </Directory>
           </Directory>
