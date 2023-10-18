@@ -65,11 +65,12 @@ void AveragingInterpolation::Compute()
         throw AlgorithmError("AveragingInterpolation::Compute: No samples available.");
     }
 
-    if (m_samplesRtree.Empty ()) {
+    if (m_samplesRtree.Empty())
+    {
         m_samplesRtree.BuildTree(m_samples);
     }
 
-    if (m_visitedSamples.empty ())
+    if (m_visitedSamples.empty())
     {
         m_visitedSamples.resize(m_samples.size());
     }
@@ -286,22 +287,20 @@ meshkernel::HessianAveragingInterpolation::HessianAveragingInterpolation(Mesh2D&
 
     size_t count = 0;
 
-    for (size_t i = 0; i < numX; ++i) {
+    for (size_t i = 0; i < numX; ++i)
+    {
 
-        for (size_t j = 0; j < numY; ++j) {
-            std::cout << "hessian " << std::setw (5) << i << ", " << std::setw (5) <<j << " = "
-                      << std::setw (17) << samples[count].x << "  " << std::setw (17) << samples[count].y << "  "
-                      << std::setw (17) << hessian (0, i, j) << "  " << std::setw (17) << hessian (1, i, j) << "  "
-                      << std::setw (17) << hessian (2, i, j) << "  " << std::setw (17) << hessian (3, i, j) << "  "
-                      << std::setw (17) << hessian (4, i, j) << "  " << std::endl;
-            m_hessianSamples [count].x = samples[count].x;
-            m_hessianSamples [count].y = samples[count].y;
-            m_hessianSamples [count].value = samples[count].value;
+        for (size_t j = 0; j < numY; ++j)
+        {
+            // std::cout << "hessian " << std::setw (5) << i << ", " << std::setw (5) <<j << " = "
+            //           << std::setw (17) << samples[count].x << "  " << std::setw (17) << samples[count].y << "  "
+            //           << std::setw (17) << hessian (0, i, j) << "  " << std::setw (17) << hessian (1, i, j) << "  "
+            //           << std::setw (17) << hessian (2, i, j) << "  " << std::setw (17) << hessian (3, i, j) << "  "
+            //           << std::setw (17) << hessian (4, i, j) << "  " << std::endl;
+            m_hessianSamples[count].x = samples[count].x;
+            m_hessianSamples[count].y = samples[count].y;
+            m_hessianSamples[count].value = samples[count].value;
             ++count;
         }
-
     }
-
-
-
 }
