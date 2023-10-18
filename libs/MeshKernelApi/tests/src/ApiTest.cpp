@@ -219,9 +219,38 @@ TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
     meshkernelapi::GeometryList geometry_list{};
+    std::vector xCoordinates{-0.5, 2.5, 2.5, -0.5, -0.5};
+    std::vector yCoordinates{-0.5, -0.5, 2.5, 2.5, -0.5};
+    std::vector zCoordinates{0.0, 0.0, 0.0, 0.5, 0.5};
+
+    geometry_list.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometry_list.coordinates_x = xCoordinates.data();
+    geometry_list.coordinates_y = yCoordinates.data();
+    geometry_list.values = zCoordinates.data();
+    geometry_list.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_merge_nodes(meshKernelId, geometry_list, 0.001);
+    auto errorCode = mkernel_mesh2d_merge_nodes(meshKernelId, geometry_list);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+
+    // Assert (nothing is done, just check that the api communication works)
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(17, mesh2d.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
+{
+    // Prepare
+    MakeMesh(2, 3, 1.0);
+    auto const meshKernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometry_list{};
+
+    // Execute
+    auto errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshKernelId, geometry_list, 0.001);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};

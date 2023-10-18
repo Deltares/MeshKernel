@@ -228,6 +228,12 @@ namespace meshkernel
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
 
+        /// @brief Compute the minimum edge length of the edges included in the polygon.
+        /// An edge is considered included if one of the two nodes is inside the polygon.
+        /// @param[in] polygon The polygon for considering an edge included
+        /// @return The minimum edge length
+        [[nodiscard]] double ComputeMinEdgeLength(const Polygons& polygon) const;
+
         /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
@@ -298,6 +304,12 @@ namespace meshkernel
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
+
+        /// @brief Computes if a location is in polygon.
+        /// @param[in] polygon The input polygon.
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return A vector of booleans indicating if a location is in a polygon or not.
+        [[nodiscard]] std::vector<bool> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
