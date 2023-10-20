@@ -1584,22 +1584,18 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
         const auto numEdgeFaces = GetNumEdgesFaces(e);
-        bool deleteEdge = true;
 
         if (numEdgeFaces == 1 && excludedFace(m_edgesFaces[e][0]))
         {
-            deleteEdge = false;
+            continue;
         }
         if (numEdgeFaces == 2 && (excludedFace(m_edgesFaces[e][0]) || excludedFace(m_edgesFaces[e][1])))
         {
-            deleteEdge = false;
+            continue;
         }
 
-        if (deleteEdge)
-        {
-            m_edges[e].first = constants::missing::uintValue;
-            m_edges[e].second = constants::missing::uintValue;
-        }
+        m_edges[e].first = constants::missing::uintValue;
+        m_edges[e].second = constants::missing::uintValue;
     }
 
     m_nodesRTreeRequiresUpdate = true;
