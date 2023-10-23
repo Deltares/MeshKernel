@@ -992,7 +992,7 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
     // Prepare
     const auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::spherical, meshkernel::Point{0, 0});
 
-    // a polygon including all nodes of a face, but also intersecting
+    // a polygon including all nodes of a face, but also intersecting one
     std::vector<meshkernel::Point> polygonNodes{
         {1.87622950819672, -0.299180327868853},
         {1.86885245901639, 0.187704918032786},
@@ -1011,4 +1011,31 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
+}
+
+TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(4,
+                                                    4,
+                                                    2.0,
+                                                    2.0,
+                                                    meshkernel::Projection::spherical,
+                                                    meshkernel::Point{-3.0, 48.5});
+
+    // a large polygon
+    std::vector<meshkernel::Point> polygonNodes{
+        {-2.29490103397341, 50.0126381093058},
+        {179.33620776839, 50.3853885542098},
+        {180.05965832319, -3.87340305583453},
+        {-2.24988148655834, -3.14995250103394},
+        {-2.29490103397341, 50.0126381093058}};
+
+    auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+
+    // Execute
+    mesh->DeleteMesh(polygon, 0, false);
+
+    // Assert
+    EXPECT_EQ(mesh->GetNumFaces(), 7);
 }

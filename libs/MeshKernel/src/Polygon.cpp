@@ -37,12 +37,6 @@ void meshkernel::Polygon::Initialise()
         throw ConstraintError("Polygon nodes contains invalid nodes");
     }
 
-    if (m_projection == Projection::spherical)
-    {
-        // TODO SHould this be called for spherical accurate too?
-        TranslateSphericalCoordinates(m_nodes);
-    }
-
     m_boundingBox.Reset(m_nodes);
 }
 
@@ -84,7 +78,7 @@ bool meshkernel::Polygon::ContainsCartesianOrSpherical(const Point& point) const
 
     for (size_t n = 0; n < m_nodes.size() - 1; n++)
     {
-        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, m_projection);
+        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::cartesian);
 
         if (IsEqual(crossProductValue, 0.0))
         {
@@ -180,6 +174,10 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
 
 bool meshkernel::Polygon::Contains(const Point& pnt) const
 {
+    if (pnt.x > -1.8)
+    {
+        std::cout << "debug" << std::endl;
+    }
 
     if (!pnt.IsValid())
     {
