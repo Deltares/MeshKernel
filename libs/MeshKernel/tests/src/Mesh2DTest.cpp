@@ -986,3 +986,29 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
 }
+
+TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::spherical, meshkernel::Point{0, 0});
+
+    // a polygon including all nodes of a face, but also intersecting
+    std::vector<meshkernel::Point> polygonNodes{
+        {1.87622950819672, -0.299180327868853},
+        {1.86885245901639, 0.187704918032786},
+        {3.27049180327869, 0.195081967213114},
+        {3.27049180327869, 0.320491803278688},
+        {1.87622950819672, 0.320491803278688},
+        {1.86147540983607, 1.16147540983606},
+        {3.54344262295082, 1.18360655737705},
+        {3.55081967213115, -0.358196721311476},
+        {1.87622950819672, -0.299180327868853}};
+
+    auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+
+    // Execute
+    mesh->DeleteMesh(polygon, 0, false);
+
+    // Assert
+    EXPECT_EQ(mesh->GetNumFaces(), 9);
+}

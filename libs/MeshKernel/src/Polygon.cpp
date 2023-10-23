@@ -78,16 +78,13 @@ void meshkernel::Polygon::Reset(const std::vector<Point>& points,
     Initialise();
 }
 
-bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
+bool meshkernel::Polygon::ContainsCartesianOrSpherical(const Point& point) const
 {
     int windingNumber = 0;
 
     for (size_t n = 0; n < m_nodes.size() - 1; n++)
     {
-        // TODO always Cartesian
-        // So Dx and Dy can be simplified (no branching)
-        // Then for 2 or more points, return multiple cross product values
-        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::cartesian);
+        const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, m_projection);
 
         if (IsEqual(crossProductValue, 0.0))
         {
@@ -206,13 +203,10 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
 
     if (m_projection == Projection::cartesian || m_projection == Projection::spherical)
     {
-        return ContainsCartesian(pnt);
+        return ContainsCartesianOrSpherical(pnt);
     }
-    else
-    {
-        // projection = Projection::sphericalAccurate
-        return ContainsSphericalAccurate(pnt);
-    }
+    // projection = Projection::sphericalAccurate
+    return ContainsSphericalAccurate(pnt);
 }
 
 // TODO does this need start and end points, probably not all the polygon is to be snapped
