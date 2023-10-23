@@ -1601,7 +1601,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    AdministrateNodesEdges();
+    Administrate();
 }
 
 void Mesh2D::DeleteHangingEdges()
