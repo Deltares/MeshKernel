@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>Deltares.MeshKernel</id>
-        <version>@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@-dev.@VERSION_SUFFIX@</version>
+        <version>@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.@VERSION_SUFFIX@-dev</version>
         <authors>Deltares</authors>
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
@@ -12,6 +12,6 @@
     <files>
         <file src="winX64\*" target="runtimes/win-x64/native/" />
         <file src="linuxX64\*" target="runtimes/linux-x64/native/" />
-        <file src="Deltares.MeshKernel.Native.targets" target="build\netstandard2.0\Deltares.MeshKernel.targets" />
+        <file src="Deltares.MeshKernel.Development.targets" target="build\netstandard2.0\Deltares.MeshKernel.targets" />
     </files>
 </package>
