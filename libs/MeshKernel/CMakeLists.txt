@@ -114,6 +114,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
+  ${DOMAIN_INC_DIR}/MeshTransformation.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
