@@ -5,7 +5,7 @@
 
 void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sampleData,
                                                   const UInt numberOfSmoothingIterations,
-                                                  Hessian& hessian) const
+                                                  Hessian& hessian)
 {
 
     const double sigma = 0.5;
@@ -99,7 +99,7 @@ void meshkernel::HessianCalculator::ComputeGradient(const std::vector<Sample>& s
                                                     meshkernel::Vector& gradient,
                                                     meshkernel::Vector& S,
                                                     double& dareaL,
-                                                    double& dareaR) const
+                                                    double& dareaR)
 {
     //   compute the gradient in a control volume defined by the polygon (0-R-1-L)
     //
@@ -186,7 +186,7 @@ void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Samp
                                                           meshkernel::Vector& gradient,
                                                           meshkernel::Vector& sn,
                                                           double& dareaL,
-                                                          double& dareaR) const
+                                                          double& dareaR)
 {
 
     // const HessianDimension& dimension = hessian.size();
@@ -259,7 +259,7 @@ void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Samp
 
 void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& samplePoints,
                                                    const Projection projection,
-                                                   Hessian& hessian) const
+                                                   Hessian& hessian)
 {
 
     if (hessian.size(1) < 3 || hessian.size(2) < 3)
@@ -365,7 +365,7 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
 
 void meshkernel::HessianCalculator::PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
                                                             const Projection projection,
-                                                            Hessian& hessian) const
+                                                            Hessian& hessian)
 {
 
     // TODO pass in Compute function
@@ -379,7 +379,7 @@ void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSample
                                             const Projection projection,
                                             const UInt numX,
                                             const UInt numY,
-                                            Hessian& hessian) const
+                                            Hessian& hessian)
 {
     std::vector<Sample> samplePoints(rawSamplePoints);
 
@@ -391,7 +391,7 @@ void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSample
                                             const Projection projection,
                                             const UInt numX,
                                             const UInt numY,
-                                            std::vector<Sample>& hessianSamples) const
+                                            std::vector<Sample>& hessianSamples)
 {
     hessianSamples = rawSamplePoints;
 

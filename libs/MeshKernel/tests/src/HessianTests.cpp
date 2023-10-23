@@ -252,10 +252,10 @@ TEST(HessianTests, CheckHessian)
     std::vector<meshkernel::Sample> samples = hessian->hessianSamples();
 #elif 1
     std::vector<meshkernel::Sample> samples;
-    meshkernel::HessianSampleCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
+    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
 #else
     std::vector<meshkernel::Sample> samples(sampleData.size());
-    meshkernel::HessianSampleCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
+    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
 #endif
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
