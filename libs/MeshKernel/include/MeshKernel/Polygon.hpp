@@ -135,8 +135,8 @@ namespace meshkernel
 
         /// @brief Determine if the polygon contains the point for Cartesian coordinate system
         ///
-        /// For cartesian and spherical coordinates
-        bool ContainsCartesianOrSpherical(const Point& point) const;
+        /// Also for spherical coordinates
+        bool ContainsCartesian(const Point& point) const;
 
         /// @brief Determine if the polygon contains the point for accurate spherical coordinate system
         bool ContainsSphericalAccurate(const Point& point) const;

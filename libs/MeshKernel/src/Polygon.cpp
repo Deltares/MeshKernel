@@ -2,7 +2,6 @@
 
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
-#include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Vector.hpp"
@@ -72,12 +71,15 @@ void meshkernel::Polygon::Reset(const std::vector<Point>& points,
     Initialise();
 }
 
-bool meshkernel::Polygon::ContainsCartesianOrSpherical(const Point& point) const
+bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 {
     int windingNumber = 0;
 
     for (size_t n = 0; n < m_nodes.size() - 1; n++)
     {
+        // TODO always Cartesian
+        // So Dx and Dy can be simplified (no branching)
+        // Then for 2 or more points, return multiple cross product values
         const auto crossProductValue = crossProduct(m_nodes[n], m_nodes[n + 1], m_nodes[n], point, Projection::cartesian);
 
         if (IsEqual(crossProductValue, 0.0))
@@ -174,11 +176,6 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
 
 bool meshkernel::Polygon::Contains(const Point& pnt) const
 {
-    if (pnt.x > -1.8)
-    {
-        std::cout << "debug" << std::endl;
-    }
-
     if (!pnt.IsValid())
     {
         throw ConstraintError("Point is not valid");
@@ -201,7 +198,7 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
 
     if (m_projection == Projection::cartesian || m_projection == Projection::spherical)
     {
-        return ContainsCartesianOrSpherical(pnt);
+        return ContainsCartesian(pnt);
     }
     // projection = Projection::sphericalAccurate
     return ContainsSphericalAccurate(pnt);
