@@ -35,6 +35,8 @@ set(
   ${SRC_DIR}/Definitions.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
+  ${SRC_DIR}/Hessian.cpp
+  ${SRC_DIR}/HessianCalculator.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
@@ -49,8 +51,8 @@ set(
   ${SRC_DIR}/Polygon.cpp
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
-  ${SRC_DIR}/RidgeRefinement.cpp
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
+  ${SRC_DIR}/RidgeRefinement.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -107,6 +109,8 @@ set(
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
   ${DOMAIN_INC_DIR}/Formatting.hpp
+  ${DOMAIN_INC_DIR}/Hessian.hpp
+  ${DOMAIN_INC_DIR}/HessianCalculator.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp

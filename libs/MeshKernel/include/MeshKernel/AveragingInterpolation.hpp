@@ -34,7 +34,7 @@
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
-#include "MeshKernel/RidgeRefinement.hpp"
+#include "MeshKernel/HessianCalculator.hpp"
 
 namespace meshkernel
 {
@@ -131,7 +131,8 @@ namespace meshkernel
         /// param[in]  strategy            The input strategy
         /// param[in] searchPolygon        The bounding polygon
         /// @return The interpolated result
-        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
+        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint, std::vector<Point> const& searchPolygon);
+        // [[nodiscard]] double ComputeInterpolationResultFromNeighbors(averaging::AveragingStrategy& strategy, std::vector<Point> const& searchPolygon);
 
         /// @brief Gets the sample value from an r-tree query
         /// param[in] index            The query index
@@ -175,7 +176,8 @@ namespace meshkernel
                                       bool subtractSampleValues,
                                       UInt minNumSamples);
 
-        const std::vector<Sample>& hessianSamples () const {
+        const std::vector<Sample>& hessianSamples() const
+        {
             return m_hessianSamples;
         }
 

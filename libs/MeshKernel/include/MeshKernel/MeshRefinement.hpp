@@ -85,7 +85,8 @@ namespace meshkernel
         enum class RefinementType
         {
             WaveCourant = 1,
-            RefinementLevels = 2
+            RefinementLevels = 2,
+            RidgeDetection = 3
         };
 
     public:
@@ -143,6 +144,18 @@ namespace meshkernel
 
         /// @brief Computes the edge and face refinement mask from the minimum edge size
         void ComputeRefinementMaskFromEdgeSize();
+
+        void ComputeRefinementMasksForRefinementLevels(UInt face,
+                                                       size_t& numberOfEdgesToRefine,
+                                                       std::vector<UInt>& edgeToRefine);
+
+        void ComputeRefinementMasksForWaveCourant(UInt face,
+                                                  size_t& numberOfEdgesToRefine,
+                                                  std::vector<UInt>& edgeToRefine);
+
+        void ComputeRefinementMasksForRidgeDetection(UInt face,
+                                                     size_t& numberOfEdgesToRefine,
+                                                     std::vector<UInt>& edgeToRefine);
 
         /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method

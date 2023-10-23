@@ -30,6 +30,7 @@
 #include <array>
 #include <vector>
 
+#include "MeshKernel/Hessian.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
@@ -37,62 +38,7 @@
 namespace meshkernel
 {
 
-    /// @brief Array containing dimensions of the hessian
-    using HessianDimension = std::array<UInt, 3>;
-
-    using MatrixColMajor = lin_alg::Matrix<double, Eigen::ColMajor>;
-
-    /// @brief The hessian values
-    ///
-    /// Implemented as an array of matrices.
-    /// Not sure what is the best implementation yet for performance.
-    class Hessian
-    {
-    public:
-
-        Hessian() = default;
-
-        Hessian(const UInt dim1, const UInt dim2, const UInt dim3);
-
-        void resize(const UInt dim1, const UInt dim2, const UInt dim3);
-
-        /// @brief Get the dimension for each dimension?
-        ///
-        /// @param [in] dim For which dimension is the size required, dim in range [0,2]
-        UInt size(const UInt dim) const;
-
-        /// @brief Get all the Hessian dimensions
-        const HessianDimension& size() const;
-
-        /// @brief Get the 1-dimension index of
-        UInt get1DIndex(const UInt dim2, const UInt dim3) const;
-
-        /// @brief Get the value of the hessian
-        double operator()(const UInt dim1, const UInt dim2, const UInt dim3) const;
-
-        /// @brief Get the value of the hessian
-        double& operator()(const UInt dim1, const UInt dim2, const UInt dim3);
-
-        /// @brief Access the matrix in 'dim1' as though it were a 1 dimensional array
-        ///
-        /// dim2 = i + size(1) * j?
-        double operator()(const UInt dim1, const UInt dim2) const;
-
-        /// @brief Get the matrix for a dimension
-        const MatrixColMajor& getMatrix(const UInt dim) const;
-
-        /// @brief Get the matrix for a dimension
-        MatrixColMajor& getMatrix(const UInt dim);
-
-        /// @brief Set all entries to zero.
-        void zero();
-
-    private:
-        // Since the size of the first index will be 5, and most accesses are vary the first index fastest
-        // try: std::vector<lin_alg::MatrixColMajor<std::array<double,5>>> m_hessian
-        std::vector<MatrixColMajor> m_hessian;
-        HessianDimension m_dimensions{0, 0, 0};
-    };
+#if 0
 
     class RidgeRefinement final
     {
@@ -172,7 +118,9 @@ namespace meshkernel
                                      const Projection projection,
                                      Hessian& hessian) const;
     };
+#endif
 
+#if 0
     class HessianCalculator final
     {
     public:
@@ -182,6 +130,13 @@ namespace meshkernel
                      const UInt numX,
                      const UInt numY,
                      Hessian& hessian) const;
+
+        /// @brief Intended to be the computation of the Hessian
+        void Compute(const std::vector<Sample>& rawSamplePoints,
+                     const Projection projection,
+                     const UInt numX,
+                     const UInt numY,
+                     std::vector<Sample>& hessianSamples) const;
 
     private:
         /// @brief Smooth sample data
@@ -236,45 +191,74 @@ namespace meshkernel
                                      const Projection projection,
                                      Hessian& hessian) const;
     };
+#endif
+
+    class HessianSampleCalculator final
+    {
+    public:
+        /// @brief Intended to be the computation of the Hessian
+        static void Compute(const std::vector<Sample>& rawSamplePoints,
+                            const Projection projection,
+                            const UInt numX,
+                            const UInt numY,
+                            std::vector<Sample>& hessian);
+
+    private:
+        static meshkernel::UInt get1DIndex(const UInt numX, const UInt numY, const UInt dim1, const UInt dim2)
+        {
+            (void)numY;
+            (void)numX;
+            // return numY * dim1 + dim2;
+            return dim1 + numX * dim2;
+        }
+
+        /// @brief Smooth sample data
+        ///
+        /// From (smooth_samples.f90)
+        static void SmoothSamples(const UInt numX,
+                                  const UInt numY,
+                                  const UInt numberOfSmoothingIterations,
+                                  std::vector<Sample>& sampleData);
+
+        /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
+        ///
+        /// From (comp_grad.f90)
+        static void ComputeGradient(const std::vector<Sample>& sampleData,
+                                    const Projection projection,
+                                    const UInt ip0,
+                                    const UInt ip1,
+                                    const UInt ip0L,
+                                    const UInt ip0R,
+                                    const UInt ip1L,
+                                    const UInt ip1R,
+                                    meshkernel::Vector& gradient,
+                                    meshkernel::Vector& S,
+                                    double& dareaL,
+                                    double& dareaR);
+
+        /// @brief Compute the gradient of the sample data along an edge
+        ///
+        /// From (comp_samplegradi.f90)
+        static void ComputeSampleGradient(const std::vector<Sample>& samplePoints,
+                                          const UInt numX,
+                                          const UInt numY,
+                                          const Projection projection,
+                                          const UInt direction,
+                                          const UInt i,
+                                          const UInt j,
+                                          meshkernel::Vector& gradient,
+                                          meshkernel::Vector& sn,
+                                          double& dareaL,
+                                          double& dareaR);
+
+        /// @brief Compute the Hessian
+        ///
+        /// From (comp_samplehessian.f90)
+        static void ComputeHessian(const std::vector<Sample>& samplePoints,
+                                   const UInt numX,
+                                   const UInt numY,
+                                   const Projection projection,
+                                   std::vector<Sample>& hessian);
+    };
 
 } // namespace meshkernel
-
-inline meshkernel::UInt meshkernel::Hessian::size(const UInt dim) const
-{
-    return m_dimensions[dim];
-}
-
-inline const meshkernel::HessianDimension& meshkernel::Hessian::size() const
-{
-    return m_dimensions;
-}
-
-inline meshkernel::UInt meshkernel::Hessian::get1DIndex(const UInt dim2, const UInt dim3) const
-{
-    return dim2 + size(1) * dim3;
-}
-
-inline double meshkernel::Hessian::operator()(const UInt dim1, const UInt dim2, const UInt dim3) const
-{
-    return m_hessian[dim1](dim2, dim3);
-}
-
-inline double& meshkernel::Hessian::operator()(const UInt dim1, const UInt dim2, const UInt dim3)
-{
-    return m_hessian[dim1](dim2, dim3);
-}
-
-inline double meshkernel::Hessian::operator()(const UInt dim1, const UInt dim2) const
-{
-    return m_hessian[dim1](dim2);
-}
-
-inline const meshkernel::MatrixColMajor& meshkernel::Hessian::getMatrix(const UInt dim) const
-{
-    return m_hessian[dim];
-}
-
-inline meshkernel::MatrixColMajor& meshkernel::Hessian::getMatrix(const UInt dim)
-{
-    return m_hessian[dim];
-}

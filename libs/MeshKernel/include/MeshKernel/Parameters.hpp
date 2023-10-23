@@ -191,7 +191,7 @@ namespace meshkernel
         range_check::CheckGreater(parameters.min_edge_size, 0.0, "Min edge size");
         // Move enum meshkernel::MeshRefinement::RefinementType out of meshkernel::MeshRefinement
         // then use the underlying type of the enums to define ValidMeshRefinementTypes
-        static std::vector<int> const ValidMeshRefinementTypes{1, 2};
+        static std::vector<int> const ValidMeshRefinementTypes{1, 2, 3};
         range_check::CheckOneOf(parameters.refinement_type, ValidMeshRefinementTypes, "Refinement type");
         range_check::CheckOneOf(parameters.connect_hanging_nodes, {0, 1}, "Connect hanging nodes");
         range_check::CheckOneOf(parameters.account_for_samples_outside, {0, 1}, "Account for samples outside");

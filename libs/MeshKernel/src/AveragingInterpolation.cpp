@@ -201,9 +201,13 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
     return m_samples[sample_index].value;
 }
 
-double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy,
+double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
+// double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(averaging::AveragingStrategy& strategy,
+//                                                                        std::vector<Point> const& searchPolygon)
 {
+
+    auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
 
     for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
     {
@@ -252,8 +256,8 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
-        return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
+        // auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
+        return ComputeInterpolationResultFromNeighbors(interpolationPoint, searchPolygon);
     }
 
     return constants::missing::doubleValue;
@@ -286,21 +290,24 @@ meshkernel::HessianAveragingInterpolation::HessianAveragingInterpolation(Mesh2D&
     computeHessianSamples(mesh, samples, numX, numY, hessian);
 
     size_t count = 0;
-
-    for (size_t i = 0; i < numX; ++i)
+    std::cout << std::endl;
+    for (size_t j = 0; j < numY; ++j)
     {
 
-        for (size_t j = 0; j < numY; ++j)
+        for (size_t i = 0; i < numX; ++i)
         {
-            // std::cout << "hessian " << std::setw (5) << i << ", " << std::setw (5) <<j << " = "
-            //           << std::setw (17) << samples[count].x << "  " << std::setw (17) << samples[count].y << "  "
-            //           << std::setw (17) << hessian (0, i, j) << "  " << std::setw (17) << hessian (1, i, j) << "  "
-            //           << std::setw (17) << hessian (2, i, j) << "  " << std::setw (17) << hessian (3, i, j) << "  "
-            //           << std::setw (17) << hessian (4, i, j) << "  " << std::endl;
+
+            std::cout << "hessian " << std::setw(5) << i << ", " << std::setw(5) << j << " = "
+                      << std::setw(17) << samples[count].x << "  " << std::setw(17) << samples[count].y << "  "
+                      // << std::setw(17) << hessian(0, i, j) << "  " << std::setw(17) << hessian(1, i, j) << "  "
+                      // << std::setw(17) << hessian(2, i, j) << "  " << std::setw(17) << hessian(3, i, j) << "  "
+                      << std::setw(17) << hessian(4, i, j) << "  " << std::endl;
             m_hessianSamples[count].x = samples[count].x;
             m_hessianSamples[count].y = samples[count].y;
-            m_hessianSamples[count].value = samples[count].value;
+            m_hessianSamples[count].value = hessian(4, i, j); // samples[count].value;
             ++count;
         }
     }
+
+    std::cout << std::endl;
 }
