@@ -248,7 +248,7 @@ namespace meshkernel
             }
 
 #pragma omp parallel for
-            for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+            for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
                 if (mesh.m_nodes[i].IsValid())
                 {
