@@ -29,8 +29,8 @@
 
 #include <type_traits>
 
-#include <Eigen/Core>
-
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 namespace meshkernel
@@ -156,8 +156,10 @@ namespace meshkernel
     private:
         /// @brief The rotation angle, theta
         double theta = 0.0;
+
         /// @brief cosine of the rotation angle
         double cosTheta = 1.0;
+
         /// @brief sine of the rotation angle
         double sinTheta = 0.0;
     };
@@ -169,7 +171,7 @@ namespace meshkernel
         /// @brief Default constructor, default is no transformation
         RigidBodyTransformation() = default;
 
-        /// @brief Reset trasformation to identity transformation (i.e. no transformation)
+        /// @brief Reset transformation to identity transformation (i.e. no transformation)
         void identity()
         {
             rotation_.identity();
@@ -178,7 +180,7 @@ namespace meshkernel
 
         /// @brief Compose rotation and transformation object.
         ///
-        /// Will be applied rot (transformation).
+        /// Will be applied: rot (transformation).
         void compose(const Rotation& rot)
         {
             rotation_ = rot.compose(rotation_);
@@ -187,7 +189,7 @@ namespace meshkernel
 
         /// @brief Compose translation and transformation object.
         ///
-        /// Will be applied translation (transformation).
+        /// Will be applied: translation (transformation).
         void compose(const Translation& trans)
         {
             translation_ = trans.compose(translation_);
@@ -224,6 +226,7 @@ namespace meshkernel
     private:
         /// @brief The rotation part of the transformation
         Rotation rotation_;
+
         /// @brief The translation part of the transformation
         Translation translation_;
     };
@@ -232,7 +235,7 @@ namespace meshkernel
     class MeshTransformation
     {
     public:
-        /// @brief Apply a transformation to a mesh
+        /// @brief Apply a transformation to a mesh with a Cartesian projection
         template <TransformationOperation Transformation>
         static void Compute(Mesh& mesh, Transformation transformation);
     };
@@ -242,6 +245,11 @@ namespace meshkernel
 template <meshkernel::TransformationOperation Transformation>
 void meshkernel::MeshTransformation::Compute(Mesh& mesh, Transformation transformation)
 {
+    if (mesh.m_projection != Projection::cartesian)
+    {
+        throw MeshKernelError ("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
+                               ToString (mesh.m_projection));
+    }
 
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {

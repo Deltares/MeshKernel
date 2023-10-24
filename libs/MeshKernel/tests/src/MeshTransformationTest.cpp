@@ -171,6 +171,7 @@ TEST(MeshTransformationTest, PointRotationTest)
 
 TEST(MeshTransformationTest, MeshTranslationTest)
 {
+    // Test the translation on the entire mesh.
 
     mk::UInt nx = 11;
     mk::UInt ny = 11;
@@ -196,6 +197,7 @@ TEST(MeshTransformationTest, MeshTranslationTest)
 
 TEST(MeshTransformationTest, MeshRotationTest)
 {
+    // Test the rotation on the entire mesh.
 
     mk::UInt nx = 11;
     mk::UInt ny = 11;
@@ -216,8 +218,29 @@ TEST(MeshTransformationTest, MeshRotationTest)
 
     for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
-        mk::Point expected{originalMesh->m_nodes[i].x * cosTheta - originalMesh->m_nodes[i].y * sinTheta, originalMesh->m_nodes[i].x * sinTheta + originalMesh->m_nodes[i].y * cosTheta};
+        mk::Point expected{originalMesh->m_nodes[i].x * cosTheta - originalMesh->m_nodes[i].y * sinTheta,
+                           originalMesh->m_nodes[i].x * sinTheta + originalMesh->m_nodes[i].y * cosTheta};
         EXPECT_EQ(expected.x, mesh->m_nodes[i].x);
         EXPECT_EQ(expected.y, mesh->m_nodes[i].y);
     }
+}
+
+TEST(MeshTransformationTest, IncorrectProjectionTest)
+{
+    // Test correct failure with non Cartesian projection.
+
+    // Generate mesh in spherical coordinate system
+    std::shared_ptr<mk::Mesh2D> mesh = MakeRectangularMeshForTesting(11, 11, 10.0, mk::Projection::spherical);
+
+    mk::Rotation rotation(45.0 * M_PI / 180.0);
+
+    // Should throw an exception with spherical coordinate system
+    EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
+
+    // // Change projection to Projection::sphericalAccurate
+    // mesh->m_projection = mk::Projection::sphericalAccurate;
+
+    // // Should throw an exception with spherical-accurate coordinate system
+    // EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
+
 }
