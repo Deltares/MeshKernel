@@ -27,7 +27,8 @@
 
 #pragma once
 
-#include <type_traits>
+#include <cmath>
+#include <concepts>
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
