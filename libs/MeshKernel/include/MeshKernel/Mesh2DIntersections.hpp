@@ -164,7 +164,7 @@ namespace meshkernel
         std::vector<FaceMeshPolyLineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
         std::vector<EdgeMeshPolyLineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
         std::vector<FaceMeshPolyLineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
-        static constexpr UInt maxSearchSegments = 10;                        ///< mex number of steps in polyline intersection algorithm
+        static constexpr UInt maxSearchSegments = 1000;                      ///< max number of steps in polyline intersection algorithm
     };
 
 } // namespace meshkernel
