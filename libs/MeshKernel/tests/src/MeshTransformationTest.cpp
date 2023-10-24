@@ -114,7 +114,7 @@ TEST(MeshTransformationTest, BasicRigidBodyTransformationTest)
     EXPECT_EQ(rotatedVector.x(), transformation.translation().vector().x());
     EXPECT_EQ(rotatedVector.y(), transformation.translation().vector().y());
 
-    // Third rotate back
+    // Third translate back
     vec = {rotationPoint.x, rotationPoint.y};
     translation.reset(vec);
     transformation.compose(translation);

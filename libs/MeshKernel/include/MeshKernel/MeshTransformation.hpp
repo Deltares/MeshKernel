@@ -132,15 +132,6 @@ namespace meshkernel
             return Rotation(theta + rot.theta);
         }
 
-        /// @brief Compose rotation and translation object.
-        ///
-        /// Will be applied rot (trans).
-        Translation compose(const Translation& trans) const
-        {
-            Vector vec(operator()(trans.vector()));
-            return Translation(vec);
-        }
-
         /// @brief Apply the rotation to a point in Cartesian coordinate system
         Point operator()(const Point& pnt) const
         {
@@ -187,7 +178,7 @@ namespace meshkernel
         void compose(const Rotation& rot)
         {
             rotation_ = rot.compose(rotation_);
-            translation_ = rot.compose(translation_);
+            translation_.reset(rot(translation_.vector()));
         }
 
         /// @brief Compose translation and transformation object.
