@@ -235,7 +235,7 @@ namespace meshkernel
         {
             if (mesh.m_projection != Projection::cartesian)
             {
-                throw MeshKernelError("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
+                throw MeshKernelError("Incorrect mesh coordinate system, expecting 'Projection::cartesian', found '{}'",
                                       ToString(mesh.m_projection));
             }
 
