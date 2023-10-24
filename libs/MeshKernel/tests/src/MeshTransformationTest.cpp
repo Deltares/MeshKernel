@@ -66,7 +66,7 @@ TEST(MeshTransformationTest, PointTranslationTest)
     mk::Vector vec(translationX, translationY);
     mk::Translation translation(vec);
     mk::Point pnt(originX, originY);
-    pnt = translation.apply(pnt);
+    pnt = translation(pnt);
 
     EXPECT_EQ(originX + translationX, pnt.x);
     EXPECT_EQ(originY + translationY, pnt.y);
@@ -108,7 +108,7 @@ TEST(MeshTransformationTest, BasicRigidBodyTransformationTest)
     mk::Rotation rotation(theta);
     transformation.compose(rotation);
 
-    mk::Vector rotatedVector = rotation.apply(vec);
+    mk::Vector rotatedVector = rotation(vec);
 
     EXPECT_EQ(theta, transformation.rotation().angle());
     EXPECT_EQ(rotatedVector.x(), transformation.translation().vector().x());
@@ -138,15 +138,15 @@ TEST(MeshTransformationTest, BasicRigidBodyTransformationTest)
     mk::Point expected2{0.0, 2.0};
     mk::Point expected3{-1.0, 3.0};
 
-    pnt1 = transformation.apply(pnt1);
+    pnt1 = transformation(pnt1);
     EXPECT_NEAR(expected1.x, pnt1.x, tolerance);
     EXPECT_NEAR(expected1.y, pnt1.y, tolerance);
 
-    pnt2 = transformation.apply(pnt2);
+    pnt2 = transformation(pnt2);
     EXPECT_NEAR(expected2.x, pnt2.x, tolerance);
     EXPECT_NEAR(expected2.y, pnt2.y, tolerance);
 
-    pnt3 = transformation.apply(pnt3);
+    pnt3 = transformation(pnt3);
     EXPECT_NEAR(expected3.x, pnt3.x, tolerance);
     EXPECT_NEAR(expected3.y, pnt3.y, tolerance);
 }
@@ -163,7 +163,7 @@ TEST(MeshTransformationTest, PointRotationTest)
 
     mk::Rotation rotation(theta);
     mk::Point pnt(originX, originY);
-    pnt = rotation.apply(pnt);
+    pnt = rotation(pnt);
 
     EXPECT_EQ(originX * cosTheta - originY * sinTheta, pnt.x);
     EXPECT_EQ(originX * sinTheta + originY * cosTheta, pnt.y);

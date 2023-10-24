@@ -40,7 +40,7 @@ namespace meshkernel
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
     template <typename Operation>
-    concept TransformationOperation = requires(Operation op, Point p) {{ op.apply(p)} -> std::same_as<Point>; };
+    concept TransformationOperation = requires(Operation op, Point p) {{ op(p)} -> std::same_as<Point>; };
 
     /// @brief Apply a translation transformation to a point or a vector.
     class Translation
@@ -77,13 +77,13 @@ namespace meshkernel
         }
 
         /// @brief Apply the translation to a point in Cartesian coordinate system
-        Point apply(const Point& pnt) const
+        Point operator()(const Point& pnt) const
         {
             return pnt + translation;
         }
 
         /// @brief Apply the translation to a vector in Cartesian coordinate system
-        Vector apply(const Vector& vec) const
+        Vector operator()(const Vector& vec) const
         {
             return vec + translation;
         }
@@ -136,19 +136,19 @@ namespace meshkernel
         /// Will be applied rot (trans).
         Translation compose(const Translation& trans) const
         {
-            Vector vec(apply(trans.vector()));
+            Vector vec(operator()(trans.vector()));
             return Translation(vec);
         }
 
         /// @brief Apply the rotation to a point in Cartesian coordinate system
-        Point apply(const Point& pnt) const
+        Point operator()(const Point& pnt) const
         {
             Point result({cosTheta * pnt.x - sinTheta * pnt.y, sinTheta * pnt.x + cosTheta * pnt.y});
             return result;
         }
 
         /// @brief Apply the rotation to a vector in Cartesian coordinate system
-        Vector apply(const Vector& vec) const
+        Vector operator()(const Vector& vec) const
         {
             Vector result({cosTheta * vec.x() - sinTheta * vec.y(),
                            sinTheta * vec.x() + cosTheta * vec.y()});
@@ -210,18 +210,18 @@ namespace meshkernel
         }
 
         /// @brief Apply the transformation to a point in Cartesian coordinate system
-        Point apply(const Point& pnt) const
+        Point operator()(const Point& pnt) const
         {
-            Point result = rotation_.apply(pnt);
-            result = translation_.apply(result);
+            Point result = rotation_(pnt);
+            result = translation_(result);
             return result;
         }
 
         /// @brief Apply the transformation to a vector in Cartesian coordinate system
-        Vector apply(const Vector& vec) const
+        Vector operator()(const Vector& vec) const
         {
-            Vector result = rotation_.apply(vec);
-            result = translation_.apply(result);
+            Vector result = rotation_(vec);
+            result = translation_(result);
             return result;
         }
 
@@ -250,14 +250,14 @@ void meshkernel::MeshTransformation::Compute(Mesh& mesh, Transformation transfor
     if (mesh.m_projection != Projection::cartesian)
     {
         throw MeshKernelError("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
-                              ToString (mesh.m_projection));
+                              ToString(mesh.m_projection));
     }
 
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
         if (mesh.m_nodes[i].IsValid())
         {
-            mesh.m_nodes[i] = transformation.apply(mesh.m_nodes[i]);
+            mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
         }
     }
 }
