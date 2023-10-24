@@ -239,25 +239,23 @@ namespace meshkernel
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
         template <TransformationOperation Transformation>
-        static void Compute(Mesh& mesh, Transformation transformation);
+        static void Compute(Mesh& mesh, Transformation transformation)
+        {
+            if (mesh.m_projection != Projection::cartesian)
+            {
+                throw MeshKernelError("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
+                                      ToString(mesh.m_projection));
+            }
+
+#pragma omp parallel for
+            for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+            {
+                if (mesh.m_nodes[i].IsValid())
+                {
+                    mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
+                }
+            }
+        }
     };
 
 } // namespace meshkernel
-
-template <meshkernel::TransformationOperation Transformation>
-void meshkernel::MeshTransformation::Compute(Mesh& mesh, Transformation transformation)
-{
-    if (mesh.m_projection != Projection::cartesian)
-    {
-        throw MeshKernelError("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
-                              ToString(mesh.m_projection));
-    }
-
-    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
-    {
-        if (mesh.m_nodes[i].IsValid())
-        {
-            mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
-        }
-    }
-}
