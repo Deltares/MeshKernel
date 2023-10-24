@@ -32,6 +32,8 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
@@ -236,19 +238,19 @@ namespace meshkernel
     {
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
-        template <TransformationOperation Transformation>
+        template <typename Transformation>
         static void Compute(Mesh& mesh, Transformation transformation);
     };
 
 } // namespace meshkernel
 
-template <meshkernel::TransformationOperation Transformation>
+template <typename Transformation>
 void meshkernel::MeshTransformation::Compute(Mesh& mesh, Transformation transformation)
 {
     if (mesh.m_projection != Projection::cartesian)
     {
-        throw MeshKernelError ("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
-                               ToString (mesh.m_projection));
+        throw MeshKernelError("Incorrect mesh coordinate system, should be 'Projection::cartesian', found {}",
+                              ToString (mesh.m_projection));
     }
 
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)

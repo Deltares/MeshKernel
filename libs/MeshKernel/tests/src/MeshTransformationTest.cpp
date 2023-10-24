@@ -237,10 +237,9 @@ TEST(MeshTransformationTest, IncorrectProjectionTest)
     // Should throw an exception with spherical coordinate system
     EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
 
-    // // Change projection to Projection::sphericalAccurate
-    // mesh->m_projection = mk::Projection::sphericalAccurate;
+    // Change projection to Projection::sphericalAccurate
+    mesh->m_projection = mk::Projection::sphericalAccurate;
 
-    // // Should throw an exception with spherical-accurate coordinate system
-    // EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
-
+    // Should throw an exception with spherical-accurate coordinate system
+    EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
 }
