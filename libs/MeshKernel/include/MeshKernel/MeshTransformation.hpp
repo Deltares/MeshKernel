@@ -40,8 +40,16 @@ namespace meshkernel
 {
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
-    template <typename Operation>
-    concept TransformationOperation = requires(Operation op, Point p) {{ op(p)} -> std::same_as<Point>; };
+    template <typename Function>
+    concept HasTransformationFunction = requires(Function op, Point p) {{ op(p)} -> std::same_as<Point>; };
+
+    /// @brief Ensure any instantiation of the MeshTransformation Compute function is able to determine the projection.
+    template <typename Function>
+    concept HasTransformationProjection = requires(Function op) {{ op.TransformationProjection()} -> std::same_as<Projection>; };
+
+    /// @brief To ensure the MeshTransformation Compute template parameter has a valid interface.
+    template <typename Function>
+    concept TransformationFunction = HasTransformationFunction<Function> && HasTransformationProjection<Function>;
 
     /// @brief Apply a translation transformation to a point or a vector.
     class Translation
@@ -52,6 +60,12 @@ namespace meshkernel
 
         /// @brief Construct with user defined translation
         explicit Translation(const Vector& trans) : translation(trans) {}
+
+        /// @brief Get the projection required for the translation
+        Projection TransformationProjection() const
+        {
+            return Projection::cartesian;
+        }
 
         /// @brief Reset translation to identity translation (i.e. no translation)
         void identity()
@@ -103,6 +117,12 @@ namespace meshkernel
 
         /// @brief Construct with user defined rotation angle, in radians.
         explicit Rotation(const double angle) : theta(angle), cosTheta(std::cos(angle)), sinTheta(std::sin(angle)) {}
+
+        /// @brief Get the projection required for the rotation
+        Projection TransformationProjection() const
+        {
+            return Projection::cartesian;
+        }
 
         /// @brief Reset rotation to identity translation (i.e. no rotation, theta = 0)
         void identity()
@@ -164,6 +184,12 @@ namespace meshkernel
     public:
         /// @brief Default constructor, default is no transformation
         RigidBodyTransformation() = default;
+
+        /// @brief Get the projection required for the transformation
+        Projection TransformationProjection() const
+        {
+            return Projection::cartesian;
+        }
 
         /// @brief Reset transformation to identity transformation (i.e. no transformation)
         void identity()
@@ -230,13 +256,13 @@ namespace meshkernel
     {
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
-        template <TransformationOperation Transformation>
+        template <TransformationFunction Transformation>
         static void Compute(Mesh& mesh, Transformation transformation)
         {
-            if (mesh.m_projection != Projection::cartesian)
+            if (mesh.m_projection != transformation.TransformationProjection())
             {
-                throw MeshKernelError("Incorrect mesh coordinate system, expecting 'Projection::cartesian', found '{}'",
-                                      ToString(mesh.m_projection));
+                throw MeshKernelError("Incorrect mesh coordinate system, expecting '{}', found '{}'",
+                                      ToString(transformation.TransformationProjection()), ToString(mesh.m_projection));
             }
 
 #pragma omp parallel for
