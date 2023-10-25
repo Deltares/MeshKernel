@@ -256,11 +256,17 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     const auto polyLineSize = static_cast<UInt>(polyLine.size());
 
     std::vector<double> cumulativeLength(polyLine.size(), 0.0);
-    std::vector<BoundingBox> polyLineBoundingBoxes(polyLine.size());
+    std::vector<BoundingBox> polyLineBoundingBoxes(polyLine.size() - 1);
     for (UInt i = 1; i < polyLineSize; ++i)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_mesh.m_projection);
-        polyLineBoundingBoxes[i] = BoundingBox(polyLine[i - 1], polyLine[i]);
+
+        const auto lowerLeftX = std::min(polyLine[i - 1].x, polyLine[i].x);
+        const auto lowerLeftY = std::min(polyLine[i - 1].y, polyLine[i].y);
+        const auto upperRightX = std::max(polyLine[i - 1].x, polyLine[i].x);
+        const auto upperRightY = std::max(polyLine[i - 1].y, polyLine[i].y);
+
+        polyLineBoundingBoxes[i - 1] = BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
     }
 
     std::queue<std::array<UInt, 2>> crossingEdges;
