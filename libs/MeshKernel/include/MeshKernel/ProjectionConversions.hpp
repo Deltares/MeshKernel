@@ -38,29 +38,23 @@ namespace meshkernel
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
     template <typename Operation>
-    concept TransformationOperation = requires(Operation op, Point p)
-    {
-        {op(p)} -> std::same_as<Point>;
-    };
+    concept HasTransformationOperation = requires(Operation op, Point p) {{ op(p)} -> std::same_as<Point>; };
 
     /// @brief Ensure any instantiation of the MeshConversion Compute function is able to determine source and target projection types.
     template <typename Operation>
-    concept TransformationProjection = requires(Operation op)
-    {
-        {op.SourceProjection ()} -> std::same_as<Projection>;
-        {op.TargetProjection ()} -> std::same_as<Projection>;
-    };
+    concept HasConversionProjection = requires(Operation op) {{ op.SourceProjection()} -> std::same_as<Projection>;
+                                                              { op.TargetProjection()} -> std::same_as<Projection>; };
 
     /// @brief Ensure the MeshConversion template parameter has a valid interface.
     template <typename Operation>
-    concept ConversionFunctor = TransformationOperation<Operation> && TransformationProjection<Operation>;
+    concept ConversionFunctor = HasTransformationOperation<Operation> && HasConversionProjection<Operation>;
 
     /// @brief Converts points from spherical to Cartesian coordinate system.
     class ConvertSphericalToCartesian
     {
-    public :
+    public:
         /// @brief Construct ConvertSphericalToCartesian with the origin of the target mesh
-        ConvertSphericalToCartesian(const Point& o) : origin (o) {}
+        ConvertSphericalToCartesian(const Point& o) : origin(o) {}
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
         Projection SourceProjection() const
@@ -81,7 +75,7 @@ namespace meshkernel
             return result;
         }
 
-    private :
+    private:
         /// @brief The origin of the target mesh.
         Point origin;
     };
@@ -94,28 +88,27 @@ namespace meshkernel
         template <ConversionFunctor Conversion>
         static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
         {
-            if (sourceMesh.m_projection != conversion.SourceProjection ())
+            if (sourceMesh.m_projection != conversion.SourceProjection())
             {
                 throw MeshKernelError("Incorrect source mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.SourceProjection ()), ToString(sourceMesh.m_projection));
+                                      ToString(conversion.SourceProjection()), ToString(sourceMesh.m_projection));
             }
 
-            if (targetMesh.m_projection != conversion.TargetProjection ())
+            if (targetMesh.m_projection != conversion.TargetProjection())
             {
                 throw MeshKernelError("Incorrect target mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.TargetProjection ()), ToString(targetMesh.m_projection));
+                                      ToString(conversion.TargetProjection()), ToString(targetMesh.m_projection));
             }
 
-            if (sourceMesh.GetNumNodes () != targetMesh.GetNumNodes ())
+            if (sourceMesh.GetNumNodes() != targetMesh.GetNumNodes())
             {
                 throw MeshKernelError("Source and target meshes have different numbers of nodes, source = '{}', target = '{}'",
-                                      sourceMesh.GetNumNodes (), targetMesh.GetNumNodes ());
+                                      sourceMesh.GetNumNodes(), targetMesh.GetNumNodes());
             }
 
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
             {
-                // TODO SHould the conversion function take care of invalid nodes?
                 if (sourceMesh.m_nodes[i].IsValid())
                 {
                     targetMesh.m_nodes[i] = conversion(sourceMesh.m_nodes[i]);
@@ -131,4 +124,4 @@ namespace meshkernel
         }
     };
 
-}
+} // namespace meshkernel
