@@ -2026,9 +2026,6 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
 
-    // Only need to loop over boundary nodes
-
-    // First loop over lower boundary (i,0)
     const auto numNodes = GetNumNodes();
     for (UInt e = 0; e < numNodes; ++e)
     {
@@ -2043,7 +2040,6 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
 
 std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
 {
-
     const auto numEdges = GetNumEdges();
     std::vector<BoundingBox> result(numEdges);
     for (UInt e = 0; e < numEdges; ++e)
