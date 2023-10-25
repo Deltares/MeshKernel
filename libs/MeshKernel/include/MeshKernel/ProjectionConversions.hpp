@@ -38,53 +38,47 @@ namespace meshkernel
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
     template <typename Operation>
-    concept TransformationOperation = requires(Operation op, Point p)
-    {
-        {op(p)} -> std::same_as<Point>;
-    };
+    concept HasTransformationOperation = requires(Operation op, Point p) {{ op(p)} -> std::same_as<Point>; };
 
     /// @brief Ensure any instantiation of the MeshConversion Compute function is able to determine source and target projection types.
     template <typename Operation>
-    concept TransformationProjection = requires(Operation op)
-    {
-        {op.SourceProjection ()} -> std::same_as<Projection>;
-        {op.TargetProjection ()} -> std::same_as<Projection>;
-    };
+    concept HasConversionProjection = requires(Operation op) {{ op.SourceProjection()} -> std::same_as<Projection>;
+                                                              { op.TargetProjection()} -> std::same_as<Projection>; };
 
+    /// @brief Ensure the MeshConversion template parameter has a valid interface.
     template <typename Operation>
-    concept ConversionFunctor = TransformationOperation<Operation> && TransformationProjection<Operation>;
+    concept ConversionFunctor = HasTransformationOperation<Operation> && HasConversionProjection<Operation>;
 
-    /// @brief Converts points from spherical to Cartesian coordinate system.
-    class ConvertSphericalToCartesian
+    /// @brief Converts points from Cartesian to spherical coordinate system.
+    class ConvertCartesianToSpherical
     {
-    public :
-        /// @brief Construct ConvertSphericalToCartesian with the origin of the target mesh
-        ConvertSphericalToCartesian(const Point& o) : origin (o) {}
+    public:
+        /// @brief Construct ConvertCartesianToSpherical with the origin of the target mesh
+        ConvertCartesianToSpherical(const Point& o) : origin(o) {}
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
         Projection SourceProjection() const
         {
-            return Projection::spherical;
+            return Projection::cartesian;
         }
 
         /// @brief The coordinate system of the point result of the conversion operation.
         Projection TargetProjection() const
         {
-            return Projection::cartesian;
+            return Projection::spherical;
         }
 
-        /// @brief Apply the conversion of a point in Spherical coordinate system to Cartesian
+        /// @brief Apply the conversion of a point in Cartesian coordinate system to spherical
         Point operator()(const Point& pnt) const
         {
-            Point result = origin + Vector(GetDx(origin, pnt, Projection::spherical), GetDy(origin, pnt, Projection::spherical));
+            Point result = origin + Point(std::cos(pnt.x), std::cos(pnt.y));
             return result;
         }
 
-    private :
+    private:
         /// @brief The origin of the target mesh.
         Point origin;
     };
-
 
     /// @brief Apply a conversion to nodes of a mesh
     class MeshConversion
@@ -94,22 +88,22 @@ namespace meshkernel
         template <ConversionFunctor Conversion>
         static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, Conversion conversion)
         {
-            if (sourceMesh.m_projection != conversion.SourceProjection ())
+            if (sourceMesh.m_projection != conversion.SourceProjection())
             {
                 throw MeshKernelError("Incorrect source mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.SourceProjection ()), ToString(sourceMesh.m_projection));
+                                      ToString(conversion.SourceProjection()), ToString(sourceMesh.m_projection));
             }
 
-            if (targetMesh.m_projection != conversion.TargetProjection ())
+            if (targetMesh.m_projection != conversion.TargetProjection())
             {
                 throw MeshKernelError("Incorrect target mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.TargetProjection ()), ToString(targetMesh.m_projection));
+                                      ToString(conversion.TargetProjection()), ToString(targetMesh.m_projection));
             }
 
-            if (sourceMesh.GetNumNodes () != targetMesh.GetNumNodes ())
+            if (sourceMesh.GetNumNodes() != targetMesh.GetNumNodes())
             {
                 throw MeshKernelError("Source and target meshes have different numbers of nodes, source = '{}', target = '{}'",
-                                      sourceMesh.GetNumNodes (), targetMesh.GetNumNodes ());
+                                      sourceMesh.GetNumNodes(), targetMesh.GetNumNodes());
             }
 
 #pragma omp parallel for
@@ -129,4 +123,4 @@ namespace meshkernel
         }
     };
 
-}
+} // namespace meshkernel
