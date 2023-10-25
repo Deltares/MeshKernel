@@ -106,6 +106,11 @@ namespace meshkernel
                    point.y >= m_lowerLeft.y && point.y <= m_upperRight.y;
         }
 
+        /// @brief Checks if two bounding boxes overlaps
+        /// @param[in] boundingBox The input bounding box
+        /// @return True if the point if the current bounding box overlaps with another, false otherwise
+        bool Overlaps(const BoundingBox& boundingBox) const;
+
         /// @brief Returns the lower left corner of the bounding box
         /// @return The lower left corner of the bounding box
         [[nodiscard]] auto& lowerLeft() const { return m_lowerLeft; }
@@ -202,4 +207,32 @@ inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const Bo
 inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 {
     return Vector(m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y);
+}
+
+inline bool meshkernel::BoundingBox::Overlaps(const BoundingBox& other) const
+{
+
+    const auto& otherLowerleft = other.lowerLeft();
+    const auto& otherUpperRight = other.upperRight();
+    if (m_upperRight.x < otherLowerleft.x)
+    {
+        return false;
+    }
+
+    if (otherUpperRight.x < m_lowerLeft.x)
+    {
+        return false;
+    }
+
+    if (m_upperRight.y < otherLowerleft.y)
+    {
+        return false;
+    }
+
+    if (otherUpperRight.y < m_lowerLeft.y)
+    {
+        return false;
+    }
+
+    return true;
 }

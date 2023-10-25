@@ -2019,3 +2019,43 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 
     return mergedMesh;
 }
+
+meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
+{
+
+    Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
+
+    // Only need to loop over boundary nodes
+
+    // First loop over lower boundary (i,0)
+    const auto numNodes = GetNumNodes();
+    for (UInt e = 0; e < numNodes; ++e)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_nodes[e].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_nodes[e].y);
+        upperRight.x = std::max(upperRight.x, m_nodes[e].x);
+        upperRight.y = std::max(upperRight.y, m_nodes[e].y);
+    }
+
+    return BoundingBox(lowerLeft, upperRight);
+}
+
+std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
+{
+
+    const auto numEdges = GetNumEdges();
+    std::vector<BoundingBox> result(numEdges);
+    for (UInt e = 0; e < numEdges; ++e)
+    {
+        const auto& [firstNode, secondNode] = m_edges[e];
+
+        const auto lowerLeftX = std::min(m_nodes[firstNode].x, m_nodes[secondNode].x);
+        const auto lowerLeftY = std::min(m_nodes[firstNode].y, m_nodes[secondNode].y);
+        const auto upperRightX = std::max(m_nodes[firstNode].x, m_nodes[secondNode].x);
+        const auto upperRightY = std::max(m_nodes[firstNode].y, m_nodes[secondNode].y);
+        result[e] = BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
+    }
+
+    return result;
+}

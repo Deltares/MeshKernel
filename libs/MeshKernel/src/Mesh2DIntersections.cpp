@@ -27,10 +27,14 @@ Mesh2DIntersections::Mesh2DIntersections(Mesh2D& mesh) : m_mesh(mesh)
     // Declare local caches
     m_edgesIntersectionsCache.resize(mesh.GetNumEdges());
     m_facesIntersectionsCache.resize(mesh.GetNumFaces());
+
+    m_meshBoundingBox = m_mesh.GetBoundingBox();
+    m_meshEdgesBoundingBoxes = m_mesh.GetEdgesBoundingBoxes();
 }
 
 std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& mesh,
                                                                 const std::vector<Point>& polyLine,
+                                                                const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                                 const std::vector<bool>& vistedEdges) const
 {
     UInt crossedSegmentIndex = constants::missing::uintValue;
@@ -44,6 +48,16 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
         {
             // edge already crossed, nothing to do
             if (vistedEdges[edgeIndex])
+            {
+                continue;
+            }
+
+            if (!m_meshBoundingBox.Overlaps(polyLineBoundingBoxes[segmentIndex]))
+            {
+                continue;
+            }
+
+            if (!m_meshEdgesBoundingBoxes[edgeIndex].Overlaps(polyLineBoundingBoxes[segmentIndex]))
             {
                 continue;
             }
@@ -79,6 +93,7 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
 }
 
 std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNextEdgeIntersection(const std::vector<Point>& polyLine,
+                                                                                                  const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                                                                   UInt edgeIndex,
                                                                                                   UInt firstIndex,
                                                                                                   UInt secondIndex,
@@ -122,6 +137,18 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
             firstIndex = firstIndex - 1;
         }
 
+        if (!m_meshBoundingBox.Overlaps(polyLineBoundingBoxes[firstIndex]))
+        {
+            numSteps++;
+            continue;
+        }
+
+        if (!m_meshEdgesBoundingBoxes[edgeIndex].Overlaps(polyLineBoundingBoxes[firstIndex]))
+        {
+            numSteps++;
+            continue;
+        }
+
         auto intersection = AreSegmentsCrossing(polyLine[firstIndex],
                                                 polyLine[secondIndex],
                                                 m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
@@ -141,6 +168,7 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
 }
 
 void Mesh2DIntersections::IntersectFaceEdges(const std::vector<Point>& polyLine,
+                                             const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                              const std::vector<double>& cumulativeLength,
                                              UInt currentCrossingEdge,
                                              UInt currentFaceIndex,
@@ -179,7 +207,7 @@ void Mesh2DIntersections::IntersectFaceEdges(const std::vector<Point>& polyLine,
                      secondIndex,
                      crossProductValue,
                      adimensionalPolylineSegmentDistance,
-                     adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, segmentIndex + 1, Direction::Forward);
+                     adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, polyLineBoundingBoxes, edgeIndex, segmentIndex, segmentIndex + 1, Direction::Forward);
         }
 
         if (!intersectionFound)
@@ -189,7 +217,7 @@ void Mesh2DIntersections::IntersectFaceEdges(const std::vector<Point>& polyLine,
                      secondIndex,
                      crossProductValue,
                      adimensionalPolylineSegmentDistance,
-                     adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, edgeIndex, segmentIndex, segmentIndex + 1, Direction::Backward);
+                     adimensionalEdgeDistance) = GetNextEdgeIntersection(polyLine, polyLineBoundingBoxes, edgeIndex, segmentIndex, segmentIndex + 1, Direction::Backward);
         }
 
         // none of the polyline intersect the current edge
@@ -228,9 +256,11 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     const auto polyLineSize = static_cast<UInt>(polyLine.size());
 
     std::vector<double> cumulativeLength(polyLine.size(), 0.0);
+    std::vector<BoundingBox> polyLineBoundingBoxes(polyLine.size());
     for (UInt i = 1; i < polyLineSize; ++i)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_mesh.m_projection);
+        polyLineBoundingBoxes[i] = BoundingBox(polyLine[i - 1], polyLine[i]);
     }
 
     std::queue<std::array<UInt, 2>> crossingEdges;
@@ -244,6 +274,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
         const auto [crossedEdgeIndex, crossedSegmentIndex] = GetIntersectionSeed(
             m_mesh,
             polyLine,
+            polyLineBoundingBoxes,
             vistedEdges);
 
         // no valid seed found in the entire mesh, we are done
@@ -267,6 +298,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                     continue;
                 }
                 IntersectFaceEdges(polyLine,
+                                   polyLineBoundingBoxes,
                                    cumulativeLength,
                                    currentCrossingEdge,
                                    currentFaceIndex,

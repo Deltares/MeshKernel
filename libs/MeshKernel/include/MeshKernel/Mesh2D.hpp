@@ -308,6 +308,16 @@ namespace meshkernel
         /// it may be required to call Administrate after merging
         static Mesh2D Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
 
+        /// @brief Get the mesh bounding box
+        ///
+        /// @return The mesh bounding box
+        [[nodiscard]] BoundingBox GetBoundingBox() const;
+
+        /// @brief Get the bounding boxes of the mesh edges
+        ///
+        /// @return The mesh edges bounding boxes
+        [[nodiscard]] std::vector<BoundingBox> GetEdgesBoundingBoxes() const;
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
