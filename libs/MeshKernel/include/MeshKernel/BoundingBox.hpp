@@ -146,6 +146,18 @@ namespace meshkernel
         /// @brief Return the delta of the bounding box.
         Vector Delta() const;
 
+        /// @brief Create a bounding box from two points
+        template <std::derived_from<Point> T>
+        static BoundingBox CreateBoundingBox(const T& first, const T& second)
+        {
+            const auto lowerLeftX = std::min(first.x, second.x);
+            const auto lowerLeftY = std::min(first.y, second.y);
+            const auto upperRightX = std::max(first.x, second.x);
+            const auto upperRightY = std::max(first.y, second.y);
+
+            return BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
+        }
+
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
         Point m_upperRight; ///< The upper right corner of the bounding box
@@ -214,22 +226,10 @@ inline bool meshkernel::BoundingBox::Overlaps(const BoundingBox& other) const
 
     const auto& otherLowerleft = other.lowerLeft();
     const auto& otherUpperRight = other.upperRight();
-    if (m_upperRight.x < otherLowerleft.x)
-    {
-        return false;
-    }
-
-    if (otherUpperRight.x < m_lowerLeft.x)
-    {
-        return false;
-    }
-
-    if (m_upperRight.y < otherLowerleft.y)
-    {
-        return false;
-    }
-
-    if (otherUpperRight.y < m_lowerLeft.y)
+    if (m_upperRight.x < otherLowerleft.x ||
+        otherUpperRight.x < m_lowerLeft.x ||
+        m_upperRight.y < otherLowerleft.y ||
+        otherUpperRight.y < m_lowerLeft.y)
     {
         return false;
     }

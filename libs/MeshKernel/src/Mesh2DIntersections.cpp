@@ -261,12 +261,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     {
         cumulativeLength[i] = cumulativeLength[i - 1] + ComputeDistance(polyLine[i], polyLine[i - 1], m_mesh.m_projection);
 
-        const auto lowerLeftX = std::min(polyLine[i - 1].x, polyLine[i].x);
-        const auto lowerLeftY = std::min(polyLine[i - 1].y, polyLine[i].y);
-        const auto upperRightX = std::max(polyLine[i - 1].x, polyLine[i].x);
-        const auto upperRightY = std::max(polyLine[i - 1].y, polyLine[i].y);
-
-        polyLineBoundingBoxes[i - 1] = BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
+        polyLineBoundingBoxes[i - 1] = BoundingBox::CreateBoundingBox(polyLine[i - 1], polyLine[i]);
     }
 
     std::queue<std::array<UInt, 2>> crossingEdges;

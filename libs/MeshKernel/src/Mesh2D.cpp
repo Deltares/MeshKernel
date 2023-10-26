@@ -2024,7 +2024,7 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
 {
 
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
+    Point upperRight = -lowerLeft;
 
     const auto numNodes = GetNumNodes();
     for (UInt e = 0; e < numNodes; ++e)
@@ -2040,17 +2040,11 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
 
 std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
 {
-    const auto numEdges = GetNumEdges();
-    std::vector<BoundingBox> result(numEdges);
-    for (UInt e = 0; e < numEdges; ++e)
+    std::vector<BoundingBox> result;
+    result.reserve(GetNumEdges());
+    for (const auto& e : m_edges)
     {
-        const auto& [firstNode, secondNode] = m_edges[e];
-
-        const auto lowerLeftX = std::min(m_nodes[firstNode].x, m_nodes[secondNode].x);
-        const auto lowerLeftY = std::min(m_nodes[firstNode].y, m_nodes[secondNode].y);
-        const auto upperRightX = std::max(m_nodes[firstNode].x, m_nodes[secondNode].x);
-        const auto upperRightY = std::max(m_nodes[firstNode].y, m_nodes[secondNode].y);
-        result[e] = BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
+        result.emplace_back(BoundingBox::CreateBoundingBox(m_nodes[e.first], m_nodes[e.second]));
     }
 
     return result;
