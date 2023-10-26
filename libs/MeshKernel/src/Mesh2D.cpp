@@ -2019,3 +2019,33 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 
     return mergedMesh;
 }
+
+meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
+{
+
+    Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    Point upperRight = -lowerLeft;
+
+    const auto numNodes = GetNumNodes();
+    for (UInt e = 0; e < numNodes; ++e)
+    {
+        lowerLeft.x = std::min(lowerLeft.x, m_nodes[e].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_nodes[e].y);
+        upperRight.x = std::max(upperRight.x, m_nodes[e].x);
+        upperRight.y = std::max(upperRight.y, m_nodes[e].y);
+    }
+
+    return BoundingBox(lowerLeft, upperRight);
+}
+
+std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
+{
+    std::vector<BoundingBox> result;
+    result.reserve(GetNumEdges());
+    for (const auto& e : m_edges)
+    {
+        result.emplace_back(BoundingBox::CreateBoundingBox(m_nodes[e.first], m_nodes[e.second]));
+    }
+
+    return result;
+}
