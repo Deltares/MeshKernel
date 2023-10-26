@@ -108,7 +108,7 @@ namespace meshkernel
 
         /// @brief Checks if two bounding boxes overlaps
         /// @param[in] boundingBox The input bounding box
-        /// @return True if the point if the current bounding box overlaps with another, false otherwise
+        /// @return True if the point if the this bounding box overlaps with another, false otherwise
         bool Overlaps(const BoundingBox& boundingBox) const;
 
         /// @brief Returns the lower left corner of the bounding box
