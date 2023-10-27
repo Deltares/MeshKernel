@@ -63,8 +63,9 @@ var searchData=
   ['converttosamples_86',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['coordinates_5fx_87',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
   ['coordinates_5fy_88',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
-  ['crossproduct_89',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
-  ['curvature_5fadapted_5fgrid_5fspacing_90',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
-  ['curvilineargrid_91',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_92',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
+  ['createboundingbox_89',['CreateBoundingBox',['../classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24',1,'meshkernel::BoundingBox']]],
+  ['crossproduct_90',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
+  ['curvature_5fadapted_5fgrid_5fspacing_91',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
+  ['curvilineargrid_92',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_93',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];

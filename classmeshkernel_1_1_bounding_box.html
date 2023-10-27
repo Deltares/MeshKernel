@@ -75,6 +75,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classmeshkernel_1_1_bounding_box-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::BoundingBox Class Reference</div>  </div>
@@ -118,6 +119,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a63e16e992de07aef73dc83211cf91692"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a63e16e992de07aef73dc83211cf91692">Contains</a> (const T &amp;point) const</td></tr>
 <tr class="memdesc:a63e16e992de07aef73dc83211cf91692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is inside a bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#a63e16e992de07aef73dc83211cf91692">More...</a><br /></td></tr>
 <tr class="separator:a63e16e992de07aef73dc83211cf91692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e6e9b67da9331bf5bf67997dee3fa23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a5e6e9b67da9331bf5bf67997dee3fa23">Overlaps</a> (const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox) const</td></tr>
+<tr class="memdesc:a5e6e9b67da9331bf5bf67997dee3fa23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if two bounding boxes overlaps.  <a href="classmeshkernel_1_1_bounding_box.html#a5e6e9b67da9331bf5bf67997dee3fa23">More...</a><br /></td></tr>
+<tr class="separator:a5e6e9b67da9331bf5bf67997dee3fa23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4406fad61746c7fa34e8beb8acb85f75"><td class="memItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75">lowerLeft</a> () const</td></tr>
 <tr class="memdesc:a4406fad61746c7fa34e8beb8acb85f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lower left corner of the bounding box.  <a href="classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75">More...</a><br /></td></tr>
 <tr class="separator:a4406fad61746c7fa34e8beb8acb85f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +145,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#a8b1c03b754fcf2e2583efff4a891c69c">Delta</a> () const</td></tr>
 <tr class="memdesc:a8b1c03b754fcf2e2583efff4a891c69c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the delta of the bounding box. <br /></td></tr>
 <tr class="separator:a8b1c03b754fcf2e2583efff4a891c69c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:acf29fe83a13844ada155c6455b406f24"><td class="memTemplParams" colspan="2"><a id="acf29fe83a13844ada155c6455b406f24"></a>
+template&lt;std::derived_from&lt; Point &gt; T&gt; </td></tr>
+<tr class="memitem:acf29fe83a13844ada155c6455b406f24"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24">CreateBoundingBox</a> (const T &amp;first, const T &amp;second)</td></tr>
+<tr class="memdesc:acf29fe83a13844ada155c6455b406f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a bounding box from two points. <br /></td></tr>
+<tr class="separator:acf29fe83a13844ada155c6455b406f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class defining a bounding box. </p>
@@ -452,6 +464,41 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the other bounding box is not equal </dd></dl>
+
+</div>
+</div>
+<a id="a5e6e9b67da9331bf5bf67997dee3fa23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e6e9b67da9331bf5bf67997dee3fa23">&#9670;&nbsp;</a></span>Overlaps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::BoundingBox::Overlaps </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;&#160;</td>
+          <td class="paramname"><em>boundingBox</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if two bounding boxes overlaps. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">boundingBox</td><td>The input bounding box </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the point if the this bounding box overlaps with another, false otherwise </dd></dl>
 
 </div>
 </div>

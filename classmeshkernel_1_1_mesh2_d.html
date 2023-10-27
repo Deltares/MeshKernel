@@ -255,6 +255,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a399739726d1d913f8b23a385abe536aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a399739726d1d913f8b23a385abe536aa">NextFace</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceId, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeId) const</td></tr>
 <tr class="memdesc:a399739726d1d913f8b23a385abe536aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next face adjacent to the edge on the opposite side.  <a href="classmeshkernel_1_1_mesh2_d.html#a399739726d1d913f8b23a385abe536aa">More...</a><br /></td></tr>
 <tr class="separator:a399739726d1d913f8b23a385abe536aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add026690951b8de12423e8722f4b62b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#add026690951b8de12423e8722f4b62b2">GetBoundingBox</a> () const</td></tr>
+<tr class="memdesc:add026690951b8de12423e8722f4b62b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the mesh bounding box.  <a href="classmeshkernel_1_1_mesh2_d.html#add026690951b8de12423e8722f4b62b2">More...</a><br /></td></tr>
+<tr class="separator:add026690951b8de12423e8722f4b62b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c99b947455c2b4361988bf44711467d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a4c99b947455c2b4361988bf44711467d">GetEdgesBoundingBoxes</a> () const</td></tr>
+<tr class="memdesc:a4c99b947455c2b4361988bf44711467d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the bounding boxes of the mesh edges.  <a href="classmeshkernel_1_1_mesh2_d.html#a4c99b947455c2b4361988bf44711467d">More...</a><br /></td></tr>
+<tr class="separator:a4c99b947455c2b4361988bf44711467d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a05bc04f7af254a40598f8b9627da6e60 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a05bc04f7af254a40598f8b9627da6e60"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a05bc04f7af254a40598f8b9627da6e60">Mesh</a> ()=default</td></tr>
@@ -988,6 +994,46 @@ Coincide circumcenter</div></div>
 
 <p>Find edge on the opposite side of the element. </p>
 <dl class="section note"><dt>Note</dt><dd>Currently only valid of quadrilateral elements. Will throw exception <a class="el" href="classmeshkernel_1_1_not_implemented_error.html" title="A class for throwing not implemented exceptions.">NotImplementedError</a> for non-quadrilateral element shapes. </dd></dl>
+
+</div>
+</div>
+<a id="add026690951b8de12423e8722f4b62b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add026690951b8de12423e8722f4b62b2">&#9670;&nbsp;</a></span>GetBoundingBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> meshkernel::Mesh2D::GetBoundingBox </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the mesh bounding box. </p>
+<dl class="section return"><dt>Returns</dt><dd>The mesh bounding box </dd></dl>
+
+</div>
+</div>
+<a id="a4c99b947455c2b4361988bf44711467d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c99b947455c2b4361988bf44711467d">&#9670;&nbsp;</a></span>GetEdgesBoundingBoxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a>&gt; meshkernel::Mesh2D::GetEdgesBoundingBoxes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the bounding boxes of the mesh edges. </p>
+<dl class="section return"><dt>Returns</dt><dd>The mesh edges bounding boxes </dd></dl>
 
 </div>
 </div>
