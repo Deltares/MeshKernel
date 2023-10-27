@@ -1,9 +1,4 @@
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/core/coordinate_system.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/srs/epsg.hpp>
-
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>

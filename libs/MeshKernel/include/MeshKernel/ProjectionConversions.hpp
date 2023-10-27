@@ -32,6 +32,7 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/srs/epsg.hpp>
 
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
@@ -69,6 +70,9 @@ namespace meshkernel
 
         /// @brief Constructor with projection
         ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : projection(proj) {}
+
+        /// @brief Default destructor
+        virtual ~ConvertSphericalToCartesianBase() = default;
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
         Projection SourceProjection() const
