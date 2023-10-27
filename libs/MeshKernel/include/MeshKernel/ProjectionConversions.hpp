@@ -61,12 +61,13 @@ namespace meshkernel
     class ConvertSphericalToCartesianBase
     {
     public:
-        /// @brief
+        /// @brief point in longitude-latitude space
         using LongLat = bg::model::d2::point_xy<double, bg::cs::geographic<bg::degree>>;
 
-        /// @brief
+        /// @brief Point in x-y space
         using UTM = bg::model::d2::point_xy<double, Projection>;
 
+        /// @brief Constructor with projection
         ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : projection(proj) {}
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
