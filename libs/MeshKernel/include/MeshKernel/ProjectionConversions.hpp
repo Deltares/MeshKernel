@@ -29,12 +29,19 @@
 
 #include <concepts>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/core/coordinate_system.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
+
+    /// @brief Namespace alias for boost::geometry
+    namespace bg = boost::geometry;
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
     template <typename Operation>
@@ -50,11 +57,17 @@ namespace meshkernel
     concept ConversionFunctor = HasTransformationOperation<Operation> && HasConversionProjection<Operation>;
 
     /// @brief Converts points from spherical to Cartesian coordinate system.
-    class ConvertSphericalToCartesian
+    template <typename ProjectionConversion>
+    class ConvertSphericalToCartesianBase
     {
     public:
-        /// @brief Construct ConvertSphericalToCartesian with the origin of the target mesh
-        ConvertSphericalToCartesian(const Point& o) : origin(o) {}
+        /// @brief
+        using LongLat = bg::model::d2::point_xy<double, bg::cs::geographic<bg::degree>>;
+
+        /// @brief
+        using UTM = bg::model::d2::point_xy<double, Projection>;
+
+        ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : projection(proj) {}
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
         Projection SourceProjection() const
@@ -71,13 +84,48 @@ namespace meshkernel
         /// @brief Apply the conversion of a point in Spherical coordinate system to Cartesian
         Point operator()(const Point& pnt) const
         {
-            Point result = origin + Vector(GetDx(origin, pnt, Projection::spherical), GetDy(origin, pnt, Projection::spherical));
+            LongLat longLat(pnt.x, pnt.y);
+            UTM utm{0.0, 0.0};
+            projection.forward(longLat, utm);
+
+            Point result(utm.x(), utm.y());
+            return result;
+        }
+
+        /// @brief Apply the reverse conversion of a point in Cartesian coordinate system to Spherical
+        Point reverse(const Point& pnt) const
+        {
+            UTM utm{pnt.x, pnt.y};
+            LongLat longLat{0.0, 0.0};
+            projection.inverse(utm, longLat);
+
+            Point result(longLat.x(), longLat.y());
             return result;
         }
 
     private:
         /// @brief The origin of the target mesh.
-        Point origin;
+        ProjectionConversion projection;
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    template <const int EpsgCode>
+    class ConvertSphericalToCartesianEPSG : public ConvertSphericalToCartesianBase<bg::srs::projection<bg::srs::static_epsg<EpsgCode>>>
+    {
+    public:
+        /// @brief The EPSG projection
+        using EpsgProjection = bg::srs::projection<bg::srs::static_epsg<EpsgCode>>;
+
+        /// @brief Construct spherical to Cartesian with an EPSG code
+        ConvertSphericalToCartesianEPSG() : ConvertSphericalToCartesianBase<bg::srs::projection<bg::srs::static_epsg<EpsgCode>>>(EpsgProjection()) {}
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    class ConvertSphericalToCartesian : public ConvertSphericalToCartesianBase<bg::srs::projection<>>
+    {
+    public:
+        /// @brief Construct spherical to Cartesian with an zone string
+        ConvertSphericalToCartesian(const std::string& zone) : ConvertSphericalToCartesianBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
     };
 
     /// @brief Apply a conversion to nodes of a mesh
