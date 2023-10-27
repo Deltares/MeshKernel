@@ -29,12 +29,20 @@
 
 #include <concepts>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/core/coordinate_system.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/srs/epsg.hpp>
+
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
 {
+
+    /// @brief Namespace alias for boost::geometry
+    namespace bg = boost::geometry;
 
     /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
     template <typename Operation>
@@ -49,12 +57,22 @@ namespace meshkernel
     template <typename Operation>
     concept ConversionFunctor = HasTransformationOperation<Operation> && HasConversionProjection<Operation>;
 
-    /// @brief Converts points from Cartesian to spherical coordinate system.
-    class ConvertCartesianToSpherical
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    template <typename ProjectionConversion>
+    class ConvertCartesianToSphericalBase
     {
     public:
-        /// @brief Construct ConvertCartesianToSpherical with the origin of the target mesh
-        ConvertCartesianToSpherical(const Point& o) : origin(o) {}
+        /// @brief point in longitude-latitude space
+        using LongLat = bg::model::d2::point_xy<double, bg::cs::geographic<bg::degree>>;
+
+        /// @brief Point in x-y space
+        using UTM = bg::model::d2::point_xy<double, Projection>;
+
+        /// @brief Constructor with projection
+        ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : projection(proj) {}
+
+        /// @brief Default destructor
+        virtual ~ConvertCartesianToSphericalBase() = default;
 
         /// @brief The coordinate system of the point parameter to the conversion operation.
         Projection SourceProjection() const
@@ -71,13 +89,37 @@ namespace meshkernel
         /// @brief Apply the conversion of a point in Cartesian coordinate system to spherical
         Point operator()(const Point& pnt) const
         {
-            Point result = origin + Point(std::cos(pnt.x), std::cos(pnt.y));
+            UTM utm{pnt.x, pnt.y};
+            LongLat longLat{0.0, 0.0};
+            projection.inverse(utm, longLat);
+
+            Point result(longLat.x(), longLat.y());
             return result;
         }
 
     private:
         /// @brief The origin of the target mesh.
-        Point origin;
+        ProjectionConversion projection;
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    template <const int EpsgCode>
+    class ConvertCartesianToSphericalEPSG : public ConvertCartesianToSphericalBase<boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>>
+    {
+    public:
+        /// @brief The EPSG projection
+        using EpsgProjection = boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>;
+
+        /// @brief Construct spherical to Cartesian with an EPSG code
+        ConvertCartesianToSphericalEPSG() : ConvertCartesianToSphericalBase<boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>>(EpsgProjection()) {}
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    class ConvertCartesianToSpherical : public ConvertCartesianToSphericalBase<bg::srs::projection<>>
+    {
+    public:
+        /// @brief Construct spherical to Cartesian with an zone string
+        ConvertCartesianToSpherical(const std::string& zone) : ConvertCartesianToSphericalBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
     };
 
     /// @brief Apply a conversion to nodes of a mesh
@@ -86,7 +128,7 @@ namespace meshkernel
     public:
         /// @brief Apply a conversion to nodes of a mesh.
         template <ConversionFunctor Conversion>
-        static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, Conversion conversion)
+        static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
         {
             if (sourceMesh.m_projection != conversion.SourceProjection())
             {
@@ -119,6 +161,7 @@ namespace meshkernel
                 }
             }
 
+            // TODO Does this need a parameter indicating that admininstrate needs to be called
             targetMesh.Administrate();
         }
     };
