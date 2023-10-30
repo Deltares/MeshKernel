@@ -398,11 +398,11 @@ void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSample
     Hessian hessian(5, numX, numY);
     PrepareSampleForHessian(hessianSamples, projection, hessian);
 
-    size_t count = 0;
+    UInt count = 0;
 
-    for (size_t j = 0; j < numY; ++j)
+    for (UInt j = 0; j < numY; ++j)
     {
-        for (size_t i = 0; i < numX; ++i)
+        for (UInt i = 0; i < numX; ++i)
         {
             hessianSamples[count].value = hessian(4, i, j);
             ++count;

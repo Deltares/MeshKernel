@@ -289,19 +289,20 @@ meshkernel::HessianAveragingInterpolation::HessianAveragingInterpolation(Mesh2D&
     Hessian hessian(5, numX, numY);
     computeHessianSamples(mesh, samples, numX, numY, hessian);
 
-    size_t count = 0;
+    UInt count = 0;
     std::cout << std::endl;
-    for (size_t j = 0; j < numY; ++j)
+    for (UInt j = 0; j < numY; ++j)
     {
 
-        for (size_t i = 0; i < numX; ++i)
+        for (UInt i = 0; i < numX; ++i)
         {
-
+            /*
             std::cout << "hessian " << std::setw(5) << i << ", " << std::setw(5) << j << " = "
                       << std::setw(17) << samples[count].x << "  " << std::setw(17) << samples[count].y << "  "
                       // << std::setw(17) << hessian(0, i, j) << "  " << std::setw(17) << hessian(1, i, j) << "  "
                       // << std::setw(17) << hessian(2, i, j) << "  " << std::setw(17) << hessian(3, i, j) << "  "
                       << std::setw(17) << hessian(4, i, j) << "  " << std::endl;
+                      */
             m_hessianSamples[count].x = samples[count].x;
             m_hessianSamples[count].y = samples[count].y;
             m_hessianSamples[count].value = hessian(4, i, j); // samples[count].value;
