@@ -9,7 +9,7 @@
         <copyright>Copyright 2021</copyright>
     </metadata>
     <files>
-        <file src="..\libs\MeshKernelApi\Release\*" target="native\Lib" />
+        <file src="..\libs\MeshKernelApi\Release\*" target="runtimes/win-x64/native/" />
         <file src="Deltares.MeshKernel.Release.targets" target="build\net461\Deltares.MeshKernel.targets" />
     </files>
 </package>
