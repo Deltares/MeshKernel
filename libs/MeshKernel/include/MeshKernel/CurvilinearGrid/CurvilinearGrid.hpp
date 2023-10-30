@@ -206,6 +206,10 @@ namespace meshkernel
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         void DeleteNode(Point const& point);
 
+        /// @brief Set all the nodes interior to the block to be invalid.
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
+        void DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
+
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used
         /// @param[in] toPoint The coordinates of the new position

@@ -153,3 +153,25 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
 
     return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
 }
+
+std::shared_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
+{
+    double y = originY;
+
+    lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+
+    for (size_t m = 0; m < ny; ++m)
+    {
+        double x = originX;
+
+        for (size_t n = 0; n < nx; ++n)
+        {
+            points(n, m) = meshkernel::Point(x, y);
+            x += deltaX;
+        }
+
+        y += deltaY;
+    }
+
+    return std::make_shared<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
+}
