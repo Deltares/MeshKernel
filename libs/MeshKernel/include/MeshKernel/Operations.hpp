@@ -451,21 +451,18 @@ namespace meshkernel
     /// @param[in]  secondSegmentSecondPoint The second point of the second segment
     /// @param[in]  adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in]  projection               The coordinate system projection
-    /// @param[out] intersectionPoint        The intersection point
-    /// @param[out] crossProduct             The cross product of the intersection
-    /// @param[out] ratioFirstSegment        The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
-    /// @param[out] ratioSecondSegment       The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
-    /// @return If the two segments are crossing
-    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                                           const Point& firstSegmentSecondPoint,
-                                           const Point& secondSegmentFirstPoint,
-                                           const Point& secondSegmentSecondPoint,
-                                           bool adimensionalCrossProduct,
-                                           const Projection& projection,
-                                           Point& intersectionPoint,
-                                           double& crossProduct,
-                                           double& ratioFirstSegment,
-                                           double& ratioSecondSegment);
+    /// @return A tuple with:
+    ///  If the two segments are crossing
+    ///  The intersection point
+    ///  The cross product of the intersection
+    ///  The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    ///  The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    [[nodiscard]] std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                                      const Point& firstSegmentSecondPoint,
+                                                                                      const Point& secondSegmentFirstPoint,
+                                                                                      const Point& secondSegmentSecondPoint,
+                                                                                      bool adimensionalCrossProduct,
+                                                                                      const Projection& projection);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates                 The spline node coordinates

@@ -58,12 +58,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
-        /// @brief Connect two or more disconnected regions along boundary
-        /// @param[in]  meshKernelId  The id of the mesh states
-        /// @param[in]  mesh2d  The mesh we want to connect to the main mesh
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d);
-
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
@@ -144,7 +138,7 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
-        /// @brief Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
+        /// @brief Computes a curvilinear grid in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygons      The input polygons
         /// @param[in] firstNode     The first selected node
@@ -168,7 +162,7 @@ namespace meshkernelapi
                                                                              const GeometryList& splines,
                                                                              const meshkernel::CurvilinearParameters& curvilinearParameters);
 
-        /// @brief Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
+        /// @brief Computes a curvilinear grid in a triangle. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] polygon      The input polygons
         /// @param[in] firstNode    The first selected node
@@ -321,21 +315,28 @@ namespace meshkernelapi
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_line_shift(int meshKernelId);
 
-        /// @brief Makes a new curvilinear grid. If polygons is not empty, the first polygon will be used
+        /// @brief Computes a rectangular curvilinear grid
+        /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] makeGridParameters The structure containing the make grid parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid(int meshKernelId,
+                                                                     const meshkernel::MakeGridParameters& makeGridParameters);
+
+        /// @brief Computes a rectangular curvilinear grid from polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_uniform(int meshKernelId,
-                                                         const meshkernel::MakeGridParameters& makeGridParameters,
-                                                         const GeometryList& geometryList);
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_from_polygon(int meshKernelId,
+                                                                                  const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                  const GeometryList& geometryList);
 
-        /// @brief Makes a new curvilinear grid.
+        /// @brief Computes a rectangular curvilinear grid on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_make_uniform_on_extension(int meshKernelId,
-                                                                      const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_on_extension(int meshKernelId,
+                                                                                  const meshkernel::MakeGridParameters& makeGridParameters);
 
         /// @brief Moves a point of a curvilinear grid from one location to another
         /// @param meshKernelId The id of the mesh state
@@ -712,6 +713,13 @@ namespace meshkernelapi
                                                                  const GeometryList& selectingPolygon,
                                                                  const GeometryList& landBoundaries);
 
+        /// @brief Connect two or more disconnected regions along boundary
+        /// @param[in]  meshKernelId  The id of the mesh states
+        /// @param[in]  mesh2d  The mesh we want to connect to the main mesh
+        /// @param[in]  searchFraction  Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction);
+
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
@@ -995,63 +1003,76 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex);
 
-        /// @brief Gets the edges intersected by a polyline, with additional information on the intersections
+        /// @brief Gets the edges intersected by a polygon, with additional information on the intersections
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] boundaryPolyLine An input polyline, defined as a series of points
+        /// @param[in] boundaryPolygon An input polygon, defined as a series of points
         /// @param[out] edgeNodes The indices of the intersected edge nodes. The first node of the edge is on the left (the virtual node), the second node of the edge is on the right (the inner node)
         /// @param[out] edgeIndex For each intersected edge, the edge index
         /// @param[out] edgeDistances For each intersection, the location of the intersection expressed as adimensional distance from the edge starting node
-        /// @param[out] segmentDistances For each intersection, the location of the intersection expressed as adimensional distance from the polyline segment start
+        /// @param[out] segmentDistances For each intersection, the location of the intersection expressed as adimensional distance from the polygon segment start
         /// @param[out] segmentIndexes For each intersection, the segment index
         /// @param[out] faceIndexes For each intersection, the face index
         /// @param[out] faceNumEdges For each intersection, the number of intersections
         /// @param[out] faceEdgeIndex For each intersection, the index of the intersected edge
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_intersections_from_polyline(int meshKernelId,
-                                                                   const GeometryList& boundaryPolyLine,
-                                                                   int* edgeNodes,
-                                                                   int* edgeIndex,
-                                                                   double* edgeDistances,
-                                                                   double* segmentDistances,
-                                                                   int* segmentIndexes,
-                                                                   int* faceIndexes,
-                                                                   int* faceNumEdges,
-                                                                   int* faceEdgeIndex);
+        MKERNEL_API int mkernel_mesh2d_intersections_from_polygon(int meshKernelId,
+                                                                  const GeometryList& boundaryPolygon,
+                                                                  int* edgeNodes,
+                                                                  int* edgeIndex,
+                                                                  double* edgeDistances,
+                                                                  double* segmentDistances,
+                                                                  int* segmentIndexes,
+                                                                  int* faceIndexes,
+                                                                  int* faceNumEdges,
+                                                                  int* faceEdgeIndex);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
+        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
 
         /// @brief Makes a triangular mesh from  a set of samples, triangulating the sample points.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] samples The samples where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_mesh_from_samples(int meshKernelId, const GeometryList& samples);
+        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_samples(int meshKernelId, const GeometryList& samples);
 
-        /// @brief Makes uniform meshes from a series of polygons
+        /// @brief Makes a rectangular mesh
+        /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] makeGridParameters The structure containing the make grid parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh(int meshKernelId,
+                                                             const meshkernel::MakeGridParameters& makeGridParameters);
+
+        /// @brief Makes a rectangular mesh from a polygon
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygons to account for
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform(int meshKernelId,
-                                                    const meshkernel::MakeGridParameters& makeGridParameters,
-                                                    const GeometryList& geometryList);
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_from_polygon(int meshKernelId,
+                                                                          const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                          const GeometryList& geometryList);
 
-        /// @brief Makes uniform mesh on a defined extension
+        /// @brief Makes a rectangular mesh on a defined extension
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_uniform_on_extension(int meshKernelId,
-                                                                 const meshkernel::MakeGridParameters& makeGridParameters);
+        MKERNEL_API int mkernel_mesh2d_make_rectangular_mesh_on_extension(int meshKernelId,
+                                                                          const meshkernel::MakeGridParameters& makeGridParameters);
+
+        /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
+        /// @param[in] meshKernelId   The id of the mesh state
+        /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn);
 
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
         /// @param[in] mergingDistance The distance below which two nodes will be merged
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
+        MKERNEL_API int mkernel_mesh2d_merge_nodes_with_merging_distance(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
 
         /// @brief Merges two mesh2d nodes into one.
         /// @param[in] meshKernelId The id of the mesh state
@@ -1242,7 +1263,7 @@ namespace meshkernelapi
 
         /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
         ///
-        /// The function is often used before `mkernel_mesh2d_make_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
+        /// The function is often used before `mkernel_mesh2d_make_triangular_mesh_from_polygon`, for generating a triangular mesh where edges have a desired length.
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  polygonToRefine    The input polygon to refine
         /// @param[in]  firstNodeIndex     The first index of the refinement interval
