@@ -34,6 +34,7 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -3226,6 +3227,43 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
+                                                        double xFirstPointCoordinate,
+                                                        double yFirstPointCoordinate,
+                                                        double xSecondPointCoordinate,
+                                                        double ySecondPointCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
+            }
+            meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
+
+            curvilinearDeleteInterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
+                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+
+            curvilinearDeleteInterior.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_curvilinear_line_attraction_repulsion(int meshKernelId,
                                                                   double repulsionParameter,
                                                                   double xFirstNodeOnTheLine,
@@ -3301,44 +3339,6 @@ namespace meshkernelapi
         }
         return lastExitCode;
     }
-
-    /*
-    MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
-                                                        double xFirstPointCoordinate,
-                                                        double yFirstPointCoordinate,
-                                                        double xSecondPointCoordinate,
-                                                        double ySecondPointCoordinate)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
-            {
-                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
-            }
-
-            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
-            {
-                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
-            }
-
-            meshKernelState[meshKernelId].m_curvilinearGrid.SetBlock(firstPoint, secondPoint);
-
-            meshKernelState[meshKernelId].m_curvilinearGrid->DeleteInterior({xFirstPointCoordinate, yFirstPointCoordinate},
-                                                                            {xSecondPointCoordinate, ySecondPointCoordinate});
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-    */
 
     MKERNEL_API int mkernel_curvilinear_delete_node(int meshKernelId,
                                                     double xPointCoordinate,

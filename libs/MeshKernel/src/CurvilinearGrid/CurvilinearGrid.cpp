@@ -284,8 +284,15 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>
 CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)},
-            {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
+    CurvilinearGridNodeIndices lowerLeft(std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n));
+    CurvilinearGridNodeIndices upperRight(std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n));
+
+    if (!lowerLeft.IsValid() || !upperRight.IsValid())
+    {
+        throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", lowerLeft.m_m, lowerLeft.m_n, upperRight.m_m, upperRight.m_n);
+    }
+
+    return {lowerLeft, upperRight};
 }
 
 void CurvilinearGrid::ComputeGridFacesMask()
