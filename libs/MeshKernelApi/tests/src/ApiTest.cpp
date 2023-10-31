@@ -219,9 +219,38 @@ TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
     meshkernelapi::GeometryList geometry_list{};
+    std::vector xCoordinates{-0.5, 2.5, 2.5, -0.5, -0.5};
+    std::vector yCoordinates{-0.5, -0.5, 2.5, 2.5, -0.5};
+    std::vector zCoordinates{0.0, 0.0, 0.0, 0.5, 0.5};
+
+    geometry_list.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometry_list.coordinates_x = xCoordinates.data();
+    geometry_list.coordinates_y = yCoordinates.data();
+    geometry_list.values = zCoordinates.data();
+    geometry_list.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_merge_nodes(meshKernelId, geometry_list, 0.001);
+    auto errorCode = mkernel_mesh2d_merge_nodes(meshKernelId, geometry_list);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+
+    // Assert (nothing is done, just check that the api communication works)
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(17, mesh2d.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
+{
+    // Prepare
+    MakeMesh(2, 3, 1.0);
+    auto const meshKernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometry_list{};
+
+    // Execute
+    auto errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshKernelId, geometry_list, 0.001);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
@@ -349,7 +378,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 
@@ -399,7 +428,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridFromSamplesThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_samples(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_samples(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
@@ -1154,7 +1183,6 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernel::MakeGridParameters makeGridParameters;
-    meshkernelapi::GeometryList geometryList{};
 
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 2;
@@ -1165,9 +1193,7 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
     makeGridParameters.block_size_y = 1.0;
 
     // Execute
-    auto errorCode = mkernel_curvilinear_make_uniform(meshKernelId,
-                                                      makeGridParameters,
-                                                      geometryList);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
@@ -1326,7 +1352,7 @@ TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(3, 3);
+    MakeRectangularCurvilinearGrid(3, 3);
 
     auto errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId, 10.0, 20.0, 20.0, 20.0, 10);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1344,7 +1370,7 @@ TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId, 10.0, 20.0, 30.0, 20.0);
@@ -1363,7 +1389,7 @@ TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonaliz
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(3, 3);
+    MakeRectangularCurvilinearGrid(3, 3);
     // Move a node to make the grid non orthogonal
     auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, 10.0, 20.0, 18.0, 12.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1405,7 +1431,7 @@ TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
@@ -1424,7 +1450,7 @@ TEST_F(CartesianApiTestFixture, ComputedDirectionalSmooth_CurvilinearGrid_Should
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing_directional(meshKernelId,
@@ -1453,7 +1479,7 @@ TEST_F(CartesianApiTestFixture, ComputedLineShift_CurvilinearGrid_ShouldShift)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
 
     meshkernelapi::mkernel_curvilinear_initialize_line_shift(meshKernelId);
 
@@ -2189,7 +2215,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearComputeOrthogonalGridFromSplines_Shou
 TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
@@ -2206,7 +2232,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
 TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
 
@@ -2223,7 +2249,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
 TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
@@ -2251,7 +2277,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
 {
     // Setup
-    MakeUniformCurvilinearGrid();
+    MakeRectangularCurvilinearGrid();
     auto const meshKernelId = GetMeshKernelId();
 
     // Execute
@@ -2373,7 +2399,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttract
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    MakeUniformCurvilinearGrid(5, 5);
+    MakeRectangularCurvilinearGrid(5, 5);
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_line_attraction_repulsion(meshKernelId,
@@ -2406,7 +2432,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteNode_ShouldDeleteNode)
 {
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
-    MakeUniformCurvilinearGrid(5, 5);
+    MakeRectangularCurvilinearGrid(5, 5);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     auto errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -2664,28 +2690,24 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     makeMeshParameters.origin_y = 0.0;
     makeMeshParameters.angle = 0.0;
 
-    // Empty polygon
-    meshkernelapi::GeometryList geometryList;
-    geometryList.num_coordinates = 0;
-
     // Creates an unstructured grid from mesh parameters
-    errorCode = mkernel_mesh2d_make_uniform(meshKernelId, makeMeshParameters, geometryList);
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, makeMeshParameters);
 
     // Get the mesh dimensions
     meshkernelapi::Mesh2D mesh2dDimensions{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dDimensions);
 
     // Set the polyLine
-    std::vector xCoordinates{0.6, 0.6};
-    std::vector yCoordinates{2.5, 0.5};
+    std::vector xCoordinates{0.6, 0.6, 2.5, 2.5, 0.6};
+    std::vector yCoordinates{2.5, 0.5, 0.5, 2.5, 2.5};
 
-    meshkernelapi::GeometryList boundaryPolyLine{};
-    boundaryPolyLine.geometry_separator = meshkernel::constants::missing::doubleValue;
-    boundaryPolyLine.coordinates_x = xCoordinates.data();
-    boundaryPolyLine.coordinates_y = yCoordinates.data();
-    boundaryPolyLine.values = nullptr;
+    meshkernelapi::GeometryList boundaryPolygon{};
+    boundaryPolygon.geometry_separator = meshkernel::constants::missing::doubleValue;
+    boundaryPolygon.coordinates_x = xCoordinates.data();
+    boundaryPolygon.coordinates_y = yCoordinates.data();
+    boundaryPolygon.values = nullptr;
 
-    boundaryPolyLine.num_coordinates = 2;
+    boundaryPolygon.num_coordinates = static_cast<int>(xCoordinates.size());
 
     std::vector<int> polylineSegmentIndexes(mesh2dDimensions.num_edges * 2, meshkernel::constants::missing::intValue);
 
@@ -2699,16 +2721,16 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     std::vector<int> faceNumEdges(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
     std::vector<int> faceIndexes(mesh2dDimensions.num_edges, meshkernel::constants::missing::intValue);
 
-    errorCode = mkernel_mesh2d_intersections_from_polyline(meshKernelId,
-                                                           boundaryPolyLine,
-                                                           edgeNodes.data(),
-                                                           edgeIndex.data(),
-                                                           edgeDistances.data(),
-                                                           segmentDistances.data(),
-                                                           segmentIndexes.data(),
-                                                           faceIndexes.data(),
-                                                           faceNumEdges.data(),
-                                                           faceEdgeIndex.data());
+    errorCode = mkernel_mesh2d_intersections_from_polygon(meshKernelId,
+                                                          boundaryPolygon,
+                                                          edgeNodes.data(),
+                                                          edgeIndex.data(),
+                                                          edgeDistances.data(),
+                                                          segmentDistances.data(),
+                                                          segmentIndexes.data(),
+                                                          faceIndexes.data(),
+                                                          faceNumEdges.data(),
+                                                          faceEdgeIndex.data());
 
     /// Assert
     const double tolerance = 1e-6;
@@ -2717,34 +2739,34 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
 
     ASSERT_EQ(segmentIndexes[0], 0);
     ASSERT_EQ(segmentIndexes[1], 0);
-    ASSERT_EQ(segmentIndexes[2], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(segmentIndexes[2], 1);
 
     ASSERT_NEAR(segmentDistances[0], 0.25, tolerance);
     ASSERT_NEAR(segmentDistances[1], 0.75, tolerance);
-    ASSERT_NEAR(segmentDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
+    ASSERT_NEAR(segmentDistances[2], 0.21052631578947370, tolerance);
 
     ASSERT_NEAR(edgeDistances[0], 0.6, tolerance);
     ASSERT_NEAR(edgeDistances[1], 0.6, tolerance);
-    ASSERT_NEAR(edgeDistances[2], meshkernel::constants::missing::doubleValue, tolerance);
+    ASSERT_NEAR(edgeDistances[2], 0.50000000000000000, tolerance);
 
-    ASSERT_EQ(faceIndexes[0], 6);
+    ASSERT_EQ(faceIndexes[0], 3);
     ASSERT_EQ(faceIndexes[1], 3);
-    ASSERT_EQ(faceIndexes[2], 3);
+    ASSERT_EQ(faceIndexes[2], 0);
     ASSERT_EQ(faceIndexes[3], 0);
-    ASSERT_EQ(faceIndexes[4], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(faceIndexes[4], 1);
 
-    ASSERT_EQ(faceNumEdges[0], 1);
+    ASSERT_EQ(faceNumEdges[0], 2);
     ASSERT_EQ(faceNumEdges[1], 2);
-    ASSERT_EQ(faceNumEdges[2], 1);
-    ASSERT_EQ(faceNumEdges[3], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(faceNumEdges[2], 2);
+    ASSERT_EQ(faceNumEdges[3], 2);
 
     ASSERT_EQ(faceEdgeIndex[0], 18);
-    ASSERT_EQ(faceEdgeIndex[1], 18);
-    ASSERT_EQ(faceEdgeIndex[2], 15);
+    ASSERT_EQ(faceEdgeIndex[1], 15);
+    ASSERT_EQ(faceEdgeIndex[2], 1);
     ASSERT_EQ(faceEdgeIndex[3], 15);
-    ASSERT_EQ(faceEdgeIndex[4], meshkernel::constants::missing::intValue);
+    ASSERT_EQ(faceEdgeIndex[4], 1);
 }
-TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
+TEST(Mesh2D, CurvilinearMakeRectangularOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
 {
     // Setup
     auto makeGridParameters = meshkernel::MakeGridParameters();
@@ -2761,7 +2783,7 @@ TEST(Mesh2D, CurvilinearMakeUniformOnExtension_OnSpericalCoordinates_ShouldGener
     auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d;
@@ -2825,10 +2847,9 @@ TEST(Mesh2D, RemoveMultipleIslands)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     meshkernel::MakeGridParameters makeGridParameters;
-    meshkernelapi::GeometryList geometryList;
 
     makeGridParameters.origin_x = -1.0;
     makeGridParameters.origin_y = 49.1;
@@ -2842,7 +2863,7 @@ TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGr
     auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;
@@ -2852,7 +2873,7 @@ TEST(CurvilinearGrid, MakeUniform_OnSphericalCoordinates_ShouldMakeCurvilinearGr
     ASSERT_EQ(12, curvilinearGridResults.num_m);
     ASSERT_EQ(9, curvilinearGridResults.num_n);
 }
-TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
 {
     // Setup
     const double lonMin = -6.0;
@@ -2885,7 +2906,7 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     geometryList.coordinates_y = coordinates_y.data();
     geometryList.num_coordinates = static_cast<int>(coordinates_x.size());
 
-    errorCode = mkernel_curvilinear_make_uniform(meshKernelId, makeGridParameters, geometryList);
+    errorCode = mkernel_curvilinear_compute_rectangular_grid_from_polygon(meshKernelId, makeGridParameters, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;
@@ -2897,7 +2918,7 @@ TEST(CurvilinearGrid, MakeUniformn_OnSphericalCoordinatesWithpolygon_ShouldMakeC
     ASSERT_EQ(61, curvilinearGridResults.num_n);
 }
 
-TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
+TEST(CurvilinearGrid, MakeRectangularOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     // Setup
     meshkernel::MakeGridParameters makeGridParameters;
@@ -2914,7 +2935,7 @@ TEST(CurvilinearGrid, MakeUniformOnDefinedExtension_OnSphericalCoordinates_Shoul
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_make_uniform_on_extension(meshKernelId, makeGridParameters);
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid_on_extension(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGridResults;
@@ -3181,7 +3202,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi_OnClockWisePoly
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 

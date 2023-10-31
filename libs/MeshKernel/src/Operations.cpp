@@ -1125,21 +1125,18 @@ namespace meshkernel
         return circumcenter;
     }
 
-    bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                             const Point& firstSegmentSecondPoint,
-                             const Point& secondSegmentFirstPoint,
-                             const Point& secondSegmentSecondPoint,
-                             bool adimensionalCrossProduct,
-                             const Projection& projection,
-                             Point& intersectionPoint,
-                             double& crossProduct,
-                             double& ratioFirstSegment,
-                             double& ratioSecondSegment)
+    std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                        const Point& firstSegmentSecondPoint,
+                                                                        const Point& secondSegmentFirstPoint,
+                                                                        const Point& secondSegmentSecondPoint,
+                                                                        bool adimensionalCrossProduct,
+                                                                        const Projection& projection)
     {
         bool isCrossing = false;
-        ratioFirstSegment = constants::missing::doubleValue;
-        ratioSecondSegment = constants::missing::doubleValue;
-        crossProduct = constants::missing::doubleValue;
+        Point intersectionPoint;
+        double ratioFirstSegment = constants::missing::doubleValue;
+        double ratioSecondSegment = constants::missing::doubleValue;
+        double crossProduct = constants::missing::doubleValue;
 
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
@@ -1161,7 +1158,7 @@ namespace meshkernel
 
             if (std::abs(det) < eps)
             {
-                return isCrossing;
+                return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
             }
 
             ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
@@ -1241,7 +1238,7 @@ namespace meshkernel
             }
         }
 
-        return isCrossing;
+        return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
     }
 
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection)

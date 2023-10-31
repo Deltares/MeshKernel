@@ -109,27 +109,6 @@ namespace meshkernel
             {Location::Edges, "Edges"},
             {Location::Unknown, "Unknown"}};
 
-        /// edge-segment intersection
-        struct EdgeMeshPolylineIntersection
-        {
-            int polylineSegmentIndex{constants::missing::intValue};                      ///< The intersected segment index (a polyline can formed by several segments)
-            double polylineDistance{constants::missing::doubleValue};                    ///< The location of the intersection expressed as distance from the polyline start
-            double adimensionalPolylineSegmentDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the segment start
-            UInt edgeIndex{constants::missing::uintValue};                               ///< The edge index
-            UInt edgeFirstNode{constants::missing::uintValue};                           ///< The first node of the edge is on the left (the virtual node)
-            UInt edgeSecondNode{constants::missing::uintValue};                          ///< The second node of the edge is on the right (the inner node)
-            double edgeDistance{constants::missing::doubleValue};                        ///< The location of the intersection expressed as an adimensional distance from the edge start
-        };
-
-        /// face-segment intersection
-        struct FaceMeshPolylineIntersection
-        {
-            double polylineDistance{constants::missing::doubleValue}; ///< The location of the intersection expressed as an adimensional distance from the polyline start
-            UInt faceIndex{constants::missing::uintValue};            ///< The face index
-            std::vector<UInt> edgeIndexses;                           ///< The indexes of crossed edges
-            std::vector<UInt> edgeNodes;                              ///< The indexes of the nodes defining the crossed edges
-        };
-
         /// @brief Default constructor
         Mesh() = default;
 
@@ -249,6 +228,12 @@ namespace meshkernel
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
 
+        /// @brief Compute the minimum edge length of the edges included in the polygon.
+        /// An edge is considered included if one of the two nodes is inside the polygon.
+        /// @param[in] polygon The polygon for considering an edge included
+        /// @return The minimum edge length
+        [[nodiscard]] double ComputeMinEdgeLength(const Polygons& polygon) const;
+
         /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
@@ -319,6 +304,12 @@ namespace meshkernel
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
+
+        /// @brief Computes if a location is in polygon.
+        /// @param[in] polygon The input polygon.
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return A vector of booleans indicating if a location is in a polygon or not.
+        [[nodiscard]] std::vector<bool> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh

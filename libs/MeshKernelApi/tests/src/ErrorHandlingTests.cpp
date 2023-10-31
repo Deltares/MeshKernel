@@ -8,7 +8,7 @@
 
 TEST_F(CartesianApiTestFixture, RangeError)
 {
-    this->MakeUniformCurvilinearGrid(3, 3);
+    this->MakeRectangularCurvilinearGrid(3, 3);
     int const meshKernelId = this->GetMeshKernelId();
     meshkernel::OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = -1; // invalid, must be > 0
