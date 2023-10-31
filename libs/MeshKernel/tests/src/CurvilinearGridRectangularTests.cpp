@@ -1,7 +1,7 @@
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
-
 #include <gtest/gtest.h>
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp" 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -379,8 +379,12 @@ void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
 
     meshkernel::UInt expectedValid = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
 
+    CurvilinearGridDeleteExterior curvilinearGridDeleteExterior(curvilinearGrid);
+    curvilinearGridDeleteExterior.m_lowerLeft = {lowerLimitJ, lowerLimitI};
+    curvilinearGridDeleteExterior.m_upperRight = {upperLimitJ, upperLimitI};
+
     // Delete the nodes outside of a block
-    curvilinearGrid.DeleteExterior(first, second);
+    curvilinearGridDeleteExterior.Compute();
 
     auto inRange = [](const meshkernel::UInt v, const meshkernel::UInt l, const meshkernel::UInt u)
     { return l <= v && v <= u; };
@@ -461,9 +465,13 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesFailureTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    CurvilinearGridDeleteExterior curvilinearGridDeleteExterior(curvilinearGrid);
 
-    EXPECT_THROW(curvilinearGrid.DeleteExterior({1, meshkernel::constants::missing::uintValue}, {nx, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteExterior({1, 1}, {meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteExterior({1, 1}, {nx, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteExterior({nx, 1}, {4, 4}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{nx, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
 }

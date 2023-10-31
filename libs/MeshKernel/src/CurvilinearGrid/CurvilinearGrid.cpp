@@ -890,69 +890,6 @@ void CurvilinearGrid::DeleteNode(Point const& point)
     }
 }
 
-void CurvilinearGrid::DeleteExterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode)
-{
-
-    if (!firstNode.IsValid() || !secondNode.IsValid())
-    {
-        throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", firstNode.m_m, firstNode.m_n, secondNode.m_m, secondNode.m_n);
-    }
-
-    if (firstNode.m_m >= m_numM || firstNode.m_n >= m_numN)
-    {
-        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", firstNode.m_m, firstNode.m_n, m_numM, m_numN);
-    }
-
-    if (secondNode.m_m >= m_numM || secondNode.m_n >= m_numN)
-    {
-        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_m, secondNode.m_n, m_numM, m_numN);
-    }
-
-    UInt lowerLimitI = std::min(firstNode.m_n, secondNode.m_n);
-    UInt upperLimitI = std::max(firstNode.m_n, secondNode.m_n);
-
-    UInt lowerLimitJ = std::min(firstNode.m_m, secondNode.m_m);
-    UInt upperLimitJ = std::max(firstNode.m_m, secondNode.m_m);
-
-    // Split into 4 regions, setting the nodes in each region to invalid
-    //
-    // First region: all nodes "south" the designated box
-    for (UInt n = 0; n < m_numN; ++n)
-    {
-        for (UInt m = 0; m < lowerLimitJ; ++m)
-        {
-            m_gridNodes(n, m).SetInvalid();
-        }
-    }
-
-    // Second region: all nodes "directly west of" the designated box
-    for (UInt n = 0; n < lowerLimitI; ++n)
-    {
-        for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
-        {
-            m_gridNodes(n, m).SetInvalid();
-        }
-    }
-
-    // Third region: all nodes "directly east of" the designated box
-    for (UInt n = upperLimitI + 1; n < m_numN; ++n)
-    {
-        for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
-        {
-            m_gridNodes(n, m).SetInvalid();
-        }
-    }
-
-    // Fourth region: all nodes "north" the designated box
-    for (UInt n = 0; n < m_numN; ++n)
-    {
-        for (UInt m = upperLimitJ + 1; m < m_numM; ++m)
-        {
-            m_gridNodes(n, m).SetInvalid();
-        }
-    }
-}
-
 void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
 {
     // Get the node indices of fromPoint

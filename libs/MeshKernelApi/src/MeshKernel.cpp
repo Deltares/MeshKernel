@@ -25,8 +25,10 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
@@ -34,7 +36,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -3219,6 +3220,43 @@ namespace meshkernelapi
 
             // curvilinear grid must be re-setted
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
+                                                        double xFirstPointCoordinate,
+                                                        double yFirstPointCoordinate,
+                                                        double xSecondPointCoordinate,
+                                                        double ySecondPointCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
+            }
+            meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
+
+            curvilinearDeleteExterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
+                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+
+            curvilinearDeleteExterior.Compute();
         }
         catch (...)
         {
