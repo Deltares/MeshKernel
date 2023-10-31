@@ -72,6 +72,7 @@ set(
   CURVILINEAR_GRID_SRC_LIST
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteInterior.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromPolygon.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplines.cpp
@@ -149,6 +150,7 @@ set(
   CURVILINEAR_GRID_INC_LIST
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteInterior.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromPolygon.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplines.hpp

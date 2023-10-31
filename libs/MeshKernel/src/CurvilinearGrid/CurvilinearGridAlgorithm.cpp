@@ -34,9 +34,8 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridAlgorithm;
 using meshkernel::CurvilinearGridLine;
 
-CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid)
+CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(CurvilinearGrid& grid) : m_grid(grid)
 {
-    m_grid = grid->CloneCurvilinearGrid();
 }
 
 void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)

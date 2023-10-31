@@ -45,10 +45,10 @@ namespace meshkernel
         /// \p firstPoint and \p secondPoint must lie on the same gridline
         /// @param[in] grid The input curvilinear grid
         /// @param[in] refinement  The number of refinement lines between the points set by SetBlock()
-        CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, UInt refinement);
+        CurvilinearGridRefinement(CurvilinearGrid& grid, UInt refinement);
 
         /// @brief Refine the curvilinear grid
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
     private:
         UInt m_refinement; ///< The selected number of refinement lines

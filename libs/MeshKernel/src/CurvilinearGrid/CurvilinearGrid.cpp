@@ -36,14 +36,20 @@ using meshkernel::CurvilinearGridNodeIndices;
 
 CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
 
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : Mesh(projection)
 {
+    SetGridNodes(grid);
+}
+
+void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point> gridNodes)
+{
+    m_gridNodes = gridNodes;
+
     if (!IsValid())
     {
         throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
 
-    m_projection = projection;
     m_numM = static_cast<UInt>(m_gridNodes.rows());
     m_numN = static_cast<UInt>(m_gridNodes.cols());
 
@@ -771,11 +777,6 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
     const auto mixedSmoothingFactor = std::sqrt(nSmoothingFactor * mSmoothingFactor);
 
     return {mSmoothingFactor, nSmoothingFactor, mixedSmoothingFactor};
-}
-
-CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
-{
-    return CurvilinearGrid(m_gridNodes, m_projection);
 }
 
 double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)

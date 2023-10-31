@@ -89,36 +89,36 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                        {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 6.997894028534e+01, 7.997860717722e+01, 8.997827406910e+01, 9.777374826707e+01},
                                                        {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
     snappingLine = std::vector{Point(100, 0), Point(100, 100)};
     CurvilinearGridSnapping snappingEast(grid, eastLandBoundary, snappingLine);
 
     // First snap the east boundary of the domain
-    auto computedGrid = snappingEast.Compute();
+    snappingEast.Compute();
 
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
     //--------------------------------
 
-    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
     snappingLine = std::vector{Point(0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
 
     // Next snap the west boundary of the domain
-    auto computedGrid2 = snappingWest.Compute();
+    snappingWest.Compute();
 
     std::vector<std::vector<double>> westMappedPointsX{{-1.865916600000e+01, -1.865916600000e+01, -1.960069189347e+01, -2.370988900717e+01, -3.123906057660e+01, -3.191016458763e+01, -2.903003538732e+01, -1.992326360550e+01, -1.510684645043e+01, -1.465914200000e+01, 0.000000000000e+00},
                                                        {-4.588727360955e+00, -4.588727360955e+00, -5.324862328784e+00, -8.537650958466e+00, -1.442435732467e+01, -1.494906209700e+01, -1.269722406374e+01, -5.577066031841e+00, -1.811335198432e+00, -1.461296072050e+00, 1.000000000000e+01},
@@ -148,25 +148,25 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
     //--------------------------------
 
-    auto grid3 = std::make_shared<CurvilinearGrid>(computedGrid2.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid3(grid2.m_gridNodes, Projection::cartesian);
     snappingLine = std::vector{Point({0.0e+00, 1.0e+02}), Point({1.043040e+02, 9.715260e+01})};
     CurvilinearGridSnapping snappingNorth(grid3, northLandBoundary, snappingLine);
 
     // Finally snap the north boundary of the domain
-    auto computedGrid3 = snappingNorth.Compute();
+    snappingNorth.Compute();
 
     std::vector<std::vector<double>> northMappedPointsX{{-1.865916600000e+01, -1.865916600000e+01, -1.960069189347e+01, -2.370988900717e+01, -3.123906057660e+01, -3.191016458763e+01, -2.903003538732e+01, -1.984793400324e+01, -1.490230187035e+01, -1.444198867385e+01, 4.105750388196e-01},
                                                         {-4.588727360955e+00, -4.588727360955e+00, -5.324862328784e+00, -8.537650958466e+00, -1.442435732467e+01, -1.494906209700e+01, -1.269722406374e+01, -5.500065621084e+00, -1.615594343945e+00, -1.234667619608e+00, 1.035463931961e+01},
@@ -196,14 +196,14 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid3.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid3.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
@@ -246,25 +246,25 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                         {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                         {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
     std::vector<Point> snappingLine{Point(50.0, 100.0), Point(0.0, 100.0)};
     CurvilinearGridSnapping snappingNorth(grid, northLandBoundary, snappingLine);
 
-    auto computedGrid = snappingNorth.Compute();
+    snappingNorth.Compute();
 
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
         }
     }
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
         }
     }
 
@@ -287,16 +287,16 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    auto grid2 = std::make_shared<CurvilinearGrid>(computedGrid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
     snappingLine = std::vector{Point(0.0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
-    auto computedGrid2 = snappingWest.Compute();
+    snappingWest.Compute();
 
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 
@@ -304,7 +304,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 }
@@ -345,23 +345,23 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
                                                            {4.090098002615e+00, 9.976827813659e+00, 1.997642286026e+01, 2.997601790685e+01, 3.997561295345e+01, 4.997520800005e+01, 5.997480304664e+01, 6.997439809324e+01, 7.997399313984e+01, 8.997358818643e+01, 9.729358682083e+01},
                                                            {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
-
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
     CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
-    auto computedGrid = snapping.Compute();
+
+    snapping.Compute();
 
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
     for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
     {
         for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
@@ -405,27 +405,27 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
                                                    {0.000000000000e+00, 9.976827813659e+00, 1.997642286026e+01, 2.997601790685e+01, 3.997561295345e+01, 4.997520800005e+01, 5.997480304664e+01, 6.997439809324e+01, 7.997399313984e+01, 8.997358818643e+01, 1.000000000000e+02},
                                                    {0.000000000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
     CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    auto computedGrid = snapping.Compute();
+    snapping.Compute();
 
     // Check results
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -473,26 +473,26 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
                                                     {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02},
                                                     {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
     CurvilinearGridSnapping snapping(grid, westLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    auto computedGrid = snapping.Compute();
+    snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -541,26 +541,25 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.020664439596e+01, 8.181183341756e+01, 9.386143769632e+01, 1.047799937436e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
-
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    auto computedGrid = snapping.Compute();
+    snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -610,26 +609,25 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.070001387673e+01, 8.238999687179e+01, 9.407997986685e+01, 1.047799937436e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.025755535907e+01, 8.087934900000e+01, 9.150114264093e+01, 1.017586980000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
-
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    auto computedGrid = snapping.Compute();
+    snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }
@@ -680,26 +678,25 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02},
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
-    auto grid = std::make_shared<CurvilinearGrid>(gridPoints, Projection::cartesian);
-
+    CurvilinearGrid grid(gridPoints, Projection::cartesian);
     CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    auto computedGrid = snapping.Compute();
+    snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid->m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid->m_gridNodes.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(computedGrid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }
@@ -710,7 +707,9 @@ TEST(CurvilinearGridSnapping, ChecksForFailingTests)
     // Tests the snapping throws exceptions when expected.
 
     LandBoundary eastLandBoundary({{104.303970, 97.152596}, {103.697906, 4.303172}});
-    auto grid = std::make_shared<CurvilinearGrid>(snapping::GetGridPoints10x10(), Projection::cartesian);
+
+    CurvilinearGrid grid(snapping::GetGridPoints10x10(), Projection::cartesian);
+
     std::vector<Point> snappingLine{Point(0.0, 100.0)};
 
     // Test should throw as there is only a single point defined for the grid line

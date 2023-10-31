@@ -31,7 +31,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
 namespace meshkernel
@@ -44,10 +43,10 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
-        CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid);
+        CurvilinearGridAlgorithm(CurvilinearGrid& grid);
 
         /// @brief Executes the algorithm
-        virtual CurvilinearGrid Compute() = 0;
+        virtual void Compute() = 0;
 
         /// @brief Sets a block where the algorithm should execute
         /// @param[in] firstCornerPoint            The first point defining the bounding box
@@ -63,7 +62,7 @@ namespace meshkernel
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
-        CurvilinearGrid m_grid;                   ///< A deep copy of the original grid, modified by the algorithms
+        CurvilinearGrid& m_grid;                  ///< A reference of the grid, modified by the algorithms
         std::vector<CurvilinearGridLine> m_lines; ///< Selected grid lines
         CurvilinearGridNodeIndices m_lowerLeft;   ///< The lower left corner of the block
         CurvilinearGridNodeIndices m_upperRight;  ///< The upper right corner of the block
