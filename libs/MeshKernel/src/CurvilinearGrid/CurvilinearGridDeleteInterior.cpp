@@ -40,22 +40,11 @@ meshkernel::CurvilinearGridDeleteInterior::CurvilinearGridDeleteInterior(Curvili
 
 void meshkernel::CurvilinearGridDeleteInterior::Compute()
 {
+    const UInt lowerLimitI = m_lowerLeft.m_n;
+    const UInt upperLimitI = m_upperRight.m_n;
 
-    if (m_lowerLeft.m_m >= m_grid.m_numM || m_lowerLeft.m_n >= m_grid.m_numN)
-    {
-        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", m_lowerLeft.m_m, m_lowerLeft.m_n, m_grid.m_numM, m_grid.m_numN);
-    }
-
-    if (m_upperRight.m_m >= m_grid.m_numM || m_upperRight.m_n >= m_grid.m_numN)
-    {
-        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", m_upperRight.m_m, m_upperRight.m_n, m_grid.m_numM, m_grid.m_numN);
-    }
-
-    UInt lowerLimitI = m_lowerLeft.m_n;
-    UInt upperLimitI = m_upperRight.m_n;
-
-    UInt lowerLimitJ = m_lowerLeft.m_m;
-    UInt upperLimitJ = m_upperRight.m_m;
+    const UInt lowerLimitJ = m_lowerLeft.m_m;
+    const UInt upperLimitJ = m_upperRight.m_m;
 
     for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
     {

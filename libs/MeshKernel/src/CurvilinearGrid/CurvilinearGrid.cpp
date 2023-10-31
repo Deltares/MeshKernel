@@ -292,6 +292,16 @@ CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& 
         throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", lowerLeft.m_m, lowerLeft.m_n, upperRight.m_m, upperRight.m_n);
     }
 
+    if (lowerLeft.m_m >= m_numM || lowerLeft.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", lowerLeft.m_m, lowerLeft.m_n, m_numM, m_numN);
+    }
+
+    if (upperRight.m_m >= m_numM || upperRight.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", upperRight.m_m, upperRight.m_n, m_numM, m_numN);
+    }
+
     return {lowerLeft, upperRight};
 }
 
