@@ -1,3 +1,5 @@
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
@@ -27,10 +29,10 @@ TEST(CurvilinearGridUniform, CurvilinearGridRectangular_WithPolygon_ShouldComput
     // Execution
     CurvilinearGridRectangular const curvilinearGridRectangular(Projection::cartesian);
     const auto curvilinearGrid = curvilinearGridRectangular.Compute(angle,
-                                                              blockSizeX,
-                                                              blockSizeY,
-                                                              polygons,
-                                                              0);
+                                                                    blockSizeX,
+                                                                    blockSizeY,
+                                                                    polygons,
+                                                                    0);
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
     auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
@@ -227,7 +229,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
 TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
 {
     // Prepare
-     auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execute
     curvilinearGrid.DeleteNode({80398.0, 366854.0});
@@ -258,10 +260,13 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid curvilinearGrid,
     meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
 
     meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
-    const auto initialSize = static_cast<meshkernel::UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
+    const auto initialSize = static_cast<UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
+    CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
+    curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitJ - 1, lowerLimitI - 1};
+    curvilinearGridDeleteInterior.m_upperRight = {upperLimitJ + 1, upperLimitI + 1};
 
     // Delete the nodes interior to a block
-    curvilinearGrid.DeleteInterior(first, second);
+    curvilinearGridDeleteInterior.Compute();
 
     auto inRange = [](const meshkernel::UInt v, const meshkernel::UInt l, const meshkernel::UInt u)
     { return l <= v && v <= u; };
@@ -342,11 +347,15 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesFailureTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
 
-    EXPECT_THROW(curvilinearGrid.DeleteInterior({1, meshkernel::constants::missing::uintValue}, {nx, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteInterior({1, 1}, {meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteInterior({1, 1}, {nx, ny}), meshkernel::ConstraintError);
-    EXPECT_THROW(curvilinearGrid.DeleteInterior({nx, 1}, {4, 4}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+
+    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{10, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
 }
 
 void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,

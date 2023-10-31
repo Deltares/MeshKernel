@@ -157,7 +157,7 @@ namespace meshkernel
         /// @param[in] firstNode The node indices of the first node
         /// @param[in] secondNode The node indices of the second node
         /// @return The upper left and lower right of the box defined by the two points
-        [[nodiscard]] std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const;
+        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const;
 
         /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m and n coordinates
         /// @param[in] firstCornerPoint The first corner point
@@ -205,10 +205,6 @@ namespace meshkernel
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         void DeleteNode(Point const& point);
-
-        /// @brief Set all the nodes interior to the block to be invalid.
-        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
-        void DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
 
         /// @brief Set all the nodes outside of the block to be invalid.
         /// @note If any index is the null value or is out of range a ConstraintError will be thrown

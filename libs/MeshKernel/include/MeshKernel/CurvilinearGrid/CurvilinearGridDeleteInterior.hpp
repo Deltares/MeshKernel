@@ -40,7 +40,8 @@ namespace meshkernel
         /// @param[in] grid The input curvilinear grid
         CurvilinearGridDeleteInterior(CurvilinearGrid& grid);
 
-        /// @brief Computes the deletion
+        /// @brief Set all the nodes interior to the block to be invalid.
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
         void Compute() override;
     };
 } // namespace meshkernel
