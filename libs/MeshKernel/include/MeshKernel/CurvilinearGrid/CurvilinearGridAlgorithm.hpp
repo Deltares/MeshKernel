@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/Splines.hpp>
@@ -43,7 +41,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
-        CurvilinearGridAlgorithm(CurvilinearGrid& grid);
+        explicit CurvilinearGridAlgorithm(CurvilinearGrid& grid);
 
         /// @brief Executes the algorithm
         virtual void Compute() = 0;

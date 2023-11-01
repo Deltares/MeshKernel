@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp" 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>

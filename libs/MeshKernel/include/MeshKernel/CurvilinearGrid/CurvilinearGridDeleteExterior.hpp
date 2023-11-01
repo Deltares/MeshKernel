@@ -38,7 +38,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        CurvilinearGridDeleteExterior(CurvilinearGrid& grid);
+        explicit CurvilinearGridDeleteExterior(CurvilinearGrid& grid);
 
         /// @brief Set all the nodes outside of the block to be invalid.
         /// @note If any index is the null value or is out of range a ConstraintError will be thrown
