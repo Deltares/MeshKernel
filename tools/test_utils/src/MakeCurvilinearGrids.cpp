@@ -20,15 +20,15 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
     return validNodes;
 }
 
-size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> const& curvilinearGrid)
+size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvilinearGrid)
 {
     size_t validNodes = 0;
     size_t index = 0;
-    for (size_t m = 0; m < curvilinearGrid->m_numM; ++m)
+    for (size_t m = 0; m < curvilinearGrid.m_numM; ++m)
     {
-        for (size_t n = 0; n < curvilinearGrid->m_numN; ++n)
+        for (size_t n = 0; n < curvilinearGrid.m_numN; ++n)
         {
-            if (curvilinearGrid->m_gridNodes(m, n).IsValid())
+            if (curvilinearGrid.m_gridNodes(m, n).IsValid())
             {
                 validNodes++;
             }
@@ -38,7 +38,7 @@ size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGri
     return validNodes;
 }
 
-std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
+meshkernel::CurvilinearGrid MakeSmallCurvilinearGrid()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
@@ -93,10 +93,10 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
+    return meshkernel::CurvilinearGrid(grid, meshkernel::Projection::cartesian);
 }
 
-std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissingFaces()
+meshkernel::CurvilinearGrid MakeSmallCurvilinearGridWithMissingFaces()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
@@ -151,10 +151,10 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
+    return meshkernel::CurvilinearGrid(grid, meshkernel::Projection::cartesian);
 }
 
-std::shared_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
+meshkernel::CurvilinearGrid MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
 {
     double y = originY;
 
@@ -173,5 +173,5 @@ std::shared_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX,
         y += deltaY;
     }
 
-    return std::make_shared<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
+    return meshkernel::CurvilinearGrid(points, meshkernel::Projection::cartesian);
 }

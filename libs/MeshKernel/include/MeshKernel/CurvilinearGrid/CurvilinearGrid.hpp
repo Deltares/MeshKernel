@@ -80,6 +80,10 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection);
 
+        /// @brief Set the grid nodes of a curvilinear grid instance
+        /// @param[in] gridNodes The input grid points
+        void SetGridNodes(lin_alg::Matrix<Point> gridNodes);
+
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons
         /// @param[in] polygonIndex The index of the polygon to use for deletion
@@ -153,7 +157,7 @@ namespace meshkernel
         /// @param[in] firstNode The node indices of the first node
         /// @param[in] secondNode The node indices of the second node
         /// @return The upper left and lower right of the box defined by the two points
-        [[nodiscard]] std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const;
+        std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const;
 
         /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m and n coordinates
         /// @param[in] firstCornerPoint The first corner point
@@ -186,10 +190,6 @@ namespace meshkernel
         /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const;
 
-        /// @brief Clones the curvilinear grid instance
-        /// @return A pointer to a deep copy of current curvilinear grid instance
-        [[nodiscard]] CurvilinearGrid CloneCurvilinearGrid() const;
-
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
@@ -205,10 +205,6 @@ namespace meshkernel
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         void DeleteNode(Point const& point);
-
-        /// @brief Set all the nodes interior to the block to be invalid.
-        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
-        void DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode);
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used

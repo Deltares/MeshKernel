@@ -27,31 +27,21 @@
 
 #pragma once
 
-#include <memory>
-
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "CurvilinearGridAlgorithm.hpp"
 
 namespace meshkernel
 {
 
-    /// @brief A class implementing the curvilinear grid line shift. Line is shifted on the new locations.
-    /// and the displacement gets distributed on the influence zone, set with SetBlock
-    ///
-    /// This option provides the possibility to fit the curvilinear grid’s edges to a land boundary.
-    class CurvilinearGridLineAttractionRepulsion : public CurvilinearGridAlgorithm
+    /// @brief A class implementing the curvilinear grid delete exterior algorithm.
+    class CurvilinearGridDeleteExterior : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
-        /// @param[in] grid             The input curvilinear grid
-        /// @param[in] attractionFactor The input attraction/repulsion factor (positive attracts lines/negative repulses lines)
-        CurvilinearGridLineAttractionRepulsion(CurvilinearGrid& grid, double attractionFactor);
+        /// @param[in] grid The input curvilinear grid
+        explicit CurvilinearGridDeleteExterior(CurvilinearGrid& grid);
 
-        /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
+        /// @brief Set all the nodes outside of the block to be invalid.
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
         void Compute() override;
-
-    private:
-        CurvilinearGrid m_originalGrid; ///< A pointer to the original grid, used for computation of quantities
-        double m_attractionFactor;      ///< The attraction factor. If 0.0 no line will be attracted to m_lines[0]
     };
 } // namespace meshkernel

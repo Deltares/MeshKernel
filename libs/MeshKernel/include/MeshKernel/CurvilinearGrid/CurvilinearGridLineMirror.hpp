@@ -43,11 +43,10 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
         /// @param[in] mirroringFactor The mirroringFactor factor
-        CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid, double mirroringFactor);
+        CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        /// @return The shifted curvilinear grid
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
     private:
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions

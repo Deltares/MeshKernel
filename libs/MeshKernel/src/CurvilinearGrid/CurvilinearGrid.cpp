@@ -36,14 +36,20 @@ using meshkernel::CurvilinearGridNodeIndices;
 
 CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
 
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : Mesh(projection)
 {
+    SetGridNodes(grid);
+}
+
+void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point> gridNodes)
+{
+    m_gridNodes = gridNodes;
+
     if (!IsValid())
     {
         throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
 
-    m_projection = projection;
     m_numM = static_cast<UInt>(m_gridNodes.rows());
     m_numN = static_cast<UInt>(m_gridNodes.cols());
 
@@ -278,8 +284,25 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>
 CurvilinearGrid::ComputeBlockFromCornerPoints(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)},
-            {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
+    CurvilinearGridNodeIndices lowerLeft(std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n));
+    CurvilinearGridNodeIndices upperRight(std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n));
+
+    if (!lowerLeft.IsValid() || !upperRight.IsValid())
+    {
+        throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", lowerLeft.m_m, lowerLeft.m_n, upperRight.m_m, upperRight.m_n);
+    }
+
+    if (lowerLeft.m_m >= m_numM || lowerLeft.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", lowerLeft.m_m, lowerLeft.m_n, m_numM, m_numN);
+    }
+
+    if (upperRight.m_m >= m_numM || upperRight.m_n >= m_numN)
+    {
+        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", upperRight.m_m, upperRight.m_n, m_numM, m_numN);
+    }
+
+    return {lowerLeft, upperRight};
 }
 
 void CurvilinearGrid::ComputeGridFacesMask()
@@ -773,11 +796,6 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
     return {mSmoothingFactor, nSmoothingFactor, mixedSmoothingFactor};
 }
 
-CurvilinearGrid CurvilinearGrid::CloneCurvilinearGrid() const
-{
-    return CurvilinearGrid(m_gridNodes, m_projection);
-}
-
 double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)
 {
     if (index.m_m > m_gridNodes.rows() || index.m_n > m_gridNodes.cols())
@@ -869,39 +887,6 @@ void CurvilinearGrid::DeleteNode(Point const& point)
         // Re-compute quantities
         ComputeGridNodeTypes();
         SetFlatCopies();
-    }
-}
-
-void CurvilinearGrid::DeleteInterior(const CurvilinearGridNodeIndices& firstNode, const CurvilinearGridNodeIndices& secondNode)
-{
-
-    if (!firstNode.IsValid() || !secondNode.IsValid())
-    {
-        throw ConstraintError("Invalid index: first index - {{{}, {}}}, second index - {{{}, {}}}", firstNode.m_m, firstNode.m_n, secondNode.m_m, secondNode.m_n);
-    }
-
-    if (firstNode.m_m >= m_numM || firstNode.m_n >= m_numN)
-    {
-        throw ConstraintError("Invalid index: first index {{{}, {}}} not in mesh limits {{{}, {}}}", firstNode.m_m, firstNode.m_n, m_numM, m_numN);
-    }
-
-    if (secondNode.m_m >= m_numM || secondNode.m_n >= m_numN)
-    {
-        throw ConstraintError("Invalid index: second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_m, secondNode.m_n, m_numM, m_numN);
-    }
-
-    UInt lowerLimitI = std::min(firstNode.m_n, secondNode.m_n);
-    UInt upperLimitI = std::max(firstNode.m_n, secondNode.m_n);
-
-    UInt lowerLimitJ = std::min(firstNode.m_m, secondNode.m_m);
-    UInt upperLimitJ = std::max(firstNode.m_m, secondNode.m_m);
-
-    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
-    {
-        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
-        {
-            m_gridNodes(n, m).SetInvalid();
-        }
     }
 }
 

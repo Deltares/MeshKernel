@@ -36,7 +36,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridOrthogonalization;
 
-CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
+CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(CurvilinearGrid& grid,
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
       m_orthoEqTerms(m_grid.m_numM, m_grid.m_numN),
@@ -62,7 +62,7 @@ void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
     }
 }
 
-CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
+void CurvilinearGridOrthogonalization::Compute()
 {
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
@@ -86,8 +86,6 @@ CurvilinearGrid CurvilinearGridOrthogonalization::Compute()
             ProjectVerticalBoundariesGridNodes();
         }
     }
-
-    return m_grid;
 }
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()

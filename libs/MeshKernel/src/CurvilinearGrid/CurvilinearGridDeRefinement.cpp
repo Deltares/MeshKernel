@@ -32,11 +32,11 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridDeRefinement;
 
-CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid) : CurvilinearGridAlgorithm(grid)
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid) : CurvilinearGridAlgorithm(grid)
 {
 }
 
-CurvilinearGrid CurvilinearGridDeRefinement::Compute()
+void CurvilinearGridDeRefinement::Compute()
 {
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
@@ -77,5 +77,5 @@ CurvilinearGrid CurvilinearGridDeRefinement::Compute()
     }
 
     // substitute original grid with the derefined one
-    return CurvilinearGrid(lin_alg::STLVectorOfVectorsToMatrix(deRefinedGrid), m_grid.m_projection);
+    m_grid.SetGridNodes(lin_alg::STLVectorOfVectorsToMatrix(deRefinedGrid));
 }
