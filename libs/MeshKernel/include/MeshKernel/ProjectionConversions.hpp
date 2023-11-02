@@ -66,7 +66,7 @@ namespace meshkernel
         using LongLat = bg::model::d2::point_xy<double, bg::cs::geographic<bg::degree>>;
 
         /// @brief Point in x-y space
-        using UTM = bg::model::d2::point_xy<double, Projection>;
+        using UTM = bg::model::d2::point_xy<double>;
 
         /// @brief Constructor with projection
         ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : projection(proj) {}
