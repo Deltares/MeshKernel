@@ -146,6 +146,12 @@ Functions</h2></td></tr>
 MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2cc98d41e263377e95dcd66dff42a996">mkernel_curvilinear_convert_to_mesh2d</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a2cc98d41e263377e95dcd66dff42a996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a curvilinear grid to an unstructured mesh. <br /></td></tr>
 <tr class="separator:a2cc98d41e263377e95dcd66dff42a996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6184e6e6ccdd6a9a4bdb216204061915"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6184e6e6ccdd6a9a4bdb216204061915">mkernel_curvilinear_delete_exterior</a> (int meshKernelId, double xFirstPointCoordinate, double yFirstPointCoordinate, double xSecondPointCoordinate, double ySecondPointCoordinate)</td></tr>
+<tr class="memdesc:a6184e6e6ccdd6a9a4bdb216204061915"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the exterior part of a curvilinear gris.  <a href="namespacemeshkernelapi.html#a6184e6e6ccdd6a9a4bdb216204061915">More...</a><br /></td></tr>
+<tr class="separator:a6184e6e6ccdd6a9a4bdb216204061915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43eb86925de2003afbec3b1a3756736f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a43eb86925de2003afbec3b1a3756736f">mkernel_curvilinear_delete_interior</a> (int meshKernelId, double xFirstPointCoordinate, double yFirstPointCoordinate, double xSecondPointCoordinate, double ySecondPointCoordinate)</td></tr>
+<tr class="memdesc:a43eb86925de2003afbec3b1a3756736f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the interior part of a curvilinear gris.  <a href="namespacemeshkernelapi.html#a43eb86925de2003afbec3b1a3756736f">More...</a><br /></td></tr>
+<tr class="separator:a43eb86925de2003afbec3b1a3756736f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8828c734b99cf7e4a75065b93750e7c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">mkernel_curvilinear_delete_node</a> (int meshKernelId, double xPointCoordinate, double yPointCoordinate)</td></tr>
 <tr class="memdesc:a8828c734b99cf7e4a75065b93750e7c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the node closest to a point.  <a href="namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3">More...</a><br /></td></tr>
 <tr class="separator:a8828c734b99cf7e4a75065b93750e7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1205,6 +1211,124 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a6184e6e6ccdd6a9a4bdb216204061915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6184e6e6ccdd6a9a4bdb216204061915">&#9670;&nbsp;</a></span>mkernel_curvilinear_delete_exterior()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_delete_exterior </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xFirstPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yFirstPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xSecondPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ySecondPointCoordinate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete the exterior part of a curvilinear gris. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstPointCoordinate</td><td>The x coordinate of the first point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstPointCoordinate</td><td>The y coordinate of the first point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondPointCoordinate</td><td>The x coordinate of the second point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondPointCoordinate</td><td>The y coordinate of the second point </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a43eb86925de2003afbec3b1a3756736f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43eb86925de2003afbec3b1a3756736f">&#9670;&nbsp;</a></span>mkernel_curvilinear_delete_interior()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_delete_interior </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xFirstPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yFirstPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xSecondPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ySecondPointCoordinate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete the interior part of a curvilinear gris. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xFirstPointCoordinate</td><td>The x coordinate of the first point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yFirstPointCoordinate</td><td>The y coordinate of the first point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xSecondPointCoordinate</td><td>The x coordinate of the second point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ySecondPointCoordinate</td><td>The y coordinate of the second point </td></tr>
   </table>
   </dd>
 </dl>
