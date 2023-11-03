@@ -31,6 +31,7 @@ set(
   ${SRC_DIR}/MakeCurvilinearGrids.cpp
   ${SRC_DIR}/MakeMeshes.cpp
   ${SRC_DIR}/SampleFileReader.cpp
+  ${SRC_DIR}/SampleFileWriter.cpp
 )
 
 # list of target headers
@@ -40,6 +41,7 @@ set(
   ${DOMAIN_INC_DIR}/MakeCurvilinearGrids.hpp
   ${DOMAIN_INC_DIR}/MakeMeshes.hpp
   ${DOMAIN_INC_DIR}/SampleFileReader.hpp
+  ${DOMAIN_INC_DIR}/SampleFileWriter.hpp
 )
 
 # add sources to target

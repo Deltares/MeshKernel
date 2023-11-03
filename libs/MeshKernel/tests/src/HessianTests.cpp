@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <iomanip>
-#include <random>
 #include <vector>
 
 #include "MeshKernel/AveragingInterpolation.hpp"
@@ -12,11 +10,12 @@
 #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
-#include "MeshKernel/RidgeRefinement.hpp"
+#include <TestUtils/Definitions.hpp>
 
-#include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
-#include "TestUtils/SampleFileReader.hpp"
+#include "TestUtils/SampleFileWriter.hpp"
+
+#include <fstream>
 
 namespace mk = meshkernel;
 
@@ -132,12 +131,13 @@ TEST(HessianTests, TidyPointsTest)
 }
 
 #endif
-
-std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
+std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
 {
     meshkernel::UInt start = 0;
     meshkernel::UInt size = (nx - start) * (nx - start);
     std::vector<meshkernel::Sample> sampleData(size);
+
+    std::vector sampleDataMatrix(nx, std::vector<double>(ny));
 
     [[maybe_unused]] double centreX = (static_cast<double>((nx - 1) / 2) * deltaX);
     [[maybe_unused]] double centreY = (static_cast<double>((ny - 1) / 2) * deltaY);
@@ -162,7 +162,7 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
     for (meshkernel::UInt i = start; i < nx; ++i)
     {
 #ifdef Y_FIRST_SAMPLE
-        y = yInit;
+        y = yInit + deltaY * (ny - 1);
 #else
         x = xInit;
 #endif
@@ -184,6 +184,7 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
             double sinx = std::sin(x / maxx * M_PI * 4.0);
             double xxx = scale * sinx + centreY;
             double sample = 10 * (std::atan(20.0 * (xxx - y)) + M_PI / 2.0);
+            sampleDataMatrix[i][j] = sample;
 #else
 
             // A arctan function
@@ -194,7 +195,7 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
             sampleData[count] = {x, y, sample};
 
 #ifdef Y_FIRST_SAMPLE
-            y += deltaY;
+            y -= deltaY;
 #else
             x += deltaX;
 #endif
@@ -209,7 +210,7 @@ std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkern
 #endif
     }
 
-    return sampleData;
+    return {sampleData, sampleDataMatrix};
 }
 
 TEST(HessianTests, CheckHessian)
@@ -235,7 +236,11 @@ TEST(HessianTests, CheckHessian)
 
     [[maybe_unused]] double radius = 2.0 * sampleDeltaX;
 
-    std::vector<meshkernel::Sample> sampleData = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
+    const auto [sampleData, sampleDataMatrix] = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
+
+    std::string const filePath = TEST_FOLDER + "/generatedRidgeRefinementSamples.asc";
+
+    WriteSampleFileToAsc(sampleDataMatrix, sampleDeltaX, filePath);
 
 #if 0
     std::shared_ptr<meshkernel::HessianAveragingInterpolation> hessian = std::make_shared<meshkernel::HessianAveragingInterpolation>(*mesh,
@@ -259,11 +264,7 @@ TEST(HessianTests, CheckHessian)
 #endif
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
-                                                                                   // meshkernel::AveragingInterpolation::Method::Max,
-                                                                                   meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                   // meshkernel::AveragingInterpolation::Method::InverseWeightedDistance,
-                                                                                   // meshkernel::AveragingInterpolation::Method::Closest,
-                                                                                   // meshkernel::AveragingInterpolation::Method::SimpleAveraging,
+                                                                                   meshkernel::AveragingInterpolation::Method::Max,
                                                                                    meshkernel::Mesh::Location::Faces,
                                                                                    1.0,
                                                                                    false,
@@ -292,6 +293,10 @@ TEST(HessianTests, CheckHessian)
     std::cout << std::endl;
     std::cout << "--------------------------------" << std::endl;
     std::cout << std::endl;
+    std::ofstream outputFile;
 
-    meshkernel::Print(mesh->m_nodes, mesh->m_edges);
+    outputFile.open(TEST_FOLDER + "/result.m");
+
+    meshkernel::Print(mesh->m_nodes, mesh->m_edges, outputFile);
+    outputFile.close();
 }

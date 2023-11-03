@@ -21,9 +21,9 @@ void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sam
     {
         for (UInt j = 0; j < hessian.size(2); ++j)
         {
-            hessian(0, i, j) = sampleData[count].value;
+            // hessian(0, i, j) = sampleData[count].value;
+            hessian(0, i, j) = sampleData[i + hessian.size(1) * j].value;
             ++count;
-            // hessian(0, i, j) = sampleData[i + hessian.size(1) * j].value;
         }
     }
 
@@ -212,19 +212,21 @@ void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Samp
         //                  \ /                  |
         //                   R:(i+1/2,j-1/2)
 
-        UInt ip0 = hessian.get1DIndex(i, j);          // ! pointer to (i,j)
-        UInt ip1 = hessian.get1DIndex(i + 1, j);      // ! pointer to (i+1,j)
-        UInt ip0L = hessian.get1DIndex(i, j + 1);     // ! pointer to (i,j+1)
-        UInt ip0R = hessian.get1DIndex(i, j - 1);     // ! pointer to (i,j-1)
-        UInt ip1L = hessian.get1DIndex(i + 1, j + 1); // ! pointer to (i+1,j+1)
-        UInt ip1R = hessian.get1DIndex(i + 1, j - 1); // ! pointer to (i+1,j-1)
+        // UInt ip0 = hessian.get1DIndex(i, j);          // ! pointer to (i,j)
+        // UInt ip1 = hessian.get1DIndex(i + 1, j);      // ! pointer to (i+1,j)
+        // UInt ip0L = hessian.get1DIndex(i, j + 1);     // ! pointer to (i,j+1)
+        // UInt ip0R = hessian.get1DIndex(i, j - 1);     // ! pointer to (i,j-1)
+        // UInt ip1L = hessian.get1DIndex(i + 1, j + 1); // ! pointer to (i+1,j+1)
+        // UInt ip1R = hessian.get1DIndex(i + 1, j - 1); // ! pointer to (i+1,j-1)
 
-        // UInt ip0 = i + dimension[1] * j;                                        // ! pointer to (i,j)
-        // UInt ip1 = i + 1 + dimension[1] * j;                                    // ! pointer to (i+1,j)
-        // UInt ip0L = i + dimension[1] * (std::min(j + 1, dimension[2]) - 1);     // ! pointer to (i,j+1)
-        // UInt ip0R = i + dimension[1] * (std::max(j - 1, 1U) - 1);               // ! pointer to (i,j-1)
-        // UInt ip1L = i + 1 + dimension[1] * (std::min(j + 1, dimension[2]) - 1); // ! pointer to (i+1,j+1)
-        // UInt ip1R = i + 1 + dimension[1] * (std::max(j - 1, 1U) - 1);           // ! pointer to (i+1,j-1)
+        const auto& dimension = hessian.size();
+
+        UInt ip0 = i + dimension[1] * j;                                  // ! pointer to (i,j)
+        UInt ip1 = i + 1 + dimension[1] * j;                              // ! pointer to (i+1,j)
+        UInt ip0L = i + dimension[1] * std::min(j + 1, dimension[2]);     // ! pointer to (i,j+1)
+        UInt ip0R = i + dimension[1] * std::max(j - 1, 0U);               // ! pointer to (i,j-1)
+        UInt ip1L = i + 1 + dimension[1] * std::min(j + 1, dimension[2]); // ! pointer to (i+1,j+1)
+        UInt ip1R = i + 1 + dimension[1] * std::max(j - 1, 0U);           // ! pointer to (i+1,j-1)
         ComputeGradient(samplePoints, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
     else if (direction == 1)
@@ -240,19 +242,21 @@ void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Samp
         //                  \ /                  |
         //                   0:(i,j)
 
-        UInt ip0 = hessian.get1DIndex(i, j);
-        UInt ip1 = hessian.get1DIndex(i, j + 1);
-        UInt ip0L = hessian.get1DIndex(i - 1, j);     //              ! pointer to (i-1,j)
-        UInt ip0R = hessian.get1DIndex(i + 1, j);     //              ! pointer to (i+1,j)
-        UInt ip1L = hessian.get1DIndex(i - 1, j + 1); //              ! pointer to (i-1,j+1)
-        UInt ip1R = hessian.get1DIndex(i + 1, j + 1); //              ! pointer to (i+1,j+1)
+        // UInt ip0 = hessian.get1DIndex(i, j);
+        // UInt ip1 = hessian.get1DIndex(i, j + 1);
+        // UInt ip0L = hessian.get1DIndex(i - 1, j);     //              ! pointer to (i-1,j)
+        // UInt ip0R = hessian.get1DIndex(i + 1, j);     //              ! pointer to (i+1,j)
+        // UInt ip1L = hessian.get1DIndex(i - 1, j + 1); //              ! pointer to (i-1,j+1)
+        // UInt ip1R = hessian.get1DIndex(i + 1, j + 1); //              ! pointer to (i+1,j+1)
 
-        // UInt ip0 = i + dimension[1] * (j - 1);                              //              ! pointer to (i,j)
-        // UInt ip1 = i + dimension[1] * (j);                                  //              ! pointer to (i,j+1)
-        // UInt ip0L = std::max(i - 1, 1U) + dimension[1] * (j - 1);           //              ! pointer to (i-1,j)
-        // UInt ip0R = std::min(i + 1, dimension[1]) + dimension[1] * (j - 1); //              ! pointer to (i+1,j)
-        // UInt ip1L = std::max(i - 1, 1U) + dimension[1] * (j);               //              ! pointer to (i-1,j+1)
-        // UInt ip1R = std::min(i + 1, dimension[1]) + dimension[1] * (j);     //              ! pointer to (i+1,j+1)
+        const auto& dimension = hessian.size();
+
+        UInt ip0 = i + dimension[1] * j;                                    //              ! pointer to (i,j)
+        UInt ip1 = i + dimension[1] * (j + 1);                              //              ! pointer to (i,j+1)
+        UInt ip0L = std::max(i - 1, 0U) + dimension[1] * j;                 //              ! pointer to (i-1,j)
+        UInt ip0R = std::min(i + 1, dimension[2]) + dimension[1] * j;       //              ! pointer to (i+1,j)
+        UInt ip1L = std::max(i - 1, 0U) + dimension[1] * (j + 1);           //              ! pointer to (i-1,j+1)
+        UInt ip1R = std::min(i + 1, dimension[2]) + dimension[1] * (j + 1); //              ! pointer to (i+1,j+1)
         ComputeGradient(samplePoints, projection, hessian, ip0, ip1, ip0L, ip0R, ip1L, ip1R, gradient, sn, dareaL, dareaR);
     }
 }
@@ -305,41 +309,41 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
 
             ComputeSampleGradient(samplePoints, projection, hessian, 0, i, j, gradientiR, SniR, dareaiR, dum);
 
-            if (gradientiR[0] == constants::missing::doubleValue)
+            if (IsEqual(gradientiR[0], constants::missing::doubleValue))
             {
                 continue;
             }
 
             ComputeSampleGradient(samplePoints, projection, hessian, 0, i - 1, j, gradientiL, SniL, dum, dareaiL);
 
-            if (gradientiL[0] == constants::missing::doubleValue)
+            if (IsEqual(gradientiL[0], constants::missing::doubleValue))
             {
                 continue;
             }
 
             ComputeSampleGradient(samplePoints, projection, hessian, 1, i, j, gradientjR, SnjR, dareajR, dum);
 
-            if (gradientjR[0] == constants::missing::doubleValue)
+            if (IsEqual(gradientjR[0], constants::missing::doubleValue))
             {
                 continue;
             }
 
             ComputeSampleGradient(samplePoints, projection, hessian, 1, i, j - 1, gradientjL, SnjL, dum, dareajL);
 
-            if (gradientjL[0] == constants::missing::doubleValue)
+            if (IsEqual(gradientjL[0], constants::missing::doubleValue))
             {
                 continue;
             }
 
-            double area = dareaiL + dareaiR + dareajL + dareajR;
-            double areaInv = 1.0 / area;
+            const double area = dareaiL + dareaiR + dareajL + dareajR;
+            const double areaInv = 1.0 / area;
 
-            double zx = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[0] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[0] +
-                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[0] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[0]) *
-                        areaInv;
-            double zy = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[1] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[1] +
-                         0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[1] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[1]) *
-                        areaInv;
+            const double zx = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[0] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[0] +
+                               0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[0] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[0]) *
+                              areaInv;
+            const double zy = (0.5 * (hessian(0, i + 1, j) + hessian(0, i, j)) * SniR[1] - 0.5 * (hessian(0, i - 1, j) + hessian(0, i, j)) * SniL[1] +
+                               0.5 * (hessian(0, i, j + 1) + hessian(0, i, j)) * SnjR[1] - 0.5 * (hessian(0, i, j - 1) + hessian(0, i, j)) * SnjL[1]) *
+                              areaInv;
 
             VV(0, 0) = (gradientiR[0] * SniR[0] - gradientiL[0] * SniL[0] + gradientjR[0] * SnjR[0] - gradientjL[0] * SnjL[0]) * areaInv;
             VV(0, 1) = (gradientiR[0] * SniR[1] - gradientiL[0] * SniL[1] + gradientjR[0] * SnjR[1] - gradientjL[0] * SnjL[1]) * areaInv;
@@ -352,12 +356,27 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
             const Eigen::EigenSolver<Eigen::Matrix2d>::EigenvectorsType& eigenvectors = eigensolver.eigenvectors();
             Eigen::EigenSolver<Eigen::Matrix2d>::EigenvalueType eigenvalues = eigensolver.eigenvalues();
 
+            // Eigen::JacobiSVD svd(VV, Eigen::ComputeFullU | Eigen::ComputeFullV);
+            // auto V = svd.matrixV();
+            // auto Sigma = svd.singularValues();
+
+            // const auto eigenvalues = Sigma.array().square();
+            // const auto eigenvectors = svd.matrixU();
+
             UInt k = std::abs(eigenvalues[0].real()) > std::abs(eigenvalues[1].real()) ? 0U : 1u;
 
             hessian(1, i, j) = eigenvectors(0, k).real();
             hessian(2, i, j) = eigenvectors(1, k).real();
             hessian(3, i, j) = eigenvalues[k].real() * area;
-            hessian(4, i, j) = -(eigenvectors(0, k).real() * zx + eigenvectors(1, k).real() * zy) / (eigenvalues[k].real() + 1.0e-8);
+            const double uu1 = eigenvectors(0, k).real();
+            const double uu2 = eigenvectors(1, k).real();
+            const auto firstVectorFirst = eigenvectors(0, 0).real();
+            const auto firstVectorSecond = eigenvectors(0, 1).real();
+            const auto secondVectorFirst = eigenvectors(k, 0).real();
+            const auto secondVectorSecond = eigenvectors(1, 1).real();
+
+            hessian(4, i, j) = -(eigenvectors(k, 0).real() * zx - eigenvectors(k, 1).real() * zy) / (eigenvalues[k].real() + 1.0e-8);
+            const double hessianValue = hessian(4, i, j);
             std::cout << hessian(0, i + 1, j) << "  " << hessian(0, i, j) << "  " << hessian(0, i - 1, j) << "  " << hessian(0, i, j) << "  " << hessian(4, i, j) << std::endl;
         }
     }
@@ -395,16 +414,17 @@ void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSample
 {
     hessianSamples = rawSamplePoints;
 
-    Hessian hessian(5, numX, numY);
+    Hessian hessian(5, numY, numX);
     PrepareSampleForHessian(hessianSamples, projection, hessian);
 
     UInt count = 0;
 
-    for (UInt j = 0; j < numY; ++j)
+    for (UInt i = 0; i < numX; ++i)
     {
-        for (UInt i = 0; i < numX; ++i)
+        for (UInt j = 0; j < numY; ++j)
         {
-            hessianSamples[count].value = hessian(4, i, j);
+
+            hessianSamples[count].value = hessian(4, j, i);
             ++count;
         }
     }
