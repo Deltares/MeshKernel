@@ -34,6 +34,7 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/srs/epsg.hpp>
 
+#include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Vector.hpp"
