@@ -31,7 +31,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
 {
@@ -43,11 +42,10 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] smoothingIterations         The number of smoothing iterations to perform
-        CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, UInt smoothingIterations);
+        CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
-        /// @return The smoothed grid
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.

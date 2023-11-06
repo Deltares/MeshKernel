@@ -42,9 +42,9 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid);
+        CurvilinearGridDeRefinement(CurvilinearGrid& grid);
 
         /// @brief Refine the curvilinear grid
-        CurvilinearGrid Compute() override;
+        void Compute() override;
     };
 } // namespace meshkernel

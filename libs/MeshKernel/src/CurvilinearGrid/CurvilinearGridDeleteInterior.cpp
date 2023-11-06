@@ -25,33 +25,32 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
+#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 
-#include <memory>
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridLine;
+using meshkernel::CurvilinearGridNodeIndices;
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Splines.hpp>
-
-namespace meshkernel
+meshkernel::CurvilinearGridDeleteInterior::CurvilinearGridDeleteInterior(CurvilinearGrid& grid)
+    : CurvilinearGridAlgorithm(grid)
 {
-    class CurvilinearGrid;
+}
 
-    /// @brief A class implementing the curvilinear grid refinement algorithm
-    class CurvilinearGridRefinement : public CurvilinearGridAlgorithm
+void meshkernel::CurvilinearGridDeleteInterior::Compute()
+{
+    const UInt lowerLimitI = m_lowerLeft.m_n;
+    const UInt upperLimitI = m_upperRight.m_n;
+
+    const UInt lowerLimitJ = m_lowerLeft.m_m;
+    const UInt upperLimitJ = m_upperRight.m_m;
+
+    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
     {
-    public:
-        /// @brief Class constructor
-        ///
-        /// \p firstPoint and \p secondPoint must lie on the same gridline
-        /// @param[in] grid The input curvilinear grid
-        /// @param[in] refinement  The number of refinement lines between the points set by SetBlock()
-        CurvilinearGridRefinement(CurvilinearGrid& grid, UInt refinement);
-
-        /// @brief Refine the curvilinear grid
-        void Compute() override;
-
-    private:
-        UInt m_refinement; ///< The selected number of refinement lines
-        Splines m_splines; ///< An instance of the spline class storing the individual grid lines as splines
-    };
-} // namespace meshkernel
+        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
+        {
+            m_grid.m_gridNodes(n, m).SetInvalid();
+        }
+    }
+}

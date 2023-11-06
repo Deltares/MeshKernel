@@ -39,13 +39,17 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
 /// @brief Counts the number of valid nodes in a meshkernel::CurvilinearGrid instance
 /// @param The input curvilinear grid
 /// @return The number of valid nodes
-size_t CurvilinearGridCountValidNodes(std::shared_ptr<meshkernel::CurvilinearGrid> const& curvilinearGrid);
+size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvilinearGrid);
 
 /// @brief Makes a small, real world curvi grid
 /// See tests/CurvilinearGrids/Orthogonalization/small_curvi_grid.png for a plot of the grid
 /// @return A pointer to a curvilinear grid
-std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid();
+meshkernel::CurvilinearGrid MakeSmallCurvilinearGrid();
 
 /// @brief Makes a small, real world curvi grid, with missing faces
 /// @return A pointer to a curvilinear grid
-std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissingFaces();
+meshkernel::CurvilinearGrid MakeSmallCurvilinearGridWithMissingFaces();
+
+/// @brief Makes a curvilinear grid
+/// @return A pointer to a curvilinear grid
+meshkernel::CurvilinearGrid MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny);
