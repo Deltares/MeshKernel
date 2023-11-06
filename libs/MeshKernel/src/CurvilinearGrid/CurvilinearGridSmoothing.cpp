@@ -34,7 +34,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridSmoothing;
 
-CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
+CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
 
 {
     // Allocate cache for storing grid nodes values
@@ -45,14 +45,13 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGr
     m_grid.ComputeGridNodeTypes();
 }
 
-CurvilinearGrid CurvilinearGridSmoothing::Compute()
+void CurvilinearGridSmoothing::Compute()
 {
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
-    return m_grid;
 }
 
 CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()

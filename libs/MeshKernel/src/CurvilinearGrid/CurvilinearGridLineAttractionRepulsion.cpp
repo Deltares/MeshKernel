@@ -34,13 +34,13 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLineAttractionRepulsion;
 using meshkernel::Point;
 
-CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(std::shared_ptr<CurvilinearGrid> grid,
+CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(CurvilinearGrid& grid,
                                                                                double attractionFactor) : CurvilinearGridAlgorithm(grid), m_originalGrid(grid), m_attractionFactor(attractionFactor)
 
 {
 }
 
-CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
+void CurvilinearGridLineAttractionRepulsion::Compute()
 {
     if (lin_alg::MatrixIsEmpty(m_grid.m_gridNodes))
     {
@@ -69,7 +69,7 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
         for (auto n = startN; n <= endN; ++n)
         {
             // Not a valid grid node
-            if (!m_originalGrid->m_gridNodes(m, n).IsValid())
+            if (!m_originalGrid.m_gridNodes(m, n).IsValid())
             {
                 continue;
             }
@@ -84,7 +84,7 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
 
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(nodeIndex, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
 
-            auto const distance = m_originalGrid->ComputeAverageNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
+            auto const distance = m_originalGrid.ComputeAverageNodalDistance(nodeIndex, m_lines[0].m_gridLineType);
             auto displacement = Point{0.0, 0.0};
 
             if (m_lines[0].IsMGridLine())
@@ -99,12 +99,10 @@ CurvilinearGrid CurvilinearGridLineAttractionRepulsion::Compute()
             }
 
             // project transformation
-            displacement = m_originalGrid->TransformDisplacement(displacement, nodeIndex, false);
+            displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
 
             // adjust nodes
             m_grid.m_gridNodes(m, n) += displacement;
         }
     }
-
-    return m_grid;
 }
