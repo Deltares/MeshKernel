@@ -34,7 +34,7 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLineMirror;
 using meshkernel::Point;
 
-CurvilinearGridLineMirror::CurvilinearGridLineMirror(std::shared_ptr<CurvilinearGrid> grid, double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
+CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
 
 {
     if (m_mirroringFactor <= 0)
@@ -43,7 +43,7 @@ CurvilinearGridLineMirror::CurvilinearGridLineMirror(std::shared_ptr<Curvilinear
     }
 }
 
-CurvilinearGrid CurvilinearGridLineMirror::Compute()
+void CurvilinearGridLineMirror::Compute()
 {
     if (m_lines.empty())
     {
@@ -91,6 +91,4 @@ CurvilinearGrid CurvilinearGridLineMirror::Compute()
     }
 
     m_grid.SetFlatCopies();
-
-    return m_grid;
 }

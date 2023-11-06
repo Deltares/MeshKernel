@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridRefinement;
 
-CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, UInt refinement)
+CurvilinearGridRefinement::CurvilinearGridRefinement(CurvilinearGrid& grid, UInt refinement)
     : CurvilinearGridAlgorithm(grid),
       m_refinement(refinement)
 {
@@ -41,7 +41,7 @@ CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<Curvi
     m_splines = Splines(m_grid);
 }
 
-CurvilinearGrid CurvilinearGridRefinement::Compute()
+void CurvilinearGridRefinement::Compute()
 {
 
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
@@ -140,5 +140,5 @@ CurvilinearGrid CurvilinearGridRefinement::Compute()
     }
 
     // Substitute original grid with the refined one
-    return CurvilinearGrid(refinedGrid, m_grid.m_projection);
+    m_grid.SetGridNodes(refinedGrid);
 }

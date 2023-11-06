@@ -3,7 +3,6 @@
 
 #include <MeshKernel/Parameters.hpp>
 
-#include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 
