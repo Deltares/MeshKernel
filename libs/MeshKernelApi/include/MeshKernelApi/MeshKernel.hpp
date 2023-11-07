@@ -684,6 +684,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh1d_set(int meshKernelId, const Mesh1D& mesh1d);
 
+        /// @brief Adds a mesh to the meshkernel::Mesh1D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh1d       The Mesh1D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh1d_add(int meshKernelId, const Mesh1D& mesh1d);
+
         /// @brief AveragingInterpolation interpolation (ec_module)
         ///
         /// \see meshkernel::AveragingInterpolation
@@ -1175,6 +1181,12 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
+
+        /// @brief Adds a mesh to the meshkernel::Mesh2D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh2d       The Mesh2D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_add(int meshKernelId, const Mesh2D& mesh2d);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

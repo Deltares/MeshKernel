@@ -24,7 +24,9 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     m_mesh1d->AdministrateNodesEdges();
@@ -137,7 +139,9 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration
@@ -232,7 +236,9 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // no valid polygons provided
@@ -298,7 +304,9 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
@@ -339,7 +347,9 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration
