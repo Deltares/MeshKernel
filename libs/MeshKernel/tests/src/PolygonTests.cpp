@@ -215,3 +215,66 @@ TEST(PolygonTests, Refine_GivenStartIndexLargerThanEndIndex_RefinesFromStartInde
         EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
     }
 }
+
+TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_AvoidsTinyRefinedSegment)
+{
+    // setup
+    constexpr double d = 2.5 * (1 - .9 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    ASSERT_EQ(refined.size(), expected.size());
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        constexpr double tolerance = 1e-6;
+        EXPECT_NEAR(refined[i].x, expected[i].x, tolerance);
+        EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
+    }
+}
+
+TEST(PolygonTests, Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotOvershootAndUsesOriginalCornerPoint)
+{
+    // setup
+    constexpr double d = 2.5 * (1 + .9 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    ASSERT_EQ(refined.size(), expected.size());
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        constexpr double tolerance = 1e-6;
+        EXPECT_NEAR(refined[i].x, expected[i].x, tolerance);
+        EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
+    }
+}
+
+TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance)
+{
+    // setup
+    constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0}, {5., d}, {5., 2 * d}, {5., 5.}, {5. - d, 5.}, {5. - 2 * d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    ASSERT_EQ(refined.size(), expected.size());
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        constexpr double tolerance = 1e-6;
+        EXPECT_NEAR(refined[i].x, expected[i].x, tolerance);
+        EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
+    }
+}
