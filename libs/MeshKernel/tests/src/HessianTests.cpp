@@ -165,19 +165,20 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
 
 #if 0
             // Gaussian bump, in the centre of the grid
-            double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            double sample = 100.0 * std::exp(-0.025 * centre);
-#elif 0
-            // Gaussian wave, along the centre line of the grid
-            double centre = (x - centreX) * (x - centreX);
-            double sample = 100.0 * std::exp(-0.025 * centre);
-
+            // double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            // double sample = 100.0 * std::exp(-0.025 * centre);
 #elif 1
+            // Gaussian wave, along the centre line of the grid
+            double centre = std::sqrt(((x - centreX) * (x - centreX)) * ((y - centreY) * (y - centreY)));
+            double factor = std::max(1e-6, std::exp(-0.00025 * centre));
+            double sample = 100.0 * factor;
+
+#elif 0
             // sine wave ridge in x-direction
             double sinx = std::sin(x / maxx * M_PI * 4.0);
             double xxx = scale * sinx + centreY;
             double sample = 10 * (std::atan(20.0 * (xxx - y)) + M_PI / 2.0);
-            sampleDataMatrix[i][j] = sample;
+
 #else
 
             // A arctan function
@@ -186,6 +187,7 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
 #endif
 
             sampleData[count] = {x, y, sample};
+            sampleDataMatrix[i][j] = sample;
 
 #ifdef Y_FIRST_SAMPLE
             y -= deltaY;
@@ -202,7 +204,6 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
         y += deltaY;
 #endif
     }
-
     return {sampleData, sampleDataMatrix};
 }
 
@@ -237,7 +238,6 @@ TEST(HessianTests, CheckHessian)
 
     std::vector<meshkernel::Sample> samples;
     meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
-    // std::vector<meshkernel::Sample> samples = ReadSampleFile("D:/ENGINES/delft3d/trunk/build_dflowfm_interacter/x64/Debug/ridgeRefinement/hessian.xyz");
 
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,

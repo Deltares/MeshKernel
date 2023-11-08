@@ -20,12 +20,12 @@ void WriteSampleFileToAsc(const std::vector<std::vector<double>>& sampleDataMatr
     outputFile << "cellsize " << sampleDelta << std::endl;
     outputFile << "NODATA_value " << 0.0 << std::endl;
 
-    for (int r = 0; r < sampleDataMatrix[0].size(); r++)
+    for (int c = 0; c < sampleDataMatrix[0].size(); c++) // columns
     {
-        for (int c = 0; c < sampleDataMatrix.size(); c++)
+        for (int r = 0; r < sampleDataMatrix.size(); r++) // rows
         {
-            outputFile << std::fixed << std::setprecision(12) << sampleDataMatrix[c][r] << " ";
-            if (c == sampleDataMatrix.size() - 1)
+            outputFile << std::fixed << std::setprecision(12) << sampleDataMatrix[r][c] << " ";
+            if (r == sampleDataMatrix.size() - 1)
             {
                 outputFile << std::endl;
             }
