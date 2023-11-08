@@ -175,3 +175,43 @@ TEST(PolygonTests, FailureConstructionTests)
     std::vector<mk::Point> closedPolygonWithNull{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {mk::constants::missing::doubleValue, mk::constants::missing::doubleValue}, {-10.0, -5.0}};
     EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::cartesian), mk::ConstraintError);
 }
+
+TEST(PolygonTests, Refine_GivenStartIndexLessThanEndIndex_RefinesBetweenStartIndexAndEndIndex)
+{
+    // setup
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., 2}, {5., 4}, {5., 5.}, {3, 5}, {1, 5}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, 2);
+
+    // assert
+    ASSERT_EQ(refined.size(), expected.size());
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        constexpr double tolerance = 1e-6;
+        EXPECT_NEAR(refined[i].x, expected[i].x, tolerance);
+        EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
+    }
+}
+
+TEST(PolygonTests, Refine_GivenStartIndexLargerThanEndIndex_RefinesFromStartIndexToVectorEndAndFromVectorBeginToEndIndex)
+{
+    // setup
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {2, 0}, {4, 0}, {5., 0.}, {5., 5.}, {0, 5.}, {0, 3}, {0, 1}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(3, 1, 2);
+
+    // assert
+    ASSERT_EQ(refined.size(), expected.size());
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        constexpr double tolerance = 1e-6;
+        EXPECT_NEAR(refined[i].x, expected[i].x, tolerance);
+        EXPECT_NEAR(refined[i].y, expected[i].y, tolerance);
+    }
+}
