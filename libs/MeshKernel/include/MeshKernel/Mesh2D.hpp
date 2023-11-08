@@ -27,11 +27,9 @@
 
 #pragma once
 #include <array>
-#include <functional>
 #include <ranges>
 #include <utility>
 #include <vector>
-#include <functional>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -110,10 +108,11 @@ namespace meshkernel
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
 
-        /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
+        /// @brief Constructs the face nodes mapping, face mass centers and areas
         void FindFaces();
 
-        void FindFacesGivenFaceNodes();
+        /// @brief Find remaining face information given the face nodes mapping
+        void FindFacesGivenMappings();
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -397,9 +396,8 @@ namespace meshkernel
             m_numFacesNodes.reserve(GetNumNodes());
         }
 
+        /// @brief Pointer to appropriate method for finding the faces
         void (Mesh2D::*m_findFacesPtr)(void) = nullptr;
-        
-        //std::function<void()> m_func;
     };
 
 } // namespace meshkernel

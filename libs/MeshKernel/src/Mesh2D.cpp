@@ -44,7 +44,6 @@ Mesh2D::Mesh2D(Projection projection)
     : Mesh(projection),
       m_findFacesPtr(&Mesh2D::FindFaces)
 {
-    //m_func = std::bind(&Mesh2D::FindFaces, this);
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -54,7 +53,6 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
       m_findFacesPtr(&Mesh2D::FindFaces)
 {
     std::cout << "Mesh2D::Mesh2D ctor [[1]]\n";
-    //m_func = std::bind(&Mesh2D::FindFaces, this);
     DoAdministration();
 }
 
@@ -64,12 +62,11 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<UInt>& numFaceNodes,
                Projection projection)
     : Mesh(edges, nodes, projection),
-      m_findFacesPtr(&Mesh2D::FindFacesGivenFaceNodes)
+      m_findFacesPtr(&Mesh2D::FindFacesGivenMappings)
 {
     std::cout << "Mesh2D::Mesh2D ctor [[2]]\n";
     m_facesNodes = faceNodes;
     m_numFacesNodes = numFaceNodes;
-    //m_func = std::bind(&Mesh2D::FindFacesGivenFaceNodes, this);
     DoAdministration();
 }
 
@@ -86,7 +83,6 @@ void Mesh2D::DoAdministration()
         throw MeshKernelError("m_findFacesPtr is null");
     }
     (this->*m_findFacesPtr)();
-    //std::invoke(m_func);
 
     // find mesh circumcenters
     ComputeCircumcentersMassCentersAndFaceAreas();
@@ -349,7 +345,9 @@ bool Mesh2D::HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector
         for (UInt n = 0; n < sortedEdgesFaces.size() - 1; n++)
         {
             if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
+            {
                 return true;
+            }
         }
     }
 
@@ -368,14 +366,20 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
 {
     // The selected edge does not exist.
     if (nodes.size() >= numClosingEdges)
+    {
         return;
+    }
 
     if (m_edges[previousEdge].first == constants::missing::uintValue || m_edges[previousEdge].second == constants::missing::uintValue)
+    {
         throw std::invalid_argument("Mesh2D::FindFacesRecursive: The selected edge is invalid. This should not happen since all invalid edges should have been cleaned up.");
+    }
 
     // Check if the faces are already found
     if (m_edgesNumFaces[previousEdge] >= 2)
+    {
         return;
+    }
 
     edges.push_back(previousEdge);
     nodes.push_back(node);
@@ -494,9 +498,9 @@ void Mesh2D::FindFaces()
     }
 }
 
-void Mesh2D::FindFacesGivenFaceNodes()
+void Mesh2D::FindFacesGivenMappings()
 {
-    std::cout << "Mesh2D::FindFacesGivenFaceNodes\n";
+    std::cout << "Mesh2D::FindFacesGivenMappings\n";
     std::vector<UInt> local_edges;
     std::vector<Point> local_nodes;
     std::vector<UInt> local_node_indices;
@@ -543,7 +547,7 @@ void Mesh2D::FindFacesGivenFaceNodes()
         {
             if (m_edgesNumFaces[e] > 2)
             {
-                throw AlgorithmError("AdministrateFromFaceNodes: m_edgesNumFaces > 2.");
+                throw AlgorithmError("FindFacesGivenMappings: m_edgesNumFaces > 2.");
             }
             m_edgesFaces[e][m_edgesNumFaces[e]] = f;
             m_edgesNumFaces[e] += 1;
