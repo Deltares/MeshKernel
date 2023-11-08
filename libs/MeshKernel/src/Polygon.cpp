@@ -264,22 +264,20 @@ void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
     const auto& n0 = *nodeIterator;
     const auto& n1 = *std::next(nodeIterator);
 
-    auto p = n0;
-
-    refinedPolygon.push_back(p);
+    refinedPolygon.push_back(n0);
 
     const double segmentLength = ComputeDistance(n0, n1, projection);
+
+    auto n = std::lround(std::round(segmentLength / refinementDistance));
+    if (n * refinementDistance > segmentLength ||
+        meshkernel::IsEqual(n * refinementDistance, segmentLength, meshkernel::constants::geometric::refinementTolerance))
+        --n;
+
     // Refined segment step size.
     const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
-    double lengthAlongInterval = refinementDistance;
-
-    // Exit when the lengthAlongInterval is greater or equal than segmentLength
-    // To prevent very small refined segment lengths, also exit when lengthAlongInterval is a small fraction less (defined by refinementTolerance)
-    while (lengthAlongInterval < segmentLength && !meshkernel::IsEqual(lengthAlongInterval, segmentLength, meshkernel::constants::geometric::refinementTolerance))
+    for (auto i = 1; i <= n; ++i)
     {
-        p += delta;
-        lengthAlongInterval += refinementDistance;
-        refinedPolygon.push_back(p);
+        refinedPolygon.push_back(n0 + i * delta);
     }
 }
 
