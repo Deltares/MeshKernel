@@ -291,15 +291,6 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
 
         for (UInt j = 1; j < hessian.size(2) - 1; ++j)
         {
-#if 0
-            UInt ip = i + (j - 1) * hessian.size(1);
-
-            // TODO is this some debugging left over?
-            if ((std::abs(samplePoints[ip].x - 87270.0) < 1.0e-8) && (std::abs(samplePoints[ip].y - 415570.0) < 1.0e-8))
-            {
-                continue;
-            }
-#endif
 
             double dareaiL = 0.0;
             double dareaiR = 0.0;
@@ -356,28 +347,12 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
             const Eigen::EigenSolver<Eigen::Matrix2d>::EigenvectorsType& eigenvectors = eigensolver.eigenvectors();
             Eigen::EigenSolver<Eigen::Matrix2d>::EigenvalueType eigenvalues = eigensolver.eigenvalues();
 
-            // Eigen::JacobiSVD svd(VV, Eigen::ComputeFullU | Eigen::ComputeFullV);
-            // auto V = svd.matrixV();
-            // auto Sigma = svd.singularValues();
-
-            // const auto eigenvalues = Sigma.array().square();
-            // const auto eigenvectors = svd.matrixU();
-
             UInt k = std::abs(eigenvalues[0].real()) > std::abs(eigenvalues[1].real()) ? 0U : 1u;
 
             hessian(1, i, j) = eigenvectors(0, k).real();
             hessian(2, i, j) = eigenvectors(1, k).real();
             hessian(3, i, j) = eigenvalues[k].real() * area;
-            const double uu1 = eigenvectors(0, k).real();
-            const double uu2 = eigenvectors(1, k).real();
-            const auto firstVectorFirst = eigenvectors(0, 0).real();
-            const auto firstVectorSecond = eigenvectors(0, 1).real();
-            const auto secondVectorFirst = eigenvectors(k, 0).real();
-            const auto secondVectorSecond = eigenvectors(1, 1).real();
-
             hessian(4, i, j) = -(eigenvectors(k, 0).real() * zx - eigenvectors(k, 1).real() * zy) / (eigenvalues[k].real() + 1.0e-8);
-            const double hessianValue = hessian(4, i, j);
-            std::cout << hessian(0, i + 1, j) << "  " << hessian(0, i, j) << "  " << hessian(0, i - 1, j) << "  " << hessian(0, i, j) << "  " << hessian(4, i, j) << std::endl;
         }
     }
 }

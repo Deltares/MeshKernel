@@ -135,10 +135,10 @@ TEST(HessianTests, TidyPointsTest)
 std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
 {
     meshkernel::UInt start = 0;
-    meshkernel::UInt size = (nx - start) * (nx - start);
+    meshkernel::UInt size = (nx - start) * (ny - start);
     std::vector<meshkernel::Sample> sampleData(size);
 
-    std::vector sampleDataMatrix(nx, std::vector<double>(ny));
+    std::vector sampleDataMatrix(ny, std::vector<double>(nx));
 
     [[maybe_unused]] double centreX = (static_cast<double>((nx - 1) / 2) * deltaX);
     [[maybe_unused]] double centreY = (static_cast<double>((ny - 1) / 2) * deltaY);
@@ -154,22 +154,21 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
     [[maybe_unused]] double r = (nx / 5) * deltaX;
     [[maybe_unused]] double maxx = (nx - 1) * deltaX;
 
-    meshkernel::UInt count = 0;
-
-    for (meshkernel::UInt i = start; i < nx; ++i)
+    for (int i = ny - 1; i >= 0; --i)
     {
-        y = yInit + deltaY * (ny - 1);
 
-        for (meshkernel::UInt j = start; j < ny; ++j)
+        for (meshkernel::UInt j = start; j < nx; ++j)
         {
+            y = deltaY * i;
+            x = deltaX * j;
 
-#if 0
+#if 1
             // Gaussian bump, in the centre of the grid
-            // double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            // double sample = 100.0 * std::exp(-0.025 * centre);
-#elif 1
+            double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            double sample = 100.0 * std::exp(-0.025 * centre);
+#elif 0
             // Gaussian wave, along the centre line of the grid
-            double centre = std::sqrt(((x - centreX) * (x - centreX)) * ((y - centreY) * (y - centreY)));
+            double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
             double factor = std::max(1e-6, std::exp(-0.00025 * centre));
             double sample = 100.0 * factor;
 
@@ -186,24 +185,22 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
             double sample = 10 * (std::atan(20.0 * (r * r - centre)) + M_PI / 2.0);
 #endif
 
-            sampleData[count] = {x, y, sample};
-            sampleDataMatrix[i][j] = sample;
-
-#ifdef Y_FIRST_SAMPLE
-            y -= deltaY;
-#else
-            x += deltaX;
-#endif
-
-            ++count;
+            sampleDataMatrix[(ny - 1) - i][j] = sample;
         }
-
-#ifdef Y_FIRST_SAMPLE
-        x += deltaX;
-#else
-        y += deltaY;
-#endif
     }
+
+    meshkernel::UInt count = 0;
+    for (meshkernel::UInt j = start; j < nx; ++j)
+    {
+        for (int i = ny - 1; i >= 0; --i)
+        {
+            y = deltaY * i;
+            x = deltaX * j;
+            sampleData[count] = {x, y, sampleDataMatrix[(ny - 1) - i][j]};
+            count++;
+        }
+    }
+
     return {sampleData, sampleDataMatrix};
 }
 
@@ -250,7 +247,7 @@ TEST(HessianTests, CheckHessian)
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
 
-    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.max_num_refinement_iterations = 3;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 2.0;
