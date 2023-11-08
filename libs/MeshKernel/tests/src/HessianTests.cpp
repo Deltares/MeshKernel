@@ -1,6 +1,7 @@
+#include "SampleFileReader.hpp"
+
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "MeshKernel/AveragingInterpolation.hpp"
@@ -155,17 +156,9 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
 
     meshkernel::UInt count = 0;
 
-    // Does not seem to matter if this is defined or not
-    //
-#define Y_FIRST_SAMPLE
-
     for (meshkernel::UInt i = start; i < nx; ++i)
     {
-#ifdef Y_FIRST_SAMPLE
         y = yInit + deltaY * (ny - 1);
-#else
-        x = xInit;
-#endif
 
         for (meshkernel::UInt j = start; j < ny; ++j)
         {
@@ -231,8 +224,8 @@ TEST(HessianTests, CheckHessian)
     meshkernel::UInt sampleNx = (nx - 1) * superSample + 1;
     meshkernel::UInt sampleNy = (ny - 1) * superSample + 1;
 
-    double sampleDeltaX = deltaX / static_cast<double>(superSample);
-    double sampleDeltaY = deltaY / static_cast<double>(superSample);
+    const double sampleDeltaX = deltaX / static_cast<double>(superSample);
+    const double sampleDeltaY = deltaY / static_cast<double>(superSample);
 
     [[maybe_unused]] double radius = 2.0 * sampleDeltaX;
 
@@ -242,26 +235,10 @@ TEST(HessianTests, CheckHessian)
 
     WriteSampleFileToAsc(sampleDataMatrix, sampleDeltaX, filePath);
 
-#if 0
-    std::shared_ptr<meshkernel::HessianAveragingInterpolation> hessian = std::make_shared<meshkernel::HessianAveragingInterpolation>(*mesh,
-                                                                                                                                     sampleData,
-                                                                                                                                     sampleNx,
-                                                                                                                                     sampleNy,
-                                                                                                                                     meshkernel::AveragingInterpolation::Method::SimpleAveraging,
-                                                                                                                                     meshkernel::Mesh::Location::Faces,
-                                                                                                                                     radius,
-                                                                                                                                     false,
-                                                                                                                                     false,
-                                                                                                                                     1);
-
-    std::vector<meshkernel::Sample> samples = hessian->hessianSamples();
-#elif 1
     std::vector<meshkernel::Sample> samples;
     meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
-#else
-    std::vector<meshkernel::Sample> samples(sampleData.size());
-    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
-#endif
+    // std::vector<meshkernel::Sample> samples = ReadSampleFile("D:/ENGINES/delft3d/trunk/build_dflowfm_interacter/x64/Debug/ridgeRefinement/hessian.xyz");
+
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
                                                                                    meshkernel::AveragingInterpolation::Method::Max,
@@ -273,7 +250,6 @@ TEST(HessianTests, CheckHessian)
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
 
-    meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
@@ -285,17 +261,13 @@ TEST(HessianTests, CheckHessian)
 
     meshkernel::MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, false);
 
-    // meshkernel::Print(mesh->m_nodes, mesh->m_edges);
-
     // Execute
     meshRefinement.Compute();
 
-    std::cout << std::endl;
-    std::cout << "--------------------------------" << std::endl;
-    std::cout << std::endl;
     std::ofstream outputFile;
 
-    outputFile.open(TEST_FOLDER + "/result.m");
+    const auto resultFolder = TEST_FOLDER + "/result.m";
+    outputFile.open(resultFolder);
 
     meshkernel::Print(mesh->m_nodes, mesh->m_edges, outputFile);
     outputFile.close();

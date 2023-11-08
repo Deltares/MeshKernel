@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <iomanip>
-
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -203,8 +201,6 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
 
 double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
-// double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(averaging::AveragingStrategy& strategy,
-//                                                                        std::vector<Point> const& searchPolygon)
 {
 
     auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
@@ -261,54 +257,4 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     }
 
     return constants::missing::doubleValue;
-}
-
-void meshkernel::HessianAveragingInterpolation::computeHessianSamples(Mesh2D& mesh,
-                                                                      const std::vector<Sample>& samples,
-                                                                      UInt numX,
-                                                                      UInt numY,
-                                                                      Hessian& hessian)
-{
-    HessianCalculator hessianCalculator;
-    hessianCalculator.Compute(samples, mesh.m_projection, numX, numY, hessian);
-}
-
-meshkernel::HessianAveragingInterpolation::HessianAveragingInterpolation(Mesh2D& mesh,
-                                                                         const std::vector<Sample>& samples,
-                                                                         UInt numX,
-                                                                         UInt numY,
-                                                                         Method method,
-                                                                         Mesh::Location locationType,
-                                                                         double relativeSearchRadius,
-                                                                         bool useClosestSampleIfNoneAvailable,
-                                                                         bool subtractSampleValues,
-                                                                         UInt minNumSamples)
-    : AveragingInterpolation(mesh, m_hessianSamples, method, locationType, relativeSearchRadius, useClosestSampleIfNoneAvailable, subtractSampleValues, minNumSamples),
-      m_hessianSamples(samples.size())
-{
-    Hessian hessian(5, numX, numY);
-    computeHessianSamples(mesh, samples, numX, numY, hessian);
-
-    UInt count = 0;
-    std::cout << std::endl;
-    for (UInt j = 0; j < numY; ++j)
-    {
-
-        for (UInt i = 0; i < numX; ++i)
-        {
-            /*
-            std::cout << "hessian " << std::setw(5) << i << ", " << std::setw(5) << j << " = "
-                      << std::setw(17) << samples[count].x << "  " << std::setw(17) << samples[count].y << "  "
-                      // << std::setw(17) << hessian(0, i, j) << "  " << std::setw(17) << hessian(1, i, j) << "  "
-                      // << std::setw(17) << hessian(2, i, j) << "  " << std::setw(17) << hessian(3, i, j) << "  "
-                      << std::setw(17) << hessian(4, i, j) << "  " << std::endl;
-                      */
-            m_hessianSamples[count].x = samples[count].x;
-            m_hessianSamples[count].y = samples[count].y;
-            m_hessianSamples[count].value = hessian(4, i, j); // samples[count].value;
-            ++count;
-        }
-    }
-
-    std::cout << std::endl;
 }

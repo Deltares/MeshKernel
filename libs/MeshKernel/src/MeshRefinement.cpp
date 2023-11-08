@@ -979,20 +979,15 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
     for (size_t i = 0; i < numEdges; ++i)
     {
-        double distance;
-        if (i == numEdges - 1)
-        {
-            distance = ComputeDistance(m_mesh->m_nodes[i], m_mesh->m_nodes[0], m_mesh->m_projection);
-        }
-        else
-        {
-            distance = ComputeDistance(m_mesh->m_nodes[i], m_mesh->m_nodes[i + 1], m_mesh->m_projection);
-        }
+
+        const auto& edgeIndex = m_mesh->m_facesEdges[face][i];
+        const auto& [firstNode, secondNode] = m_mesh->m_edges[edgeIndex];
+        const auto distance = ComputeDistance(m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
         maxEdgeLength = std::max(maxEdgeLength, distance);
     }
 
     double absInterpolatedFaceValue = std::abs(m_interpolant->GetFaceResult(face));
-    double threshold = 50.0; // 1.0e2;
+    double threshold = 1.0; // 1.0e2;
     double thresholdMin = 1.0;
     double hmin = m_meshRefinementParameters.min_edge_size;
 

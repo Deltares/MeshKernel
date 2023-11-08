@@ -159,37 +159,4 @@ namespace meshkernel
 
         RTree m_samplesRtree; ///< The samples tree
     };
-
-    //--------------------------------
-
-    class HessianAveragingInterpolation : public AveragingInterpolation
-    {
-    public:
-        HessianAveragingInterpolation(Mesh2D& mesh,
-                                      const std::vector<Sample>& samples,
-                                      UInt numX,
-                                      UInt numY,
-                                      Method method,
-                                      Mesh::Location locationType,
-                                      double relativeSearchRadius,
-                                      bool useClosestSampleIfNoneAvailable,
-                                      bool subtractSampleValues,
-                                      UInt minNumSamples);
-
-        const std::vector<Sample>& hessianSamples() const
-        {
-            return m_hessianSamples;
-        }
-
-    private:
-        void computeHessianSamples(Mesh2D& mesh,
-                                   const std::vector<Sample>& samples,
-                                   UInt numX,
-                                   UInt numY,
-                                   Hessian& hessian);
-
-        Hessian m_hessian;
-        std::vector<Sample> m_hessianSamples;
-    };
-
 } // namespace meshkernel

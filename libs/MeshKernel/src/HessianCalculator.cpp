@@ -424,8 +424,8 @@ void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSample
         for (UInt j = 0; j < numY; ++j)
         {
 
-            hessianSamples[count].value = hessian(4, j, i);
-            ++count;
+            count = numY * i + j;
+            hessianSamples[count].value = hessian(3, j, i);
         }
     }
 }
