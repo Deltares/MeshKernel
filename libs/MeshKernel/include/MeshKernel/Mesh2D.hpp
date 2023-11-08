@@ -27,9 +27,11 @@
 
 #pragma once
 #include <array>
+#include <functional>
 #include <ranges>
 #include <utility>
 #include <vector>
+#include <functional>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -110,6 +112,8 @@ namespace meshkernel
 
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
+
+        void FindFacesGivenFaceNodes();
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -329,6 +333,9 @@ namespace meshkernel
         /// @brief Bounded array for storing hanging node indices.
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
+        /// @brief Perform complete administration
+        void DoAdministration();
+
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
         /// @param[in] node The current node
@@ -389,6 +396,10 @@ namespace meshkernel
             m_facesCircumcenters.reserve(GetNumNodes());
             m_numFacesNodes.reserve(GetNumNodes());
         }
+
+        void (Mesh2D::*m_findFacesPtr)(void) = nullptr;
+        
+        //std::function<void()> m_func;
     };
 
 } // namespace meshkernel

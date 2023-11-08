@@ -248,7 +248,6 @@ namespace meshkernelapi
 
             if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
             {
-
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
                 std::vector<meshkernel::UInt> num_face_nodes;
