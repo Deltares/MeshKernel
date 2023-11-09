@@ -127,6 +127,12 @@ namespace meshkernelapi
         /// @returns                           Error code
         MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts);
 
+        /// @brief Sets the 1d-2d contacts
+        /// @param[in]  meshKernelId           The id of the mesh state
+        /// @param[out] contacts               Contacts data
+        /// @returns                           Error code
+        MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts);
+
         /// @brief Generates curvilinear grid from splines with the advancing front method.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners

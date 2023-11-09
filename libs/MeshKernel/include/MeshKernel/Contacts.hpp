@@ -139,6 +139,14 @@ namespace meshkernel
         /// @return Vector of 2d mesh indices
         std::vector<UInt> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
+        void SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
+                        const std::vector<meshkernel::UInt>& mesh2dIndices)
+        {
+            m_mesh1dIndices = mesh1dIndices;
+            m_mesh2dIndices = mesh2dIndices;
+            m_areComputed = true;
+        }
+
         /// @brief checks whether contacts have been computed
         /// @return True if the contact is crossing an existing contact
         [[nodiscard]] bool AreComputed() const { return m_areComputed; };

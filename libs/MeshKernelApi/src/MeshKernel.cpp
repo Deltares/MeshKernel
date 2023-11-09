@@ -593,6 +593,34 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::vector<meshkernel::UInt> mesh1dIndices(contacts.num_contacts);
+            std::vector<meshkernel::UInt> mesh2dIndices(contacts.num_contacts);
+
+            for (size_t i = 0; i < contacts.num_contacts; ++i)
+            {
+                mesh1dIndices[i] = contacts.mesh1d_indices[i];
+                mesh2dIndices[i] = contacts.mesh2d_indices[i];
+            }
+
+            meshKernelState[meshKernelId].m_contacts->SetIndices(mesh1dIndices, mesh2dIndices);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_count_hanging_edges(int meshKernelId, int& numHangingEdges)
     {
         lastExitCode = meshkernel::ExitCode::Success;
