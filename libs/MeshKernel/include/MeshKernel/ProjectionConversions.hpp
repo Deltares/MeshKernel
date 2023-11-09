@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <concepts>
-
 #include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -44,19 +42,6 @@ namespace meshkernel
 
     /// @brief Namespace alias for boost::geometry
     namespace bg = boost::geometry;
-
-    /// @brief Ensure any instantiation of the MeshTransformation Compute function is with the correct operation
-    template <typename Operation>
-    concept HasTransformationOperation = requires(Operation op, Point p) {{ op(p)} -> std::same_as<Point>; };
-
-    /// @brief Ensure any instantiation of the MeshConversion Compute function is able to determine source and target projection types.
-    template <typename Operation>
-    concept HasConversionProjection = requires(Operation op) {{ op.SourceProjection()} -> std::same_as<Projection>;
-                                                              { op.TargetProjection()} -> std::same_as<Projection>; };
-
-    /// @brief Ensure the MeshConversion template parameter has a valid interface.
-    template <typename Operation>
-    concept ConversionFunctor = HasTransformationOperation<Operation> && HasConversionProjection<Operation>;
 
     /// @brief Converts points from spherical to Cartesian coordinate system.
     template <typename ProjectionConversion>
@@ -132,50 +117,6 @@ namespace meshkernel
     public:
         /// @brief Construct spherical to Cartesian with an zone string
         ConvertSphericalToCartesian(const std::string& zone) : ConvertSphericalToCartesianBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
-    };
-
-    /// @brief Apply a conversion to nodes of a mesh
-    class MeshConversion
-    {
-    public:
-        /// @brief Apply a conversion to nodes of a mesh.
-        template <ConversionFunctor Conversion>
-        static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
-        {
-            if (sourceMesh.m_projection != conversion.SourceProjection())
-            {
-                throw MeshKernelError("Incorrect source mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.SourceProjection()), ToString(sourceMesh.m_projection));
-            }
-
-            if (targetMesh.m_projection != conversion.TargetProjection())
-            {
-                throw MeshKernelError("Incorrect target mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.TargetProjection()), ToString(targetMesh.m_projection));
-            }
-
-            if (sourceMesh.GetNumNodes() != targetMesh.GetNumNodes())
-            {
-                throw MeshKernelError("Source and target meshes have different numbers of nodes, source = '{}', target = '{}'",
-                                      sourceMesh.GetNumNodes(), targetMesh.GetNumNodes());
-            }
-
-#pragma omp parallel for
-            for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
-            {
-                if (sourceMesh.m_nodes[i].IsValid())
-                {
-                    targetMesh.m_nodes[i] = conversion(sourceMesh.m_nodes[i]);
-                }
-                else
-                {
-                    targetMesh.m_nodes[i] = sourceMesh.m_nodes[i];
-                }
-            }
-
-            // TODO Does this need a parameter indicating that admininstrate needs to be called
-            targetMesh.Administrate();
-        }
     };
 
 } // namespace meshkernel

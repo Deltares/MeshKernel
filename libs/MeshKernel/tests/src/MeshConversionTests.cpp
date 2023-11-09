@@ -6,6 +6,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshConversion.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/ProjectionConversions.hpp"
 

@@ -114,6 +114,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
+  ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
@@ -241,6 +242,7 @@ target_precompile_headers(
     <array>
     <cassert>
     <cmath>
+    <concepts>
     <initializer_list>
     <limits>
     <map>
