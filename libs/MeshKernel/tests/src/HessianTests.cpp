@@ -48,7 +48,7 @@ std::vector<std::vector<mk::Point>> GenerateGridPoints(const mk::UInt rows, cons
     return meshPoints;
 }
 
-std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
+std::vector<meshkernel::Sample> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
 {
     meshkernel::UInt start = 0;
     meshkernel::UInt size = (nx - start) * (ny - start);
@@ -111,7 +111,7 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
         }
     }
 
-    return {sampleData, sampleDataMatrix};
+    return sampleData;
 }
 
 TEST(HessianTests, CheckHessian)
@@ -135,17 +135,11 @@ TEST(HessianTests, CheckHessian)
     const double sampleDeltaX = deltaX / static_cast<double>(superSample);
     const double sampleDeltaY = deltaY / static_cast<double>(superSample);
 
-    [[maybe_unused]] double radius = 2.0 * sampleDeltaX;
+    const auto sampleData = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
 
-    const auto [sampleData, sampleDataMatrix] = generateSampleData(sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
-
-    std::string const filePath = TEST_FOLDER + "/generatedRidgeRefinementSamples.asc";
-
-    WriteSampleFileToAsc(sampleDataMatrix, sampleDeltaX, filePath);
-
-    std::vector<meshkernel::Sample> samples;
     meshkernel::UInt numberOfSmoothingIterations = 0;
-    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, numberOfSmoothingIterations, sampleNx, sampleNy, samples);
+
+    auto samples = meshkernel::HessianCalculator::ComputeHessianSamples(sampleData, mesh->m_projection, numberOfSmoothingIterations, sampleNx, sampleNy);
 
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
@@ -172,11 +166,11 @@ TEST(HessianTests, CheckHessian)
     // Execute
     meshRefinement.Compute();
 
-    std::ofstream outputFile;
+    // std::ofstream outputFile;
 
-    const auto resultFolder = TEST_FOLDER + "/result.m";
-    outputFile.open(resultFolder);
+    // const auto resultFolder = TEST_FOLDER + "/result.m";
+    // outputFile.open(resultFolder);
 
-    meshkernel::Print(mesh->m_nodes, mesh->m_edges, outputFile);
-    outputFile.close();
+    // meshkernel::Print(mesh->m_nodes, mesh->m_edges, outputFile);
+    // outputFile.close();
 }

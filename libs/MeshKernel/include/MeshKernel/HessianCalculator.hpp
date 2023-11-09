@@ -40,21 +40,12 @@ namespace meshkernel
     class HessianCalculator final
     {
     public:
-        /// @brief Intended to be the computation of the Hessian
-        static void Compute(const std::vector<Sample>& rawSamplePoints,
-                            const Projection projection,
-                            UInt numberOfSmoothingIterations,
-                            const UInt numX,
-                            const UInt numY,
-                            Hessian& hessian);
-
-        /// @brief Intended to be the computation of the Hessian
-        static void Compute(const std::vector<Sample>& rawSamplePoints,
-                            const Projection projection,
-                            UInt numberOfSmoothingIterations,
-                            const UInt numX,
-                            const UInt numY,
-                            std::vector<Sample>& hessianSamples);
+        /// @brief Intended to be the computation of the Hessian samples
+        static std::vector<Sample> ComputeHessianSamples(const std::vector<Sample>& rawSamplePoints,
+                                                         const Projection projection,
+                                                         UInt numberOfSmoothingIterations,
+                                                         const UInt numX,
+                                                         const UInt numY);
 
     private:
         /// @brief Smooth sample data

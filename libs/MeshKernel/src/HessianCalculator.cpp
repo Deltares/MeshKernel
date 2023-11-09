@@ -14,16 +14,11 @@ void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sam
     MatrixColMajor zsdum(hessian.size(1), hessian.size(2));
     zsdum.setZero();
 
-    [[maybe_unused]] UInt count = 0;
-
-    // May be better to reorder the loop (j, then i), can then use a count for the sampleData.
     for (UInt i = 0; i < hessian.size(1); ++i)
     {
         for (UInt j = 0; j < hessian.size(2); ++j)
         {
-            // hessian(0, i, j) = sampleData[count].value;
             hessian(0, i, j) = sampleData[i + hessian.size(1) * j].value;
-            ++count;
         }
     }
 
@@ -339,7 +334,7 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
             VV(1, 0) = (gradientiR[1] * SniR[0] - gradientiL[1] * SniL[0] + gradientjR[1] * SnjR[0] - gradientjL[1] * SnjL[0]) * areaInv;
             VV(1, 1) = (gradientiR[1] * SniR[1] - gradientiL[1] * SniL[1] + gradientjR[1] * SnjR[1] - gradientjL[1] * SnjL[1]) * areaInv;
 
-            // Eigen decompostion
+            // Eigendecompostion
             Eigen::EigenSolver<Eigen::Matrix2d> eigensolver(VV);
             const Eigen::EigenSolver<Eigen::Matrix2d>::EigenvectorsType& eigenvectors = eigensolver.eigenvectors();
             Eigen::EigenSolver<Eigen::Matrix2d>::EigenvalueType eigenvalues = eigensolver.eigenvalues();
@@ -359,40 +354,25 @@ void meshkernel::HessianCalculator::PrepareSampleForHessian(const std::vector<Sa
     ComputeHessian(samplePoints, projection, hessian);
 }
 
-void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSamplePoints,
-                                            const Projection projection,
-                                            UInt numberOfSmoothingIterations,
-                                            const UInt numX,
-                                            const UInt numY,
-                                            Hessian& hessian)
+std::vector<meshkernel::Sample> meshkernel::HessianCalculator::ComputeHessianSamples(const std::vector<Sample>& rawSamplePoints,
+                                                                                     const Projection projection,
+                                                                                     UInt numberOfSmoothingIterations,
+                                                                                     const UInt numX,
+                                                                                     const UInt numY)
 {
-    std::vector<Sample> samplePoints(rawSamplePoints);
-
-    hessian.resize(2, numX, numY);
-    PrepareSampleForHessian(samplePoints, projection, numberOfSmoothingIterations, hessian);
-}
-
-void meshkernel::HessianCalculator::Compute(const std::vector<Sample>& rawSamplePoints,
-                                            const Projection projection,
-                                            UInt numberOfSmoothingIterations,
-                                            const UInt numX,
-                                            const UInt numY,
-                                            std::vector<Sample>& hessianSamples)
-{
-    hessianSamples = rawSamplePoints;
+    std::vector<Sample> result = rawSamplePoints;
 
     Hessian hessian(2, numY, numX);
-    PrepareSampleForHessian(hessianSamples, projection, numberOfSmoothingIterations, hessian);
-
-    UInt count = 0;
+    PrepareSampleForHessian(rawSamplePoints, projection, numberOfSmoothingIterations, hessian);
 
     for (UInt i = 0; i < numX; ++i)
     {
         for (UInt j = 0; j < numY; ++j)
         {
 
-            count = numY * i + j;
-            hessianSamples[count].value = hessian(1, j, i);
+            UInt count = numY * i + j;
+            result[count].value = hessian(1, j, i);
         }
     }
+    return result;
 }
