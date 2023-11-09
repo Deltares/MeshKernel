@@ -548,6 +548,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
+            {
+                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
+            }
+
             contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
@@ -565,6 +571,11 @@ namespace meshkernelapi
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
+            {
+                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
             }
 
             auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();

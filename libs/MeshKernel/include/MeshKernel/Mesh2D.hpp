@@ -112,6 +112,8 @@ namespace meshkernel
         void FindFaces();
 
         /// @brief Find remaining face information given the face nodes mapping
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
         void FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
                                             const std::vector<UInt>& numFaceNodes);
 
@@ -338,7 +340,8 @@ namespace meshkernel
         void DoAdministration();
 
         /// @brief Perform complete administration
-        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
         void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
                                                    const std::vector<UInt>& numFaceNodes);
 
