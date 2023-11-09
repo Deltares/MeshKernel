@@ -41,19 +41,17 @@
 using meshkernel::Mesh2D;
 
 Mesh2D::Mesh2D(Projection projection)
-    : Mesh(projection),
-      m_findFacesPtr(&Mesh2D::FindFaces)
+    : Mesh(projection)
 {
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                Projection projection)
-    : Mesh(edges, nodes, projection),
-      m_findFacesPtr(&Mesh2D::FindFaces)
+    : Mesh(edges, nodes, projection)
 {
     std::cout << "Mesh2D::Mesh2D ctor [[1]]\n";
-    DoAdministration();
+    DoAdministration(false);
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -61,39 +59,12 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<std::vector<UInt>>& faceNodes,
                const std::vector<UInt>& numFaceNodes,
                Projection projection)
-    : Mesh(edges, nodes, projection),
-      m_findFacesPtr(&Mesh2D::FindFacesGivenMappings)
+    : Mesh(edges, nodes, projection)
 {
     std::cout << "Mesh2D::Mesh2D ctor [[2]]\n";
     m_facesNodes = faceNodes;
     m_numFacesNodes = numFaceNodes;
-    DoAdministration();
-}
-
-void Mesh2D::DoAdministration()
-{
-    AdministrateNodesEdges();
-
-    // face administration
-    ResizeAndInitializeFaceVectors();
-
-    // find faces
-    if (!m_findFacesPtr)
-    {
-        throw MeshKernelError("m_findFacesPtr is null");
-    }
-    (this->*m_findFacesPtr)();
-
-    // find mesh circumcenters
-    ComputeCircumcentersMassCentersAndFaceAreas();
-
-    // classify node types
-    ClassifyNodes();
-}
-
-void Mesh2D::Administrate()
-{
-    DoAdministration();
+    DoAdministration(true);
 }
 
 Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection)
@@ -172,6 +143,35 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     m_edgesRTreeRequiresUpdate = true;
 
     *this = Mesh2D(edges, inputNodes, projection);
+}
+
+void Mesh2D::DoAdministration(bool const face_mappings_given)
+{
+    AdministrateNodesEdges();
+
+    // face administration
+    ResizeAndInitializeFaceVectors();
+
+    // find faces
+    if (face_mappings_given)
+    {
+        FindFacesGivenMappings();
+    }
+    else
+    {
+        FindFaces();
+    }
+
+    // find mesh circumcenters
+    ComputeCircumcentersMassCentersAndFaceAreas();
+
+    // classify node types
+    ClassifyNodes();
+}
+
+void Mesh2D::Administrate()
+{
+    DoAdministration(false);
 }
 
 bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const
@@ -352,6 +352,31 @@ bool Mesh2D::HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector
     }
 
     return false;
+}
+
+void Mesh2D::ResizeAndInitializeFaceVectors()
+{
+    // face administration
+    m_edgesNumFaces.resize(m_edges.size());
+    std::ranges::fill(m_edgesNumFaces, 0);
+
+    m_edgesFaces.resize(m_edges.size());
+    std::ranges::fill(m_edgesFaces, std::array{constants::missing::uintValue,
+                                               constants::missing::uintValue});
+
+    m_facesMassCenters.clear();
+    m_faceArea.clear();
+    m_facesNodes.clear();
+    m_facesEdges.clear();
+    m_facesCircumcenters.clear();
+    m_numFacesNodes.clear();
+
+    m_facesMassCenters.reserve(GetNumNodes());
+    m_faceArea.reserve(GetNumNodes());
+    m_facesNodes.reserve(GetNumNodes());
+    m_facesEdges.reserve(GetNumNodes());
+    m_facesCircumcenters.reserve(GetNumNodes());
+    m_numFacesNodes.reserve(GetNumNodes());
 }
 
 void Mesh2D::FindFacesRecursive(UInt startNode,

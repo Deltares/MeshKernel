@@ -15,6 +15,7 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
+#include <memory>
 #include <numeric>
 
 #include "CartesianApiTestFixture.hpp"
@@ -1952,7 +1953,7 @@ TEST(Mesh2D, Mesh2DInitializeOrthogonalization_WithHexagon_ShouldOrthogonalize)
 
 TEST_F(CartesianApiTestFixture, ContactsComputeSingle_OnMesh2D_ShouldComputeContacts)
 {
-    auto [nodes_x, nodes_y, edges, face_nodes, num_face_nodes] = MakeMeshWithFaceNodes();
+    auto [nodes_x, nodes_y, edges, face_nodes, num_face_nodes] = MakeMeshWithFaceNodesForApiTesting();
     const auto meshKernelId = GetMeshKernelId();
 
     meshkernelapi::Mesh2D mesh2d;

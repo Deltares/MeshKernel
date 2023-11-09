@@ -333,7 +333,8 @@ namespace meshkernel
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
         /// @brief Perform complete administration
-        void DoAdministration();
+        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        void DoAdministration(bool const face_mappings_given);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -372,32 +373,7 @@ namespace meshkernel
         bool HasDuplicateEdgeFaces(const UInt numClosingEdges, const std::vector<UInt>& edges, std::vector<UInt>& sortedEdgesFaces) const;
 
         /// @brief Resizes and initializes face vectors
-        void ResizeAndInitializeFaceVectors()
-        {
-            // face administration
-            m_edgesNumFaces.resize(m_edges.size());
-            std::ranges::fill(m_edgesNumFaces, 0);
-
-            m_edgesFaces.resize(m_edges.size());
-            std::ranges::fill(m_edgesFaces, std::array{constants::missing::uintValue, constants::missing::uintValue});
-
-            m_facesMassCenters.clear();
-            m_faceArea.clear();
-            m_facesNodes.clear();
-            m_facesEdges.clear();
-            m_facesCircumcenters.clear();
-            m_numFacesNodes.clear();
-
-            m_facesMassCenters.reserve(GetNumNodes());
-            m_faceArea.reserve(GetNumNodes());
-            m_facesNodes.reserve(GetNumNodes());
-            m_facesEdges.reserve(GetNumNodes());
-            m_facesCircumcenters.reserve(GetNumNodes());
-            m_numFacesNodes.reserve(GetNumNodes());
-        }
-
-        /// @brief Pointer to appropriate method for finding the faces
-        void (Mesh2D::*m_findFacesPtr)(void) = nullptr;
+        void ResizeAndInitializeFaceVectors();
     };
 
 } // namespace meshkernel

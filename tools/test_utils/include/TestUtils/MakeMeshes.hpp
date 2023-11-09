@@ -30,8 +30,11 @@
 #include <memory>
 #include <string>
 
+#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Point.hpp>
+#include <MeshKernel/Definitions.hpp>
 
 std::tuple<size_t,
            size_t,
@@ -90,4 +93,10 @@ std::tuple<std::vector<double>,
            std::vector<int>,
            std::vector<int>,
            std::vector<int>>
+MakeMeshWithFaceNodesForApiTesting();
+
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>,
+           std::vector<std::vector<meshkernel::UInt>>,
+           std::vector<meshkernel::UInt>>
 MakeMeshWithFaceNodes();
