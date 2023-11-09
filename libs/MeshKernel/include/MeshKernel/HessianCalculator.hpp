@@ -43,6 +43,7 @@ namespace meshkernel
         /// @brief Intended to be the computation of the Hessian
         static void Compute(const std::vector<Sample>& rawSamplePoints,
                             const Projection projection,
+                            UInt numberOfSmoothingIterations,
                             const UInt numX,
                             const UInt numY,
                             Hessian& hessian);
@@ -50,6 +51,7 @@ namespace meshkernel
         /// @brief Intended to be the computation of the Hessian
         static void Compute(const std::vector<Sample>& rawSamplePoints,
                             const Projection projection,
+                            UInt numberOfSmoothingIterations,
                             const UInt numX,
                             const UInt numY,
                             std::vector<Sample>& hessianSamples);
@@ -105,6 +107,7 @@ namespace meshkernel
         /// From (prepare_samplehessian.f90)
         static void PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
                                             const Projection projection,
+                                            UInt numberOfSmoothingIterations,
                                             Hessian& hessian);
     };
 

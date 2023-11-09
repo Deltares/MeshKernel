@@ -23,7 +23,7 @@ namespace mk = meshkernel;
 std::vector<std::vector<mk::Point>> GenerateGridPoints(const mk::UInt rows, const mk::UInt cols)
 {
 
-    std::vector<std::vector<mk::Point>> meshPoints(cols, std::vector<mk::Point>(rows));
+    std::vector meshPoints(cols, std::vector<mk::Point>(rows));
 
     mk::Point origin = mk::Point(0.0, 0.0);
 
@@ -48,90 +48,6 @@ std::vector<std::vector<mk::Point>> GenerateGridPoints(const mk::UInt rows, cons
     return meshPoints;
 }
 
-#if 0
-
-TEST(HessianTests, TidyPointsNoDuplicatesTest)
-{
-    // Test that the TidySamples does not change a data set that has no duplicates.
-
-    const mk::UInt size = 100;
-
-    std::vector<mk::Point> samplePoints(size);
-    std::vector<mk::Point> generated;
-    std::vector<double> sampleData(size);
-
-    std::random_device rand_dev;
-    std::mt19937 generator(rand_dev());
-    std::uniform_real_distribution<double> distribution(0.0, 100.0);
-
-    for (mk::UInt i = 0; i < size; ++i)
-    {
-        samplePoints[i] = mk::Point(distribution(generator), distribution(generator));
-        sampleData[i] = distribution(generator);
-    }
-
-    std::vector<mk::Point> expectedSamplePoints = samplePoints;
-    std::vector<double> expectedSampleData = sampleData;
-
-    mk::RidgeRefinement ridgeRefinement;
-    ridgeRefinement.TidySamples(samplePoints, sampleData);
-
-    for (mk::UInt i = 0; i < size; ++i)
-    {
-        EXPECT_EQ(expectedSamplePoints[i].x, samplePoints[i].x);
-        EXPECT_EQ(expectedSamplePoints[i].y, samplePoints[i].y);
-        EXPECT_EQ(expectedSampleData[i], sampleData[i]);
-    }
-}
-
-TEST(HessianTests, TidyPointsTest)
-{
-
-    const mk::UInt size = 100;
-
-    std::vector<mk::Point> samplePoints(size);
-    std::vector<mk::Point> expectedSamplePoints;
-    std::vector<mk::Point> generated;
-    std::vector<double> sampleData(size);
-
-    const double invMax = 1.0 / static_cast<double>(RAND_MAX);
-
-    for (mk::UInt i = 0; i < size; ++i)
-    {
-        // Use the simple pseudo random number generator to have repeatable values between tests when debugging.
-        samplePoints[i] = mk::Point(rand() * invMax, rand() * invMax);
-        sampleData[i] = rand() * invMax;
-
-        if (i > 0 && i % 10 == 0)
-        {
-            samplePoints[i - 1] = samplePoints[i];
-            sampleData[i - 1] = sampleData[i];
-        }
-        else if (i > 10 && i % 21 == 0)
-        {
-            samplePoints[i - 10] = samplePoints[i];
-            sampleData[i - 10] = sampleData[i];
-        }
-        else
-        {
-            expectedSamplePoints.push_back(samplePoints[i]);
-        }
-    }
-
-    mk::RidgeRefinement ridgeRefinement;
-    ridgeRefinement.TidySamples(samplePoints, sampleData);
-
-    EXPECT_EQ(expectedSamplePoints.size(), samplePoints.size());
-
-#if 0
-    for (const auto& point : expectedSamplePoints)
-    {
-        EXPECT_TRUE(std::find(samplePoints.begin(), samplePoints.end(), point) != samplePoints.end());
-    }
-#endif
-}
-
-#endif
 std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(meshkernel::UInt nx, meshkernel::UInt ny, double deltaX, double deltaY)
 {
     meshkernel::UInt start = 0;
@@ -143,14 +59,8 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
     [[maybe_unused]] double centreX = (static_cast<double>((nx - 1) / 2) * deltaX);
     [[maybe_unused]] double centreY = (static_cast<double>((ny - 1) / 2) * deltaY);
 
-    std::cout << "centre: " << centreX << "  " << centreY << std::endl;
-
-    [[maybe_unused]] double xInit = 0.0; // 0.5 * deltaX;
-    [[maybe_unused]] double yInit = 0.0; // 0.5 * deltaY;
-
     [[maybe_unused]] double scale = (ny / 4.0) * deltaY;
-    [[maybe_unused]] double x = xInit; // 0.0;
-    [[maybe_unused]] double y = yInit; // 0.0;
+
     [[maybe_unused]] double r = (nx / 5) * deltaX;
     [[maybe_unused]] double maxx = (nx - 1) * deltaX;
 
@@ -159,10 +69,10 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
 
         for (meshkernel::UInt j = start; j < nx; ++j)
         {
-            y = deltaY * i;
-            x = deltaX * j;
+            const double y = deltaY * i;
+            const double x = deltaX * j;
 
-#if 1
+#if 0
             // Gaussian bump, in the centre of the grid
             double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
             double sample = 100.0 * std::exp(-0.025 * centre);
@@ -194,8 +104,8 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
     {
         for (int i = ny - 1; i >= 0; --i)
         {
-            y = deltaY * i;
-            x = deltaX * j;
+            const double y = deltaY * i;
+            const double x = deltaX * j;
             sampleData[count] = {x, y, sampleDataMatrix[(ny - 1) - i][j]};
             count++;
         }
@@ -234,7 +144,8 @@ TEST(HessianTests, CheckHessian)
     WriteSampleFileToAsc(sampleDataMatrix, sampleDeltaX, filePath);
 
     std::vector<meshkernel::Sample> samples;
-    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, sampleNx, sampleNy, samples);
+    meshkernel::UInt numberOfSmoothingIterations = 0;
+    meshkernel::HessianCalculator::Compute(sampleData, mesh->m_projection, numberOfSmoothingIterations, sampleNx, sampleNy, samples);
 
     const auto interpolator = std::make_shared<meshkernel::AveragingInterpolation>(*mesh,
                                                                                    samples,
