@@ -50,8 +50,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
-    std::cout << "Mesh2D::Mesh2D ctor [[1]]\n";
-    DoAdministration(false);
+    DoAdministration();
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -61,15 +60,11 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
-    std::cout << "Mesh2D::Mesh2D ctor [[2]]\n";
-    m_facesNodes = faceNodes;
-    m_numFacesNodes = numFaceNodes;
-    DoAdministration(true);
+    DoAdministrationGivenFaceNodesMapping(faceNodes, numFaceNodes);
 }
 
 Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection)
 {
-    std::cout << "Mesh2D::Mesh2D ctor [[3]]\n";
     m_projection = projection;
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
@@ -145,7 +140,7 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     *this = Mesh2D(edges, inputNodes, projection);
 }
 
-void Mesh2D::DoAdministration(bool const face_mappings_given)
+void Mesh2D::DoAdministration()
 {
     AdministrateNodesEdges();
 
@@ -153,14 +148,25 @@ void Mesh2D::DoAdministration(bool const face_mappings_given)
     ResizeAndInitializeFaceVectors();
 
     // find faces
-    if (face_mappings_given)
-    {
-        FindFacesGivenMappings();
-    }
-    else
-    {
-        FindFaces();
-    }
+    FindFaces();
+
+    // find mesh circumcenters
+    ComputeCircumcentersMassCentersAndFaceAreas();
+
+    // classify node types
+    ClassifyNodes();
+}
+
+void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                                   const std::vector<UInt>& numFaceNodes)
+{
+    AdministrateNodesEdges();
+
+    // face administration
+    ResizeAndInitializeFaceVectors();
+
+    // find faces
+    FindFacesGivenFaceNodesMapping(faceNodes, numFaceNodes);
 
     // find mesh circumcenters
     ComputeCircumcentersMassCentersAndFaceAreas();
@@ -171,7 +177,7 @@ void Mesh2D::DoAdministration(bool const face_mappings_given)
 
 void Mesh2D::Administrate()
 {
-    DoAdministration(false);
+    DoAdministration();
 }
 
 bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const
@@ -497,7 +503,6 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
 
 void Mesh2D::FindFaces()
 {
-    std::cout << "Mesh2D::FindFaces\n";
     std::vector<UInt> sortedEdgesFaces(m_maximumNumberOfEdgesPerFace);
     std::vector<UInt> sortedNodes(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> nodalValues(m_maximumNumberOfEdgesPerFace);
@@ -523,9 +528,12 @@ void Mesh2D::FindFaces()
     }
 }
 
-void Mesh2D::FindFacesGivenMappings()
+void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                            const std::vector<UInt>& numFaceNodes)
 {
-    std::cout << "Mesh2D::FindFacesGivenMappings\n";
+    m_facesNodes = faceNodes;
+    m_numFacesNodes = numFaceNodes;
+
     std::vector<UInt> local_edges;
     std::vector<Point> local_nodes;
     std::vector<UInt> local_node_indices;

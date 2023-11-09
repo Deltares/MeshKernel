@@ -52,21 +52,18 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         // connect only nodes included in the polygons
         if (!nodePolygonIndices[n])
         {
-            std::cout << "skipping 1" << n << "\n";
             continue;
         }
 
         // if oneDNodeMask is not empty, connect only if the mask value for the current node is true
         if (!oneDNodeMask.empty() && !oneDNodeMask[n])
         {
-            std::cout << "skipping 1" << n << "\n";
             continue;
         }
 
         // if a node is inside a face, connect the 1d node with the face including the node. No more work to do
         if (node1dFaceIndices[n] != constants::missing::uintValue)
         {
-            std::cout << "populating "<< n <<"\n";
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(node1dFaceIndices[n]);
             continue;

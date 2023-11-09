@@ -112,7 +112,8 @@ namespace meshkernel
         void FindFaces();
 
         /// @brief Find remaining face information given the face nodes mapping
-        void FindFacesGivenMappings();
+        void FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                            const std::vector<UInt>& numFaceNodes);
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -334,7 +335,12 @@ namespace meshkernel
 
         /// @brief Perform complete administration
         /// @param[in] face_mappings_given True if face mappings are given, false otherwise
-        void DoAdministration(bool const face_mappings_given);
+        void DoAdministration();
+
+        /// @brief Perform complete administration
+        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                                   const std::vector<UInt>& numFaceNodes);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
