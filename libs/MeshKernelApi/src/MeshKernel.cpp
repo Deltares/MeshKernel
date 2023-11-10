@@ -55,6 +55,7 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
@@ -1779,6 +1780,57 @@ namespace meshkernelapi
             {
                 selectionResults.values[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_rotate(int meshKernelId, double centreX, double centreY, double theta)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::RigidBodyTransformation transformation;
+            meshkernel::Translation translation;
+
+            // Translate centre of rotation to origin
+            transformation.compose(meshkernel::Translation(meshkernel::Vector(-centreX, -centreY)));
+            // Add rotation
+            transformation.compose(meshkernel::Rotation(theta));
+            // Translate origin back to centre of rotation
+            transformation.compose(meshkernel::Translation(meshkernel::Vector(centreX, centreY)));
+
+            meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, transformation);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::Translation translation(meshkernel::Vector(translationX, translationY));
+            meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation);
         }
         catch (...)
         {
