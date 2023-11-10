@@ -91,7 +91,11 @@ namespace meshkernel
     private:
         // Since the size of the first index will be 2, and most accesses are vary the first index fastest
         // try: std::vector<lin_alg::MatrixColMajor<std::array<double,2>>> m_hessian
+
+        /// @brief a vector of matrices for storing the hessian calculations
         std::vector<MatrixColMajor> m_hessian;
+
+        /// @brief the initial hessian matrix dimension
         HessianDimension m_dimensions{0, 0, 0};
     };
 

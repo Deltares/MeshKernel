@@ -145,14 +145,17 @@ namespace meshkernel
         /// @brief Computes the edge and face refinement mask from the minimum edge size
         void ComputeRefinementMaskFromEdgeSize();
 
+        /// @brief Computes the refinement mask for refinement based on levels
         void ComputeRefinementMasksForRefinementLevels(UInt face,
                                                        size_t& numberOfEdgesToRefine,
                                                        std::vector<UInt>& edgeToRefine);
 
+        /// @brief Computes the refinement mask for refinement based on wave courant criteria
         void ComputeRefinementMasksForWaveCourant(UInt face,
                                                   size_t& numberOfEdgesToRefine,
                                                   std::vector<UInt>& edgeToRefine);
 
+        /// @brief Computes the refinement mask for refinement based on ridge detection
         void ComputeRefinementMasksForRidgeDetection(UInt face,
                                                      size_t& numberOfEdgesToRefine,
                                                      std::vector<UInt>& edgeToRefine);
