@@ -34,9 +34,8 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridAlgorithm;
 using meshkernel::CurvilinearGridLine;
 
-CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid)
+CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(CurvilinearGrid& grid) : m_grid(grid)
 {
-    m_grid = grid->CloneCurvilinearGrid();
 }
 
 void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
@@ -62,13 +61,13 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
     // Coinciding nodes, no valid line, nothing to do
     if (newLineLowerLeft == newLineUpperRight)
     {
-        throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the start and the end points of the line are coinciding");
+        throw AlgorithmError("The start and the end points of the line are coinciding");
     }
 
     // The points of the frozen line, must be on the same grid-line
     if (!newLineLowerLeft.IsOnTheSameGridLine(newLineUpperRight))
     {
-        throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the nodes do not define a grid line");
+        throw AlgorithmError("The nodes do not define a grid line");
     }
 
     CurvilinearGridLine const newGridline{newLineLowerLeft, newLineUpperRight};

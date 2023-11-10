@@ -122,6 +122,9 @@ namespace meshkernel
 
             return !isInvalid;
         }
+
+        /// @brief Set the point to be invalid.
+        void SetInvalid();
     };
 
     /// @brief Compute the dot product of a point and a vector.
@@ -443,4 +446,10 @@ inline meshkernel::Vector meshkernel::GetDeltaCartesian(const Point& p1, const P
 inline meshkernel::Point meshkernel::PointAlongLine(const Point& startPoint, const Point& endPoint, const double lambda)
 {
     return (1.0 - lambda) * startPoint + lambda * endPoint;
+}
+
+void inline meshkernel::Point::SetInvalid()
+{
+    x = constants::missing::doubleValue;
+    y = constants::missing::doubleValue;
 }

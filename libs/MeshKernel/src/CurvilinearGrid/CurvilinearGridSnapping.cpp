@@ -74,10 +74,10 @@ double meshkernel::NonDirectionalSmoothingCalculator::compute(const CurvilinearG
     return factor;
 }
 
-meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(std::shared_ptr<CurvilinearGrid> grid,
+meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(CurvilinearGrid& grid,
                                                              const LandBoundary& lb,
                                                              const std::vector<Point>& points) : CurvilinearGridAlgorithm(grid),
-                                                                                                 m_originalGrid(*grid),
+                                                                                                 m_originalGrid(grid),
                                                                                                  m_landBoundary(lb),
                                                                                                  m_points(points)
 {
@@ -184,7 +184,7 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
     }
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
+void meshkernel::CurvilinearGridSnapping::Compute()
 {
 
     std::unique_ptr<MeshSmoothingCalculator> smoothingFactorCalculator;
@@ -227,6 +227,4 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSnapping::Compute()
             }
         }
     }
-
-    return m_grid;
 }

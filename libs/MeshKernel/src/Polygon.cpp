@@ -2,7 +2,6 @@
 
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
-#include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Vector.hpp"
@@ -35,12 +34,6 @@ void meshkernel::Polygon::Initialise()
     if (InvalidPointCount(m_nodes) > 0)
     {
         throw ConstraintError("Polygon nodes contains invalid nodes");
-    }
-
-    if (m_projection == Projection::spherical)
-    {
-        // TODO SHould this be called for spherical accurate too?
-        TranslateSphericalCoordinates(m_nodes);
     }
 
     m_boundingBox.Reset(m_nodes);
@@ -183,7 +176,6 @@ bool meshkernel::Polygon::ContainsSphericalAccurate(const Point& point) const
 
 bool meshkernel::Polygon::Contains(const Point& pnt) const
 {
-
     if (!pnt.IsValid())
     {
         throw ConstraintError("Point is not valid");
@@ -208,11 +200,8 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
     {
         return ContainsCartesian(pnt);
     }
-    else
-    {
-        // projection = Projection::sphericalAccurate
-        return ContainsSphericalAccurate(pnt);
-    }
+    // projection = Projection::sphericalAccurate
+    return ContainsSphericalAccurate(pnt);
 }
 
 // TODO does this need start and end points, probably not all the polygon is to be snapped

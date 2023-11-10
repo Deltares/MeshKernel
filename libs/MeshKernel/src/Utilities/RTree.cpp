@@ -113,7 +113,7 @@ void RTree::DeleteNode(UInt position)
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
     {
-        throw std::invalid_argument("DeleteNode: Could not remove node at given position.");
+        return;
     }
     m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
 }

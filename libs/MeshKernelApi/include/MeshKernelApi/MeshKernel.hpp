@@ -178,6 +178,32 @@ namespace meshkernelapi
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId);
 
+        /// @brief Delete the exterior part of a curvilinear gris
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
+        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
+        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
+        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
+                                                            double xFirstPointCoordinate,
+                                                            double yFirstPointCoordinate,
+                                                            double xSecondPointCoordinate,
+                                                            double ySecondPointCoordinate);
+
+        /// @brief Delete the interior part of a curvilinear gris
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
+        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
+        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
+        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
+                                                            double xFirstPointCoordinate,
+                                                            double yFirstPointCoordinate,
+                                                            double xSecondPointCoordinate,
+                                                            double ySecondPointCoordinate);
+
         /// @brief Delete the node closest to a point
         /// @param meshKernelId The id of the mesh state
         /// @param[in] xPointCoordinate The x coordinate of the point
@@ -1064,9 +1090,15 @@ namespace meshkernelapi
         /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn);
+
+        /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
+        /// @param[in] meshKernelId   The id of the mesh state
+        /// @param[in] geometryListIn The polygon defining the area where the operation will be performed
         /// @param[in] mergingDistance The distance below which two nodes will be merged
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
+        MKERNEL_API int mkernel_mesh2d_merge_nodes_with_merging_distance(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance);
 
         /// @brief Merges two mesh2d nodes into one.
         /// @param[in] meshKernelId The id of the mesh state

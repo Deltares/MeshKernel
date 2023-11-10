@@ -137,12 +137,12 @@ namespace meshkernel
         /// @param [in] grid         The input curvilinear grid
         /// @param [in] landBoundary The land boundary to which the grid is to be snapped.
         /// @param [in] points       The points used to control the snapping and smoothing.
-        CurvilinearGridSnapping(std::shared_ptr<CurvilinearGrid> grid,
+        CurvilinearGridSnapping(CurvilinearGrid& grid,
                                 const LandBoundary& landBoundary,
                                 const std::vector<Point>& points);
 
         /// @brief Executes the snapping and smoothing algorithm
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
     private:
         /// @brief Tolerance to determine if point is on (close to) boundary
@@ -174,7 +174,7 @@ namespace meshkernel
         void Initialise();
 
         /// @brief The grid to be smoothed
-        const CurvilinearGrid& m_originalGrid;
+        const CurvilinearGrid m_originalGrid;
 
         /// @brief The land boundary to which the grid is to be snapped.
         const LandBoundary& m_landBoundary;

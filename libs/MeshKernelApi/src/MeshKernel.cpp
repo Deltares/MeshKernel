@@ -25,8 +25,10 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
@@ -1175,7 +1177,33 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
+    MKERNEL_API int mkernel_mesh2d_merge_nodes(int meshKernelId, const GeometryList& geometryListIn)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
+
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
+
+            const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
+            const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
+            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_merge_nodes_with_merging_distance(int meshKernelId, const GeometryList& geometryListIn, double mergingDistance)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2399,9 +2427,9 @@ namespace meshkernelapi
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
+            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
             curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridRefinement.Compute());
+            curvilinearGridRefinement.Compute();
         }
         catch (...)
         {
@@ -2428,11 +2456,10 @@ namespace meshkernelapi
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
-
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
+            curvilinearGridDeRefinement.Compute();
         }
         catch (...)
         {
@@ -2744,7 +2771,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_shared<meshkernel::CurvilinearGridOrthogonalization>(meshKernelState[meshKernelId].m_curvilinearGrid,
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_shared<meshkernel::CurvilinearGridOrthogonalization>(*meshKernelState[meshKernelId].m_curvilinearGrid,
                                                                                                                                               orthogonalizationParameters);
         }
         catch (...)
@@ -2835,7 +2862,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute());
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute();
         }
         catch (...)
         {
@@ -2898,11 +2925,11 @@ namespace meshkernelapi
             const meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid,
                                                                           static_cast<meshkernel::UInt>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
-            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(curvilinearGridSmoothing.Compute());
+            curvilinearGridSmoothing.Compute();
         }
         catch (...)
         {
@@ -2946,12 +2973,12 @@ namespace meshkernelapi
             meshkernel::Point const upperRight{xUpperRightCornerSmootingArea, yUpperRightCornerSmootingArea};
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
 
             curvilinearGridSmoothing.SetLine(firstNode, secondNode);
             curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid(curvilinearGridSmoothing.ComputeDirectional());
+            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional();
         }
         catch (...)
         {
@@ -2981,7 +3008,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift = std::make_shared<meshkernel::CurvilinearGridLineShift>(meshKernelState[meshKernelId].m_curvilinearGrid);
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift = std::make_shared<meshkernel::CurvilinearGridLineShift>(*meshKernelState[meshKernelId].m_curvilinearGrid);
         }
         catch (...)
         {
@@ -3113,7 +3140,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Curvilinear grid line shift algorithm instance is null.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
         }
         catch (...)
         {
@@ -3189,10 +3216,86 @@ namespace meshkernelapi
 
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
+            const auto curviTemp = meshKernelState[meshKernelId].m_curvilinearGrid;
+
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
             // curvilinear grid must be re-setted
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
+                                                        double xFirstPointCoordinate,
+                                                        double yFirstPointCoordinate,
+                                                        double xSecondPointCoordinate,
+                                                        double ySecondPointCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
+            }
+            meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
+
+            curvilinearDeleteExterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
+                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+
+            curvilinearDeleteExterior.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
+                                                        double xFirstPointCoordinate,
+                                                        double yFirstPointCoordinate,
+                                                        double xSecondPointCoordinate,
+                                                        double ySecondPointCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
+            }
+            meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
+
+            curvilinearDeleteInterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
+                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+
+            curvilinearDeleteInterior.Compute();
         }
         catch (...)
         {
@@ -3220,7 +3323,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
+            meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(*meshKernelState[meshKernelId].m_curvilinearGrid, repulsionParameter);
 
             meshkernel::Point const lineFrom{xFirstNodeOnTheLine, yFirstNodeOnTheLine};
             meshkernel::Point const lineTo{xSecondNodeOnTheLine, ySecondNodeOnTheLine};
@@ -3230,7 +3333,7 @@ namespace meshkernelapi
             meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
             curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearLineAttractionRepulsion.Compute();
+            curvilinearLineAttractionRepulsion.Compute();
         }
         catch (...)
         {
@@ -3264,11 +3367,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(meshKernelState[meshKernelId].m_curvilinearGrid, mirroringFactor);
+            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(*meshKernelState[meshKernelId].m_curvilinearGrid, mirroringFactor);
 
             curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridLineMirror.Compute();
+            curvilinearGridLineMirror.Compute();
         }
         catch (...)
         {

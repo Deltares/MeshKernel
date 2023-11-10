@@ -274,20 +274,29 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
 void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
     // first filter the nodes in polygon
-    std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<UInt> originalNodeIndices(GetNumNodes(), constants::missing::uintValue);
-    UInt index = 0;
-    for (UInt i = 0; i < GetNumNodes(); ++i)
+    const auto numNodes = GetNumNodes();
+    std::vector<Point> filteredNodes(numNodes);
+    std::vector<UInt> originalNodeIndices(numNodes, constants::missing::uintValue);
+    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
+
+    UInt filteredNodeCount = 0;
+    for (UInt i = 0; i < numNodes; ++i)
     {
-        const bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
-        if (inPolygon)
+        if (isNodeInPolygon[i])
         {
-            filteredNodes[index] = m_nodes[i];
-            originalNodeIndices[index] = i;
-            index++;
+            filteredNodes[filteredNodeCount] = m_nodes[i];
+            originalNodeIndices[filteredNodeCount] = i;
+            filteredNodeCount++;
         }
     }
-    filteredNodes.resize(index);
+
+    // no node to merge
+    if (filteredNodeCount == 0)
+    {
+        return;
+    }
+
+    filteredNodes.resize(filteredNodeCount);
 
     // Update the R-Tree of the mesh nodes
     RTree nodesRtree;
@@ -395,6 +404,23 @@ void Mesh::ComputeEdgesLengths()
     }
 }
 
+double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
+{
+    auto const numEdges = GetNumEdges();
+    auto result = std::numeric_limits<double>::max();
+
+    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
+    for (UInt e = 0; e < numEdges; e++)
+    {
+        const auto& [firstNode, secondNode] = m_edges[e];
+        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
+        {
+            result = std::min(result, m_edgeLengths[e]);
+        }
+    }
+    return result;
+}
+
 void Mesh::ComputeEdgesCenters()
 {
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
@@ -459,7 +485,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
         return GetLocationsIndices(0, Location::Nodes);
     }
 
-    throw AlgorithmError("Could not find the node index close to a point.");
+    return constants::missing::uintValue;
 }
 
 meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
@@ -875,6 +901,18 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
             result.emplace_back(massCentre);
         }
     }
+    return result;
+}
+
+std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
+{
+    const auto locations = ComputeLocations(location);
+    std::vector<bool> result(locations.size(), false);
+    for (UInt i = 0; i < result.size(); ++i)
+    {
+        result[i] = polygon.IsPointInPolygon(locations[i], 0);
+    }
+
     return result;
 }
 

@@ -45,11 +45,10 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid);
+        CurvilinearGridLineShift(CurvilinearGrid& grid);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        /// @return The shifted curvilinear grid
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
@@ -68,6 +67,6 @@ namespace meshkernel
         /// @return The new displacement
         Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool toLocal) const;
 
-        std::shared_ptr<CurvilinearGrid> m_originalGrid; ///< A pointer to the original grid
+        CurvilinearGrid m_originalGrid; ///< A pointer to the original grid
     };
 } // namespace meshkernel

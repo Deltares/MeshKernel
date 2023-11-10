@@ -45,11 +45,11 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
-        CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
+        CurvilinearGridOrthogonalization(CurvilinearGrid& grid,
                                          const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
-        CurvilinearGrid Compute() override;
+        void Compute() override;
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)

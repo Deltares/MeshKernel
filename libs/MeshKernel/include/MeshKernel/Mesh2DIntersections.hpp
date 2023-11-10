@@ -107,11 +107,13 @@ namespace meshkernel
         /// @returns The intersection seed
         std::tuple<UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh,
                                                    const std::vector<Point>& polyLine,
+                                                   const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                    const std::vector<bool>& vistedEdges) const;
 
         /// @brief Gets the next edge intersection
         /// @returns The intersection seed
         std::tuple<bool, UInt, UInt, double, double, double> GetNextEdgeIntersection(const std::vector<Point>& polyLine,
+                                                                                     const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                                                      UInt edgeIndex,
                                                                                      UInt firstIndex,
                                                                                      UInt secondIndex,
@@ -120,6 +122,7 @@ namespace meshkernel
         /// @brief Gets the next edge intersection
         /// @returns The intersection seed
         void IntersectFaceEdges(const std::vector<Point>& polyLine,
+                                const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                 const std::vector<double>& cumulativeLength,
                                 UInt currentCrossingEdge,
                                 UInt currentFaceIndex,
@@ -164,7 +167,9 @@ namespace meshkernel
         std::vector<FaceMeshPolyLineIntersection> m_facesIntersectionsCache; ///< A cache for saving the local face intersections of one inner or outer
         std::vector<EdgeMeshPolyLineIntersection> m_edgesIntersections;      ///< A vector collecting all edge intersection results
         std::vector<FaceMeshPolyLineIntersection> m_faceIntersections;       ///< A vector collecting all face intersection results
-        static constexpr UInt maxSearchSegments = 10;                        ///< mex number of steps in polyline intersection algorithm
+        BoundingBox m_meshBoundingBox;                                       ///< The mesh bounding box
+        std::vector<BoundingBox> m_meshEdgesBoundingBoxes;                   ///< The mesh edges bounding boxes
+        static constexpr UInt maxSearchSegments = 1000;                      ///< max number of steps in polyline intersection algorithm
     };
 
 } // namespace meshkernel
