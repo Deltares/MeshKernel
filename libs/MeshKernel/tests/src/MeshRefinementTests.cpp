@@ -1,4 +1,5 @@
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
 
 #include <gtest/gtest.h>
 
