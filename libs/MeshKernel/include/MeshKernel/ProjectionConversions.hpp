@@ -53,7 +53,7 @@ namespace meshkernel
         using UTM = bg::model::d2::point_xy<double, Projection>;
 
         /// @brief Constructor with projection
-        ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : m_projection(proj) {}
+        explicit ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : m_projection(proj) {}
 
         /// @brief Default destructor
         virtual ~ConvertSphericalToCartesianBase() = default;
@@ -103,7 +103,7 @@ namespace meshkernel
     {
     public:
         /// @brief Construct spherical to Cartesian with an zone string
-        ConvertSphericalToCartesian(const std::string& zone) : ConvertSphericalToCartesianBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
+        explicit ConvertSphericalToCartesian(const std::string& zone) : ConvertSphericalToCartesianBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
     };
 
     //--------------------------------
@@ -120,7 +120,7 @@ namespace meshkernel
         using UTM = bg::model::d2::point_xy<double>;
 
         /// @brief Constructor with projection
-        ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : m_projection(proj) {}
+        explicit ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : m_projection(proj) {}
 
         /// @brief Default destructor
         virtual ~ConvertCartesianToSphericalBase() = default;
@@ -170,7 +170,7 @@ namespace meshkernel
     {
     public:
         /// @brief Construct spherical to Cartesian with an zone string
-        ConvertCartesianToSpherical(const std::string& zone) : ConvertCartesianToSphericalBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
+        explicit ConvertCartesianToSpherical(const std::string& zone) : ConvertCartesianToSphericalBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
     };
 
 } // namespace meshkernel
