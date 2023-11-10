@@ -35,11 +35,16 @@
 
 namespace meshkernel
 {
-
+    /// @brief A class implementing the computation of the hessian sample set
     class SamplesHessianCalculator final
     {
     public:
-        /// @brief Intended to be the computation of the Hessian samples
+        /// @brief Computation of the samples Hessian
+        /// @param[in] rawSamplePoints The raw sample points
+        /// @param[in] projection The mesh projection
+        /// @param[in] numberOfSmoothingIterations The number of smoothing iterations for the sample set
+        /// @param[in] numX The number of samples x coordinates
+        /// @param[in] numY The number of samples y coordinates
         static std::vector<Sample> ComputeSamplesHessian(const std::vector<Sample>& rawSamplePoints,
                                                          const Projection projection,
                                                          UInt numberOfSmoothingIterations,
