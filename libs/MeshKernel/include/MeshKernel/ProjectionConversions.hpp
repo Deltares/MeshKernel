@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -84,7 +86,7 @@ namespace meshkernel
         }
 
     private:
-        /// @brief The origin of the target mesh.
+        /// @brief The projection conversion object.
         ProjectionConversion projection;
     };
 
@@ -151,7 +153,7 @@ namespace meshkernel
         }
 
     private:
-        /// @brief The origin of the target mesh.
+        /// @brief The projection conversion object.
         ProjectionConversion projection;
     };
 
