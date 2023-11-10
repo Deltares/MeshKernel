@@ -36,7 +36,6 @@ set(
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/Hessian.cpp
-  ${SRC_DIR}/HessianCalculator.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
