@@ -24,7 +24,6 @@ void meshkernel::SamplesHessianCalculator::SmoothSamples(const std::vector<Sampl
 
     for (UInt iter = 1; iter <= numberOfSmoothingIterations; ++iter)
     {
-        // double af = static_cast<double>(iter - 1) / static_cast<double>(std::max(numberOfSmoothingIterations - 1, 1));
         zsdum = hessian.getMatrix(0);
 
         for (UInt j = 1; j < hessian.size(2) - 1; ++j)
@@ -152,8 +151,6 @@ void meshkernel::SamplesHessianCalculator::ComputeGradient(const std::vector<Sam
 
     double darea = 0.5 * (dot(cx0, x0) + dot(cx1, x1) + dot(cxL, leftPoint) + dot(cxR, rightPoint));
 
-    // !     gradx and grady can be composed
-
     if (zss(ip0) != constants::missing::doubleValue &&
         zss(ip1) != constants::missing::doubleValue &&
         zss(ip0L) != constants::missing::doubleValue &&
@@ -183,9 +180,6 @@ void meshkernel::SamplesHessianCalculator::ComputeSampleGradient(const std::vect
                                                                  double& dareaL,
                                                                  double& dareaR)
 {
-
-    // const HessianDimension& dimension = hessian.size();
-
     gradient[0] = 0.0;
     gradient[1] = 0.0;
     sn[0] = 0.0;
@@ -206,13 +200,6 @@ void meshkernel::SamplesHessianCalculator::ComputeSampleGradient(const std::vect
         //                 \   /                 |
         //                  \ /                  |
         //                   R:(i+1/2,j-1/2)
-
-        // UInt ip0 = hessian.get1DIndex(i, j);          // ! pointer to (i,j)
-        // UInt ip1 = hessian.get1DIndex(i + 1, j);      // ! pointer to (i+1,j)
-        // UInt ip0L = hessian.get1DIndex(i, j + 1);     // ! pointer to (i,j+1)
-        // UInt ip0R = hessian.get1DIndex(i, j - 1);     // ! pointer to (i,j-1)
-        // UInt ip1L = hessian.get1DIndex(i + 1, j + 1); // ! pointer to (i+1,j+1)
-        // UInt ip1R = hessian.get1DIndex(i + 1, j - 1); // ! pointer to (i+1,j-1)
 
         const auto& dimension = hessian.size();
 
@@ -236,13 +223,6 @@ void meshkernel::SamplesHessianCalculator::ComputeSampleGradient(const std::vect
         //                 \   /                 |
         //                  \ /                  |
         //                   0:(i,j)
-
-        // UInt ip0 = hessian.get1DIndex(i, j);
-        // UInt ip1 = hessian.get1DIndex(i, j + 1);
-        // UInt ip0L = hessian.get1DIndex(i - 1, j);     //              ! pointer to (i-1,j)
-        // UInt ip0R = hessian.get1DIndex(i + 1, j);     //              ! pointer to (i+1,j)
-        // UInt ip1L = hessian.get1DIndex(i - 1, j + 1); //              ! pointer to (i-1,j+1)
-        // UInt ip1R = hessian.get1DIndex(i + 1, j + 1); //              ! pointer to (i+1,j+1)
 
         const auto& dimension = hessian.size();
 
