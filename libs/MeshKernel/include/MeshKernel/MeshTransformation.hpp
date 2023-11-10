@@ -115,8 +115,11 @@ namespace meshkernel
         /// @brief Default constructor, default is theta = 0.
         Rotation() = default;
 
-        /// @brief Construct with user defined rotation angle, in radians.
-        explicit Rotation(const double angle) : m_theta(angle), m_cosTheta(std::cos(angle)), m_sinTheta(std::sin(angle)) {}
+        /// @brief Construct with user defined rotation angle, in degrees.
+        explicit Rotation(const double angle)
+        {
+            reset(angle);
+        }
 
         /// @brief Get the projection required for the rotation
         [[nodiscard]] Projection TransformationProjection() const
@@ -133,14 +136,16 @@ namespace meshkernel
         }
 
         /// @brief Reset the rotation to a new rotation angle
+        ///
+        /// The angle in degrees.
         void reset(const double angle)
         {
             m_theta = angle;
-            m_cosTheta = std::cos(m_theta);
-            m_sinTheta = std::sin(m_theta);
+            m_cosTheta = std::cos(m_theta * constants::conversion::degToRad);
+            m_sinTheta = std::sin(m_theta * constants::conversion::degToRad);
         }
 
-        /// @brief Get the current defined rotation angle
+        /// @brief Get the current defined rotation angle in degrees
         double angle() const
         {
             return m_theta;

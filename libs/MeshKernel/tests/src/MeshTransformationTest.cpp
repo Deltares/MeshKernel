@@ -41,7 +41,7 @@ TEST(MeshTransformationTest, BasicTranslationTest)
 TEST(MeshTransformationTest, BasicRotationTest)
 {
     // Test basic functionality of the rotation class
-    double theta = 45.0 * M_PI / 180.0;
+    double theta = 45.0;
 
     mk::Rotation rotation(theta);
 
@@ -85,7 +85,7 @@ TEST(MeshTransformationTest, BasicRigidBodyTransformationTest)
     // Step 2 apply composite transformation to a series of points
     constexpr double tolerance = 1.0e-10;
 
-    double theta = -90.0 * M_PI / 180.0;
+    double theta = -90.0;
     mk::Point rotationPoint(-1.0, 1.0);
 
     mk::RigidBodyTransformation transformation;
@@ -157,9 +157,9 @@ TEST(MeshTransformationTest, PointRotationTest)
     double originX = 12.0;
     double originY = -19.0;
 
-    double theta = 45.0 * M_PI / 180.0;
-    double cosTheta = std::cos(theta);
-    double sinTheta = std::sin(theta);
+    double theta = 45.0;
+    double cosTheta = std::cos(theta * M_PI / 180.0);
+    double sinTheta = std::sin(theta * M_PI / 180.0);
 
     mk::Rotation rotation(theta);
     mk::Point pnt(originX, originY);
@@ -208,11 +208,11 @@ TEST(MeshTransformationTest, MeshRotationTest)
     std::shared_ptr<mk::Mesh2D> originalMesh = MakeRectangularMeshForTesting(nx, ny, delta, mk::Projection::cartesian);
     std::shared_ptr<mk::Mesh2D> mesh = MakeRectangularMeshForTesting(nx, ny, delta, mk::Projection::cartesian);
 
-    double theta = 45.0 * M_PI / 180.0;
+    double theta = 45.0;
 
     mk::Rotation rotation(theta);
-    double cosTheta = std::cos(theta);
-    double sinTheta = std::sin(theta);
+    double cosTheta = std::cos(theta * M_PI / 180.0);
+    double sinTheta = std::sin(theta * M_PI / 180.0);
 
     mk::MeshTransformation::Compute(*mesh, rotation);
 
@@ -232,7 +232,7 @@ TEST(MeshTransformationTest, IncorrectProjectionTest)
     // Generate mesh in spherical coordinate system
     std::shared_ptr<mk::Mesh2D> mesh = MakeRectangularMeshForTesting(11, 11, 10.0, mk::Projection::spherical);
 
-    mk::Rotation rotation(45.0 * M_PI / 180.0);
+    mk::Rotation rotation(45.0);
 
     // Should throw an exception with spherical coordinate system
     EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
