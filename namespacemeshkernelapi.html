@@ -341,9 +341,15 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aa390097481a2f81487f41c5e46eaaaf6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa390097481a2f81487f41c5e46eaaaf6">mkernel_mesh2d_compute_inner_ortogonalization_iteration</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:aa390097481a2f81487f41c5e46eaaaf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode).  <a href="namespacemeshkernelapi.html#aa390097481a2f81487f41c5e46eaaaf6">More...</a><br /></td></tr>
 <tr class="separator:aa390097481a2f81487f41c5e46eaaaf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a3589ccdc1570cb64308aef54deb7d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a91a3589ccdc1570cb64308aef54deb7d">mkernel_mesh2d_rotate</a> (int meshKernelId, double centreX, double centreY, double theta)</td></tr>
+<tr class="memdesc:a91a3589ccdc1570cb64308aef54deb7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate a mesh2d about a point.  <a href="namespacemeshkernelapi.html#a91a3589ccdc1570cb64308aef54deb7d">More...</a><br /></td></tr>
+<tr class="separator:a91a3589ccdc1570cb64308aef54deb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0a396a0ad56ec345564e4ae9db73e11"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11">mkernel_splines_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, int startSplineIndex, int endSplineIndex)</td></tr>
 <tr class="memdesc:af0a396a0ad56ec345564e4ae9db73e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps the spline (or splines) to the land boundary.  <a href="namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11">More...</a><br /></td></tr>
 <tr class="separator:af0a396a0ad56ec345564e4ae9db73e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b25c255f1bf9207093b9d98ca1011d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a85b25c255f1bf9207093b9d98ca1011d">mkernel_mesh2d_translate</a> (int meshKernelId, double translationX, double translationY)</td></tr>
+<tr class="memdesc:a85b25c255f1bf9207093b9d98ca1011d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translate a mesh2d.  <a href="namespacemeshkernelapi.html#a85b25c255f1bf9207093b9d98ca1011d">More...</a><br /></td></tr>
+<tr class="separator:a85b25c255f1bf9207093b9d98ca1011d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156192886c65dcffa89cad36a5c78045"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045">mkernel_mesh2d_compute_orthogonalization</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">meshkernel::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="separator:a156192886c65dcffa89cad36a5c78045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf9d548882516ac652fd0f01a08c88bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction)</td></tr>
@@ -5835,6 +5841,58 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="a91a3589ccdc1570cb64308aef54deb7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a3589ccdc1570cb64308aef54deb7d">&#9670;&nbsp;</a></span>mkernel_mesh2d_rotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_rotate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>centreX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>centreY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>theta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotate a mesh2d about a point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">centreX</td><td>X-coordinate of the centre of rotation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">centreY</td><td>Y-coordinate of the centre of rotation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">theta</td><td>Angle of rotation </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="aa8871161744c899f45413808e2ebbbfb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8871161744c899f45413808e2ebbbfb">&#9670;&nbsp;</a></span>mkernel_mesh2d_set()</h2>
 
@@ -5866,6 +5924,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a85b25c255f1bf9207093b9d98ca1011d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b25c255f1bf9207093b9d98ca1011d">&#9670;&nbsp;</a></span>mkernel_mesh2d_translate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_translate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>translationX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>translationY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Translate a mesh2d. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">translationX</td><td>X-component of the translation vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">translationY</td><td>Y-component of the translation vector </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['smoothing_5fiterations_1263',['smoothing_iterations',['../structmeshkernel_1_1_curvilinear_parameters.html#a8188a3e37a5bfc26ee7cb716d869eb0a',1,'meshkernel::CurvilinearParameters::smoothing_iterations()'],['../structmeshkernel_1_1_mesh_refinement_parameters.html#ad74f6967d8491b6fb385073deede6f05',1,'meshkernel::MeshRefinementParameters::smoothing_iterations()']]],
-  ['smoothing_5fparameter_1264',['smoothing_parameter',['../structmeshkernel_1_1_curvilinear_parameters.html#ad198e0967eef861f150ab8dbb8214add',1,'meshkernel::CurvilinearParameters']]]
+  ['refine_5fintersected_1287',['refine_intersected',['../structmeshkernel_1_1_mesh_refinement_parameters.html#aa39ee6bd0a820b00f564fac00e06cc26',1,'meshkernel::MeshRefinementParameters']]],
+  ['refinement_5ftype_1288',['refinement_type',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a5c1fb9c41739362ff3d3db9ee48b8351',1,'meshkernel::MeshRefinementParameters']]],
+  ['remove_5fskinny_5ftriangles_1289',['remove_skinny_triangles',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a15b853a211af2462adf0e4e3ecd440c3',1,'meshkernel::SplinesToCurvilinearParameters']]]
 ];

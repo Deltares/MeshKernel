@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['x_1270',['x',['../structmeshkernel_1_1_cartesian3_d_point.html#a9d9cd481cc25c8de8c69c6529ac99436',1,'meshkernel::Cartesian3DPoint::x()'],['../classmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a',1,'meshkernel::Point::x()']]],
-  ['x_5fcoordinates_1271',['x_coordinates',['../structmeshkernelapi_1_1_gridded_samples.html#aa87e0276e14be0cb3859e2ea12d6ef8d',1,'meshkernelapi::GriddedSamples']]],
-  ['x_5forigin_1272',['x_origin',['../structmeshkernelapi_1_1_gridded_samples.html#ad885c20427a12d4aab4a56938bcf4dbf',1,'meshkernelapi::GriddedSamples']]],
-  ['x_5fupper_5fright_1273',['x_upper_right',['../structmeshkernelapi_1_1_gridded_samples.html#a9888153370e7c93732fa8194c7fa0621',1,'meshkernelapi::GriddedSamples']]]
+  ['upper_5fright_5fx_1293',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
+  ['upper_5fright_5fy_1294',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
+  ['use_5fmass_5fcenter_5fwhen_5frefining_1295',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
 ];

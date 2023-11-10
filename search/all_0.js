@@ -10,7 +10,7 @@ var searchData=
   ['administratenodesedges_7',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],
   ['algorithmerror_8',['AlgorithmError',['../classmeshkernel_1_1_algorithm_error.html',1,'meshkernel']]],
   ['algorithmerrorcode_9',['AlgorithmErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbaa9b690d54bf5d98211a5e30554d66306',1,'meshkernel']]],
-  ['angle_10',['angle',['../structmeshkernel_1_1_make_grid_parameters.html#a4d9ed1f2b5553e0246b117bfc6e92651',1,'meshkernel::MakeGridParameters']]],
+  ['angle_10',['angle',['../structmeshkernel_1_1_make_grid_parameters.html#a4d9ed1f2b5553e0246b117bfc6e92651',1,'meshkernel::MakeGridParameters::angle()'],['../classmeshkernel_1_1_rotation.html#a3a227d8d9b657f8bc0989dee2b483864',1,'meshkernel::Rotation::angle()']]],
   ['anticlockwise_11',['AntiClockwise',['../namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4a3ac558edd1e7ab76b05ea7e3eef91b54',1,'meshkernel']]],
   ['areal_5fto_5fangle_5fsmoothing_5ffactor_12',['areal_to_angle_smoothing_factor',['../structmeshkernel_1_1_orthogonalization_parameters.html#a03fe0c871ae5f7e8f37e2e251c2fb4f5',1,'meshkernel::OrthogonalizationParameters']]],
   ['aresegmentscrossing_13',['AreSegmentsCrossing',['../namespacemeshkernel.html#a25c24792eb7e1bc1bb3393f33a1a374e',1,'meshkernel']]],

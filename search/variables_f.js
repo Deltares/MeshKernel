@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['upper_5fright_5fx_1265',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
-  ['upper_5fright_5fy_1266',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
-  ['use_5fmass_5fcenter_5fwhen_5frefining_1267',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
+  ['smoothing_5fiterations_1290',['smoothing_iterations',['../structmeshkernel_1_1_curvilinear_parameters.html#a8188a3e37a5bfc26ee7cb716d869eb0a',1,'meshkernel::CurvilinearParameters::smoothing_iterations()'],['../structmeshkernel_1_1_mesh_refinement_parameters.html#ad74f6967d8491b6fb385073deede6f05',1,'meshkernel::MeshRefinementParameters::smoothing_iterations()']]],
+  ['smoothing_5fparameter_1291',['smoothing_parameter',['../structmeshkernel_1_1_curvilinear_parameters.html#ad198e0967eef861f150ab8dbb8214add',1,'meshkernel::CurvilinearParameters']]]
 ];

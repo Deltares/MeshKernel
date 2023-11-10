@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['y_1274',['y',['../structmeshkernel_1_1_cartesian3_d_point.html#a41e449f80963b5783ac3767e5f5f9402',1,'meshkernel::Cartesian3DPoint::y()'],['../classmeshkernel_1_1_point.html#aad94b2da9a9218821edbc5a4db62e513',1,'meshkernel::Point::y()']]],
-  ['y_5fcoordinates_1275',['y_coordinates',['../structmeshkernelapi_1_1_gridded_samples.html#a6cb0848acfc7b02f4147b958a5ac27c4',1,'meshkernelapi::GriddedSamples']]],
-  ['y_5forigin_1276',['y_origin',['../structmeshkernelapi_1_1_gridded_samples.html#a4ebf53862c05ee5da99a8ccf5c286b0d',1,'meshkernelapi::GriddedSamples']]],
-  ['y_5fupper_5fright_1277',['y_upper_right',['../structmeshkernelapi_1_1_gridded_samples.html#a5cf2b0c1764068dd3c3275a3bda231c3',1,'meshkernelapi::GriddedSamples']]]
+  ['value_1296',['value',['../classmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
+  ['values_1297',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList::values()'],['../structmeshkernelapi_1_1_gridded_samples.html#aab159ea4c8567ff71c93a22671f57e01',1,'meshkernelapi::GriddedSamples::values()']]]
 ];
