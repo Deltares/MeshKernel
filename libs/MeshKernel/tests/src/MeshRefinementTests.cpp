@@ -881,3 +881,168 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     // Assert: nothing gets refined
     ASSERT_EQ(4, mesh->GetNumEdges());
 }
+
+enum class RidgeRefinementTestCase
+{
+    GaussianBump = 1,
+    GaussianWave = 2,
+    RidgeXDirection = 3,
+    ArctanFunction = 4,
+};
+
+std::vector<Sample> generateSampleData(RidgeRefinementTestCase testcase,
+                                       UInt nx = 10,
+                                       UInt ny = 10,
+                                       double deltaX = 10.0,
+                                       double deltaY = 10.0)
+{
+    UInt start = 0;
+    UInt size = (nx - start) * (ny - start);
+    std::vector<Sample> sampleData(size);
+
+    std::vector sampleDataMatrix(ny, std::vector<double>(nx));
+
+    const double centreX = static_cast<double>((nx - 1) / 2) * deltaX;
+    const double centreY = static_cast<double>((ny - 1) / 2) * deltaY;
+
+    const double scale = ny / 4.0 * deltaY;
+
+    const double r = nx / 5 * deltaX;
+    const double maxx = (nx - 1) * deltaX;
+
+    std::function<double(double, double)> generateSample;
+    switch (testcase)
+    {
+    case RidgeRefinementTestCase::GaussianBump:
+        generateSample = [&](double x, double y)
+        {
+            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            return 100.0 * std::exp(-0.025 * centre);
+        };
+        break;
+    case RidgeRefinementTestCase::GaussianWave:
+        generateSample = [&](double x, double y)
+        {
+            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            const double factor = std::max(1e-6, std::exp(-0.00025 * centre));
+            return 100.0 * factor;
+        };
+        break;
+    case RidgeRefinementTestCase::RidgeXDirection:
+        generateSample = [&](double x, double y)
+        {
+            const double sinx = std::sin(x / maxx * M_PI * 4.0);
+            const double xxx = scale * sinx + centreY;
+            return 10 * (std::atan(20.0 * (xxx - y)) + M_PI / 2.0);
+        };
+        break;
+    case RidgeRefinementTestCase::ArctanFunction:
+        generateSample = [&](double x, double y)
+        {
+            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
+            return 10 * (std::atan(20.0 * (r * r - centre)) + M_PI / 2.0);
+        };
+        break;
+    default:
+        throw std::invalid_argument("invalid ridge refinement test case");
+    }
+
+    for (int i = ny - 1; i >= 0; --i)
+    {
+
+        for (UInt j = start; j < nx; ++j)
+        {
+            const double y = deltaY * i;
+            const double x = deltaX * j;
+            sampleDataMatrix[ny - 1 - i][j] = generateSample(x, y);
+        }
+    }
+
+    UInt count = 0;
+    for (UInt j = start; j < nx; ++j)
+    {
+        for (int i = ny - 1; i >= 0; --i)
+        {
+            const double y = deltaY * i;
+            const double x = deltaX * j;
+            sampleData[count] = {x, y, sampleDataMatrix[ny - 1 - i][j]};
+            count++;
+        }
+    }
+
+    return sampleData;
+}
+
+class RidgeRefinementTestCases : public testing::TestWithParam<std::tuple<RidgeRefinementTestCase, UInt, UInt>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<RidgeRefinementTestCase, UInt, UInt>> GetData()
+    {
+        return std::vector{
+            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::GaussianBump, 1165, 2344),
+            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::GaussianWave, 5297, 10784),
+            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::RidgeXDirection, 2618, 5694),
+            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::ArctanFunction, 2309, 5028)};
+    }
+};
+
+TEST_P(RidgeRefinementTestCases, expectedResults)
+{
+    // Prepare
+    const auto [testCase, numNodes, numEdges] = GetParam();
+
+    UInt nx = 41;
+    UInt ny = 21;
+
+    double deltaX = 10.0;
+    double deltaY = 10.0;
+
+    double dimX = (nx - 1) * deltaX;
+    double dimY = (ny - 1) * deltaY;
+
+    std::shared_ptr<Mesh2D> mesh = MakeRectangularMeshForTesting(nx, ny, dimX, dimY, Projection::cartesian);
+
+    UInt superSample = 2;
+
+    UInt sampleNx = (nx - 1) * superSample + 1;
+    UInt sampleNy = (ny - 1) * superSample + 1;
+
+    const double sampleDeltaX = deltaX / static_cast<double>(superSample);
+    const double sampleDeltaY = deltaY / static_cast<double>(superSample);
+
+    const auto sampleData = generateSampleData(testCase, sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
+
+    auto samples = HessianCalculator::ComputeHessianSamples(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
+
+    const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
+                                                                       samples,
+                                                                       AveragingInterpolation::Method::Max,
+                                                                       Mesh::Location::Faces,
+                                                                       1.0,
+                                                                       false,
+                                                                       false,
+                                                                       1);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 2.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 3;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, false);
+
+    // Execute
+    meshRefinement.Compute();
+
+    // Assert
+    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    ASSERT_EQ(numEdges, mesh->GetNumEdges());
+}
+
+INSTANTIATE_TEST_SUITE_P(RidgeRefinementTestCases,
+                         RidgeRefinementTestCases,
+                         ::testing::ValuesIn(RidgeRefinementTestCases::GetData()));

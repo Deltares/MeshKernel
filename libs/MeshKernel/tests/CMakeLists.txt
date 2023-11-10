@@ -28,7 +28,6 @@ set(
   ${SRC_DIR}/CurvilinearGridSnappingTests.cpp
   ${SRC_DIR}/FlipEdgesTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
-  ${SRC_DIR}/HessianTests.cpp
   ${SRC_DIR}/FormattingTests.cpp
   ${SRC_DIR}/LandBoundaryTests.cpp
   ${SRC_DIR}/LinearAlgebraTests.cpp
