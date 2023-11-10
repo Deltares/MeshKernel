@@ -66,9 +66,6 @@ namespace meshkernel
         /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
         ///
         /// From (comp_grad.f90)
-        /// @param[in] samplePoints The sample points
-        /// @param[in] projection  The number of smoothing iterations for the sample set
-        /// @param[in] hessian The hessian matrix where to store the result of the hessian calculations
         static void ComputeGradient(const std::vector<Sample>& samplePoints,
                                     const Projection projection,
                                     const Hessian& hessian,
