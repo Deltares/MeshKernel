@@ -59,7 +59,7 @@ namespace meshkernel
         Translation() = default;
 
         /// @brief Construct with user defined translation
-        explicit Translation(const Vector& trans) : translation(trans) {}
+        explicit Translation(const Vector& trans) : m_translation(trans) {}
 
         /// @brief Get the projection required for the translation
         Projection TransformationProjection() const
@@ -70,42 +70,42 @@ namespace meshkernel
         /// @brief Reset translation to identity translation (i.e. no translation)
         void identity()
         {
-            translation = {0.0, 0.0};
+            m_translation = {0.0, 0.0};
         }
 
         /// @brief Reset the translation to a new translation quantity
         void reset(const Vector& trans)
         {
-            translation = trans;
+            m_translation = trans;
         }
 
         /// @brief Get the current defined translation vector.
         const Vector& vector() const
         {
-            return translation;
+            return m_translation;
         }
 
         /// @brief Compose two translation objects.
         Translation compose(const Translation& trans) const
         {
-            return Translation(translation + trans.translation);
+            return Translation(m_translation + trans.m_translation);
         }
 
         /// @brief Apply the translation to a point in Cartesian coordinate system
         Point operator()(const Point& pnt) const
         {
-            return pnt + translation;
+            return pnt + m_translation;
         }
 
         /// @brief Apply the translation to a vector in Cartesian coordinate system
         Vector operator()(const Vector& vec) const
         {
-            return vec + translation;
+            return vec + m_translation;
         }
 
     private:
         /// @brief The translation values
-        Vector translation{0.0, 0.0};
+        Vector m_translation{0.0, 0.0};
     };
 
     /// @brief Apply a rotation transformation to a point or a vector.
@@ -116,7 +116,7 @@ namespace meshkernel
         Rotation() = default;
 
         /// @brief Construct with user defined rotation angle, in radians.
-        explicit Rotation(const double angle) : theta(angle), cosTheta(std::cos(angle)), sinTheta(std::sin(angle)) {}
+        explicit Rotation(const double angle) : m_theta(angle), m_cosTheta(std::cos(angle)), m_sinTheta(std::sin(angle)) {}
 
         /// @brief Get the projection required for the rotation
         Projection TransformationProjection() const
@@ -127,55 +127,56 @@ namespace meshkernel
         /// @brief Reset rotation to identity translation (i.e. no rotation, theta = 0)
         void identity()
         {
-            theta = 0.0;
-            cosTheta = 1.0;
-            sinTheta = 0.0;
+            m_theta = 0.0;
+            m_cosTheta = 1.0;
+            m_sinTheta = 0.0;
         }
 
         /// @brief Reset the rotation to a new rotation angle
         void reset(const double angle)
         {
-            theta = angle;
-            cosTheta = std::cos(theta);
-            sinTheta = std::sin(theta);
+            m_theta = angle;
+            m_cosTheta = std::cos(m_theta);
+            m_sinTheta = std::sin(m_theta);
         }
 
         /// @brief Get the current defined rotation angle
         double angle() const
         {
-            return theta;
+            return m_theta;
         }
 
         /// @brief Compose two rotation objects.
         Rotation compose(const Rotation& rot) const
         {
-            return Rotation(theta + rot.theta);
+            return Rotation(m_theta + rot.m_theta);
         }
 
         /// @brief Apply the rotation to a point in Cartesian coordinate system
         Point operator()(const Point& pnt) const
         {
-            Point result({cosTheta * pnt.x - sinTheta * pnt.y, sinTheta * pnt.x + cosTheta * pnt.y});
+            Point result({m_cosTheta * pnt.x - m_sinTheta * pnt.y,
+                          m_sinTheta * pnt.x + m_cosTheta * pnt.y});
             return result;
         }
 
         /// @brief Apply the rotation to a vector in Cartesian coordinate system
         Vector operator()(const Vector& vec) const
         {
-            Vector result({cosTheta * vec.x() - sinTheta * vec.y(),
-                           sinTheta * vec.x() + cosTheta * vec.y()});
+            Vector result({m_cosTheta * vec.x() - m_sinTheta * vec.y(),
+                           m_sinTheta * vec.x() + m_cosTheta * vec.y()});
             return result;
         }
 
     private:
         /// @brief The rotation angle, theta
-        double theta = 0.0;
+        double m_theta = 0.0;
 
         /// @brief cosine of the rotation angle
-        double cosTheta = 1.0;
+        double m_cosTheta = 1.0;
 
         /// @brief sine of the rotation angle
-        double sinTheta = 0.0;
+        double m_sinTheta = 0.0;
     };
 
     /// @brief A composition of translation and rotation transformations
@@ -194,8 +195,8 @@ namespace meshkernel
         /// @brief Reset transformation to identity transformation (i.e. no transformation)
         void identity()
         {
-            rotation_.identity();
-            translation_.identity();
+            m_rotation.identity();
+            m_translation.identity();
         }
 
         /// @brief Compose rotation and transformation object.
@@ -203,8 +204,8 @@ namespace meshkernel
         /// Will be applied: rot (transformation).
         void compose(const Rotation& rot)
         {
-            rotation_ = rot.compose(rotation_);
-            translation_.reset(rot(translation_.vector()));
+            m_rotation = rot.compose(m_rotation);
+            m_translation.reset(rot(m_translation.vector()));
         }
 
         /// @brief Compose translation and transformation object.
@@ -212,43 +213,43 @@ namespace meshkernel
         /// Will be applied: translation (transformation).
         void compose(const Translation& trans)
         {
-            translation_ = trans.compose(translation_);
+            m_translation = trans.compose(m_translation);
         }
 
         /// @brief Get the current rotation.
         const Rotation& rotation() const
         {
-            return rotation_;
+            return m_rotation;
         }
 
         /// @brief Get the current translation.
         const Translation& translation() const
         {
-            return translation_;
+            return m_translation;
         }
 
         /// @brief Apply the transformation to a point in Cartesian coordinate system
         Point operator()(const Point& pnt) const
         {
-            Point result = rotation_(pnt);
-            result = translation_(result);
+            Point result = m_rotation(pnt);
+            result = m_translation(result);
             return result;
         }
 
         /// @brief Apply the transformation to a vector in Cartesian coordinate system
         Vector operator()(const Vector& vec) const
         {
-            Vector result = rotation_(vec);
-            result = translation_(result);
+            Vector result = m_rotation(vec);
+            result = m_translation(result);
             return result;
         }
 
     private:
         /// @brief The rotation part of the transformation
-        Rotation rotation_;
+        Rotation m_rotation;
 
         /// @brief The translation part of the transformation
-        Translation translation_;
+        Translation m_translation;
     };
 
     /// @brief Apply a transformation to a mesh
