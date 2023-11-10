@@ -62,7 +62,7 @@ namespace meshkernel
         explicit Translation(const Vector& trans) : m_translation(trans) {}
 
         /// @brief Get the projection required for the translation
-        Projection TransformationProjection() const
+        [[nodiscard]] Projection TransformationProjection() const
         {
             return Projection::cartesian;
         }
@@ -119,7 +119,7 @@ namespace meshkernel
         explicit Rotation(const double angle) : m_theta(angle), m_cosTheta(std::cos(angle)), m_sinTheta(std::sin(angle)) {}
 
         /// @brief Get the projection required for the rotation
-        Projection TransformationProjection() const
+        [[nodiscard]] Projection TransformationProjection() const
         {
             return Projection::cartesian;
         }
@@ -187,7 +187,7 @@ namespace meshkernel
         RigidBodyTransformation() = default;
 
         /// @brief Get the projection required for the transformation
-        Projection TransformationProjection() const
+        [[nodiscard]] Projection TransformationProjection() const
         {
             return Projection::cartesian;
         }
