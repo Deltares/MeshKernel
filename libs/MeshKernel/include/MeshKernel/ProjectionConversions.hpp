@@ -29,14 +29,10 @@
 
 #include <string>
 
-#include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/srs/epsg.hpp>
 
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/Operations.hpp"
-#include "MeshKernel/Point.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
@@ -57,7 +53,7 @@ namespace meshkernel
         using UTM = bg::model::d2::point_xy<double, Projection>;
 
         /// @brief Constructor with projection
-        ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : projection(proj) {}
+        ConvertSphericalToCartesianBase(const ProjectionConversion& proj) : m_projection(proj) {}
 
         /// @brief Default destructor
         virtual ~ConvertSphericalToCartesianBase() = default;
@@ -79,7 +75,7 @@ namespace meshkernel
         {
             LongLat longLat(pnt.x, pnt.y);
             UTM utm{0.0, 0.0};
-            projection.forward(longLat, utm);
+            m_projection.forward(longLat, utm);
 
             Point result(utm.x(), utm.y());
             return result;
@@ -87,7 +83,7 @@ namespace meshkernel
 
     private:
         /// @brief The projection conversion object.
-        ProjectionConversion projection;
+        ProjectionConversion m_projection;
     };
 
     /// @brief Converts points from spherical to Cartesian coordinate system using an ESPG code.
@@ -124,7 +120,7 @@ namespace meshkernel
         using UTM = bg::model::d2::point_xy<double>;
 
         /// @brief Constructor with projection
-        ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : projection(proj) {}
+        ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : m_projection(proj) {}
 
         /// @brief Default destructor
         virtual ~ConvertCartesianToSphericalBase() = default;
@@ -146,7 +142,7 @@ namespace meshkernel
         {
             UTM utm{pnt.x, pnt.y};
             LongLat longLat{0.0, 0.0};
-            projection.inverse(utm, longLat);
+            m_projection.inverse(utm, longLat);
 
             Point result(longLat.x(), longLat.y());
             return result;
@@ -154,7 +150,7 @@ namespace meshkernel
 
     private:
         /// @brief The projection conversion object.
-        ProjectionConversion projection;
+        ProjectionConversion m_projection;
     };
 
     /// @brief Converts points from spherical to Cartesian coordinate system using an EPSG code.
