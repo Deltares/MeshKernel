@@ -27,8 +27,6 @@
 
 #pragma once
 
-#include <concepts>
-
 #include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
