@@ -274,6 +274,8 @@ namespace meshkernel
                     mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
                 }
             }
+
+            mesh.Administrate();
         }
     };
 
