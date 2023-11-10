@@ -91,6 +91,29 @@ namespace meshkernel
 
             targetMesh.Administrate();
         }
+
+        /// @brief Apply a conversion to nodes of a mesh.
+        template <ConversionFunctor Conversion>
+        static void Compute(Mesh& mesh, const Conversion& conversion)
+        {
+            if (mesh.m_projection != conversion.SourceProjection())
+            {
+                throw MeshKernelError("Incorrect mesh coordinate system, expecting '{}', found '{}'",
+                                      ToString(conversion.SourceProjection()), ToString(mesh.m_projection));
+            }
+
+#pragma omp parallel for
+            for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
+            {
+                if (mesh.m_nodes[i].IsValid())
+                {
+                    mesh.m_nodes[i] = conversion(mesh.m_nodes[i]);
+                }
+            }
+
+            mesh.m_projection = conversion.TargetProjection();
+            mesh.Administrate();
+        }
     };
 
 } // namespace meshkernel
