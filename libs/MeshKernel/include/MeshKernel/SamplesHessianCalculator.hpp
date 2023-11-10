@@ -45,6 +45,7 @@ namespace meshkernel
         /// @param[in] numberOfSmoothingIterations The number of smoothing iterations for the sample set
         /// @param[in] numX The number of samples x coordinates
         /// @param[in] numY The number of samples y coordinates
+        /// @returns A vector of samples containing the real component the local hessian eigenvalues
         static std::vector<Sample> ComputeSamplesHessian(const std::vector<Sample>& rawSamplePoints,
                                                          const Projection projection,
                                                          UInt numberOfSmoothingIterations,
@@ -55,6 +56,9 @@ namespace meshkernel
         /// @brief Smooth sample data
         ///
         /// From (smooth_samples.f90)
+        /// @param[in] sampleData The sample points
+        /// @param[in] numberOfSmoothingIterations  The number of smoothing iterations for the sample set
+        /// @param[in] hessian The hessian matrix where to store the result of the hessian calculations
         static void SmoothSamples(const std::vector<Sample>& sampleData,
                                   const UInt numberOfSmoothingIterations,
                                   Hessian& hessian);
@@ -62,6 +66,9 @@ namespace meshkernel
         /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
         ///
         /// From (comp_grad.f90)
+        /// @param[in] samplePoints The sample points
+        /// @param[in] projection  The number of smoothing iterations for the sample set
+        /// @param[in] hessian The hessian matrix where to store the result of the hessian calculations
         static void ComputeGradient(const std::vector<Sample>& samplePoints,
                                     const Projection projection,
                                     const Hessian& hessian,
