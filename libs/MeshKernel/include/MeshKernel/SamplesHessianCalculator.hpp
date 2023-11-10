@@ -63,9 +63,7 @@ namespace meshkernel
                                   const UInt numberOfSmoothingIterations,
                                   Hessian& hessian);
 
-        /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L)
-        ///
-        /// From (comp_grad.f90)
+        /// @brief Compute the gradient in a control volume defined by the polygon (0-R-1-L, comp_grad.f90)
         static void ComputeGradient(const std::vector<Sample>& samplePoints,
                                     const Projection projection,
                                     const Hessian& hessian,
@@ -80,9 +78,7 @@ namespace meshkernel
                                     double& dareaL,
                                     double& dareaR);
 
-        /// @brief Compute the gradient of the sample data along an edge
-        ///
-        /// From (comp_samplegradi.f90)
+        /// @brief Compute the gradient of the sample data along an edge (comp_samplegradi.f90)
         static void ComputeSampleGradient(const std::vector<Sample>& samplePoints,
                                           const Projection projection,
                                           const Hessian& hessian,
@@ -94,16 +90,12 @@ namespace meshkernel
                                           double& dareaL,
                                           double& dareaR);
 
-        /// @brief Compute the Hessian
-        ///
-        /// From (comp_samplehessian.f90)
+        /// @brief Compute the Hessian From (comp_samplehessian.f90)
         static void ComputeHessian(const std::vector<Sample>& samplePoints,
                                    const Projection projection,
                                    Hessian& hessian);
 
-        /// @brief Prepare the sample data for the Hessian computation.
-        ///
-        /// From (prepare_samplehessian.f90)
+        /// @brief Prepare the sample data for the Hessian computation (prepare_samplehessian.f90)
         static void PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
                                             const Projection projection,
                                             UInt numberOfSmoothingIterations,
