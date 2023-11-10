@@ -35,14 +35,14 @@
 
 namespace meshkernel
 {
-    /// @brief A class implementing the computation of the hessian sample set
+    /// @brief A class implementing the computation of the real component the local hessian eigenvalues
     class SamplesHessianCalculator final
     {
     public:
         /// @brief Computation of the samples Hessian
         /// @param[in] rawSamplePoints The raw sample points
         /// @param[in] projection The mesh projection
-        /// @param[in] numberOfSmoothingIterations The number of smoothing iterations for the sample set
+        /// @param[in] numberOfSmoothingIterations The number of smoothing iterations for the samples
         /// @param[in] numX The number of samples x coordinates
         /// @param[in] numY The number of samples y coordinates
         /// @returns A vector of samples containing the real component the local hessian eigenvalues
@@ -57,7 +57,7 @@ namespace meshkernel
         ///
         /// From (smooth_samples.f90)
         /// @param[in] sampleData The sample points
-        /// @param[in] numberOfSmoothingIterations  The number of smoothing iterations for the sample set
+        /// @param[in] numberOfSmoothingIterations  The number of smoothing iterations for the samples
         /// @param[in] hessian The hessian matrix where to store the result of the hessian calculations
         static void SmoothSamples(const std::vector<Sample>& sampleData,
                                   const UInt numberOfSmoothingIterations,

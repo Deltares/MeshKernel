@@ -38,6 +38,7 @@ namespace meshkernel
     /// @brief Array containing dimensions of the hessian
     using HessianDimension = std::array<UInt, 3>;
 
+    /// @brief Define column major orientation
     using MatrixColMajor = lin_alg::Matrix<double, Eigen::ColMajor>;
 
     /// @brief The hessian values
@@ -47,13 +48,16 @@ namespace meshkernel
     class Hessian
     {
     public:
+        /// @brief Default constructor
         Hessian() = default;
 
+        /// @brief Constructor taking 3 parameters
         Hessian(const UInt dim1, const UInt dim2, const UInt dim3);
 
+        /// @brief Resize taking 3 parameters
         void resize(const UInt dim1, const UInt dim2, const UInt dim3);
 
-        /// @brief Get the dimension for each dimension?
+        /// @brief Get the dimension for each dimension
         ///
         /// @param [in] dim For which dimension is the size required, dim in range [0,2]
         UInt size(const UInt dim) const;
@@ -85,8 +89,8 @@ namespace meshkernel
         void zero();
 
     private:
-        // Since the size of the first index will be 5, and most accesses are vary the first index fastest
-        // try: std::vector<lin_alg::MatrixColMajor<std::array<double,5>>> m_hessian
+        // Since the size of the first index will be 2, and most accesses are vary the first index fastest
+        // try: std::vector<lin_alg::MatrixColMajor<std::array<double,2>>> m_hessian
         std::vector<MatrixColMajor> m_hessian;
         HessianDimension m_dimensions{0, 0, 0};
     };
