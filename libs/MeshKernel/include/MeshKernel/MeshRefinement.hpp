@@ -170,7 +170,6 @@ namespace meshkernel
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
-        /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
         void FindHangingNodes(UInt face);
 
         /// @brief Get the number of hanging nodes
