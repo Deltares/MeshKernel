@@ -27,7 +27,6 @@
 
 #pragma once
 
-#include <array>
 #include <vector>
 
 #include "MeshKernel/Hessian.hpp"
@@ -37,11 +36,11 @@
 namespace meshkernel
 {
 
-    class HessianCalculator final
+    class SamplesHessianCalculator final
     {
     public:
         /// @brief Intended to be the computation of the Hessian samples
-        static std::vector<Sample> ComputeHessianSamples(const std::vector<Sample>& rawSamplePoints,
+        static std::vector<Sample> ComputeSamplesHessian(const std::vector<Sample>& rawSamplePoints,
                                                          const Projection projection,
                                                          UInt numberOfSmoothingIterations,
                                                          const UInt numX,

@@ -1012,7 +1012,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
 
     const auto sampleData = generateSampleData(testCase, sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
 
-    auto samples = HessianCalculator::ComputeHessianSamples(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
+    auto samples = SamplesHessianCalculator::ComputeSamplesHessian(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
 
     const auto interpolator = std::make_shared<AveragingInterpolation>(*mesh,
                                                                        samples,

@@ -1,9 +1,9 @@
-#include "MeshKernel/HessianCalculator.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/Operations.hpp"
 
 #include <Eigen/Core>
 
-void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sampleData,
+void meshkernel::SamplesHessianCalculator::SmoothSamples(const std::vector<Sample>& sampleData,
                                                   const UInt numberOfSmoothingIterations,
                                                   Hessian& hessian)
 {
@@ -82,7 +82,7 @@ void meshkernel::HessianCalculator::SmoothSamples(const std::vector<Sample>& sam
     }
 }
 
-void meshkernel::HessianCalculator::ComputeGradient(const std::vector<Sample>& samplePoints,
+void meshkernel::SamplesHessianCalculator::ComputeGradient(const std::vector<Sample>& samplePoints,
                                                     const Projection projection,
                                                     const Hessian& hessian,
                                                     const UInt ip0,
@@ -172,7 +172,7 @@ void meshkernel::HessianCalculator::ComputeGradient(const std::vector<Sample>& s
     dareaR = 0.5 * std::abs(OuterProductTwoSegments(x1, rightPoint, x1, leftPoint, projection));
 }
 
-void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Sample>& samplePoints,
+void meshkernel::SamplesHessianCalculator::ComputeSampleGradient(const std::vector<Sample>& samplePoints,
                                                           const Projection projection,
                                                           const Hessian& hessian,
                                                           const UInt direction,
@@ -256,7 +256,7 @@ void meshkernel::HessianCalculator::ComputeSampleGradient(const std::vector<Samp
     }
 }
 
-void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& samplePoints,
+void meshkernel::SamplesHessianCalculator::ComputeHessian(const std::vector<Sample>& samplePoints,
                                                    const Projection projection,
                                                    Hessian& hessian)
 {
@@ -345,7 +345,7 @@ void meshkernel::HessianCalculator::ComputeHessian(const std::vector<Sample>& sa
     }
 }
 
-void meshkernel::HessianCalculator::PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
+void meshkernel::SamplesHessianCalculator::PrepareSampleForHessian(const std::vector<Sample>& samplePoints,
                                                             const Projection projection,
                                                             UInt numberOfSmoothingIterations,
                                                             Hessian& hessian)
@@ -354,7 +354,7 @@ void meshkernel::HessianCalculator::PrepareSampleForHessian(const std::vector<Sa
     ComputeHessian(samplePoints, projection, hessian);
 }
 
-std::vector<meshkernel::Sample> meshkernel::HessianCalculator::ComputeHessianSamples(const std::vector<Sample>& rawSamplePoints,
+std::vector<meshkernel::Sample> meshkernel::SamplesHessianCalculator::ComputeSamplesHessian(const std::vector<Sample>& rawSamplePoints,
                                                                                      const Projection projection,
                                                                                      UInt numberOfSmoothingIterations,
                                                                                      const UInt numX,

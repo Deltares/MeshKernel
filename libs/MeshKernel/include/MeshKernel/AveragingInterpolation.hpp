@@ -34,8 +34,6 @@
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
-#include "MeshKernel/HessianCalculator.hpp"
-
 namespace meshkernel
 {
     // Forward declarations
