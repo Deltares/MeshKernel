@@ -37,6 +37,7 @@ set(
   ${SRC_DIR}/MeshConversionTests.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
+  ${SRC_DIR}/MeshConversionTests.cpp
   ${SRC_DIR}/OrthogonalizationTests.cpp
   ${SRC_DIR}/ParametersTests.cpp
   ${SRC_DIR}/PointTests.cpp

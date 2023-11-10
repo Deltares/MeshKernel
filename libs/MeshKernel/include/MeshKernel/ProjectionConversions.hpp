@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <concepts>
+
 #include <boost/geometry.hpp>
 #include <boost/geometry/core/coordinate_system.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -83,23 +85,12 @@ namespace meshkernel
             return result;
         }
 
-        /// @brief Apply the reverse conversion of a point in Cartesian coordinate system to Spherical
-        Point reverse(const Point& pnt) const
-        {
-            UTM utm{pnt.x, pnt.y};
-            LongLat longLat{0.0, 0.0};
-            projection.inverse(utm, longLat);
-
-            Point result(longLat.x(), longLat.y());
-            return result;
-        }
-
     private:
         /// @brief The origin of the target mesh.
         ProjectionConversion projection;
     };
 
-    /// @brief Converts points from spherical to Cartesian coordinate system.
+    /// @brief Converts points from spherical to Cartesian coordinate system using an ESPG code.
     template <const int EpsgCode>
     class ConvertSphericalToCartesianEPSG : public ConvertSphericalToCartesianBase<bg::srs::projection<bg::srs::static_epsg<EpsgCode>>>
     {
@@ -117,6 +108,73 @@ namespace meshkernel
     public:
         /// @brief Construct spherical to Cartesian with an zone string
         ConvertSphericalToCartesian(const std::string& zone) : ConvertSphericalToCartesianBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
+    };
+
+    //--------------------------------
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    template <typename ProjectionConversion>
+    class ConvertCartesianToSphericalBase
+    {
+    public:
+        /// @brief point in longitude-latitude space
+        using LongLat = bg::model::d2::point_xy<double, bg::cs::geographic<bg::degree>>;
+
+        /// @brief Point in x-y space
+        using UTM = bg::model::d2::point_xy<double>;
+
+        /// @brief Constructor with projection
+        ConvertCartesianToSphericalBase(const ProjectionConversion& proj) : projection(proj) {}
+
+        /// @brief Default destructor
+        virtual ~ConvertCartesianToSphericalBase() = default;
+
+        /// @brief The coordinate system of the point parameter to the conversion operation.
+        Projection SourceProjection() const
+        {
+            return Projection::cartesian;
+        }
+
+        /// @brief The coordinate system of the point result of the conversion operation.
+        Projection TargetProjection() const
+        {
+            return Projection::spherical;
+        }
+
+        /// @brief Apply the conversion of a point in Cartesian coordinate system to spherical
+        Point operator()(const Point& pnt) const
+        {
+            UTM utm{pnt.x, pnt.y};
+            LongLat longLat{0.0, 0.0};
+            projection.inverse(utm, longLat);
+
+            Point result(longLat.x(), longLat.y());
+            return result;
+        }
+
+    private:
+        /// @brief The origin of the target mesh.
+        ProjectionConversion projection;
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system using an EPSG code.
+    template <const int EpsgCode>
+    class ConvertCartesianToSphericalEPSG : public ConvertCartesianToSphericalBase<boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>>
+    {
+    public:
+        /// @brief The EPSG projection
+        using EpsgProjection = boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>;
+
+        /// @brief Construct spherical to Cartesian with an EPSG code
+        ConvertCartesianToSphericalEPSG() : ConvertCartesianToSphericalBase<boost::geometry::srs::projection<boost::geometry::srs::static_epsg<EpsgCode>>>(EpsgProjection()) {}
+    };
+
+    /// @brief Converts points from spherical to Cartesian coordinate system.
+    class ConvertCartesianToSpherical : public ConvertCartesianToSphericalBase<bg::srs::projection<>>
+    {
+    public:
+        /// @brief Construct spherical to Cartesian with an zone string
+        ConvertCartesianToSpherical(const std::string& zone) : ConvertCartesianToSphericalBase<bg::srs::projection<>>(bg::srs::proj4(zone)) {}
     };
 
 } // namespace meshkernel
