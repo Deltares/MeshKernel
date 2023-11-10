@@ -2,7 +2,6 @@
 #include "SampleFileReader.hpp"
 
 #include <gtest/gtest.h>
-
 #include <vector>
 
 #include "MeshKernel/AveragingInterpolation.hpp"
@@ -11,10 +10,7 @@
 #include "MeshKernel/HessianCalculator.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Operations.hpp"
-
 #include "TestUtils/MakeMeshes.hpp"
-
-#include <fstream>
 
 namespace mk = meshkernel;
 
