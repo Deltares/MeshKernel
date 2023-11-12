@@ -30,11 +30,11 @@
 #include <memory>
 #include <string>
 
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Point.hpp>
-#include <MeshKernel/Definitions.hpp>
 
 std::tuple<size_t,
            size_t,
