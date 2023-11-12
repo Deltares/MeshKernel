@@ -139,6 +139,9 @@ namespace meshkernel
         /// @return Vector of 2d mesh indices
         std::vector<UInt> const& Mesh2dIndices() const { return m_mesh2dIndices; }
 
+        /// @brief Sets the 1d and 2d mesh indices
+        /// @param[in] mesh1dIndices The 1d mesh indices
+        /// @param[in] mesh2dIndices The 2d mesh indices
         void SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
                         const std::vector<meshkernel::UInt>& mesh2dIndices)
         {
