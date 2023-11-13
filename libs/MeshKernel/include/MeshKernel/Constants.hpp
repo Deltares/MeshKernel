@@ -33,14 +33,14 @@
 #include <limits>
 #include <math.h>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
 #include <Eigen/Core>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 
