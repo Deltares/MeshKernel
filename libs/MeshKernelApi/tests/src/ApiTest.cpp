@@ -2717,7 +2717,6 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     meshkernelapi::Mesh2D mesh2d{};
     mkernel_mesh2d_get_dimensions(mk_id, mesh2d);
 
-
     // allocate memory for the arrays of mesh2d
     std::vector<int> edge_faces(mesh2d.num_edges * 2);
     std::vector<int> edge_nodes(mesh2d.num_edges * 2);

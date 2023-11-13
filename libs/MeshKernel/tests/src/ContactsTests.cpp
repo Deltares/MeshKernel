@@ -343,7 +343,8 @@ TEST(Contacts, ComputeBoundaryContacts)
     ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 2, 3, 5, 6, 7, 8));
 }
 
-TEST(Contacts, SetIndices) {
+TEST(Contacts, SetIndices)
+{
     Contacts contacts;
     std::vector<UInt> mesh1dIndices;
     std::vector<UInt> mesh2dIndices;
