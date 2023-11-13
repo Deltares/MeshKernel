@@ -119,13 +119,13 @@ void meshkernel::SamplesHessianCalculator::ComputeGradient(const std::vector<Sam
     dareaL = 0.0;
     dareaR = 0.0;
 
-    Point x0 = samplePoints[ip0];
+    Point x0 = {samplePoints[ip0].x, samplePoints[ip0].y};
     double z0 = samplePoints[ip0].value;
 
     const MatrixColMajor& zss = hessian.getMatrix(0);
 
-    Point x1 = samplePoints[ip1];
-    double z1 = zss(ip1); // zss(1, ip1);
+    Point x1 = {samplePoints[ip1].x, samplePoints[ip1].y};
+    double z1 = zss(ip1);
 
     if (x0.x == constants::missing::doubleValue ||
         x0.y == constants::missing::doubleValue ||
