@@ -342,3 +342,22 @@ TEST(Contacts, ComputeBoundaryContacts)
     ASSERT_THAT(contacts.Mesh1dIndices(), ::testing::ElementsAre(0, 2, 6, 0, 7, 7, 7, 7));
     ASSERT_THAT(contacts.Mesh2dIndices(), ::testing::ElementsAre(0, 1, 2, 3, 5, 6, 7, 8));
 }
+
+TEST(Contacts, SetIndices) {
+    Contacts contacts;
+    std::vector<UInt> mesh1dIndices;
+    std::vector<UInt> mesh2dIndices;
+    EXPECT_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices), AlgorithmError);
+
+    mesh1dIndices = {1, 2, 3};
+    EXPECT_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices), AlgorithmError);
+
+    mesh2dIndices = {1, 2, 3, 4};
+    EXPECT_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices), AlgorithmError);
+
+    mesh2dIndices = {4, 5, 6};
+    EXPECT_NO_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices));
+
+    EXPECT_EQ(mesh1dIndices, contacts.Mesh1dIndices());
+    EXPECT_EQ(mesh2dIndices, contacts.Mesh2dIndices());
+}

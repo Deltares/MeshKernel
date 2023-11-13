@@ -465,3 +465,28 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     m_areComputed = true;
 }
+
+void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
+                          const std::vector<meshkernel::UInt>& mesh2dIndices)
+{
+    if (mesh1dIndices.empty())
+    {
+        throw AlgorithmError("The 1d mesh indices vector is empty");
+    }
+
+    if (mesh2dIndices.empty())
+    {
+        throw AlgorithmError("The 2d mesh indices vector is empty");
+    }
+
+    if (mesh1dIndices.size() != mesh2dIndices.size())
+    {
+        throw AlgorithmError("The size of the 1d mesh indices ({}) and that of the 2d mesh indices ({}) are not equal",
+                             mesh1dIndices.size(),
+                             mesh2dIndices.size());
+    }
+
+    m_mesh1dIndices = mesh1dIndices;
+    m_mesh2dIndices = mesh2dIndices;
+    m_areComputed = true;
+}

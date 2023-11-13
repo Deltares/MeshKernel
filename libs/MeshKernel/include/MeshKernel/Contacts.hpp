@@ -143,12 +143,7 @@ namespace meshkernel
         /// @param[in] mesh1dIndices The 1d mesh indices
         /// @param[in] mesh2dIndices The 2d mesh indices
         void SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
-                        const std::vector<meshkernel::UInt>& mesh2dIndices)
-        {
-            m_mesh1dIndices = mesh1dIndices;
-            m_mesh2dIndices = mesh2dIndices;
-            m_areComputed = true;
-        }
+                        const std::vector<meshkernel::UInt>& mesh2dIndices);
 
         /// @brief checks whether contacts have been computed
         /// @return True if the contact is crossing an existing contact
