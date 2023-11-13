@@ -332,6 +332,13 @@ std::vector<meshkernel::Sample> meshkernel::SamplesHessianCalculator::ComputeSam
                                                                                             const UInt numX,
                                                                                             const UInt numY)
 {
+
+    if (numX * numY != rawSamplePoints.size())
+    {
+        throw ConstraintError("Inconsistent dimensions: sample points size {}, where as num-x {{}} and num-y {{}} = {}",
+                              rawSamplePoints.size(), numX, numY, numX * numY);
+    }
+
     std::vector<Sample> result = rawSamplePoints;
 
     Hessian hessian(2, numY, numX);
