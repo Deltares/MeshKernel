@@ -27,12 +27,12 @@
 
 #pragma once
 
-#include "MeshInterpolation.hpp"
-
-#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshInterpolation.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 
 namespace meshkernel
 {
@@ -129,7 +129,7 @@ namespace meshkernel
         /// param[in]  strategy            The input strategy
         /// param[in] searchPolygon        The bounding polygon
         /// @return The interpolated result
-        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
+        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint, std::vector<Point> const& searchPolygon);
 
         /// @brief Gets the sample value from an r-tree query
         /// param[in] index            The query index

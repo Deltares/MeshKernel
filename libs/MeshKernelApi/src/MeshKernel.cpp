@@ -1531,7 +1531,9 @@ namespace meshkernelapi
 
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
+            // averagingMethod may be used uninitialised;
             meshkernel::AveragingInterpolation::Method averagingMethod;
+
             if (meshRefinementParameters.refinement_type == 1)
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
