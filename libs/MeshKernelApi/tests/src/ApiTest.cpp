@@ -2672,6 +2672,8 @@ TEST_F(CartesianApiTestFixture, RotateMesh)
 
 TEST(Mesh2D, Mesh2DSetAndAdd)
 {
+    using namespace meshkernelapi;
+
     meshkernel::UInt const num_nodes_x = 20;
     meshkernel::UInt const num_nodes_y = 15;
     double const delta = 1.0;
@@ -2683,7 +2685,7 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
                                          num_nodes_y,
                                          delta,
                                          meshkernel::Point(0.0, 0.0));
-    meshkernelapi::Mesh2D mesh2d_1{};
+    Mesh2D mesh2d_1{};
     mesh2d_1.num_nodes = static_cast<int>(num_nodes_1);
     mesh2d_1.num_edges = static_cast<int>(num_edges_1);
     mesh2d_1.node_x = node_x_1.data();
@@ -2696,7 +2698,7 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
                                          num_nodes_y,
                                          delta,
                                          meshkernel::Point(0.0 + offset_x, 0.0));
-    meshkernelapi::Mesh2D mesh2d_2{};
+    Mesh2D mesh2d_2{};
     mesh2d_2.num_nodes = static_cast<int>(num_nodes_2);
     mesh2d_2.num_edges = static_cast<int>(num_edges_2);
     mesh2d_2.node_x = node_x_2.data();
@@ -2705,17 +2707,17 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 
     // allocate state
     int mk_id = 0;
-    const auto errorCode = meshkernelapi::mkernel_allocate_state(0, mk_id);
+    [[maybe_unused]] int errorCode = mkernel_allocate_state(0, mk_id);
 
     // first initialise using the first mesh, mesh2d_1
-    mkernel_mesh2d_set(mk_id, mesh2d_1);
+    errorCode = mkernel_mesh2d_set(mk_id, mesh2d_1);
 
     // then add the second mesh, mesh2d_2
-    mkernel_mesh2d_add(mk_id, mesh2d_2);
+    errorCode = mkernel_mesh2d_add(mk_id, mesh2d_2);
 
     // get the dimensions of the resulting mesh
-    meshkernelapi::Mesh2D mesh2d{};
-    mkernel_mesh2d_get_dimensions(mk_id, mesh2d);
+    Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(mk_id, mesh2d);
 
     // allocate memory for the arrays of mesh2d
     std::vector<int> edge_faces(mesh2d.num_edges * 2);
@@ -2743,7 +2745,7 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     mesh2d.face_y = face_y.data();
 
     // upon allocation, get the data of the resulting mesh
-    mkernel_mesh2d_get_data(mk_id, mesh2d);
+    errorCode = mkernel_mesh2d_get_data(mk_id, mesh2d);
 
     EXPECT_EQ(mesh2d.num_nodes, num_nodes_1 + num_nodes_2);
     EXPECT_EQ(mesh2d.num_edges, num_edges_1 + num_edges_2);
@@ -2768,5 +2770,5 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
         EXPECT_EQ(mesh2d.edge_nodes[i], mesh2d_2.edge_nodes[i - num_nodes_1]);
     }
 
-    meshkernelapi::mkernel_deallocate_state(mk_id);
+    errorCode = mkernel_deallocate_state(mk_id);
 }
