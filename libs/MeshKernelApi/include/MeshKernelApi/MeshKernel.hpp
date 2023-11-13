@@ -722,6 +722,15 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
+        /// @brief Rotate a mesh2d about a point.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] centreX X-coordinate of the centre of rotation
+        /// @param[in] centreY Y-coordinate of the centre of rotation
+        /// @param[in] theta  Angle of rotation
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_rotate(int meshKernelId, double centreX, double centreY, double theta);
+
         /// @brief Snaps the spline (or splines) to the land boundary
         ///
         /// @param[in] meshKernelId     The id of the mesh state
@@ -735,6 +744,14 @@ namespace meshkernelapi
                                                              GeometryList& splines,
                                                              int startSplineIndex,
                                                              int endSplineIndex);
+
+        /// @brief Translate a mesh2d
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] translationX X-component of the translation vector
+        /// @param[in] translationY Y-component of the translation vector
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
