@@ -51,9 +51,6 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_transformSamples(transformSamples),
       m_minNumSamples(minNumSamples)
 {
-    // build sample r-tree for searches
-    // m_samplesRtree.BuildTree(m_samples);
-    // m_visitedSamples.resize(m_samples.size());
 }
 
 void AveragingInterpolation::Compute()
@@ -252,7 +249,6 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        // auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
         return ComputeInterpolationResultFromNeighbors(interpolationPoint, searchPolygon);
     }
 
