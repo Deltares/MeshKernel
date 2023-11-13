@@ -873,7 +873,7 @@ meshkernel::UInt MeshRefinement::CountEdgesToRefine(UInt face) const
 
 void MeshRefinement::ComputeRefinementMasksForRefinementLevels(UInt face,
                                                                size_t& numberOfEdgesToRefine,
-                                                               std::vector<UInt>& edgeToRefine)
+                                                               std::vector<UInt>& edgeToRefine) const
 {
     if (m_interpolant->GetFaceResult(face) <= 0)
     {
@@ -971,7 +971,7 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
 
 void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
                                                              size_t& numberOfEdgesToRefine,
-                                                             std::vector<UInt>& edgeToRefine)
+                                                             std::vector<UInt>& edgeToRefine) const
 {
 
     double maxEdgeLength = 0.0;
@@ -987,7 +987,7 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
     }
 
     double absInterpolatedFaceValue = std::abs(m_interpolant->GetFaceResult(face));
-    double threshold = 1.0; // 1.0e2;
+    double threshold = 1.0; // In Fortran code this value is 100
     double thresholdMin = 1.0;
     double hmin = m_meshRefinementParameters.min_edge_size;
 

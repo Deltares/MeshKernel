@@ -110,7 +110,6 @@ inline const meshkernel::HessianDimension& meshkernel::Hessian::size() const
 
 inline meshkernel::UInt meshkernel::Hessian::get1DIndex(const UInt dim2, const UInt dim3) const
 {
-    // return m_dimensions[2] * dim2 + dim3;
     return dim2 + m_dimensions[1] * dim3;
 }
 

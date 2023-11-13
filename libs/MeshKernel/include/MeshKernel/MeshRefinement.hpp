@@ -148,7 +148,7 @@ namespace meshkernel
         /// @brief Computes the refinement mask for refinement based on levels
         void ComputeRefinementMasksForRefinementLevels(UInt face,
                                                        size_t& numberOfEdgesToRefine,
-                                                       std::vector<UInt>& edgeToRefine);
+                                                       std::vector<UInt>& edgeToRefine) const;
 
         /// @brief Computes the refinement mask for refinement based on wave courant criteria
         void ComputeRefinementMasksForWaveCourant(UInt face,
@@ -158,7 +158,7 @@ namespace meshkernel
         /// @brief Computes the refinement mask for refinement based on ridge detection
         void ComputeRefinementMasksForRidgeDetection(UInt face,
                                                      size_t& numberOfEdgesToRefine,
-                                                     std::vector<UInt>& edgeToRefine);
+                                                     std::vector<UInt>& edgeToRefine) const;
 
         /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
