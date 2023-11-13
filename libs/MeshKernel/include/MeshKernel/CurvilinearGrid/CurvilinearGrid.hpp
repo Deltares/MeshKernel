@@ -82,7 +82,7 @@ namespace meshkernel
 
         /// @brief Set the grid nodes of a curvilinear grid instance
         /// @param[in] gridNodes The input grid points
-        void SetGridNodes(lin_alg::Matrix<Point> gridNodes);
+        void SetGridNodes(const lin_alg::Matrix<Point>& gridNodes);
 
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons

@@ -2753,11 +2753,13 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     for (meshkernel::UInt i = 0; i < num_nodes_1; ++i)
     {
         EXPECT_EQ(mesh2d.node_x[i], mesh2d_1.node_x[i]);
+        EXPECT_EQ(mesh2d.node_y[i], mesh2d_1.node_y[i]);
     }
 
     for (meshkernel::UInt i = num_nodes_1; i < num_nodes_2; ++i)
     {
         EXPECT_EQ(mesh2d.node_x[i], mesh2d_2.node_x[i - num_nodes_1]);
+        EXPECT_EQ(mesh2d.node_y[i], mesh2d_2.node_y[i - num_nodes_1]);
     }
 
     for (meshkernel::UInt i = 0; i < num_edges_1; ++i)
