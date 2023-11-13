@@ -23,8 +23,8 @@ void meshkernel::Hessian::resize(const UInt dim1, const UInt dim2, const UInt di
 
 void meshkernel::Hessian::zero()
 {
-    for (UInt i = 0; i < m_hessian.size(); ++i)
+    for (MatrixColMajor& mat : m_hessian)
     {
-        m_hessian[i].setZero();
+        mat.setZero();
     }
 }
