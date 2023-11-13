@@ -133,6 +133,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_func_distance_from_a_point.html">FuncDistanceFromAPoint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is used to compute the point on a spline closest to another point.  <a href="structmeshkernel_1_1_func_distance_from_a_point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_hessian.html">Hessian</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The hessian values.  <a href="classmeshkernel_1_1_hessian.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing land boundaries. These are used to visualise the land-water interface.  <a href="classmeshkernel_1_1_land_boundaries.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -217,6 +220,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_sample.html">Sample</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing a sample with two coordinates and a value.  <a href="classmeshkernel_1_1_sample.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_samples_hessian_calculator.html">SamplesHessianCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the computation of the real component the local hessian eigenvalues.  <a href="classmeshkernel_1_1_samples_hessian_calculator.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html">Smoother</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).  <a href="classmeshkernel_1_1_smoother.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,6 +258,14 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nam
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df84a19a3f709cf8">Edge</a> = std::pair&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;</td></tr>
 <tr class="memdesc:a07234cba2b9eb4b8df84a19a3f709cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes an edge with two indices. <br /></td></tr>
 <tr class="separator:a07234cba2b9eb4b8df84a19a3f709cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70be77418c65ec9bd57ccd7ef6941185"><td class="memItemLeft" align="right" valign="top"><a id="a70be77418c65ec9bd57ccd7ef6941185"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a70be77418c65ec9bd57ccd7ef6941185">HessianDimension</a> = std::array&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, 3 &gt;</td></tr>
+<tr class="memdesc:a70be77418c65ec9bd57ccd7ef6941185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array containing dimensions of the hessian. <br /></td></tr>
+<tr class="separator:a70be77418c65ec9bd57ccd7ef6941185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e4f9a4fcbcd58d048139eaa3bb75666"><td class="memItemLeft" align="right" valign="top"><a id="a9e4f9a4fcbcd58d048139eaa3bb75666"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a9e4f9a4fcbcd58d048139eaa3bb75666">MatrixColMajor</a> = lin_alg::Matrix&lt; double, Eigen::ColMajor &gt;</td></tr>
+<tr class="memdesc:a9e4f9a4fcbcd58d048139eaa3bb75666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define column major orientation. <br /></td></tr>
+<tr class="separator:a9e4f9a4fcbcd58d048139eaa3bb75666"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -495,6 +509,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aee5597f3aa1803e0c97e6436b39b1d76">IncrementValidValue</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;value, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> increment)</td></tr>
 <tr class="memdesc:aee5597f3aa1803e0c97e6436b39b1d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increment a valid value by an increment. <br /></td></tr>
 <tr class="separator:aee5597f3aa1803e0c97e6436b39b1d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46c4949453f4ccd0a0665a22b5eefe1e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a46c4949453f4ccd0a0665a22b5eefe1e">dot</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p, const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v)</td></tr>
+<tr class="memdesc:a46c4949453f4ccd0a0665a22b5eefe1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the dot product of a point and a vector.  <a href="namespacemeshkernel.html#a46c4949453f4ccd0a0665a22b5eefe1e">More...</a><br /></td></tr>
+<tr class="separator:a46c4949453f4ccd0a0665a22b5eefe1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf5ffaf3fedceee72e69d15769156f62"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#acf5ffaf3fedceee72e69d15769156f62">dot</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p)</td></tr>
+<tr class="memdesc:acf5ffaf3fedceee72e69d15769156f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the dot product of a point and a vector.  <a href="namespacemeshkernel.html#acf5ffaf3fedceee72e69d15769156f62">More...</a><br /></td></tr>
+<tr class="separator:acf5ffaf3fedceee72e69d15769156f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#adbadb3777c64aaa66fd0e98c1f8c3379">operator-</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;pnt)</td></tr>
 <tr class="memdesc:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unary minus.  <a href="namespacemeshkernel.html#adbadb3777c64aaa66fd0e98c1f8c3379">More...</a><br /></td></tr>
 <tr class="separator:adbadb3777c64aaa66fd0e98c1f8c3379"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -571,6 +591,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aec0e604161b010fc791f1c101e15e929">dot</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v1, const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v2)</td></tr>
 <tr class="memdesc:aec0e604161b010fc791f1c101e15e929"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the dot product of two vectors. <br /></td></tr>
 <tr class="separator:aec0e604161b010fc791f1c101e15e929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac71ef840d2dc0d5498a4aa8654f859f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_vector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aac71ef840d2dc0d5498a4aa8654f859f">operator-</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;vec)</td></tr>
+<tr class="memdesc:aac71ef840d2dc0d5498a4aa8654f859f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unary minus.  <a href="namespacemeshkernel.html#aac71ef840d2dc0d5498a4aa8654f859f">More...</a><br /></td></tr>
+<tr class="separator:aac71ef840d2dc0d5498a4aa8654f859f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87a2b779bf8c32afccb7e82fce67131c"><td class="memItemLeft" align="right" valign="top"><a id="a87a2b779bf8c32afccb7e82fce67131c"></a>
 <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a87a2b779bf8c32afccb7e82fce67131c">operator+</a> (const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v1, const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;v2)</td></tr>
 <tr class="memdesc:a87a2b779bf8c32afccb7e82fce67131c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two vectors. <br /></td></tr>
@@ -1620,6 +1643,84 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The normal distance from the segment, the intersection of the normal projection on the segment, the distance from the first node, expressed as ratio of the segment length </dd></dl>
+
+</div>
+</div>
+<a id="a46c4949453f4ccd0a0665a22b5eefe1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46c4949453f4ccd0a0665a22b5eefe1e">&#9670;&nbsp;</a></span>dot() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the dot product of a point and a vector. </p>
+<p>This is mainly a convenience function </p>
+
+</div>
+</div>
+<a id="acf5ffaf3fedceee72e69d15769156f62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf5ffaf3fedceee72e69d15769156f62">&#9670;&nbsp;</a></span>dot() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the dot product of a point and a vector. </p>
+<p>This is mainly a convenience function </p>
 
 </div>
 </div>
@@ -3014,7 +3115,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a499ee1d8ecd9fa1392b0e2fbac2e3436"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a499ee1d8ecd9fa1392b0e2fbac2e3436">&#9670;&nbsp;</a></span>operator-() <span class="overload">[1/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a499ee1d8ecd9fa1392b0e2fbac2e3436">&#9670;&nbsp;</a></span>operator-() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3053,7 +3154,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="af8e2875be014e11a062de50adcfd476c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8e2875be014e11a062de50adcfd476c">&#9670;&nbsp;</a></span>operator-() <span class="overload">[2/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af8e2875be014e11a062de50adcfd476c">&#9670;&nbsp;</a></span>operator-() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3092,7 +3193,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a44c434d4afa56e5f2437bd1070bc4714"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44c434d4afa56e5f2437bd1070bc4714">&#9670;&nbsp;</a></span>operator-() <span class="overload">[3/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a44c434d4afa56e5f2437bd1070bc4714">&#9670;&nbsp;</a></span>operator-() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3131,7 +3232,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="adbadb3777c64aaa66fd0e98c1f8c3379"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbadb3777c64aaa66fd0e98c1f8c3379">&#9670;&nbsp;</a></span>operator-() <span class="overload">[4/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adbadb3777c64aaa66fd0e98c1f8c3379">&#9670;&nbsp;</a></span>operator-() <span class="overload">[4/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3160,7 +3261,7 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <a id="a2e71d30dd3146b06771e7222f3c77351"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e71d30dd3146b06771e7222f3c77351">&#9670;&nbsp;</a></span>operator-() <span class="overload">[5/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e71d30dd3146b06771e7222f3c77351">&#9670;&nbsp;</a></span>operator-() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3195,6 +3296,35 @@ template&lt;typename T &gt; </div>
 
 <p>Subtract vector from a point. </p>
 <dl class="section return"><dt>Returns</dt><dd>\( (p.x - v.x, p.y - v.y)\) </dd></dl>
+
+</div>
+</div>
+<a id="aac71ef840d2dc0d5498a4aa8654f859f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac71ef840d2dc0d5498a4aa8654f859f">&#9670;&nbsp;</a></span>operator-() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_vector.html">meshkernel::Vector</a> meshkernel::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_vector.html">Vector</a> &amp;&#160;</td>
+          <td class="paramname"><em>vec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unary minus. </p>
+<dl class="section return"><dt>Returns</dt><dd>\( (-vec.x, -vec.y)\) </dd></dl>
 
 </div>
 </div>

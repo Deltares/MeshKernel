@@ -112,57 +112,66 @@ $(function() {
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;math.h&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#if defined(__linux__) || defined(__APPLE__)</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#pragma GCC diagnostic push</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wmaybe-uninitialized&quot;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">namespace </span>constants</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="comment">// missing values</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keyword">namespace </span>missing</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            constexpr <span class="keywordtype">double</span> innerOuterSeparator = -998.0;                                     </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            constexpr <span class="keywordtype">double</span> doubleValue = -999.0;                                             </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            constexpr <span class="keywordtype">int</span> intValue = -999;                                                     </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> uintValue = std::numeric_limits&lt;UInt&gt;::max();                       </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            constexpr Eigen::Index EigenIndexValue = std::numeric_limits&lt;Eigen::Index&gt;::max(); </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }                                                                                      <span class="comment">// namespace missing</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="comment">// often used values</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keyword">namespace </span>numeric</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> squareRootOfThree = std::sqrt(3.0); </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            constexpr <span class="keywordtype">double</span> oneThird = 1.0 / 3.0;                  </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            constexpr <span class="keywordtype">int</span> defaultSnappingIterations = 5;            </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        }                                                           <span class="comment">// namespace numeric</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="comment">// unit conversion constants</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keyword">namespace </span>conversion</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            constexpr <span class="keywordtype">double</span> degToRad = M_PI / 180.0;   </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            constexpr <span class="keywordtype">double</span> radToDeg = 1.0 / degToRad; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        }                                               <span class="comment">// namespace conversion</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="comment">// geometric constants</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keyword">namespace </span>geometric</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;            constexpr <span class="keywordtype">double</span> earth_radius = 6378137.0;                  </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            constexpr <span class="keywordtype">double</span> inverse_earth_radius = 1.0 / earth_radius; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            constexpr <span class="keywordtype">double</span> absLatitudeAtPoles = 0.0001;               </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            constexpr <span class="keywordtype">double</span> refinementTolerance = 1.0e-2;              </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodesInQuadrilateral = 4;                 </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodesInTriangle = 3;                      </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }                                                               <span class="comment">// namespace geometric</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keyword">namespace </span>physical</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            constexpr <span class="keywordtype">double</span> gravity = 9.80665;                    </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> sqrt_gravity = std::sqrt(gravity); </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }                                                          <span class="comment">// namespace physical</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    } <span class="comment">// namespace constants</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#if defined(__linux__) || defined(__APPLE__)</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#pragma GCC diagnostic pop</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;{</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">namespace </span>constants</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="comment">// missing values</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keyword">namespace </span>missing</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            constexpr <span class="keywordtype">double</span> innerOuterSeparator = -998.0;                                     </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            constexpr <span class="keywordtype">double</span> doubleValue = -999.0;                                             </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            constexpr <span class="keywordtype">int</span> intValue = -999;                                                     </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> uintValue = std::numeric_limits&lt;UInt&gt;::max();                       </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            constexpr Eigen::Index EigenIndexValue = std::numeric_limits&lt;Eigen::Index&gt;::max(); </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }                                                                                      <span class="comment">// namespace missing</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="comment">// often used values</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keyword">namespace </span>numeric</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> squareRootOfThree = std::sqrt(3.0); </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            constexpr <span class="keywordtype">double</span> oneThird = 1.0 / 3.0;                  </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            constexpr <span class="keywordtype">int</span> defaultSnappingIterations = 5;            </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        }                                                           <span class="comment">// namespace numeric</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="comment">// unit conversion constants</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keyword">namespace </span>conversion</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            constexpr <span class="keywordtype">double</span> degToRad = M_PI / 180.0;   </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            constexpr <span class="keywordtype">double</span> radToDeg = 1.0 / degToRad; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        }                                               <span class="comment">// namespace conversion</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="comment">// geometric constants</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keyword">namespace </span>geometric</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            constexpr <span class="keywordtype">double</span> earth_radius = 6378137.0;                  </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            constexpr <span class="keywordtype">double</span> inverse_earth_radius = 1.0 / earth_radius; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            constexpr <span class="keywordtype">double</span> absLatitudeAtPoles = 0.0001;               </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;            constexpr <span class="keywordtype">double</span> refinementTolerance = 1.0e-2;              </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodesInQuadrilateral = 4;                 </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;            constexpr <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodesInTriangle = 3;                      </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        }                                                               <span class="comment">// namespace geometric</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keyword">namespace </span>physical</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            constexpr <span class="keywordtype">double</span> gravity = 9.80665;                    </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;            <span class="keyword">static</span> <span class="keywordtype">double</span> <span class="keyword">const</span> sqrt_gravity = std::sqrt(gravity); </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        }                                                          <span class="comment">// namespace physical</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    } <span class="comment">// namespace constants</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:37</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:36</div></div>

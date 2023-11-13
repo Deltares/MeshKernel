@@ -105,6 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad9e87c3c0fb5d00e7d7c6f85a56a43aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#ad9e87c3c0fb5d00e7d7c6f85a56a43aa">Point</a> (double <a class="el" href="classmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a">x</a>, double <a class="el" href="classmeshkernel_1_1_point.html#aad94b2da9a9218821edbc5a4db62e513">y</a>)</td></tr>
 <tr class="memdesc:ad9e87c3c0fb5d00e7d7c6f85a56a43aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor initializing with given coordinates.  <a href="classmeshkernel_1_1_point.html#ad9e87c3c0fb5d00e7d7c6f85a56a43aa">More...</a><br /></td></tr>
 <tr class="separator:ad9e87c3c0fb5d00e7d7c6f85a56a43aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb72cd221c13395bd76bb62c1171726"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a2bb72cd221c13395bd76bb62c1171726">SetInvalid</a> ()</td></tr>
+<tr class="memdesc:a2bb72cd221c13395bd76bb62c1171726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the point to be invalid.  <a href="classmeshkernel_1_1_point.html#a2bb72cd221c13395bd76bb62c1171726">More...</a><br /></td></tr>
+<tr class="separator:a2bb72cd221c13395bd76bb62c1171726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4500f059fa4a47efdae32f1a5ca783f4"><td class="memItemLeft" align="right" valign="top"><a id="a4500f059fa4a47efdae32f1a5ca783f4"></a>
 <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a4500f059fa4a47efdae32f1a5ca783f4">operator+=</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;p)</td></tr>
 <tr class="memdesc:a4500f059fa4a47efdae32f1a5ca783f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inplace add point to point. <br /></td></tr>
@@ -154,10 +157,6 @@ Public Member Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a5861eebe8cc2aaedca2eac8b8572d619">IsValid</a> (const double missingValue=constants::missing::doubleValue) const</td></tr>
 <tr class="memdesc:a5861eebe8cc2aaedca2eac8b8572d619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if one of the point coordinates equals to <code>missingValue</code>. <br /></td></tr>
 <tr class="separator:a5861eebe8cc2aaedca2eac8b8572d619"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bb72cd221c13395bd76bb62c1171726"><td class="memItemLeft" align="right" valign="top"><a id="a2bb72cd221c13395bd76bb62c1171726"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_point.html#a2bb72cd221c13395bd76bb62c1171726">SetInvalid</a> ()</td></tr>
-<tr class="memdesc:a2bb72cd221c13395bd76bb62c1171726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the point to be invalid. <br /></td></tr>
-<tr class="separator:a2bb72cd221c13395bd76bb62c1171726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -274,6 +273,34 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 
 <p>Inplace divide point by point. </p>
 <dl class="section note"><dt>Note</dt><dd>No check is made that any component of the divisor is 0 </dd></dl>
+
+</div>
+</div>
+<a id="a2bb72cd221c13395bd76bb62c1171726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bb72cd221c13395bd76bb62c1171726">&#9670;&nbsp;</a></span>SetInvalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Point::SetInvalid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the point to be invalid. </p>
+<p>Both x and y values are set to the null, missing value </p>
 
 </div>
 </div>
