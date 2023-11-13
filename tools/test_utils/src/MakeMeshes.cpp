@@ -250,7 +250,8 @@ std::tuple<meshkernel::UInt,
 MakeRectangularMeshForApiTesting(
     meshkernel::UInt numRows,
     meshkernel::UInt numColumns,
-    double delta)
+    double delta,
+    meshkernel::Point origin)
 {
 
     const auto numY = numRows + static_cast<meshkernel::UInt>(1);
@@ -267,8 +268,8 @@ MakeRectangularMeshForApiTesting(
         for (meshkernel::UInt j = 0; j < numY; ++j)
         {
 
-            nodeX[nodeIndex] = i * delta;
-            nodeY[nodeIndex] = j * delta;
+            nodeX[nodeIndex] = origin.x + i * delta;
+            nodeY[nodeIndex] = origin.y + j * delta;
             indicesValues[i][j] = i * numY + j;
             nodeIndex++;
         }

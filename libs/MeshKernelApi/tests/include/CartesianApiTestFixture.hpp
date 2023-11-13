@@ -14,8 +14,7 @@ public:
     /// Constructor for allocating state
     CartesianApiTestFixture()
     {
-        int isGeographic = 0;
-        const auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, m_meshKernelId);
+        const auto errorCode = meshkernelapi::mkernel_allocate_state(0, m_meshKernelId);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not allocate state");

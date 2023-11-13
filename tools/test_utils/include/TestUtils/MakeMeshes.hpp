@@ -82,7 +82,8 @@ std::tuple<meshkernel::UInt,
 MakeRectangularMeshForApiTesting(
     meshkernel::UInt numRows,
     meshkernel::UInt numColumns,
-    double delta);
+    double delta,
+    meshkernel::Point origin = {0.0, 0.0});
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 

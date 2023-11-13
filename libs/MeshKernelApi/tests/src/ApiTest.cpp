@@ -2488,3 +2488,105 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi_OnClockWisePoly
     ASSERT_EQ(5, mesh2d.num_nodes);
     ASSERT_EQ(8, mesh2d.num_edges);
 }
+
+TEST(Mesh2D, Mesh2DSetAndAdd)
+{
+    meshkernel::UInt const num_nodes_x = 20;
+    meshkernel::UInt const num_nodes_y = 15;
+    double const delta = 1.0;
+    double const offset_x = 0.5;
+
+    // create first mesh
+    auto [num_nodes_1, num_edges_1, node_x_1, node_y_1, edge_nodes_1] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    meshkernelapi::Mesh2D mesh2d_1{};
+    mesh2d_1.num_nodes = static_cast<int>(num_nodes_1);
+    mesh2d_1.num_edges = static_cast<int>(num_edges_1);
+    mesh2d_1.node_x = node_x_1.data();
+    mesh2d_1.node_y = node_y_1.data();
+    mesh2d_1.edge_nodes = edge_nodes_1.data();
+
+    // create second mesh
+    auto [num_nodes_2, num_edges_2, node_x_2, node_y_2, edge_nodes_2] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0 + offset_x, 0.0));
+    meshkernelapi::Mesh2D mesh2d_2{};
+    mesh2d_2.num_nodes = static_cast<int>(num_nodes_2);
+    mesh2d_2.num_edges = static_cast<int>(num_edges_2);
+    mesh2d_2.node_x = node_x_2.data();
+    mesh2d_2.node_y = node_y_2.data();
+    mesh2d_2.edge_nodes = edge_nodes_2.data();
+
+    // allocate state
+    int mk_id = 0;
+    const auto errorCode = meshkernelapi::mkernel_allocate_state(0, mk_id);
+
+    // first initialise using the first mesh, mesh2d_1
+    mkernel_mesh2d_set(mk_id, mesh2d_1);
+
+    // then add the second mesh, mesh2d_2
+    mkernel_mesh2d_add(mk_id, mesh2d_2);
+
+    // get the dimensions of the resulting mesh
+    meshkernelapi::Mesh2D mesh2d{};
+    mkernel_mesh2d_get_dimensions(mk_id, mesh2d);
+
+
+    // allocate memory for the arrays of mesh2d
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> face_edges(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_faces = edge_faces.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
+    mesh2d.nodes_per_face = nodes_per_face.data();
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_x = edge_x.data();
+    mesh2d.edge_y = edge_y.data();
+    mesh2d.face_x = face_x.data();
+    mesh2d.face_y = face_y.data();
+
+    // upon allocation, get the data of the resulting mesh
+    mkernel_mesh2d_get_data(mk_id, mesh2d);
+
+    EXPECT_EQ(mesh2d.num_nodes, num_nodes_1 + num_nodes_2);
+    EXPECT_EQ(mesh2d.num_edges, num_edges_1 + num_edges_2);
+
+    for (meshkernel::UInt i = 0; i < num_nodes_1; ++i)
+    {
+        EXPECT_EQ(mesh2d.node_x[i], mesh2d_1.node_x[i]);
+    }
+
+    for (meshkernel::UInt i = num_nodes_1; i < num_nodes_2; ++i)
+    {
+        EXPECT_EQ(mesh2d.node_x[i], mesh2d_2.node_x[i - num_nodes_1]);
+    }
+
+    for (meshkernel::UInt i = 0; i < num_edges_1; ++i)
+    {
+        EXPECT_EQ(mesh2d.edge_nodes[i], mesh2d_1.edge_nodes[i]);
+    }
+
+    for (meshkernel::UInt i = num_edges_1; i < num_edges_2; ++i)
+    {
+        EXPECT_EQ(mesh2d.edge_nodes[i], mesh2d_2.edge_nodes[i - num_nodes_1]);
+    }
+
+    meshkernelapi::mkernel_deallocate_state(mk_id);
+}
