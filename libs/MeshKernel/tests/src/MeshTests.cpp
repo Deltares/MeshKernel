@@ -357,7 +357,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+    mesh->BuildTree(meshkernel::Location::Nodes);
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
@@ -370,7 +370,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->Administrate();
 
     // builds edges RTree
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+    mesh->BuildTree(meshkernel::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(5, mesh->m_edgesRTree.Size());
@@ -382,7 +382,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     meshkernel::Point newPoint{10.0, 10.0};
-    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+    mesh->BuildTree(meshkernel::Location::Nodes);
     mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
@@ -392,7 +392,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->Administrate();
 
     // building a tree based on nodes
-    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+    mesh->BuildTree(meshkernel::Location::Nodes);
 
     // After deleting a node, the nodes RTree is reduced
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
@@ -414,7 +414,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->Administrate();
 
     // re-build tree
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+    mesh->BuildTree(meshkernel::Location::Edges);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(5, mesh->m_edgesRTree.Size());
@@ -424,7 +424,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+    mesh->BuildTree(meshkernel::Location::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     mesh->DeleteEdge(0);
@@ -433,7 +433,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->Administrate();
 
     // re-build tree
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+    mesh->BuildTree(meshkernel::Location::Edges);
 
     // deleting an edge produces an edges rtree of size 3
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
@@ -448,7 +448,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    mesh->BuildTree(meshkernel::Mesh::Location::Nodes);
+    mesh->BuildTree(meshkernel::Location::Nodes);
     const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
 
@@ -465,7 +465,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
-    mesh->BuildTree(meshkernel::Mesh::Location::Edges);
+    mesh->BuildTree(meshkernel::Location::Edges);
     const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
 

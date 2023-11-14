@@ -28,6 +28,7 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
 
 namespace meshkernel
@@ -60,5 +61,22 @@ namespace meshkernel
         Clockwise,    ///< Points define a clockwise traversal of the polygon
         AntiClockwise ///< Points define a anti-clockwise (counter-clockwise) traversal of the polygon
     };
+
+    /// @enum Location
+    /// @brief Mesh locations enumeration
+    enum class Location
+    {
+        Faces = 0,  ///< Faces
+        Nodes = 1,  ///< Nodes
+        Edges = 2,  ///< Edges
+        Unknown = 3 ///< Unknown
+    };
+
+    /// @brief Maps Location enumeration to a string
+    inline static std::map<Location, std::string> const LocationToString = {
+        {Location::Faces, "Faces"},
+        {Location::Nodes, "Nodes"},
+        {Location::Edges, "Edges"},
+        {Location::Unknown, "Unknown"}};
 
 } // namespace meshkernel

@@ -38,7 +38,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
             *mesh,
             samples,
             AveragingInterpolation::Method::MinAbsValue,
-            Mesh::Location::Faces,
+            Location::Faces,
             1.0,
             false,
             false,
