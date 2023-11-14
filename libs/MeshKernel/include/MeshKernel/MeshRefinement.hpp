@@ -85,7 +85,8 @@ namespace meshkernel
         enum class RefinementType
         {
             WaveCourant = 1,
-            RefinementLevels = 2
+            RefinementLevels = 2,
+            RidgeDetection = 3
         };
 
     public:
@@ -144,6 +145,21 @@ namespace meshkernel
         /// @brief Computes the edge and face refinement mask from the minimum edge size
         void ComputeRefinementMaskFromEdgeSize();
 
+        /// @brief Computes the refinement mask for refinement based on levels
+        void ComputeRefinementMasksForRefinementLevels(UInt face,
+                                                       size_t& numberOfEdgesToRefine,
+                                                       std::vector<UInt>& edgeToRefine) const;
+
+        /// @brief Computes the refinement mask for refinement based on wave courant criteria
+        void ComputeRefinementMasksForWaveCourant(UInt face,
+                                                  size_t& numberOfEdgesToRefine,
+                                                  std::vector<UInt>& edgeToRefine);
+
+        /// @brief Computes the refinement mask for refinement based on ridge detection
+        void ComputeRefinementMasksForRidgeDetection(UInt face,
+                                                     size_t& numberOfEdgesToRefine,
+                                                     std::vector<UInt>& edgeToRefine) const;
+
         /// @brief Computes refinement masks (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
         /// @param face The face index
@@ -154,7 +170,6 @@ namespace meshkernel
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
         /// @param[in] face The current face index
-        /// @returns The number of hanging edges on the face, the number of hanging nodes and the number of edges to refine
         void FindHangingNodes(UInt face);
 
         /// @brief Get the number of hanging nodes

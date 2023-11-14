@@ -59,6 +59,11 @@ namespace meshkernel
         {
         }
 
+        /// @brief Set the point to be invalid
+        ///
+        /// Both x and y values are set to the null, missing value
+        void SetInvalid();
+
         /// @brief Inplace add point to point.
         Point& operator+=(const Point& p);
 
@@ -117,10 +122,17 @@ namespace meshkernel
 
             return !isInvalid;
         }
-
-        /// @brief Set the point to be invalid.
-        void SetInvalid();
     };
+
+    /// @brief Compute the dot product of a point and a vector.
+    ///
+    /// This is mainly a convenience function
+    double dot(const Point& p, const Vector& v);
+
+    /// @brief Compute the dot product of a point and a vector.
+    ///
+    /// This is mainly a convenience function
+    double dot(const Vector& v, const Point& p);
 
     /// @brief Unary minus
     ///
@@ -242,6 +254,12 @@ namespace meshkernel
 
 } // namespace meshkernel
 
+inline void meshkernel::Point::SetInvalid()
+{
+    x = constants::missing::doubleValue;
+    y = constants::missing::doubleValue;
+}
+
 inline meshkernel::Point& meshkernel::Point::operator+=(const Point& p)
 {
     x += p.x;
@@ -310,6 +328,16 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     x *= p;
     y *= p;
     return *this;
+}
+
+inline double meshkernel::dot(const Point& p, const Vector& v)
+{
+    return p.x * v.x() + p.y * v.y();
+}
+
+inline double meshkernel::dot(const Vector& v, const Point& p)
+{
+    return dot(p, v);
 }
 
 inline meshkernel::Point meshkernel::operator-(const Point& pnt)
@@ -415,10 +443,4 @@ inline meshkernel::Vector meshkernel::GetDeltaCartesian(const Point& p1, const P
 inline meshkernel::Point meshkernel::PointAlongLine(const Point& startPoint, const Point& endPoint, const double lambda)
 {
     return (1.0 - lambda) * startPoint + lambda * endPoint;
-}
-
-void inline meshkernel::Point::SetInvalid()
-{
-    x = constants::missing::doubleValue;
-    y = constants::missing::doubleValue;
 }
