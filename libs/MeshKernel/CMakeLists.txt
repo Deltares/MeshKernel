@@ -117,6 +117,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
+  ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
@@ -129,6 +130,7 @@ set(
   ${DOMAIN_INC_DIR}/Polygon.hpp
   ${DOMAIN_INC_DIR}/PolygonalEnclosure.hpp
   ${DOMAIN_INC_DIR}/Polygons.hpp
+  ${DOMAIN_INC_DIR}/ProjectionConversions.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
@@ -245,6 +247,7 @@ target_precompile_headers(
     <array>
     <cassert>
     <cmath>
+    <concepts>
     <initializer_list>
     <limits>
     <map>
