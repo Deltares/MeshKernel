@@ -2670,7 +2670,6 @@ TEST_F(CartesianApiTestFixture, RotateMesh)
     }
 }
 
-
 TEST(Mesh1D, Mesh1DSetAndAdd)
 {
     using namespace meshkernelapi;
@@ -2859,5 +2858,4 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-}
 }
