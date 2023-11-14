@@ -323,8 +323,8 @@ namespace meshkernel
                                   MeshKernelError::FormattedMessage());
         }
 
-        meshkernel::UInt m_mesh_index;  ///< The invalid mesh location index.
-        Location m_mesh_location; ///< The location type.
+        meshkernel::UInt m_mesh_index; ///< The invalid mesh location index.
+        Location m_mesh_location;      ///< The location type.
     };
 
     /// @brief A class for throwing linear algebra exceptions
