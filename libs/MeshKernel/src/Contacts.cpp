@@ -1,5 +1,6 @@
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Contacts.hpp"
+
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
