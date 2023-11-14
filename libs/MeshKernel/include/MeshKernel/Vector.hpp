@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include <cmath>
 #include <array>
+#include <cmath>
 
 #include "MeshKernel/Constants.hpp"
 
