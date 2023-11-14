@@ -254,33 +254,44 @@ std::vector<double> meshkernel::Polygon::EdgeLengths() const
     return edgeLengths;
 }
 
-// Refines the section from node specified by index to the next node. The first node is added, the next node is not
-void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
-                   const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
-                   const double refinementDistance,
-                   const meshkernel::Projection projection)
+namespace
 {
-    // Line segment starting point.
-    const auto& n0 = *nodeIterator;
-    const auto& n1 = *std::next(nodeIterator);
-
-    refinedPolygon.push_back(n0);
-
-    const double segmentLength = ComputeDistance(n0, n1, projection);
-
-    int n = std::lround(segmentLength / refinementDistance);
-    const double refinedLength = n * refinementDistance;
-    if (refinedLength > segmentLength ||
-        meshkernel::IsEqual(refinedLength, segmentLength, meshkernel::constants::geometric::refinementTolerance))
-        --n;
-
-    // Refined segment step size.
-    const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
-    for (auto i = 1; i <= n; ++i)
+    /// @brief Refines the segment between two polygon nodes, starting with the node specified by the iterator up to,
+    /// but not including, the next node.
+    /// @param refinedPolygon     [in,out] a buffer of points into which the refined points are written
+    /// @param nodeIterator       [in] position in the original, unrefined polygon that contains the first point of
+    ///                           the refinement
+    /// @param refinementDistance [in] the distance between two refined nodes
+    /// @param projection         [in] the projection used for computing the length of the segment to be refined
+    void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
+                       const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
+                       const double refinementDistance,
+                       const meshkernel::Projection projection)
     {
-        refinedPolygon.push_back(n0 + i * delta);
+        // Line segment starting point.
+        const auto& n0 = *nodeIterator;
+        const auto& n1 = *std::next(nodeIterator);
+
+        refinedPolygon.push_back(n0);
+
+        const double segmentLength = ComputeDistance(n0, n1, projection);
+
+        int n = std::lround(segmentLength / refinementDistance);
+        const double refinedLength = n * refinementDistance;
+        if (refinedLength > segmentLength ||
+            meshkernel::IsEqual(refinedLength, segmentLength, meshkernel::constants::geometric::refinementTolerance))
+        {
+            --n;
+        }
+
+        // Refined segment step size.
+        const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
+        for (auto i = 1; i <= n; ++i)
+        {
+            refinedPolygon.push_back(n0 + i * delta);
+        }
     }
-}
+} // unnamed namespace
 
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
 {
@@ -300,9 +311,9 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     const auto from = std::next(m_nodes.begin(), iStart);
     const auto to = std::next(m_nodes.begin(), iEnd);
 
-    auto computeDistance = [this](auto l, auto p)
+    auto computeDistance = [&projection = std::as_const(m_projection)](auto l, auto p)
     {
-        return l + ComputeDistance(p, *std::next(&p), m_projection);
+        return l + ComputeDistance(p, *std::next(&p), projection);
     };
 
     if (startIndex < endIndex)
@@ -317,7 +328,9 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 
         // refine edges starting with startIndex
         for (auto it = from; it != to; ++it)
+        {
             RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+        }
 
         // copy the nodes starting with endIndex until the end
         std::copy(to, m_nodes.end(), std::back_inserter(refinedPolygon));

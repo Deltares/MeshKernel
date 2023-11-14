@@ -176,16 +176,19 @@ TEST(PolygonTests, FailureConstructionTests)
     EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::cartesian), mk::ConstraintError);
 }
 
-void CheckPolygonPointVectors(const std::vector<mk::Point>& actual, const std::vector<mk::Point>& expected)
+namespace
 {
-    ASSERT_EQ(actual.size(), expected.size());
-    for (size_t i = 0; i < actual.size(); ++i)
+    void CheckPolygonPointVectors(const std::vector<mk::Point>& actual, const std::vector<mk::Point>& expected)
     {
-        constexpr double tolerance = 1e-6;
-        EXPECT_NEAR(actual[i].x, expected[i].x, tolerance);
-        EXPECT_NEAR(actual[i].y, expected[i].y, tolerance);
+        ASSERT_EQ(actual.size(), expected.size());
+        for (size_t i = 0; i < actual.size(); ++i)
+        {
+            constexpr double tolerance = 1e-6;
+            EXPECT_NEAR(actual[i].x, expected[i].x, tolerance);
+            EXPECT_NEAR(actual[i].y, expected[i].y, tolerance);
+        }
     }
-}
+} // namespace
 
 TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStartIndexAndEndIndex)
 {
@@ -198,6 +201,7 @@ TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStart
     const auto refined = polygon.Refine(1, 3, 2);
 
     // assert
+    SCOPED_TRACE("Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStartIndexAndEndIndex");
     CheckPolygonPointVectors(refined, expected);
 }
 
@@ -212,6 +216,7 @@ TEST(PolygonTests, Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartI
     const auto refined = polygon.Refine(3, 1, 2);
 
     // assert
+    SCOPED_TRACE("Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartIndexToVectorEndAndFromVectorBeginToEndIndex");
     CheckPolygonPointVectors(refined, expected);
 }
 
@@ -225,6 +230,7 @@ TEST(PolygonTests, Refine_WhenStartIndexEqualsEndIndex_ThenNoRefinementIsDone)
     const auto refined = polygon.Refine(2, 2, .5);
 
     // assert
+    SCOPED_TRACE("Refine_WhenStartIndexEqualsEndIndex_ThenNoRefinementIsDone");
     CheckPolygonPointVectors(refined, outer);
 }
 
@@ -240,6 +246,7 @@ TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_Avo
     const auto refined = polygon.Refine(1, 3, d);
 
     // assert
+    SCOPED_TRACE("Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_AvoidsTinyRefinedSegment");
     CheckPolygonPointVectors(refined, expected);
 }
 
@@ -255,6 +262,7 @@ TEST(PolygonTests, Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotO
     const auto refined = polygon.Refine(1, 3, d);
 
     // assert
+    SCOPED_TRACE("Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotOvershootAndUsesOriginalCornerPoint");
     CheckPolygonPointVectors(refined, expected);
 }
 
@@ -270,6 +278,7 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     const auto refined = polygon.Refine(1, 3, d);
 
     // assert
+    SCOPED_TRACE("Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance");
     CheckPolygonPointVectors(refined, expected);
 }
 
