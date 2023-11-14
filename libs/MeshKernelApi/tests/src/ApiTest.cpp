@@ -2678,7 +2678,7 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
     meshkernelapi::Mesh1D mesh1d_1;
     meshkernelapi::Mesh1D mesh1d_2;
     {
-        std::vector node_x{
+        std::vector<double> node_x{
             1.73493900000000,
             2.35659313023165,
             5.38347452702839,
@@ -2687,7 +2687,7 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
             25.3723169493137,
             25.8072280000000};
 
-        std::vector node_y{
+        std::vector<double> node_y{
             -7.6626510000000,
             1.67281447902331,
             10.3513746546384,
@@ -2696,7 +2696,7 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
             24.1623588554512,
             33.5111870000000};
 
-        std::vector edge_nodes{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6};
+        std::vector<int> edge_nodes{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6};
 
         mesh1d_1.node_x = node_x.data();
         mesh1d_1.node_y = node_y.data();
@@ -2704,15 +2704,17 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
         mesh1d_1.edge_nodes = edge_nodes.data();
         mesh1d_1.num_edges = static_cast<int>(edge_nodes.size()) / 2;
 
-        double const offset = node_x.back() + 1.0;
-        std::transform(node_x.begin(),
-                       node_x.end(),
-                       node_x.begin(),
+        // do not overwrite node_x
+        std::vector<double> node_x_cp(node_x);
+        double const offset = node_x_cp.back() + 1.0;
+        std::transform(node_x_cp.begin(),
+                       node_x_cp.end(),
+                       node_x_cp.begin(),
                        [offset](double const val)
                        { return val + offset; });
-        mesh1d_2.node_x = node_x.data();
-        mesh1d_2.node_y = node_y.data();
-        mesh1d_2.num_nodes = static_cast<int>(node_x.size());
+        mesh1d_2.node_x = node_x_cp.data();
+        mesh1d_2.node_y = node_x_cp.data();
+        mesh1d_2.num_nodes = static_cast<int>(node_x_cp.size());
         mesh1d_2.edge_nodes = edge_nodes.data();
         mesh1d_2.num_edges = static_cast<int>(edge_nodes.size()) / 2;
     }
@@ -2748,12 +2750,14 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
     {
         EXPECT_EQ(mesh1d.node_x[i], mesh1d_1.node_x[i]);
         EXPECT_EQ(mesh1d.node_y[i], mesh1d_1.node_y[i]);
+        std::cout << i << ' ' << mesh1d.node_x[i] << ' ' << mesh1d_1.node_x[i] << std::endl;
     }
 
     for (int i = mesh1d_1.num_nodes; i < mesh1d_1.num_nodes + mesh1d_2.num_nodes; ++i)
     {
         EXPECT_EQ(mesh1d.node_x[i], mesh1d_2.node_x[i - mesh1d_1.num_nodes]);
         EXPECT_EQ(mesh1d.node_y[i], mesh1d_2.node_y[i - mesh1d_1.num_nodes]);
+        std::cout << i << ' ' << mesh1d.node_x[i] << ' ' << mesh1d_2.node_x[i - mesh1d_1.num_nodes] << std::endl;
     }
 
     errorCode = mkernel_deallocate_state(mk_id);
