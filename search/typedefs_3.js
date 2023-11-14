@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['uint_1329',['UInt',['../namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28',1,'meshkernel']]]
+  ['matrixcolmajor_1379',['MatrixColMajor',['../namespacemeshkernel.html#a9e4f9a4fcbcd58d048139eaa3bb75666',1,'meshkernel']]]
 ];

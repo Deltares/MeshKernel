@@ -1,13 +1,14 @@
 var searchData=
 [
-  ['landboundaries_250',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; Polygons &gt; polygons)']]],
-  ['landboundary_251',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel::LandBoundary'],['../classmeshkernel_1_1_land_boundary.html#ad2e7d36dc35d8796461a33a0acb74cd6',1,'meshkernel::LandBoundary::LandBoundary()']]],
-  ['length_252',['length',['../classmeshkernel_1_1_vector.html#ab3e9a44ab7c1e139b1364e53cf3060e8',1,'meshkernel::Vector']]],
-  ['lengthsquared_253',['lengthSquared',['../classmeshkernel_1_1_vector.html#a062eee060772375fb9d67f2bd4a94b4c',1,'meshkernel::Vector']]],
-  ['linearalgebraerror_254',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]],
-  ['linearalgebraerrorcode_255',['LinearAlgebraErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44',1,'meshkernel']]],
-  ['linearinterpolationintriangle_256',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],
-  ['location_257',['Location',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63',1,'meshkernel::Mesh']]],
-  ['locationtostring_258',['LocationToString',['../classmeshkernel_1_1_mesh.html#af2ac1b6f6c9f21894e579ecad4ee2da3',1,'meshkernel::Mesh']]],
-  ['lowerleft_259',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
+  ['landboundaries_265',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; Polygons &gt; polygons)']]],
+  ['landboundary_266',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel::LandBoundary'],['../classmeshkernel_1_1_land_boundary.html#ad2e7d36dc35d8796461a33a0acb74cd6',1,'meshkernel::LandBoundary::LandBoundary()']]],
+  ['length_267',['length',['../classmeshkernel_1_1_vector.html#ab3e9a44ab7c1e139b1364e53cf3060e8',1,'meshkernel::Vector']]],
+  ['lengthsquared_268',['lengthSquared',['../classmeshkernel_1_1_vector.html#a062eee060772375fb9d67f2bd4a94b4c',1,'meshkernel::Vector']]],
+  ['linearalgebraerror_269',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]],
+  ['linearalgebraerrorcode_270',['LinearAlgebraErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44',1,'meshkernel']]],
+  ['linearinterpolationintriangle_271',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],
+  ['location_272',['Location',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63',1,'meshkernel::Mesh']]],
+  ['locationtostring_273',['LocationToString',['../classmeshkernel_1_1_mesh.html#af2ac1b6f6c9f21894e579ecad4ee2da3',1,'meshkernel::Mesh']]],
+  ['longlat_274',['LongLat',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a38c01b16de732b8916bf8cc0ce079c54',1,'meshkernel::ConvertSphericalToCartesianBase::LongLat()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a45de01c8d7a639cbc93943c4f63fd1ff',1,'meshkernel::ConvertCartesianToSphericalBase::LongLat()']]],
+  ['lowerleft_275',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
 ];
