@@ -53,6 +53,10 @@ void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point> gridNodes)
     m_numM = static_cast<UInt>(m_gridNodes.rows());
     m_numN = static_cast<UInt>(m_gridNodes.cols());
 
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+
     SetFlatCopies();
 }
 
