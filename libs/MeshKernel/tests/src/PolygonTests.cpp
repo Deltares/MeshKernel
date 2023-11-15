@@ -175,3 +175,109 @@ TEST(PolygonTests, FailureConstructionTests)
     std::vector<mk::Point> closedPolygonWithNull{{-10.0, -5.0}, {20.0, -5.0}, {20.0, 10.0}, {-10.0, 10.0}, {mk::constants::missing::doubleValue, mk::constants::missing::doubleValue}, {-10.0, -5.0}};
     EXPECT_THROW([[maybe_unused]] mk::Polygon polygon(closedPolygonWithNull, mk::Projection::cartesian), mk::ConstraintError);
 }
+
+namespace
+{
+    void CheckPolygonPointVectors(const std::vector<mk::Point>& actual, const std::vector<mk::Point>& expected)
+    {
+        ASSERT_EQ(actual.size(), expected.size());
+        for (size_t i = 0; i < actual.size(); ++i)
+        {
+            constexpr double tolerance = 1e-6;
+            EXPECT_NEAR(actual[i].x, expected[i].x, tolerance);
+            EXPECT_NEAR(actual[i].y, expected[i].y, tolerance);
+        }
+    }
+} // namespace
+
+TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStartIndexAndEndIndex)
+{
+    // setup
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., 2}, {5., 4}, {5., 5.}, {3, 5}, {1, 5}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, 2);
+
+    // assert
+    SCOPED_TRACE("Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStartIndexAndEndIndex");
+    CheckPolygonPointVectors(refined, expected);
+}
+
+TEST(PolygonTests, Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartIndexToVectorEndAndFromVectorBeginToEndIndex)
+{
+    // setup
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {2, 0}, {4, 0}, {5., 0.}, {5., 5.}, {0, 5.}, {0, 3}, {0, 1}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(3, 1, 2);
+
+    // assert
+    SCOPED_TRACE("Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartIndexToVectorEndAndFromVectorBeginToEndIndex");
+    CheckPolygonPointVectors(refined, expected);
+}
+
+TEST(PolygonTests, Refine_WhenStartIndexEqualsEndIndex_ThenNoRefinementIsDone)
+{
+    // setup
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(2, 2, .5);
+
+    // assert
+    SCOPED_TRACE("Refine_WhenStartIndexEqualsEndIndex_ThenNoRefinementIsDone");
+    CheckPolygonPointVectors(refined, outer);
+}
+
+TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_AvoidsTinyRefinedSegment)
+{
+    // setup
+    constexpr double d = 2.5 * (1 - .9 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    SCOPED_TRACE("Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_AvoidsTinyRefinedSegment");
+    CheckPolygonPointVectors(refined, expected);
+}
+
+TEST(PolygonTests, Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotOvershootAndUsesOriginalCornerPoint)
+{
+    // setup
+    constexpr double d = 2.5 * (1 + .9 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    SCOPED_TRACE("Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotOvershootAndUsesOriginalCornerPoint");
+    CheckPolygonPointVectors(refined, expected);
+}
+
+TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance)
+{
+    // setup
+    constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0., 0.}, {5., 0}, {5., d}, {5., 2 * d}, {5., 5.}, {5. - d, 5.}, {5. - 2 * d, 5.}, {0, 5.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    const auto refined = polygon.Refine(1, 3, d);
+
+    // assert
+    SCOPED_TRACE("Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance");
+    CheckPolygonPointVectors(refined, expected);
+}
