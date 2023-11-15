@@ -254,52 +254,110 @@ std::vector<double> meshkernel::Polygon::EdgeLengths() const
     return edgeLengths;
 }
 
+namespace
+{
+    /// @brief Refines the segment between two polygon nodes, starting with the node specified by the iterator up to,
+    /// but not including, the next node.
+    /// @param refinedPolygon     [in,out] a buffer of points into which the refined points are written
+    /// @param nodeIterator       [in] position in the original, unrefined polygon that contains the first point of
+    ///                           the refinement
+    /// @param refinementDistance [in] the distance between two refined nodes
+    /// @param projection         [in] the projection used for computing the length of the segment to be refined
+    void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
+                       const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
+                       const double refinementDistance,
+                       const meshkernel::Projection projection)
+    {
+        // Line segment starting point.
+        const auto& n0 = *nodeIterator;
+        const auto& n1 = *std::next(nodeIterator);
+
+        refinedPolygon.push_back(n0);
+
+        const double segmentLength = ComputeDistance(n0, n1, projection);
+
+        int n = std::lround(segmentLength / refinementDistance);
+        const double refinedLength = n * refinementDistance;
+        if (refinedLength > segmentLength ||
+            meshkernel::IsEqual(refinedLength, segmentLength, meshkernel::constants::geometric::refinementTolerance))
+        {
+            --n;
+        }
+
+        // Refined segment step size.
+        const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
+        for (auto i = 1; i <= n; ++i)
+        {
+            refinedPolygon.push_back(n0 + i * delta);
+        }
+    }
+} // unnamed namespace
+
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
 {
+    if (startIndex == endIndex)
+    {
+        return m_nodes;
+    }
 
-    if (startIndex > endIndex || endIndex >= m_nodes.size())
+    if (startIndex >= m_nodes.size() || endIndex >= m_nodes.size())
     {
         throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
     }
 
     std::vector<Point> refinedPolygon;
-    refinedPolygon.reserve(m_nodes.size());
+    const auto iStart = static_cast<std::vector<Point>::difference_type>(startIndex);
+    const auto iEnd = static_cast<std::vector<Point>::difference_type>(endIndex);
+    const auto from = std::next(m_nodes.begin(), iStart);
+    const auto to = std::next(m_nodes.begin(), iEnd);
 
-    // Add nodes before the section to be refined
-    for (size_t i = 0; i <= startIndex; ++i)
+    auto computeDistance = [&projection = std::as_const(m_projection)](auto l, auto p)
     {
-        refinedPolygon.emplace_back(m_nodes[i]);
-    }
+        return l + ComputeDistance(p, *std::next(&p), projection);
+    };
 
-    // Refine each line segment.
-    for (size_t i = startIndex; i < endIndex; ++i)
+    if (startIndex < endIndex)
     {
-        // Line segment starting point.
-        Point p = m_nodes[i];
-        const double segmentLength = ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
-        // Refined segment step size.
-        const Point delta = (m_nodes[i + 1] - m_nodes[i]) * refinementDistance / segmentLength;
-        double lengthAlongInterval = refinementDistance;
+        // estimate the size of the resulting polygon
+        const double length = std::accumulate(from, to, 0.0, computeDistance);
+        const size_t sizeEstimate = m_nodes.size() + std::lround(std::ceil(length / refinementDistance));
+        refinedPolygon.reserve(sizeEstimate);
 
-        // Exit when the lengthAlongInterval is greater or equal than segmentLength
-        // To prevent very small refined segment lengths, also exit when lengthAlongInterval is a small fraction less (defined by refinementTolerance)
-        while (lengthAlongInterval < segmentLength && !IsEqual(lengthAlongInterval, segmentLength, constants::geometric::refinementTolerance))
+        // copy the first segments, up to startIndex
+        std::copy(m_nodes.begin(), from, std::back_inserter(refinedPolygon));
+
+        // refine edges starting with startIndex
+        for (auto it = from; it != to; ++it)
         {
-            p += delta;
-            lengthAlongInterval += refinementDistance;
-            refinedPolygon.emplace_back(p);
+            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
         }
 
-        // Add last node to the refined polygon point sequence.
-        refinedPolygon.emplace_back(m_nodes[i + 1]);
+        // copy the nodes starting with endIndex until the end
+        std::copy(to, m_nodes.end(), std::back_inserter(refinedPolygon));
     }
-
-    // Add nodes after the section to be refined
-    for (size_t i = endIndex + 1; i < m_nodes.size(); ++i)
+    else
     {
-        refinedPolygon.emplace_back(m_nodes[i]);
-    }
+        // estimate the size of the resulting polygon
+        const auto last = std::prev(m_nodes.end());
+        const double length =
+            std::accumulate(m_nodes.begin(), from, 0.0, computeDistance) +
+            std::accumulate(to, last, 0.0, computeDistance);
 
+        const size_t sizeEstimate = m_nodes.size() + static_cast<size_t>(length / refinementDistance);
+        refinedPolygon.reserve(sizeEstimate);
+
+        // refine edges from the start to endIndex
+        for (auto it = m_nodes.begin(); it != to; ++it)
+            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+
+        // copy from endIndex up to startIndex
+        std::copy(to, from, std::back_inserter(refinedPolygon));
+
+        // refine edges from startIndex to the end of the polygon
+        for (auto it = from; it != last; ++it)
+            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+        refinedPolygon.push_back(m_nodes.back());
+    }
     return refinedPolygon;
 }
 

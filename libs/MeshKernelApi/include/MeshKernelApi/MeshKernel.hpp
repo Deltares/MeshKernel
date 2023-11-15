@@ -775,6 +775,14 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction);
 
+        /// @brief Change the projection of a mesh2d.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] projectionType new projection for the mesh
+        /// @param[in] zoneString The UTM zone and information string
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_convert(int meshKernelId, int projectionType, const std::string& zoneString);
+
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state

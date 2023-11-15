@@ -51,9 +51,6 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_transformSamples(transformSamples),
       m_minNumSamples(minNumSamples)
 {
-    // build sample r-tree for searches
-    m_samplesRtree.BuildTree(m_samples);
-    m_visitedSamples.resize(m_samples.size());
 }
 
 void AveragingInterpolation::Compute()
@@ -61,6 +58,16 @@ void AveragingInterpolation::Compute()
     if (m_samples.empty())
     {
         throw AlgorithmError("AveragingInterpolation::Compute: No samples available.");
+    }
+
+    if (m_samplesRtree.Empty())
+    {
+        m_samplesRtree.BuildTree(m_samples);
+    }
+
+    if (m_visitedSamples.empty())
+    {
+        m_visitedSamples.resize(m_samples.size());
     }
 
     if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
@@ -189,9 +196,11 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
     return m_samples[sample_index].value;
 }
 
-double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy,
+double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
 {
+
+    auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
 
     for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
     {
@@ -240,8 +249,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     if (m_samplesRtree.HasQueryResults())
     {
 
-        auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
-        return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
+        return ComputeInterpolationResultFromNeighbors(interpolationPoint, searchPolygon);
     }
 
     return constants::missing::doubleValue;

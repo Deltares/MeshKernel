@@ -54,12 +54,14 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshConversion.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/ProjectionConversions.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
@@ -614,6 +616,44 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_contacts->SetIndices(mesh1dIndices, mesh2dIndices);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_convert(int meshKernelId, int projectionType, const std::string& zoneString)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const meshkernel::Projection projection = meshkernel::GetProjectionValue(projectionType);
+
+            if (meshKernelState[meshKernelId].m_mesh2d->m_projection != projection)
+            {
+                if (meshKernelState[meshKernelId].m_projection == meshkernel::Projection::cartesian)
+                {
+                    meshkernel::ConvertCartesianToSpherical conversion(zoneString);
+                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                }
+                else if (meshKernelState[meshKernelId].m_projection == meshkernel::Projection::spherical)
+                {
+                    meshkernel::ConvertSphericalToCartesian conversion(zoneString);
+                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                }
+                else
+                {
+                    throw meshkernel::MeshKernelError("Mesh conversion between projection {} and {} has not been implemented.",
+                                                      meshkernel::ToString(meshKernelState[meshKernelId].m_projection), meshkernel::ToString(projection));
+                }
+            }
         }
         catch (...)
         {
@@ -1651,7 +1691,9 @@ namespace meshkernelapi
 
             auto samplesVector = ConvertGeometryListToSampleVector(samples);
 
+            // averagingMethod may be used uninitialised;
             meshkernel::AveragingInterpolation::Method averagingMethod;
+
             if (meshRefinementParameters.refinement_type == 1)
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
