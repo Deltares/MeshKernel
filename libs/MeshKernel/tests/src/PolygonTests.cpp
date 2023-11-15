@@ -281,4 +281,3 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     SCOPED_TRACE("Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance");
     CheckPolygonPointVectors(refined, expected);
 }
-
