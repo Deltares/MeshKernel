@@ -16,7 +16,12 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Add compiler-specific options and definitions per supported platform
 if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
+    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+      add_compile_options("-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    else()
+      add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    endif()
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
