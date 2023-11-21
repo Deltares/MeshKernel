@@ -35,6 +35,7 @@ set(
   ${SRC_DIR}/Definitions.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
+  ${SRC_DIR}/GenerateGlobalGrid.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
@@ -106,6 +107,7 @@ set(
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
   ${DOMAIN_INC_DIR}/Formatting.hpp
+  ${DOMAIN_INC_DIR}/GenerateGlobalGrid.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
