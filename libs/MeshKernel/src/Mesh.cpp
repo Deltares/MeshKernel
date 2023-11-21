@@ -192,9 +192,24 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
 void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
 {
-    if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
+    if (firstNodeIndex == constants::missing::uintValue)
     {
-        throw std::invalid_argument("Mesh::MergeTwoNodes: Either the first or the second node-index is invalid.");
+        throw ConstraintError("The first node-index has the null value");
+    }
+
+    if (secondNodeIndex == constants::missing::uintValue)
+    {
+        throw ConstraintError("The second node-index has the null value");
+    }
+
+    if (firstNodeIndex >= GetNumNodes())
+    {
+        throw ConstraintError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
+    }
+
+    if (secondNodeIndex >= GetNumNodes())
+    {
+        throw ConstraintError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);

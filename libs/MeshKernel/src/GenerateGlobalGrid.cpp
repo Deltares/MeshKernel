@@ -1,3 +1,4 @@
+#include <cmath>
 #include "MeshKernel/GenerateGlobalGrid.hpp"
 
 double meshkernel::GenerateGlobalGrid::getDeltaY(const double y, const double deltaX)
@@ -100,6 +101,7 @@ void meshkernel::GenerateGlobalGrid::Compute(const UInt nx, const UInt ny, Mesh2
     bool jaklaar = false;
 
     [[maybe_unused]] Projection projection = Projection::sphericalAccurate;
+    mesh.m_projection = projection;
 
     for (UInt i = 0; i < ny; ++i)
     {
@@ -195,18 +197,23 @@ void meshkernel::GenerateGlobalGrid::Compute(const UInt nx, const UInt ny, Mesh2
 
 void meshkernel::GenerateGlobalGrid::mergenodesinpolygon(Mesh2D& mesh [[maybe_unused]])
 {
-#if 0
-    mesh.NodeAdministration();
+    mesh.AdministrateNodesEdges();
+
+    UInt numberOfPoints = mesh.GetNumNodes();
 
     for (UInt i = 0; i < numberOfPoints; ++i)
     {
-        auto [isInPolygon, whichPolygon] = polygons.IsPointInPolygons(mesh.n_nodes[i]);
+        // auto [isInPolygon, whichPolygon] = polygons.IsPointInPolygons(mesh.m_nodes[i]);
+        bool isInPolygon = true;
 
         if (isInPolygon)
         {
-            for (UInt j = 0; j < mesh.m_nodesNumEdges[i])
+            for (UInt j = 0; j < mesh.m_nodesNumEdges[i]; ++j)
             {
-                UInt ll = std::abs(mesh.m_nodesEdges[i][j]);
+
+#if 0
+                [[maybe_unused]] UInt ll = mesh.m_nodesEdges[i][j];
+                // UInt ll = std::abs(mesh.m_nodesEdges[i][j]);
 
                 if (mesh.m_edges[ll] == 1 || mesh.m_edges[ll] == 6)
                 {
@@ -226,21 +233,45 @@ void meshkernel::GenerateGlobalGrid::mergenodesinpolygon(Mesh2D& mesh [[maybe_un
                 }
 
                 mesh.kc[i] = max(mesh.kc[i], itp);
+#endif
+
             }
         }
     }
 
-    if (mesh.m_projection == Projection::sphericalAccurate)
-    {
-        getMeshBounds();
-    }
+    // if (mesh.m_projection == Projection::sphericalAccurate)
+    // {
+    //     getMeshBounds();
+    // }
 
-    UInt kint = std::max(numk / 100, 1);
+    // [[maybe_unused]] UInt kint = std::max<UInt>(numberOfPoints / 100, 1U);
     double tooClose = 1.0e-3;
 
     if (tooClose > 0.0)
     {
+        double searchRadius = tooClose * tooClose;
+
+        for (UInt i = 0; i < numberOfPoints; ++i)
+        {
+            // Do we have to rebuild the tree each time a point has been merged?
+            mesh.BuildTree (Mesh::Location::Nodes);
+
+            mesh.SearchNearestLocation(mesh.m_nodes[i], searchRadius, Mesh::Location::Nodes);
+
+            UInt count = mesh.GetNumLocations(Mesh::Location::Nodes);
+
+            std::cout << "number of locations: " << count << std::endl;
+
+            for (UInt j = 0; j < count; ++j)
+            {
+                [[maybe_unused]] UInt location = mesh.GetLocationsIndices (j, Mesh::Location::Nodes);
+                std::cout << "merging nodes: " << i << "  " << j << "   " << mesh.GetLocationsIndices (j, Mesh::Location::Nodes) <<  "  "
+                    << mesh.m_nodes[location].x << "  " << mesh.m_nodes[location].y << "  "
+                          << std::endl;
+                mesh.MergeTwoNodes ( mesh.GetLocationsIndices (j, Mesh::Location::Nodes), i);
+            }
+
+        }
 
     }
-#endif
 }
