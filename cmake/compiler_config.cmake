@@ -2,6 +2,11 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Prevent g++-11: error: unrecognized command-line option '-Xarch_arm64'
+if (APPLE)
+  unset(_CMAKE_APPLE_ARCHS_DEFAULT)
+endif()
+
 # Disable compiler specific extensions
 set(CMAKE_CXX_EXTENSIONS OFF)
 
