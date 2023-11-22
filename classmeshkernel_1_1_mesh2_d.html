@@ -158,8 +158,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:aaf625bb91c465cf93bfed19ce43dad50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b94a7acb30a64061a8767efec60811b"><td class="memItemLeft" align="right" valign="top"><a id="a5b94a7acb30a64061a8767efec60811b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5b94a7acb30a64061a8767efec60811b">FindFaces</a> ()</td></tr>
-<tr class="memdesc:a5b94a7acb30a64061a8767efec60811b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells) <br /></td></tr>
+<tr class="memdesc:a5b94a7acb30a64061a8767efec60811b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the face nodes mapping, face mass centers and areas. <br /></td></tr>
 <tr class="separator:a5b94a7acb30a64061a8767efec60811b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9b754cf034505cda1ff0f96da4e6f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a0e9b754cf034505cda1ff0f96da4e6f9">FindFacesGivenFaceNodesMapping</a> (const std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&gt; &amp;faceNodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;numFaceNodes)</td></tr>
+<tr class="memdesc:a0e9b754cf034505cda1ff0f96da4e6f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find remaining face information given the face nodes mapping.  <a href="classmeshkernel_1_1_mesh2_d.html#a0e9b754cf034505cda1ff0f96da4e6f9">More...</a><br /></td></tr>
+<tr class="separator:a0e9b754cf034505cda1ff0f96da4e6f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e874419b2e05ab89e9000f16f3e905b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a9e874419b2e05ab89e9000f16f3e905b">OffsetSphericalCoordinates</a> (double minx, double miny)</td></tr>
 <tr class="memdesc:a9e874419b2e05ab89e9000f16f3e905b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset the x coordinates if m_projection is spherical.  <a href="classmeshkernel_1_1_mesh2_d.html#a9e874419b2e05ab89e9000f16f3e905b">More...</a><br /></td></tr>
 <tr class="separator:a9e874419b2e05ab89e9000f16f3e905b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -960,6 +963,43 @@ Coincide circumcenter</div></div>
 <p>These triangles having the above properties are merged by collapsing the face nodes to the node having the minimum absolute cosine (e.g. the node where the internal angle is closer to 90 degrees). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">minFractionalAreaTriangles</td><td>Small triangles at the boundaries will be eliminated. This threshold is the ration of the face area to the average area of neighboring faces. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0e9b754cf034505cda1ff0f96da4e6f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9b754cf034505cda1ff0f96da4e6f9">&#9670;&nbsp;</a></span>FindFacesGivenFaceNodesMapping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh2D::FindFacesGivenFaceNodesMapping </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>faceNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>numFaceNodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find remaining face information given the face nodes mapping. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">faceNodes</td><td>The input face nodes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numFaceNodes</td><td>For each face, the number of nodes </td></tr>
   </table>
   </dd>
 </dl>

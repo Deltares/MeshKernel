@@ -116,6 +116,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aba245fc87cc502ef76c0c5e757a6c816"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#aba245fc87cc502ef76c0c5e757a6c816">Mesh2dIndices</a> () const</td></tr>
 <tr class="memdesc:aba245fc87cc502ef76c0c5e757a6c816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the 2d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#aba245fc87cc502ef76c0c5e757a6c816">More...</a><br /></td></tr>
 <tr class="separator:aba245fc87cc502ef76c0c5e757a6c816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae80306ee59b6c43fc7cfd2fc587a0111"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ae80306ee59b6c43fc7cfd2fc587a0111">SetIndices</a> (const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> &gt; &amp;mesh1dIndices, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> &gt; &amp;mesh2dIndices)</td></tr>
+<tr class="memdesc:ae80306ee59b6c43fc7cfd2fc587a0111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the 1d and 2d mesh indices.  <a href="classmeshkernel_1_1_contacts.html#ae80306ee59b6c43fc7cfd2fc587a0111">More...</a><br /></td></tr>
+<tr class="separator:ae80306ee59b6c43fc7cfd2fc587a0111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0114f4c40a92aff503117d84bf795d70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a0114f4c40a92aff503117d84bf795d70">AreComputed</a> () const</td></tr>
+<tr class="memdesc:a0114f4c40a92aff503117d84bf795d70"><td class="mdescLeft">&#160;</td><td class="mdescRight">checks whether contacts have been computed  <a href="classmeshkernel_1_1_contacts.html#a0114f4c40a92aff503117d84bf795d70">More...</a><br /></td></tr>
+<tr class="separator:a0114f4c40a92aff503117d84bf795d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an 1d-2d contacts. </p>
@@ -159,6 +165,34 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0114f4c40a92aff503117d84bf795d70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0114f4c40a92aff503117d84bf795d70">&#9670;&nbsp;</a></span>AreComputed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::Contacts::AreComputed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>checks whether contacts have been computed </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the contact is crossing an existing contact </dd></dl>
+
+</div>
+</div>
 <a id="a4ec01984b66446a3db7cd48de077e5df"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ec01984b66446a3db7cd48de077e5df">&#9670;&nbsp;</a></span>ComputeBoundaryContacts()</h2>
 
@@ -193,7 +227,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll). </p>
 <p>The algorithms works as follows:</p><ul>
-<li>For each oned node, find the closest 2d boundary faces within the search radius.</li>
+<li>For each 1d node, find the closest 2d boundary faces within the search radius.</li>
 <li>If a boundary face can be connected to multiple oned nodes, choose the closest one.</li>
 <li>Generate the 1d-2d contacts.Index m_numM = 0; ///&lt; Number of columns in the curvilinear grid <div class="image">
 <img src="ComputeBoundaryContacts.jpg" alt=""/>
@@ -429,6 +463,43 @@ Public Member Functions</h2></td></tr>
 
 <p>Gets the 2d mesh indices. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmeshkernel_1_1_vector.html" title="A class defining a vector.">Vector</a> of 2d mesh indices </dd></dl>
+
+</div>
+</div>
+<a id="ae80306ee59b6c43fc7cfd2fc587a0111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae80306ee59b6c43fc7cfd2fc587a0111">&#9670;&nbsp;</a></span>SetIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Contacts::SetIndices </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mesh1dIndices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mesh2dIndices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the 1d and 2d mesh indices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh1dIndices</td><td>The 1d mesh indices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh2dIndices</td><td>The 2d mesh indices </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
