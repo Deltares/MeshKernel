@@ -17,9 +17,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
-    # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
-      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>) 
+      # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
+      # Suppress notes related to ABI changes
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
     endif()
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
