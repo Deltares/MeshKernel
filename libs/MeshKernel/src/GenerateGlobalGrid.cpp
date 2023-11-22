@@ -1,5 +1,5 @@
-#include <cmath>
 #include "MeshKernel/GenerateGlobalGrid.hpp"
+#include <cmath>
 
 double meshkernel::GenerateGlobalGrid::getDeltaY(const double y, const double deltaX)
 {
@@ -234,7 +234,6 @@ void meshkernel::GenerateGlobalGrid::mergenodesinpolygon(Mesh2D& mesh [[maybe_un
 
                 mesh.kc[i] = max(mesh.kc[i], itp);
 #endif
-
             }
         }
     }
@@ -250,28 +249,45 @@ void meshkernel::GenerateGlobalGrid::mergenodesinpolygon(Mesh2D& mesh [[maybe_un
     if (tooClose > 0.0)
     {
         double searchRadius = tooClose * tooClose;
+        [[maybe_unused]] bool jadone = true;
+        UInt numberMerged = 0;
+
+        // Do we have to rebuild the tree each time a point has been merged?
+        mesh.BuildTree(Mesh::Location::Nodes);
 
         for (UInt i = 0; i < numberOfPoints; ++i)
         {
             // Do we have to rebuild the tree each time a point has been merged?
-            mesh.BuildTree (Mesh::Location::Nodes);
-
+            // How does the tree handle invalid points?
+            mesh.BuildTree(Mesh::Location::Nodes);
             mesh.SearchNearestLocation(mesh.m_nodes[i], searchRadius, Mesh::Location::Nodes);
 
             UInt count = mesh.GetNumLocations(Mesh::Location::Nodes);
 
             std::cout << "number of locations: " << count << std::endl;
 
-            for (UInt j = 0; j < count; ++j)
+            if (count > 1)
             {
-                [[maybe_unused]] UInt location = mesh.GetLocationsIndices (j, Mesh::Location::Nodes);
-                std::cout << "merging nodes: " << i << "  " << j << "   " << mesh.GetLocationsIndices (j, Mesh::Location::Nodes) <<  "  "
-                    << mesh.m_nodes[location].x << "  " << mesh.m_nodes[location].y << "  "
-                          << std::endl;
-                mesh.MergeTwoNodes ( mesh.GetLocationsIndices (j, Mesh::Location::Nodes), i);
-            }
+                for (UInt j = 0; j < count; ++j)
+                {
+                    UInt nodeToMerge = mesh.GetLocationsIndices(j, Mesh::Location::Nodes);
+                    std::cout << "merging nodes: " << i << "  " << j << "   " << mesh.GetLocationsIndices(j, Mesh::Location::Nodes) << "  "
+                              << mesh.m_nodes[nodeToMerge].x << "  " << mesh.m_nodes[nodeToMerge].y << "  "
+                              << std::endl;
 
+                    if (nodeToMerge != i && mesh.m_nodes[nodeToMerge].IsValid())
+                    {
+                        mesh.MergeTwoNodes(nodeToMerge, i);
+                        ++numberMerged;
+                    }
+                }
+            }
         }
 
+        std::cout << " numberMerged " << numberMerged << std::endl;
     }
+
+    [[maybe_unused]] int dummy;
+
+    dummy = 1;
 }

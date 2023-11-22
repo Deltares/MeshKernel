@@ -17,5 +17,5 @@ TEST(GlobalGridTest, BasicTest)
 
     mk::Mesh2D mesh;
 
-    mk::GenerateGlobalGrid::Compute(10, 20, mesh);
+    mk::GenerateGlobalGrid::Compute(192, 250, mesh);
 }
