@@ -250,7 +250,8 @@ std::tuple<meshkernel::UInt,
 MakeRectangularMeshForApiTesting(
     meshkernel::UInt numRows,
     meshkernel::UInt numColumns,
-    double delta)
+    double delta,
+    meshkernel::Point origin)
 {
 
     const auto numY = numRows + static_cast<meshkernel::UInt>(1);
@@ -267,8 +268,8 @@ MakeRectangularMeshForApiTesting(
         for (meshkernel::UInt j = 0; j < numY; ++j)
         {
 
-            nodeX[nodeIndex] = i * delta;
-            nodeY[nodeIndex] = j * delta;
+            nodeX[nodeIndex] = origin.x + i * delta;
+            nodeY[nodeIndex] = origin.y + j * delta;
             indicesValues[i][j] = i * numY + j;
             nodeIndex++;
         }
@@ -532,13 +533,14 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
     return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }
 
-/// @brief Make face nodes
+/// @brief Make mesh with face nodes for API testing
+/// @return a tuple consisting of the x-nodes, y-nodes, edges, face nodes and number of face nodes
 std::tuple<std::vector<double>,
            std::vector<double>,
            std::vector<int>,
            std::vector<int>,
            std::vector<int>>
-MakeMeshWithFaceNodes()
+MakeMeshWithFaceNodesForApiTesting()
 {
     // Set-up new mesh
     std::vector<double> nodes_x{
@@ -699,4 +701,74 @@ MakeMeshWithFaceNodes()
     std::vector<int> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
 
     return {nodes_x, nodes_y, edges, faceNodes, num_face_nodes};
+}
+
+/// @brief Make mesh with face nodes for
+/// @return a tuple consisting of the nodes, edges, face nodes and number of face nodes
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>,
+           std::vector<std::vector<meshkernel::UInt>>,
+           std::vector<meshkernel::UInt>>
+MakeMeshWithFaceNodes()
+{
+
+    // Set-up new mesh
+    std::vector<meshkernel::Point> nodes{
+        {0, 0},
+        {10, 0},
+        {20, 0},
+        {30, 0},
+        {0, 10},
+        {10, 10},
+        {20, 10},
+        {30, 10},
+        {0, 20},
+        {10, 20},
+        {20, 20},
+        {30, 20},
+        {0, 30},
+        {10, 30},
+        {20, 30},
+        {30, 30}};
+
+    std::vector<meshkernel::Edge> edges{
+        {0, 1},
+        {1, 5},
+        {5, 4},
+        {4, 0},
+        {1, 2},
+        {2, 6},
+        {6, 5},
+        {2, 3},
+        {3, 7},
+        {7, 6},
+        {4, 8},
+        {5, 9},
+        {9, 8},
+        {6, 10},
+        {10, 9},
+        {7, 11},
+        {11, 10},
+        {8, 12},
+        {9, 13},
+        {13, 12},
+        {10, 14},
+        {14, 13},
+        {11, 15},
+        {15, 14}};
+
+    std::vector<std::vector<meshkernel::UInt>> faceNodes{
+        {0, 1, 5, 4},
+        {1, 2, 6, 5},
+        {2, 3, 7, 6},
+        {4, 5, 9, 8},
+        {5, 6, 10, 9},
+        {6, 7, 11, 10},
+        {8, 9, 13, 12},
+        {9, 10, 14, 13},
+        {10, 11, 15, 14}};
+
+    std::vector<meshkernel::UInt> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
+
+    return {nodes, edges, faceNodes, num_face_nodes};
 }
