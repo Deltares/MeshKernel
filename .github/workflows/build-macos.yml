@@ -66,9 +66,12 @@ jobs:
       # macOS
       - if: runner.os == 'macOS'
         name: Install system-provided dependencies
-        run: | # brew update
+        run: |
           brew install boost
           brew install doxygen
+          if [ "${{ matrix.platform }}" == "macos-13-xlarge" ]; then
+            brew install libzip
+          fi
       # Linux
       - if: runner.os == 'Linux'
         name: Install system-provided dependencies
