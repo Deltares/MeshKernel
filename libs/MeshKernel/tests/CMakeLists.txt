@@ -4,6 +4,9 @@ string(CONCAT TARGET_NAME ${PROJECT_NAME} "UnitTests")
 # executable
 add_executable(${TARGET_NAME})
 
+# Something requires libzip
+find_package(libzip REQUIRED)
+
 # source directory
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
