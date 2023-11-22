@@ -62,23 +62,16 @@ jobs:
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
 
-      # Step: Install system-provided dependencies
-      # macOS
-      - if: runner.os == 'macOS'
-        name: Install system-provided dependencies
+      - name: Install system-provided dependencies
         run: |
-          brew install boost
-          brew install doxygen
-          if [ "${{ matrix.platform }}" == "macos-13-xlarge" ]; then
-            brew install libzip
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            brew install boost
+            brew install doxygen
+          elif [ "${{ runner.os }}" == "Linux" ]; then
+            sudo apt-get install libboost-all-dev
+            sudo apt-get install doxygen
           fi
-      # Linux
-      - if: runner.os == 'Linux'
-        name: Install system-provided dependencies
-        run: | # sudo apt-get update && sudo apt upgrade
-          sudo apt-get install libboost-all-dev
-          sudo apt-get install doxygen
-      
+
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
         uses: actions/cache/restore@v3
@@ -141,5 +134,7 @@ jobs:
         if: always()
         with:
           name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
-          path: ${{ steps.paths.outputs.install_dir }}
+          path: |
+            ${{ steps.paths.outputs.install_dir }}
+            ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           if-no-files-found: error
