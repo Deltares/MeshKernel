@@ -59,7 +59,6 @@ jobs:
         id: paths
         run : |
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
-          echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
 
       - name: Install system-provided dependencies
@@ -67,40 +66,13 @@ jobs:
           if [ "${{ runner.os }}" == "macOS" ]; then
             brew install boost
             brew install doxygen
-            brew install libzip
+            brew install netcdf
+            fi
           elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get install libboost-all-dev
             sudo apt-get install doxygen
           fi
 
-      # Step: Restore cached user-provided dependencies
-      - name: Restore cached user-provided dependencies
-        uses: actions/cache/restore@v3
-        id: restore-cached-external-dependencies
-        with:
-          key: ${{ runner.os }}-cache-key
-          restore-keys: ${{ runner.os }}-cache-key
-          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-
-      # Step: Build and install user-provided dependencies, executes only if no cache restored
-      - name: Build and install user-provided dependencies
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
-        # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
-        run: >
-          pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
-          -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work
-          -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
-          -BuildType '${{ matrix.build_type }}'
-          -ParallelJobs 10
-
-    # Step: Cache user-provided dependencies, executes only if no cache restored
-      - name: Cache user-provided dependencies
-        uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
-        with:
-          key: ${{ runner.os }}-cache-key
-          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-      
       # Step: CMake configuration
       - name: Configure
         run: >
@@ -108,7 +80,6 @@ jobs:
           -S ${{ github.workspace }}
           -B ${{ steps.paths.outputs.build_dir }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
       
       # Step: CMake build
@@ -137,5 +108,4 @@ jobs:
           name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
           path: |
             ${{ steps.paths.outputs.install_dir }}
-            ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           if-no-files-found: error
