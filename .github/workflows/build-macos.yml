@@ -67,6 +67,7 @@ jobs:
           if [ "${{ runner.os }}" == "macOS" ]; then
             brew install boost
             brew install doxygen
+            brew install libzip
           elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get install libboost-all-dev
             sudo apt-get install doxygen
