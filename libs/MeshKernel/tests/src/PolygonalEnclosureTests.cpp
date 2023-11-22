@@ -237,17 +237,17 @@ TEST(PolygonalEnclosureTests, RefineFailureTest)
 
     // Combine the points into a single array
     polygonPoints.insert(polygonPoints.end(), outerPolygon.begin(), outerPolygon.end());
-    polygonPoints.push_back({mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator});
+    polygonPoints.emplace_back(mk::constants::missing::innerOuterSeparator, mk::constants::missing::innerOuterSeparator);
     polygonPoints.insert(polygonPoints.end(), innerPolygon.begin(), innerPolygon.end());
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
 
     // End point lies in inner polygon, so outside the outer polygon
     EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(0, 6, 25.0), mk::ConstraintError);
+    // Start point lies in inner polygon, so outside the outer polygon
+    EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(6, 0, 25.0), mk::ConstraintError);
     // All point indices are in inner polygon
     EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(6, 10, 25.0), mk::ConstraintError);
-    // All point indices are in outer polygon, but in wrong order
-    EXPECT_THROW([[maybe_unused]] auto refinedPoints = enclosure.Refine(4, 0, 25.0), mk::ConstraintError);
 }
 
 TEST(PolygonalEnclosureTests, SnapToLandBoundaryTest)

@@ -2,14 +2,14 @@
 <package >
     <metadata>
         <id>Deltares.MeshKernel</id>
-        <version>@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.0</version>
+        <version>@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.@VERSION_SUFFIX@</version>
         <authors>Deltares</authors>
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
         <copyright>Copyright 2021</copyright>
     </metadata>
     <files>
-        <file src="..\libs\MeshKernelApi\Release\*" target="native\Lib" />
-        <file src="Deltares.MeshKernel.targets" target="build\net461\Deltares.MeshKernel.targets" />
+        <file src="..\libs\MeshKernelApi\Release\*" target="runtimes/win-x64/native/" />
+        <file src="Deltares.MeshKernel.Release.targets" target="build\netstandard2.0\Deltares.MeshKernel.targets" />
     </files>
 </package>

@@ -118,7 +118,7 @@ namespace meshkernel
         /// where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll).
         ///
         /// The algorithms works as follows:
-        /// - For each oned node, find the closest 2d boundary faces within the search radius.
+        /// - For each 1d node, find the closest 2d boundary faces within the search radius.
         /// - If a boundary face can be connected to multiple oned nodes, choose the closest one.
         /// - Generate the 1d-2d contacts.Index m_numM = 0;                                     ///< Number of columns in the curvilinear grid
         /// \image html ComputeBoundaryContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.
@@ -138,6 +138,16 @@ namespace meshkernel
         /// @brief Gets the 2d mesh indices
         /// @return Vector of 2d mesh indices
         std::vector<UInt> const& Mesh2dIndices() const { return m_mesh2dIndices; }
+
+        /// @brief Sets the 1d and 2d mesh indices
+        /// @param[in] mesh1dIndices The 1d mesh indices
+        /// @param[in] mesh2dIndices The 2d mesh indices
+        void SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
+                        const std::vector<meshkernel::UInt>& mesh2dIndices);
+
+        /// @brief checks whether contacts have been computed
+        /// @return True if the contact is crossing an existing contact
+        [[nodiscard]] bool AreComputed() const { return m_areComputed; };
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
@@ -162,5 +172,6 @@ namespace meshkernel
         std::shared_ptr<Mesh2D> m_mesh2d;  ///< The 2-d mesh to connect
         std::vector<UInt> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
         std::vector<UInt> m_mesh2dIndices; ///< The indices of the connected 2-d faces
+        bool m_areComputed = false;        ///< Indicates whether contacts have been computed
     };
 } // namespace meshkernel

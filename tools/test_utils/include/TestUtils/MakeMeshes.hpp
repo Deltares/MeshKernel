@@ -30,8 +30,11 @@
 #include <memory>
 #include <string>
 
+#include <MeshKernel/Definitions.hpp>
+#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Point.hpp>
 
 std::tuple<size_t,
            size_t,
@@ -79,7 +82,8 @@ std::tuple<meshkernel::UInt,
 MakeRectangularMeshForApiTesting(
     meshkernel::UInt numRows,
     meshkernel::UInt numColumns,
-    double delta);
+    double delta,
+    meshkernel::Point origin = {0.0, 0.0});
 
 std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
@@ -90,4 +94,10 @@ std::tuple<std::vector<double>,
            std::vector<int>,
            std::vector<int>,
            std::vector<int>>
+MakeMeshWithFaceNodesForApiTesting();
+
+std::tuple<std::vector<meshkernel::Point>,
+           std::vector<meshkernel::Edge>,
+           std::vector<std::vector<meshkernel::UInt>>,
+           std::vector<meshkernel::UInt>>
 MakeMeshWithFaceNodes();

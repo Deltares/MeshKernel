@@ -540,7 +540,7 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
 {
     if (GetNumEdges() == 0)
     {
-        throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
+        throw std::invalid_argument("Mesh::FindEdgeCloseToAPoint: There are no valid edges.");
     }
 
     SearchNearestLocation(point, Location::Edges);

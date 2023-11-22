@@ -16,16 +16,16 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
         Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-    const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
+    curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(4, curvilinearGrid.m_numM);
+    ASSERT_EQ(4, curvilinearGrid.m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldDeRefineVerticalGridLines)
@@ -42,17 +42,16 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
         Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30},
         Point{50, 0}, Point{50, 10}, Point{50, 20}, Point{50, 30};
 
-    const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-
-    const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
+    curvilinearGridDeRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(6, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(6, curvilinearGrid.m_numM);
+    ASSERT_EQ(4, curvilinearGrid.m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizontalGridLines)
@@ -64,14 +63,14 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
         Point{20, 0}, Point{20, 10}, Point{20, 11}, Point{20, 20}, Point{20, 30},
         Point{30, 0}, Point{30, 10}, Point{30, 11}, Point{30, 20}, Point{30, 30};
 
-    auto curvilinearGrid = std::make_shared<CurvilinearGrid>(grid, Projection::cartesian);
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
     curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
 
     // Execute
-    const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
+    curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(4, curvilinearGrid.m_numM);
+    ASSERT_EQ(4, curvilinearGrid.m_numN);
 }

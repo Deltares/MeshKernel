@@ -127,6 +127,12 @@ namespace meshkernelapi
         /// @returns                           Error code
         MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts);
 
+        /// @brief Sets the 1d-2d contacts
+        /// @param[in]  meshKernelId           The id of the mesh state
+        /// @param[out] contacts               Contacts data
+        /// @returns                           Error code
+        MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts);
+
         /// @brief Generates curvilinear grid from splines with the advancing front method.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners
@@ -177,6 +183,32 @@ namespace meshkernelapi
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId);
+
+        /// @brief Delete the exterior part of a curvilinear gris
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
+        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
+        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
+        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
+                                                            double xFirstPointCoordinate,
+                                                            double yFirstPointCoordinate,
+                                                            double xSecondPointCoordinate,
+                                                            double ySecondPointCoordinate);
+
+        /// @brief Delete the interior part of a curvilinear gris
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
+        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
+        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
+        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
+                                                            double xFirstPointCoordinate,
+                                                            double yFirstPointCoordinate,
+                                                            double xSecondPointCoordinate,
+                                                            double ySecondPointCoordinate);
 
         /// @brief Delete the node closest to a point
         /// @param meshKernelId The id of the mesh state
@@ -658,6 +690,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh1d_set(int meshKernelId, const Mesh1D& mesh1d);
 
+        /// @brief Adds a mesh to the meshkernel::Mesh1D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh1d       The Mesh1D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh1d_add(int meshKernelId, const Mesh1D& mesh1d);
+
         /// @brief AveragingInterpolation interpolation (ec_module)
         ///
         /// \see meshkernel::AveragingInterpolation
@@ -684,6 +722,15 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
+        /// @brief Rotate a mesh2d about a point.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] centreX X-coordinate of the centre of rotation
+        /// @param[in] centreY Y-coordinate of the centre of rotation
+        /// @param[in] theta  Angle of rotation
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_rotate(int meshKernelId, double centreX, double centreY, double theta);
+
         /// @brief Snaps the spline (or splines) to the land boundary
         ///
         /// @param[in] meshKernelId     The id of the mesh state
@@ -697,6 +744,14 @@ namespace meshkernelapi
                                                              GeometryList& splines,
                                                              int startSplineIndex,
                                                              int endSplineIndex);
+
+        /// @brief Translate a mesh2d
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] translationX X-component of the translation vector
+        /// @param[in] translationY Y-component of the translation vector
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
@@ -719,6 +774,14 @@ namespace meshkernelapi
         /// @param[in]  searchFraction  Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction);
+
+        /// @brief Change the projection of a mesh2d.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] projectionType new projection for the mesh
+        /// @param[in] zoneString The UTM zone and information string
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_convert(int meshKernelId, int projectionType, const std::string& zoneString);
 
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
@@ -1149,6 +1212,12 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
+
+        /// @brief Adds a mesh to the meshkernel::Mesh2D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh2d       The Mesh2D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_add(int meshKernelId, const Mesh2D& mesh2d);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
