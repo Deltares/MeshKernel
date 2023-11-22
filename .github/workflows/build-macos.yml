@@ -67,7 +67,6 @@ jobs:
             brew install boost
             brew install doxygen
             brew install netcdf
-            fi
           elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get install libboost-all-dev
             sudo apt-get install doxygen
