@@ -89,7 +89,7 @@ if(${USE_LIBFMT})
 FetchContent_Declare(
   Eigen
   GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG        d1b03fb5c91dcf0e48555bba8387201a0b1425d9
+  GIT_TAG        21cd3fe20990a5ac1d683806f605110962aac3f1
 )
 
 FetchContent_GetProperties(Eigen)
