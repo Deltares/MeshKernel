@@ -5,7 +5,7 @@ meshkernel::Projection meshkernel::GetProjectionValue(const int projection)
 {
     static const int Cartesian = static_cast<int>(Projection::cartesian);
     static const int Spherical = static_cast<int>(Projection::spherical);
-    static const int Accurate = static_cast<int>(Projection::sphericalAccurate);
+    static const int SphericalAccurate = static_cast<int>(Projection::sphericalAccurate);
 
     if (projection == Cartesian)
     {
@@ -15,7 +15,7 @@ meshkernel::Projection meshkernel::GetProjectionValue(const int projection)
     {
         return Projection::spherical;
     }
-    else if (projection == Accurate)
+    else if (projection == SphericalAccurate)
     {
         return Projection::sphericalAccurate;
     }
@@ -29,7 +29,7 @@ const std::string& meshkernel::ToString(const Projection projection)
 {
     static const std::string Cartesian = "Projection::Cartesian";
     static const std::string Spherical = "Projection::Spherical";
-    static const std::string Accurate = "Projection::SphericalAccurate";
+    static const std::string SphericalAccurate = "Projection::SphericalAccurate";
     static const std::string Unknown = "UNKNOWN";
 
     switch (projection)
@@ -39,7 +39,7 @@ const std::string& meshkernel::ToString(const Projection projection)
     case Projection::spherical:
         return Spherical;
     case Projection::sphericalAccurate:
-        return Accurate;
+        return SphericalAccurate;
     default:
         return Unknown;
     }
