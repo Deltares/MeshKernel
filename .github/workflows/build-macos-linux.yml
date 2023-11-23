@@ -66,7 +66,7 @@ jobs:
       - name: Install system-provided dependencies
         run: |
           if [ "${{ runner.os }}" == "macOS" ]; then
-            brew install boost@1.83.0 doxygen netcdf@4.9.1
+            brew install boost doxygen netcdf
           elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get install libboost-all-dev doxygen
           fi
