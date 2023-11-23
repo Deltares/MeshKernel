@@ -2,7 +2,7 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Prevent g++-11: error: unrecognized command-line option '-Xarch_arm64'
+# Cmake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
 if (APPLE)
   unset(_CMAKE_APPLE_ARCHS_DEFAULT)
 endif()
@@ -20,8 +20,6 @@ if (UNIX)
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
       # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
-      # Suppress Boost warnings in test compile
-      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-maybe-uninitialized>)
       # Suppress notes related to ABI changes
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
     endif()
