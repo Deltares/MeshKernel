@@ -634,19 +634,19 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const meshkernel::Projection projection = meshkernel::GetProjectionValue(projectionType);
+            const meshkernel::Projection targetProjection = meshkernel::GetProjectionValue(projectionType);
 
-            // const meshkernel::Projection& proj = meshKernelState[meshKernelId].m_mesh2d->m_projection;
+            const meshkernel::Projection& sourceProjection = meshKernelState[meshKernelId].m_mesh2d->m_projection;
 
-            if (meshKernelState[meshKernelId].m_mesh2d->m_projection != projection)
+            if (sourceProjection != targetProjection)
             {
-                if (meshKernelState[meshKernelId].m_mesh2d->m_projection == meshkernel::Projection::cartesian)
+                if (sourceProjection == meshkernel::Projection::cartesian)
                 {
                     meshkernel::ConvertCartesianToSpherical conversion(zoneString);
                     meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
                     meshKernelState[meshKernelId].m_projection = conversion.TargetProjection();
                 }
-                else if (meshKernelState[meshKernelId].m_mesh2d->m_projection == meshkernel::Projection::spherical)
+                else if (sourceProjection == meshkernel::Projection::spherical)
                 {
                     meshkernel::ConvertSphericalToCartesian conversion(zoneString);
                     meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
@@ -655,8 +655,8 @@ namespace meshkernelapi
                 else
                 {
                     throw meshkernel::MeshKernelError("Mesh conversion between projection {} and {} has not been implemented.",
-                                                      meshkernel::ToString(meshKernelState[meshKernelId].m_projection),
-                                                      meshkernel::ToString(projection));
+                                                      meshkernel::ToString(sourceProjection),
+                                                      meshkernel::ToString(targetProjection));
                 }
             }
         }
