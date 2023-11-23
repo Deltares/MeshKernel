@@ -26,8 +26,8 @@ jobs:
       matrix:
         platform:
           - ubuntu-latest
-          # - macos-latest
-          # - macos-13-xlarge
+          - macos-latest
+          - macos-13-xlarge
         build_type:
           - 'Release'
           #- 'Debug'
@@ -42,8 +42,8 @@ jobs:
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
     # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
     env:
-      CC: gcc-13
-      CXX: g++-13
+      CC: gcc-11
+      CXX: g++-11
 
       # Build steps
     steps:
