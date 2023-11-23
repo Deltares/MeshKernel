@@ -361,9 +361,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:acf9d548882516ac652fd0f01a08c88bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction)</td></tr>
 <tr class="memdesc:acf9d548882516ac652fd0f01a08c88bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two or more disconnected regions along boundary.  <a href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">More...</a><br /></td></tr>
 <tr class="separator:acf9d548882516ac652fd0f01a08c88bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36784976b5db4cd6cfb3ddf75fbf79ad"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a36784976b5db4cd6cfb3ddf75fbf79ad">mkernel_mesh2d_convert</a> (int meshKernelId, int projectionType, const std::string &amp;zoneString)</td></tr>
-<tr class="memdesc:a36784976b5db4cd6cfb3ddf75fbf79ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the projection of a mesh2d.  <a href="namespacemeshkernelapi.html#a36784976b5db4cd6cfb3ddf75fbf79ad">More...</a><br /></td></tr>
-<tr class="separator:a36784976b5db4cd6cfb3ddf75fbf79ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a14647b813f56d13fdfc182a9f95011"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011">mkernel_mesh2d_convert_projection</a> (int meshKernelId, int projectionType, const char *const zoneString)</td></tr>
+<tr class="memdesc:a8a14647b813f56d13fdfc182a9f95011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the projection of a mesh2d.  <a href="namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011">More...</a><br /></td></tr>
+<tr class="separator:a8a14647b813f56d13fdfc182a9f95011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00ba5182f31ea1567bc258bb95cad221"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">mkernel_mesh2d_count_hanging_edges</a> (int meshKernelId, int &amp;numEdges)</td></tr>
 <tr class="memdesc:a00ba5182f31ea1567bc258bb95cad221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">More...</a><br /></td></tr>
 <tr class="separator:a00ba5182f31ea1567bc258bb95cad221"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3941,14 +3941,14 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a36784976b5db4cd6cfb3ddf75fbf79ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36784976b5db4cd6cfb3ddf75fbf79ad">&#9670;&nbsp;</a></span>mkernel_mesh2d_convert()</h2>
+<a id="a8a14647b813f56d13fdfc182a9f95011"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a14647b813f56d13fdfc182a9f95011">&#9670;&nbsp;</a></span>mkernel_mesh2d_convert_projection()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_convert </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_convert_projection </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -3962,7 +3962,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramtype">const char *const&#160;</td>
           <td class="paramname"><em>zoneString</em>&#160;</td>
         </tr>
         <tr>
@@ -3973,11 +3973,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Change the projection of a mesh2d. </p>
+<p>Converts the projection of a mesh2d. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>new projection for the mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>The new projection for the mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zoneString</td><td>The UTM zone and information string </td></tr>
   </table>
   </dd>

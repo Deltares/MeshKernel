@@ -181,7 +181,7 @@ var searchData=
   ['mkernel_5fmesh2d_5fcompute_5finner_5fortogonalization_5fiteration_456',['mkernel_mesh2d_compute_inner_ortogonalization_iteration',['../namespacemeshkernelapi.html#aa390097481a2f81487f41c5e46eaaaf6',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcompute_5forthogonalization_457',['mkernel_mesh2d_compute_orthogonalization',['../namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fconnect_5fmeshes_458',['mkernel_mesh2d_connect_meshes',['../namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd',1,'meshkernelapi']]],
-  ['mkernel_5fmesh2d_5fconvert_459',['mkernel_mesh2d_convert',['../namespacemeshkernelapi.html#a36784976b5db4cd6cfb3ddf75fbf79ad',1,'meshkernelapi']]],
+  ['mkernel_5fmesh2d_5fconvert_5fprojection_459',['mkernel_mesh2d_convert_projection',['../namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcount_5fhanging_5fedges_460',['mkernel_mesh2d_count_hanging_edges',['../namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcount_5fmesh_5fboundaries_5fas_5fpolygons_461',['mkernel_mesh2d_count_mesh_boundaries_as_polygons',['../namespacemeshkernelapi.html#a5b7bcc0a8c5e3af905c124e5778a5960',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcount_5fnodes_5fin_5fpolygons_462',['mkernel_mesh2d_count_nodes_in_polygons',['../namespacemeshkernelapi.html#a1ddb0753a28c76813a451f9c5221443e',1,'meshkernelapi']]],
