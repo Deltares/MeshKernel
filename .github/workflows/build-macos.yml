@@ -25,6 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
+          - ubuntu-latest
           - macos-latest
           - macos-13-xlarge
         build_type:
@@ -70,6 +71,7 @@ jobs:
           elif [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get install libboost-all-dev
             sudo apt-get install doxygen
+            sudo apt-get install libnetcdf
           fi
 
       # Step: CMake configuration
