@@ -10,8 +10,19 @@ using meshkernel::Contacts;
 
 Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
                    std::shared_ptr<Mesh2D> mesh2d)
-    : m_mesh1d(mesh1d), m_mesh2d(mesh2d), m_mesh1dIndices(), m_mesh2dIndices()
+    : m_mesh1d(mesh1d),
+      m_mesh2d(mesh2d)
 {
+    if (!m_mesh1d)
+    {
+        throw AlgorithmError("m_mesh1d is null");
+    }
+
+    if (!m_mesh2d)
+    {
+        throw AlgorithmError("m_mesh2d is null");
+    }
+
     // assert mesh1d and mesh have the same projection
     if (m_mesh1d->m_projection != m_mesh2d->m_projection)
     {
@@ -26,7 +37,9 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     m_mesh1d->AdministrateNodesEdges();
@@ -64,6 +77,8 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         // connect faces crossing the left projected segment
         Connect1dNodesWithCrossingFaces(n, -projectionFactor);
     }
+
+    m_areComputed = true;
 }
 
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
@@ -139,7 +154,9 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration
@@ -226,6 +243,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             }
         }
     }
+
+    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
@@ -234,7 +253,9 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // no valid polygons provided
@@ -292,6 +313,8 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
         m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
     }
+
+    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
@@ -300,7 +323,9 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
@@ -332,6 +357,8 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         m_mesh1dIndices.emplace_back(m_mesh1d->GetLocationsIndices(0, Location::Nodes));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
+
+    m_areComputed = true;
 }
 
 void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
@@ -341,7 +368,9 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
     {
-        throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
+        throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
+                             oneDNodeMask.size(),
+                             m_mesh1d->m_nodes.size());
     }
 
     // perform mesh1d administration
@@ -435,4 +464,31 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             m_mesh2dIndices.emplace_back(f);
         }
     }
+
+    m_areComputed = true;
+}
+
+void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
+                          const std::vector<meshkernel::UInt>& mesh2dIndices)
+{
+    if (mesh1dIndices.empty())
+    {
+        throw AlgorithmError("The 1d mesh indices vector is empty");
+    }
+
+    if (mesh2dIndices.empty())
+    {
+        throw AlgorithmError("The 2d mesh indices vector is empty");
+    }
+
+    if (mesh1dIndices.size() != mesh2dIndices.size())
+    {
+        throw AlgorithmError("The size of the 1d mesh indices ({}) and that of the 2d mesh indices ({}) are not equal",
+                             mesh1dIndices.size(),
+                             mesh2dIndices.size());
+    }
+
+    m_mesh1dIndices = mesh1dIndices;
+    m_mesh2dIndices = mesh2dIndices;
+    m_areComputed = true;
 }

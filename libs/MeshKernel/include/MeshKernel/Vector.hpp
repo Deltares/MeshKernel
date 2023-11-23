@@ -28,6 +28,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 
 #include "MeshKernel/Constants.hpp"
 
@@ -121,6 +122,9 @@ namespace meshkernel
     /// @brief Compute the dot product of two vectors.
     double dot(const Vector& v1, const Vector& v2);
 
+    /// @brief Compute the angle between two vector.
+    double angleBetween(const Vector& v1, const Vector& v2);
+
     /// @brief Unary minus
     ///
     /// @returns \f$ (-vec.x, -vec.y)\f$
@@ -209,6 +213,11 @@ inline meshkernel::Vector meshkernel::normalise(const Vector& vec)
 inline double meshkernel::dot(const Vector& v1, const Vector& v2)
 {
     return v1.x() * v2.x() + v1.y() * v2.y();
+}
+
+inline double meshkernel::angleBetween(const Vector& v1, const Vector& v2)
+{
+    return std::atan2(v1.y() * v2.x() - v1.x() * v2.y(), v1.x() * v2.x() + v1.y() * v2.y());
 }
 
 inline meshkernel::Vector meshkernel::operator-(const Vector& vec)

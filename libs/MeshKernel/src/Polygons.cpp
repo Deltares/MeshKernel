@@ -160,11 +160,6 @@ std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(UInt startIndex,
         polygonEndNode = m_enclosures[0].Outer().Size() - 1;
     }
 
-    if (endIndex <= startIndex)
-    {
-        throw ConstraintError("The end index is smaller than the start index: {} >= {}.", startIndex, endIndex);
-    }
-
     std::tie(polygonIndex, polygonStartNode, polygonEndNode) = PolygonIndex(startIndex, endIndex);
 
     return RefinePolygon(polygonIndex, polygonStartNode, polygonEndNode, refinementDistance);

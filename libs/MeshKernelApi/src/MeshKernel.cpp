@@ -54,12 +54,14 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshConversion.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/ProjectionConversions.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
@@ -207,6 +209,58 @@ namespace meshkernelapi
                 }
 
                 // Do not change the pointer, just the object it is pointing to
+                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
+                                                                             nodes2d,
+                                                                             face_nodes,
+                                                                             num_face_nodes,
+                                                                             meshKernelState[meshKernelId].m_projection);
+            }
+            else
+            {
+                // Do not change the pointer, just the object it is pointing to
+                // Compute the faces
+                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
+                                                                             nodes2d,
+                                                                             meshKernelState[meshKernelId].m_projection);
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_add(int meshKernelId, const Mesh2D& mesh2d)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            // convert raw arrays to containers
+            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
+                                                                      mesh2d.edge_nodes);
+
+            const auto nodes2d = meshkernel::ConvertToNodesVector(mesh2d.num_nodes,
+                                                                  mesh2d.node_x,
+                                                                  mesh2d.node_y);
+
+            if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
+            {
+                const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
+
+                std::vector<meshkernel::UInt> num_face_nodes;
+                num_face_nodes.reserve(mesh2d.num_faces);
+                for (auto n = 0; n < mesh2d.num_faces; n++)
+                {
+                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                }
+
+                // Do not change the pointer, just the object it is pointing to
                 *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
                                                                               nodes2d,
                                                                               face_nodes,
@@ -243,8 +297,39 @@ namespace meshkernelapi
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.node_x,
                                                                   mesh1d.node_y);
+
             // Do not change the pointer, just the object it is pointing to
-            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d,
+                                                                         nodes1d,
+                                                                         meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh1d_add(int meshKernelId,
+                                       const Mesh1D& mesh1d)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            // convert raw arrays to containers
+            const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
+                                                                      mesh1d.edge_nodes);
+            const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
+                                                                  mesh1d.node_x,
+                                                                  mesh1d.node_y);
+            // Do not change the pointer, just the object it is pointing to
+            *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(edges1d,
+                                                                          nodes1d,
+                                                                          meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -292,7 +377,6 @@ namespace meshkernelapi
             }
             const auto fixedChainagesByPolyline = ConvertVectorToVectorOfVectors(localFixedChainages, mkernel_get_separator());
 
-            // Do not change the pointer, just the object it is pointing to
             meshKernelState[meshKernelId].m_network1d->ComputeFixedChainages(fixedChainagesByPolyline, minFaceSize, fixedChainagesOffset);
         }
         catch (...)
@@ -312,7 +396,6 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            // Do not change the pointer, just the object it is pointing to
             meshKernelState[meshKernelId].m_network1d->ComputeOffsettedChainages(offset);
         }
         catch (...)
@@ -468,6 +551,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
+            {
+                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
+            }
+
             contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
@@ -487,12 +576,83 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
+            {
+                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
+            }
+
             auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();
             auto const& mesh2dIndices = meshKernelState[meshKernelId].m_contacts->Mesh2dIndices();
             for (auto i = 0; i < contacts.num_contacts; ++i)
             {
                 contacts.mesh1d_indices[i] = static_cast<int>(mesh1dIndices[i]);
                 contacts.mesh2d_indices[i] = static_cast<int>(mesh2dIndices[i]);
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::vector<meshkernel::UInt> mesh1dIndices(contacts.num_contacts);
+            std::vector<meshkernel::UInt> mesh2dIndices(contacts.num_contacts);
+
+            for (int i = 0; i < contacts.num_contacts; ++i)
+            {
+                mesh1dIndices[i] = contacts.mesh1d_indices[i];
+                mesh2dIndices[i] = contacts.mesh2d_indices[i];
+            }
+
+            meshKernelState[meshKernelId].m_contacts->SetIndices(mesh1dIndices, mesh2dIndices);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_convert(int meshKernelId, int projectionType, const std::string& zoneString)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const meshkernel::Projection projection = meshkernel::GetProjectionValue(projectionType);
+
+            if (meshKernelState[meshKernelId].m_mesh2d->m_projection != projection)
+            {
+                if (meshKernelState[meshKernelId].m_projection == meshkernel::Projection::cartesian)
+                {
+                    meshkernel::ConvertCartesianToSpherical conversion(zoneString);
+                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                }
+                else if (meshKernelState[meshKernelId].m_projection == meshkernel::Projection::spherical)
+                {
+                    meshkernel::ConvertSphericalToCartesian conversion(zoneString);
+                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                }
+                else
+                {
+                    throw meshkernel::MeshKernelError("Mesh conversion between projection {} and {} has not been implemented.",
+                                                      meshkernel::ToString(meshKernelState[meshKernelId].m_projection), meshkernel::ToString(projection));
+                }
             }
         }
         catch (...)
@@ -2758,8 +2918,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters,
-                                                                                                meshKernelState[meshKernelId].m_projection);
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
+                CreateRectangularCurvilinearGrid(makeGridParameters,
+                                                 meshKernelState[meshKernelId].m_projection));
         }
         catch (...)
         {
@@ -2780,9 +2941,10 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
-                                                                                                            geometryList,
-                                                                                                            meshKernelState[meshKernelId].m_projection);
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
+                CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
+                                                             geometryList,
+                                                             meshKernelState[meshKernelId].m_projection));
         }
         catch (...)
         {
@@ -2802,8 +2964,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
-                                                                                                           meshKernelState[meshKernelId].m_projection);
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
+                CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
+                                                            meshKernelState[meshKernelId].m_projection));
         }
         catch (...)
         {
@@ -3030,7 +3193,7 @@ namespace meshkernelapi
             curvilinearGridSmoothing.SetLine(firstNode, secondNode);
             curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
-            *meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional();
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridSmoothing.ComputeDirectional());
         }
         catch (...)
         {
@@ -3261,18 +3424,22 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 && meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Invalid curvilinear grid");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 &&
+                meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
             {
                 throw meshkernel::MeshKernelError("The existing mesh2d projection is not equal to the curvilinear grid projection");
             }
 
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
-            const auto curviTemp = meshKernelState[meshKernelId].m_curvilinearGrid;
-
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
-            // curvilinear grid must be re-setted
+            // curvilinear grid must be reset
             *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
         }
         catch (...)
