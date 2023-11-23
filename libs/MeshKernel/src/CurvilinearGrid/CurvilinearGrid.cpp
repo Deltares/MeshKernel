@@ -41,7 +41,7 @@ CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection 
     SetGridNodes(grid);
 }
 
-void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point> gridNodes)
+void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
     m_gridNodes = gridNodes;
 
