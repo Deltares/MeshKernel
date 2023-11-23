@@ -1,4 +1,4 @@
-name: Build and test on macos
+name: Build and test on macos and linux
 
 on:
   push:
@@ -26,8 +26,8 @@ jobs:
       matrix:
         platform:
           - ubuntu-latest
-          - macos-latest
-          - macos-13-xlarge
+          # - macos-latest
+          # - macos-13-xlarge
         build_type:
           - 'Release'
           #- 'Debug'
@@ -42,9 +42,9 @@ jobs:
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
     # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
     env:
-      CC: gcc-11
-      CXX: g++-11
-    
+      CC: gcc-13
+      CXX: g++-13
+
       # Build steps
     steps:
 
@@ -65,13 +65,9 @@ jobs:
       - name: Install system-provided dependencies
         run: |
           if [ "${{ runner.os }}" == "macOS" ]; then
-            brew install boost
-            brew install doxygen
-            brew install netcdf
+            brew install boost@1.81.0, doxygen, netcdf@4.9.1
           elif [ "${{ runner.os }}" == "Linux" ]; then
-            sudo apt-get install libboost-all-dev
-            sudo apt-get install doxygen
-            sudo apt-get install libnetcdf
+            sudo apt-get install libboost-all-dev doxygen libnetcdf-dev -fy
           fi
 
       # Step: CMake configuration
@@ -107,6 +103,5 @@ jobs:
         if: always()
         with:
           name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
-          path: |
-            ${{ steps.paths.outputs.install_dir }}
+          path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error

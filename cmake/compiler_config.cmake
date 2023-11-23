@@ -20,7 +20,7 @@ if (UNIX)
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
       # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
-      # Supress Boost warnings in test compile
+      # Suppress Boost warnings in test compile
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-maybe-uninitialized>)
       # Suppress notes related to ABI changes
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
