@@ -281,3 +281,26 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     SCOPED_TRACE("Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance");
     CheckPolygonPointVectors(refined, expected);
 }
+
+TEST(PolygonTests, LinearRefine)
+{
+    // setup
+    constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
+    const std::vector<mk::Point> outer{{0., 0.}, {6., 0.}, {7., 7.}, {-1, 4.}, {0., 0.}};
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+    std::vector<mk::Point> refined = polygon.LinearRefine(1, 3, d);
+
+    for (size_t i = 0; i < outer.size(); ++i)
+    {
+        std::cout << " outer " << i << "   " << outer[i].x << "  " << outer[i].y << std::endl;
+    }
+
+    std::cout << "-------------------------------- " << std::endl;
+
+    for (size_t i = 0; i < refined.size(); ++i)
+    {
+        std::cout << " refined " << i << "   " << refined[i].x << "  " << refined[i].y << std::endl;
+    }
+}
