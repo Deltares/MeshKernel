@@ -6,6 +6,46 @@
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Vector.hpp"
 
+void printIt(const std::vector<double>& vec, const meshkernel::UInt last = meshkernel::constants::missing::uintValue, const std::string& name = "vec")
+{
+
+    std::cout << name << " = ";
+
+    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? vec.size() : last);
+
+    for (meshkernel::UInt i = 0; i < upperLimit; ++i)
+    {
+        std::cout << vec[i] << ", ";
+
+        if ((i + 1) % 10 == 0)
+        {
+            std::cout << std::endl;
+        }
+    }
+
+    std::cout << std::endl;
+}
+
+void printIt(const std::vector<meshkernel::Point>& vec, const meshkernel::UInt last = meshkernel::constants::missing::uintValue, const std::string& name = "vec")
+{
+
+    std::cout << name << " = ";
+
+    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? vec.size() : last);
+
+    for (meshkernel::UInt i = 0; i < upperLimit; ++i)
+    {
+        std::cout << "{ " << vec[i].x << ", " << vec[i].y << " }, ";
+
+        if ((i + 1) % 10 == 0)
+        {
+            std::cout << std::endl;
+        }
+    }
+
+    std::cout << std::endl;
+}
+
 meshkernel::Polygon::Polygon(const std::vector<Point>& points,
                              Projection projection) : m_nodes(points), m_projection(projection)
 {
@@ -291,6 +331,121 @@ namespace
             refinedPolygon.push_back(n0 + i * delta);
         }
     }
+
+    void averageDiff(const std::vector<double>& distances, std::vector<double>& average, const meshkernel::UInt npl)
+    {
+        // std::fill(average.begin(), average.begin() + npl, 0.0);
+        std::fill(average.begin(), average.end(), 0.0);
+
+        average[0] = distances[1] - distances[0];
+        average[npl - 1] = distances[npl - 1] - distances[npl - 2];
+
+        for (meshkernel::UInt i = 1; i < npl - 1; ++i)
+        {
+            average[i] = 0.5 * (distances[i + 1] - distances[i - 1]);
+        }
+    }
+
+    void smoothWithDesiredDiff(std::vector<double>& dpla, const std::vector<double>& dxs, const meshkernel::UInt npl) // SMOOTH WITH DESIRED
+    {
+        // dpla !< The current cumulative lengths (will be overwritten with smoothed values).
+        // dxs  !< The desired segment sizes at each polyline point.
+        // npl  !< Nr. of polyline points.
+
+        double sumdxs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
+        double cumdxs = 0.0;
+        double dfac = dxs[npl - 1] / sumdxs;
+
+        std::cout << "smoothWithDesiredDiff " << sumdxs << "  " << dfac << "  " << npl << "  " << dxs[npl - 1] << "  " << sumdxs << "  "
+                  << dxs[0] << "  "
+                  << dxs[npl - 1] << "  "
+                  << 0.5 * (dxs[0] + dxs[npl - 1]) << "  "
+                  << std::endl;
+
+        for (meshkernel::UInt i = 1; i < npl - 1; ++i)
+        {
+            cumdxs += 0.5 * (dxs[i - 1] + dxs[i]);
+            std::cout << cumdxs << "  ";
+            dpla[i] = cumdxs * dfac;
+        }
+
+        std::cout << std::endl;
+    }
+
+    void interpolateOnPolyline(const std::vector<double>& distances, std::vector<double>& dxs, const meshkernel::UInt npl, const double dxs1, const double dxs2)
+    {
+        // dpl  !< Accumulated distance at each point.
+        // dxs  !< Interpolated values of dxs1--dxs2 on polyline points.
+        // npl  !< Nr. of polyline points.
+        // dxs1 !< Value at first polyline point.
+        // dxs2 !< Value at last polyline point.
+
+        if (npl <= 1)
+        {
+            return;
+        }
+
+        for (meshkernel::UInt i = 0; i < npl; ++i)
+        {
+            double f = distances[i] / distances[npl - 1];
+            dxs[i] = (1.0 - f) * dxs1 + f * dxs2;
+        }
+    }
+
+    // TODO swap last parameter
+    void findOnPolyline(const std::vector<meshkernel::Point>& points, const std::vector<double>& distances, const meshkernel::UInt npl, meshkernel::Point& interpolatedPoint, const double desiredDistance /* better name*/)
+    {
+
+        meshkernel::UInt i = 0;
+        [[maybe_unused]] bool foundInterval = false;
+
+        // label:
+        // {
+        //     ++i;
+        //     foundInterval = false;
+        //     if (distances[i] > desiredDistance)
+        //     {
+        //         if (i < npl - 1)
+        //         {
+        //             goto label;
+        //         }
+        //         foundInterval = true;
+        //     }
+        // }
+
+        while (!foundInterval)
+        {
+            ++i;
+
+            if (distances[i] > desiredDistance || i == npl - 1)
+            {
+                foundInterval = true;
+            }
+        }
+
+        double dt = distances[i] - distances[i - 1];
+        double ti = 0.0;
+
+        if (dt != 0.0)
+        {
+            ti = (desiredDistance - distances[i - 1]) / dt;
+        }
+
+        interpolatedPoint = (1.0 - ti) * points[i - 1] + ti * points[i];
+
+        std::cout << " findOnPolyline " << desiredDistance << "  " << i << "  " << points[i - 1].x << " " << points[i - 1].y << "  " << points[i].x << " " << points[i].y << "  "
+                  << ti << "  " << interpolatedPoint.x << ", " << interpolatedPoint.y
+                  << std::endl;
+    }
+
+    void mapToPolyline(const std::vector<meshkernel::Point>& points, const std::vector<double>& distances, std::vector<meshkernel::Point>& interpolatedPoints, std::vector<double>& desiredDistances, const meshkernel::UInt npl)
+    {
+        for (meshkernel::UInt i = 0; i < npl; ++i)
+        {
+            findOnPolyline(points, distances, npl, interpolatedPoints[i], desiredDistances[i]);
+        }
+    }
+
 } // unnamed namespace
 
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
@@ -358,6 +513,157 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
             RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
         refinedPolygon.push_back(m_nodes.back());
     }
+    return refinedPolygon;
+}
+
+std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex [[maybe_unused]], const size_t endIndex [[maybe_unused]], const double refinementDistance [[maybe_unused]]) const
+{
+    if (m_nodes.size() < 4)
+    {
+        return m_nodes;
+    }
+
+    // UInt numberOfPoints = m_nodes.size();
+    UInt npl = m_nodes.size();
+    UInt nx = 10 * npl;
+
+    std::vector<Point> refinedPolygon;
+
+    std::vector<double> dpl(m_nodes.size(), 0.0); // distances
+    std::vector<Point> xpl(m_nodes.size());       // interpolatedPoints
+    std::vector<double> dxa(nx, 0.0);             // averages?
+    std::vector<double> dpla(nx, 0.0);            // desiredDistances
+    std::vector<double> dxs(nx, 0.0);             // no idea yet
+
+    dpl[0] = 0.0;
+
+    for (UInt i = 1; i < dpl.size(); ++i)
+    {
+        dpl[i] = dpl[i - 1] + ComputeDistance(m_nodes[i], m_nodes[i - 1], m_projection);
+    }
+
+    printIt(dpl, dpl.size(), "dpl");
+
+    averageDiff(dpl, dxa, npl);
+
+    printIt(dxa, dpl.size(), "dxa");
+
+    double dxs1 = dxa[0];
+    double dxs2 = dxa[npl - 1];
+
+    std::cout << " dxs1, 2: " << dxs1 << "  " << dxs2 << std::endl;
+
+    for (UInt i = 0; i < m_nodes.size(); ++i)
+    {
+        dpla[i] = dpl[i];
+    }
+
+    printIt(dpla, npl, "dpla");
+    double txa = dpla[m_nodes.size() - 1];
+
+    bool ja = true;
+
+    while (ja)
+    {
+        double txs;
+
+        for (int k = 1; k <= 5; ++k) // TODO in rgfgrid this is 20
+        {
+            std::cout << " " << std::endl;
+            mapToPolyline(m_nodes, dpl, xpl, dpla, npl);
+            printIt(xpl, npl, "xpl");
+            printIt(dpla, npl, "dpla");
+            averageDiff(dpla, dxa, npl);
+            printIt(dxa, npl, "dxa");
+            interpolateOnPolyline(dpla, dxs, npl, dxs1, dxs2);
+            printIt(dxs, npl, "dxs");
+
+            // Can be moved out of this inner loop
+            txs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
+
+            smoothWithDesiredDiff(dpla, dxs, npl);
+        }
+
+        std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
+
+        double rmn = 1.0e9;
+        UInt nmn = constants::missing::uintValue;
+        double rmx = -1.0e9;
+        UInt nmx = constants::missing::uintValue;
+        double dxsm = 1.0e30;
+
+        for (UInt i = 0; i < npl - 1; ++i)
+        {
+            dxsm = std::min(dxs[i], dxsm);
+            double rma = dxa[i] / dxs[i];
+
+            if (i > 0)
+            {
+                if (rma < rmn)
+                {
+                    nmn = i;
+                    rmn = rma;
+                }
+            }
+
+            if (rma > rmx)
+            {
+                nmx = i;
+                rmx = rma;
+            }
+        }
+
+        std::cout << " values:  " << rmn << "  " << rmx << "  " << nmn << "  " << nmx << "  " << std::endl;
+        printIt(dxs, npl, "dxs");
+        std::cout << "next: " << txs << "  " << txs - 1.5 * dxs[nmn] << "  " << txa << "  " << std::boolalpha << (txs - 1.5 * dxs[nmn] > txa) << std::endl;
+        std::cout << "next: " << txs << "  " << txs + 1.5 * dxa[nmx] << "  " << txa << "  " << std::boolalpha << (txs + 0.5 * dxa[nmx] < txa) << std::endl;
+
+        if (nmn != constants::missing::uintValue && txs - 1.5 * dxs[nmn] > txa)
+        {
+            --npl;
+
+            for (UInt i = nmn; i < npl; ++i)
+            {
+                dpla[i] = dpla[i + 1];
+            }
+
+            ja = true;
+        }
+        else if (txs + 0.5 * dxa[nmx] < txa)
+        {
+            ++npl;
+
+            if (npl > nx)
+            {
+                nx = nx + nx / 2;
+
+                // resize vectors
+                dxa.resize(nx);  // averages?
+                dpla.resize(nx); // desiredDistances
+                dxs.resize(nx);  // no idea yet
+            }
+
+            UInt lowerLimit = (nmx == constants::missing::uintValue ? 0u : nmx) + 2;
+
+            for (UInt i = npl - 1; i >= lowerLimit; --i)
+            {
+                dpla[i] = dpla[i - 1];
+            }
+
+            dpla[nmx] = 0.5 * (dpla[nmx - 1] + dpla[nmx + 1]);
+            ja = true;
+        }
+        else
+        {
+            ja = false;
+        }
+    }
+
+    for (UInt i = 0; i < npl; ++i)
+    {
+        refinedPolygon.push_back(xpl[i]);
+    }
+
     return refinedPolygon;
 }
 
