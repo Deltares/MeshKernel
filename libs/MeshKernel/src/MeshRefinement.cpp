@@ -35,6 +35,25 @@
 using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;
 
+MeshRefinement::RefinementType MeshRefinement::GetRefinementTypeValue(const int refinementInt)
+{
+    static constexpr int WaveCourantInt = static_cast<int>(RefinementType::WaveCourant);
+    static constexpr int RefinementLevelsInt = static_cast<int>(RefinementType::RefinementLevels);
+    static constexpr int RidgeDetectionInt = static_cast<int>(RefinementType::RidgeDetection);
+
+    switch (refinementInt)
+    {
+    case WaveCourantInt:
+        return RefinementType::WaveCourant;
+    case RefinementLevelsInt:
+        return RefinementType::RefinementLevels;
+    case RidgeDetectionInt:
+        return RefinementType::RidgeDetection;
+    default:
+        throw ConstraintError("Cannot convert the integer value, {}, for refinement to a valid refinement type enumeration", refinementInt);
+    }
+}
+
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters)
@@ -43,7 +62,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = GetRefinementTypeValue(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -56,7 +75,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
-    m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
+    m_refinementType = GetRefinementTypeValue(m_meshRefinementParameters.refinement_type);
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -67,6 +86,65 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
+}
+
+void MeshRefinement::ReviewRefinement(const int level)
+{
+
+    // TODO is this comment correct? Looks like its disabling refinement
+    // if one face node is in polygon enable face refinement
+    // TODO add enum for nodeMask values
+    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    {
+        for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
+        {
+            const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+
+            bool disableRefinement = (level == 0 ? m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2 : m_nodeMask[nodeIndex] != 1);
+
+            if (disableRefinement)
+            {
+                m_faceMask[f] = 0;
+                break;
+            }
+        }
+    }
+
+#if 0
+        if (level == 0)
+        {
+            // TODO is this comment correct? Looks like its disabling refinement
+            // if one face node is in polygon enable face refinement
+            for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+            {
+                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
+                {
+                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+                    if (m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2)
+                    {
+                        m_faceMask[f] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        if (level > 0)
+        {
+            // if one face node is not in polygon disable refinement
+            for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
+            {
+                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
+                {
+                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+                    if (m_nodeMask[nodeIndex] != 1)
+                    {
+                        m_faceMask[f] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+#endif
 }
 
 void MeshRefinement::Compute()
@@ -108,7 +186,7 @@ void MeshRefinement::Compute()
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
     // reserve some extra capacity for the node mask
     m_nodeMask.reserve(m_nodeMask.size() * 2);
-    for (auto level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
+    for (int level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
     {
         // Compute all edge lengths at once
         ComputeEdgeBelowMinSizeAfterRefinement();
@@ -123,48 +201,11 @@ void MeshRefinement::Compute()
             ComputeRefinementMaskFromEdgeSize();
         }
 
-        if (level == 0)
-        {
-            // if one face node is in polygon enable face refinement
-            for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
-            {
-                bool activeNodeFound = false;
-                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
-                {
-                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2)
-                    {
-                        activeNodeFound = true;
-                        break;
-                    }
-                }
-                if (!activeNodeFound)
-                {
-                    m_faceMask[f] = 0;
-                }
-            }
-        }
-        if (level > 0)
-        {
-            // if one face node is not in polygon disable refinement
-            for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
-            {
-                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
-                {
-                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_nodeMask[nodeIndex] != 1)
-                    {
-                        m_faceMask[f] = 0;
-                        break;
-                    }
-                }
-            }
-        }
-
+        ReviewRefinement(level);
         ComputeEdgesRefinementMask();
-
         ComputeIfFaceShouldBeSplit();
 
+#if 0
         UInt numFacesToRefine = 0;
         for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
         {
@@ -173,10 +214,22 @@ void MeshRefinement::Compute()
                 numFacesToRefine++;
             }
         }
-        if (numFacesToRefine == 0)
+#endif
+
+        // UInt numFacesToRefine = std::count_if(m_faceMask.begin(), m_faceMask.end(), [](UInt value)
+        //                                       { return value != 0; });
+
+        // if (numFacesToRefine == 0)
+        // {
+        //     break;
+        // }
+
+        if (std::count_if(m_faceMask.begin(), m_faceMask.end(), [](UInt value)
+                          { return value != 0; }) == 0)
         {
             break;
         }
+
         numFacesAfterRefinement = numFacesAfterRefinement * 4;
 
         // spit the edges

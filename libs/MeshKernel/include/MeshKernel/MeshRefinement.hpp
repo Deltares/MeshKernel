@@ -37,6 +37,59 @@ namespace meshkernel
     // Forward declarations
     class Mesh2D;
 
+#if 0
+
+    class ComputeRefinement
+    {
+    public:
+        virtual ~ComputeRefinement() = default;
+
+        virtual void compute() const = 0;
+
+    private:
+    };
+
+    class EdgeSizeBasedRefinement : public ComputeRefinement
+    {
+    public:
+        void compute() const override;
+
+    private:
+    };
+
+    class SamplesBasedRefinement : public ComputeRefinement
+    {
+    public:
+        // Will loop over all elememts in the mesh calling ComputeForFace
+        void compute() const override;
+
+    private:
+        virtual void ComputeForFace() const = 0;
+    };
+
+    class WaveCourantRefinement : public SamplesBasedRefinement
+    {
+    public:
+    private:
+        void ComputeForFace(const UInt face) const override;
+    };
+
+    class RefinementLevelsRefinement : public SamplesBasedRefinement
+    {
+    public:
+    private:
+        void ComputeForFace(const UInt face) const override;
+    };
+
+    class RidgeDetectionRefinement : public SamplesBasedRefinement
+    {
+    public:
+    private:
+        void ComputeForFace(const UInt face) const override;
+    };
+
+#endif
+
     /// @brief A class used to refine a Mesh2D instance
     ///
     /// Mesh refinement operates on Mesh2D and is based on
@@ -88,6 +141,11 @@ namespace meshkernel
             RefinementLevels = 2,
             RidgeDetection = 3
         };
+
+        /// @brief Convert the integer value of refinementInt to a valid value of RefinementType.
+        ///
+        /// If no such RefinementType value exists then a ConstraintError will be thrown.
+        static RefinementType GetRefinementTypeValue(const int refinementInt);
 
     public:
         /// @brief The constructor for refining based on samples
@@ -219,13 +277,17 @@ namespace meshkernel
         /// @brief Compute which edge will be below the minimum size after refinement
         void ComputeEdgeBelowMinSizeAfterRefinement();
 
+        ///  @brief Review the refinement, some elements marked for refinement may not need to be refined.
+        void ReviewRefinement(const int level);
+
         RTree m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;                           ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;                           ///< If 0, edge is not split
         std::vector<bool> m_isEdgeBelowMinSizeAfterRefinement; ///< If an edge is below the minimum size after refinement
-        std::vector<int> m_nodeMask;                           ///< The node mask used in the refinement process
-        std::vector<UInt> m_brotherEdges;                      ///< The index of the brother edge for each edge
+        // TODO add enum for nodeMask values: Or comment describing the meaning of the values -2, -1, 0 and 1.
+        std::vector<int> m_nodeMask;      ///< The node mask used in the refinement process
+        std::vector<UInt> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
         std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging
