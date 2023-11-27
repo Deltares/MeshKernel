@@ -60,7 +60,7 @@ namespace meshkernel
     class SamplesBasedRefinement : public ComputeRefinement
     {
     public:
-        // Will loop over all elememts in the mesh calling ComputeForFace
+        // Will loop over all elements in the mesh calling ComputeForFace
         void compute() const override;
 
     private:

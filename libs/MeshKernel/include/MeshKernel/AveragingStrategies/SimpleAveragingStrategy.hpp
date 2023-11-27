@@ -21,7 +21,7 @@ namespace meshkernel::averaging
 
     private:
         /// @brief The minimum number of points for a valid interpolation.
-        size_t m_minNumPoints;
+        const size_t m_minNumPoints;
 
         /// @brief The current result from which Calculate calculates the final value.
         double m_result = 0.0;

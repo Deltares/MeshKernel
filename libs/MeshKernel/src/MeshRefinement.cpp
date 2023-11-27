@@ -91,60 +91,46 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 void MeshRefinement::ReviewRefinement(const int level)
 {
 
-    // TODO is this comment correct? Looks like its disabling refinement
-    // if one face node is in polygon enable face refinement
-    // TODO add enum for nodeMask values
-    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    if (level == 0)
     {
-        for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
+        // TODO is this comment correct? Looks like its disabling refinement
+        // if one face node is in polygon enable face refinement
+        for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
         {
-            const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+            bool activeNodeFound = false;
 
-            bool disableRefinement = (level == 0 ? m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2 : m_nodeMask[nodeIndex] != 1);
+            for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
+            {
+                const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+                if (m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2)
+                {
+                    activeNodeFound = true;
+                    break;
+                }
+            }
 
-            if (disableRefinement)
+            if (!activeNodeFound)
             {
                 m_faceMask[f] = 0;
-                break;
             }
         }
     }
-
-#if 0
-        if (level == 0)
+    if (level > 0)
+    {
+        // if one face node is not in polygon disable refinement
+        for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
         {
-            // TODO is this comment correct? Looks like its disabling refinement
-            // if one face node is in polygon enable face refinement
-            for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+            for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
             {
-                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); ++n)
+                const auto nodeIndex = m_mesh->m_facesNodes[f][n];
+                if (m_nodeMask[nodeIndex] != 1)
                 {
-                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_nodeMask[nodeIndex] != 0 && m_nodeMask[nodeIndex] != -2)
-                    {
-                        m_faceMask[f] = 0;
-                        break;
-                    }
+                    m_faceMask[f] = 0;
+                    break;
                 }
             }
         }
-        if (level > 0)
-        {
-            // if one face node is not in polygon disable refinement
-            for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
-            {
-                for (UInt n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
-                {
-                    const auto nodeIndex = m_mesh->m_facesNodes[f][n];
-                    if (m_nodeMask[nodeIndex] != 1)
-                    {
-                        m_faceMask[f] = 0;
-                        break;
-                    }
-                }
-            }
-        }
-#endif
+    }
 }
 
 void MeshRefinement::Compute()
@@ -183,7 +169,6 @@ void MeshRefinement::Compute()
     // set_initial_mask
     ComputeNodeMaskAtPolygonPerimeter();
 
-    auto numFacesAfterRefinement = m_mesh->GetNumFaces();
     // reserve some extra capacity for the node mask
     m_nodeMask.reserve(m_nodeMask.size() * 2);
     for (int level = 0; level < m_meshRefinementParameters.max_num_refinement_iterations; level++)
@@ -205,17 +190,6 @@ void MeshRefinement::Compute()
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
 
-#if 0
-        UInt numFacesToRefine = 0;
-        for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
-        {
-            if (m_faceMask[f] != 0)
-            {
-                numFacesToRefine++;
-            }
-        }
-#endif
-
         auto notZero = [](UInt value)
         { return value != 0; };
 
@@ -223,8 +197,6 @@ void MeshRefinement::Compute()
         {
             break;
         }
-
-        numFacesAfterRefinement = numFacesAfterRefinement * 4;
 
         // spit the edges
         RefineFacesBySplittingEdges();
