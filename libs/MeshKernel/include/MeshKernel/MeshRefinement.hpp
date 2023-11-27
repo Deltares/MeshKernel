@@ -37,58 +37,32 @@ namespace meshkernel
     // Forward declarations
     class Mesh2D;
 
-#if 0
-
     class ComputeRefinement
     {
     public:
+        ComputeRefinement(const Mesh2D& mesh) : m_mesh(mesh) {}
+
         virtual ~ComputeRefinement() = default;
 
-        virtual void compute() const = 0;
+        virtual void Compute(const std::vector<bool>& edgeIsBelowminimumSize,
+                             const std::vector<UInt>& brotherEdges,
+                             std::vector<int>& edgeMask,
+                             std::vector<int>& faceMask) = 0;
+
+        virtual bool IsSampleBased() const
+        {
+            return false;
+        }
+
+    protected:
+        const Mesh2D& GetMesh() const
+        {
+            return m_mesh;
+        }
 
     private:
+        const Mesh2D& m_mesh;
     };
-
-    class EdgeSizeBasedRefinement : public ComputeRefinement
-    {
-    public:
-        void compute() const override;
-
-    private:
-    };
-
-    class SamplesBasedRefinement : public ComputeRefinement
-    {
-    public:
-        // Will loop over all elements in the mesh calling ComputeForFace
-        void compute() const override;
-
-    private:
-        virtual void ComputeForFace() const = 0;
-    };
-
-    class WaveCourantRefinement : public SamplesBasedRefinement
-    {
-    public:
-    private:
-        void ComputeForFace(const UInt face) const override;
-    };
-
-    class RefinementLevelsRefinement : public SamplesBasedRefinement
-    {
-    public:
-    private:
-        void ComputeForFace(const UInt face) const override;
-    };
-
-    class RidgeDetectionRefinement : public SamplesBasedRefinement
-    {
-    public:
-    private:
-        void ComputeForFace(const UInt face) const override;
-    };
-
-#endif
 
     /// @brief A class used to refine a Mesh2D instance
     ///
@@ -126,6 +100,8 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
+
+    public:
         /// @brief Enumerator describing the face location types
         enum class FaceLocation
         {
@@ -147,7 +123,6 @@ namespace meshkernel
         /// If no such RefinementType value exists then a ConstraintError will be thrown.
         static RefinementType GetRefinementTypeValue(const int refinementInt);
 
-    public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use
@@ -307,5 +282,113 @@ namespace meshkernel
         MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
         bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
         const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
+
+        std::unique_ptr<ComputeRefinement> m_refinementMasks;
     };
+
+    class EdgeSizeBasedRefinement : public ComputeRefinement
+    {
+    public:
+        EdgeSizeBasedRefinement(Mesh2D& mesh) : ComputeRefinement(mesh) {}
+
+        void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
+                     const std::vector<UInt>& brotherEdges,
+                     std::vector<int>& edgeMask,
+                     std::vector<int>& faceMask) override;
+
+    private:
+    };
+
+    class SamplesBasedRefinement : public ComputeRefinement
+    {
+    public:
+        SamplesBasedRefinement(Mesh2D& mesh,
+                               std::shared_ptr<MeshInterpolation> interpolant,
+                               const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinement(mesh), m_interpolant(interpolant), m_meshRefinementParameters(meshRefinementParameters) {}
+
+        // Will loop over all elements in the mesh calling ComputeForFace
+        void Compute(const std::vector<bool>& edgeIsBelowminimumSize,
+                     const std::vector<UInt>& brotherEdges,
+                     std::vector<int>& edgeMask,
+                     std::vector<int>& faceMask) override;
+
+        bool IsSampleBased() const override
+        {
+            return true;
+        }
+
+        // TODO should all be private
+        std::shared_ptr<MeshInterpolation> m_interpolant;
+        MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
+
+        std::vector<bool> m_isHangingNodeCache; ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache; ///< Cache for maintaining if edge is hanging
+
+    private:
+        void SmoothRefinementMasks(const std::vector<UInt>& brotherEdges,
+                                   std::vector<int>& edgeMask,
+                                   std::vector<int>& faceMask);
+
+        //  What to do here, it is needed by both the samples based refinement and the mesh-refinement
+        void FindHangingNodes(const std::vector<UInt>& brotherEdges, UInt face);
+
+        virtual UInt ComputeForFace(const UInt faceId,
+                                    const std::vector<bool>& edgeIsBelowMinimumSize,
+                                    std::vector<UInt>& refineEdgeCache) = 0;
+
+        std::vector<UInt> m_refineEdgeCache; ///< Cache for the edges to be refined
+    };
+
+    class RefinementLevelsRefinement : public SamplesBasedRefinement
+    {
+    public:
+        RefinementLevelsRefinement(Mesh2D& mesh,
+                                   std::shared_ptr<MeshInterpolation> interpolant,
+                                   const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
+
+    private:
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+    };
+
+    class RidgeDetectionRefinement : public SamplesBasedRefinement
+    {
+    public:
+        RidgeDetectionRefinement(Mesh2D& mesh,
+                                 std::shared_ptr<MeshInterpolation> interpolant,
+                                 const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
+
+    private:
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+    };
+
+    class WaveCourantRefinement : public SamplesBasedRefinement
+    {
+    public:
+        WaveCourantRefinement(Mesh2D& mesh,
+                              std::shared_ptr<MeshInterpolation> interpolant,
+
+                              const MeshRefinementParameters& meshRefinementParameters,
+                              bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters), m_useNodalRefinement(useNodalRefinement)
+        {
+        }
+
+    private:
+        bool IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const;
+
+        void ComputeFaceLocationTypes();
+
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+
+        std::vector<MeshRefinement::FaceLocation> m_faceLocationType; ///< Cache for the face location types
+
+        bool m_useNodalRefinement = false;      ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001; ///< The distance for merging two edges
+    };
+
 } // namespace meshkernel
