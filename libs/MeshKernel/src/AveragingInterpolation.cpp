@@ -49,7 +49,8 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_relativeSearchRadius(relativeSearchRadius),
       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
       m_transformSamples(transformSamples),
-      m_minNumSamples(minNumSamples)
+      m_minNumSamples(minNumSamples),
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, m_mesh.m_projection))
 {
 }
 
@@ -199,8 +200,7 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
 double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
 {
-
-    auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, interpolationPoint, m_mesh.m_projection);
+    m_strategy->Reset(interpolationPoint);
 
     for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
     {
@@ -215,11 +215,11 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
         if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
         {
-            strategy->Add(samplePoint, sampleValue);
+            m_strategy->Add(samplePoint, sampleValue);
         }
     }
 
-    return strategy->Calculate();
+    return m_strategy->Calculate();
 }
 
 double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,

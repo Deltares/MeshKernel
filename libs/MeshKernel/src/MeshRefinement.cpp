@@ -216,16 +216,10 @@ void MeshRefinement::Compute()
         }
 #endif
 
-        // UInt numFacesToRefine = std::count_if(m_faceMask.begin(), m_faceMask.end(), [](UInt value)
-        //                                       { return value != 0; });
+        auto notZero = [](UInt value)
+        { return value != 0; };
 
-        // if (numFacesToRefine == 0)
-        // {
-        //     break;
-        // }
-
-        if (std::count_if(m_faceMask.begin(), m_faceMask.end(), [](UInt value)
-                          { return value != 0; }) == 0)
+        if (std::count_if(m_faceMask.begin(), m_faceMask.end(), notZero) == 0)
         {
             break;
         }

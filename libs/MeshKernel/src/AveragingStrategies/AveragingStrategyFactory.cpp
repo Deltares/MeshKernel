@@ -36,7 +36,6 @@
 
 std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
                                                                                                                                 size_t minNumSamples,
-                                                                                                                                Point const& interpolationPoint,
                                                                                                                                 Projection projection)
 {
     switch (averagingMethod)
@@ -44,13 +43,13 @@ std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging:
     case AveragingInterpolation::Method::SimpleAveraging:
         return std::make_unique<SimpleAveragingStrategy>(minNumSamples);
     case AveragingInterpolation::Method::Closest:
-        return std::make_unique<ClosestAveragingStrategy>(interpolationPoint, projection);
+        return std::make_unique<ClosestAveragingStrategy>(projection);
     case AveragingInterpolation::Method::Max:
         return std::make_unique<MaxAveragingStrategy>();
     case AveragingInterpolation::Method::Min:
         return std::make_unique<MinAveragingStrategy>();
     case AveragingInterpolation::Method::InverseWeightedDistance:
-        return std::make_unique<InverseWeightedAveragingStrategy>(interpolationPoint, minNumSamples, projection);
+        return std::make_unique<InverseWeightedAveragingStrategy>(minNumSamples, projection);
     case AveragingInterpolation::Method::MinAbsValue:
         return std::make_unique<MinAbsAveragingStrategy>();
     default:

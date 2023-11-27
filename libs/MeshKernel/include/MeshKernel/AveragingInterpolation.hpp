@@ -154,6 +154,7 @@ namespace meshkernel
 
         std::vector<bool> m_visitedSamples; ///< The visited samples
 
-        RTree m_samplesRtree; ///< The samples tree
+        RTree m_samplesRtree;                                     ///< The samples tree
+        std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel

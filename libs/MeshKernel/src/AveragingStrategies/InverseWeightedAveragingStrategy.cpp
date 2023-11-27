@@ -3,11 +3,16 @@
 
 namespace meshkernel::averaging
 {
-    InverseWeightedAveragingStrategy::InverseWeightedAveragingStrategy(Point const& interpolation_point,
-                                                                       size_t minNumSamples,
-                                                                       Projection const projection) : m_interpolationPoint(interpolation_point),
-                                                                                                      m_minNumSamples(minNumSamples),
+    InverseWeightedAveragingStrategy::InverseWeightedAveragingStrategy(size_t minNumSamples,
+                                                                       Projection const projection) : m_minNumSamples(minNumSamples),
                                                                                                       m_projection(projection) {}
+
+    void InverseWeightedAveragingStrategy::Reset(const Point& interpolationPoint)
+    {
+        m_interpolationPoint = interpolationPoint;
+        m_result = 0.0;
+        m_wall = 0.0;
+    }
 
     void InverseWeightedAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {

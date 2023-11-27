@@ -37,12 +37,13 @@ namespace meshkernel::averaging
     {
     public:
         /// @brief Construct a new InverseWeightedAveragingStrategy.
-        /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] minNumSamples      The minimum amount of samples for a valid interpolation.
         /// @param[in] projection         The projection used in calculating the distance.
-        InverseWeightedAveragingStrategy(Point const& interpolationPoint,
-                                         size_t minNumSamples,
+        InverseWeightedAveragingStrategy(size_t minNumSamples,
                                          Projection projection);
+
+        /// @brief Reset the state of the inverse weighted averaging strategy.
+        void Reset(const Point& interpolationPoint) override;
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
@@ -55,10 +56,10 @@ namespace meshkernel::averaging
         double m_wall = 0.0;
 
         /// @brief The interpolation point from which the inverse weight is calculated.
-        Point const& m_interpolationPoint;
+        Point m_interpolationPoint{constants::missing::doubleValue, constants::missing::doubleValue};
 
         /// @brief The minimum number of samples for a valid interpolation.
-        size_t m_minNumSamples;
+        const size_t m_minNumSamples;
 
         /// @brief The projection used to calculate the distance.
         Projection const m_projection;
