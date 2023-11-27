@@ -44,7 +44,7 @@ namespace meshkernel
 
         virtual ~ComputeRefinement() = default;
 
-        virtual void Compute(const std::vector<bool>& edgeIsBelowminimumSize,
+        virtual void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
                              const std::vector<UInt>& brotherEdges,
                              std::vector<int>& edgeMask,
                              std::vector<int>& faceMask) = 0;
@@ -100,7 +100,6 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
-
     public:
         /// @brief Enumerator describing the face location types
         enum class FaceLocation
@@ -307,7 +306,7 @@ namespace meshkernel
                                const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinement(mesh), m_interpolant(interpolant), m_meshRefinementParameters(meshRefinementParameters) {}
 
         // Will loop over all elements in the mesh calling ComputeForFace
-        void Compute(const std::vector<bool>& edgeIsBelowminimumSize,
+        void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
                      const std::vector<UInt>& brotherEdges,
                      std::vector<int>& edgeMask,
                      std::vector<int>& faceMask) override;
@@ -370,7 +369,6 @@ namespace meshkernel
     public:
         WaveCourantRefinement(Mesh2D& mesh,
                               std::shared_ptr<MeshInterpolation> interpolant,
-
                               const MeshRefinementParameters& meshRefinementParameters,
                               bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters), m_useNodalRefinement(useNodalRefinement)
         {

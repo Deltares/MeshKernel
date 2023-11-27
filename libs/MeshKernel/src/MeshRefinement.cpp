@@ -456,8 +456,29 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = GetRefinementTypeValue(m_meshRefinementParameters.refinement_type);
-}
 
+    if (interpolant != nullptr)
+    {
+        switch (m_refinementType)
+        {
+        case RefinementType::WaveCourant:
+            m_refinementMasks = std::make_unique<WaveCourantRefinement>(*mesh, interpolant, meshRefinementParameters, false);
+            break;
+        case RefinementType::RefinementLevels:
+            m_refinementMasks = std::make_unique<RefinementLevelsRefinement>(*mesh, interpolant, meshRefinementParameters);
+            break;
+        case RefinementType::RidgeDetection:
+            m_refinementMasks = std::make_unique<RidgeDetectionRefinement>(*mesh, interpolant, meshRefinementParameters);
+            break;
+        default:
+            throw ConstraintError("Invalid mesh refinement type when creating with interpolant: refinement type {}", m_meshRefinementParameters.refinement_type);
+        }
+    }
+    else
+    {
+        m_refinementMasks = std::make_unique<EdgeSizeBasedRefinement>(*mesh);
+    }
+}
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters,
@@ -469,6 +490,28 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = GetRefinementTypeValue(m_meshRefinementParameters.refinement_type);
+
+    if (interpolant != nullptr)
+    {
+        switch (m_refinementType)
+        {
+        case RefinementType::WaveCourant:
+            m_refinementMasks = std::make_unique<WaveCourantRefinement>(*mesh, interpolant, meshRefinementParameters, useNodalRefinement);
+            break;
+        case RefinementType::RefinementLevels:
+            m_refinementMasks = std::make_unique<RefinementLevelsRefinement>(*mesh, interpolant, meshRefinementParameters);
+            break;
+        case RefinementType::RidgeDetection:
+            m_refinementMasks = std::make_unique<RidgeDetectionRefinement>(*mesh, interpolant, meshRefinementParameters);
+            break;
+        default:
+            throw ConstraintError("Invalid mesh refinement type when creating with interpolant: refinement type {}", m_meshRefinementParameters.refinement_type);
+        }
+    }
+    else
+    {
+        m_refinementMasks = std::make_unique<EdgeSizeBasedRefinement>(*mesh);
+    }
 }
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
@@ -479,6 +522,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
+    m_refinementMasks = std::make_unique<EdgeSizeBasedRefinement>(*mesh);
 }
 
 void MeshRefinement::ReviewRefinement(const int level)
@@ -546,7 +590,7 @@ void MeshRefinement::Compute()
     }
 
     // select the nodes to refine
-    auto const isRefinementBasedOnSamples = m_refinementMasks->IsSampleBased(); // m_interpolant != nullptr;
+    auto const isRefinementBasedOnSamples = m_refinementMasks != nullptr && m_refinementMasks->IsSampleBased(); // m_interpolant != nullptr;
     if (!isRefinementBasedOnSamples && m_meshRefinementParameters.refine_intersected == 1)
     {
         const auto edgeMask = m_mesh->MaskEdgesOfFacesInPolygon(m_polygons, false, true);
