@@ -152,8 +152,6 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
 
-        std::vector<bool> m_visitedSamples; ///< The visited samples
-
         RTree m_samplesRtree;                                     ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };

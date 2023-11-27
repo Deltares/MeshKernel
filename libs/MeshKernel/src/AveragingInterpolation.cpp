@@ -66,16 +66,10 @@ void AveragingInterpolation::Compute()
         m_samplesRtree.BuildTree(m_samples);
     }
 
-    if (m_visitedSamples.empty())
-    {
-        m_visitedSamples.resize(m_samples.size());
-    }
-
     if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
     {
 
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
-        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
         // make sure edge centers are computed
         m_mesh.ComputeEdgesCenters();
@@ -93,7 +87,6 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Mesh::Location::Edges)
     {
         m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
-        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
 
         for (UInt e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
@@ -111,11 +104,10 @@ void AveragingInterpolation::Compute()
 
     if (m_interpolationLocation == Mesh::Location::Faces)
     {
-        m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
-        std::ranges::fill(m_faceResults, constants::missing::doubleValue);
-
+        std::vector<bool> visitedSamples(m_samples.size(), false); ///< The visited samples
         std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
-        std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
+        m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
+
         for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
             polygonNodesCache.clear();
@@ -134,9 +126,9 @@ void AveragingInterpolation::Compute()
                 // it is difficult to do it otherwise without sharing or caching the query result
                 for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
                 {
-                    if (const auto sample = m_samplesRtree.GetQueryResult(i); !m_visitedSamples[sample])
+                    if (const auto sample = m_samplesRtree.GetQueryResult(i); !visitedSamples[sample])
                     {
-                        m_visitedSamples[sample] = true;
+                        visitedSamples[sample] = true;
                         m_samples[sample].value -= 1;
                     }
                 }
