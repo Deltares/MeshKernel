@@ -1030,7 +1030,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     int invalidIndex;
     int type;
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
-    ASSERT_EQ(static_cast<int>(meshkernel::Mesh::Location::Nodes), type);
+    ASSERT_EQ(static_cast<int>(meshkernel::Location::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
 

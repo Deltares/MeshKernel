@@ -268,7 +268,7 @@ namespace meshkernel
             if (mesh.m_projection != transformation.TransformationProjection())
             {
                 throw MeshKernelError("Incorrect mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(transformation.TransformationProjection()), ToString(mesh.m_projection));
+                                      ProjectionToString(transformation.TransformationProjection()), ProjectionToString(mesh.m_projection));
             }
 
 #pragma omp parallel for

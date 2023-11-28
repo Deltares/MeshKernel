@@ -725,7 +725,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     }
     else if (numSharedFaces > 0)
     {
-        throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Fatal error (phiTot=0)");
+        throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
 
     double phi0 = 0.0;
@@ -747,7 +747,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
             }
             else
             {
-                throw MeshGeometryError(currentNode, Mesh::Location::Nodes, "Inappropriate fictitious boundary face");
+                throw MeshGeometryError(currentNode, Location::Nodes, "Inappropriate fictitious boundary face");
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;
