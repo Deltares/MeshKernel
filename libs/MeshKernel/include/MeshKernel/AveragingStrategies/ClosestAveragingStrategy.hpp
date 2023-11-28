@@ -47,6 +47,10 @@ namespace meshkernel::averaging
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
 
+        double Calculate (const Point& interpolationPoint,
+                          const std::vector<Point>& samplePoints,
+                          const std::vector<double>& sampleValues) override; //const
+
     private:
         /// @brief The result used to calculate the final value in Calculate.
         double m_result = constants::missing::doubleValue;

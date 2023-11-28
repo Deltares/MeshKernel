@@ -53,4 +53,25 @@ namespace meshkernel::averaging
     {
         return m_result;
     }
+
+    double ClosestAveragingStrategy::Calculate (const Point& interpolationPoint,
+                                                const std::vector<Point>& samplePoints,
+                                                const std::vector<double>& sampleValues) //const
+    {
+        double result = constants::missing::doubleValue;
+        double closestSquaredValue = std::numeric_limits<double>::max();
+
+        for (UInt i = 0; i < samplePoints.size (); ++i)
+        {
+            if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoints[i], m_projection);
+                squaredDistance < closestSquaredValue)
+            {
+                closestSquaredValue = squaredDistance;
+                result = sampleValues[i];
+            }
+        }
+
+        return result;
+    }
+
 } // namespace meshkernel::averaging

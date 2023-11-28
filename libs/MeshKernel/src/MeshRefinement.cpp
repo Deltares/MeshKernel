@@ -100,18 +100,6 @@ void SamplesBasedRefinement::Compute(const std::vector<bool>& edgeIsBelowMinimum
         }
     }
 
-    // for (UInt i = 0; i < edgeIsBelowMinimumSize.size (); ++i) {
-    //     std::cout << "edgeIsBelowMinimumSize " << i << "  " << edgeIsBelowMinimumSize [i] << std::endl;
-    // }
-
-    // for (UInt i = 0; i < faceMask.size (); ++i) {
-    //     std::cout << " face " << i << "  "<< faceMask[i] << std::endl;
-    // }
-
-    for (UInt i = 0; i < edgeMask.size (); ++i) {
-        std::cout << " edge " << i << "  "<< edgeMask[i] << std::endl;
-    }
-
     for (auto& edge : edgeMask)
     {
         edge = -edge;
@@ -410,8 +398,6 @@ meshkernel::UInt WaveCourantRefinement::ComputeForFace(const UInt face,
             numberOfEdgesToRefine = 0;
         }
     }
-
-    std::cout << " face to refine " << face << "  " << numberOfEdgesToRefine << std::endl;
 
     return numberOfEdgesToRefine;
 }

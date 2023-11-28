@@ -109,6 +109,9 @@ namespace meshkernel
         void Compute() override;
 
     private:
+        /// @brief Default size for interpolation points and sample caches.
+        static constexpr UInt DefaultMaximumCacheSize = 100;
+
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
@@ -151,6 +154,8 @@ namespace meshkernel
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
         UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
+        std::vector<Point> m_interpolationPointCache;   ///< Cache for interpolation points
+        std::vector<double> m_interpolationSampleCache; ///< Cache for interpolation samples
 
         RTree m_samplesRtree;                                     ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy

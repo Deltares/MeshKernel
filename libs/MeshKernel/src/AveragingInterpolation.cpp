@@ -52,6 +52,8 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_minNumSamples(minNumSamples),
       m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, m_mesh.m_projection))
 {
+    m_interpolationPointCache.reserve (DefaultMaximumCacheSize);
+    m_interpolationSampleCache.reserve (DefaultMaximumCacheSize);
 }
 
 void AveragingInterpolation::Compute()
@@ -192,7 +194,10 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
 double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
 {
-    m_strategy->Reset(interpolationPoint);
+    // m_strategy->Reset(interpolationPoint);
+
+    m_interpolationPointCache.resize (0);
+    m_interpolationSampleCache.resize (0);
 
     for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
     {
@@ -207,11 +212,13 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
         if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
         {
-            m_strategy->Add(samplePoint, sampleValue);
+            m_interpolationPointCache.emplace_back (samplePoint);
+            m_interpolationSampleCache.emplace_back (sampleValue);
+            // m_strategy->Add(samplePoint, sampleValue);
         }
     }
 
-    return m_strategy->Calculate();
+    return m_strategy->Calculate(interpolationPoint, m_interpolationPointCache, m_interpolationSampleCache);
 }
 
 double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,

@@ -47,5 +47,20 @@ namespace meshkernel::averaging
         /// @brief Calculates the average value based on the values added.
         /// @return The calculated average
         [[nodiscard]] virtual double Calculate() const = 0;
+
+        virtual double Calculate (const Point& interpolationPoint,
+                                  const std::vector<Point>& samplePoints,
+                                  const std::vector<double>& sampleValues) {
+
+
+            Reset (interpolationPoint);
+
+            for (UInt i = 0; i < samplePoints.size (); ++i)
+            {
+                Add(samplePoints[i], sampleValues[i]);
+            }
+
+            return Calculate ();
+        }
     };
 } // namespace meshkernel::averaging
