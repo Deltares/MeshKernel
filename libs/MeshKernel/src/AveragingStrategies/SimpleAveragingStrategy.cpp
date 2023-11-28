@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <algorithm>
+
 #include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
 
 namespace meshkernel::averaging
@@ -53,13 +55,7 @@ namespace meshkernel::averaging
                                               const std::vector<Point>& samplePoints [[maybe_unused]],
                                               const std::vector<double>& sampleValues) const
     {
-        double result = 0.0;
-
-        for (UInt i = 0; i < sampleValues.size (); ++i)
-        {
-            result += sampleValues[i];
-        }
-
+        double result = std::accumulate (sampleValues.begin (), sampleValues.end (), 0.0);
         return sampleValues.size () >= m_minNumPoints ? result / static_cast<double>(sampleValues.size ()) : constants::missing::doubleValue;
     }
 
