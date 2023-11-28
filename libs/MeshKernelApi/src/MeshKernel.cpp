@@ -651,7 +651,8 @@ namespace meshkernelapi
                 else
                 {
                     throw meshkernel::MeshKernelError("Mesh conversion between projection {} and {} has not been implemented.",
-                                                      meshkernel::ToString(meshKernelState[meshKernelId].m_projection), meshkernel::ToString(projection));
+                                                      meshkernel::ProjectionToString(meshKernelState[meshKernelId].m_projection),
+                                                      meshkernel::ProjectionToString(projection));
                 }
             }
         }

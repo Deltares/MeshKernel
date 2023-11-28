@@ -25,7 +25,7 @@ meshkernel::Projection meshkernel::GetProjectionValue(const int projection)
     }
 }
 
-const std::string& meshkernel::ToString(const Projection projection)
+const std::string& meshkernel::ProjectionToString(const Projection projection)
 {
     static const std::string Cartesian = "Projection::Cartesian";
     static const std::string Spherical = "Projection::Spherical";

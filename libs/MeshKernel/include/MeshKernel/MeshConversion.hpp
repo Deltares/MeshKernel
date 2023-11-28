@@ -61,13 +61,13 @@ namespace meshkernel
             if (sourceMesh.m_projection != conversion.SourceProjection())
             {
                 throw MeshKernelError("Incorrect source mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.SourceProjection()), ToString(sourceMesh.m_projection));
+                                      ProjectionToString(conversion.SourceProjection()), ProjectionToString(sourceMesh.m_projection));
             }
 
             if (targetMesh.m_projection != conversion.TargetProjection())
             {
                 throw MeshKernelError("Incorrect target mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.TargetProjection()), ToString(targetMesh.m_projection));
+                                      ProjectionToString(conversion.TargetProjection()), ProjectionToString(targetMesh.m_projection));
             }
 
             if (sourceMesh.GetNumNodes() != targetMesh.GetNumNodes())
@@ -99,7 +99,7 @@ namespace meshkernel
             if (mesh.m_projection != conversion.SourceProjection())
             {
                 throw MeshKernelError("Incorrect mesh coordinate system, expecting '{}', found '{}'",
-                                      ToString(conversion.SourceProjection()), ToString(mesh.m_projection));
+                                      ProjectionToString(conversion.SourceProjection()), ProjectionToString(mesh.m_projection));
             }
 
 #pragma omp parallel for

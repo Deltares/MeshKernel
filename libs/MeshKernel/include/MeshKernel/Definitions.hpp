@@ -51,7 +51,7 @@ namespace meshkernel
     Projection GetProjectionValue(int projection);
 
     /// @brief Get the string representation of the Projection enumeration values.
-    const std::string& ToString(Projection projection);
+    const std::string& ProjectionToString(Projection projection);
 
     /// @brief Indicator for traversal direction of the points specifying a polygon
     // PolygonTraversalDirection? too long
