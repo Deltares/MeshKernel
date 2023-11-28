@@ -19,6 +19,11 @@ namespace meshkernel::averaging
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
 
+        /// @brief Calculates the average value based on the sample values.
+        /// @param[in] interpolationPoint The point for which the average should be calculated.
+        /// @param[in] samplePoints The sample points to used by this strategy.
+        /// @param[in] sampleValues The sample values  associated with each sample point.
+        /// @return The calculated average
         double Calculate (const Point& interpolationPoint,
                           const std::vector<Point>& samplePoints,
                           const std::vector<double>& sampleValues) const override;

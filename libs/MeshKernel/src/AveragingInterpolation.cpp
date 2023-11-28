@@ -194,8 +194,6 @@ double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
 double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Point& interpolationPoint,
                                                                        std::vector<Point> const& searchPolygon)
 {
-    // m_strategy->Reset(interpolationPoint);
-
     m_interpolationPointCache.resize (0);
     m_interpolationSampleCache.resize (0);
 
@@ -210,11 +208,11 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
         }
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
+
         if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
         {
             m_interpolationPointCache.emplace_back (samplePoint);
             m_interpolationSampleCache.emplace_back (sampleValue);
-            // m_strategy->Add(samplePoint, sampleValue);
         }
     }
 
