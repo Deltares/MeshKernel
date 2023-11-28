@@ -44,4 +44,19 @@ namespace meshkernel::averaging
     {
         return m_result != std::numeric_limits<double>::lowest() ? m_result : constants::missing::doubleValue;
     }
+
+    double MaxAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
+                                           const std::vector<Point>& samplePoints,
+                                           const std::vector<double>& sampleValues) const
+    {
+        double result = std::numeric_limits<double>::lowest();
+
+        for (UInt i = 0; i < samplePoints.size (); ++i)
+        {
+            result = std::max(result, sampleValues[i]);
+        }
+
+        return result != std::numeric_limits<double>::lowest() ? result : constants::missing::doubleValue;
+    }
+
 } // namespace meshkernel::averaging

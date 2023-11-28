@@ -48,4 +48,19 @@ namespace meshkernel::averaging
     {
         return m_nAdds >= m_minNumPoints ? m_result / static_cast<double>(m_nAdds) : constants::missing::doubleValue;
     }
+
+    double SimpleAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
+                                              const std::vector<Point>& samplePoints [[maybe_unused]],
+                                              const std::vector<double>& sampleValues) const
+    {
+        double result = 0.0;
+
+        for (UInt i = 0; i < sampleValues.size (); ++i)
+        {
+            result += sampleValues[i];
+        }
+
+        return sampleValues.size () >= m_minNumPoints ? result / static_cast<double>(sampleValues.size ()) : constants::missing::doubleValue;
+    }
+
 } // namespace meshkernel::averaging

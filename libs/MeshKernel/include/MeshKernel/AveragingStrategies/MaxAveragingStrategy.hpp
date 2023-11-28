@@ -43,6 +43,10 @@ namespace meshkernel::averaging
 
         [[nodiscard]] double Calculate() const override;
 
+        double Calculate (const Point& interpolationPoint,
+                          const std::vector<Point>& samplePoints,
+                          const std::vector<double>& sampleValues) const override;
+
     private:
         /// @brief The current result returned in Calculate.
         double m_result = std::numeric_limits<double>::lowest();

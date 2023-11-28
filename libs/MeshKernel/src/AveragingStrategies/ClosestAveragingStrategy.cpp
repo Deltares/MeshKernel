@@ -56,7 +56,7 @@ namespace meshkernel::averaging
 
     double ClosestAveragingStrategy::Calculate (const Point& interpolationPoint,
                                                 const std::vector<Point>& samplePoints,
-                                                const std::vector<double>& sampleValues) //const
+                                                const std::vector<double>& sampleValues) const
     {
         double result = constants::missing::doubleValue;
         double closestSquaredValue = std::numeric_limits<double>::max();

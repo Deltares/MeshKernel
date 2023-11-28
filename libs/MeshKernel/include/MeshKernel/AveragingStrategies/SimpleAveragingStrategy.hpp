@@ -19,6 +19,10 @@ namespace meshkernel::averaging
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
 
+        double Calculate (const Point& interpolationPoint,
+                          const std::vector<Point>& samplePoints,
+                          const std::vector<double>& sampleValues) const override;
+
     private:
         /// @brief The minimum number of points for a valid interpolation.
         const size_t m_minNumPoints;

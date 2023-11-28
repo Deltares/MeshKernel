@@ -49,7 +49,7 @@ namespace meshkernel::averaging
 
         double Calculate (const Point& interpolationPoint,
                           const std::vector<Point>& samplePoints,
-                          const std::vector<double>& sampleValues) override; //const
+                          const std::vector<double>& sampleValues) const override;
 
     private:
         /// @brief The result used to calculate the final value in Calculate.

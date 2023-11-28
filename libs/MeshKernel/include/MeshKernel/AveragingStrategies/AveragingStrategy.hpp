@@ -48,19 +48,10 @@ namespace meshkernel::averaging
         /// @return The calculated average
         [[nodiscard]] virtual double Calculate() const = 0;
 
+        /// @brief Calculates the average value based on the values added.
+        /// @return The calculated average
         virtual double Calculate (const Point& interpolationPoint,
                                   const std::vector<Point>& samplePoints,
-                                  const std::vector<double>& sampleValues) {
-
-
-            Reset (interpolationPoint);
-
-            for (UInt i = 0; i < samplePoints.size (); ++i)
-            {
-                Add(samplePoints[i], sampleValues[i]);
-            }
-
-            return Calculate ();
-        }
+                                  const std::vector<double>& sampleValues) const = 0;
     };
 } // namespace meshkernel::averaging

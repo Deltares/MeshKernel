@@ -29,7 +29,7 @@ namespace meshkernel::averaging
 
     double InverseWeightedAveragingStrategy::Calculate (const Point& interpolationPoint,
                                                         const std::vector<Point>& samplePoints,
-                                                        const std::vector<double>& sampleValues) //const
+                                                        const std::vector<double>& sampleValues) const
     {
         double result = 0.0;
         double wall = 0.0;
