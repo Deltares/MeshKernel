@@ -73,6 +73,13 @@ void SamplesBasedRefinement::Compute(const std::vector<bool>& edgeIsBelowMinimum
     for (UInt face = 0; face < GetMesh().GetNumFaces(); face++)
     {
         FindHangingNodes(brotherEdges, face);
+
+        if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
+        {
+            continue;
+        }
+
+        std::ranges::fill(m_refineEdgeCache, 0);
         UInt numberToBeRefined = ComputeForFace(face, edgeIsBelowMinimumSize, m_refineEdgeCache);
 
         if (numberToBeRefined > 1)
@@ -91,6 +98,18 @@ void SamplesBasedRefinement::Compute(const std::vector<bool>& edgeIsBelowMinimum
                 }
             }
         }
+    }
+
+    // for (UInt i = 0; i < edgeIsBelowMinimumSize.size (); ++i) {
+    //     std::cout << "edgeIsBelowMinimumSize " << i << "  " << edgeIsBelowMinimumSize [i] << std::endl;
+    // }
+
+    // for (UInt i = 0; i < faceMask.size (); ++i) {
+    //     std::cout << " face " << i << "  "<< faceMask[i] << std::endl;
+    // }
+
+    for (UInt i = 0; i < edgeMask.size (); ++i) {
+        std::cout << " edge " << i << "  "<< edgeMask[i] << std::endl;
     }
 
     for (auto& edge : edgeMask)
@@ -310,6 +329,11 @@ meshkernel::UInt WaveCourantRefinement::ComputeForFace(const UInt face,
 {
     UInt numberOfEdgesToRefine = 0;
 
+    if (face == 288) {
+        [[maybe_unused]] int dummy;
+        dummy = 1;
+    }
+
     if (m_useNodalRefinement)
     {
         ComputeFaceLocationTypes();
@@ -386,6 +410,8 @@ meshkernel::UInt WaveCourantRefinement::ComputeForFace(const UInt face,
             numberOfEdgesToRefine = 0;
         }
     }
+
+    std::cout << " face to refine " << face << "  " << numberOfEdgesToRefine << std::endl;
 
     return numberOfEdgesToRefine;
 }
@@ -622,13 +648,26 @@ void MeshRefinement::Compute()
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
 
-        auto notZero = [](UInt value)
-        { return value != 0; };
-
-        if (std::count_if(m_faceMask.begin(), m_faceMask.end(), notZero) == 0)
+        UInt numFacesToRefine = 0;
+        for (UInt f = 0; f < m_mesh->GetNumFaces(); f++)
+        {
+            if (m_faceMask[f] != 0)
+            {
+                numFacesToRefine++;
+            }
+        }
+        if (numFacesToRefine == 0)
         {
             break;
         }
+
+        // auto notZero = [](UInt value)
+        // { return value != 0; };
+
+        // if (std::count_if(m_faceMask.begin(), m_faceMask.end(), notZero) == 0)
+        // {
+        //     break;
+        // }
 
         // spit the edges
         RefineFacesBySplittingEdges();

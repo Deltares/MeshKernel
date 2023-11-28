@@ -37,12 +37,12 @@ namespace meshkernel
     // Forward declarations
     class Mesh2D;
 
-    class ComputeRefinement
+    class ComputeRefinementMask
     {
     public:
-        ComputeRefinement(const Mesh2D& mesh) : m_mesh(mesh) {}
+        ComputeRefinementMask(const Mesh2D& mesh) : m_mesh(mesh) {}
 
-        virtual ~ComputeRefinement() = default;
+        virtual ~ComputeRefinementMask() = default;
 
         virtual void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
                              const std::vector<UInt>& brotherEdges,
@@ -282,13 +282,13 @@ namespace meshkernel
         bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
         const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
 
-        std::unique_ptr<ComputeRefinement> m_refinementMasks;
+        std::unique_ptr<ComputeRefinementMask> m_refinementMasks;
     };
 
-    class EdgeSizeBasedRefinement : public ComputeRefinement
+    class EdgeSizeBasedRefinement : public ComputeRefinementMask
     {
     public:
-        EdgeSizeBasedRefinement(Mesh2D& mesh) : ComputeRefinement(mesh) {}
+        EdgeSizeBasedRefinement(Mesh2D& mesh) : ComputeRefinementMask(mesh) {}
 
         void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
                      const std::vector<UInt>& brotherEdges,
@@ -298,12 +298,14 @@ namespace meshkernel
     private:
     };
 
-    class SamplesBasedRefinement : public ComputeRefinement
+    class SamplesBasedRefinement : public ComputeRefinementMask
     {
     public:
         SamplesBasedRefinement(Mesh2D& mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
-                               const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinement(mesh), m_interpolant(interpolant), m_meshRefinementParameters(meshRefinementParameters) {}
+                               const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinementMask(mesh),
+                                                                                           m_interpolant(interpolant),
+                                                                                           m_meshRefinementParameters(meshRefinementParameters) {}
 
         // Will loop over all elements in the mesh calling ComputeForFace
         void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
@@ -370,9 +372,8 @@ namespace meshkernel
         WaveCourantRefinement(Mesh2D& mesh,
                               std::shared_ptr<MeshInterpolation> interpolant,
                               const MeshRefinementParameters& meshRefinementParameters,
-                              bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters), m_useNodalRefinement(useNodalRefinement)
-        {
-        }
+                              bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters),
+                                                         m_useNodalRefinement(useNodalRefinement) {}
 
     private:
         bool IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const;
