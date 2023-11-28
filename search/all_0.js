@@ -20,5 +20,5 @@ var searchData=
   ['aspect_5fratio_5fgrow_5ffactor_17',['aspect_ratio_grow_factor',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a74ff14377b237d297ad3d9d3ae7e3896',1,'meshkernel::SplinesToCurvilinearParameters']]],
   ['attraction_5fparameter_18',['attraction_parameter',['../structmeshkernel_1_1_curvilinear_parameters.html#a7dacc86369634873602728f1c61b2f01',1,'meshkernel::CurvilinearParameters']]],
   ['average_5fwidth_19',['average_width',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#adbc81d6bc04a3575805c1cf211a3159a',1,'meshkernel::SplinesToCurvilinearParameters']]],
-  ['averaginginterpolation_20',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#add8740cb094d0f4a5272b5998a3fb3d1',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]]
+  ['averaginginterpolation_20',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]]
 ];

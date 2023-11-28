@@ -113,9 +113,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:add8740cb094d0f4a5272b5998a3fb3d1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#add8740cb094d0f4a5272b5998a3fb3d1">AveragingInterpolation</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, std::vector&lt; <a class="el" href="classmeshkernel_1_1_sample.html">Sample</a> &gt; &amp;samples, <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> method, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> locationType, double relativeSearchRadius, bool useClosestSampleIfNoneAvailable, bool subtractSampleValues, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> minNumSamples)</td></tr>
-<tr class="memdesc:add8740cb094d0f4a5272b5998a3fb3d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation based on averaging.  <a href="classmeshkernel_1_1_averaging_interpolation.html#add8740cb094d0f4a5272b5998a3fb3d1">More...</a><br /></td></tr>
-<tr class="separator:add8740cb094d0f4a5272b5998a3fb3d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb6c24e68b623555fda76e933ff0b4ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae">AveragingInterpolation</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, std::vector&lt; <a class="el" href="classmeshkernel_1_1_sample.html">Sample</a> &gt; &amp;samples, <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> method, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> locationType, double relativeSearchRadius, bool useClosestSampleIfNoneAvailable, bool subtractSampleValues, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> minNumSamples)</td></tr>
+<tr class="memdesc:adb6c24e68b623555fda76e933ff0b4ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation based on averaging.  <a href="classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae">More...</a><br /></td></tr>
+<tr class="separator:adb6c24e68b623555fda76e933ff0b4ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7e374c03aaefca0cc61aa36f0751143"><td class="memItemLeft" align="right" valign="top"><a id="ac7e374c03aaefca0cc61aa36f0751143"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#ac7e374c03aaefca0cc61aa36f0751143">Compute</a> () override</td></tr>
 <tr class="memdesc:ac7e374c03aaefca0cc61aa36f0751143"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute interpolation. <br /></td></tr>
@@ -162,19 +162,19 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The class used to interpolate based on averaging. </p>
-<p>The averaging interpolation operates on three specific <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> - Faces (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to collect all samples close to the locations and perform a mathematical operation on their values. The <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> enum describes available operations.</p>
+<p>The averaging interpolation operates on three specific <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> - Faces (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to collect all samples close to the locations and perform a mathematical operation on their values. The <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">Method</a> enum describes available operations.</p>
 <p>The algorithm operates as follow:</p>
 <ul>
 <li>The samples are ordered in an RTree for a fast search</li>
 <li>The search area around the location is constructed as follow:<ol type="1">
 <li>For face locations, the sample areas correspond to the faces, increased/decreased by the relativeSearchRadius parameter (relativeSearchRadius &gt; 1 increased, relativeSearchRadius &lt; 1 decreased).</li>
-<li>For <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> Nodes and <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> Edges locations, the dual face around the node is constructed by connecting the mid-points of all edges connected to the node. As above, the resulting polygon can be increased/decreased by the relativeSearchRadius parameter.</li>
+<li>For <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> Nodes and <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> Edges locations, the dual face around the node is constructed by connecting the mid-points of all edges connected to the node. As above, the resulting polygon can be increased/decreased by the relativeSearchRadius parameter.</li>
 </ol>
 </li>
 <li>The search radius is computed from the constructed polygon nodes and the locations, the maximum value is taken.</li>
 <li>The sample RTree is inquired to retrieve the indices of the samples within the search radius.</li>
 <li>The operations described above are executed on the found samples.</li>
-<li>For the <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a> Edges location, the interpolated values at the node are averaged. </li>
+<li>For the <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> Edges location, the interpolated values at the node are averaged. </li>
 </ul>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a972b7df6ae79caf25d17f2259bfc74e0"></a>
@@ -216,8 +216,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="add8740cb094d0f4a5272b5998a3fb3d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add8740cb094d0f4a5272b5998a3fb3d1">&#9670;&nbsp;</a></span>AveragingInterpolation()</h2>
+<a id="adb6c24e68b623555fda76e933ff0b4ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb6c24e68b623555fda76e933ff0b4ae">&#9670;&nbsp;</a></span>AveragingInterpolation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,7 +243,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Mesh::Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>locationType</em>, </td>
         </tr>
         <tr>

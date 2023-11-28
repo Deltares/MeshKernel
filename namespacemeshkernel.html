@@ -301,6 +301,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a74432f6294d6952b6f3b363b0f85a3a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicator for traversal direction of the points specifying a polygon.  <a href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">More...</a><br /></td></tr>
 <tr class="separator:a74432f6294d6952b6f3b363b0f85a3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50aa377deae5c143c4fc0ba767f051d9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> { <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a4f93ea0836ba76b6f9b81e3eee53a3af">Location::Faces</a> = 0, 
+<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a187c6ad3a74cc93ac6c2229d398e383e">Location::Nodes</a> = 1, 
+<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9">Location::Edges</a> = 2, 
+<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a88183b946cc5f0e8c96b2e66e1c74a7e">Location::Unknown</a> = 3
+ }</td></tr>
+<tr class="memdesc:a50aa377deae5c143c4fc0ba767f051d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mesh locations enumeration.  <a href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">More...</a><br /></td></tr>
+<tr class="separator:a50aa377deae5c143c4fc0ba767f051d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
 <a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
@@ -333,10 +340,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a5aa59cfaa16a551c36007c392269bb0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">GetProjectionValue</a> (int projection)</td></tr>
 <tr class="memdesc:a5aa59cfaa16a551c36007c392269bb0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an integer value to the Projection enumeration type.  <a href="namespacemeshkernel.html#a5aa59cfaa16a551c36007c392269bb0d">More...</a><br /></td></tr>
 <tr class="separator:a5aa59cfaa16a551c36007c392269bb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fccbe2746c846a00eedadfe769e994e"><td class="memItemLeft" align="right" valign="top"><a id="a1fccbe2746c846a00eedadfe769e994e"></a>
-const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a1fccbe2746c846a00eedadfe769e994e">ToString</a> (<a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
-<tr class="memdesc:a1fccbe2746c846a00eedadfe769e994e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the string representation of the Projection enumeration values. <br /></td></tr>
-<tr class="separator:a1fccbe2746c846a00eedadfe769e994e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a103d3801f3c0a6f8e46d70e9739b3b76"><td class="memItemLeft" align="right" valign="top"><a id="a103d3801f3c0a6f8e46d70e9739b3b76"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a103d3801f3c0a6f8e46d70e9739b3b76">ProjectionToString</a> (<a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a103d3801f3c0a6f8e46d70e9739b3b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the string representation of the Projection enumeration values. <br /></td></tr>
+<tr class="separator:a103d3801f3c0a6f8e46d70e9739b3b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">ResizeAndFill2DVector</a> (std::vector&lt; std::vector&lt; T &gt;&gt; &amp;v, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;firstDimension, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;secondDimension, bool fill=false, const T &amp;fillValue={})</td></tr>
 <tr class="memdesc:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a two dimensional vector.  <a href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">More...</a><br /></td></tr>
@@ -708,6 +715,40 @@ template&lt;typename Function &gt; </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003"></a>StdLibExceptionCode&#160;</td><td class="fielddoc"><p>Standrad library exception. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653"></a>UnknownExceptionCode&#160;</td><td class="fielddoc"><p>Unknown exception. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a50aa377deae5c143c4fc0ba767f051d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50aa377deae5c143c4fc0ba767f051d9">&#9670;&nbsp;</a></span>Location</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">meshkernel::Location</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> locations enumeration. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a4f93ea0836ba76b6f9b81e3eee53a3af"></a>Faces&#160;</td><td class="fielddoc"><p>Faces. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a187c6ad3a74cc93ac6c2229d398e383e"></a>Nodes&#160;</td><td class="fielddoc"><p>Nodes. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9"></a>Edges&#160;</td><td class="fielddoc"><p>Edges. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"><p>Unknown. </p>
 </td></tr>
 </table>
 

@@ -13,7 +13,7 @@ var searchData=
   ['edgelengths_136',['EdgeLengths',['../classmeshkernel_1_1_polygon.html#ac112f73ec7266607a3cb9ba091339f81',1,'meshkernel::Polygon']]],
   ['edgemeshpolylineintersection_137',['EdgeMeshPolyLineIntersection',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html',1,'meshkernel']]],
   ['edgenodes_138',['edgeNodes',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#aea85374e72f3e668979323a5788e60e3',1,'meshkernel::FaceMeshPolyLineIntersection']]],
-  ['edges_139',['Edges',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9',1,'meshkernel::Mesh']]],
+  ['edges_139',['Edges',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9',1,'meshkernel']]],
   ['edgesecondnode_140',['edgeSecondNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#ae510c4bfb261f5cb5860d07dd0a46ff3',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
   ['enclosure_141',['Enclosure',['../classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb',1,'meshkernel::Polygons']]],
   ['epsgprojection_142',['EpsgProjection',['../classmeshkernel_1_1_convert_spherical_to_cartesian_e_p_s_g.html#aaf3ca50189775ab2e4259fddecce6c4c',1,'meshkernel::ConvertSphericalToCartesianEPSG::EpsgProjection()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_e_p_s_g.html#a062d234d811cc114a737c1bf309cd5ef',1,'meshkernel::ConvertCartesianToSphericalEPSG::EpsgProjection()']]],

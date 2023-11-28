@@ -106,13 +106,6 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a2bdcf8039b306fc22ee56210ac137078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different mesh types.  <a href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078">More...</a><br /></td></tr>
 <tr class="separator:a2bdcf8039b306fc22ee56210ac137078"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a197164c7734986c1409935442b520f63"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> { <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af">Location::Faces</a> = 0, 
-<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e">Location::Nodes</a> = 1, 
-<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9">Location::Edges</a> = 2, 
-<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e">Location::Unknown</a> = 3
- }</td></tr>
-<tr class="memdesc:a197164c7734986c1409935442b520f63"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> locations enumeration.  <a href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">More...</a><br /></td></tr>
-<tr class="separator:a197164c7734986c1409935442b520f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -217,31 +210,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:afe1805fbb756c7f015c609eda23a3d4b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#afe1805fbb756c7f015c609eda23a3d4b">ComputeMaxLengthSurroundingEdges</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node)</td></tr>
 <tr class="memdesc:afe1805fbb756c7f015c609eda23a3d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the max length of the edges connected to a node.  <a href="classmeshkernel_1_1_mesh.html#afe1805fbb756c7f015c609eda23a3d4b">More...</a><br /></td></tr>
 <tr class="separator:afe1805fbb756c7f015c609eda23a3d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfb284547a7588c325732c913bda14d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2">BuildTree</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation)</td></tr>
+<tr class="memitem:adfb284547a7588c325732c913bda14d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2">BuildTree</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation)</td></tr>
 <tr class="memdesc:adfb284547a7588c325732c913bda14d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the rtree for the corresponding location, using all locations.  <a href="classmeshkernel_1_1_mesh.html#adfb284547a7588c325732c913bda14d2">More...</a><br /></td></tr>
 <tr class="separator:adfb284547a7588c325732c913bda14d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad96928e361282ff2bd0a3a992cfbfcb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad96928e361282ff2bd0a3a992cfbfcb1">BuildTree</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox)</td></tr>
+<tr class="memitem:ad96928e361282ff2bd0a3a992cfbfcb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad96928e361282ff2bd0a3a992cfbfcb1">BuildTree</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox)</td></tr>
 <tr class="memdesc:ad96928e361282ff2bd0a3a992cfbfcb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the rtree for the corresponding location, using only the locations inside the bounding box.  <a href="classmeshkernel_1_1_mesh.html#ad96928e361282ff2bd0a3a992cfbfcb1">More...</a><br /></td></tr>
 <tr class="separator:ad96928e361282ff2bd0a3a992cfbfcb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a673d21451c09769b5164f778bedc4c70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70">SearchNearestLocation</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation)</td></tr>
+<tr class="memitem:a673d21451c09769b5164f778bedc4c70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70">SearchNearestLocation</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation)</td></tr>
 <tr class="memdesc:a673d21451c09769b5164f778bedc4c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search all points sorted by proximity to another point.  <a href="classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70">More...</a><br /></td></tr>
 <tr class="separator:a673d21451c09769b5164f778bedc4c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00ee5223d2b614f5cec051375eab801b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b">SearchNearestLocation</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation)</td></tr>
+<tr class="memitem:a00ee5223d2b614f5cec051375eab801b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b">SearchNearestLocation</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation)</td></tr>
 <tr class="memdesc:a00ee5223d2b614f5cec051375eab801b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the nearest point within a radius to another point.  <a href="classmeshkernel_1_1_mesh.html#a00ee5223d2b614f5cec051375eab801b">More...</a><br /></td></tr>
 <tr class="separator:a00ee5223d2b614f5cec051375eab801b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afadb6ba0a263f4c997f3eb9d211ac923"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923">SearchLocations</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation)</td></tr>
+<tr class="memitem:afadb6ba0a263f4c997f3eb9d211ac923"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923">SearchLocations</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation)</td></tr>
 <tr class="memdesc:afadb6ba0a263f4c997f3eb9d211ac923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the nearest points within a radius to another point.  <a href="classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923">More...</a><br /></td></tr>
 <tr class="separator:afadb6ba0a263f4c997f3eb9d211ac923"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8672c19898410c6f5721d8066b53cb7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a8672c19898410c6f5721d8066b53cb7b">GetNumLocations</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation) const</td></tr>
+<tr class="memitem:a8672c19898410c6f5721d8066b53cb7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a8672c19898410c6f5721d8066b53cb7b">GetNumLocations</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation) const</td></tr>
 <tr class="memdesc:a8672c19898410c6f5721d8066b53cb7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the search results. To be used after <a class="el" href="classmeshkernel_1_1_mesh.html#afadb6ba0a263f4c997f3eb9d211ac923">SearchLocations</a> or <a class="el" href="classmeshkernel_1_1_mesh.html#a673d21451c09769b5164f778bedc4c70">SearchNearestLocation</a>.  <a href="classmeshkernel_1_1_mesh.html#a8672c19898410c6f5721d8066b53cb7b">More...</a><br /></td></tr>
 <tr class="separator:a8672c19898410c6f5721d8066b53cb7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affc3101752419a1ae4cd700593ec63a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#affc3101752419a1ae4cd700593ec63a0">GetLocationsIndices</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> index, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> meshLocation)</td></tr>
+<tr class="memitem:affc3101752419a1ae4cd700593ec63a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#affc3101752419a1ae4cd700593ec63a0">GetLocationsIndices</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> index, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> meshLocation)</td></tr>
 <tr class="memdesc:affc3101752419a1ae4cd700593ec63a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.  <a href="classmeshkernel_1_1_mesh.html#affc3101752419a1ae4cd700593ec63a0">More...</a><br /></td></tr>
 <tr class="separator:affc3101752419a1ae4cd700593ec63a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab712987123157ee36c0bdc471bba55fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab712987123157ee36c0bdc471bba55fe">ComputeLocations</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> location) const</td></tr>
+<tr class="memitem:ab712987123157ee36c0bdc471bba55fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab712987123157ee36c0bdc471bba55fe">ComputeLocations</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location) const</td></tr>
 <tr class="memdesc:ab712987123157ee36c0bdc471bba55fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).  <a href="classmeshkernel_1_1_mesh.html#ab712987123157ee36c0bdc471bba55fe">More...</a><br /></td></tr>
 <tr class="separator:ab712987123157ee36c0bdc471bba55fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a486a0f889bfa8cbd8c8aa6391a06f6c6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a486a0f889bfa8cbd8c8aa6391a06f6c6">IsLocationInPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a> location) const</td></tr>
+<tr class="memitem:a486a0f889bfa8cbd8c8aa6391a06f6c6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a486a0f889bfa8cbd8c8aa6391a06f6c6">IsLocationInPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location) const</td></tr>
 <tr class="memdesc:a486a0f889bfa8cbd8c8aa6391a06f6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes if a location is in polygon.  <a href="classmeshkernel_1_1_mesh.html#a486a0f889bfa8cbd8c8aa6391a06f6c6">More...</a><br /></td></tr>
 <tr class="separator:a486a0f889bfa8cbd8c8aa6391a06f6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abae11e12a202c2e4d2ee57fae97f9881"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">operator+=</a> (<a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> const &amp;rhs)</td></tr>
@@ -349,9 +342,6 @@ RTree&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:af2ac1b6f6c9f21894e579ecad4ee2da3"><td class="memItemLeft" align="right" valign="top">static const std::map&lt; <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#af2ac1b6f6c9f21894e579ecad4ee2da3">LocationToString</a></td></tr>
-<tr class="memdesc:af2ac1b6f6c9f21894e579ecad4ee2da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps Location enumeration to a string.  <a href="classmeshkernel_1_1_mesh.html#af2ac1b6f6c9f21894e579ecad4ee2da3">More...</a><br /></td></tr>
-<tr class="separator:af2ac1b6f6c9f21894e579ecad4ee2da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40fbec78aa3205dd3aa45393869672c5"><td class="memItemLeft" align="right" valign="top"><a id="a40fbec78aa3205dd3aa45393869672c5"></a>
 static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a40fbec78aa3205dd3aa45393869672c5">m_maximumNumberOfEdgesPerNode</a> = 16</td></tr>
 <tr class="memdesc:a40fbec78aa3205dd3aa45393869672c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per node. <br /></td></tr>
@@ -390,40 +380,6 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
 </ul>
 <p>The public interface of the mesh class contains several algorithms, which modify the mesh class members when they are called. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="a197164c7734986c1409935442b520f63"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a197164c7734986c1409935442b520f63">&#9670;&nbsp;</a></span>Location</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">meshkernel::Mesh::Location</a></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> locations enumeration. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af"></a>Faces&#160;</td><td class="fielddoc"><p>Faces. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e"></a>Nodes&#160;</td><td class="fielddoc"><p>Nodes. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9"></a>Edges&#160;</td><td class="fielddoc"><p>Edges. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"><p>Unknown. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
 <a id="a2bdcf8039b306fc22ee56210ac137078"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2bdcf8039b306fc22ee56210ac137078">&#9670;&nbsp;</a></span>Type</h2>
 
@@ -543,7 +499,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="memname">void meshkernel::Mesh::BuildTree </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em></td><td>)</td>
           <td></td>
         </tr>
@@ -569,7 +525,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="memname">void meshkernel::Mesh::BuildTree </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em>, </td>
         </tr>
         <tr>
@@ -606,7 +562,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Mesh::ComputeLocations </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>location</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -960,7 +916,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em>&#160;</td>
         </tr>
         <tr>
@@ -1118,7 +1074,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh::GetNumLocations </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1268,7 +1224,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>location</em>&#160;</td>
         </tr>
         <tr>
@@ -1505,7 +1461,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em>&#160;</td>
         </tr>
         <tr>
@@ -1549,7 +1505,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em>&#160;</td>
         </tr>
         <tr>
@@ -1587,7 +1543,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
           <td class="paramname"><em>meshLocation</em>&#160;</td>
         </tr>
         <tr>
@@ -1646,44 +1602,10 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
 
 </div>
 </div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="af2ac1b6f6c9f21894e579ecad4ee2da3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2ac1b6f6c9f21894e579ecad4ee2da3">&#9670;&nbsp;</a></span>LocationToString</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::map&lt;<a class="el" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63">Location</a>, std::string&gt; meshkernel::Mesh::LocationToString</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">            {<a class="code" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af">Location::Faces</a>, <span class="stringliteral">&quot;Faces&quot;</span>},</div>
-<div class="line">            {<a class="code" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e">Location::Nodes</a>, <span class="stringliteral">&quot;Nodes&quot;</span>},</div>
-<div class="line">            {<a class="code" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9">Location::Edges</a>, <span class="stringliteral">&quot;Edges&quot;</span>},</div>
-<div class="line">            {<a class="code" href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e">Location::Unknown</a>, <span class="stringliteral">&quot;Unknown&quot;</span>}}</div>
-</div><!-- fragment -->
-<p>Maps Location enumeration to a string. </p>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_mesh_8hpp_source.html">Mesh.hpp</a></li>
 </ul>
 </div><!-- contents -->
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a88183b946cc5f0e8c96b2e66e1c74a7e">meshkernel::Mesh::Location::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdoc">Unknown.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a484afb8d54ec549700b1fe96417519a9">meshkernel::Mesh::Location::Edges</a></div><div class="ttdeci">@ Edges</div><div class="ttdoc">Edges.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a187c6ad3a74cc93ac6c2229d398e383e">meshkernel::Mesh::Location::Nodes</a></div><div class="ttdeci">@ Nodes</div><div class="ttdoc">Nodes.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af">meshkernel::Mesh::Location::Faces</a></div><div class="ttdeci">@ Faces</div><div class="ttdoc">Faces.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -8,7 +8,7 @@ var searchData=
   ['faceindex_153',['faceIndex',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#a1597ff2a16762181284173a9aa14faf8',1,'meshkernel::FaceMeshPolyLineIntersection']]],
   ['faceintersections_154',['FaceIntersections',['../classmeshkernel_1_1_mesh2_d_intersections.html#a9f7734f190b9c886e9d53c25103730dc',1,'meshkernel::Mesh2DIntersections']]],
   ['facemeshpolylineintersection_155',['FaceMeshPolyLineIntersection',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html',1,'meshkernel']]],
-  ['faces_156',['Faces',['../classmeshkernel_1_1_mesh.html#a197164c7734986c1409935442b520f63a4f93ea0836ba76b6f9b81e3eee53a3af',1,'meshkernel::Mesh']]],
+  ['faces_156',['Faces',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a4f93ea0836ba76b6f9b81e3eee53a3af',1,'meshkernel']]],
   ['finalizeouteriteration_157',['FinalizeOuterIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a907c05be6ae69d5bc51d22e42afa5ca3',1,'meshkernel::OrthogonalizationAndSmoothing']]],
   ['findcommonnode_158',['FindCommonNode',['../classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28',1,'meshkernel::Mesh']]],
   ['findedge_159',['FindEdge',['../classmeshkernel_1_1_mesh.html#adca9e46fe37ed14e5b42ca498c8f9c42',1,'meshkernel::Mesh']]],

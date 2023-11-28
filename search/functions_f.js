@@ -9,7 +9,7 @@ var searchData=
   ['setindices_1196',['SetIndices',['../classmeshkernel_1_1_contacts.html#ae80306ee59b6c43fc7cfd2fc587a0111',1,'meshkernel::Contacts']]],
   ['setinvalid_1197',['SetInvalid',['../classmeshkernel_1_1_point.html#a2bb72cd221c13395bd76bb62c1171726',1,'meshkernel::Point']]],
   ['sgn_1198',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
-  ['size_1199',['Size',['../classmeshkernel_1_1_polygon.html#aa99ff0f328271d0def9cfc8d425a1bb0',1,'meshkernel::Polygon::Size()'],['../classmeshkernel_1_1_hessian.html#a0ee3b2327814ed618920ee93c7dcb2e6',1,'meshkernel::Hessian::size(const UInt dim) const'],['../classmeshkernel_1_1_hessian.html#abf480650bff072b9dee9594d7f232353',1,'meshkernel::Hessian::size() const']]],
+  ['size_1199',['size',['../classmeshkernel_1_1_hessian.html#a0ee3b2327814ed618920ee93c7dcb2e6',1,'meshkernel::Hessian::size(const UInt dim) const'],['../classmeshkernel_1_1_hessian.html#abf480650bff072b9dee9594d7f232353',1,'meshkernel::Hessian::size() const'],['../classmeshkernel_1_1_polygon.html#aa99ff0f328271d0def9cfc8d425a1bb0',1,'meshkernel::Polygon::Size()']]],
   ['smoother_1200',['Smoother',['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother']]],
   ['snapmeshtolandboundaries_1201',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
   ['snapspline_1202',['SnapSpline',['../classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca',1,'meshkernel::Splines']]],
