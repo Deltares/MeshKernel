@@ -31,7 +31,9 @@ namespace meshkernel::averaging
         Point p = Point(0.0, 0.0);
         std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().first,
                                                                                                       1,
-                                                                                                      p, Projection::cartesian);
+                                                                                                      Projection::cartesian);
+
+        pStrategy->Reset(p);
 
         // Call
         double result = pStrategy->Calculate();
@@ -97,7 +99,9 @@ namespace meshkernel::averaging
         // Setup
         Point p = Point(0.0, 0.0);
         std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().method_, 1,
-                                                                                                      p, Projection::cartesian);
+                                                                                                      Projection::cartesian);
+
+        pStrategy->Reset(p);
 
         for (auto const& p : GetParam().addData_)
         {

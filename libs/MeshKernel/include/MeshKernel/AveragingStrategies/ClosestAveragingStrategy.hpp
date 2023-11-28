@@ -39,8 +39,10 @@ namespace meshkernel::averaging
         /// @brief Construct a new ClosestAveragingStrategy.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used to calculate distances with.
-        ClosestAveragingStrategy(Point const& interpolationPoint,
-                                 Projection projection);
+        ClosestAveragingStrategy(Projection projection);
+
+        /// @brief Reset the state of the closest averaging strategy.
+        void Reset(const Point& interpolationPoint) override;
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
@@ -53,7 +55,7 @@ namespace meshkernel::averaging
         double m_closestSquaredValue = std::numeric_limits<double>::max();
 
         /// @brief The interpolation point from which the closest value is calculated.
-        Point const& m_interpolationPoint;
+        Point m_interpolationPoint{constants::missing::doubleValue, constants::missing::doubleValue};
 
         /// @brief The projection used to calculate the squared distance.
         Projection const m_projection;

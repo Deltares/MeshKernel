@@ -35,6 +35,9 @@ namespace meshkernel::averaging
     class MinAveragingStrategy final : public AveragingStrategy
     {
     public:
+        /// @brief Reset the state of the minimum value averaging-strategy.
+        void Reset(const Point& interpolationPoint) override;
+
         void Add(Point const& samplePoint, double sampleValue) override;
 
         [[nodiscard]] double Calculate() const override;

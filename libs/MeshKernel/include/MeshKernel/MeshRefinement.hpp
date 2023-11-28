@@ -37,6 +37,33 @@ namespace meshkernel
     // Forward declarations
     class Mesh2D;
 
+    class ComputeRefinementMask
+    {
+    public:
+        ComputeRefinementMask(const Mesh2D& mesh) : m_mesh(mesh) {}
+
+        virtual ~ComputeRefinementMask() = default;
+
+        virtual void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
+                             const std::vector<UInt>& brotherEdges,
+                             std::vector<int>& edgeMask,
+                             std::vector<int>& faceMask) = 0;
+
+        virtual bool IsSampleBased() const
+        {
+            return false;
+        }
+
+    protected:
+        const Mesh2D& GetMesh() const
+        {
+            return m_mesh;
+        }
+
+    private:
+        const Mesh2D& m_mesh;
+    };
+
     /// @brief A class used to refine a Mesh2D instance
     ///
     /// Mesh refinement operates on Mesh2D and is based on
@@ -73,6 +100,7 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
+    public:
         /// @brief Enumerator describing the face location types
         enum class FaceLocation
         {
@@ -89,7 +117,11 @@ namespace meshkernel
             RidgeDetection = 3
         };
 
-    public:
+        /// @brief Convert the integer value of refinementInt to a valid value of RefinementType.
+        ///
+        /// If no such RefinementType value exists then a ConstraintError will be thrown.
+        static RefinementType GetRefinementTypeValue(const int refinementInt);
+
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use
@@ -219,13 +251,17 @@ namespace meshkernel
         /// @brief Compute which edge will be below the minimum size after refinement
         void ComputeEdgeBelowMinSizeAfterRefinement();
 
+        ///  @brief Review the refinement, some elements marked for refinement may not need to be refined.
+        void ReviewRefinement(const int level);
+
         RTree m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;                           ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;                           ///< If 0, edge is not split
         std::vector<bool> m_isEdgeBelowMinSizeAfterRefinement; ///< If an edge is below the minimum size after refinement
-        std::vector<int> m_nodeMask;                           ///< The node mask used in the refinement process
-        std::vector<UInt> m_brotherEdges;                      ///< The index of the brother edge for each edge
+        // TODO add enum for nodeMask values: Or comment describing the meaning of the values -2, -1, 0 and 1.
+        std::vector<int> m_nodeMask;      ///< The node mask used in the refinement process
+        std::vector<UInt> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
         std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging
@@ -245,5 +281,113 @@ namespace meshkernel
         MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
         bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
         const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
+
+        std::unique_ptr<ComputeRefinementMask> m_refinementMasks;
     };
+
+    class EdgeSizeBasedRefinement : public ComputeRefinementMask
+    {
+    public:
+        EdgeSizeBasedRefinement(Mesh2D& mesh) : ComputeRefinementMask(mesh) {}
+
+        void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
+                     const std::vector<UInt>& brotherEdges,
+                     std::vector<int>& edgeMask,
+                     std::vector<int>& faceMask) override;
+
+    private:
+    };
+
+    class SamplesBasedRefinement : public ComputeRefinementMask
+    {
+    public:
+        SamplesBasedRefinement(Mesh2D& mesh,
+                               std::shared_ptr<MeshInterpolation> interpolant,
+                               const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinementMask(mesh),
+                                                                                           m_interpolant(interpolant),
+                                                                                           m_meshRefinementParameters(meshRefinementParameters) {}
+
+        // Will loop over all elements in the mesh calling ComputeForFace
+        void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
+                     const std::vector<UInt>& brotherEdges,
+                     std::vector<int>& edgeMask,
+                     std::vector<int>& faceMask) override;
+
+        bool IsSampleBased() const override
+        {
+            return true;
+        }
+
+        // TODO should all be private
+        std::shared_ptr<MeshInterpolation> m_interpolant;
+        MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
+
+        std::vector<bool> m_isHangingNodeCache; ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache; ///< Cache for maintaining if edge is hanging
+
+    private:
+        void SmoothRefinementMasks(const std::vector<UInt>& brotherEdges,
+                                   std::vector<int>& edgeMask,
+                                   std::vector<int>& faceMask);
+
+        //  What to do here, it is needed by both the samples based refinement and the mesh-refinement
+        void FindHangingNodes(const std::vector<UInt>& brotherEdges, UInt face);
+
+        virtual UInt ComputeForFace(const UInt faceId,
+                                    const std::vector<bool>& edgeIsBelowMinimumSize,
+                                    std::vector<UInt>& refineEdgeCache) = 0;
+
+        std::vector<UInt> m_refineEdgeCache; ///< Cache for the edges to be refined
+    };
+
+    class RefinementLevelsRefinement : public SamplesBasedRefinement
+    {
+    public:
+        RefinementLevelsRefinement(Mesh2D& mesh,
+                                   std::shared_ptr<MeshInterpolation> interpolant,
+                                   const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
+
+    private:
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+    };
+
+    class RidgeDetectionRefinement : public SamplesBasedRefinement
+    {
+    public:
+        RidgeDetectionRefinement(Mesh2D& mesh,
+                                 std::shared_ptr<MeshInterpolation> interpolant,
+                                 const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
+
+    private:
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+    };
+
+    class WaveCourantRefinement : public SamplesBasedRefinement
+    {
+    public:
+        WaveCourantRefinement(Mesh2D& mesh,
+                              std::shared_ptr<MeshInterpolation> interpolant,
+                              const MeshRefinementParameters& meshRefinementParameters,
+                              bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters),
+                                                         m_useNodalRefinement(useNodalRefinement) {}
+
+    private:
+        bool IsRefineNeededBasedOnCourantCriteria(UInt edge, double depthValues) const;
+
+        void ComputeFaceLocationTypes();
+
+        UInt ComputeForFace(const UInt faceId,
+                            const std::vector<bool>& edgeIsBelowMinimumSize,
+                            std::vector<UInt>& refineEdgeCache) override;
+
+        std::vector<MeshRefinement::FaceLocation> m_faceLocationType; ///< Cache for the face location types
+
+        bool m_useNodalRefinement = false;      ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001; ///< The distance for merging two edges
+    };
+
 } // namespace meshkernel
