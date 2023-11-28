@@ -206,7 +206,7 @@ TEST(MeshConversionTests, CartesianToSphericalClassTestFromStringZone31)
     EXPECT_TRUE(mk::IsEqual(target.y, result.y, tolerance));
 }
 
-TEST(MeshConversionTests, CartesianToSphericalClassTestFromStringZone30)
+TEST(MeshConversionTests, CartesianToSphericalClassTestFromStringZone30N)
 {
     constexpr double tolerance = 1.0e-6;
 
