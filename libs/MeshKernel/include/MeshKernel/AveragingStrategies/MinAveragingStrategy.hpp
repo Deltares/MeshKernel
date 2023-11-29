@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ namespace meshkernel::averaging
         /// @param[in] samplePoints The sample points to used by this strategy.
         /// @param[in] sampleValues The sample values  associated with each sample point.
         /// @return The calculated average
-        double Calculate (const Point& interpolationPoint,
-                          const std::vector<Point>& samplePoints,
-                          const std::vector<double>& sampleValues) const override;
+        double Calculate(const Point& interpolationPoint,
+                         const std::vector<Point>& samplePoints,
+                         const std::vector<double>& sampleValues) const override;
 
     private:
         /// @brief The current result returned in Calculate

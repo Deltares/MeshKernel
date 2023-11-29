@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@ namespace meshkernel::averaging
                                               const std::vector<Point>& samplePoints [[maybe_unused]],
                                               const std::vector<double>& sampleValues) const
     {
-        double result = std::accumulate (sampleValues.begin (), sampleValues.end (), 0.0);
-        return sampleValues.size () >= m_minNumPoints ? result / static_cast<double>(sampleValues.size ()) : constants::missing::doubleValue;
+        double result = std::accumulate(sampleValues.begin(), sampleValues.end(), 0.0);
+        return sampleValues.size() >= m_minNumPoints ? result / static_cast<double>(sampleValues.size()) : constants::missing::doubleValue;
     }
 
 } // namespace meshkernel::averaging

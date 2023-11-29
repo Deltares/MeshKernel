@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -54,14 +54,14 @@ namespace meshkernel::averaging
         return m_result;
     }
 
-    double ClosestAveragingStrategy::Calculate (const Point& interpolationPoint,
-                                                const std::vector<Point>& samplePoints,
-                                                const std::vector<double>& sampleValues) const
+    double ClosestAveragingStrategy::Calculate(const Point& interpolationPoint,
+                                               const std::vector<Point>& samplePoints,
+                                               const std::vector<double>& sampleValues) const
     {
         double result = constants::missing::doubleValue;
         double closestSquaredValue = std::numeric_limits<double>::max();
 
-        for (UInt i = 0; i < samplePoints.size (); ++i)
+        for (UInt i = 0; i < samplePoints.size(); ++i)
         {
             if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoints[i], m_projection);
                 squaredDistance < closestSquaredValue)
