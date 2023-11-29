@@ -13,12 +13,24 @@ namespace meshkernel::averaging
         /// @param minNumSamples[in] The minimum amount of samples for a valid interpolation
         SimpleAveragingStrategy(size_t minNumSamples);
 
+        /// @brief Reset the state of the simple averaging-strategy.
+        void Reset(const Point& interpolationPoint) override;
+
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
 
+        /// @brief Calculates the average value based on the sample values.
+        /// @param[in] interpolationPoint The point for which the average should be calculated.
+        /// @param[in] samplePoints The sample points to used by this strategy.
+        /// @param[in] sampleValues The sample values  associated with each sample point.
+        /// @return The calculated average
+        double Calculate (const Point& interpolationPoint,
+                          const std::vector<Point>& samplePoints,
+                          const std::vector<double>& sampleValues) const override;
+
     private:
         /// @brief The minimum number of points for a valid interpolation.
-        size_t m_minNumPoints;
+        const size_t m_minNumPoints;
 
         /// @brief The current result from which Calculate calculates the final value.
         double m_result = 0.0;
