@@ -1445,6 +1445,42 @@ void MeshRefinement::ComputeEdgesRefinementMask()
     }
 }
 
+bool MeshRefinement::IsRefinementRequired(const UInt face, const UInt numFaceNodes) const
+{
+    bool isRefinementRequired = false;
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        const auto edgeIndex = m_mesh->m_facesEdges[face][n];
+
+        if (m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] > 0)
+        {
+            isRefinementRequired = true;
+        }
+    }
+
+    const auto numEdgesToRefine = CountEdgesToRefine(face);
+    const auto numHangingEdges = CountHangingEdges();
+    const auto numHangingNodes = CountHangingNodes();
+
+    // compute the effective face type
+    const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
+    if (2 * (numFaceNodes - numNodesEffective) != numHangingEdges)
+    {
+        // uneven number of brotherlinks
+        // TODO: ADD DOT
+    }
+
+    if (numFaceNodes + numEdgesToRefine > Mesh::m_maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
+        numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
+        numNodesEffective == numEdgesToRefine)                                   // refine all edges
+    {
+        isRefinementRequired = true;
+    }
+
+    return isRefinementRequired;
+}
+
 void MeshRefinement::ComputeIfFaceShouldBeSplit()
 {
     const UInt maxiter = 1000;
@@ -1466,47 +1502,18 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 continue;
             }
 
-            const auto numEdgesToRefine = CountEdgesToRefine(f);
-
             FindHangingNodes(f);
-            const auto numHangingEdges = CountHangingEdges();
-            const auto numHangingNodes = CountHangingNodes();
-
-            bool isSplittingRequired = false;
 
             // check if the edge has a brother edge and needs to be refined
             const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
             if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerFace)
             {
+                // Should this be an error, or at least a warning message logged?
                 return;
             }
 
-            for (UInt n = 0; n < numFaceNodes; n++)
-            {
-                const auto edgeIndex = m_mesh->m_facesEdges[f][n];
-                if (m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] > 0)
-                {
-                    isSplittingRequired = true;
-                }
-            }
-
-            // compute the effective face type
-            const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
-            if (2 * (numFaceNodes - numNodesEffective) != numHangingEdges)
-            {
-                // uneven number of brotherlinks
-                // TODO: ADD DOT
-            }
-
-            if (numFaceNodes + numEdgesToRefine > Mesh::m_maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
-                numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
-                numNodesEffective == numEdgesToRefine)                                   // refine all edges
-            {
-                isSplittingRequired = true;
-            }
-
-            if (isSplittingRequired)
+            if (IsRefinementRequired(f, numFaceNodes))
             {
                 if (m_faceMask[f] != -1)
                 {
