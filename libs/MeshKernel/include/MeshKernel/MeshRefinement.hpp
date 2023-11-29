@@ -164,6 +164,15 @@ namespace meshkernel
         void Compute();
 
     private:
+        /// @brief Allocate the refinement mask calculator based on the RefinementType enum
+        ///
+        /// \note A ConstraintError exception may be thrown given inconsistent parameters
+        static std::unique_ptr<ComputeRefinementMask> CreateRefinementMaskCalculator(const RefinementType refinementType,
+                                                                                     const Mesh2D& mesh,
+                                                                                     std::shared_ptr<MeshInterpolation> interpolant,
+                                                                                     const MeshRefinementParameters& meshRefinementParameters,
+                                                                                     const bool useNodalRefinement);
+
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
@@ -288,7 +297,7 @@ namespace meshkernel
     class EdgeSizeBasedRefinement : public ComputeRefinementMask
     {
     public:
-        EdgeSizeBasedRefinement(Mesh2D& mesh) : ComputeRefinementMask(mesh) {}
+        EdgeSizeBasedRefinement(const Mesh2D& mesh) : ComputeRefinementMask(mesh) {}
 
         void Compute(const std::vector<bool>& edgeIsBelowMinimumSize,
                      const std::vector<UInt>& brotherEdges,
@@ -301,7 +310,7 @@ namespace meshkernel
     class SamplesBasedRefinement : public ComputeRefinementMask
     {
     public:
-        SamplesBasedRefinement(Mesh2D& mesh,
+        SamplesBasedRefinement(const Mesh2D& mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters) : ComputeRefinementMask(mesh),
                                                                                            m_interpolant(interpolant),
@@ -343,7 +352,7 @@ namespace meshkernel
     class RefinementLevelsRefinement : public SamplesBasedRefinement
     {
     public:
-        RefinementLevelsRefinement(Mesh2D& mesh,
+        RefinementLevelsRefinement(const Mesh2D& mesh,
                                    std::shared_ptr<MeshInterpolation> interpolant,
                                    const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
 
@@ -356,7 +365,7 @@ namespace meshkernel
     class RidgeDetectionRefinement : public SamplesBasedRefinement
     {
     public:
-        RidgeDetectionRefinement(Mesh2D& mesh,
+        RidgeDetectionRefinement(const Mesh2D& mesh,
                                  std::shared_ptr<MeshInterpolation> interpolant,
                                  const MeshRefinementParameters& meshRefinementParameters) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters) {}
 
@@ -369,7 +378,7 @@ namespace meshkernel
     class WaveCourantRefinement : public SamplesBasedRefinement
     {
     public:
-        WaveCourantRefinement(Mesh2D& mesh,
+        WaveCourantRefinement(const Mesh2D& mesh,
                               std::shared_ptr<MeshInterpolation> interpolant,
                               const MeshRefinementParameters& meshRefinementParameters,
                               bool useNodalRefinement) : SamplesBasedRefinement(mesh, interpolant, meshRefinementParameters),
