@@ -1594,6 +1594,79 @@ void MeshRefinement::FindBrotherEdges()
     }
 }
 
+void MeshRefinement::SmoothEdgeRefinement(std::vector<bool>& splitEdge)
+{
+
+    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    {
+        if (m_faceMask[f] != 1)
+        {
+            continue;
+        }
+
+        const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+        for (UInt e = 0; e < numEdges; ++e)
+        {
+            const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+            const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
+            const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
+            const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
+                               m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
+
+            if (split)
+            {
+                splitEdge[edgeIndex] = true;
+            }
+        }
+    }
+}
+
+void MeshRefinement::UpdateFaceRefinementMask(const std::vector<bool>& splitEdge)
+{
+    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    {
+        const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+        for (UInt e = 0; e < numEdges; ++e)
+        {
+            const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+
+            if (splitEdge[edgeIndex])
+            {
+                m_faceMask[f] = 1;
+            }
+        }
+    }
+}
+
+void MeshRefinement::UpdateEdgeRefinementMask()
+{
+    for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
+    {
+        if (m_faceMask[f] != 1)
+        {
+            continue;
+        }
+
+        const auto numEdges = m_mesh->GetNumFaceEdges(f);
+
+        for (UInt e = 0; e < numEdges; ++e)
+        {
+            const auto edgeIndex = m_mesh->m_facesEdges[f][e];
+            const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
+            const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
+            const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
+                               m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
+
+            if (split)
+            {
+                m_edgeMask[edgeIndex] = 1;
+            }
+        }
+    }
+}
+
 void MeshRefinement::SmoothRefinementMasks()
 {
     if (m_meshRefinementParameters.directional_refinement == 1)
@@ -1611,68 +1684,8 @@ void MeshRefinement::SmoothRefinementMasks()
     {
         std::fill(splitEdge.begin(), splitEdge.end(), false);
 
-        for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
-        {
-            if (m_faceMask[f] != 1)
-            {
-                continue;
-            }
-
-            const auto numEdges = m_mesh->GetNumFaceEdges(f);
-
-            for (UInt e = 0; e < numEdges; ++e)
-            {
-                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
-                const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
-                const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
-                const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
-                                   m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
-
-                if (split)
-                {
-                    splitEdge[edgeIndex] = true;
-                }
-            }
-        }
-
-        // update face refinement mask
-        for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
-        {
-            const auto numEdges = m_mesh->GetNumFaceEdges(f);
-
-            for (UInt e = 0; e < numEdges; ++e)
-            {
-                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
-                if (splitEdge[edgeIndex])
-                {
-                    m_faceMask[f] = 1;
-                }
-            }
-        }
-
-        // update edge refinement mask
-        for (UInt f = 0; f < m_mesh->GetNumFaces(); ++f)
-        {
-            if (m_faceMask[f] != 1)
-            {
-                continue;
-            }
-
-            const auto numEdges = m_mesh->GetNumFaceEdges(f);
-
-            for (UInt e = 0; e < numEdges; ++e)
-            {
-                const auto edgeIndex = m_mesh->m_facesEdges[f][e];
-                const auto nextEdgeIndex = NextCircularForwardIndex(e, numEdges);
-                const auto previousEdgeIndex = NextCircularBackwardIndex(e, numEdges);
-                const auto split = m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][nextEdgeIndex] &&
-                                   m_brotherEdges[edgeIndex] != m_mesh->m_facesEdges[f][previousEdgeIndex];
-
-                if (split)
-                {
-                    m_edgeMask[edgeIndex] = 1;
-                }
-            }
-        }
+        SmoothEdgeRefinement(splitEdge);
+        UpdateFaceRefinementMask(splitEdge);
+        UpdateEdgeRefinementMask();
     }
 }

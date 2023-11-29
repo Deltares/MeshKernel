@@ -233,6 +233,15 @@ namespace meshkernel
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
 
+        /// @brief Update edge refinement indicator to ensure smoother refinement transition between elements.
+        void SmoothEdgeRefinement(std::vector<bool>& splitEdge);
+
+        /// @brief Using the latest edge refinement indicator, update face refinement mask.
+        void UpdateFaceRefinementMask(const std::vector<bool>& splitEdge);
+
+        /// @brief Update the edge refinement mask
+        void UpdateEdgeRefinementMask();
+
         /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
         void SmoothRefinementMasks();
 
