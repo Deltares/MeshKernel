@@ -35,17 +35,16 @@ namespace meshkernel::averaging
                                                                                                       m_projection(projection) {}
 
     double InverseWeightedAveragingStrategy::Calculate(const Point& interpolationPoint,
-                                                       const std::vector<Point>& samplePoints,
-                                                       const std::vector<double>& sampleValues) const
+                                                       const std::vector<Sample>& samples) const
     {
         double result = 0.0;
         double wall = 0.0;
 
-        for (UInt i = 0; i < samplePoints.size(); ++i)
+        for (UInt i = 0; i < samples.size(); ++i)
         {
-            double weight = 1.0 / std::max(0.01, ComputeDistance(interpolationPoint, samplePoints[i], m_projection));
+            double weight = 1.0 / std::max(0.01, ComputeDistance(interpolationPoint, samples[i], m_projection));
             wall += weight;
-            result += weight * sampleValues[i];
+            result += weight * samples[i].value;
         }
 
         return wall >= static_cast<double>(m_minNumSamples) ? result / wall : constants::missing::doubleValue;

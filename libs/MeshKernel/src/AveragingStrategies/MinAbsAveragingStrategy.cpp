@@ -31,14 +31,13 @@ namespace meshkernel::averaging
 {
 
     double MinAbsAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
-                                              const std::vector<Point>& samplePoints,
-                                              const std::vector<double>& sampleValues) const
+                                              const std::vector<Sample>& samples) const
     {
         double result = std::numeric_limits<double>::max();
 
-        for (UInt i = 0; i < samplePoints.size(); ++i)
+        for (UInt i = 0; i < samples.size(); ++i)
         {
-            result = std::min(result, std::abs(sampleValues[i]));
+            result = std::min(result, std::abs(samples[i].value));
         }
 
         return result != std::numeric_limits<double>::max() ? result : constants::missing::doubleValue;

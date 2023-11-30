@@ -33,19 +33,18 @@ namespace meshkernel::averaging
     ClosestAveragingStrategy::ClosestAveragingStrategy(Projection const projection) : m_projection(projection) {}
 
     double ClosestAveragingStrategy::Calculate(const Point& interpolationPoint,
-                                               const std::vector<Point>& samplePoints,
-                                               const std::vector<double>& sampleValues) const
+                                               const std::vector<Sample>& samples) const
     {
         double result = constants::missing::doubleValue;
         double closestSquaredValue = std::numeric_limits<double>::max();
 
-        for (UInt i = 0; i < samplePoints.size(); ++i)
+        for (UInt i = 0; i < samples.size(); ++i)
         {
-            if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoints[i], m_projection);
+            if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samples[i], m_projection);
                 squaredDistance < closestSquaredValue)
             {
                 closestSquaredValue = squaredDistance;
-                result = sampleValues[i];
+                result = samples[i].value;
             }
         }
 

@@ -38,11 +38,9 @@ namespace meshkernel::averaging
 
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
-        /// @param[in] samplePoints The sample points to used by this strategy.
-        /// @param[in] sampleValues The sample values  associated with each sample point.
+        /// @param[in] samples The sample points and values used by this strategy.
         /// @return The calculated average
-        virtual double Calculate(const Point& interpolationPoint,
-                                 const std::vector<Point>& samplePoints,
-                                 const std::vector<double>& sampleValues) const = 0;
+        [[nodiscard]] virtual double Calculate(const Point& interpolationPoint,
+                                               const std::vector<Sample>& samples) const = 0;
     };
 } // namespace meshkernel::averaging

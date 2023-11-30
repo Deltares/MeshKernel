@@ -153,8 +153,7 @@ namespace meshkernel
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
-        std::vector<Point> m_interpolationPointCache;   ///< Cache for interpolation points
-        std::vector<double> m_interpolationSampleCache; ///< Cache for interpolation samples
+        std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
         RTree m_samplesRtree;                                     ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
