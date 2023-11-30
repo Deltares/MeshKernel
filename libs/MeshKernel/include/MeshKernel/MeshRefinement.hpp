@@ -49,12 +49,32 @@ namespace meshkernel
                              std::vector<int>& edgeMask,
                              std::vector<int>& faceMask) = 0;
 
+        void ComputeIfFaceShouldBeSplit(const std::vector<UInt>& brotherEdges,
+                                        std::vector<int>& edgeMask,
+                                        std::vector<int>& faceMask);
+
         virtual bool IsSampleBased() const
         {
             return false;
         }
 
+        // TODO SHould be private
+        std::vector<bool> m_isHangingNodeCache; ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache; ///< Cache for maintaining if edge is hanging
+
     protected:
+        UInt CountHangingNodes() const;
+        UInt CountHangingEdges() const;
+        UInt CountEdgesToRefine(const std::vector<int>& edgeMask,
+                                UInt face) const;
+
+        //  What to do here, it is needed by both the samples based refinement and the mesh-refinement
+        void FindHangingNodes(const std::vector<UInt>& brotherEdges, UInt face);
+
+        bool IsRefinementRequired(const std::vector<int>& edgeMask,
+                                  const UInt face,
+                                  const UInt numFaceNodes) const;
+
         const Mesh2D& GetMesh() const
         {
             return m_mesh;
@@ -233,18 +253,6 @@ namespace meshkernel
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
 
-        /// @brief Update edge refinement indicator to ensure smoother refinement transition between elements.
-        void SmoothEdgeRefinement(std::vector<bool>& splitEdge);
-
-        /// @brief Using the latest edge refinement indicator, update face refinement mask.
-        void UpdateFaceRefinementMask(const std::vector<bool>& splitEdge);
-
-        /// @brief Update the edge refinement mask
-        void UpdateEdgeRefinementMask();
-
-        /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
-        void SmoothRefinementMasks();
-
         /// @brief Determine if refinement is required for the face.
         bool IsRefinementRequired(const UInt face, const UInt numFaceNodes) const;
 
@@ -343,16 +351,20 @@ namespace meshkernel
         std::shared_ptr<MeshInterpolation> m_interpolant;
         MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
 
-        std::vector<bool> m_isHangingNodeCache; ///< Cache for maintaining if node is hanging
-        std::vector<bool> m_isHangingEdgeCache; ///< Cache for maintaining if edge is hanging
-
     private:
+        void SmoothEdgeRefinement(const std::vector<UInt>& brotherEdges,
+                                  const std::vector<int>& faceMask,
+                                  std::vector<bool>& splitEdge);
+
+        void UpdateFaceRefinementMask(const std::vector<bool>& splitEdge, std::vector<int>& faceMask);
+
+        void UpdateEdgeRefinementMask(const std::vector<UInt>& brotherEdges,
+                                      const std::vector<int>& faceMask,
+                                      std::vector<int>& edgeMask);
+
         void SmoothRefinementMasks(const std::vector<UInt>& brotherEdges,
                                    std::vector<int>& edgeMask,
                                    std::vector<int>& faceMask);
-
-        //  What to do here, it is needed by both the samples based refinement and the mesh-refinement
-        void FindHangingNodes(const std::vector<UInt>& brotherEdges, UInt face);
 
         virtual UInt ComputeForFace(const UInt faceId,
                                     const std::vector<bool>& edgeIsBelowMinimumSize,
