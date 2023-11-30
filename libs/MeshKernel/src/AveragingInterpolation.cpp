@@ -69,6 +69,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Location::Nodes || m_interpolationLocation == Location::Edges)
     {
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
+        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
         // make sure edge centers are computed
         m_mesh.ComputeEdgesCenters();
@@ -86,6 +87,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Location::Edges)
     {
         m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
+        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
 
         for (UInt e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
@@ -106,6 +108,7 @@ void AveragingInterpolation::Compute()
         std::vector<bool> visitedSamples(m_samples.size(), false); ///< The visited samples
         std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
+        std::ranges::fill(m_faceResults, constants::missing::doubleValue);
 
         for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
