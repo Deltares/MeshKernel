@@ -30,7 +30,6 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Formatting.hpp"
-#include "MeshKernel/Mesh.hpp"
 
 #include <algorithm>
 #include <exception>
@@ -290,7 +289,7 @@ namespace meshkernel
         /// @param[in] args          The arguments to be formatted.
         template <typename... Args>
         MeshGeometryError(meshkernel::UInt mesh_index,
-                          Mesh::Location mesh_location,
+                          Location mesh_location,
                           FormatString const& format_string,
                           Args&&... args)
             : MeshKernelError(format_string, std::forward<Args>(args)...),
@@ -305,7 +304,7 @@ namespace meshkernel
 
         /// @brief Returns the mesh location.
         /// @return The mesh location.
-        [[nodiscard]] Mesh::Location MeshLocation() const { return m_mesh_location; }
+        [[nodiscard]] Location MeshLocation() const { return m_mesh_location; }
 
     private:
         /// @brief Returns the error category.
@@ -320,12 +319,12 @@ namespace meshkernel
         {
             return fmt_ns::format("Error occurred at index {} (location: {}). {}",
                                   m_mesh_index,
-                                  Mesh::LocationToString.at(m_mesh_location),
+                                  LocationToString.at(m_mesh_location),
                                   MeshKernelError::FormattedMessage());
         }
 
-        meshkernel::UInt m_mesh_index;  ///< The invalid mesh location index.
-        Mesh::Location m_mesh_location; ///< The location type.
+        meshkernel::UInt m_mesh_index; ///< The invalid mesh location index.
+        Location m_mesh_location;      ///< The location type.
     };
 
     /// @brief A class for throwing linear algebra exceptions

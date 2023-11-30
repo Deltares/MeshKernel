@@ -701,7 +701,7 @@ namespace meshkernelapi
         /// \see meshkernel::AveragingInterpolation
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] samples                The samples coordinates and values
-        /// @param[in] locationType           The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in] locationType           The location type (see \ref meshkernel::Location enum)
         /// @param[in] averagingMethodType    The averaging method (see Method enum)
         /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
         /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
@@ -775,13 +775,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction);
 
-        /// @brief Change the projection of a mesh2d.
+        /// @brief Converts the projection of a mesh2d.
         ///
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] projectionType new projection for the mesh
+        /// @param[in] projectionType The new projection for the mesh
         /// @param[in] zoneString The UTM zone and information string
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_convert(int meshKernelId, int projectionType, const std::string& zoneString);
+        MKERNEL_API int mkernel_mesh2d_convert_projection(int meshKernelId, int projectionType, const char* const zoneString);
 
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
@@ -1232,7 +1232,7 @@ namespace meshkernelapi
         /// \see meshkernel::TriangulationInterpolation
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  samples            The samples coordinates and values
-        /// @param[in]  locationType       The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in]  locationType       The location type (see \ref meshkernel::Location enum)
         /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
         MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,

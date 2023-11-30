@@ -37,7 +37,7 @@ using meshkernel::AveragingInterpolation;
 AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                std::vector<Sample>& samples,
                                                Method method,
-                                               Mesh::Location locationType,
+                                               Location locationType,
                                                double relativeSearchRadius,
                                                bool useClosestSampleIfNoneAvailable,
                                                bool transformSamples,
@@ -70,7 +70,7 @@ void AveragingInterpolation::Compute()
         m_visitedSamples.resize(m_samples.size());
     }
 
-    if (m_interpolationLocation == Mesh::Location::Nodes || m_interpolationLocation == Mesh::Location::Edges)
+    if (m_interpolationLocation == Location::Nodes || m_interpolationLocation == Location::Edges)
     {
 
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
@@ -89,7 +89,7 @@ void AveragingInterpolation::Compute()
     }
 
     // for edges, an average of the nodal interpolated value is made
-    if (m_interpolationLocation == Mesh::Location::Edges)
+    if (m_interpolationLocation == Location::Edges)
     {
         m_edgeResults.resize(m_mesh.GetNumEdges(), constants::missing::doubleValue);
         std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
@@ -108,7 +108,7 @@ void AveragingInterpolation::Compute()
         }
     }
 
-    if (m_interpolationLocation == Mesh::Location::Faces)
+    if (m_interpolationLocation == Location::Faces)
     {
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);

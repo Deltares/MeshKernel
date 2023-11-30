@@ -29,6 +29,7 @@
 
 #include <vector>
 
+#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Hessian.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"

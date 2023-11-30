@@ -1030,7 +1030,7 @@ TEST(ApiStatelessTests, Orthogonalize_OnInvaliMesh_ShouldThrowAMeshGeometryError
     int invalidIndex;
     int type;
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
-    ASSERT_EQ(static_cast<int>(meshkernel::Mesh::Location::Nodes), type);
+    ASSERT_EQ(static_cast<int>(meshkernel::Location::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
 
@@ -2667,6 +2667,106 @@ TEST_F(CartesianApiTestFixture, RotateMesh)
         // The compare the expected node with the transformed mesh node
         EXPECT_NEAR(expected.x, mesh2dTranslated.node_x[i], tolerance);
         EXPECT_NEAR(expected.y, mesh2dTranslated.node_y[i], tolerance);
+    }
+}
+
+TEST_F(CartesianApiTestFixture, ConvertProjection)
+{
+    // Prepare
+
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    int errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Get copy of original mesh
+    // Will be used later to compare with translated mesh
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> face_edges(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_faces = edge_faces.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
+    mesh2d.nodes_per_face = nodes_per_face.data();
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_x = edge_x.data();
+    mesh2d.edge_y = edge_y.data();
+    mesh2d.face_x = face_x.data();
+    mesh2d.face_y = face_y.data();
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
+
+    {
+        std::string const zoneString("+proj=utm +lat_1=0.5 +lat_2=2 +n=0.5 +zone=31");
+
+        // The mesh above has Cartesian projection, convert it to spherical
+        int target_projection = 1;
+        errorCode = meshkernelapi::mkernel_mesh2d_convert_projection(meshKernelId, target_projection, zoneString.c_str());
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+        int projection;
+        errorCode = meshkernelapi::mkernel_get_projection(meshKernelId, projection);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        ASSERT_EQ(target_projection, projection);
+
+        // Round trip back to Cartesian
+        target_projection = 0;
+        errorCode = meshkernelapi::mkernel_mesh2d_convert_projection(meshKernelId, target_projection, zoneString.c_str());
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        errorCode = meshkernelapi::mkernel_get_projection(meshKernelId, projection);
+        ASSERT_EQ(target_projection, projection);
+    }
+
+    meshkernelapi::Mesh2D mesh2dConvertedProjection{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dConvertedProjection);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Data for translated mesh
+    std::vector<int> edge_faces_t(mesh2dConvertedProjection.num_edges * 2);
+    std::vector<int> edge_nodes_t(mesh2dConvertedProjection.num_edges * 2);
+    std::vector<int> face_nodes_t(mesh2dConvertedProjection.num_face_nodes);
+    std::vector<int> face_edges_t(mesh2dConvertedProjection.num_face_nodes);
+    std::vector<int> nodes_per_face_t(mesh2dConvertedProjection.num_faces);
+    std::vector<double> node_x_t(mesh2dConvertedProjection.num_nodes);
+    std::vector<double> node_y_t(mesh2dConvertedProjection.num_nodes);
+    std::vector<double> edge_x_t(mesh2dConvertedProjection.num_edges);
+    std::vector<double> edge_y_t(mesh2dConvertedProjection.num_edges);
+    std::vector<double> face_x_t(mesh2dConvertedProjection.num_faces);
+    std::vector<double> face_y_t(mesh2dConvertedProjection.num_faces);
+
+    mesh2dConvertedProjection.edge_faces = edge_faces_t.data();
+    mesh2dConvertedProjection.edge_nodes = edge_nodes_t.data();
+    mesh2dConvertedProjection.face_nodes = face_nodes_t.data();
+    mesh2dConvertedProjection.face_edges = face_edges_t.data();
+    mesh2dConvertedProjection.nodes_per_face = nodes_per_face_t.data();
+    mesh2dConvertedProjection.node_x = node_x_t.data();
+    mesh2dConvertedProjection.node_y = node_y_t.data();
+    mesh2dConvertedProjection.edge_x = edge_x_t.data();
+    mesh2dConvertedProjection.edge_y = edge_y_t.data();
+    mesh2dConvertedProjection.face_x = face_x_t.data();
+    mesh2dConvertedProjection.face_y = face_y_t.data();
+
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2dConvertedProjection);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    constexpr double tolerance = 1e-6;
+
+    for (int i = 0; i < mesh2d.num_nodes; ++i)
+    {
+        EXPECT_NEAR(mesh2d.node_x[i], mesh2dConvertedProjection.node_x[i], tolerance);
+        EXPECT_NEAR(mesh2d.node_y[i], mesh2dConvertedProjection.node_y[i], tolerance);
     }
 }
 
