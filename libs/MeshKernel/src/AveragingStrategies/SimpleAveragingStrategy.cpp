@@ -34,23 +34,6 @@ namespace meshkernel::averaging
 
     SimpleAveragingStrategy::SimpleAveragingStrategy(size_t minNumSamples) : m_minNumPoints(minNumSamples) {}
 
-    void SimpleAveragingStrategy::Reset(const Point& interpolationPoint [[maybe_unused]])
-    {
-        m_result = 0.0;
-        m_nAdds = 0;
-    }
-
-    void SimpleAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
-    {
-        m_result += sampleValue;
-        m_nAdds += 1;
-    }
-
-    double SimpleAveragingStrategy::Calculate() const
-    {
-        return m_nAdds >= m_minNumPoints ? m_result / static_cast<double>(m_nAdds) : constants::missing::doubleValue;
-    }
-
     double SimpleAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
                                               const std::vector<Point>& samplePoints [[maybe_unused]],
                                               const std::vector<double>& sampleValues) const

@@ -36,18 +36,6 @@ namespace meshkernel::averaging
     public:
         virtual ~AveragingStrategy() = default;
 
-        /// @brief Reset the state of the averaging strategy, ready for the next calculation.
-        virtual void Reset(const Point& interpolationPoint) = 0;
-
-        /// @brief Adds the specified sample point.
-        /// @param[in] samplePoint The sample point to add to this strategy.
-        /// @param[in] sampleValue The value associated with the sample point.
-        virtual void Add(Point const& samplePoint, double sampleValue) = 0;
-
-        /// @brief Calculates the average value based on the values added.
-        /// @return The calculated average
-        [[nodiscard]] virtual double Calculate() const = 0;
-
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] samplePoints The sample points to used by this strategy.

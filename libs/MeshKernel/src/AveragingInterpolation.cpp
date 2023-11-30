@@ -44,13 +44,11 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
                                                UInt minNumSamples)
     : m_mesh(mesh),
       m_samples(samples),
-      m_method(method),
       m_interpolationLocation(locationType),
       m_relativeSearchRadius(relativeSearchRadius),
       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
       m_transformSamples(transformSamples),
-      m_minNumSamples(minNumSamples),
-      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, m_minNumSamples, m_mesh.m_projection))
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(method, minNumSamples, m_mesh.m_projection))
 {
     m_interpolationPointCache.reserve(DefaultMaximumCacheSize);
     m_interpolationSampleCache.reserve(DefaultMaximumCacheSize);
@@ -70,7 +68,6 @@ void AveragingInterpolation::Compute()
 
     if (m_interpolationLocation == Location::Nodes || m_interpolationLocation == Location::Edges)
     {
-
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
 
         // make sure edge centers are computed

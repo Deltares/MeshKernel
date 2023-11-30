@@ -149,12 +149,10 @@ namespace meshkernel
 
         Mesh2D& m_mesh;                                 ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
-        Method m_method;                                ///< The method to use for the interpolation
         Location m_interpolationLocation;               ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
-        UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
         std::vector<Point> m_interpolationPointCache;   ///< Cache for interpolation points
         std::vector<double> m_interpolationSampleCache; ///< Cache for interpolation samples
 

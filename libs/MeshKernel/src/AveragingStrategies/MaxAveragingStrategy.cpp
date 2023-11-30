@@ -30,21 +30,6 @@
 namespace meshkernel::averaging
 {
 
-    void MaxAveragingStrategy::Reset(const Point& interpolationPoint [[maybe_unused]])
-    {
-        m_result = std::numeric_limits<double>::lowest();
-    }
-
-    void MaxAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
-    {
-        m_result = std::max(m_result, sampleValue);
-    }
-
-    double MaxAveragingStrategy::Calculate() const
-    {
-        return m_result != std::numeric_limits<double>::lowest() ? m_result : constants::missing::doubleValue;
-    }
-
     double MaxAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
                                            const std::vector<Point>& samplePoints,
                                            const std::vector<double>& sampleValues) const

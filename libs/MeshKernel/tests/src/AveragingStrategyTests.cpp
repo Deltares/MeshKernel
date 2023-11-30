@@ -33,10 +33,11 @@ namespace meshkernel::averaging
                                                                                                       1,
                                                                                                       Projection::cartesian);
 
-        pStrategy->Reset(p);
+        std::vector<meshkernel::Point> samplePoints;
+        std::vector<double> sampleValues;
 
         // Call
-        double result = pStrategy->Calculate();
+        double result = pStrategy->Calculate(p, samplePoints, sampleValues);
 
         // Assert
         ASSERT_EQ(GetParam().second, result);
@@ -101,15 +102,17 @@ namespace meshkernel::averaging
         std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().method_, 1,
                                                                                                       Projection::cartesian);
 
-        pStrategy->Reset(p);
+        std::vector<meshkernel::Point> samplePoints;
+        std::vector<double> sampleValues;
 
         for (auto const& p : GetParam().addData_)
         {
-            pStrategy->Add(p.first, p.second);
+            samplePoints.emplace_back(p.first);
+            sampleValues.emplace_back(p.second);
         }
 
         // Call
-        double result = pStrategy->Calculate();
+        double result = pStrategy->Calculate(p, samplePoints, sampleValues);
 
         // Assert
         constexpr double tolerance = 1e-6;

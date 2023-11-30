@@ -42,12 +42,6 @@ namespace meshkernel::averaging
         InverseWeightedAveragingStrategy(size_t minNumSamples,
                                          Projection projection);
 
-        /// @brief Reset the state of the inverse weighted averaging strategy.
-        void Reset(const Point& interpolationPoint) override;
-
-        void Add(Point const& samplePoint, double sampleValue) override;
-        [[nodiscard]] double Calculate() const override;
-
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] samplePoints The sample points to used by this strategy.
@@ -58,15 +52,6 @@ namespace meshkernel::averaging
                          const std::vector<double>& sampleValues) const override;
 
     private:
-        /// @brief The current result used in Calculate to calculate the final value.
-        double m_result = 0.0;
-
-        /// @brief The wall
-        double m_wall = 0.0;
-
-        /// @brief The interpolation point from which the inverse weight is calculated.
-        Point m_interpolationPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-
         /// @brief The minimum number of samples for a valid interpolation.
         const size_t m_minNumSamples;
 

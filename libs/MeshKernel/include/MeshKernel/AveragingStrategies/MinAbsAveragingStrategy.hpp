@@ -36,13 +36,6 @@ namespace meshkernel::averaging
     class MinAbsAveragingStrategy final : public AveragingStrategy
     {
     public:
-        /// @brief Reset the state of the absolute-value-of-the-mininimum averaging-strategy.
-        void Reset(const Point& interpolationPoint) override;
-
-        void Add(Point const& samplePoint, double sampleValue) override;
-
-        [[nodiscard]] double Calculate() const override;
-
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] samplePoints The sample points to used by this strategy.
@@ -51,9 +44,5 @@ namespace meshkernel::averaging
         double Calculate(const Point& interpolationPoint,
                          const std::vector<Point>& samplePoints,
                          const std::vector<double>& sampleValues) const override;
-
-    private:
-        /// @brief The current result returned in Calculate
-        double m_result = std::numeric_limits<double>::max();
     };
 } // namespace meshkernel::averaging
