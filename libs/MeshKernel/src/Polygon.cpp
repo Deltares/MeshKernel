@@ -405,11 +405,26 @@ namespace
         {
             ++i;
 
-            if (distances[i] > desiredDistance || i == npl - 1)
+            if (distances[i - 1] > desiredDistance || i == npl)
             {
+                --i;
                 foundInterval = true;
             }
         }
+
+        // // A bit of a cheat perhaps.
+        // meshkernel::UInt i = meshkernel::constants::missing::uintValue;
+        // bool foundInterval = false;
+
+        // while (!foundInterval)
+        // {
+        //     ++i;
+
+        //     if (distances[i] > desiredDistance || i == npl - 1)
+        //     {
+        //         foundInterval = true;
+        //     }
+        // }
 
         double dt = distances[i] - distances[i - 1];
         double ti = 0.0;
@@ -566,11 +581,11 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
             interpolateOnPolyline(dpla, dxs, npl, dxs1, dxs2);
             printIt(dxs, npl, "dxs");
 
-            // Can be moved out of this inner loop
-            txs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
-
             smoothWithDesiredDiff(dpla, dxs, npl);
         }
+
+        // Can be moved out of this inner loop
+        txs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
 
         std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
 
@@ -578,12 +593,16 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
         UInt nmn = constants::missing::uintValue;
         double rmx = -1.0e9;
         UInt nmx = constants::missing::uintValue;
-        double dxsm = 1.0e30;
+        double dxsm = 1.0e30; // DOes nto seem to be used
+
+        std::cout << " raio: ";
 
         for (UInt i = 0; i < npl - 1; ++i)
         {
             dxsm = std::min(dxs[i], dxsm);
             double rma = dxa[i] / dxs[i];
+
+            std::cout << " (" << dxa[i] << ", " << dxs[i] << ", " << rma << ")  ";
 
             if (i > 0)
             {
@@ -600,6 +619,8 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
                 rmx = rma;
             }
         }
+
+        std::cout << std::endl;
 
         std::cout << " values:  " << rmn << "  " << rmx << "  " << nmn << "  " << nmx << "  " << std::endl;
         printIt(dxs, npl, "dxs");
