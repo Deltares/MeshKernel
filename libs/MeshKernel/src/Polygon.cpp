@@ -332,6 +332,8 @@ namespace
         }
     }
 
+    // TODO where to put this: keep here, move to free functions or static functions in Polygon class.
+
     void averageDiff(const std::vector<double>& distances, std::vector<double>& average, const meshkernel::UInt npl)
     {
         // std::fill(average.begin(), average.begin() + npl, 0.0);
@@ -397,21 +399,7 @@ namespace
     {
 
         meshkernel::UInt i = 0;
-        [[maybe_unused]] bool foundInterval = false;
-
-        // label:
-        // {
-        //     ++i;
-        //     foundInterval = false;
-        //     if (distances[i] > desiredDistance)
-        //     {
-        //         if (i < npl - 1)
-        //         {
-        //             goto label;
-        //         }
-        //         foundInterval = true;
-        //     }
-        // }
+        bool foundInterval = false;
 
         while (!foundInterval)
         {
@@ -615,8 +603,8 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
 
         std::cout << " values:  " << rmn << "  " << rmx << "  " << nmn << "  " << nmx << "  " << std::endl;
         printIt(dxs, npl, "dxs");
-        std::cout << "next: " << txs << "  " << txs - 1.5 * dxs[nmn] << "  " << txa << "  " << std::boolalpha << (txs - 1.5 * dxs[nmn] > txa) << std::endl;
-        std::cout << "next: " << txs << "  " << txs + 1.5 * dxa[nmx] << "  " << txa << "  " << std::boolalpha << (txs + 0.5 * dxa[nmx] < txa) << std::endl;
+        std::cout << "next -: " << txs << "  " << txs - 1.5 * dxs[nmn] << "  " << txa << "  " << std::boolalpha << (txs - 1.5 * dxs[nmn] > txa) << std::endl;
+        std::cout << "next +: " << txs << "  " << txs + 1.5 * dxa[nmx] << "  " << txa << "  " << std::boolalpha << (txs + 0.5 * dxa[nmx] < txa) << std::endl;
 
         if (nmn != constants::missing::uintValue && txs - 1.5 * dxs[nmn] > txa)
         {
