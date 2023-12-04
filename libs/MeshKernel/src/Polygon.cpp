@@ -254,44 +254,26 @@ std::vector<double> meshkernel::Polygon::EdgeLengths() const
     return edgeLengths;
 }
 
-namespace
+void meshkernel::Polygon::RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
+                                        const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
+                                        const double refinementDistance,
+                                        const meshkernel::Projection projection)
 {
-    /// @brief Refines the segment between two polygon nodes, starting with the node specified by the iterator up to,
-    /// but not including, the next node.
-    /// @param refinedPolygon     [in,out] a buffer of points into which the refined points are written
-    /// @param nodeIterator       [in] position in the original, unrefined polygon that contains the first point of
-    ///                           the refinement
-    /// @param refinementDistance [in] the distance between two refined nodes
-    /// @param projection         [in] the projection used for computing the length of the segment to be refined
-    void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
-                       const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
-                       const double refinementDistance,
-                       const meshkernel::Projection projection)
+    // Line segment starting point.
+    const auto& n0 = *nodeIterator;
+    const auto& n1 = *std::next(nodeIterator);
+
+    refinedPolygon.push_back(n0);
+
+    const double segmentLength = ComputeDistance(n0, n1, projection);
+    int n = std::lround(segmentLength / refinementDistance);
+
+    for (int i = 1; i < n; ++i)
     {
-        // Line segment starting point.
-        const auto& n0 = *nodeIterator;
-        const auto& n1 = *std::next(nodeIterator);
-
-        refinedPolygon.push_back(n0);
-
-        const double segmentLength = ComputeDistance(n0, n1, projection);
-
-        int n = std::lround(segmentLength / refinementDistance);
-        const double refinedLength = n * refinementDistance;
-        if (refinedLength > segmentLength ||
-            meshkernel::IsEqual(refinedLength, segmentLength, meshkernel::constants::geometric::refinementTolerance))
-        {
-            --n;
-        }
-
-        // Refined segment step size.
-        const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
-        for (auto i = 1; i <= n; ++i)
-        {
-            refinedPolygon.push_back(n0 + i * delta);
-        }
+        double lambda = static_cast<double>(i) / static_cast<double>(n);
+        refinedPolygon.push_back((1.0 - lambda) * n0 + lambda * n1);
     }
-} // unnamed namespace
+}
 
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
 {
