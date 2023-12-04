@@ -250,3 +250,57 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     ASSERT_NEAR(71.609593896396262, curvilinearGrid.m_gridNodes(1, 9).y, tolerance);
     ASSERT_NEAR(76.904826220873304, curvilinearGrid.m_gridNodes(1, 10).y, tolerance);
 }
+
+TEST(CurvilinearGridFromSplinesTransfinite, BugTest)
+{
+
+    std::vector<Point> firstSpline{{0, 2.0000}, {1., 2.0}, {2., 2.0}, {3., 2.0}, {4.0, 2.0}, {5.0, 2.0000}};
+    std::vector<Point> secondSpline{{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}, {4.0, 0.0}, {5.0, 0.0000}};
+    std::vector<Point> thirdSpline{{2.5, -4}, {2.5, 4.0}};
+    std::vector<Point> fourthSpline{{4.5, 4}, {4.5, -4.0}};
+
+    // std::vector<Point> firstSpline{{0, 2.0000}, {1.2566, 2.0}, {2.5133, 2.0}, {3.7699, 2.0}, {5.0265, 2.0}, {6.2832, 2.0000}};
+    // std::vector<Point> secondSpline{{1.2566, 0.0}, {2.5133, 0.0}, {3.7699, 0.0}, {5.0265, 0.0}, {6.2832, 0.0000}};
+    // std::vector<Point> thirdSpline{{2.6, -4}, {2.6, 4.0}};
+    // std::vector<Point> fourthSpline{{5.7, 4}, {5.7, -4.0}};
+
+    // Generates "squeezed" last two columns of elements
+    // std::vector<Point> firstSpline{{1.2566, 2.0}, {2.5133, 2.0}, {3.7699, 2.0}, {5.0265, 2.0}, {6.2832, 2.0000}};
+    // std::vector<Point> secondSpline{{1.2566, 0.0}, {2.5133, 0.0}, {3.7699, 0.0}, {5.0265, 0.0}, {6.2832, 0.0000}};
+    // std::vector<Point> thirdSpline{{1.4, -4}, {1.4, 4.0}};
+    // std::vector<Point> fourthSpline{{5.7, 4}, {5.7, -4.0}};
+
+    // Generates twisted last few columns of elements
+    // std::vector<Point> firstSpline{{1.2566, 2.0}, {2.5133, 2.0}, {3.7699, 2.0}, {5.0265, 2.0}, {6.2832, 2.0000}};
+    // std::vector<Point> secondSpline{{0, 0}, {1.2566, 0.0}, {2.5133, 0.0}, {3.7699, 0.0}, {5.0265, 0.0}, {6.2832, 0.0000}};
+    // std::vector<Point> thirdSpline{{1.4, -4}, {1.4, 4.0}};
+    // std::vector<Point> fourthSpline{{5.7, 4}, {5.7, -4.0}};
+
+    // Generates twisted last few columns of elements
+    // std::vector<Point> firstSpline{{0, 2.0000}, {1.2566, 2.0}, {2.5133, 2.0}, {3.7699, 2.0}, {5.0265, 2.0}, {6.2832, 2.0000}};
+    // std::vector<Point> secondSpline{{0, 0}, {1.2566, 0.0}, {2.5133, 0.0}, {3.7699, 0.0}, {5.0265, 0.0}, {6.2832, 0.0000}};
+    // std::vector<Point> thirdSpline{{0.2, -4}, {0.2, 4.0}};
+    // std::vector<Point> fourthSpline{{5.7, 4}, {5.7, -4.0}};
+
+    // Generates twisted last few columns of elements
+    // std::vector<Point> firstSpline{{0, 2.0000}, {1.2566, 2.9511}, {2.5133, 2.5878}, {3.7699, 1.4122}, {5.0265, 1.0489}, {6.2832, 2.0000}};
+    // std::vector<Point> secondSpline{{0, 0}, {1.2566, 0.9511}, {2.5133, 0.5878}, {3.7699, -0.5878}, {5.0265, -0.9511}, {6.2832, -0.0000}};
+    // std::vector<Point> thirdSpline{{0.2, -4}, {0.2, 4.0}};
+    // std::vector<Point> fourthSpline{{5.7, 4}, {5.7, -4.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+
+    splines->AddSpline(firstSpline);
+    splines->AddSpline(secondSpline);
+    splines->AddSpline(thirdSpline);
+    splines->AddSpline(fourthSpline);
+
+    CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.n_refinement = 2;
+    curvilinearParameters.m_refinement = 2;
+    CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
+
+    const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
+
+    meshkernel::Print(curvilinearGrid.m_nodes, curvilinearGrid.m_edges);
+}

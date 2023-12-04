@@ -147,6 +147,24 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                                                                                                              false,
                                                                                                              distances);
 
+        std::cout << "distances:  ";
+
+        for (UInt i = 0; i < distances.size(); ++i)
+        {
+            std::cout << distances[i] << " ";
+        }
+
+        std::cout << std::endl;
+
+        std::cout << "points: " << splineIndex << "  ";
+
+        for (UInt i = 0; i < points.size(); ++i)
+        {
+            std::cout << "{ " << points[i].x << ", " << points[i].y << "} ";
+        }
+
+        std::cout << std::endl;
+
         // Start filling curvilinear grid
         UInt index = 0;
         for (auto i = from; i < to; i++)
@@ -161,6 +179,32 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
             }
             index++;
         }
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for (UInt j = 0; j < TotalNRows + 1; ++j)
+    {
+        for (UInt i = 0; i < TotalMColumns + 1; ++i)
+        {
+            std::cout << gridNodes(i, j).x << " ";
+        }
+
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for (UInt j = 0; j < TotalNRows + 1; ++j)
+    {
+        for (UInt i = 0; i < TotalMColumns + 1; ++i)
+        {
+            std::cout << gridNodes(i, j).y << " ";
+        }
+
+        std::cout << std::endl;
     }
 
     sideOne.resize(numNPoints);
@@ -230,6 +274,33 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                 }
             }
         }
+    }
+
+    std::cout << std::endl;
+    std::cout << "after interplation" << std::endl;
+    std::cout << std::endl;
+
+    for (UInt j = 0; j < TotalNRows + 1; ++j)
+    {
+        for (UInt i = 0; i < TotalMColumns + 1; ++i)
+        {
+            std::cout << gridNodes(i, j).x << " ";
+        }
+
+        std::cout << std::endl;
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for (UInt j = 0; j < TotalNRows + 1; ++j)
+    {
+        for (UInt i = 0; i < TotalMColumns + 1; ++i)
+        {
+            std::cout << gridNodes(i, j).y << " ";
+        }
+
+        std::cout << std::endl;
     }
 
     return CurvilinearGrid(gridNodes, m_splines->m_projection);
