@@ -311,7 +311,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     const auto from = std::next(m_nodes.begin(), iStart);
     const auto to = std::next(m_nodes.begin(), iEnd);
 
-    auto computeDistance = [&projection = std::as_const(m_projection)](auto l, auto p)
+    auto computeDistance = [&projection = std::as_const(m_projection)](auto l, const Point& p)
     {
         return l + ComputeDistance(p, *std::next(&p), projection);
     };

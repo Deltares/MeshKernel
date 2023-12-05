@@ -71,13 +71,6 @@ namespace meshkernel
                                         UInt startSecond,
                                         UInt endSecond);
 
-        /// @brief Swap the rows of a two dimensional vector
-        /// @param v The input vector
-        /// @param firstRow The first row
-        /// @param secondRow The second row
-        template <typename T>
-        void SwapRows(std::vector<std::vector<T>>& v, UInt firstRow, UInt secondRow) const;
-
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
         /// @param v

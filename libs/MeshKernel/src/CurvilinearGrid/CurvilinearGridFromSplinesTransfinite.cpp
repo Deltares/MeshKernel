@@ -147,23 +147,6 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                                                                                                              false,
                                                                                                              distances);
 
-        std::cout << "distances:  ";
-
-        for (UInt i = 0; i < distances.size(); ++i)
-        {
-            std::cout << distances[i] << " ";
-        }
-
-        std::cout << std::endl;
-
-        std::cout << "points: " << splineIndex << "  ";
-
-        for (UInt i = 0; i < points.size(); ++i)
-        {
-            std::cout << "{ " << points[i].x << ", " << points[i].y << "} ";
-        }
-
-        std::cout << std::endl;
 
         // Start filling curvilinear grid
         UInt index = 0;
@@ -179,32 +162,6 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
             }
             index++;
         }
-    }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    for (UInt j = 0; j < TotalNRows + 1; ++j)
-    {
-        for (UInt i = 0; i < TotalMColumns + 1; ++i)
-        {
-            std::cout << gridNodes(i, j).x << " ";
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    for (UInt j = 0; j < TotalNRows + 1; ++j)
-    {
-        for (UInt i = 0; i < TotalMColumns + 1; ++i)
-        {
-            std::cout << gridNodes(i, j).y << " ";
-        }
-
-        std::cout << std::endl;
     }
 
     sideOne.resize(numNPoints);
@@ -274,33 +231,6 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                 }
             }
         }
-    }
-
-    std::cout << std::endl;
-    std::cout << "after interplation" << std::endl;
-    std::cout << std::endl;
-
-    for (UInt j = 0; j < TotalNRows + 1; ++j)
-    {
-        for (UInt i = 0; i < TotalMColumns + 1; ++i)
-        {
-            std::cout << gridNodes(i, j).x << " ";
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    for (UInt j = 0; j < TotalNRows + 1; ++j)
-    {
-        for (UInt i = 0; i < TotalMColumns + 1; ++i)
-        {
-            std::cout << gridNodes(i, j).y << " ";
-        }
-
-        std::cout << std::endl;
     }
 
     return CurvilinearGrid(gridNodes, m_splines->m_projection);
@@ -614,9 +544,13 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                 {
                     continue;
                 }
+
                 // they must be swapped
-                SwapRows(m_splines->m_splineNodes, j, k);
-                SwapRows(m_splineIntersectionRatios, j, k);
+                m_splines->m_splineNodes[j].swap (m_splines->m_splineNodes[k]);
+                m_splines->m_splineDerivatives[j].swap (m_splines->m_splineDerivatives[k]);
+                std::swap(m_splines->m_splinesLength[j], m_splines->m_splinesLength[k]);
+                m_splineIntersectionRatios[j].swap (m_splineIntersectionRatios[k]);
+
                 SwapColumns(m_splineIntersectionRatios, j, k);
 
                 // repeat the entire procedure once more
@@ -626,18 +560,6 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
     }
 
     return true;
-}
-
-template <typename T>
-void CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, UInt firstRow, UInt secondRow) const
-{
-    auto minSize = std::min(static_cast<UInt>(v[firstRow].size()), static_cast<UInt>(v[secondRow].size()));
-    minSize = std::min(minSize, m_splines->GetNumSplines());
-
-    for (UInt i = 0; i < minSize; i++)
-    {
-        std::swap(v[firstRow][i], v[secondRow][i]);
-    }
 }
 
 template <typename T>

@@ -72,11 +72,13 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     // copy the spline nodes from start to start + size
     UInt count = 0;
     std::vector<Point> splinesNodes(size);
+
     for (auto i = start; i < start + size; ++i)
     {
         splinesNodes[count] = splines[i];
         count++;
     }
+
     m_splineNodes.emplace_back(splinesNodes);
 
     // compute second order derivatives
@@ -334,12 +336,14 @@ double Splines::ComputeSplineLength(UInt index,
     {
         const double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;
+
         if (rightPointCoordinateOnSpline > endAdimensionalCoordinate)
         {
             rightPointCoordinateOnSpline = endAdimensionalCoordinate;
         }
 
         const auto rightPoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline);
+
         if (!rightPoint.IsValid())
         {
             continue;
