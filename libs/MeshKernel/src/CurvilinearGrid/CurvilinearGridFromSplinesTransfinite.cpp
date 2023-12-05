@@ -147,7 +147,6 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
                                                                                                              false,
                                                                                                              distances);
 
-
         // Start filling curvilinear grid
         UInt index = 0;
         for (auto i = from; i < to; i++)
@@ -546,10 +545,10 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                 }
 
                 // they must be swapped
-                m_splines->m_splineNodes[j].swap (m_splines->m_splineNodes[k]);
-                m_splines->m_splineDerivatives[j].swap (m_splines->m_splineDerivatives[k]);
+                m_splines->m_splineNodes[j].swap(m_splines->m_splineNodes[k]);
+                m_splines->m_splineDerivatives[j].swap(m_splines->m_splineDerivatives[k]);
                 std::swap(m_splines->m_splinesLength[j], m_splines->m_splinesLength[k]);
-                m_splineIntersectionRatios[j].swap (m_splineIntersectionRatios[k]);
+                m_splineIntersectionRatios[j].swap(m_splineIntersectionRatios[k]);
 
                 SwapColumns(m_splineIntersectionRatios, j, k);
 
