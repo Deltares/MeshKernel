@@ -98,6 +98,9 @@ namespace meshkernel
         void SnapToLandBoundary(const size_t startIndex, const size_t endIndex, const LandBoundary& boundary);
 
         /// @brief Refine the polygon
+        ///
+        /// The refined nodes are placed at equally spaced intervals for each polygon segment.
+        /// The spacing of the refined nodes may differ between polygon segments.
         /// @return The points for the refined polygon
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
@@ -130,6 +133,18 @@ namespace meshkernel
         Projection GetProjection() const;
 
     private:
+        /// @brief Refines the segment between two polygon nodes.
+        ///
+        /// Starting with the node specified by the iterator up to, but not including, the next node.
+        /// @param refinedPolygon     [in,out] a buffer of points into which the refined points are written
+        /// @param nodeIterator       [in] position in the original, unrefined polygon that contains the first point of the refinement
+        /// @param refinementDistance [in] the distance between two refined nodes
+        /// @param projection         [in] the projection used for computing the length of the segment to be refined
+        static void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
+                                  const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
+                                  const double refinementDistance,
+                                  const meshkernel::Projection projection);
+
         /// @brief Check polygon has a valid state and initialise it.
         void Initialise();
 
