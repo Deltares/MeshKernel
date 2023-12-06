@@ -296,6 +296,11 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongFirstS
 
     SCOPED_TRACE("FourSplinesSimpleRectangleLongFirstSpline");
     testmk::TestCurvilinearGridFromSplines(firstSpline, secondSpline, thirdSpline, fourthSpline, expectedPoints);
+    // Not compiled in yet due to crash (will be another Jira item)
+#if 0
+    testmk::TestCurvilinearGridFromSplines(thirdSpline, firstSpline, secondSpline, fourthSpline, expectedPoints);
+    testmk::TestCurvilinearGridFromSplines(fourthSpline, secondSpline, thirdSpline, firstSpline, expectedPoints);
+#endif
 }
 
 TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongSecondSpline)
