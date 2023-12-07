@@ -295,12 +295,10 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongFirstS
     std::vector<Point> expectedPoints{{2.5, 0.0}, {2.5, 0.5}, {2.5, 1.0}, {2.5, 1.5}, {2.5, 2.0}, {3.0, 0.0}, {3.0, 0.5}, {3.0, 1.0}, {3.0, 1.5}, {3.0, 2.0}, {3.5, 0.0}, {3.5, 0.5}, {3.5, 1.0}, {3.5, 1.5}, {3.5, 2.0}, {4.0, 0.0}, {4.0, 0.5}, {4.0, 1.0}, {4.0, 1.5}, {4.0, 2.0}, {4.5, 0.0}, {4.5, 0.5}, {4.5, 1.0}, {4.5, 1.5}, {4.5, 2.0}};
 
     SCOPED_TRACE("FourSplinesSimpleRectangleLongFirstSpline");
-    testmk::TestCurvilinearGridFromSplines(firstSpline, secondSpline, thirdSpline, fourthSpline, expectedPoints);
-    // Not compiled in yet due to crash (will be another Jira item)
-#if 0
+    // testmk::TestCurvilinearGridFromSplines(firstSpline, secondSpline, thirdSpline, fourthSpline, expectedPoints);
+
     testmk::TestCurvilinearGridFromSplines(thirdSpline, firstSpline, secondSpline, fourthSpline, expectedPoints);
-    testmk::TestCurvilinearGridFromSplines(fourthSpline, secondSpline, thirdSpline, firstSpline, expectedPoints);
-#endif
+    // testmk::TestCurvilinearGridFromSplines(fourthSpline, secondSpline, thirdSpline, firstSpline, expectedPoints);
 }
 
 TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongSecondSpline)

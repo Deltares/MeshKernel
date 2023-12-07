@@ -105,9 +105,12 @@ namespace meshkernel
         std::vector<std::vector<double>> m_splineIntersectionRatios;             ///< For each spline, stores the intersections in terms of total spline length
         std::vector<std::vector<UInt>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
         UInt m_numMSplines = 0;                                                  ///< The index of the last m spline
-        UInt m_numNSplines = 0;                                                  ///< The index of the last m spline
-        UInt m_numM = 0;                                                         ///< Number of m columns
-        UInt m_numN = 0;                                                         ///< Number of n rows
+        UInt m_numNSplines = 0;                                                  ///< The index of the last n spline
+        UInt m_mSplinesCount = 0;                                                ///< The index of the last m spline
+        UInt m_nSplinesCount = 0;                                                ///< The index of the last n spline
+
+        UInt m_numM = 0; ///< Number of m columns
+        UInt m_numN = 0; ///< Number of n rows
     };
 
 } // namespace meshkernel
