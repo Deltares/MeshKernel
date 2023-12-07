@@ -70,6 +70,8 @@ namespace meshkernel
         void AddSpline(const std::vector<Point>& splines);
 
         /// @brief Swap all the data for two splines.
+        ///
+        /// On exit the contents of the two splines will be swapped
         void SwapSplines(const UInt firstSpline, const UInt secondSpline);
 
         /// @brief Snap the spline to the land boundary (snap_spline)
