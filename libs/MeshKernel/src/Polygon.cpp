@@ -1,5 +1,6 @@
 #include <cmath>
 
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
@@ -11,7 +12,7 @@ void printIt(const std::vector<double>& vec, const meshkernel::UInt last = meshk
 
     std::cout << name << " = ";
 
-    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? vec.size() : last);
+    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? static_cast<meshkernel::UInt>(vec.size()) : last);
 
     for (meshkernel::UInt i = 0; i < upperLimit; ++i)
     {
@@ -31,7 +32,7 @@ void printIt(const std::vector<meshkernel::Point>& vec, const meshkernel::UInt l
 
     std::cout << name << " = ";
 
-    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? vec.size() : last);
+    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? static_cast<meshkernel::UInt>(vec.size()) : last);
 
     for (meshkernel::UInt i = 0; i < upperLimit; ++i)
     {
@@ -332,124 +333,81 @@ namespace
         }
     }
 
-    // TODO where to put this: keep here, move to free functions or static functions in Polygon class.
-
-    void averageDiff(const std::vector<double>& distances, std::vector<double>& average, const meshkernel::UInt npl)
+    void averageLenghts(const std::vector<double>& cumulativeDistances, std::vector<double>& averageDistances)
     {
-        // std::fill(average.begin(), average.begin() + npl, 0.0);
-        std::fill(average.begin(), average.end(), 0.0);
-
-        average[0] = distances[1] - distances[0];
-        average[npl - 1] = distances[npl - 1] - distances[npl - 2];
-
-        for (meshkernel::UInt i = 1; i < npl - 1; ++i)
+        averageDistances.front() = cumulativeDistances[1] - cumulativeDistances.front();
+        averageDistances.back() = cumulativeDistances.back() - cumulativeDistances[cumulativeDistances.size() - 2];
+        for (meshkernel::UInt i = 1; i < cumulativeDistances.size() - 1; ++i)
         {
-            average[i] = 0.5 * (distances[i + 1] - distances[i - 1]);
+            averageDistances[i] = 0.5 * (cumulativeDistances[i + 1] - cumulativeDistances[i - 1]);
         }
     }
 
-    void smoothWithDesiredDiff(std::vector<double>& dpla, const std::vector<double>& dxs, const meshkernel::UInt npl) // SMOOTH WITH DESIRED
+    void smoothCumulativeDistance(const std::vector<double>& averageDistances, std::vector<double>& cumulativeDistances)
     {
-        // dpla !< The current cumulative lengths (will be overwritten with smoothed values).
-        // dxs  !< The desired segment sizes at each polyline point.
-        // npl  !< Nr. of polyline points.
+        double disc = std::accumulate(averageDistances.begin(), averageDistances.end(), 0.0) - 0.5 * (averageDistances.front() + averageDistances.back());
+        double dfac = cumulativeDistances.back() / disc;
 
-        double sumdxs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
-        double cumdxs = 0.0;
-        double dfac = dxs[npl - 1] / sumdxs;
-
-        std::cout << "smoothWithDesiredDiff " << sumdxs << "  " << dfac << "  " << npl << "  " << dxs[npl - 1] << "  " << sumdxs << "  "
-                  << dxs[0] << "  "
-                  << dxs[npl - 1] << "  "
-                  << 0.5 * (dxs[0] + dxs[npl - 1]) << "  "
-                  << std::endl;
-
-        for (meshkernel::UInt i = 1; i < npl - 1; ++i)
+        double cumDistance = 0.0;
+        for (meshkernel::UInt i = 1; i < averageDistances.size() - 1; ++i)
         {
-            cumdxs += 0.5 * (dxs[i - 1] + dxs[i]);
-            std::cout << cumdxs << "  ";
-            dpla[i] = cumdxs * dfac;
+            cumDistance += 0.5 * (averageDistances[i - 1] + averageDistances[i]);
+            cumulativeDistances[i] = cumDistance * dfac;
         }
-
-        std::cout << std::endl;
     }
 
-    void interpolateOnPolyline(const std::vector<double>& distances, std::vector<double>& dxs, const meshkernel::UInt npl, const double dxs1, const double dxs2)
+    void smoothAverageDistances(const std::vector<double>& cumulativeDistances,
+                                const double firstDistance,
+                                const double lastDistance,
+                                std::vector<double>& averageDistance)
     {
-        // dpl  !< Accumulated distance at each point.
-        // dxs  !< Interpolated values of dxs1--dxs2 on polyline points.
-        // npl  !< Nr. of polyline points.
-        // dxs1 !< Value at first polyline point.
-        // dxs2 !< Value at last polyline point.
-
-        if (npl <= 1)
+        if (cumulativeDistances.size() <= 1)
         {
             return;
         }
 
-        for (meshkernel::UInt i = 0; i < npl; ++i)
+        for (meshkernel::UInt i = 0; i < cumulativeDistances.size(); ++i)
         {
-            double f = distances[i] / distances[npl - 1];
-            dxs[i] = (1.0 - f) * dxs1 + f * dxs2;
+            double f = cumulativeDistances[i] / cumulativeDistances.back();
+            averageDistance[i] = (1.0 - f) * firstDistance + f * lastDistance;
         }
     }
 
-    // TODO swap last parameter
-    void findOnPolyline(const std::vector<meshkernel::Point>& points, const std::vector<double>& distances, const meshkernel::UInt npl, meshkernel::Point& interpolatedPoint, const double desiredDistance /* better name*/)
+    meshkernel::Point interpolatePointOnPolyline(const std::vector<meshkernel::Point>& points,
+                                                 const std::vector<double>& cumulativeDistances,
+                                                 const double pointDistance)
     {
-
-        meshkernel::UInt i = 0;
-        bool foundInterval = false;
-
-        while (!foundInterval)
+        if (cumulativeDistances.empty())
         {
-            ++i;
+            throw meshkernel::ConstraintError("Distances vector is empty!");
+        }
 
-            if (distances[i - 1] > desiredDistance || i == npl)
+        meshkernel::UInt intervalIndex = meshkernel::constants::missing::uintValue;
+        for (meshkernel::UInt i = 0; i < cumulativeDistances.size(); ++i)
+        {
+            if (cumulativeDistances[i] > pointDistance)
             {
-                --i;
-                foundInterval = true;
+                intervalIndex = i;
+                break;
             }
         }
 
-        // // A bit of a cheat perhaps.
-        // meshkernel::UInt i = meshkernel::constants::missing::uintValue;
-        // bool foundInterval = false;
+        if (intervalIndex == meshkernel::constants::missing::uintValue)
+        {
+            intervalIndex = static_cast<meshkernel::UInt>(cumulativeDistances.size() - 1u);
+        }
 
-        // while (!foundInterval)
-        // {
-        //     ++i;
-
-        //     if (distances[i] > desiredDistance || i == npl - 1)
-        //     {
-        //         foundInterval = true;
-        //     }
-        // }
-
-        double dt = distances[i] - distances[i - 1];
+        const double dt = cumulativeDistances[intervalIndex] - cumulativeDistances[intervalIndex - 1];
         double ti = 0.0;
 
         if (dt != 0.0)
         {
-            ti = (desiredDistance - distances[i - 1]) / dt;
+            ti = (pointDistance - cumulativeDistances[intervalIndex - 1]) / dt;
         }
 
-        interpolatedPoint = (1.0 - ti) * points[i - 1] + ti * points[i];
-
-        std::cout << " findOnPolyline " << desiredDistance << "  " << i << "  " << points[i - 1].x << " " << points[i - 1].y << "  " << points[i].x << " " << points[i].y << "  "
-                  << ti << "  " << interpolatedPoint.x << ", " << interpolatedPoint.y
-                  << std::endl;
+        return (1.0 - ti) * points[intervalIndex - 1] + ti * points[intervalIndex];
     }
-
-    void mapToPolyline(const std::vector<meshkernel::Point>& points, const std::vector<double>& distances, std::vector<meshkernel::Point>& interpolatedPoints, std::vector<double>& desiredDistances, const meshkernel::UInt npl)
-    {
-        for (meshkernel::UInt i = 0; i < npl; ++i)
-        {
-            findOnPolyline(points, distances, npl, interpolatedPoints[i], desiredDistances[i]);
-        }
-    }
-
-} // unnamed namespace
+} // namespace
 
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
 {
@@ -519,161 +477,139 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex [[maybe_unused]], const size_t endIndex [[maybe_unused]], const double refinementDistance [[maybe_unused]]) const
+std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex, const size_t endIndex) const
 {
+    if (startIndex == endIndex)
+    {
+        return m_nodes;
+    }
+
     if (m_nodes.size() < 4)
     {
         return m_nodes;
     }
 
-    // UInt numberOfPoints = m_nodes.size();
-    UInt npl = m_nodes.size();
-    UInt nx = 10 * npl;
-
-    std::vector<Point> refinedPolygon;
-
-    std::vector<double> dpl(m_nodes.size(), 0.0); // distances
-    std::vector<Point> xpl(m_nodes.size());       // interpolatedPoints
-    std::vector<double> dxa(nx, 0.0);             // averages?
-    std::vector<double> dpla(nx, 0.0);            // desiredDistances
-    std::vector<double> dxs(nx, 0.0);             // no idea yet
-
-    dpl[0] = 0.0;
-
-    for (UInt i = 1; i < dpl.size(); ++i)
+    UInt numPolygonNodes = static_cast<UInt>(endIndex - startIndex + 1);
+    std::vector<Point> polygonNodes(numPolygonNodes);
+    for (UInt i = 0; i < polygonNodes.size(); ++i)
     {
-        dpl[i] = dpl[i - 1] + ComputeDistance(m_nodes[i], m_nodes[i - 1], m_projection);
-    }
-
-    printIt(dpl, dpl.size(), "dpl");
-
-    averageDiff(dpl, dxa, npl);
-
-    printIt(dxa, dpl.size(), "dxa");
-
-    double dxs1 = dxa[0];
-    double dxs2 = dxa[npl - 1];
-
-    std::cout << " dxs1, 2: " << dxs1 << "  " << dxs2 << std::endl;
-
-    for (UInt i = 0; i < m_nodes.size(); ++i)
-    {
-        dpla[i] = dpl[i];
-    }
-
-    printIt(dpla, npl, "dpla");
-    double txa = dpla[m_nodes.size() - 1];
-
-    bool ja = true;
-
-    while (ja)
-    {
-        double txs;
-
-        for (int k = 1; k <= 5; ++k) // TODO in rgfgrid this is 20
+        auto polygonNodeIndex = i + startIndex;
+        if (polygonNodeIndex > m_nodes.size())
         {
-            std::cout << " " << std::endl;
-            mapToPolyline(m_nodes, dpl, xpl, dpla, npl);
-            printIt(xpl, npl, "xpl");
-            printIt(dpla, npl, "dpla");
-            averageDiff(dpla, dxa, npl);
-            printIt(dxa, npl, "dxa");
-            interpolateOnPolyline(dpla, dxs, npl, dxs1, dxs2);
-            printIt(dxs, npl, "dxs");
+            polygonNodeIndex = polygonNodeIndex - m_nodes.size();
+        }
+        polygonNodes[i] = m_nodes[polygonNodeIndex];
+    }
 
-            smoothWithDesiredDiff(dpla, dxs, npl);
+    std::vector<double> cumulativeDistance(polygonNodes.size(), 0.0);
+    cumulativeDistance[0] = 0.0;
+    for (UInt i = 1; i < polygonNodes.size(); ++i)
+    {
+        cumulativeDistance[i] = cumulativeDistance[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
+    }
+
+    std::vector<double> averageLengths(numPolygonNodes, 0.0);
+    std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
+    std::vector<Point> result(numPolygonNodes);
+
+    averageLenghts(cumulativeDistance, averageLengths);
+    const double firstLength = averageLengths.front();
+    const double lastLength = averageLengths.back();
+    const double lastDistance = cumulativeDistance.back();
+    double disc = 0.0;
+    UInt maxIter = 20;
+
+    while (true)
+    {
+        for (UInt iter = 1; iter <= maxIter; ++iter)
+        {
+            for (UInt i = 0; i < numPolygonNodes; ++i)
+            {
+                result[i] = interpolatePointOnPolyline(polygonNodes, cumulativeDistance, cumulativeDistance[i]);
+            }
+
+            averageLenghts(cumulativeDistance, actualAverageLengths);
+            smoothAverageDistances(cumulativeDistance, firstLength, lastLength, averageLengths);
+            disc = std::accumulate(averageLengths.begin(), averageLengths.end(), 0.0) - 0.5 * (averageLengths.front() +
+                                                                                               averageLengths.back());
+            smoothCumulativeDistance(averageLengths, cumulativeDistance);
         }
 
-        // Can be moved out of this inner loop
-        txs = std::accumulate(dxs.begin(), dxs.begin() + npl, 0.0) - 0.5 * (dxs[0] + dxs[npl - 1]);
+        double minRatio = 1.0e9;
+        UInt minRatioIndex = constants::missing::uintValue;
+        double maxRatio = -1.0e9;
+        UInt maxRatioIndex = constants::missing::uintValue;
+        double minLength = 1.0e30;
 
-        std::cout << "++++++++++++++++++++++++++++++++" << std::endl;
-
-        double rmn = 1.0e9;
-        UInt nmn = constants::missing::uintValue;
-        double rmx = -1.0e9;
-        UInt nmx = constants::missing::uintValue;
-        double dxsm = 1.0e30; // DOes nto seem to be used
-
-        std::cout << " raio: ";
-
-        for (UInt i = 0; i < npl - 1; ++i)
+        for (UInt i = 0; i < actualAverageLengths.size() - 1; ++i)
         {
-            dxsm = std::min(dxs[i], dxsm);
-            double rma = dxa[i] / dxs[i];
-
-            std::cout << " (" << dxa[i] << ", " << dxs[i] << ", " << rma << ")  ";
+            minLength = std::min(averageLengths[i], minLength);
+            const double currentRatio = actualAverageLengths[i] / averageLengths[i];
 
             if (i > 0)
             {
-                if (rma < rmn)
+                if (currentRatio < minRatio)
                 {
-                    nmn = i;
-                    rmn = rma;
+                    minRatioIndex = i;
+                    minRatio = currentRatio;
                 }
             }
 
-            if (rma > rmx)
+            if (currentRatio > maxRatio)
             {
-                nmx = i;
-                rmx = rma;
+                maxRatioIndex = i;
+                maxRatio = currentRatio;
             }
         }
 
-        std::cout << std::endl;
-
-        std::cout << " values:  " << rmn << "  " << rmx << "  " << nmn << "  " << nmx << "  " << std::endl;
-        printIt(dxs, npl, "dxs");
-        std::cout << "next -: " << txs << "  " << txs - 1.5 * dxs[nmn] << "  " << txa << "  " << std::boolalpha << (txs - 1.5 * dxs[nmn] > txa) << std::endl;
-        std::cout << "next +: " << txs << "  " << txs + 1.5 * dxa[nmx] << "  " << txa << "  " << std::boolalpha << (txs + 0.5 * dxa[nmx] < txa) << std::endl;
-
-        if (nmn != constants::missing::uintValue && txs - 1.5 * dxs[nmn] > txa)
+        if (minRatioIndex != constants::missing::uintValue && disc - 1.5 * averageLengths[minRatioIndex] > lastDistance)
         {
-            --npl;
+            --numPolygonNodes;
 
-            for (UInt i = nmn; i < npl; ++i)
+            for (UInt i = minRatioIndex; i < numPolygonNodes; ++i)
             {
-                dpla[i] = dpla[i + 1];
+                cumulativeDistance[i] = cumulativeDistance[i + 1];
             }
-
-            ja = true;
         }
-        else if (txs + 0.5 * dxa[nmx] < txa)
+        else if (disc + 0.5 * averageLengths[maxRatioIndex] < lastLength)
         {
-            ++npl;
+            ++numPolygonNodes;
 
-            if (npl > nx)
+            if (numPolygonNodes > averageLengths.size())
             {
-                nx = nx + nx / 2;
-
-                // resize vectors
-                dxa.resize(nx);  // averages?
-                dpla.resize(nx); // desiredDistances
-                dxs.resize(nx);  // no idea yet
+                const auto newSize = averageLengths.size() * static_cast<size_t>(2);
+                averageLengths.resize(newSize);
+                actualAverageLengths.resize(newSize);
+                cumulativeDistance.resize(newSize);
+                result.resize(newSize);
             }
 
-            UInt lowerLimit = (nmx == constants::missing::uintValue ? 0u : nmx) + 2;
+            const UInt lowerLimit = (maxRatioIndex == constants::missing::uintValue ? 0u : maxRatioIndex) + 2;
 
-            for (UInt i = npl - 1; i >= lowerLimit; --i)
+            for (UInt i = numPolygonNodes - 1; i >= lowerLimit; --i)
             {
-                dpla[i] = dpla[i - 1];
+                cumulativeDistance[i] = cumulativeDistance[i - 1];
             }
 
-            dpla[nmx] = 0.5 * (dpla[nmx - 1] + dpla[nmx + 1]);
-            ja = true;
+            cumulativeDistance[maxRatioIndex] = 0.5 * (cumulativeDistance[maxRatioIndex - 1] + cumulativeDistance[maxRatioIndex + 1]);
         }
         else
         {
-            ja = false;
+            break;
         }
     }
 
-    for (UInt i = 0; i < npl; ++i)
+    if (endIndex > startIndex)
     {
-        refinedPolygon.push_back(xpl[i]);
+        result.insert(result.begin(), m_nodes.begin(), m_nodes.begin() + startIndex);
+        result.insert(result.end(), m_nodes.begin() + endIndex + 1, m_nodes.end());
+    }
+    else
+    {
+        result.insert(result.end(), m_nodes.begin() + endIndex, m_nodes.begin() + startIndex);
     }
 
-    return refinedPolygon;
+    return result;
 }
 
 std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel::Polygon::FaceAreaAndCenterOfMass(const std::vector<Point>& polygon, const Projection projection)

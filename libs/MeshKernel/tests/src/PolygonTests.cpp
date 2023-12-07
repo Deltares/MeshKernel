@@ -3,12 +3,10 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Polygon.hpp"
 
-#include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
 namespace mk = meshkernel;
@@ -286,21 +284,31 @@ TEST(PolygonTests, LinearRefine)
 {
     // setup
     constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
-    const std::vector<mk::Point> outer{{0., 0.}, {6., 0.}, {7., 7.}, {-1, 4.}, {0., 0.}};
+
+    const std::vector<mk::Point> outer{
+        {0., 0.},
+        {6., 0.},
+        {7., 7.},
+        {-1, 4.},
+        {-5, 3.},
+        {-10., 2.},
+        {-12., 1.},
+        {0., 0.},
+    };
+
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
-    std::vector<mk::Point> refined = polygon.LinearRefine(1, 3, d);
+    std::vector<mk::Point> refinedPolygon = polygon.LinearRefine(0, 5);
 
-    for (size_t i = 0; i < outer.size(); ++i)
-    {
-        std::cout << " outer " << i << "   " << outer[i].x << "  " << outer[i].y << std::endl;
-    }
+    constexpr double tolerance = 1.0e-10;
+    EXPECT_NEAR(refinedPolygon[0].x, 0.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[1].x, 6.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[2].x, 7.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[3].x, -1.0, tolerance);
 
-    std::cout << "-------------------------------- " << std::endl;
-
-    for (size_t i = 0; i < refined.size(); ++i)
-    {
-        std::cout << " refined " << i << "   " << refined[i].x << "  " << refined[i].y << std::endl;
-    }
+    EXPECT_NEAR(refinedPolygon[0].y, 0.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[1].y, 0.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[2].y, 7.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[3].y, 4.0, tolerance);
 }
