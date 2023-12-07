@@ -104,14 +104,12 @@ void Splines::AddSpline(const std::vector<Point>& splines)
     AddSpline(splines, 0, static_cast<UInt>(splines.size()));
 }
 
-
 void Splines::DeleteSpline(UInt splineIndex)
 {
     m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_splineDerivatives.erase(m_splineDerivatives.begin() + splineIndex);
     m_splinesLength.erase(m_splinesLength.begin() + splineIndex);
 }
-
 
 void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 {
