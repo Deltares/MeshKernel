@@ -113,7 +113,7 @@ void Splines::DeleteSpline(UInt splineIndex)
 }
 
 
-void Splines::SwapSplines (const UInt firstSpline, const UInt secondSpline)
+void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 {
     m_splineNodes[firstSpline].swap(m_splineNodes[secondSpline]);
     m_splineDerivatives[firstSpline].swap(m_splineDerivatives[secondSpline]);

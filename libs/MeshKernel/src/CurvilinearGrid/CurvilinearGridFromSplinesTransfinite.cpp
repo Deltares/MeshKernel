@@ -545,7 +545,7 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                 }
 
                 // Splines must be swapped
-                m_splines->SwapSplines (j, k);
+                m_splines->SwapSplines(j, k);
                 m_splineIntersectionRatios[j].swap(m_splineIntersectionRatios[k]);
 
                 SwapColumns(m_splineIntersectionRatios, j, k);
