@@ -286,29 +286,55 @@ TEST(PolygonTests, LinearRefine)
     constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
 
     const std::vector<mk::Point> outer{
-        {0., 0.},
-        {6., 0.},
-        {7., 7.},
-        {-1, 4.},
-        {-5, 3.},
-        {-10., 2.},
-        {-12., 1.},
-        {0., 0.},
+        {1.0704333E+03, 2.3986833E+03},
+        {9.6556667E+02, 2.1123167E+03},
+        {1.0139667E+03, 1.7533500E+03},
+        {1.0946333E+03, 1.5960500E+03},
+        {1.1632000E+03, 1.5153833E+03},
+        {1.2075667E+03, 1.4710167E+03},
+        {1.2801667E+03, 1.4266500E+03},
+        {1.7722333E+03, 1.2370833E+03},
+        {2.5224333E+03, 1.0233167E+03},
+        {3.3492667E+03, 1.0071833E+03},
+        {4.0591333E+03, 2.0921500E+03},
+        {4.0470333E+03, 2.5196833E+03},
+        {2.6394000E+03, 2.8665500E+03},
+        {1.6068667E+03, 2.8867167E+03},
+        {1.0704333E+03, 2.3986833E+03},
     };
 
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
-    std::vector<mk::Point> refinedPolygon = polygon.LinearRefine(0, 5);
+
+    std::vector<mk::Point> refinedPolygon = polygon.LinearRefine(0, 8);
 
     constexpr double tolerance = 1.0e-10;
-    EXPECT_NEAR(refinedPolygon[0].x, 0.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[1].x, 6.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[2].x, 7.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[3].x, -1.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[0].x, 1070.4332999999999, tolerance);
+    EXPECT_NEAR(refinedPolygon[1].x, 980.48220259045979, tolerance);
+    EXPECT_NEAR(refinedPolygon[2].x, 1000.6474442197505, tolerance);
+    EXPECT_NEAR(refinedPolygon[3].x, 1147.2820369738606, tolerance);
+    EXPECT_NEAR(refinedPolygon[4].x, 1509.6856806104856, tolerance);
+    EXPECT_NEAR(refinedPolygon[5].x, 1972.1756667754244, tolerance);
+    EXPECT_NEAR(refinedPolygon[6].x, 2522.4333000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[7].x, 3349.2667000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[8].x, 4059.1333000000000, tolerance);
+    EXPECT_NEAR(refinedPolygon[9].x, 4047.0333000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[10].x, 2639.4000000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[11].x, 1606.8667000000000, tolerance);
+    EXPECT_NEAR(refinedPolygon[12].x, 1070.4332999999999, tolerance);
 
-    EXPECT_NEAR(refinedPolygon[0].y, 0.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[1].y, 0.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[2].y, 7.0, tolerance);
-    EXPECT_NEAR(refinedPolygon[3].y, 4.0, tolerance);
+    EXPECT_NEAR(refinedPolygon[0].y, 2398.6833000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[1].y, 2153.0475822179096, tolerance);
+    EXPECT_NEAR(refinedPolygon[2].y, 1852.1344283132075, tolerance);
+    EXPECT_NEAR(refinedPolygon[3].y, 1534.1103139592642, tolerance);
+    EXPECT_NEAR(refinedPolygon[4].y, 1338.2287258438314, tolerance);
+    EXPECT_NEAR(refinedPolygon[5].y, 1180.1104928265324, tolerance);
+    EXPECT_NEAR(refinedPolygon[6].y, 1023.3167000000000, tolerance);
+    EXPECT_NEAR(refinedPolygon[7].y, 1007.1833000000000, tolerance);
+    EXPECT_NEAR(refinedPolygon[8].y, 2092.1500000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[9].y, 2519.6833000000001, tolerance);
+    EXPECT_NEAR(refinedPolygon[10].y, 2866.5500000000002, tolerance);
+    EXPECT_NEAR(refinedPolygon[11].y, 2886.7166999999999, tolerance);
+    EXPECT_NEAR(refinedPolygon[12].y, 2398.6833000000001, tolerance);
 }

@@ -335,9 +335,9 @@ namespace
 
     void averageLenghts(const std::vector<double>& cumulativeDistances, std::vector<double>& averageDistances)
     {
-        averageDistances.front() = cumulativeDistances[1] - cumulativeDistances.front();
+        averageDistances[0] = cumulativeDistances[1] - cumulativeDistances.front();
         averageDistances.back() = cumulativeDistances.back() - cumulativeDistances[cumulativeDistances.size() - 2];
-        for (meshkernel::UInt i = 1; i < cumulativeDistances.size() - 1; ++i)
+        for (meshkernel::UInt i = 1; i < averageDistances.size() - 1; ++i)
         {
             averageDistances[i] = 0.5 * (cumulativeDistances[i + 1] - cumulativeDistances[i - 1]);
         }
@@ -345,11 +345,13 @@ namespace
 
     void smoothCumulativeDistance(const std::vector<double>& averageDistances, std::vector<double>& cumulativeDistances)
     {
-        double disc = std::accumulate(averageDistances.begin(), averageDistances.end(), 0.0) - 0.5 * (averageDistances.front() + averageDistances.back());
+        double disc = std::accumulate(averageDistances.begin(),
+                                      averageDistances.end(), 0.0) -
+                      0.5 * (averageDistances.front() + averageDistances.back());
         double dfac = cumulativeDistances.back() / disc;
 
         double cumDistance = 0.0;
-        for (meshkernel::UInt i = 1; i < averageDistances.size() - 1; ++i)
+        for (meshkernel::UInt i = 1; i < cumulativeDistances.size() - 1; ++i)
         {
             cumDistance += 0.5 * (averageDistances[i - 1] + averageDistances[i]);
             cumulativeDistances[i] = cumDistance * dfac;
@@ -368,8 +370,8 @@ namespace
 
         for (meshkernel::UInt i = 0; i < cumulativeDistances.size(); ++i)
         {
-            double f = cumulativeDistances[i] / cumulativeDistances.back();
-            averageDistance[i] = (1.0 - f) * firstDistance + f * lastDistance;
+            const double factor = cumulativeDistances[i] / cumulativeDistances.back();
+            averageDistance[i] = (1.0 - factor) * firstDistance + factor * lastDistance;
         }
     }
 
@@ -394,7 +396,7 @@ namespace
 
         if (intervalIndex == meshkernel::constants::missing::uintValue)
         {
-            intervalIndex = static_cast<meshkernel::UInt>(cumulativeDistances.size() - 1u);
+            intervalIndex = static_cast<meshkernel::UInt>(cumulativeDistances.size()) - static_cast<meshkernel::UInt>(1);
         }
 
         const double dt = cumulativeDistances[intervalIndex] - cumulativeDistances[intervalIndex - 1];
@@ -501,38 +503,40 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
         polygonNodes[i] = m_nodes[polygonNodeIndex];
     }
 
-    std::vector<double> cumulativeDistance(polygonNodes.size(), 0.0);
-    cumulativeDistance[0] = 0.0;
+    std::vector<double> cumulativeDistances(numPolygonNodes, 0.0);
+    cumulativeDistances[0] = 0.0;
     for (UInt i = 1; i < polygonNodes.size(); ++i)
     {
-        cumulativeDistance[i] = cumulativeDistance[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
+        cumulativeDistances[i] = cumulativeDistances[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
     }
+    std::vector<double> initialCumulativeDistances(cumulativeDistances);
 
     std::vector<double> averageLengths(numPolygonNodes, 0.0);
     std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
     std::vector<Point> result(numPolygonNodes);
 
-    averageLenghts(cumulativeDistance, averageLengths);
+    averageLenghts(cumulativeDistances, averageLengths);
     const double firstLength = averageLengths.front();
     const double lastLength = averageLengths.back();
-    const double lastDistance = cumulativeDistance.back();
-    double disc = 0.0;
-    UInt maxIter = 20;
+    double cumulativeDistanceTarget = 0.0;
+    const UInt maxInnerIter = 20;
+    const UInt maxOuterIter = 20;
+    UInt outerIter = numPolygonNodes;
 
-    while (true)
+    while (outerIter < maxOuterIter)
     {
-        for (UInt iter = 1; iter <= maxIter; ++iter)
+        for (UInt iter = 1; iter <= maxInnerIter; ++iter)
         {
-            for (UInt i = 0; i < numPolygonNodes; ++i)
+            for (UInt i = 0; i < cumulativeDistances.size(); ++i)
             {
-                result[i] = interpolatePointOnPolyline(polygonNodes, cumulativeDistance, cumulativeDistance[i]);
+                result[i] = interpolatePointOnPolyline(polygonNodes, initialCumulativeDistances, cumulativeDistances[i]);
             }
 
-            averageLenghts(cumulativeDistance, actualAverageLengths);
-            smoothAverageDistances(cumulativeDistance, firstLength, lastLength, averageLengths);
-            disc = std::accumulate(averageLengths.begin(), averageLengths.end(), 0.0) - 0.5 * (averageLengths.front() +
-                                                                                               averageLengths.back());
-            smoothCumulativeDistance(averageLengths, cumulativeDistance);
+            averageLenghts(cumulativeDistances, actualAverageLengths);
+            smoothAverageDistances(cumulativeDistances, firstLength, lastLength, averageLengths);
+            cumulativeDistanceTarget = std::accumulate(averageLengths.begin(), averageLengths.end(), 0.0) - 0.5 * (averageLengths.front() +
+                                                                                                                   averageLengths.back());
+            smoothCumulativeDistance(averageLengths, cumulativeDistances);
         }
 
         double minRatio = 1.0e9;
@@ -541,18 +545,15 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
         UInt maxRatioIndex = constants::missing::uintValue;
         double minLength = 1.0e30;
 
-        for (UInt i = 0; i < actualAverageLengths.size() - 1; ++i)
+        for (UInt i = 0; i < averageLengths.size() - 1; ++i)
         {
             minLength = std::min(averageLengths[i], minLength);
             const double currentRatio = actualAverageLengths[i] / averageLengths[i];
 
-            if (i > 0)
+            if (i > 0 && currentRatio < minRatio)
             {
-                if (currentRatio < minRatio)
-                {
-                    minRatioIndex = i;
-                    minRatio = currentRatio;
-                }
+                minRatioIndex = i;
+                minRatio = currentRatio;
             }
 
             if (currentRatio > maxRatio)
@@ -562,47 +563,43 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
             }
         }
 
-        if (minRatioIndex != constants::missing::uintValue && disc - 1.5 * averageLengths[minRatioIndex] > lastDistance)
+        if (minRatioIndex != constants::missing::uintValue && cumulativeDistanceTarget - 1.5 * averageLengths[minRatioIndex] > initialCumulativeDistances.back())
         {
             --numPolygonNodes;
 
             for (UInt i = minRatioIndex; i < numPolygonNodes; ++i)
             {
-                cumulativeDistance[i] = cumulativeDistance[i + 1];
+                cumulativeDistances[i] = cumulativeDistances[i + 1];
             }
         }
-        else if (disc + 0.5 * averageLengths[maxRatioIndex] < lastLength)
+        else if (cumulativeDistanceTarget + 0.5 * averageLengths[maxRatioIndex] < lastLength)
         {
             ++numPolygonNodes;
-
-            if (numPolygonNodes > averageLengths.size())
-            {
-                const auto newSize = averageLengths.size() * static_cast<size_t>(2);
-                averageLengths.resize(newSize);
-                actualAverageLengths.resize(newSize);
-                cumulativeDistance.resize(newSize);
-                result.resize(newSize);
-            }
 
             const UInt lowerLimit = (maxRatioIndex == constants::missing::uintValue ? 0u : maxRatioIndex) + 2;
 
             for (UInt i = numPolygonNodes - 1; i >= lowerLimit; --i)
             {
-                cumulativeDistance[i] = cumulativeDistance[i - 1];
+                cumulativeDistances[i] = cumulativeDistances[i - 1];
             }
 
-            cumulativeDistance[maxRatioIndex] = 0.5 * (cumulativeDistance[maxRatioIndex - 1] + cumulativeDistance[maxRatioIndex + 1]);
+            cumulativeDistances[maxRatioIndex] = 0.5 * (cumulativeDistances[maxRatioIndex - 1] + cumulativeDistances[maxRatioIndex + 1]);
         }
         else
         {
             break;
         }
+        averageLengths.resize(numPolygonNodes);
+        actualAverageLengths.resize(numPolygonNodes);
+        cumulativeDistances.resize(numPolygonNodes);
+        result.resize(numPolygonNodes);
+        outerIter++;
     }
 
     if (endIndex > startIndex)
     {
         result.insert(result.begin(), m_nodes.begin(), m_nodes.begin() + startIndex);
-        result.insert(result.end(), m_nodes.begin() + endIndex + 1, m_nodes.end());
+        result.insert(result.end(), m_nodes.begin() + endIndex + 1u, m_nodes.end());
     }
     else
     {
