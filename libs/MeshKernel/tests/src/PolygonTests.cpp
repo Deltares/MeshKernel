@@ -280,11 +280,9 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     CheckPolygonPointVectors(refined, expected);
 }
 
-TEST(PolygonTests, LinearRefine)
+TEST(PolygonTests, LinearRefine_WithEndIndexLargerThanStartIndex_ShouldRefine)
 {
     // setup
-    constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
-
     const std::vector<mk::Point> outer{
         {1.0704333E+03, 2.3986833E+03},
         {9.6556667E+02, 2.1123167E+03},
@@ -337,4 +335,35 @@ TEST(PolygonTests, LinearRefine)
     EXPECT_NEAR(refinedPolygon[10].y, 2866.5500000000002, tolerance);
     EXPECT_NEAR(refinedPolygon[11].y, 2886.7166999999999, tolerance);
     EXPECT_NEAR(refinedPolygon[12].y, 2398.6833000000001, tolerance);
+}
+
+TEST(PolygonTests, LinearRefine_WithStartIndexLargerThanEndIndex_ShouldRefine)
+{
+    // setup
+    const std::vector<mk::Point> outer{
+        {1.0704333E+03, 2.3986833E+03},
+        {9.6556667E+02, 2.1123167E+03},
+        {1.0139667E+03, 1.7533500E+03},
+        {1.0946333E+03, 1.5960500E+03},
+        {1.1632000E+03, 1.5153833E+03},
+        {1.2075667E+03, 1.4710167E+03},
+        {1.2801667E+03, 1.4266500E+03},
+        {1.7722333E+03, 1.2370833E+03},
+        {2.5224333E+03, 1.0233167E+03},
+        {3.3492667E+03, 1.0071833E+03},
+        {4.0591333E+03, 2.0921500E+03},
+        {4.0470333E+03, 2.5196833E+03},
+        {2.6394000E+03, 2.8665500E+03},
+        {1.6068667E+03, 2.8867167E+03},
+        {1.0704333E+03, 2.3986833E+03},
+    };
+
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // call
+
+    std::vector<mk::Point> refinedPolygon = polygon.LinearRefine(8, 0);
+
+    constexpr double tolerance = 1.0e-10;
+    EXPECT_NEAR(refinedPolygon[0].x, 2522.4333000000001, tolerance);
 }
