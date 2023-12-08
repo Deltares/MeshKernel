@@ -84,11 +84,8 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
     sideFour.reserve(maxNumPoints);
 
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
-    const auto TotalMColumns = (m_nSplinesCount - 1) * m_numM;
-    const auto TotalNRows = (m_mSplinesCount - 1) * m_numN;
-
-    // const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
-    // const auto TotalNRows = (m_numMSplines - 1) * m_numN;
+    const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
+    const auto TotalNRows = (m_numMSplines - 1) * m_numN;
 
     lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, TotalNRows + 1);
 
@@ -323,18 +320,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
     const auto numSplines = m_splines->GetNumSplines();
 
-    for (UInt i = 0; i < numSplines; ++i)
-    {
-        std::cout << " before spline " << i << " = ";
-
-        for (UInt j = 0; j < m_splines->m_splineNodes[i].size(); ++j)
-        {
-            std::cout << "{ " << m_splines->m_splineNodes[i][j].x << ", " << m_splines->m_splineNodes[i][j].y << " } ";
-        }
-
-        std::cout << std::endl;
-    }
-
     // fill the splines with zeros
     m_splineType.resize(numSplines);
     std::fill(m_splineType.begin(), m_splineType.end(), 0);
@@ -359,8 +344,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 
             if (areCrossing)
             {
-                std::cout << " intersectionPoint " << i << "  " << j << " -- { " << intersectionPoint.x << ", " << intersectionPoint.y << " }  " << firstSplineRatio << "  " << secondSplineRatio << std::endl;
-
                 if (m_splineType[i] * m_splineType[j] == 1)
                 {
                     throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: At least two splines are intersecting twice.");
@@ -374,8 +357,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     m_splineType[j] = -m_splineType[i];
                     if (crossProductIntersection * m_splineType[i] < 0.0)
                     {
-                        std::cout << " reversing spline " << j << std::endl;
-
                         // switch j
                         std::ranges::reverse(m_splines->m_splineNodes[j]);
                         secondSplineRatio = static_cast<double>(numNodesJSpline) - 1.0 - secondSplineRatio;
@@ -386,7 +367,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     m_splineType[i] = -m_splineType[j];
                     if (crossProductIntersection * m_splineType[j] > 0.0)
                     {
-                        std::cout << " reversing spline " << i << std::endl;
                         // switch i
                         std::ranges::reverse(m_splines->m_splineNodes[i]);
                         firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
@@ -395,27 +375,8 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 
                 m_splineIntersectionRatios[i][j] = firstSplineRatio;
                 m_splineIntersectionRatios[j][i] = secondSplineRatio;
-
-                std::cout << "m_splineIntersectionRatios " << i << "  " << j << "  " << firstSplineRatio << "  " << secondSplineRatio << std::endl;
             }
         }
-    }
-
-    for (UInt i = 0; i < numSplines; ++i)
-    {
-        std::cout << " after spline " << i << " = ";
-
-        for (UInt j = 0; j < m_splines->m_splineNodes[i].size(); ++j)
-        {
-            std::cout << "{ " << m_splines->m_splineNodes[i][j].x << ", " << m_splines->m_splineNodes[i][j].y << " } ";
-        }
-
-        std::cout << std::endl;
-    }
-
-    for (UInt i = 0; i < numSplines; i++)
-    {
-        std::cout << "m_splineType[i] " << m_splineType[i] << std::endl;
     }
 
     for (UInt i = 0; i < numSplines; i++)
@@ -426,38 +387,11 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         }
     }
 
-    for (UInt i = 0; i < m_splineIntersectionRatios.size(); ++i)
-    {
-        std::cout << "  m_splineIntersectionRatios ";
-
-        for (UInt j = 0; j < m_splineIntersectionRatios[i].size(); ++j)
-        {
-            std::cout << std::setw(10) << m_splineIntersectionRatios[i][j] << "  ";
-        }
-
-        std::cout << std::endl;
-    }
-
-    for (UInt i = 0; i < m_splineIntersectionRatios.size(); ++i)
-    {
-        for (UInt j = 0; j < m_splineIntersectionRatios[i].size(); ++j)
-        {
-            std::cout << "  m_splineIntersectionRatios[" << i << "][" << j << "] " << m_splineIntersectionRatios[i][j] << std::endl;
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << "--------------------------------" << std::endl;
+    OrderSplinesByType(numSplines);
 
     // find the first non m_m spline
     m_numMSplines = FindIndex(m_splineType, -1);
     m_numNSplines = numSplines - m_numMSplines;
-
-    std::cout << " number of splines: " << m_numMSplines << "  " << m_numNSplines << std::endl;
-
-    m_mSplinesCount = 2;
-    m_nSplinesCount = 2;
 
     const UInt maxExternalIterations = 10;
     for (UInt i = 0; i < maxExternalIterations; i++)
@@ -494,16 +428,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     // Now determine the start and end spline corner points for each spline
     ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
 
-    for (UInt i = 0; i < m_splineIntersectionRatios.size(); ++i)
-    {
-        for (UInt j = 0; j < m_splineIntersectionRatios[i].size(); ++j)
-        {
-            std::cout << "  m_splineIntersectionRatios[" << i << "][" << j << "] " << m_splineIntersectionRatios[i][j] << std::endl;
-        }
-
-        std::cout << std::endl;
-    }
-
     // m_n direction
     for (UInt i = 0; i < m_numMSplines; i++)
     {
@@ -511,28 +435,17 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         {
             UInt maxIndex = 0;
             UInt lastIndex = 0;
-            bool isAssigned = false;
             for (UInt k = 0; k <= i; k++)
             {
 
-                std::cout << " m_splineIntersectionRatios[j][k] " << m_splineIntersectionRatios[j][k] << std::endl;
-
                 if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
                 {
-                    // maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1);
                     maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
                     lastIndex = k;
-                    isAssigned = true;
                 }
             }
 
-            if (!isAssigned)
-            {
-                std::cout << " not assigned " << i << "  " << j << std::endl;
-            }
-
             m_splineGroupIndexAndFromToIntersections[j][1] = maxIndex;
-            std::cout << " m_splineGroupIndexAndFromToIntersections j = " << j << " 1 = " << maxIndex << std::endl;
         }
         UInt maxIndex = 0;
         for (auto j = m_numMSplines; j < numSplines; j++)
@@ -543,7 +456,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             }
         }
         m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
-        std::cout << " m_splineGroupIndexAndFromToIntersections i = " << i << " 0 = " << maxIndex << std::endl;
     }
 
     // m_m direction
@@ -553,26 +465,20 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         {
             UInt maxIndex = 0;
             UInt lastIndex = m_numMSplines;
-            bool isAssigned = false;
             for (auto k = m_numMSplines; k <= i; k++)
             {
                 if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
                 {
-                    // maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1);
                     maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
                     lastIndex = k;
-                    isAssigned = true;
                 }
             }
 
-            if (!isAssigned)
-            {
-                std::cout << " not assigned " << std::endl;
-            }
             m_splineGroupIndexAndFromToIntersections[j][2] = maxIndex;
-            std::cout << " m_splineGroupIndexAndFromToIntersections j = " << j << " 2 = " << maxIndex << std::endl;
         }
+
         UInt maxIndex = 0;
+
         for (UInt j = 0; j < m_numMSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
@@ -580,15 +486,14 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                 maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][2]);
             }
         }
+
         m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
-        std::cout << " m_splineGroupIndexAndFromToIntersections i = " << i << " 0 = " << maxIndex << std::endl;
     }
 
     for (UInt i = 0; i < numSplines; i++)
     {
         m_splineGroupIndexAndFromToIntersections[i][1] = 0;
         m_splineGroupIndexAndFromToIntersections[i][2] = 0;
-        std::cout << " m_splineGroupIndexAndFromToIntersections i = " << i << " 1, 2a = " << 0 << std::endl;
     }
 
     // m_n constant, spline start end end
@@ -602,9 +507,8 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                 {
                     m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
                 }
-                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
 
-                std::cout << " m_splineGroupIndexAndFromToIntersections i = " << i << " 2b = " << m_splineGroupIndexAndFromToIntersections[j][0] << std::endl;
+                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
             }
         }
     }
@@ -620,24 +524,36 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                 {
                     m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
                 }
+
                 m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
-                std::cout << " m_splineGroupIndexAndFromToIntersections i = " << i << " 2c = " << m_splineGroupIndexAndFromToIntersections[j][0] << std::endl;
             }
         }
     }
-    std::cout << std::endl;
-    std::cout << "--------------------------------" << std::endl;
+}
 
-    for (UInt i = 0; i < m_splineGroupIndexAndFromToIntersections.size(); ++i)
+void CurvilinearGridFromSplinesTransfinite::OrderSplinesByType(UInt numSplines)
+{
+    for (UInt i = 0; i < numSplines; ++i)
     {
-        for (UInt j = 0; j < m_splineGroupIndexAndFromToIntersections[i].size(); ++j)
+        if (m_splineType[i] == -1)
         {
-            std::cout << "m_splineGroupIndexAndFromToIntersections " << i << ", " << j << " = " << m_splineGroupIndexAndFromToIntersections[i][j] << std::endl;
+            for (UInt j = i + 1; j < numSplines; ++j)
+            {
+                if (m_splineType[j] == 1)
+                {
+                    // they must be swapped
+                    m_splines->m_splineNodes[i].swap(m_splines->m_splineNodes[j]);
+                    m_splines->m_splineDerivatives[i].swap(m_splines->m_splineDerivatives[j]);
+                    std::swap(m_splines->m_splinesLength[i], m_splines->m_splinesLength[j]);
+                    m_splineIntersectionRatios[i].swap(m_splineIntersectionRatios[j]);
+
+                    SwapColumns(m_splineIntersectionRatios, i, j);
+                    std::swap(m_splineType[i], m_splineType[j]);
+                    break;
+                }
+            }
         }
     }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
 }
 
 bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
@@ -665,8 +581,6 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                     continue;
                 }
 
-                std::cout << "swapping splines: " << j << "  " << k << std::endl;
-
                 // they must be swapped
                 m_splines->m_splineNodes[j].swap(m_splines->m_splineNodes[k]);
                 m_splines->m_splineDerivatives[j].swap(m_splines->m_splineDerivatives[k]);
@@ -674,6 +588,7 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                 m_splineIntersectionRatios[j].swap(m_splineIntersectionRatios[k]);
 
                 SwapColumns(m_splineIntersectionRatios, j, k);
+                std::swap(m_splineType[j], m_splineType[k]);
 
                 // repeat the entire procedure once more
                 return false;

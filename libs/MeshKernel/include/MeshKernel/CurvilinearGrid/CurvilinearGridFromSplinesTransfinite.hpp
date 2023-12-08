@@ -71,6 +71,10 @@ namespace meshkernel
                                         UInt startSecond,
                                         UInt endSecond);
 
+        /// @brief Order the splines by spline type (vertical or horizontal)
+        /// @param[in] numSplines The number of splines
+        void OrderSplinesByType(UInt numSplines);
+
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
         /// @param v
@@ -106,8 +110,6 @@ namespace meshkernel
         std::vector<std::vector<UInt>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
         UInt m_numMSplines = 0;                                                  ///< The index of the last m spline
         UInt m_numNSplines = 0;                                                  ///< The index of the last n spline
-        UInt m_mSplinesCount = 0;                                                ///< The index of the last m spline
-        UInt m_nSplinesCount = 0;                                                ///< The index of the last n spline
 
         UInt m_numM = 0; ///< Number of m columns
         UInt m_numN = 0; ///< Number of n rows
