@@ -56,7 +56,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
         throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: The number of splines is less than four.");
     }
 
-    ComputeIntersections();
+    CharacteriseSplines();
 
     const auto numMPoints = m_numM + 1;
     const auto numNPoints = m_numN + 1;
@@ -316,7 +316,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double f
     }
 }
 
-void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
+void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
 {
     const auto numSplines = m_splines->GetNumSplines();
 
@@ -386,44 +386,11 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: At least one of the splines could not be classified.");
         }
     }
+}
 
-    OrderSplinesByType(numSplines);
-
-    // find the first non m_m spline
-    m_numMSplines = FindIndex(m_splineType, -1);
-    m_numNSplines = numSplines - m_numMSplines;
-
-    const UInt maxExternalIterations = 10;
-    for (UInt i = 0; i < maxExternalIterations; i++)
-    {
-        // sort along m_m
-        const UInt maxInternalIterations = 100;
-        for (UInt j = 0; j < maxInternalIterations; j++)
-        {
-            const auto successful = OrderSplines(0, m_numMSplines, m_numMSplines, numSplines);
-            if (successful)
-            {
-                break;
-            }
-        }
-
-        // sort along m_n
-        bool nSplineSortingHasNotChanged = true;
-        for (UInt j = 0; j < maxInternalIterations; j++)
-        {
-            const auto successful = OrderSplines(m_numMSplines, numSplines, 0, m_numMSplines);
-            if (successful)
-            {
-                break;
-            }
-            nSplineSortingHasNotChanged = false;
-        }
-
-        if (nSplineSortingHasNotChanged)
-        {
-            break;
-        }
-    }
+void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
+{
+    const auto numSplines = m_splines->GetNumSplines();
 
     // Now determine the start and end spline corner points for each spline
     ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
@@ -531,8 +498,10 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     }
 }
 
-void CurvilinearGridFromSplinesTransfinite::OrderSplinesByType(UInt numSplines)
+void CurvilinearGridFromSplinesTransfinite::OrganiseSplines()
 {
+    const auto numSplines = m_splines->GetNumSplines();
+
     for (UInt i = 0; i < numSplines; ++i)
     {
         if (m_splineType[i] == -1)
@@ -552,6 +521,44 @@ void CurvilinearGridFromSplinesTransfinite::OrderSplinesByType(UInt numSplines)
                     break;
                 }
             }
+        }
+    }
+
+    // find the first non m_m spline
+    m_numMSplines = FindIndex(m_splineType, -1);
+    m_numNSplines = numSplines - m_numMSplines;
+
+    // order splines
+
+    const UInt maxExternalIterations = 10;
+    for (UInt i = 0; i < maxExternalIterations; i++)
+    {
+        // sort along m_m
+        const UInt maxInternalIterations = 100;
+        for (UInt j = 0; j < maxInternalIterations; j++)
+        {
+            const auto successful = OrderSplines(0, m_numMSplines, m_numMSplines, numSplines);
+            if (successful)
+            {
+                break;
+            }
+        }
+
+        // sort along m_n
+        bool nSplineSortingHasNotChanged = true;
+        for (UInt j = 0; j < maxInternalIterations; j++)
+        {
+            const auto successful = OrderSplines(m_numMSplines, numSplines, 0, m_numMSplines);
+            if (successful)
+            {
+                break;
+            }
+            nSplineSortingHasNotChanged = false;
+        }
+
+        if (nSplineSortingHasNotChanged)
+        {
+            break;
         }
     }
 }
@@ -597,6 +604,13 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
     }
 
     return true;
+}
+
+void CurvilinearGridFromSplinesTransfinite::CharacteriseSplines()
+{
+    ComputeInteractions();
+    OrganiseSplines();
+    ClassifySplineIntersections();
 }
 
 template <typename T>

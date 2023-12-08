@@ -48,11 +48,6 @@ namespace meshkernel
         /// @returns
         CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const CurvilinearParameters& curvilinearParameters);
 
-        /// @brief Computes the adimensional intersections between splines.
-        ///
-        /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
-        void ComputeIntersections();
-
         /// Computes the curvilinear grid from the splines using transfinite interpolation
         /// @param curvilinearGrid
         CurvilinearGrid Compute();
@@ -60,6 +55,24 @@ namespace meshkernel
         std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
     private:
+        /// @brief Characterise the splines
+        ///
+        /// finds intersections and orders the splines
+        void CharacteriseSplines();
+
+        /// @brief Label each spline and its intersection.
+        ///
+        /// In which group does it lie (m or n), and spline crossing indices.
+        void ClassifySplineIntersections();
+
+        /// @brief Computes the adimensional intersections between splines.
+        ///
+        /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
+        void ComputeInteractions();
+
+        /// @brief Organise the splines by spline type (vertical or horizontal)
+        void OrganiseSplines();
+
         /// @brief Order the splines such that their index increases in m or n direction
         /// @param[in] startFirst
         /// @param[in] endFirst
@@ -70,10 +83,6 @@ namespace meshkernel
                                         UInt endFirst,
                                         UInt startSecond,
                                         UInt endSecond);
-
-        /// @brief Order the splines by spline type (vertical or horizontal)
-        /// @param[in] numSplines The number of splines
-        void OrderSplinesByType(UInt numSplines);
 
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
