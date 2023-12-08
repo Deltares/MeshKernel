@@ -7,46 +7,6 @@
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Vector.hpp"
 
-void printIt(const std::vector<double>& vec, const meshkernel::UInt last = meshkernel::constants::missing::uintValue, const std::string& name = "vec")
-{
-
-    std::cout << name << " = ";
-
-    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? static_cast<meshkernel::UInt>(vec.size()) : last);
-
-    for (meshkernel::UInt i = 0; i < upperLimit; ++i)
-    {
-        std::cout << vec[i] << ", ";
-
-        if ((i + 1) % 10 == 0)
-        {
-            std::cout << std::endl;
-        }
-    }
-
-    std::cout << std::endl;
-}
-
-void printIt(const std::vector<meshkernel::Point>& vec, const meshkernel::UInt last = meshkernel::constants::missing::uintValue, const std::string& name = "vec")
-{
-
-    std::cout << name << " = ";
-
-    meshkernel::UInt upperLimit = (last == meshkernel::constants::missing::uintValue ? static_cast<meshkernel::UInt>(vec.size()) : last);
-
-    for (meshkernel::UInt i = 0; i < upperLimit; ++i)
-    {
-        std::cout << "{ " << vec[i].x << ", " << vec[i].y << " }, ";
-
-        if ((i + 1) % 10 == 0)
-        {
-            std::cout << std::endl;
-        }
-    }
-
-    std::cout << std::endl;
-}
-
 meshkernel::Polygon::Polygon(const std::vector<Point>& points,
                              Projection projection) : m_nodes(points), m_projection(projection)
 {
