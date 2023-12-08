@@ -558,7 +558,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
                 cumulativeDistances[i] = cumulativeDistances[i - 1];
             }
 
-            cumulativeDistances[maxRatioIndex + 1] = 0.5 * (cumulativeDistances[maxRatioIndex] + cumulativeDistances[maxRatioIndex + 1]);
+            cumulativeDistances[maxRatioIndex + 1] = 0.5 * (cumulativeDistances[maxRatioIndex] + cumulativeDistances[maxRatioIndex + 2]);
         }
         else
         {
@@ -575,7 +575,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     }
     else
     {
-        result.insert(result.end(), m_nodes.begin() + endIndex, m_nodes.begin() + startIndex);
+        result.insert(result.begin(), m_nodes.begin() + endIndex, m_nodes.begin() + startIndex);
     }
 
     return result;
