@@ -293,7 +293,7 @@ namespace
         }
     }
 
-    void averageLenghts(const std::vector<double>& cumulativeDistances, std::vector<double>& averageDistances)
+    void computeAverageLengths(const std::vector<double>& cumulativeDistances, std::vector<double>& averageDistances)
     {
         averageDistances[0] = cumulativeDistances[1] - cumulativeDistances.front();
         averageDistances.back() = cumulativeDistances.back() - cumulativeDistances[cumulativeDistances.size() - 2];
@@ -318,10 +318,10 @@ namespace
         }
     }
 
-    void smoothAverageDistances(const std::vector<double>& cumulativeDistances,
-                                const double firstDistance,
-                                const double lastDistance,
-                                std::vector<double>& averageDistance)
+    void smoothAverageLengths(const std::vector<double>& cumulativeDistances,
+                              const double firstDistance,
+                              const double lastDistance,
+                              std::vector<double>& averageLengths)
     {
         if (cumulativeDistances.size() <= 1)
         {
@@ -331,7 +331,7 @@ namespace
         for (meshkernel::UInt i = 0; i < cumulativeDistances.size(); ++i)
         {
             const double factor = cumulativeDistances[i] / cumulativeDistances.back();
-            averageDistance[i] = (1.0 - factor) * firstDistance + factor * lastDistance;
+            averageLengths[i] = (1.0 - factor) * firstDistance + factor * lastDistance;
         }
     }
 
@@ -453,6 +453,9 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
 
     UInt numPolygonNodes = static_cast<UInt>(endIndex - startIndex + 1);
     std::vector<Point> polygonNodes(numPolygonNodes);
+    std::vector<double> averageLengths(numPolygonNodes, 0.0);
+    std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
+    std::vector<Point> result(numPolygonNodes);
     for (UInt i = 0; i < polygonNodes.size(); ++i)
     {
         auto polygonNodeIndex = i + startIndex;
@@ -471,11 +474,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     }
     std::vector<double> initialCumulativeDistances(cumulativeDistances);
 
-    std::vector<double> averageLengths(numPolygonNodes, 0.0);
-    std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
-    std::vector<Point> result(numPolygonNodes);
-
-    averageLenghts(cumulativeDistances, averageLengths);
+    computeAverageLengths(cumulativeDistances, averageLengths);
     const double firstLength = averageLengths.front();
     const double lastLength = averageLengths.back();
     double cumulativeDistanceTarget = 0.0;
@@ -492,8 +491,8 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
                 result[i] = interpolatePointOnPolyline(polygonNodes, initialCumulativeDistances, cumulativeDistances[i]);
             }
 
-            averageLenghts(cumulativeDistances, actualAverageLengths);
-            smoothAverageDistances(cumulativeDistances, firstLength, lastLength, averageLengths);
+            computeAverageLengths(cumulativeDistances, actualAverageLengths);
+            smoothAverageLengths(cumulativeDistances, firstLength, lastLength, averageLengths);
             cumulativeDistanceTarget = std::accumulate(averageLengths.begin(), averageLengths.end(), 0.0) - 0.5 * (averageLengths.front() +
                                                                                                                    averageLengths.back());
             smoothCumulativeDistance(averageLengths, cumulativeDistances);
