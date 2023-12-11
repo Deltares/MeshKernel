@@ -150,6 +150,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a1dc450d6cc579ef2c2155ce8752b599c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#a1dc450d6cc579ef2c2155ce8752b599c">Refine</a> (size_t startIndex, size_t endIndex, double refinementDistance) const</td></tr>
 <tr class="memdesc:a1dc450d6cc579ef2c2155ce8752b599c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine the polygon.  <a href="classmeshkernel_1_1_polygon.html#a1dc450d6cc579ef2c2155ce8752b599c">More...</a><br /></td></tr>
 <tr class="separator:a1dc450d6cc579ef2c2155ce8752b599c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b260501fc7270797ae9afa76a38d984"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#a3b260501fc7270797ae9afa76a38d984">LinearRefine</a> (size_t startIndex, size_t endIndex) const</td></tr>
+<tr class="memdesc:a3b260501fc7270797ae9afa76a38d984"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine the polygon.  <a href="classmeshkernel_1_1_polygon.html#a3b260501fc7270797ae9afa76a38d984">More...</a><br /></td></tr>
+<tr class="separator:a3b260501fc7270797ae9afa76a38d984"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abadcbde70fa56fa74e2f0eb0dc6643b3"><td class="memItemLeft" align="right" valign="top"><a id="abadcbde70fa56fa74e2f0eb0dc6643b3"></a>
 std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, <a class="el" href="namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4">TraversalDirection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#abadcbde70fa56fa74e2f0eb0dc6643b3">FaceAreaAndCenterOfMass</a> () const</td></tr>
 <tr class="memdesc:abadcbde70fa56fa74e2f0eb0dc6643b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of the polygon, its centre of mass and the direction. <br /></td></tr>
@@ -284,6 +287,37 @@ static std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html
 
 <p>Compute the area of the polygon, its centre of mass and the direction. </p>
 <p>This version uses an indirect indexing of the set of nodes, this can be used to reduce the need to copy nodes to a separate array. </p>
+
+</div>
+</div>
+<a id="a3b260501fc7270797ae9afa76a38d984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b260501fc7270797ae9afa76a38d984">&#9670;&nbsp;</a></span>LinearRefine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Polygon::LinearRefine </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>endIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine the polygon. </p>
+<dl class="section return"><dt>Returns</dt><dd>The points for the refined polygon </dd></dl>
 
 </div>
 </div>

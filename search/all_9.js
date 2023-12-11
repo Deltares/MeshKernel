@@ -7,7 +7,8 @@ var searchData=
   ['linearalgebraerror_271',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]],
   ['linearalgebraerrorcode_272',['LinearAlgebraErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44',1,'meshkernel']]],
   ['linearinterpolationintriangle_273',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],
-  ['location_274',['Location',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9',1,'meshkernel']]],
-  ['longlat_275',['LongLat',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a38c01b16de732b8916bf8cc0ce079c54',1,'meshkernel::ConvertSphericalToCartesianBase::LongLat()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a45de01c8d7a639cbc93943c4f63fd1ff',1,'meshkernel::ConvertCartesianToSphericalBase::LongLat()']]],
-  ['lowerleft_276',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
+  ['linearrefine_274',['LinearRefine',['../classmeshkernel_1_1_polygon.html#a3b260501fc7270797ae9afa76a38d984',1,'meshkernel::Polygon']]],
+  ['location_275',['Location',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9',1,'meshkernel']]],
+  ['longlat_276',['LongLat',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a38c01b16de732b8916bf8cc0ce079c54',1,'meshkernel::ConvertSphericalToCartesianBase::LongLat()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a45de01c8d7a639cbc93943c4f63fd1ff',1,'meshkernel::ConvertCartesianToSphericalBase::LongLat()']]],
+  ['lowerleft_277',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
 ];
