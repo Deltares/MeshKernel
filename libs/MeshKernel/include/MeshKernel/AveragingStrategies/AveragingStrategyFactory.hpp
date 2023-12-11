@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,12 +38,10 @@ namespace meshkernel::averaging
         /// @brief The static method returning the strategy
         /// @param[in] averagingMethod The averaging method enumeration value
         /// @param[in] minNumSamples The minimum a of samples used for certain interpolation algorithms
-        /// @param[in] interpolationPoint The interpolation point
         /// @param[in] projection  The projection to use
         /// @return The interpolation strategy to use
         [[nodiscard]] std::unique_ptr<AveragingStrategy> static GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
                                                                                      size_t minNumSamples,
-                                                                                     Point const& interpolationPoint,
                                                                                      Projection projection);
     };
 } // namespace meshkernel::averaging

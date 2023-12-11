@@ -267,20 +267,12 @@ void meshkernel::Polygon::RefineSegment(std::vector<meshkernel::Point>& refinedP
     refinedPolygon.push_back(n0);
 
     const double segmentLength = ComputeDistance(n0, n1, projection);
-
     int n = std::lround(segmentLength / refinementDistance);
-    const double refinedLength = n * refinementDistance;
-    if (refinedLength > segmentLength ||
-        meshkernel::IsEqual(refinedLength, segmentLength, meshkernel::constants::geometric::refinementTolerance))
-    {
-        --n;
-    }
 
-    // Refined segment step size.
-    const meshkernel::Point delta = (n1 - n0) * refinementDistance / segmentLength;
-    for (auto i = 1; i <= n; ++i)
+    for (int i = 1; i < n; ++i)
     {
-        refinedPolygon.push_back(n0 + i * delta);
+        double lambda = static_cast<double>(i) / static_cast<double>(n);
+        refinedPolygon.push_back((1.0 - lambda) * n0 + lambda * n1);
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,13 +29,18 @@
 
 namespace meshkernel::averaging
 {
-    void MaxAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
+
+    double MaxAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
+                                           const std::vector<Sample>& samples) const
     {
-        m_result = std::max(m_result, sampleValue);
+        double result = std::numeric_limits<double>::lowest();
+
+        for (UInt i = 0; i < samples.size(); ++i)
+        {
+            result = std::max(result, samples[i].value);
+        }
+
+        return result != std::numeric_limits<double>::lowest() ? result : constants::missing::doubleValue;
     }
 
-    double MaxAveragingStrategy::Calculate() const
-    {
-        return m_result != std::numeric_limits<double>::lowest() ? m_result : constants::missing::doubleValue;
-    }
 } // namespace meshkernel::averaging

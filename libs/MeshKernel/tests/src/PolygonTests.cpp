@@ -179,6 +179,7 @@ namespace
     void CheckPolygonPointVectors(const std::vector<mk::Point>& actual, const std::vector<mk::Point>& expected)
     {
         ASSERT_EQ(actual.size(), expected.size());
+
         for (size_t i = 0; i < actual.size(); ++i)
         {
             constexpr double tolerance = 1e-6;
@@ -192,7 +193,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStart
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., 2}, {5., 4}, {5., 5.}, {3, 5}, {1, 5}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 1.66666666666667}, {5, 3.33333333333333}, {5, 5}, {3.33333333333333, 5}, {1.66666666666667, 5}, {0, 5}, {0, 0}};
+
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -207,7 +209,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartI
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0., 0.}, {2, 0}, {4, 0}, {5., 0.}, {5., 5.}, {0, 5.}, {0, 3}, {0, 1}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0, 0}, {1.66666666666667, 0}, {3.33333333333333, 0}, {5, 0}, {5, 5}, {0, 5}, {0, 3.33333333333333}, {0, 1.66666666666667}, {0, 0}};
+
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -237,7 +240,7 @@ TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_Avo
     // setup
     constexpr double d = 2.5 * (1 - .9 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -253,7 +256,8 @@ TEST(PolygonTests, Refine_WhenLastRefinementSlightlyLargerThanTolerance_DoesNotO
     // setup
     constexpr double d = 2.5 * (1 + .9 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0., 0.}, {5., 0.}, {5., d}, {5., 5.}, {5. - d, 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
+
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -269,7 +273,7 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     // setup
     constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0., 0.}, {5., 0}, {5., d}, {5., 2 * d}, {5., 5.}, {5. - d, 5.}, {5. - 2 * d, 5.}, {0, 5.}, {0., 0.}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call

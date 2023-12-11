@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,22 +39,16 @@ namespace meshkernel::averaging
         /// @brief Construct a new ClosestAveragingStrategy.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used to calculate distances with.
-        ClosestAveragingStrategy(Point const& interpolationPoint,
-                                 Projection projection);
+        ClosestAveragingStrategy(Projection projection);
 
-        void Add(Point const& samplePoint, double sampleValue) override;
-        [[nodiscard]] double Calculate() const override;
+        /// @brief Calculates the average value based on the sample values.
+        /// @param[in] interpolationPoint The point for which the average should be calculated.
+        /// @param[in] samples The sample points and values used by this strategy.
+        /// @return The calculated average
+        [[nodiscard]] double Calculate(const Point& interpolationPoint,
+                                       const std::vector<Sample>& samples) const override;
 
     private:
-        /// @brief The result used to calculate the final value in Calculate.
-        double m_result = constants::missing::doubleValue;
-
-        /// @brief The closest squared value currently found.
-        double m_closestSquaredValue = std::numeric_limits<double>::max();
-
-        /// @brief The interpolation point from which the closest value is calculated.
-        Point const& m_interpolationPoint;
-
         /// @brief The projection used to calculate the squared distance.
         Projection const m_projection;
     };

@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -110,6 +110,9 @@ namespace meshkernel
         void Compute() override;
 
     private:
+        /// @brief Default size for interpolation points and sample caches.
+        static constexpr UInt DefaultMaximumCacheSize = 100;
+
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
@@ -146,15 +149,13 @@ namespace meshkernel
 
         Mesh2D& m_mesh;                                 ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
-        Method m_method;                                ///< The method to use for the interpolation
         Location m_interpolationLocation;               ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
-        UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
+        std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
-        std::vector<bool> m_visitedSamples; ///< The visited samples
-
-        RTree m_samplesRtree; ///< The samples tree
+        RTree m_samplesRtree;                                     ///< The samples tree
+        std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel
