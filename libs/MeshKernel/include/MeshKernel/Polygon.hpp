@@ -133,6 +133,35 @@ namespace meshkernel
         Projection GetProjection() const;
 
     private:
+        /// @brief Refines the segment between two polygon nodes, starting with the node specified by the iterator up to,
+        /// but not including, the next node.
+        /// @param refinedPolygon     [in,out] a buffer of points into which the refined points are written
+        /// @param nodeIterator       [in] position in the original, unrefined polygon that contains the first point of
+        ///                           the refinement
+        /// @param refinementDistance [in] the distance between two refined nodes
+        /// @param projection         [in] the projection used for computing the length of the segment to be refined
+        static void RefineSegment(std::vector<meshkernel::Point>& refinedPolygon,
+                                  const std::vector<meshkernel::Point>::const_iterator& nodeIterator,
+                                  const double refinementDistance,
+                                  const meshkernel::Projection projection);
+
+        /// @brief Compute the average length of a segment
+        static void computeAverageLengths(const std::vector<double>& cumulativeDistances, std::vector<double>& averageDistances);
+
+        /// @brief Smooth the cumulative distance from the start of the polyline
+        static void smoothCumulativeDistance(const std::vector<double>& averageDistances, std::vector<double>& cumulativeDistances);
+
+        /// @brief Smooth average length of polyline segment
+        static void smoothAverageLengths(const std::vector<double>& cumulativeDistances,
+                                         const double firstDistance,
+                                         const double lastDistance,
+                                         std::vector<double>& averageLengths);
+
+        /// @brief Interpolate at the point on a polyline.
+        static meshkernel::Point interpolatePointOnPolyline(const std::vector<meshkernel::Point>& points,
+                                                            const std::vector<double>& cumulativeDistances,
+                                                            const double pointDistance);
+
         /// @brief Check polygon has a valid state and initialise it.
         void Initialise();
 
