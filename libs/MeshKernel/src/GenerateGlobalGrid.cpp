@@ -1,5 +1,6 @@
 #include "MeshKernel/GenerateGlobalGrid.hpp"
 #include <cmath>
+#include <iostream>
 
 double meshkernel::GenerateGlobalGrid::getDeltaY(const double y, const double deltaX)
 {

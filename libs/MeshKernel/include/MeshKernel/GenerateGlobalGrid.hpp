@@ -27,15 +27,11 @@
 
 #pragma once
 #include <array>
-#include <ranges>
 #include <utility>
-#include <vector>
 
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
-#include "MeshKernel/Polygon.hpp"
 
 namespace meshkernel
 {
