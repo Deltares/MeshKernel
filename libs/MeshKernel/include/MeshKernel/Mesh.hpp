@@ -28,6 +28,7 @@
 #pragma once
 
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
@@ -91,23 +92,6 @@ namespace meshkernel
             Mesh1D, ///< Mesh1D
             Mesh2D  ///< Mesh2D
         };
-
-        /// @enum Location
-        /// @brief Mesh locations enumeration
-        enum class Location
-        {
-            Faces = 0,  ///< Faces
-            Nodes = 1,  ///< Nodes
-            Edges = 2,  ///< Edges
-            Unknown = 3 ///< Unknown
-        };
-
-        /// @brief Maps Location enumeration to a string
-        inline static std::map<Location, std::string> const LocationToString = {
-            {Location::Faces, "Faces"},
-            {Location::Nodes, "Nodes"},
-            {Location::Edges, "Edges"},
-            {Location::Unknown, "Unknown"}};
 
         /// @brief Default constructor
         Mesh() = default;

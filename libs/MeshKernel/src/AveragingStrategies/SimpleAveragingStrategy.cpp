@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <algorithm>
+
 #include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
 
 namespace meshkernel::averaging
@@ -32,14 +34,13 @@ namespace meshkernel::averaging
 
     SimpleAveragingStrategy::SimpleAveragingStrategy(size_t minNumSamples) : m_minNumPoints(minNumSamples) {}
 
-    void SimpleAveragingStrategy::Add(Point const& /*samplePoint*/, double const sampleValue)
+    double SimpleAveragingStrategy::Calculate(const Point& interpolationPoint [[maybe_unused]],
+                                              const std::vector<Sample>& samples) const
     {
-        m_result += sampleValue;
-        m_nAdds += 1;
+        auto sumSampleValue = [](double value, const Sample& sample)
+        { return value + sample.value; };
+        double result = std::accumulate(samples.begin(), samples.end(), 0.0, sumSampleValue);
+        return samples.size() >= m_minNumPoints ? result / static_cast<double>(samples.size()) : constants::missing::doubleValue;
     }
 
-    double SimpleAveragingStrategy::Calculate() const
-    {
-        return m_nAdds >= m_minNumPoints ? m_result / static_cast<double>(m_nAdds) : constants::missing::doubleValue;
-    }
 } // namespace meshkernel::averaging

@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,22 +30,25 @@
 
 namespace meshkernel::averaging
 {
-    ClosestAveragingStrategy::ClosestAveragingStrategy(Point const& interpolationPoint,
-                                                       Projection const projection) : m_interpolationPoint(interpolationPoint),
-                                                                                      m_projection(projection) {}
+    ClosestAveragingStrategy::ClosestAveragingStrategy(Projection const projection) : m_projection(projection) {}
 
-    void ClosestAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
+    double ClosestAveragingStrategy::Calculate(const Point& interpolationPoint,
+                                               const std::vector<Sample>& samples) const
     {
-        if (const auto squaredDistance = ComputeSquaredDistance(m_interpolationPoint, samplePoint, m_projection);
-            squaredDistance < m_closestSquaredValue)
+        double result = constants::missing::doubleValue;
+        double closestSquaredValue = std::numeric_limits<double>::max();
+
+        for (UInt i = 0; i < samples.size(); ++i)
         {
-            m_closestSquaredValue = squaredDistance;
-            m_result = sampleValue;
+            if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samples[i], m_projection);
+                squaredDistance < closestSquaredValue)
+            {
+                closestSquaredValue = squaredDistance;
+                result = samples[i].value;
+            }
         }
+
+        return result;
     }
 
-    double ClosestAveragingStrategy::Calculate() const
-    {
-        return m_result;
-    }
 } // namespace meshkernel::averaging

@@ -238,8 +238,8 @@ namespace meshkernel
         if (polygons->GetProjection() != m_projection)
         {
             throw AlgorithmError("Polygon projection ({}) is not equal to curvilinear grid projection ({})",
-                                 ToString(polygons->GetProjection()),
-                                 ToString(m_projection));
+                                 ProjectionToString(polygons->GetProjection()),
+                                 ProjectionToString(m_projection));
         }
 
         // Compute the bounding box
