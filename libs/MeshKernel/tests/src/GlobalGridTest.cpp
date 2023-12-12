@@ -3,17 +3,16 @@
 #include <random>
 
 #include "MeshKernel/Constants.hpp"
-#include "MeshKernel/GenerateGlobalGrid.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh2DGenerateGlobalGrid.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
-namespace mk = meshkernel;
-
 TEST(GlobalGridTest, BasicTest)
 {
+    const std::vector<meshkernel::Point> polygonNodes{};
 
-    mk::Mesh2D mesh;
+    const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::sphericalAccurate);
 
-    mk::GenerateGlobalGrid::Compute(192, 250, mesh);
+    const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(192, 250, polygon);
 }

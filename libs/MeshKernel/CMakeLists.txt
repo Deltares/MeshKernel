@@ -35,13 +35,13 @@ set(
   ${SRC_DIR}/Definitions.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
-  ${SRC_DIR}/GenerateGlobalGrid.cpp
   ${SRC_DIR}/Hessian.cpp
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
+  ${SRC_DIR}/Mesh2DGenerateGlobalGrid.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
@@ -118,6 +118,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobalGrid.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp

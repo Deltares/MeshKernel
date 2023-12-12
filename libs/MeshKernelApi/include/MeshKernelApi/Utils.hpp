@@ -39,6 +39,7 @@
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <stdexcept>
 #include <vector>
 

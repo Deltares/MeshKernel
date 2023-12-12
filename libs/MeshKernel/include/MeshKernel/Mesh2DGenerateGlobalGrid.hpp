@@ -36,21 +36,17 @@
 namespace meshkernel
 {
 
-    class GenerateGlobalGrid
+    class Mesh2DGenerateGlobalGrid
     {
     public:
-        // TODO may be better to return mesh rather than void
-        // nx and ny are number of elements in each direction
-        static void Compute(const UInt nx, const UInt ny, Mesh2D& mesh);
+        static Mesh2D Compute(const UInt nx, const UInt ny, const Polygons& polygon);
 
     private:
-        static double getDeltaY(const double y, const double deltaX);
+        static double getDeltaLatitude(const double y, const double deltaX);
 
-        static void isNodeDB(const Mesh& mesh, const Point& x, UInt& kp);
+        static UInt getNodeIndexFromPosition(const Mesh& mesh, const Point& x);
 
-        static void addMaze(Mesh& mesh, const std::array<Point, 8>& points, const double ySign, const UInt pointSize, const bool jafive);
-
-        static void mergenodesinpolygon(Mesh2D& mesh);
+        static void addMaze(Mesh& mesh, const std::array<Point, 8>& points, const double ySign, const UInt pointSize);
     };
 
 } // namespace meshkernel
