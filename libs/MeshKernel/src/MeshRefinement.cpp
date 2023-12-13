@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -42,6 +44,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
       m_interpolant(interpolant)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
+    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
@@ -55,6 +58,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
       m_useNodalRefinement(useNodalRefinement)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
+    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
@@ -66,6 +70,7 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
       m_polygons(polygon)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
+    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
 }
 

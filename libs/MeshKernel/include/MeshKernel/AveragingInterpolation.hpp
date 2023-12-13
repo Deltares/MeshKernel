@@ -28,12 +28,10 @@
 #pragma once
 
 #include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshInterpolation.hpp"
-#include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 namespace meshkernel
 {
@@ -155,7 +153,7 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
-        RTree m_samplesRtree;                                     ///< The samples tree
+        std::shared_ptr<RTreeBase> m_samplesRtree;                ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel

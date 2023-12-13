@@ -30,9 +30,7 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
-
-#include <map>
+#include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -83,6 +81,7 @@ namespace meshkernel
     ///
     /// The public interface of the mesh class contains several algorithms,
     /// which modify the mesh class members when they are called.
+    ///
     class Mesh
     {
     public:
@@ -94,11 +93,11 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        Mesh() = default;
+        Mesh();
 
         /// @brief  Constructs an empty mesh, sets only the projection
         /// @param[in] projection  The projection to use
-        Mesh(Projection projection) : m_projection(projection) {}
+        Mesh(Projection projection);
 
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -326,13 +325,13 @@ namespace meshkernel
         Projection m_projection; ///< The projection used
 
         // counters
-        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
-        bool m_facesRTreeRequiresUpdate = true; ///< m_facesRTree requires an update
-        RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
-        RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
-        RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
-        BoundingBox m_boundingBoxCache;         ///< Caches the last bounding box used for selecting the locations
+        bool m_nodesRTreeRequiresUpdate = true;  ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true;  ///< m_edgesRTree requires an update
+        bool m_facesRTreeRequiresUpdate = true;  ///< m_facesRTree requires an update
+        std::shared_ptr<RTreeBase> m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
+        std::shared_ptr<RTreeBase> m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
+        std::shared_ptr<RTreeBase> m_facesRTree; ///< Spatial R-Tree used to inquire face circumcenters
+        BoundingBox m_boundingBoxCache;          ///< Caches the last bounding box used for selecting the locations
 
         // constants
         static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node

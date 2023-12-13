@@ -373,7 +373,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
 }
 
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
@@ -395,7 +395,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Nodes);
 
     // After deleting a node, the nodes RTree is reduced
-    ASSERT_EQ(3, mesh->m_nodesRTree.Size());
+    ASSERT_EQ(3, mesh->m_nodesRTree->Size());
 }
 
 TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -417,7 +417,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
 }
 
 TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -436,7 +436,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // deleting an edge produces an edges rtree of size 3
-    ASSERT_EQ(3, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(3, mesh->m_edgesRTree->Size());
 }
 
 TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
@@ -445,7 +445,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // By default, no nodesRTree is build
-    ASSERT_EQ(0, mesh->m_nodesRTree.Size());
+    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
     mesh->BuildTree(meshkernel::Location::Nodes);
@@ -453,10 +453,10 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
 
     // m_nodesRTree is build
-    ASSERT_EQ(4, mesh->m_nodesRTree.Size());
+    ASSERT_EQ(4, mesh->m_nodesRTree->Size());
 
     // m_edgesRTree is not build when searching for nodes
-    ASSERT_EQ(0, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(0, mesh->m_edgesRTree->Size());
 }
 
 TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
@@ -470,10 +470,10 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
 
     // m_nodesRTree is not build when searching for edges
-    ASSERT_EQ(0, mesh->m_nodesRTree.Size());
+    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
 
     // m_edgesRTree is build
-    ASSERT_EQ(4, mesh->m_edgesRTree.Size());
+    ASSERT_EQ(4, mesh->m_edgesRTree->Size());
 }
 
 TEST(Mesh, GetObtuseTriangles)

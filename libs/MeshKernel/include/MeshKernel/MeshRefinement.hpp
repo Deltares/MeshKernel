@@ -30,7 +30,7 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include <MeshKernel/Utilities/RTreeBase.hpp>
 
 namespace meshkernel
 {
@@ -219,7 +219,7 @@ namespace meshkernel
         /// @brief Compute which edge will be below the minimum size after refinement
         void ComputeEdgeBelowMinSizeAfterRefinement();
 
-        RTree m_samplesRTree; ///< The sample node RTree
+        std::shared_ptr<RTreeBase> m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;                           ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;                           ///< If 0, edge is not split

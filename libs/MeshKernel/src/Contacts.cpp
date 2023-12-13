@@ -5,6 +5,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Contacts;
 
@@ -377,8 +378,8 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     m_mesh1d->AdministrateNodesEdges();
 
     // build mesh2d face circumcenters r-tree
-    RTree faceCircumcentersRTree;
-    faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
+    const auto faceCircumcentersRTree = RTreeFactory::create(m_mesh2d->m_projection);
+    faceCircumcentersRTree->BuildTree(m_mesh2d->m_facesCircumcenters);
 
     // get the indices
     const auto facePolygonIndices = polygons.PointsInPolygons(m_mesh2d->m_facesCircumcenters);
@@ -408,11 +409,11 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
         }
 
         // compute the nearest 2d face indices
-        faceCircumcentersRTree.SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
+        faceCircumcentersRTree->SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
 
-        for (UInt f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        for (UInt f = 0; f < faceCircumcentersRTree->GetQueryResultSize(); ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryResult(f);
+            const auto face = faceCircumcentersRTree->GetQueryResult(f);
 
             // the face is already marked as invalid, nothing to do
             if (!isValidFace[face])

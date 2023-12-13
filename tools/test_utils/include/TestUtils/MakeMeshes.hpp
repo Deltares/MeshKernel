@@ -28,7 +28,6 @@
 #pragma once
 #include <filesystem>
 #include <memory>
-#include <string>
 
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>

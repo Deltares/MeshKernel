@@ -40,6 +40,11 @@
 
 using meshkernel::Mesh2D;
 
+Mesh2D::Mesh2D()
+    : Mesh()
+{
+}
+
 Mesh2D::Mesh2D(Projection projection)
     : Mesh(projection)
 {

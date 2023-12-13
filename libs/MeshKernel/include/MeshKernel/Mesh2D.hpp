@@ -70,7 +70,7 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        Mesh2D() = default;
+        Mesh2D();
 
         /// @brief Construct a mesh2d using only the projection
         /// @param[in] projection The projection to use

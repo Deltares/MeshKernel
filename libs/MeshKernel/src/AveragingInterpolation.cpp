@@ -25,12 +25,12 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
 
 using meshkernel::AveragingInterpolation;
 
@@ -50,6 +50,7 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_transformSamples(transformSamples),
       m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(method, minNumSamples, m_mesh.m_projection))
 {
+    m_samplesRtree = RTreeFactory::create(m_mesh.m_projection);
     m_interpolationSampleCache.reserve(DefaultMaximumCacheSize);
 }
 
@@ -60,9 +61,9 @@ void AveragingInterpolation::Compute()
         throw AlgorithmError("AveragingInterpolation::Compute: No samples available.");
     }
 
-    if (m_samplesRtree.Empty())
+    if (m_samplesRtree->Empty())
     {
-        m_samplesRtree.BuildTree(m_samples);
+        m_samplesRtree->BuildTree(m_samples);
     }
 
     if (m_interpolationLocation == Location::Nodes || m_interpolationLocation == Location::Edges)
@@ -125,9 +126,9 @@ void AveragingInterpolation::Compute()
             {
                 // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
                 // it is difficult to do it otherwise without sharing or caching the query result
-                for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
+                for (UInt i = 0; i < m_samplesRtree->GetQueryResultSize(); ++i)
                 {
-                    if (const auto sample = m_samplesRtree.GetQueryResult(i); !visitedSamples[sample])
+                    if (const auto sample = m_samplesRtree->GetQueryResult(i); !visitedSamples[sample])
                     {
                         visitedSamples[sample] = true;
                         m_samples[sample].value -= 1;
@@ -186,7 +187,7 @@ double AveragingInterpolation::GetSearchRadiusSquared(std::vector<Point> const& 
 
 double AveragingInterpolation::GetSampleValueFromRTree(UInt const index)
 {
-    auto const sample_index = m_samplesRtree.GetQueryResult(index);
+    auto sample_index = m_samplesRtree->GetQueryResult(index);
     return m_samples[sample_index].value;
 }
 
@@ -195,9 +196,9 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
 {
     m_interpolationSampleCache.clear();
 
-    for (UInt i = 0; i < m_samplesRtree.GetQueryResultSize(); ++i)
+    for (UInt i = 0; i < m_samplesRtree->GetQueryResultSize(); ++i)
     {
-        auto const sampleIndex = m_samplesRtree.GetQueryResult(i);
+        auto const sampleIndex = m_samplesRtree->GetQueryResult(i);
         auto const sampleValue = m_samples[sampleIndex].value;
 
         if (sampleValue <= constants::missing::doubleValue)
@@ -234,13 +235,13 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
         throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon search radius <= 0");
     }
 
-    m_samplesRtree.SearchPoints(interpolationPoint, searchRadiusSquared);
-    if (!m_samplesRtree.HasQueryResults() && m_useClosestSampleIfNoneAvailable)
+    m_samplesRtree->SearchPoints(interpolationPoint, searchRadiusSquared);
+    if (!m_samplesRtree->HasQueryResults() && m_useClosestSampleIfNoneAvailable)
     {
-        m_samplesRtree.SearchNearestPoint(interpolationPoint);
-        return m_samplesRtree.HasQueryResults() ? GetSampleValueFromRTree(0) : constants::missing::doubleValue;
+        m_samplesRtree->SearchNearestPoint(interpolationPoint);
+        return m_samplesRtree->HasQueryResults() ? GetSampleValueFromRTree(0) : constants::missing::doubleValue;
     }
-    if (m_samplesRtree.HasQueryResults())
+    if (m_samplesRtree->HasQueryResults())
     {
 
         return ComputeInterpolationResultFromNeighbors(interpolationPoint, searchPolygon);
