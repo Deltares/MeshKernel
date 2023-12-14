@@ -64,7 +64,7 @@ namespace meshkernel
             case Projection::sphericalAccurate:
                 return std::make_shared<RTree<bg::cs::geographic<bg::degree>>>();
             default:
-                throw std::invalid_argument("Invalid projection value: " + std::to_string(static_cast<int>(projection)));
+                throw std::invalid_argument("Invalid projection value!");
             }
         }
     };

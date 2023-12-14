@@ -704,7 +704,7 @@ void Mesh::SearchNearestLocation(Point point, Location meshLocation)
     }
 }
 
-void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)
+void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation) const
 {
     switch (meshLocation)
     {

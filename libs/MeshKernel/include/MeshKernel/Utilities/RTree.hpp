@@ -289,8 +289,7 @@ namespace meshkernel
             throw AlgorithmError("RTree is empty, deletion cannot performed");
         }
 
-        const auto numberRemoved = m_rtree2D.remove(m_points[position]);
-        if (numberRemoved != 1)
+        if (const auto numberRemoved = m_rtree2D.remove(m_points[position]); numberRemoved != 1)
         {
             return;
         }

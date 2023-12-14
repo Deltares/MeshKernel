@@ -262,7 +262,7 @@ namespace meshkernel
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
+        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation) const;
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.
