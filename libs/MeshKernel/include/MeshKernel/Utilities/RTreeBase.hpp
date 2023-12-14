@@ -36,6 +36,7 @@ namespace meshkernel
     class RTreeBase
     {
     public:
+        /// @brief Virtual destructor
         virtual ~RTreeBase() = default;
 
         /// @brief Builds the tree from a vector of Points
