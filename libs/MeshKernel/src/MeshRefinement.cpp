@@ -41,10 +41,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
-      m_interpolant(interpolant)
+      m_interpolant(interpolant),
+      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
-    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
@@ -55,10 +55,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                bool useNodalRefinement)
     : m_mesh(mesh),
       m_interpolant(interpolant),
-      m_useNodalRefinement(useNodalRefinement)
+      m_useNodalRefinement(useNodalRefinement),
+      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
-    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
     m_refinementType = static_cast<RefinementType>(m_meshRefinementParameters.refinement_type);
 }
@@ -67,10 +67,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
                                const MeshRefinementParameters& meshRefinementParameters)
     : m_mesh(mesh),
-      m_polygons(polygon)
+      m_polygons(polygon),
+      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
-    m_samplesRTree = RTreeFactory::create(m_mesh->m_projection);
     m_meshRefinementParameters = meshRefinementParameters;
 }
 
@@ -225,7 +225,6 @@ void MeshRefinement::ComputeRefinementMaskFromEdgeSize()
 
 meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
 {
-
     UInt numRemovedIsolatedHangingNodes = 0;
     for (UInt e = 0; e < m_mesh->GetNumEdges(); ++e)
     {
@@ -978,7 +977,6 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
                                                              size_t& numberOfEdgesToRefine,
                                                              std::vector<UInt>& edgeToRefine) const
 {
-
     double maxEdgeLength = 0.0;
     UInt numEdges = m_mesh->GetNumFaceEdges(face);
 
@@ -1011,7 +1009,6 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
 void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 {
-
     if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
     {
         return;

@@ -72,22 +72,22 @@ namespace meshkernel
     public:
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector<Point>(nodes);
+            BuildTreeFromVector(nodes);
         }
 
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector<Sample>(samples);
+            BuildTreeFromVector(samples);
         }
 
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithBoundingBox<Point>(nodes, boundingBox);
+            BuildTreeFromVectorWithBoundingBox(nodes, boundingBox);
         }
 
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithBoundingBox<Point>(samples, boundingBox);
+            BuildTreeFromVectorWithBoundingBox(samples, boundingBox);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -115,9 +115,11 @@ namespace meshkernel
 
             m_queryIndices.reserve(m_queryCache.size());
             m_queryIndices.clear();
-            for (const auto& [first, second] : m_queryCache)
+
+            for (size_t i = 0; i < m_queryCache.size(); ++i)
             {
-                m_queryIndices.emplace_back(second);
+                auto const index = std::get<1>(m_queryCache[i]);
+                m_queryIndices.emplace_back(index);
             }
         }
 
@@ -220,7 +222,7 @@ namespace meshkernel
                     m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                 }
             }
-            m_rtree2D = RTree2D(m_points.begin(), m_points.end());
+            m_rtree2D = RTree2D(m_points);
         }
 
         /// @brief Builds the tree with nodes
@@ -244,7 +246,7 @@ namespace meshkernel
                     m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                 }
             }
-            m_rtree2D = RTree2D(m_points.begin(), m_points.end());
+            m_rtree2D = RTree2D(m_points);
         }
 
         RTree2D m_rtree2D;                              ///< The 2D RTree

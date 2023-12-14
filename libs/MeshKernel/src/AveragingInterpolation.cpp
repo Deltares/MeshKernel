@@ -48,9 +48,9 @@ AveragingInterpolation::AveragingInterpolation(Mesh2D& mesh,
       m_relativeSearchRadius(relativeSearchRadius),
       m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
       m_transformSamples(transformSamples),
+      m_samplesRtree(RTreeFactory::create(mesh.m_projection)),
       m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(method, minNumSamples, m_mesh.m_projection))
 {
-    m_samplesRtree = RTreeFactory::create(m_mesh.m_projection);
     m_interpolationSampleCache.reserve(DefaultMaximumCacheSize);
 }
 

@@ -88,10 +88,8 @@ void TriangulationInterpolation::Compute()
         trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
-    const auto samplesRtree = std::make_shared<RTree<bg::cs::cartesian>>();
-    ;
-    // RTreeFactory::create(m_projection);
-    //  samplesRtree->BuildTree(trianglesCircumcenters);
+    const auto samplesRtree = RTreeFactory::create(m_projection);
+    samplesRtree->BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
     const auto boundingBox = BoundingBox(m_samples);

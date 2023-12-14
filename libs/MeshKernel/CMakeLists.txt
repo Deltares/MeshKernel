@@ -284,30 +284,6 @@ if(ENABLE_BENCHMARKING)
   add_subdirectory(benchmark)
 endif()
 
-# Set the variable rtree_test to the executable name
-set(RTREE_EXE_NAME rtree_test)
-
-# Define the sources for the executable
-set(RTREE_EXE_SRC_LIST
-    rtree_test.cpp
-)
-
-# Add the executable target and specify its sources
-add_executable(${RTREE_EXE_NAME} ${RTREE_EXE_SRC_LIST})
-
-
-# add sources to target
-target_sources(
-  ${RTREE_EXE_NAME}
-  PRIVATE
-    ${RTREE_EXE_SRC_LIST}
-)
-
-# Include directories, use PRIVATE if Boost is only needed internally in the target
-target_include_directories(${RTREE_EXE_NAME} PUBLIC ${Boost_INCLUDE_DIR})
-
-# Link against any necessary libraries, assuming RTREE_EXE_NAME depends on Boost
-target_link_libraries(${RTREE_EXE_NAME} ${Boost_LIBRARIES})
 
 
 

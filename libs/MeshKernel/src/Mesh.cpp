@@ -37,33 +37,33 @@
 
 using meshkernel::Mesh;
 
-Mesh::Mesh() : m_projection(Projection::cartesian)
+Mesh::Mesh() : Mesh(Projection::cartesian)
 {
-    m_nodesRTree = RTreeFactory::create(m_projection);
-    m_edgesRTree = RTreeFactory::create(m_projection);
-    m_facesRTree = RTreeFactory::create(m_projection);
 }
 
-Mesh::Mesh(meshkernel::Projection projection) : m_projection(projection)
+Mesh::Mesh(Projection projection) : m_projection(projection),
+                                    m_nodesRTree(RTreeFactory::create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::create(m_projection)),
+                                    m_facesRTree(RTreeFactory::create(m_projection))
 {
-    m_nodesRTree = RTreeFactory::create(m_projection);
-    m_edgesRTree = RTreeFactory::create(m_projection);
-    m_facesRTree = RTreeFactory::create(m_projection);
 }
 
 Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
-           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection)
+           Projection projection) : m_nodes(nodes),
+                                    m_edges(edges),
+                                    m_projection(projection),
+                                    m_nodesRTree(RTreeFactory::create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::create(m_projection)),
+                                    m_facesRTree(RTreeFactory::create(m_projection))
+
 {
-    m_nodesRTree = RTreeFactory::create(m_projection);
-    m_edgesRTree = RTreeFactory::create(m_projection);
-    m_facesRTree = RTreeFactory::create(m_projection);
 }
 
 bool Mesh::NodeAdministration()
 {
     // assume no duplicated links
-    for (UInt e = 0; e < static_cast<UInt>(GetNumEdges()); e++)
+    for (UInt e = 0; e < GetNumEdges(); e++)
     {
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
@@ -73,7 +73,7 @@ bool Mesh::NodeAdministration()
             continue;
         }
 
-        if (m_nodesNumEdges[firstNode] >= Mesh::m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= Mesh::m_maximumNumberOfEdgesPerNode)
+        if (m_nodesNumEdges[firstNode] >= m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= m_maximumNumberOfEdgesPerNode)
         {
             continue;
         }
@@ -247,7 +247,7 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
     }
 
     // add all valid edges starting at secondNode
-    std::vector<UInt> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
+    std::vector<UInt> secondNodeEdges(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
