@@ -39,10 +39,9 @@ using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
-                               const MeshRefinementParameters& meshRefinementParameters)
-    : m_mesh(mesh),
-      m_interpolant(interpolant),
-      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
+                               const MeshRefinementParameters& meshRefinementParameters) : m_samplesRTree(RTreeFactory::create(mesh->m_projection)),
+                                                                                           m_mesh(mesh),
+                                                                                           m_interpolant(interpolant)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
@@ -52,11 +51,10 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                std::shared_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters,
-                               bool useNodalRefinement)
-    : m_mesh(mesh),
-      m_interpolant(interpolant),
-      m_useNodalRefinement(useNodalRefinement),
-      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
+                               bool useNodalRefinement) : m_samplesRTree(RTreeFactory::create(mesh->m_projection)),
+                                                          m_mesh(mesh),
+                                                          m_interpolant(interpolant),
+                                                          m_useNodalRefinement(useNodalRefinement)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
@@ -65,10 +63,9 @@ MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
 
 MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                const Polygons& polygon,
-                               const MeshRefinementParameters& meshRefinementParameters)
-    : m_mesh(mesh),
-      m_polygons(polygon),
-      m_samplesRTree(RTreeFactory::create(mesh->m_projection))
+                               const MeshRefinementParameters& meshRefinementParameters) : m_samplesRTree(RTreeFactory::create(mesh->m_projection)),
+                                                                                           m_mesh(mesh),
+                                                                                           m_polygons(polygon)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_meshRefinementParameters = meshRefinementParameters;
