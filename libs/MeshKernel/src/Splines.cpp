@@ -113,14 +113,14 @@ void Splines::DeleteSpline(UInt splineIndex)
 
 void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 {
-    if (firstSpline >= m_splineNodes.size ())
+    if (firstSpline >= m_splineNodes.size())
     {
         throw meshkernel::ConstraintError("Invalid first spline index: {}, not in range 0 .. {}",
                                           firstSpline,
                                           GetNumSplines() - 1);
     }
 
-    if (secondSpline >= m_splineNodes.size ())
+    if (secondSpline >= m_splineNodes.size())
     {
         throw meshkernel::ConstraintError("Invalid second spline index: {}, not in range 0 .. {}",
                                           secondSpline,
