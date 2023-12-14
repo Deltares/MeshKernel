@@ -239,11 +239,11 @@ namespace meshkernel
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
 
-        std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolation> m_interpolant;           ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                        ///< Polygons
-        MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
-        bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
-        const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
+        std::shared_ptr<Mesh2D> m_mesh;                      ///< Pointer to the mesh
+        std::shared_ptr<MeshInterpolation> m_interpolant;    ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                 ///< Polygons
+        MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
+        bool m_useNodalRefinement = false;                   ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001;              ///< The distance for merging two edges
     };
 } // namespace meshkernel
