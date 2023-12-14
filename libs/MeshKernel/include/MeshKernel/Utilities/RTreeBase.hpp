@@ -32,7 +32,7 @@
 
 namespace meshkernel
 {
-
+    /// @brief RTree interface
     class RTreeBase
     {
     public:
