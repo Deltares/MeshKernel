@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <memory>
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
