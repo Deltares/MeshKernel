@@ -52,15 +52,38 @@ namespace meshkernel
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
 
-    /// @brief Class used for inquiring adjacent nodes.
+    /// @brief Class used for inquiring adjacent nodes in a mesh.
     ///
-    /// The mesh class stores two RTree class instances, used for inquiring the closest mesh nodes and edge to a point.
-    /// RTree is a class wrapping the boost::geometry::index::rtree code,
-    /// adding an interface for performing common queries
-    /// such as inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::SearchPoints`)
-    /// or a vector of the nearest neighbors (`meshkernel::RTree::SearchNearestPoint`).
-    /// RTee has a `m_queryCache`, a vector used for collecting all query results
-    /// and avoid frequent re-allocations when the number of results changes.
+    /// The RTree class is designed for querying adjacent nodes within a mesh.
+    /// It encapsulates the boost::geometry::index::rtree functionality and extends it with a user-friendly
+    /// interface to perform common spatial queries. This class is templated on the projection type,
+    /// allowing flexibility in the geometric coordinate system used (default is bg::cs::cartesian).
+    ///
+    /// @tparam projection The geometric coordinate system projection (default is bg::cs::cartesian).
+    ///
+    /// The RTree class is primarily utilized within the mesh library for efficiently querying
+    /// the closest mesh nodes and edges to a specified point. It employs the RTreeBase class as its base.
+    ///
+    /// Internally, the RTree class maintains a query cache (`m_queryCache`) which is a vector used
+    /// to collect and store query results. This design helps optimize performance by avoiding frequent
+    /// reallocations when the number of results changes between queries.
+    ///
+    /// Example usage:
+    /// @code
+    /// // Create an RTree instance with the default Cartesian projection.
+    /// RTree<> cartesianRTree;
+    ///
+    /// // Perform a search for the nearest neighbors within a specified distance.
+    /// auto resultPoints = cartesianRTree.SearchPoints(queryPoint, searchDistance);
+    ///
+    /// // Perform a search for the single nearest neighbor.
+    /// auto nearestPoint = cartesianRTree.SearchNearestPoint(queryPoint);
+    /// @endcode
+    ///
+    /// Note: For advanced use cases and different geometric coordinate systems, users can provide
+    /// a custom projection template parameter when instantiating the RTree class.
+    ///
+    /// For more details on available query methods, refer to the base class documentation: meshkernel::RTreeBase.
     template <typename projection = bg::cs::cartesian>
     class RTree : public RTreeBase
     {

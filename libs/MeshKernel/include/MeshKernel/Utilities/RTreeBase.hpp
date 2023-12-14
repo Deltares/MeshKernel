@@ -29,10 +29,6 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
-
-// r-tree
-// https://gist.github.com/logc/10272165
 
 namespace meshkernel
 {
@@ -42,12 +38,22 @@ namespace meshkernel
     public:
         virtual ~RTreeBase() = default;
 
+        /// @brief Builds the tree from a vector of Points
+        /// @param[in] nodes The vector of nodes
         virtual void BuildTree(const std::vector<Point>& nodes) = 0;
 
+        /// @brief Builds the tree from a vector of samples
+        /// @param[in] samples The vector of samples
         virtual void BuildTree(const std::vector<Sample>& samples) = 0;
 
+        /// @brief Builds the tree from a vector of points within a bounding box
+        /// @param[in] nodes The vector of nodes
+        /// @param[in] boundingBox The vector bounding box
         virtual void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) = 0;
 
+        /// @brief Builds the tree from a vector of samples within a bounding box
+        /// @param[in] samples The vector of samples
+        /// @param[in] boundingBox The vector bounding box
         virtual void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) = 0;
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later

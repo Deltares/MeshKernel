@@ -33,14 +33,26 @@
 #include <boost/geometry.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
-// r-tree
-// https://gist.github.com/logc/10272165
-
 namespace meshkernel
 {
-
+    /// @brief Factory class for creating instances of RTree with different projections.
     struct RTreeFactory
     {
+        /// @brief Creates and returns a shared pointer to an instance of RTree with the specified projection.
+        ///
+        /// @param projection The projection type for the RTree.
+        /// @return A shared pointer to the created RTree instance.
+        ///
+        /// This factory method creates an RTree instance based on the specified projection type.
+        /// The supported projections are Cartesian, Spherical, and SphericalAccurate.
+        ///
+        /// @code
+        /// auto cartesianRTree = RTreeFactory::create(Projection::cartesian);
+        /// auto sphericalRTree = RTreeFactory::create(Projection::spherical);
+        /// auto sphericalAccurateRTree = RTreeFactory::create(Projection::sphericalAccurate);
+        /// @endcode
+        ///
+        /// @throws std::invalid_argument if an invalid projection value is provided.
         static std::shared_ptr<RTreeBase> create(Projection projection)
         {
             switch (projection)
