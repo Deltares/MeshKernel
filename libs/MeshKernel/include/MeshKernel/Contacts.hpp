@@ -143,7 +143,7 @@ namespace meshkernel
 
         /// @brief checks whether contacts have been computed
         /// @return True if the contact is crossing an existing contact
-        [[nodiscard]] bool AreComputed() const { return m_areComputed; };
+        [[nodiscard]] bool AreComputed() const { return m_areComputed; }
 
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge

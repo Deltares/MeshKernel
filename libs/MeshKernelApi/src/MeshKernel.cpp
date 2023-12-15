@@ -2441,6 +2441,7 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
+            meshKernelState[meshKernelId].m_contacts = std::make_unique<meshkernel::Contacts>(*meshKernelState[meshKernelId].m_mesh1d, *meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeSingleContacts(meshKernel1DNodeMask, meshKernelPolygons, projectionFactor);
         }
         catch (...)
@@ -2467,6 +2468,7 @@ namespace meshkernelapi
                                                                         num1DNodes);
 
             // Execute
+            meshKernelState[meshKernelId].m_contacts = std::make_unique<meshkernel::Contacts>(*meshKernelState[meshKernelId].m_mesh1d, *meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeMultipleContacts(meshKernel1DNodeMask);
         }
         catch (...)
@@ -2499,6 +2501,7 @@ namespace meshkernelapi
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
+            meshKernelState[meshKernelId].m_contacts = std::make_unique<meshkernel::Contacts>(*meshKernelState[meshKernelId].m_mesh1d, *meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPolygons(meshKernel1DNodeMask,
                                                                                   meshKernelPolygons);
         }
@@ -2528,6 +2531,7 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Point vector
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
+            meshKernelState[meshKernelId].m_contacts = std::make_unique<meshkernel::Contacts>(*meshKernelState[meshKernelId].m_mesh1d, *meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeContactsWithPoints(meshKernel1DNodeMask, meshKernelPoints);
         }
         catch (...)
@@ -2620,6 +2624,7 @@ namespace meshkernelapi
             const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // Execute
+            meshKernelState[meshKernelId].m_contacts = std::make_unique<meshkernel::Contacts>(*meshKernelState[meshKernelId].m_mesh1d, *meshKernelState[meshKernelId].m_mesh2d);
             meshKernelState[meshKernelId].m_contacts->ComputeBoundaryContacts(meshKernel1DNodeMask, meshKernelPolygons, searchRadius);
         }
         catch (...)

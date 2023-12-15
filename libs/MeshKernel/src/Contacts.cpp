@@ -24,7 +24,6 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
                                      const Polygons& polygons,
                                      double projectionFactor)
 {
-    Validate();
 
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
@@ -35,6 +34,8 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
     }
 
     m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
 
     const auto node1dFaceIndices = m_mesh2d.PointFaceIndices(m_mesh1d.m_nodes);
     m_mesh1dIndices.reserve(m_mesh1d.m_nodes.size());
@@ -76,8 +77,6 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
                                                double projectionFactor)
 {
-    Validate();
-
     const auto projectedNode = m_mesh1d.ComputeProjectedNode(node, projectionFactor);
 
     const auto [intersectedFace, intersectedEdge] = m_mesh2d.IsSegmentCrossingABoundaryEdge(m_mesh1d.m_nodes[node], projectedNode);
@@ -94,8 +93,6 @@ void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
 bool Contacts::IsContactIntersectingMesh1d(UInt node,
                                            UInt face) const
 {
-    Validate();
-
     for (UInt e = 0; e < m_mesh1d.GetNumEdges(); ++e)
     {
 
@@ -122,8 +119,6 @@ bool Contacts::IsContactIntersectingMesh1d(UInt node,
 
 bool Contacts::IsContactIntersectingContact(UInt node, UInt face) const
 {
-    Validate();
-
     for (UInt i = 0; i < m_mesh1dIndices.size(); ++i)
     {
         const auto [areSegmentCrossing,
@@ -149,7 +144,6 @@ bool Contacts::IsContactIntersectingContact(UInt node, UInt face) const
 
 void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 {
-    Validate();
 
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
@@ -161,6 +155,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
 
     // compute the indices of the faces including the 1d nodes
     const auto node1dFaceIndices = m_mesh2d.PointFaceIndices(m_mesh1d.m_nodes);
@@ -250,8 +246,6 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
                                            const Polygons& polygons)
 {
-    Validate();
-
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
@@ -268,6 +262,7 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
 
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
+    Validate();
 
     // for each mesh2d face, store polygon index
     std::vector<UInt> facePolygonIndex(m_mesh2d.GetNumFaces(), constants::missing::uintValue);
@@ -322,8 +317,6 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
 void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
                                          const std::vector<Point>& points)
 {
-    Validate();
-
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
@@ -334,6 +327,9 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
     m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
+
     m_mesh1d.BuildTree(Location::Nodes);
 
     // find the face indices containing the 1d points
@@ -369,8 +365,6 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
                                        const Polygons& polygons,
                                        double searchRadius)
 {
-    Validate();
-
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
@@ -381,6 +375,8 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
 
     // build mesh2d face circumcenters r-tree
     const auto faceCircumcentersRTree = RTreeFactory::Create(m_mesh2d.m_projection);

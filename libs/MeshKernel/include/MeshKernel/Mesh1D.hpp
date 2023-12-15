@@ -43,6 +43,18 @@ namespace meshkernel
     {
 
     public:
+        /// @brief Delete assignment operator
+        Mesh1D& operator=(const Mesh1D& mesh1d) = delete;
+
+        /// @brief Delete move assignment operator
+        Mesh1D& operator=(Mesh1D&& mesh1d) = delete;
+
+        /// @brief Delete copy constructor taking only a mesh1d
+        explicit Mesh1D(const Mesh1D& mesh1d) = delete;
+
+        /// @brief Delete Move constructor taking only a mesh1d
+        explicit Mesh1D(Mesh1D&& mesh1d) = delete;
+
         /// @brief Default constructor
         Mesh1D() = default;
 
