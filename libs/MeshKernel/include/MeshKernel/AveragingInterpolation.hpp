@@ -153,7 +153,7 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
-        std::shared_ptr<RTreeBase> m_samplesRtree;                ///< The samples tree
+        std::unique_ptr<RTreeBase> m_samplesRtree;                ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel

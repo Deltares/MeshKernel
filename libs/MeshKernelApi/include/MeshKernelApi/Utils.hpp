@@ -338,8 +338,8 @@ namespace meshkernelapi
     /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
-    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                        const meshkernel::Projection& projection)
+    static std::unique_ptr<meshkernel::CurvilinearGrid> CreateRectangularCurvilinearGrid(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                         const meshkernel::Projection& projection)
     {
         meshkernel::CurvilinearGridRectangular grid(projection);
 
@@ -357,11 +357,11 @@ namespace meshkernelapi
     /// @param[in] geometryList       The polygon inside which generating the curvilinear grid
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
-    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridFromPolygons(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                                    const GeometryList& geometryList,
-                                                                                    const meshkernel::Projection& projection)
+    static std::unique_ptr<meshkernel::CurvilinearGrid> CreateRectangularCurvilinearGridFromPolygons(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                                     const GeometryList& geometryList,
+                                                                                                     const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridRectangular grid(projection);
+        const meshkernel::CurvilinearGridRectangular grid(projection);
 
         auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
 
@@ -378,10 +378,10 @@ namespace meshkernelapi
     /// @param[in] makeGridParameters The parameters for creating a rectangular curvilinear grid are as follows
     /// @param[in] projection         The projection tu use
     /// @returns The generated curvilinear grid
-    static meshkernel::CurvilinearGrid CreateRectangularCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
-                                                                                   const meshkernel::Projection& projection)
+    static std::unique_ptr<meshkernel::CurvilinearGrid> CreateRectangularCurvilinearGridOnExtension(const meshkernel::MakeGridParameters& makeGridParameters,
+                                                                                                    const meshkernel::Projection& projection)
     {
-        meshkernel::CurvilinearGridRectangular grid(projection);
+        const meshkernel::CurvilinearGridRectangular grid(projection);
 
         if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
         {

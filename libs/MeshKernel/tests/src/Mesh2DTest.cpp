@@ -169,9 +169,8 @@ TEST(Mesh2D, TwoTrianglesDuplicatedEdges)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh2D mesh;
     // 2 Execution
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -192,8 +191,7 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
@@ -227,8 +225,7 @@ TEST(Mesh2D, HangingEdge)
     edges.push_back({3, 0});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    auto const mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -272,8 +269,7 @@ TEST(Mesh2D, NodeMerging)
         }
     }
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
@@ -282,8 +278,8 @@ TEST(Mesh2D, NodeMerging)
     std::random_device rand_dev;
     std::mt19937 generator(rand_dev());
 
-    nodes.resize(mesh.GetNumNodes() * 2);
-    edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
+    nodes.resize(mesh->GetNumNodes() * 2);
+    edges.resize(mesh->GetNumEdges() + mesh->GetNumNodes() * 2);
     meshkernel::UInt originalNodeIndex = 0;
     for (meshkernel::UInt j = 0; j < m; ++j)
     {
@@ -292,7 +288,7 @@ TEST(Mesh2D, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            auto edge = mesh.m_edges[mesh.m_nodesEdges[originalNodeIndex][0]];
+            auto edge = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
             auto otherNode = edge.first + edge.second - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};
@@ -309,15 +305,15 @@ TEST(Mesh2D, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh.MergeNodesInPolygon(polygon, 0.001);
+    mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh.GetNumNodes(), n * m);
-    ASSERT_EQ(mesh.GetNumEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh2D, MillionQuads)
@@ -386,11 +382,10 @@ TEST(Mesh2D, GetObtuseTriangles)
         {0, 3},
         {3, 1}};
 
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, only one obtuse triangle should be found
-    const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
+    const auto obtuseTrianglesCount = mesh->GetObtuseTrianglesCenters().size();
 
     // assert a small flow edge is found
     ASSERT_EQ(1, obtuseTrianglesCount);
@@ -479,22 +474,21 @@ TEST(Mesh2D, DeleteHangingEdge)
     edges.push_back({2, 1});
 
     // Execute
-    meshkernel::Mesh2D mesh;
-    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
     // Assert
-    ASSERT_EQ(1, mesh.GetNumFaces());
-    ASSERT_EQ(4, mesh.GetNumEdges());
+    ASSERT_EQ(1, mesh->GetNumFaces());
+    ASSERT_EQ(4, mesh->GetNumEdges());
 
     // Execute
-    auto hangingEdges = mesh.GetHangingEdges();
+    auto hangingEdges = mesh->GetHangingEdges();
 
     // Assert
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh.DeleteHangingEdges();
-    hangingEdges = mesh.GetHangingEdges();
+    mesh->DeleteHangingEdges();
+    hangingEdges = mesh->GetHangingEdges();
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());

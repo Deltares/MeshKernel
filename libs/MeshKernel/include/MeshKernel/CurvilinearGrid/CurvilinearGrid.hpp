@@ -30,7 +30,6 @@
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
-#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -72,8 +71,14 @@ namespace meshkernel
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
+        /// @brief Delete assignment operator
+        CurvilinearGrid& operator=(const CurvilinearGrid& other) = delete;
+
+        /// @brief Copy constructor taking only a curvilinear grid
+        explicit CurvilinearGrid(const CurvilinearGrid& grid);
+
         /// @brief Constructor taking only a projection
-        CurvilinearGrid(Projection projection);
+        explicit CurvilinearGrid(Projection projection);
 
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points

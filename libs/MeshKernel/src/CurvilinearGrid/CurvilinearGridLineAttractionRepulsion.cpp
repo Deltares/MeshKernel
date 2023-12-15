@@ -35,7 +35,9 @@ using meshkernel::CurvilinearGridLineAttractionRepulsion;
 using meshkernel::Point;
 
 CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(CurvilinearGrid& grid,
-                                                                               double attractionFactor) : CurvilinearGridAlgorithm(grid), m_originalGrid(grid), m_attractionFactor(attractionFactor)
+                                                                               double attractionFactor) : CurvilinearGridAlgorithm(grid),
+                                                                                                          m_originalGrid(grid),
+                                                                                                          m_attractionFactor(attractionFactor)
 
 {
 }

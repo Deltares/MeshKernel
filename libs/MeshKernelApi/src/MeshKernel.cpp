@@ -209,19 +209,20 @@ namespace meshkernelapi
                 }
 
                 // Do not change the pointer, just the object it is pointing to
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
-                                                                             nodes2d,
-                                                                             face_nodes,
-                                                                             num_face_nodes,
-                                                                             meshKernelState[meshKernelId].m_projection);
+
+                meshKernelState[meshKernelId].m_mesh2d->m_nodes = nodes2d;
+                meshKernelState[meshKernelId].m_mesh2d->m_edges = edges2d;
+                meshKernelState[meshKernelId].m_mesh2d->m_projection = meshKernelState[meshKernelId].m_projection;
+                meshKernelState[meshKernelId].m_mesh2d->DoAdministrationGivenFaceNodesMapping(face_nodes, num_face_nodes);
             }
             else
             {
                 // Do not change the pointer, just the object it is pointing to
                 // Compute the faces
-                *meshKernelState[meshKernelId].m_mesh2d = meshkernel::Mesh2D(edges2d,
-                                                                             nodes2d,
-                                                                             meshKernelState[meshKernelId].m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->m_nodes = nodes2d;
+                meshKernelState[meshKernelId].m_mesh2d->m_edges = edges2d;
+                meshKernelState[meshKernelId].m_mesh2d->m_projection = meshKernelState[meshKernelId].m_projection;
+                meshKernelState[meshKernelId].m_mesh2d->DoAdministration();
             }
         }
         catch (...)
@@ -259,6 +260,8 @@ namespace meshkernelapi
                 {
                     num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
                 }
+
+                // Do not change the pointer, just the object it is pointing to
 
                 // Do not change the pointer, just the object it is pointing to
                 *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
@@ -299,9 +302,9 @@ namespace meshkernelapi
                                                                   mesh1d.node_y);
 
             // Do not change the pointer, just the object it is pointing to
-            *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d,
-                                                                         nodes1d,
-                                                                         meshKernelState[meshKernelId].m_projection);
+            meshKernelState[meshKernelId].m_mesh1d->m_nodes = nodes1d;
+            meshKernelState[meshKernelId].m_mesh1d->m_edges = edges1d;
+            meshKernelState[meshKernelId].m_mesh1d->m_projection = meshKernelState[meshKernelId].m_projection;
         }
         catch (...)
         {
@@ -1116,7 +1119,7 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             const auto curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
         }
         catch (...)
@@ -1141,7 +1144,7 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             const auto curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
         }
         catch (...)
@@ -1165,7 +1168,7 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             auto const curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid.ConvertCurvilinearToNodesAndEdges();
+            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
         }
         catch (...)
@@ -2555,7 +2558,7 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            meshkernel::Mesh2D meshToConnect;
+            std::unique_ptr<meshkernel::Mesh2D> meshToConnect;
 
             if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
             {
@@ -2570,23 +2573,26 @@ namespace meshkernelapi
                     num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
                 }
 
-                meshToConnect = meshkernel::Mesh2D(edges2d,
-                                                   nodes2d,
-                                                   face_nodes,
-                                                   num_face_nodes,
-                                                   meshKernelState[meshKernelId].m_projection);
+                meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d,
+                                                                     nodes2d,
+                                                                     face_nodes,
+                                                                     num_face_nodes,
+                                                                     meshKernelState[meshKernelId].m_projection);
             }
             else
             {
                 // Do not change the pointer, just the object it is pointing to
                 // Compute the faces
-                meshToConnect = meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+                meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
             }
 
-            meshkernel::Mesh2D mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, meshToConnect);
+            const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
             meshkernel::ConnectMeshes connectMeshes;
-            connectMeshes.Compute(mergedMeshes, searchFraction);
-            *meshKernelState[meshKernelId].m_mesh2d = mergedMeshes;
+            connectMeshes.Compute(*mergedMeshes, searchFraction);
+            meshKernelState[meshKernelId].m_mesh2d->m_nodes = mergedMeshes->m_nodes;
+            meshKernelState[meshKernelId].m_mesh2d->m_edges = mergedMeshes->m_edges;
+            meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
         }
         catch (...)
         {
@@ -2923,9 +2929,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
-                CreateRectangularCurvilinearGrid(makeGridParameters,
-                                                 meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters, meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2946,10 +2950,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
-                CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
-                                                             geometryList,
-                                                             meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters,
+                                                                                                           geometryList,
+                                                                                                           meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -2969,9 +2972,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(
-                CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
-                                                            meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
+                                                                                                          meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -3198,7 +3200,7 @@ namespace meshkernelapi
             curvilinearGridSmoothing.SetLine(firstNode, secondNode);
             curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridSmoothing.ComputeDirectional());
+            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional();
         }
         catch (...)
         {
@@ -3445,7 +3447,7 @@ namespace meshkernelapi
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
             // curvilinear grid must be reset
-            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGrid();
+            meshKernelState[meshKernelId].m_curvilinearGrid = nullptr;
         }
         catch (...)
         {

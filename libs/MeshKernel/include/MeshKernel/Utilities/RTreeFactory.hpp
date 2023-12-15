@@ -53,16 +53,16 @@ namespace meshkernel
         /// @endcode
         ///
         /// @throws std::invalid_argument if an invalid projection value is provided.
-        static std::shared_ptr<RTreeBase> create(Projection projection)
+        static std::unique_ptr<RTreeBase> create(Projection projection)
         {
             switch (projection)
             {
             case Projection::cartesian:
-                return std::make_shared<RTree<bg::cs::cartesian>>();
+                return std::make_unique<RTree<bg::cs::cartesian>>();
             case Projection::spherical:
-                return std::make_shared<RTree<bg::cs::geographic<bg::degree>>>();
+                return std::make_unique<RTree<bg::cs::geographic<bg::degree>>>();
             case Projection::sphericalAccurate:
-                return std::make_shared<RTree<bg::cs::geographic<bg::degree>>>();
+                return std::make_unique<RTree<bg::cs::geographic<bg::degree>>>();
             default:
                 throw std::invalid_argument("Invalid projection value!");
             }

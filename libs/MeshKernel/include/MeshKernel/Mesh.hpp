@@ -86,6 +86,8 @@ namespace meshkernel
     class Mesh
     {
     public:
+        virtual ~Mesh() = default;
+
         /// @brief Enumerator describing the different mesh types
         enum class Type
         {
@@ -98,7 +100,13 @@ namespace meshkernel
 
         /// @brief  Constructs an empty mesh, sets only the projection
         /// @param[in] projection  The projection to use
-        Mesh(Projection projection);
+        explicit Mesh(Projection projection);
+
+        /// @brief Delete assignment operator
+        Mesh& operator=(const Mesh& mesh) = delete;
+
+        /// @brief Copy constructor taking only a mesh
+        explicit Mesh(const Mesh& mesh) = delete;
 
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -329,8 +337,8 @@ namespace meshkernel
         bool m_nodesRTreeRequiresUpdate = true;  ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true;  ///< m_edgesRTree requires an update
         bool m_facesRTreeRequiresUpdate = true;  ///< m_facesRTree requires an update
-        std::shared_ptr<RTreeBase> m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        std::shared_ptr<RTreeBase> m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
+        std::unique_ptr<RTreeBase> m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
+        std::unique_ptr<RTreeBase> m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
         std::shared_ptr<RTreeBase> m_facesRTree; ///< Spatial R-Tree used to inquire face circumcenters
         BoundingBox m_boundingBoxCache;          ///< Caches the last bounding box used for selecting the locations
 

@@ -72,9 +72,15 @@ namespace meshkernel
         /// @brief Default constructor
         Mesh2D();
 
+        /// @brief Delete assignment operator
+        Mesh2D& operator=(const Mesh2D& mesh2D) = delete;
+
+        /// @brief Copy constructor taking only a mesh2D
+        explicit Mesh2D(const Mesh2D& mesh2D) = delete;
+
         /// @brief Construct a mesh2d using only the projection
         /// @param[in] projection The projection to use
-        Mesh2D(Projection projection);
+        explicit Mesh2D(Projection projection);
 
         /// @brief Construct a mesh2d starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -312,7 +318,7 @@ namespace meshkernel
         /// Only merges the mesh connectivity graphs and updates indices.
         /// @note Does not do any administration on the node, edges or elements,
         /// it may be required to call Administrate after merging
-        static Mesh2D Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
+        static std::unique_ptr<Mesh2D> Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
 
         /// @brief Get the mesh bounding box
         ///
@@ -324,6 +330,16 @@ namespace meshkernel
         /// @return The mesh edges bounding boxes
         [[nodiscard]] std::vector<BoundingBox> GetEdgesBoundingBoxes() const;
 
+        /// @brief Perform complete administration
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
+        void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                                   const std::vector<UInt>& numFaceNodes);
+
+        /// @brief Perform complete administration
+        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        void DoAdministration();
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -334,16 +350,6 @@ namespace meshkernel
 
         /// @brief Bounded array for storing hanging node indices.
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
-
-        /// @brief Perform complete administration
-        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
-        void DoAdministration();
-
-        /// @brief Perform complete administration
-        /// @param[in] faceNodes The input face nodes
-        /// @param[in] numFaceNodes For each face, the number of nodes
-        void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
