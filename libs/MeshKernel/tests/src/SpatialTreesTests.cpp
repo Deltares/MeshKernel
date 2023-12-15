@@ -21,7 +21,7 @@ TEST(RTree, RTreeRemovePoint)
         }
     }
 
-    const auto rtree = meshkernel::RTreeFactory::create(meshkernel::Projection::cartesian);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
     rtree->BuildTree(nodes);
     rtree->DeleteNode(0);
     ASSERT_EQ(rtree->Size(), 15);
@@ -43,7 +43,7 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     }
 
     auto start(std::chrono::steady_clock::now());
-    const auto rtree = meshkernel::RTreeFactory::create(meshkernel::Projection::cartesian);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
     rtree->BuildTree(nodes);
 
     auto end = std::chrono::steady_clock::now();
@@ -77,7 +77,7 @@ TEST(RTree, SearchPoints_MustComputeCorrectQuerySize)
         }
     }
 
-    const auto rtree = meshkernel::RTreeFactory::create(meshkernel::Projection::cartesian);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
     rtree->BuildTree(nodes);
 
     // large search size, node found
@@ -105,7 +105,7 @@ TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
     points.push_back({20.0, 20.0});
     points.push_back({-20.0, 10.0});
 
-    const auto rtree = meshkernel::RTreeFactory::create(meshkernel::Projection::cartesian);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
 
     // 2 Execute
     rtree->BuildTree(points, boundingBox);

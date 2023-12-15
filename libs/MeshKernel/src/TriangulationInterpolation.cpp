@@ -88,7 +88,7 @@ void TriangulationInterpolation::Compute()
         trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
-    const auto samplesRtree = RTreeFactory::create(m_projection);
+    const auto samplesRtree = RTreeFactory::Create(m_projection);
     samplesRtree->BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box

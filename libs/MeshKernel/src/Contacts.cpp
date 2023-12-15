@@ -378,7 +378,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     m_mesh1d->AdministrateNodesEdges();
 
     // build mesh2d face circumcenters r-tree
-    const auto faceCircumcentersRTree = RTreeFactory::create(m_mesh2d->m_projection);
+    const auto faceCircumcentersRTree = RTreeFactory::Create(m_mesh2d->m_projection);
     faceCircumcentersRTree->BuildTree(m_mesh2d->m_facesCircumcenters);
 
     // get the indices

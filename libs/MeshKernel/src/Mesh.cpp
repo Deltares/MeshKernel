@@ -42,9 +42,9 @@ Mesh::Mesh() : Mesh(Projection::cartesian)
 }
 
 Mesh::Mesh(Projection projection) : m_projection(projection),
-                                    m_nodesRTree(RTreeFactory::create(m_projection)),
-                                    m_edgesRTree(RTreeFactory::create(m_projection)),
-                                    m_facesRTree(RTreeFactory::create(m_projection))
+                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
+                                    m_facesRTree(RTreeFactory::Create(m_projection))
 {
 }
 
@@ -53,9 +53,9 @@ Mesh::Mesh(const std::vector<Edge>& edges,
            Projection projection) : m_nodes(nodes),
                                     m_edges(edges),
                                     m_projection(projection),
-                                    m_nodesRTree(RTreeFactory::create(m_projection)),
-                                    m_edgesRTree(RTreeFactory::create(m_projection)),
-                                    m_facesRTree(RTreeFactory::create(m_projection))
+                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
+                                    m_facesRTree(RTreeFactory::Create(m_projection))
 
 {
 }
@@ -319,7 +319,7 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     filteredNodes.resize(filteredNodeCount);
 
     // Update the R-Tree of the mesh nodes
-    const auto nodesRtree = RTreeFactory::create(m_projection);
+    const auto nodesRtree = RTreeFactory::Create(m_projection);
     nodesRtree->BuildTree(filteredNodes);
 
     // merge the closest nodes
