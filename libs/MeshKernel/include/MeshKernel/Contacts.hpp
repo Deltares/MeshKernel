@@ -42,14 +42,10 @@ namespace meshkernel
     class Contacts
     {
     public:
-        /// @brief Default constructor
-        Contacts() = default;
-
         /// @brief Constructor taking the 1d and 2d meshes to connect
         /// @param[in] mesh1d       The mesh1d to connect
         /// @param[in] mesh2d       The mesh2d to connect
-        Contacts(std::shared_ptr<Mesh1D> mesh1d,
-                 std::shared_ptr<Mesh2D> mesh2d);
+        Contacts(Mesh1D& mesh1d, Mesh2D& mesh2d);
 
         /// @brief Computes 1d-2d contacts,
         /// where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll).
@@ -168,8 +164,11 @@ namespace meshkernel
         void Connect1dNodesWithCrossingFaces(UInt node,
                                              double projectionFactor);
 
-        std::shared_ptr<Mesh1D> m_mesh1d;  ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d;  ///< The 2-d mesh to connect
+        /// @brief Validate checking mesh1d and mesh2d are not empty, throws an exception otherwise
+        void Validate() const;
+
+        Mesh1D& m_mesh1d;                  ///< The 1-d mesh to connect
+        Mesh2D& m_mesh2d;                  ///< The 2-d mesh to connect
         std::vector<UInt> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
         std::vector<UInt> m_mesh2dIndices; ///< The indices of the connected 2-d faces
         bool m_areComputed = false;        ///< Indicates whether contacts have been computed

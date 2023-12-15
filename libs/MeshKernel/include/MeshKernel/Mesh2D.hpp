@@ -75,8 +75,14 @@ namespace meshkernel
         /// @brief Delete assignment operator
         Mesh2D& operator=(const Mesh2D& mesh2D) = delete;
 
-        /// @brief Copy constructor taking only a mesh2D
-        explicit Mesh2D(const Mesh2D& mesh2D) = delete;
+        /// @brief Delete move assignment operator
+        Mesh2D& operator=(Mesh2D&& mesh2D) = delete;
+
+        /// @brief Copy constructor taking a mesh2D
+        Mesh2D(const Mesh2D& mesh2D) = delete;
+
+        /// @brief Move constructor taking a mesh2D
+        Mesh2D(Mesh2D&& mesh2D) = delete;
 
         /// @brief Construct a mesh2d using only the projection
         /// @param[in] projection The projection to use
@@ -330,16 +336,6 @@ namespace meshkernel
         /// @return The mesh edges bounding boxes
         [[nodiscard]] std::vector<BoundingBox> GetEdgesBoundingBoxes() const;
 
-        /// @brief Perform complete administration
-        /// @param[in] faceNodes The input face nodes
-        /// @param[in] numFaceNodes For each face, the number of nodes
-        void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes);
-
-        /// @brief Perform complete administration
-        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
-        void DoAdministration();
-
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -389,6 +385,16 @@ namespace meshkernel
 
         /// @brief Resizes and initializes face vectors
         void ResizeAndInitializeFaceVectors();
+
+        /// @brief Perform complete administration
+        /// @param[in] faceNodes The input face nodes
+        /// @param[in] numFaceNodes For each face, the number of nodes
+        void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
+                                                   const std::vector<UInt>& numFaceNodes);
+
+        /// @brief Perform complete administration
+        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        void DoAdministration();
     };
 
 } // namespace meshkernel

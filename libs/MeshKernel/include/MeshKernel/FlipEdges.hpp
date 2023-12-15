@@ -49,8 +49,8 @@ namespace meshkernel
         /// @param[in] landBoundary          The land boundary
         /// @param[in] triangulateFaces      Whether to triangulate all faces or not
         /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
-        FlipEdges(std::shared_ptr<Mesh2D> mesh,
-                  std::shared_ptr<LandBoundaries> landBoundary,
+        FlipEdges(Mesh2D& mesh,
+                  LandBoundaries& landBoundary,
                   bool triangulateFaces,
                   bool projectToLandBoundary);
 
@@ -82,8 +82,8 @@ namespace meshkernel
         /// @param[in] nodeIndex The index of the node to process
         void DeleteEdgeFromNode(UInt edgeIndex, UInt nodeIndex) const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to the 2D mesh
-        std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to the land boundaries
+        Mesh2D& m_mesh;                         ///< A pointer to the 2D mesh
+        LandBoundaries& m_landBoundaries; ///< A pointer to the land boundaries
 
         bool m_triangulateFaces = false;      ///< Whether to triangulate faces
         bool m_projectToLandBoundary = false; ///< Whether to project to land boundary

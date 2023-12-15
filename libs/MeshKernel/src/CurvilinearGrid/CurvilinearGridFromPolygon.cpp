@@ -27,7 +27,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygon.hpp>
 
@@ -36,10 +35,10 @@ using meshkernel::CurvilinearGridFromPolygon;
 
 CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(const Polygon& polygon) : m_polygon(polygon) {}
 
-CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
-                                                    UInt secondNode,
-                                                    UInt thirdNode,
-                                                    bool useFourthSide) const
+std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstNode,
+                                                                     UInt secondNode,
+                                                                     UInt thirdNode,
+                                                                     bool useFourthSide) const
 {
     if (m_polygon.Size() < 4)
     {
@@ -214,12 +213,12 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
                                               polygonProjection, numMNodes - 1, numNNodes - 1);
 
-    return CurvilinearGrid(result, polygonProjection);
+    return std::make_unique<CurvilinearGrid>(result, polygonProjection);
 }
 
-CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
-                                                    UInt secondNode,
-                                                    UInt thirdNode) const
+std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstNode,
+                                                                     UInt secondNode,
+                                                                     UInt thirdNode) const
 {
     if (m_polygon.Size() < 4)
     {
@@ -430,5 +429,5 @@ CurvilinearGrid CurvilinearGridFromPolygon::Compute(UInt firstNode,
         }
     }
 
-    return CurvilinearGrid(gridNodes, polygonProjection);
+    return std::make_unique<CurvilinearGrid>(gridNodes, polygonProjection);
 }

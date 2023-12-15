@@ -145,7 +145,7 @@ namespace meshkernel
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
                                                     Point const& interpolationPoint) const;
 
-        Mesh2D& m_mesh;                                 ///< Pointer to the mesh
+        Mesh2D& m_mesh;                                 ///< Reference to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
         Location m_interpolationLocation;               ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius

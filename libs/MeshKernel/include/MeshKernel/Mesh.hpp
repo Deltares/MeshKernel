@@ -105,8 +105,14 @@ namespace meshkernel
         /// @brief Delete assignment operator
         Mesh& operator=(const Mesh& mesh) = delete;
 
+        /// @brief Delete move assignment operator
+        Mesh& operator=(Mesh&& mesh) = delete;
+
         /// @brief Copy constructor taking only a mesh
         explicit Mesh(const Mesh& mesh) = delete;
+
+        /// @brief Move constructor taking only a mesh
+        Mesh(Mesh&& mesh) = delete;
 
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
@@ -270,7 +276,7 @@ namespace meshkernel
         /// @param[in] point The reference point.
         /// @param[in] squaredRadius the squared value of the radius.
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation) const;
+        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
 
         /// @brief Search the nearest points within a radius to another point.
         /// @param[in] point The reference point.

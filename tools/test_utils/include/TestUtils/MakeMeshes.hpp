@@ -50,7 +50,7 @@ ComputeEdgesAndNodes(
     std::filesystem::path const& file_path,
     meshkernel::Mesh::Type meshType);
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double dim_x,
@@ -58,18 +58,18 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0});
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0});
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
+std::unique_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
     std::filesystem::path const& file_path,
     meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
-std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
+std::unique_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
     std::filesystem::path const& file_path,
     meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
@@ -84,9 +84,9 @@ MakeRectangularMeshForApiTesting(
     double delta,
     meshkernel::Point origin = {0.0, 0.0});
 
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
+std::unique_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+std::unique_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
 
 std::tuple<std::vector<double>,
            std::vector<double>,

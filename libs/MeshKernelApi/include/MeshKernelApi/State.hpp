@@ -48,25 +48,25 @@ namespace meshkernelapi
         /// @param[in] projection The projection to use
         MeshKernelState(meshkernel::Projection projection) : m_projection(projection)
         {
-            m_mesh1d = std::make_shared<meshkernel::Mesh1D>(projection);
-            m_mesh2d = std::make_shared<meshkernel::Mesh2D>(projection);
-            m_network1d = std::make_shared<meshkernel::Network1D>(projection);
-            m_contacts = std::make_shared<meshkernel::Contacts>(m_mesh1d, m_mesh2d);
-            m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(projection);
+            m_mesh1d = std::make_unique<meshkernel::Mesh1D>(projection);
+            m_mesh2d = std::make_unique<meshkernel::Mesh2D>(projection);
+            m_network1d = std::make_unique<meshkernel::Network1D>(projection);
+            m_contacts = std::make_unique<meshkernel::Contacts>(*m_mesh1d, *m_mesh2d);
+            m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>(projection);
         }
 
         // Geometrical entities instances
-        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
-        std::shared_ptr<meshkernel::Network1D> m_network1d;             ///< Shared pointer to meshkernel::Network1D instance
-        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
-        std::shared_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
-        std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
+        std::unique_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
+        std::unique_ptr<meshkernel::Network1D> m_network1d;             ///< Shared pointer to meshkernel::Network1D instance
+        std::unique_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
+        std::unique_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
+        std::unique_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
         // Algorithms instances (interactivity)
-        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;               ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
-        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
-        std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
-        std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
+        std::unique_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;               ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
+        std::unique_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
+        std::unique_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
+        std::unique_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
