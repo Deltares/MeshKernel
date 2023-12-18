@@ -88,8 +88,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a15523500465dc8015118b6c761df4d0a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#a15523500465dc8015118b6c761df4d0a">OrthogonalizationAndSmoothing</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_smoother.html">Smoother</a> &gt; smoother, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_orthogonalizer.html">Orthogonalizer</a> &gt; orthogonalizer, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &gt; polygon, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt; landBoundaries, <a class="el" href="classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29">LandBoundaries::ProjectToLandBoundaryOption</a> projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters)</td></tr>
-<tr class="separator:a15523500465dc8015118b6c761df4d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89453d9cdaf243e07ccb50831ae595c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#a89453d9cdaf243e07ccb50831ae595c7">OrthogonalizationAndSmoothing</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_smoother.html">Smoother</a> &gt; smoother, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_orthogonalizer.html">Orthogonalizer</a> &gt; orthogonalizer, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &gt; polygon, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt; landBoundaries, <a class="el" href="classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29">LandBoundaries::ProjectToLandBoundaryOption</a> projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters)</td></tr>
+<tr class="separator:a89453d9cdaf243e07ccb50831ae595c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac40b0272b753b40dd24a2d270b138991"><td class="memItemLeft" align="right" valign="top"><a id="ac40b0272b753b40dd24a2d270b138991"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#ac40b0272b753b40dd24a2d270b138991">Initialize</a> ()</td></tr>
 <tr class="memdesc:ac40b0272b753b40dd24a2d270b138991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the object. <br /></td></tr>
@@ -126,8 +126,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <li>An inner iteration: the resulting linear system is solved explicitly. The nodal coordinates are updated and the nodes moving on the mesh boundary are projected to the original mesh boundary (<code>OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary</code>). In case a projection to land boundary is requested, the mesh nodes are projected to the land boundaries. An OpenMP parallelization is used in <code><a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html#aaf52332adb61bb54610d43923a06566a" title="Performs an inner iteration, update the mesh node positions.">OrthogonalizationAndSmoothing::Solve</a></code> because the update of the nodal coordinates is made iteration-independent. </li>
 </ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a15523500465dc8015118b6c761df4d0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15523500465dc8015118b6c761df4d0a">&#9670;&nbsp;</a></span>OrthogonalizationAndSmoothing()</h2>
+<a id="a89453d9cdaf243e07ccb50831ae595c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89453d9cdaf243e07ccb50831ae595c7">&#9670;&nbsp;</a></span>OrthogonalizationAndSmoothing()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -135,31 +135,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_smoother.html">Smoother</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_smoother.html">Smoother</a> &gt;&#160;</td>
           <td class="paramname"><em>smoother</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_orthogonalizer.html">Orthogonalizer</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_orthogonalizer.html">Orthogonalizer</a> &gt;&#160;</td>
           <td class="paramname"><em>orthogonalizer</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &gt;&#160;</td>
           <td class="paramname"><em>polygon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt;&#160;</td>
           <td class="paramname"><em>landBoundaries</em>, </td>
         </tr>
         <tr>

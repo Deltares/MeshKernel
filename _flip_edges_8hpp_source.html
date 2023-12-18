@@ -117,8 +117,8 @@ $(function() {
 <div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_flip_edges.html">   44</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classmeshkernel_1_1_flip_edges.html#a181c0ec08211bb8ff109cb1d3fef2eae">FlipEdges</a>(std::shared_ptr&lt;Mesh2D&gt; mesh,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                  std::shared_ptr&lt;LandBoundaries&gt; landBoundary,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classmeshkernel_1_1_flip_edges.html#ad6ef8b75cd5146093bc4952c82a4c56a">FlipEdges</a>(<a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                  <a class="code" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a>&amp; landBoundary,</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                  <span class="keywordtype">bool</span> triangulateFaces,</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                  <span class="keywordtype">bool</span> projectToLandBoundary);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
@@ -135,8 +135,8 @@ $(function() {
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordtype">void</span> DeleteEdgeFromNode(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeIndex, <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;                   </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        std::shared_ptr&lt;LandBoundaries&gt; m_landBoundaries; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;                   </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <a class="code" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a>&amp; m_landBoundaries; </div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordtype">bool</span> m_triangulateFaces = <span class="keyword">false</span>;      </div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordtype">bool</span> m_projectToLandBoundary = <span class="keyword">false</span>; </div>
@@ -145,10 +145,12 @@ $(function() {
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_flip_edges_html"><div class="ttname"><a href="classmeshkernel_1_1_flip_edges.html">meshkernel::FlipEdges</a></div><div class="ttdoc">A class used to improve mesh connectivity.</div><div class="ttdef"><b>Definition:</b> FlipEdges.hpp:44</div></div>
-<div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:38</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:52</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_flip_edges_html_ad6ef8b75cd5146093bc4952c82a4c56a"><div class="ttname"><a href="classmeshkernel_1_1_flip_edges.html#ad6ef8b75cd5146093bc4952c82a4c56a">meshkernel::FlipEdges::FlipEdges</a></div><div class="ttdeci">FlipEdges(Mesh2D &amp;mesh, LandBoundaries &amp;landBoundary, bool triangulateFaces, bool projectToLandBoundary)</div><div class="ttdoc">Constructor.</div></div>
+<div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:37</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_flip_edges_html_ae527adee1fe9fadde1630d84a7bb6bcb"><div class="ttname"><a href="classmeshkernel_1_1_flip_edges.html#ae527adee1fe9fadde1630d84a7bb6bcb">meshkernel::FlipEdges::Compute</a></div><div class="ttdeci">void Compute() const</div><div class="ttdoc">Flip the edges.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_flip_edges_html_a181c0ec08211bb8ff109cb1d3fef2eae"><div class="ttname"><a href="classmeshkernel_1_1_flip_edges.html#a181c0ec08211bb8ff109cb1d3fef2eae">meshkernel::FlipEdges::FlipEdges</a></div><div class="ttdeci">FlipEdges(std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; LandBoundaries &gt; landBoundary, bool triangulateFaces, bool projectToLandBoundary)</div><div class="ttdoc">Constructor.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_land_boundaries_html"><div class="ttname"><a href="classmeshkernel_1_1_land_boundaries.html">meshkernel::LandBoundaries</a></div><div class="ttdoc">A class describing land boundaries. These are used to visualise the land-water interface.</div><div class="ttdef"><b>Definition:</b> LandBoundaries.hpp:46</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

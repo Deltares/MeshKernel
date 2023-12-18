@@ -88,13 +88,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a926fb2f9ed28702bcdcbc8b1d509b9fc"><td class="memItemLeft" align="right" valign="top"><a id="a926fb2f9ed28702bcdcbc8b1d509b9fc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc">Contacts</a> ()=default</td></tr>
-<tr class="memdesc:a926fb2f9ed28702bcdcbc8b1d509b9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
-<tr class="separator:a926fb2f9ed28702bcdcbc8b1d509b9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acce1f3d90156413b49b532ead3553492"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492">Contacts</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &gt; mesh1d, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh2d)</td></tr>
-<tr class="memdesc:acce1f3d90156413b49b532ead3553492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor taking the 1d and 2d meshes to connect.  <a href="classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492">More...</a><br /></td></tr>
-<tr class="separator:acce1f3d90156413b49b532ead3553492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa17c47cdb353019fb441cba2e9bb0b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#aeaa17c47cdb353019fb441cba2e9bb0b">Contacts</a> (<a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d, <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
+<tr class="memdesc:aeaa17c47cdb353019fb441cba2e9bb0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor taking the 1d and 2d meshes to connect.  <a href="classmeshkernel_1_1_contacts.html#aeaa17c47cdb353019fb441cba2e9bb0b">More...</a><br /></td></tr>
+<tr class="separator:aeaa17c47cdb353019fb441cba2e9bb0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70433c574488cf7db9600e63f9c37f5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a70433c574488cf7db9600e63f9c37f5e">ComputeSingleContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double projectionFactor)</td></tr>
 <tr class="memdesc:a70433c574488cf7db9600e63f9c37f5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a70433c574488cf7db9600e63f9c37f5e">More...</a><br /></td></tr>
 <tr class="separator:a70433c574488cf7db9600e63f9c37f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,8 +123,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>A class describing an 1d-2d contacts. </p>
 <p>The responsibility of the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">Contacts</a> class is connecting a 1d mesh to a 2d mesh. The class has a reference to the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> instances that will be connected. A contact is defined by the indices of the connected 1d node and 2d face. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="acce1f3d90156413b49b532ead3553492"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acce1f3d90156413b49b532ead3553492">&#9670;&nbsp;</a></span>Contacts()</h2>
+<a id="aeaa17c47cdb353019fb441cba2e9bb0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaa17c47cdb353019fb441cba2e9bb0b">&#9670;&nbsp;</a></span>Contacts()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,13 +132,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">meshkernel::Contacts::Contacts </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh1d</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh2d</em>&#160;</td>
         </tr>
         <tr>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['landboundaries_267',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, std::shared_ptr&lt; Mesh2D &gt; mesh, std::shared_ptr&lt; Polygons &gt; polygons)']]],
+  ['landboundaries_267',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a652ef2840cf3b59b78f6feab62858131',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, Mesh2D &amp;mesh, const Polygons &amp;polygons)']]],
   ['landboundary_268',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel::LandBoundary'],['../classmeshkernel_1_1_land_boundary.html#ad2e7d36dc35d8796461a33a0acb74cd6',1,'meshkernel::LandBoundary::LandBoundary()']]],
   ['length_269',['length',['../classmeshkernel_1_1_vector.html#ab3e9a44ab7c1e139b1364e53cf3060e8',1,'meshkernel::Vector']]],
   ['lengthsquared_270',['lengthSquared',['../classmeshkernel_1_1_vector.html#a062eee060772375fb9d67f2bd4a94b4c',1,'meshkernel::Vector']]],

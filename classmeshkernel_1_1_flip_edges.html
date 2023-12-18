@@ -88,9 +88,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a181c0ec08211bb8ff109cb1d3fef2eae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html#a181c0ec08211bb8ff109cb1d3fef2eae">FlipEdges</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt; landBoundary, bool triangulateFaces, bool projectToLandBoundary)</td></tr>
-<tr class="memdesc:a181c0ec08211bb8ff109cb1d3fef2eae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classmeshkernel_1_1_flip_edges.html#a181c0ec08211bb8ff109cb1d3fef2eae">More...</a><br /></td></tr>
-<tr class="separator:a181c0ec08211bb8ff109cb1d3fef2eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6ef8b75cd5146093bc4952c82a4c56a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html#ad6ef8b75cd5146093bc4952c82a4c56a">FlipEdges</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &amp;landBoundary, bool triangulateFaces, bool projectToLandBoundary)</td></tr>
+<tr class="memdesc:ad6ef8b75cd5146093bc4952c82a4c56a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="classmeshkernel_1_1_flip_edges.html#ad6ef8b75cd5146093bc4952c82a4c56a">More...</a><br /></td></tr>
+<tr class="separator:ad6ef8b75cd5146093bc4952c82a4c56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae527adee1fe9fadde1630d84a7bb6bcb"><td class="memItemLeft" align="right" valign="top"><a id="ae527adee1fe9fadde1630d84a7bb6bcb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html#ae527adee1fe9fadde1630d84a7bb6bcb">Compute</a> () const</td></tr>
 <tr class="memdesc:ae527adee1fe9fadde1630d84a7bb6bcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the edges. <br /></td></tr>
@@ -100,8 +100,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div class="textblock"><p>A class used to improve mesh connectivity. </p>
 <p>The edges are flipped in order to reduce the number of edges connected to a node The optimal number of edges to a node is six. If we additionally set <code>triangulateFaces</code>to true, that results in triangles of 60° in each angle and therefore a nearly ideal mesh. An additional option <code>projectToLandBoundary</code> defines whether we want to project to the land boundary. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a181c0ec08211bb8ff109cb1d3fef2eae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a181c0ec08211bb8ff109cb1d3fef2eae">&#9670;&nbsp;</a></span>FlipEdges()</h2>
+<a id="ad6ef8b75cd5146093bc4952c82a4c56a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6ef8b75cd5146093bc4952c82a4c56a">&#9670;&nbsp;</a></span>FlipEdges()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -109,13 +109,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">meshkernel::FlipEdges::FlipEdges </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a> &amp;&#160;</td>
           <td class="paramname"><em>landBoundary</em>, </td>
         </tr>
         <tr>
