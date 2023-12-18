@@ -1684,7 +1684,7 @@ void Mesh2D::DeleteHangingEdges()
     }
 }
 
-std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>& points) 
+std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>& points)
 {
     const auto numPoints = static_cast<UInt>(points.size());
     std::vector<UInt> result;

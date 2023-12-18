@@ -82,7 +82,7 @@ namespace meshkernel
         /// @param[in] nodeIndex The index of the node to process
         void DeleteEdgeFromNode(UInt edgeIndex, UInt nodeIndex) const;
 
-        Mesh2D& m_mesh;                         ///< A pointer to the 2D mesh
+        Mesh2D& m_mesh;                   ///< A pointer to the 2D mesh
         LandBoundaries& m_landBoundaries; ///< A pointer to the land boundaries
 
         bool m_triangulateFaces = false;      ///< Whether to triangulate faces
