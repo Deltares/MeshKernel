@@ -430,7 +430,10 @@ namespace meshkernel
             }
         }
 
-        assert(m_timeStep > 1e-8 && "time step is smaller than 1e-8!");
+        if (m_timeStep <= 1e-8)
+        {
+            throw AlgorithmError("time step is smaller than 1e-8 !");
+        }
     }
 
     std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints()
