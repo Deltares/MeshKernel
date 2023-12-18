@@ -1,7 +1,5 @@
 #include <array>
 #include <memory>
-#include <stdexcept>
-
 #include <netcdf.h>
 
 #include <TestUtils/MakeMeshes.hpp>
@@ -155,23 +153,23 @@ ComputeEdgesAndNodes(
     return {nodes, edges};
 }
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
+std::unique_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
     std::filesystem::path const& file_path,
     meshkernel::Projection projection)
 {
     const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh2D);
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
+    return std::make_unique<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
-std::shared_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
+std::unique_ptr<meshkernel::Mesh1D> ReadLegacyMesh1DFromFile(
     std::filesystem::path const& file_path,
     meshkernel::Projection projection)
 {
     const auto [nodes, edges] = ComputeEdgesAndNodes(file_path, meshkernel::Mesh::Type::Mesh1D);
-    return std::make_shared<meshkernel::Mesh1D>(edges, nodes, projection);
+    return std::make_unique<meshkernel::Mesh1D>(edges, nodes, projection);
 }
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double dim_x,
@@ -221,10 +219,10 @@ std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         }
     }
 
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
+    return std::make_unique<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
@@ -305,7 +303,7 @@ MakeRectangularMeshForApiTesting(
     return {numNodes, numEdges, nodeX, nodeY, edgeNodes};
 }
 
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+std::unique_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
@@ -343,10 +341,10 @@ std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFil
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }
 
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
+std::unique_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
 {
     std::vector<double> xCoordinates{777.2400642395231,
                                      776.8947176796199,
@@ -530,7 +528,7 @@ std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
-    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }
 
 /// @brief Make mesh with face nodes for API testing

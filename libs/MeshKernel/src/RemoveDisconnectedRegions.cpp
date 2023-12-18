@@ -1,6 +1,8 @@
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
+#include <queue>
+
 meshkernel::UInt meshkernel::RemoveDisconnectedRegions::GetNeighbour(const std::array<UInt, 2>& edge, const UInt elementId) const
 {
     if (elementId == constants::missing::uintValue)

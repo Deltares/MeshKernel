@@ -43,7 +43,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -135,7 +135,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     // Assert number of edges and nodes
@@ -236,7 +236,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -271,14 +271,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
         {410.981399284167, 505.55492288947},
         {399.638169557229, 504.294564030922}};
 
-    Polygons polygon(point, mesh->m_projection);
+    auto polygon = Polygons(point, mesh->m_projection);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // total number of edges
@@ -361,7 +361,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -431,7 +431,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -497,7 +497,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -551,14 +551,14 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
         {45.0, -10.0},
         {25.0, -10.0}};
 
-    Polygons polygon(point, mesh->m_projection);
+    const auto polygon = Polygons(point, mesh->m_projection);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
     meshRefinement.Compute();
 
@@ -609,14 +609,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
         {9.90983606557378, 34.3852459016394},
         {9.09836065573771, 34.016393442623}};
 
-    Polygons polygon(point, mesh->m_projection);
+    const auto polygon = Polygons(point, mesh->m_projection);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // assert on number of nodes and edges
@@ -656,7 +656,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters);
     meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());
@@ -703,8 +703,8 @@ TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
     meshRefinementParameters.refinement_type = 2;
 
     // Execute
-    Polygons polygon;
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    const auto polygon = Polygons();
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     // Assert, we passed from 36 to 49 nodes
@@ -733,8 +733,8 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    Polygons polygon;
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    const auto polygon = Polygons();
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     meshRefinement.Compute();
 
     mesh->ComputeEdgesLengths();
@@ -761,14 +761,14 @@ TEST(MeshRefinement, RefineElongatedFaces)
         {2038.27896800643, 1165.26385465465},
         {2018.73356016594, 1165.26385465465}};
 
-    Polygons polygon(point, mesh->m_projection);
+    const auto polygon = Polygons(point, mesh->m_projection);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
-    MeshRefinement meshRefinement(mesh, polygon, meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
     // Execute
     meshRefinement.Compute();
@@ -820,7 +820,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
@@ -847,7 +847,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
@@ -874,7 +874,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, true);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters, true);
 
     // Execute
     meshRefinement.Compute();
@@ -1034,7 +1034,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    MeshRefinement meshRefinement(mesh, interpolator, meshRefinementParameters, false);
+    MeshRefinement meshRefinement(*mesh, interpolator, meshRefinementParameters, false);
 
     // Execute
     meshRefinement.Compute();

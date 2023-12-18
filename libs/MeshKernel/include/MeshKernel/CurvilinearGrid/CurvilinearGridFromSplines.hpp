@@ -108,11 +108,11 @@ namespace meshkernel
         /// 5. Compute the edge velocities
         /// 6. Grow layers
         /// @returns The computed curvilinear grid
-        CurvilinearGrid Compute();
+        std::unique_ptr<CurvilinearGrid> Compute();
 
         /// @brief Computes the curvilinear grid from the mesh points
         /// @returns The computed curvilinear grid
-        CurvilinearGrid ComputeCurvilinearGridFromGridPoints();
+        std::unique_ptr<CurvilinearGrid> ComputeCurvilinearGridFromGridPoints();
 
         /// @brief Initialize the OrthogonalCurvilinearGrid algorithm.
         void Initialize();

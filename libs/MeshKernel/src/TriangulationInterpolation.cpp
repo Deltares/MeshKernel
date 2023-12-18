@@ -31,7 +31,7 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include <MeshKernel/Utilities/RTreeFactory.hpp>
 
 using meshkernel::TriangulationInterpolation;
 
@@ -88,8 +88,8 @@ void TriangulationInterpolation::Compute()
         trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
-    RTree samplesRtree;
-    samplesRtree.BuildTree(trianglesCircumcenters);
+    const auto samplesRtree = RTreeFactory::Create(m_projection);
+    samplesRtree->BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
     const auto boundingBox = BoundingBox(m_samples);
@@ -104,12 +104,12 @@ void TriangulationInterpolation::Compute()
         }
 
         // find the nearest triangle
-        samplesRtree.SearchNearestPoint(m_locations[n]);
-        if (!samplesRtree.HasQueryResults())
+        samplesRtree->SearchNearestPoint(m_locations[n]);
+        if (!samplesRtree->HasQueryResults())
         {
             continue;
         }
-        auto triangle = samplesRtree.GetQueryResult(0);
+        auto triangle = samplesRtree->GetQueryResult(0);
 
         // search for the triangle where the location is included
         bool isInTriangle = false;

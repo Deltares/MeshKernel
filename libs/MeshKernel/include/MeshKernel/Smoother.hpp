@@ -42,7 +42,7 @@ namespace meshkernel
     public:
         /// @brief Mesh2D constructor
         /// @brief mesh
-        explicit Smoother(std::shared_ptr<Mesh2D> mesh);
+        explicit Smoother(const Mesh2D& mesh);
 
         /// @brief Computes the smoother weights
         void Compute();
@@ -51,7 +51,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetWeight(UInt node, int connectedNode)
+        [[nodiscard]] auto GetWeight(UInt node, int connectedNode) const
         {
             return m_weights[node][connectedNode];
         }
@@ -60,7 +60,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetConnectedNodeIndex(UInt node, int connectedNode)
+        [[nodiscard]] auto GetConnectedNodeIndex(UInt node, int connectedNode) const
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -68,7 +68,7 @@ namespace meshkernel
         /// @brief Get number of connected nodes
         /// @brief node
         /// @returns
-        [[nodiscard]] auto GetNumConnectedNodes(UInt node)
+        [[nodiscard]] auto GetNumConnectedNodes(UInt node) const
         {
             return m_numConnectedNodes[node];
         }
@@ -129,7 +129,7 @@ namespace meshkernel
         void ComputeJacobian(UInt currentNode, std::vector<double>& J) const;
 
         // The mesh to smooth
-        std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
+        const Mesh2D& m_mesh; ///< A reference to mesh
 
         // Smoother weights
         std::vector<std::vector<double>> m_weights; ///< Weights
