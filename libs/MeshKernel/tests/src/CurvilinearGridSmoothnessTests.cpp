@@ -8,7 +8,7 @@
 
 namespace mk = meshkernel;
 
-meshkernel::CurvilinearGrid MakeMultiplicativeStretchedCurvilinearGrid(double originX, double originY, double deltaX, double deltaXIncrease, double deltaY, double deltaYIncrease, size_t nx, size_t ny)
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeMultiplicativeStretchedCurvilinearGrid(double originX, double originY, double deltaX, double deltaXIncrease, double deltaY, double deltaYIncrease, size_t nx, size_t ny)
 {
     double y = originY;
 
@@ -30,10 +30,10 @@ meshkernel::CurvilinearGrid MakeMultiplicativeStretchedCurvilinearGrid(double or
         deltaY *= deltaYIncrease;
     }
 
-    return meshkernel::CurvilinearGrid(points, meshkernel::Projection::cartesian);
+    return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
 }
 
-meshkernel::CurvilinearGrid MakeAdditiveStretchedCurvilinearGrid(double originX, double originY, double deltaX, double deltaXIncrease, double deltaY, double deltaYIncrease, size_t nx, size_t ny)
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeAdditiveStretchedCurvilinearGrid(double originX, double originY, double deltaX, double deltaXIncrease, double deltaY, double deltaYIncrease, size_t nx, size_t ny)
 {
     double y = originY;
 
@@ -55,7 +55,7 @@ meshkernel::CurvilinearGrid MakeAdditiveStretchedCurvilinearGrid(double originX,
         deltaY += deltaYIncrease;
     }
 
-    return meshkernel::CurvilinearGrid(points, meshkernel::Projection::cartesian);
+    return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
 }
 
 TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
@@ -69,13 +69,13 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
     constexpr size_t nx = 27;
     constexpr size_t ny = 13;
 
-    mk::CurvilinearGrid grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
     lin_alg::Matrix<double> smoothness;
 
     // First test smoothness in x-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -94,7 +94,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
 
     // Next test smoothness in y-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -121,18 +121,18 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
     constexpr size_t nx = 10;
     constexpr size_t ny = 20;
 
-    mk::CurvilinearGrid grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
-    grid.m_gridNodes(4, 4).SetInvalid();
-    grid.m_gridNodes(4, 5).SetInvalid();
-    grid.m_gridNodes(5, 4).SetInvalid();
-    grid.m_gridNodes(5, 5).SetInvalid();
+    grid->m_gridNodes(4, 4).SetInvalid();
+    grid->m_gridNodes(4, 5).SetInvalid();
+    grid->m_gridNodes(5, 4).SetInvalid();
+    grid->m_gridNodes(5, 5).SetInvalid();
 
     lin_alg::Matrix<double> smoothness;
 
     // First test smoothness in x-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -157,7 +157,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
 
     // Next test smoothness in y-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -193,13 +193,13 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGri
     constexpr size_t nx = 6;
     constexpr size_t ny = 6;
 
-    mk::CurvilinearGrid grid = MakeMultiplicativeStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeMultiplicativeStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
 
     lin_alg::Matrix<double> smoothness;
 
     // First test smoothness in x-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -218,7 +218,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGri
 
     // Next test smoothness in y-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -248,13 +248,13 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGri
     constexpr size_t nx = 6;
     constexpr size_t ny = 6;
 
-    mk::CurvilinearGrid grid = MakeMultiplicativeStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeMultiplicativeStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
 
     lin_alg::Matrix<double> smoothness;
 
     // First test smoothness in x-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -274,7 +274,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGri
 
     // Next test smoothness in y-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -305,7 +305,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
     constexpr size_t nx = 6;
     constexpr size_t ny = 6;
 
-    mk::CurvilinearGrid grid = MakeAdditiveStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeAdditiveStretchedCurvilinearGrid(originX, originY, deltaX, deltaXIncrease, deltaY, deltaYIncrease, nx, ny);
 
     // The expected smoothness for each of the test directions.
     std::vector<double> expectedSmoothnessX({-999.0, 2.25, 1.5555555555555555802, 1.3571428571428572063, 1.2631578947368420351, -999.0});
@@ -315,7 +315,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
 
     // First test smoothness in x-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -332,7 +332,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
 
     // Next test smoothness in y-direction
 
-    mk::CurvilinearGridSmoothness::Compute(grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
