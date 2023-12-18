@@ -68,23 +68,14 @@ namespace meshkernel
             Up
         };
 
-        /// @brief Default constructor
-        CurvilinearGrid() = default;
-
         /// @brief Default destructor
         ~CurvilinearGrid() override = default;
 
-        /// @brief Delete assignment operator
-        CurvilinearGrid& operator=(const CurvilinearGrid& other) = delete;
-
-        /// @brief Delete move assignment operator
-        CurvilinearGrid& operator=(CurvilinearGrid&& other) = delete;
+        /// @brief Default constructor
+        CurvilinearGrid() = default;
 
         /// @brief Copy constructor taking only a curvilinear grid
-        explicit CurvilinearGrid(const CurvilinearGrid& grid);
-
-        /// @brief Move constructor taking only a curvilinear grid
-        explicit CurvilinearGrid(CurvilinearGrid&& grid) = delete;
+        CurvilinearGrid(const CurvilinearGrid& grid);
 
         /// @brief Constructor taking only a projection
         explicit CurvilinearGrid(Projection projection);

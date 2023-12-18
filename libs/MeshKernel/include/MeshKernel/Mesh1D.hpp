@@ -43,27 +43,15 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Delete assignment operator
-        Mesh1D& operator=(const Mesh1D& mesh1d) = delete;
-
         /// @brief Default destructor
         ~Mesh1D() override = default;
-
-        /// @brief Delete move assignment operator
-        Mesh1D& operator=(Mesh1D&& mesh1d) = delete;
-
-        /// @brief Delete copy constructor taking only a mesh1d
-        explicit Mesh1D(const Mesh1D& mesh1d) = delete;
-
-        /// @brief Delete Move constructor taking only a mesh1d
-        explicit Mesh1D(Mesh1D&& mesh1d) = delete;
 
         /// @brief Default constructor
         Mesh1D() = default;
 
         /// @brief Construct a mesh1d using only the projection
         /// @param[in] projection The projection to use
-        Mesh1D(Projection projection);
+        explicit Mesh1D(Projection projection);
 
         /// @brief Construct a mesh1d starting from the edges and nodes
         /// @param[in] edges The input edges

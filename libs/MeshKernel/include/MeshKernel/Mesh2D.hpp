@@ -69,23 +69,11 @@ namespace meshkernel
             other
         };
 
-        /// @brief Default constructor
-        Mesh2D();
-
         /// @brief Default destructor
         ~Mesh2D() override = default;
 
-        /// @brief Delete assignment operator
-        Mesh2D& operator=(const Mesh2D& mesh2D) = delete;
-
-        /// @brief Delete move assignment operator
-        Mesh2D& operator=(Mesh2D&& mesh2D) = delete;
-
-        /// @brief Copy constructor taking a mesh2D
-        Mesh2D(const Mesh2D& mesh2D) = delete;
-
-        /// @brief Move constructor taking a mesh2D
-        Mesh2D(Mesh2D&& mesh2D) = delete;
+        /// @brief Default constructor
+        Mesh2D();
 
         /// @brief Construct a mesh2d using only the projection
         /// @param[in] projection The projection to use

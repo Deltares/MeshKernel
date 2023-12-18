@@ -86,8 +86,6 @@ namespace meshkernel
     class Mesh
     {
     public:
-        virtual ~Mesh() = default;
-
         /// @brief Enumerator describing the different mesh types
         enum class Type
         {
@@ -95,12 +93,11 @@ namespace meshkernel
             Mesh2D  ///< Mesh2D
         };
 
-        /// @brief Default constructor
-        Mesh();
+        /// @brief Define virtual destructor
+        virtual ~Mesh() = default;
 
-        /// @brief  Constructs an empty mesh, sets only the projection
-        /// @param[in] projection  The projection to use
-        explicit Mesh(Projection projection);
+        /// @brief Default constructor, setting a cartesian projection
+        Mesh();
 
         /// @brief Delete assignment operator
         Mesh& operator=(const Mesh& mesh) = delete;
@@ -109,10 +106,14 @@ namespace meshkernel
         Mesh& operator=(Mesh&& mesh) = delete;
 
         /// @brief Copy constructor taking only a mesh
-        explicit Mesh(const Mesh& mesh) = delete;
+        Mesh(const Mesh& mesh) = delete;
 
         /// @brief Move constructor taking only a mesh
         Mesh(Mesh&& mesh) = delete;
+
+        /// @brief  Constructs an empty mesh, sets only the projection
+        /// @param[in] projection  The projection to use
+        explicit Mesh(Projection projection);
 
         /// @brief Construct a mesh starting from the edges and nodes
         /// @param[in] edges The input edges
