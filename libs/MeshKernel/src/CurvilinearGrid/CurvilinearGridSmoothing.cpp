@@ -54,7 +54,7 @@ void CurvilinearGridSmoothing::Compute()
     }
 }
 
-CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()
+std::unique_ptr<CurvilinearGrid> CurvilinearGridSmoothing::ComputeDirectional()
 {
     if (m_lines.empty())
     {
@@ -90,7 +90,7 @@ CurvilinearGrid CurvilinearGridSmoothing::ComputeDirectional()
         SolveDirectional();
     }
 
-    return m_grid;
+    return std::make_unique<CurvilinearGrid>(m_grid);
 }
 
 void CurvilinearGridSmoothing::SolveDirectional()

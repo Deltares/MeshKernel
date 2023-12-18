@@ -21,23 +21,23 @@ TEST(LandBoundaries, OneLandBoundary)
         {510.295715, 438.923065},
         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto polygons = std::make_shared<meshkernel::Polygons>();
+    auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
+    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks
-    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoLandBoundaries)
@@ -58,10 +58,10 @@ TEST(LandBoundaries, TwoLandBoundaries)
         {518.873718, 421.415894},
         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto polygons = std::make_shared<meshkernel::Polygons>();
+    auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, *mesh, polygons);
     landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary);
 
     // Checks
@@ -90,10 +90,10 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
         {528.651428, 292.377380},
         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto polygons = std::make_shared<meshkernel::Polygons>();
+    auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, *mesh, polygons);
     landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks
@@ -126,10 +126,10 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
         {553.627319, 327.283539},
         {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto polygons = std::make_shared<meshkernel::Polygons>();
+    auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, *mesh, polygons);
     landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks

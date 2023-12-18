@@ -15,15 +15,15 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     // set landboundaries
-    auto polygon = std::make_shared<meshkernel::Polygons>();
+    auto polygon = meshkernel::Polygons();
     std::vector<meshkernel::Point> landBoundary{{-1.369282, 21.249086},
                                                 {20.885406, 21.539995},
                                                 {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto landBoundaries = meshkernel::LandBoundaries(landBoundary, *mesh, polygon);
 
     // execute flipedges
-    meshkernel::FlipEdges flipEdges(mesh, landBoundaries, true, true);
+    meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, true);
 
     flipEdges.Compute();
 
@@ -37,13 +37,13 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     // set landboundaries
-    auto polygon = std::make_shared<meshkernel::Polygons>();
+    auto polygon = meshkernel::Polygons();
 
     std::vector<meshkernel::Point> landBoundary;
-    auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+    auto landBoundaries = meshkernel::LandBoundaries(landBoundary, *mesh, polygon);
 
     // execute flipedges
-    meshkernel::FlipEdges flipEdges(mesh, landBoundaries, true, false);
+    meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);
 
     flipEdges.Compute();
 

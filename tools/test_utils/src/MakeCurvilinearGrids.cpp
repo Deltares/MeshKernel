@@ -38,7 +38,7 @@ size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvili
     return validNodes;
 }
 
-meshkernel::CurvilinearGrid MakeSmallCurvilinearGrid()
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
@@ -93,10 +93,10 @@ meshkernel::CurvilinearGrid MakeSmallCurvilinearGrid()
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return meshkernel::CurvilinearGrid(grid, meshkernel::Projection::cartesian);
+    return std::make_unique<CurvilinearGrid>(grid, Projection::cartesian);
 }
 
-meshkernel::CurvilinearGrid MakeSmallCurvilinearGridWithMissingFaces()
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissingFaces()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
@@ -134,8 +134,8 @@ meshkernel::CurvilinearGrid MakeSmallCurvilinearGridWithMissingFaces()
         Point{8.013393074394566065E+04, 3.666299991322114947E+05},
         Point{8.022657945494366868E+04, 3.666560012267631828E+05},
         Point{8.032039638097764691E+04, 3.666791259040951263E+05},
-        Point{meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
-        Point{meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+        Point{constants::missing::doubleValue, constants::missing::doubleValue},
+        Point{constants::missing::doubleValue, constants::missing::doubleValue},
         Point{8.062315126642497489E+04, 3.667184374811393791E+05},
         Point{8.073580093592485355E+04, 3.667174321629589540E+05},
         Point{8.084895945629126800E+04, 3.667167463103650953E+05},
@@ -151,10 +151,10 @@ meshkernel::CurvilinearGrid MakeSmallCurvilinearGridWithMissingFaces()
         Point{8.084783925515387091E+04, 3.665315881046829163E+05},
         Point{8.096094935050149797E+04, 3.665225607507624663E+05};
 
-    return meshkernel::CurvilinearGrid(grid, meshkernel::Projection::cartesian);
+    return std::make_unique<CurvilinearGrid>(grid, Projection::cartesian);
 }
 
-meshkernel::CurvilinearGrid MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
 {
     double y = originY;
 
@@ -173,5 +173,5 @@ meshkernel::CurvilinearGrid MakeCurvilinearGrid(double originX, double originY, 
         y += deltaY;
     }
 
-    return meshkernel::CurvilinearGrid(points, meshkernel::Projection::cartesian);
+    return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
 }

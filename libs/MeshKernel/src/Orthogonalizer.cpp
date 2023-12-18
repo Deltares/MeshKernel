@@ -34,30 +34,30 @@
 using meshkernel::Mesh2D;
 using meshkernel::Orthogonalizer;
 
-Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
+Orthogonalizer::Orthogonalizer(Mesh2D& mesh) : m_mesh(mesh)
 {
 }
 
 void Orthogonalizer::Compute()
 {
-    m_mesh->ComputeNodeNeighbours();
-    ResizeAndFill2DVector(m_weights, m_mesh->GetNumNodes(), m_mesh->m_maxNumNeighbours, true, 0.0);
-    ResizeAndFill2DVector(m_rhs, m_mesh->GetNumNodes(), 2, true, 0.0);
+    m_mesh.ComputeNodeNeighbours();
+    ResizeAndFill2DVector(m_weights, m_mesh.GetNumNodes(), m_mesh.m_maxNumNeighbours, true, 0.0);
+    ResizeAndFill2DVector(m_rhs, m_mesh.GetNumNodes(), 2, true, 0.0);
 
     // Compute mesh aspect ratios
-    m_mesh->ComputeAspectRatios(m_aspectRatios);
+    m_mesh.ComputeAspectRatios(m_aspectRatios);
 
-    for (UInt n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2)
+        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2)
         {
             continue;
         }
 
-        for (UInt nn = 0; nn < m_mesh->m_nodesNumEdges[n]; nn++)
+        for (UInt nn = 0; nn < m_mesh.m_nodesNumEdges[n]; nn++)
         {
 
-            const auto edgeIndex = m_mesh->m_nodesEdges[n][nn];
+            const auto edgeIndex = m_mesh.m_nodesEdges[n][nn];
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
@@ -69,7 +69,7 @@ void Orthogonalizer::Compute()
             // internal nodes
             m_weights[n][nn] = aspectRatio;
 
-            if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
+            if (!m_mesh.IsEdgeOnBoundary(edgeIndex))
             {
                 continue;
             }
@@ -78,17 +78,17 @@ void Orthogonalizer::Compute()
             m_weights[n][nn] = 0.5 * aspectRatio;
 
             // compute the edge length
-            Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
-            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
+            Point neighbouringNode = m_mesh.m_nodes[m_mesh.m_nodesNodes[n][nn]];
+            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh.m_nodes[n], m_mesh.m_projection);
 
-            const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
+            const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];
             bool flippedNormal;
             Point normal;
-            NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
+            NormalVectorInside(m_mesh.m_nodes[n], neighbouringNode, m_mesh.m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh.m_projection);
 
-            if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
+            if (m_mesh.m_projection == Projection::spherical && m_mesh.m_projection != Projection::sphericalAccurate)
             {
-                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
+                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh.m_nodes[n].y + neighbouringNode.y));
             }
 
             m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;

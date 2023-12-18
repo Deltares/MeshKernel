@@ -33,6 +33,8 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Polygons.hpp"
 
+#include <queue>
+
 namespace meshkernel
 {
     /// An intersection with a mesh edge

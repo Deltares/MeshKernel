@@ -47,8 +47,8 @@ TEST(TriangleInterpolation, TriangleInterpolation_OnNodesWithSphericalCoordinate
     ASSERT_NEAR(-999.00000000000000, interpolationResults[14], tolerance);
     ASSERT_NEAR(-999.00000000000000, interpolationResults[15], tolerance);
     ASSERT_NEAR(-999.00000000000000, interpolationResults[16], tolerance);
-    ASSERT_NEAR(1.4999190275429768, interpolationResults[17], tolerance);
-    ASSERT_NEAR(2.0000000000000000, interpolationResults[18], tolerance);
+    ASSERT_NEAR(1.5000000000000000, interpolationResults[17], tolerance);
+    ASSERT_NEAR(1.9998904698864137, interpolationResults[18], tolerance);
     ASSERT_NEAR(-999.00000000000000, interpolationResults[19], tolerance);
     ASSERT_NEAR(-999.00000000000000, interpolationResults[20], tolerance);
     ASSERT_NEAR(-999.00000000000000, interpolationResults[21], tolerance);

@@ -40,6 +40,11 @@
 
 using meshkernel::Mesh2D;
 
+Mesh2D::Mesh2D()
+    : Mesh()
+{
+}
+
 Mesh2D::Mesh2D(Projection projection)
     : Mesh(projection)
 {
@@ -137,7 +142,10 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    *this = Mesh2D(edges, inputNodes, projection);
+    m_edges = edges;
+    m_nodes = inputNodes;
+    m_projection = projection;
+    DoAdministration();
 }
 
 void Mesh2D::DoAdministration()
@@ -1954,7 +1962,7 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
     return constants::missing::uintValue;
 }
 
-meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
+std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 {
     if (mesh1.m_projection != mesh2.m_projection)
     {
@@ -1968,20 +1976,24 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 
     if ((mesh1.GetNumNodes() == 0 || mesh1.GetNumEdges() == 0) && (mesh2.GetNumNodes() > 0 && mesh2.GetNumEdges() > 0))
     {
-        return mesh2;
+        return std::make_unique<Mesh2D>(mesh2.m_edges,
+                                        mesh2.m_nodes,
+                                        mesh2.m_projection);
     }
 
     if ((mesh2.GetNumNodes() == 0 || mesh2.GetNumEdges() == 0) && (mesh1.GetNumNodes() > 0 && mesh1.GetNumEdges() > 0))
     {
-        return mesh1;
+        return std::make_unique<Mesh2D>(mesh1.m_edges,
+                                        mesh1.m_nodes,
+                                        mesh1.m_projection);
     }
 
     // Initialise with mesh1,
-    Mesh2D mergedMesh(mesh1);
+    Mesh2D mergedMesh(mesh1.m_edges, mesh1.m_nodes, mesh1.m_projection);
 
-    UInt mesh1NodeOffset = static_cast<UInt>(mesh1.m_nodes.size());
-    UInt mesh1EdgeOffset = static_cast<UInt>(mesh1.m_edges.size());
-    UInt mesh1FaceOffset = static_cast<UInt>(mesh1.m_numFacesNodes.size());
+    const auto mesh1NodeOffset = static_cast<UInt>(mesh1.m_nodes.size());
+    const auto mesh1EdgeOffset = static_cast<UInt>(mesh1.m_edges.size());
+    const auto mesh1FaceOffset = static_cast<UInt>(mesh1.m_numFacesNodes.size());
 
     // Merge node arrays
     mergedMesh.m_nodes.insert(mergedMesh.m_nodes.end(), mesh2.m_nodes.begin(), mesh2.m_nodes.end());
@@ -2080,7 +2092,9 @@ meshkernel::Mesh2D Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_edgesRTreeRequiresUpdate = true;
     mergedMesh.m_facesRTreeRequiresUpdate = true;
 
-    return mergedMesh;
+    return std::make_unique<Mesh2D>(mergedMesh.m_edges,
+                                    mergedMesh.m_nodes,
+                                    mergedMesh.m_projection);
 }
 
 meshkernel::BoundingBox Mesh2D::GetBoundingBox() const

@@ -50,7 +50,7 @@ namespace meshkernel
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
         /// @return The smoothed grid
-        CurvilinearGrid ComputeDirectional();
+        std::unique_ptr<CurvilinearGrid> ComputeDirectional();
 
     private:
         /// @brief Solve one iteration of block smoothing

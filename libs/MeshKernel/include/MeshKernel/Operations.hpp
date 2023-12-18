@@ -34,7 +34,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
