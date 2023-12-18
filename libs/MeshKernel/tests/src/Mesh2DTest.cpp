@@ -288,8 +288,8 @@ TEST(Mesh2D, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            auto edge = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
-            auto otherNode = edge.first + edge.second - originalNodeIndex;
+            const auto& [firstNode, secondNode] = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
+            auto otherNode = firstNode + secondNode - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};
             edgeIndex++;

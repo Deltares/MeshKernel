@@ -57,10 +57,11 @@ namespace meshkernel
         {
             switch (projection)
             {
-            case Projection::cartesian:
+                using enum Projection;
+            case cartesian:
                 return std::make_unique<RTree<bg::cs::cartesian>>();
-            case Projection::spherical:
-            case Projection::sphericalAccurate:
+            case spherical:
+            case sphericalAccurate:
                 return std::make_unique<RTree<bg::cs::geographic<bg::degree>>>();
             default:
                 throw MeshKernelError("Invalid projection '{}'", ProjectionToString(projection));
