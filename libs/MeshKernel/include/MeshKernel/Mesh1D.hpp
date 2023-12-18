@@ -39,12 +39,15 @@ namespace meshkernel
     ///
     /// A 1d mesh is composed of a series of connected edges
     /// representing 1d real word features, such as pipes or a sewage network.
-    class Mesh1D : public Mesh
+    class Mesh1D final : public Mesh
     {
 
     public:
         /// @brief Delete assignment operator
         Mesh1D& operator=(const Mesh1D& mesh1d) = delete;
+
+        /// @brief Default destructor
+        ~Mesh1D() override = default;
 
         /// @brief Delete move assignment operator
         Mesh1D& operator=(Mesh1D&& mesh1d) = delete;

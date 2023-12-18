@@ -49,7 +49,7 @@ namespace meshkernel
     /// When communicating with the client only unstructured meshes are used.
     /// Some algorithms generate curvilinear grids, but these are converted to a mesh
     /// instance when communicating with the client.
-    class Mesh2D : public Mesh
+    class Mesh2D final : public Mesh
     {
     public:
         /// Enumerator describing the different options to delete a mesh
@@ -71,6 +71,9 @@ namespace meshkernel
 
         /// @brief Default constructor
         Mesh2D();
+
+        /// @brief Default destructor
+        ~Mesh2D() override = default;
 
         /// @brief Delete assignment operator
         Mesh2D& operator=(const Mesh2D& mesh2D) = delete;

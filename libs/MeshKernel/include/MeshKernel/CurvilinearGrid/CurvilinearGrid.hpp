@@ -40,7 +40,7 @@
 namespace meshkernel
 {
     /// @brief A class representing a curvilinear grid
-    class CurvilinearGrid : public Mesh
+    class CurvilinearGrid final : public Mesh
     {
 
     public:
@@ -70,6 +70,9 @@ namespace meshkernel
 
         /// @brief Default constructor
         CurvilinearGrid() = default;
+
+        /// @brief Default destructor
+        ~CurvilinearGrid() override = default;
 
         /// @brief Delete assignment operator
         CurvilinearGrid& operator=(const CurvilinearGrid& other) = delete;
