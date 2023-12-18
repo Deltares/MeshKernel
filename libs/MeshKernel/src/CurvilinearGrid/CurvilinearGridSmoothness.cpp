@@ -7,7 +7,6 @@
 
 void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid, const int direction, lin_alg::Matrix<double>& smoothness)
 {
-
     smoothness.resize(grid.m_numM, grid.m_numN);
     smoothness.fill(constants::missing::doubleValue);
 
@@ -17,7 +16,7 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
         {
             for (UInt j = 0; j < grid.m_numN; ++j)
             {
-                smoothness(i, j) = ComputeSmoothness(grid.m_gridNodes(i - 1, j), grid.m_gridNodes(i, j), grid.m_gridNodes(i + 1, j));
+                smoothness(i, j) = ComputeNodeSmoothness(grid.m_gridNodes(i - 1, j), grid.m_gridNodes(i, j), grid.m_gridNodes(i + 1, j));
             }
         }
     }
@@ -27,32 +26,17 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
         {
             for (UInt j = 1; j < grid.m_numN - 1; ++j)
             {
-                smoothness(i, j) = ComputeSmoothness(grid.m_gridNodes(i, j - 1), grid.m_gridNodes(i, j), grid.m_gridNodes(i, j + 1));
+                smoothness(i, j) = ComputeNodeSmoothness(grid.m_gridNodes(i, j - 1), grid.m_gridNodes(i, j), grid.m_gridNodes(i, j + 1));
             }
         }
     }
 }
 
-double meshkernel::CurvilinearGridSmoothness::ComputeSmoothness(Point p0, Point p1, Point p2)
+double meshkernel::CurvilinearGridSmoothness::ComputeNodeSmoothness(const Point& p0, const Point& p1, const Point& p2)
 {
-
-    bool isValid = true;
-
-    if (!p0.IsValid())
-    {
-        isValid = false;
-        // p0 = p1;
-    }
-
-    if (!p2.IsValid())
-    {
-        isValid = false;
-        // p2 = p1;
-    }
-
     double nodeSmoothness = constants::missing::doubleValue;
 
-    if (p1.IsValid() && isValid)
+    if (p0.IsValid() && p1.IsValid() && p2.IsValid())
     {
         double diffX21 = p2.x - p1.x;
         double diffY21 = p2.y - p1.y;
@@ -71,6 +55,10 @@ double meshkernel::CurvilinearGridSmoothness::ComputeSmoothness(Point p0, Point 
             {
                 nodeSmoothness = 1.0 / nodeSmoothness;
             }
+        }
+        else
+        {
+            nodeSmoothness = 1.0;
         }
     }
 

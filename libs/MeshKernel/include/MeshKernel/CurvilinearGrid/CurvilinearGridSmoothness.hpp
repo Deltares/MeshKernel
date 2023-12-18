@@ -48,8 +48,8 @@ namespace meshkernel
         static void Compute(const CurvilinearGrid& grid, const int direction, lin_alg::Matrix<double>& smoothness);
 
     private:
-        /// @brief Compute the smoothness for three points.
-        static double ComputeSmoothness(Point p0, Point p1, Point p2);
+        /// @brief Compute the smoothness for the node.
+        static double ComputeNodeSmoothness(const Point& p0, const Point& p1, const Point& p2);
     };
 
 } // namespace meshkernel
