@@ -1,4 +1,5 @@
 #include "MeshKernel/Mesh2DGenerateGlobalGrid.hpp"
+#include <MeshKernel/Operations.hpp>
 #include <cmath>
 
 using namespace meshkernel::constants;
@@ -122,7 +123,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
 
         for (UInt j = 1; j <= numX; ++j)
         {
-            double currentLongitude = static_cast<double>(j - 1) * deltaLongitude + -180.0;
+            double currentLongitude = static_cast<double>(j) * deltaLongitude - 180.0;
 
             points[0] = {currentLongitude, currentLatitude};
 
