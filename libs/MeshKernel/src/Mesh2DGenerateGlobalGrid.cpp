@@ -3,22 +3,22 @@
 
 using namespace meshkernel::constants;
 
-double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double y, const double deltaX)
+double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
 {
 
-    double deltaY = deltaX * std::cos(conversion::degToRad * y);
+    double deltaLatitude = longitudeDiscretization * std::cos(conversion::degToRad * currentLatitude);
     constexpr UInt numIterations = 5;
     constexpr double tolerance = 1.0e-14;
 
     for (int i = 0; i < numIterations; ++i)
     {
-        double phi = conversion::degToRad * (y + 0.5 * deltaY);
+        double phi = conversion::degToRad * (currentLatitude + 0.5 * deltaLatitude);
         double c = std::cos(phi);
         double s = std::sqrt(1.0 - c * c);
-        double f = deltaY - deltaX * c;
-        double df = 1.0 + 0.5 * conversion::degToRad * deltaX * s;
+        double f = deltaLatitude - longitudeDiscretization * c;
+        double df = 1.0 + 0.5 * conversion::degToRad * longitudeDiscretization * s;
         double yd = f / df;
-        deltaY = deltaY - yd;
+        deltaLatitude = deltaLatitude - yd;
 
         if (yd < tolerance)
         {
@@ -26,7 +26,7 @@ double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double y, co
         }
     }
 
-    return deltaY;
+    return deltaLatitude;
 }
 
 meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(const Mesh& mesh, const Point& x)
@@ -46,37 +46,37 @@ meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(
 
 void meshkernel::Mesh2DGenerateGlobalGrid::addFace(Mesh& mesh,
                                                    const std::array<Point, 8>& points,
-                                                   const double ySign,
-                                                   const UInt pointCount)
+                                                   const double latitudeDirection,
+                                                   const UInt numNodes)
 {
-    std::array<UInt, 8> kk{};
+    std::array<UInt, 8> nodeIndices{};
 
-    for (UInt i = 0; i < pointCount; ++i)
+    for (UInt i = 0; i < numNodes; ++i)
     {
-        Point p = {points[i].x, ySign * points[i].y};
-        kk[i] = getNodeIndexFromPosition(mesh, p);
+        Point p = {points[i].x, latitudeDirection * points[i].y};
+        nodeIndices[i] = getNodeIndexFromPosition(mesh, p);
 
-        if (kk[i] == missing::uintValue)
+        if (nodeIndices[i] == missing::uintValue)
         {
-            kk[i] = mesh.InsertNode(p);
+            nodeIndices[i] = mesh.InsertNode(p);
         }
     }
 
-    for (UInt i = 0; i < pointCount; ++i)
+    for (UInt currentNode = 0; currentNode < numNodes; ++currentNode)
     {
-        UInt k2 = i + 1;
+        UInt nextNode = currentNode + 1;
 
-        if (i == pointCount - 1)
+        if (currentNode == numNodes - 1)
         {
-            k2 = 0;
+            nextNode = 0;
         }
-        mesh.ConnectNodes(kk[i], kk[k2]);
+        mesh.ConnectNodes(nodeIndices[currentNode], nodeIndices[nextNode]);
     }
 }
 
-meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX,
-                                                                 const UInt numY,
-                                                                 const Polygons& polygon)
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX,
+                                                                                  const UInt numY,
+                                                                                  const Polygons& polygon)
 {
     std::array<Point, 8> points;
 
@@ -87,7 +87,7 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX
     bool generationCompleted = false;
     UInt numberOfPoints;
 
-    Mesh2D mesh2d(Projection::sphericalAccurate);
+    auto mesh2d = std::make_unique<Mesh2D>(Projection::sphericalAccurate);
     constexpr double minDiscretizationLength = 30000.0;
 
     for (UInt i = 0; i < numY; ++i)
@@ -144,8 +144,8 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX
 
             if (points[2].x <= 180.0)
             {
-                addFace(mesh2d, points, 1.0, numberOfPoints);
-                addFace(mesh2d, points, -1.0, numberOfPoints);
+                addFace(*mesh2d, points, 1.0, numberOfPoints);
+                addFace(*mesh2d, points, -1.0, numberOfPoints);
             }
         }
 
@@ -157,24 +157,24 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX
         currentLatitude += deltaLatitude;
     }
 
-    mesh2d.MergeNodesInPolygon(polygon, 1e-3);
+    mesh2d->MergeNodesInPolygon(polygon, 1e-3);
 
     constexpr double tolerance = 1.0e-6;
-    for (UInt e = 0; e < mesh2d.GetNumEdges(); e++)
+    for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
     {
-        const auto& [firstNode, secondNode] = mesh2d.m_edges[e];
+        const auto& [firstNode, secondNode] = mesh2d->m_edges[e];
 
-        if ((mesh2d.m_nodesNumEdges[firstNode] == geometric::numNodesInPentagon || mesh2d.m_nodesNumEdges[firstNode] == geometric::numNodesInhaxagon) &&
-            (mesh2d.m_nodesNumEdges[secondNode] == geometric::numNodesInPentagon || mesh2d.m_nodesNumEdges[secondNode] == geometric::numNodesInhaxagon))
+        if ((mesh2d->m_nodesNumEdges[firstNode] == geometric::numNodesInPentagon || mesh2d->m_nodesNumEdges[firstNode] == geometric::numNodesInhaxagon) &&
+            (mesh2d->m_nodesNumEdges[secondNode] == geometric::numNodesInPentagon || mesh2d->m_nodesNumEdges[secondNode] == geometric::numNodesInhaxagon))
         {
-            if (IsEqual(mesh2d.m_nodes[firstNode].y, mesh2d.m_nodes[firstNode].y, tolerance))
+            if (IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
             {
-                mesh2d.DeleteEdge(e);
+                mesh2d->DeleteEdge(e);
             }
         }
     }
 
-    mesh2d.Administrate();
+    mesh2d->Administrate();
 
     return mesh2d;
 }

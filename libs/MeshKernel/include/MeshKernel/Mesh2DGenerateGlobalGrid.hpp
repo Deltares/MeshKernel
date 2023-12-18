@@ -44,7 +44,7 @@ namespace meshkernel
         /// @param [in] numX The Number of x points
         /// @param [in] numY The Number of y points
         /// @param [in] polygon The polygon where to generate the mesh
-        static Mesh2D Compute(const UInt numX, const UInt numY, const Polygons& polygon);
+        static std::unique_ptr<Mesh2D> Compute(const UInt numX, const UInt numY, const Polygons& polygon);
 
     private:
         /// @brief Compute the latitude increment given the current latitude and the longitude discretization
@@ -54,7 +54,6 @@ namespace meshkernel
         static UInt getNodeIndexFromPosition(const Mesh& mesh, const Point& position);
 
         /// @brief Add a face to an existing mesh towards a specific direction
-        static void addFace(Mesh& mesh, const std::array<Point, 8>& points, const double latitudeDirection, const UInt pointSize);
+        static void addFace(Mesh& mesh, const std::array<Point, 8>& points, const double latitudeDirection, const UInt numNodes);
     };
-
 } // namespace meshkernel
