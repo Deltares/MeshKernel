@@ -35,18 +35,26 @@
 
 namespace meshkernel
 {
-
+    /// @brief Construct a global grid in spherical coordinates, as a base for later mesh refinements
     class Mesh2DGenerateGlobalGrid
     {
     public:
-        static Mesh2D Compute(const UInt nx, const UInt ny, const Polygons& polygon);
+        /// @brief Compute the grid
+        ///
+        /// @param [in] numX The Number of x points
+        /// @param [in] numY The Number of y points
+        /// @param [in] polygon The polygon where to generate the mesh
+        static Mesh2D Compute(const UInt numX, const UInt numY, const Polygons& polygon);
 
     private:
-        static double getDeltaLatitude(const double y, const double deltaX);
+        /// @brief Compute the latitude increment given the current latitude and the longitude discretization
+        static double getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization);
 
-        static UInt getNodeIndexFromPosition(const Mesh& mesh, const Point& x);
+        /// @brief Gets the node index from a give position
+        static UInt getNodeIndexFromPosition(const Mesh& mesh, const Point& position);
 
-        static void addMaze(Mesh& mesh, const std::array<Point, 8>& points, const double ySign, const UInt pointSize);
+        /// @brief Add a face to an existing mesh towards a specific direction
+        static void addFace(Mesh& mesh, const std::array<Point, 8>& points, const double latitudeDirection, const UInt pointSize);
     };
 
 } // namespace meshkernel

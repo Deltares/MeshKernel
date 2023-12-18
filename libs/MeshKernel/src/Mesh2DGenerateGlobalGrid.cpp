@@ -1,20 +1,22 @@
 #include "MeshKernel/Mesh2DGenerateGlobalGrid.hpp"
 #include <cmath>
 
+using namespace meshkernel::constants;
+
 double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double y, const double deltaX)
 {
 
-    double deltaY = deltaX * std::cos(constants::conversion::degToRad * y);
+    double deltaY = deltaX * std::cos(conversion::degToRad * y);
     constexpr UInt numIterations = 5;
     constexpr double tolerance = 1.0e-14;
 
     for (int i = 0; i < numIterations; ++i)
     {
-        double phi = constants::conversion::degToRad * (y + 0.5 * deltaY);
+        double phi = conversion::degToRad * (y + 0.5 * deltaY);
         double c = std::cos(phi);
         double s = std::sqrt(1.0 - c * c);
         double f = deltaY - deltaX * c;
-        double df = 1.0 + 0.5 * constants::conversion::degToRad * deltaX * s;
+        double df = 1.0 + 0.5 * conversion::degToRad * deltaX * s;
         double yd = f / df;
         deltaY = deltaY - yd;
 
@@ -30,7 +32,7 @@ double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double y, co
 meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(const Mesh& mesh, const Point& x)
 {
     constexpr double tolerance = 1.0e-6;
-    const auto nodeIndex = constants::missing::uintValue;
+    const auto nodeIndex = missing::uintValue;
 
     for (int i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
     {
@@ -42,7 +44,7 @@ meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(
     return nodeIndex;
 }
 
-void meshkernel::Mesh2DGenerateGlobalGrid::addMaze(Mesh& mesh,
+void meshkernel::Mesh2DGenerateGlobalGrid::addFace(Mesh& mesh,
                                                    const std::array<Point, 8>& points,
                                                    const double ySign,
                                                    const UInt pointCount)
@@ -54,7 +56,7 @@ void meshkernel::Mesh2DGenerateGlobalGrid::addMaze(Mesh& mesh,
         Point p = {points[i].x, ySign * points[i].y};
         kk[i] = getNodeIndexFromPosition(mesh, p);
 
-        if (kk[i] == constants::missing::uintValue)
+        if (kk[i] == missing::uintValue)
         {
             kk[i] = mesh.InsertNode(p);
         }
@@ -72,11 +74,13 @@ void meshkernel::Mesh2DGenerateGlobalGrid::addMaze(Mesh& mesh,
     }
 }
 
-meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, const UInt ny, const Polygons& polygon)
+meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX,
+                                                                 const UInt numY,
+                                                                 const Polygons& polygon)
 {
     std::array<Point, 8> points;
 
-    double deltaLongitude = 360.0 / static_cast<double>(nx);
+    double deltaLongitude = 360.0 / static_cast<double>(numX);
     double currentLatitude = 0.0;
 
     bool pentagonFace = false;
@@ -86,7 +90,7 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, 
     Mesh2D mesh2d(Projection::sphericalAccurate);
     constexpr double minDiscretizationLength = 30000.0;
 
-    for (UInt i = 0; i < ny; ++i)
+    for (UInt i = 0; i < numY; ++i)
     {
         double deltaLatitude = getDeltaLatitude(currentLatitude, deltaLongitude);
 
@@ -98,7 +102,7 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, 
         }
         else
         {
-            if (deltaLatitude * constants::conversion::degToRad * constants::geometric::earth_radius < minDiscretizationLength &&
+            if (deltaLatitude * conversion::degToRad * geometric::earth_radius < minDiscretizationLength &&
                 !pentagonFace)
             {
                 deltaLongitude = 2.0 * deltaLongitude;
@@ -116,7 +120,7 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, 
             }
         }
 
-        for (UInt j = 1; j <= nx; ++j)
+        for (UInt j = 1; j <= numX; ++j)
         {
             double currentLongitude = static_cast<double>(j - 1) * deltaLongitude + -180.0;
 
@@ -140,8 +144,8 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, 
 
             if (points[2].x <= 180.0)
             {
-                addMaze(mesh2d, points, 1.0, numberOfPoints);
-                addMaze(mesh2d, points, -1.0, numberOfPoints);
+                addFace(mesh2d, points, 1.0, numberOfPoints);
+                addFace(mesh2d, points, -1.0, numberOfPoints);
             }
         }
 
@@ -158,10 +162,10 @@ meshkernel::Mesh2D meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt nx, 
     constexpr double tolerance = 1.0e-6;
     for (UInt e = 0; e < mesh2d.GetNumEdges(); e++)
     {
-        const auto [firstNode, secondNode] = mesh2d.m_edges[e];
+        const auto& [firstNode, secondNode] = mesh2d.m_edges[e];
 
-        if ((mesh2d.m_nodesNumEdges[firstNode] == 5 || mesh2d.m_nodesNumEdges[firstNode] == 6) &&
-            (mesh2d.m_nodesNumEdges[secondNode] == 5 || mesh2d.m_nodesNumEdges[secondNode] == 6))
+        if ((mesh2d.m_nodesNumEdges[firstNode] == geometric::numNodesInPentagon || mesh2d.m_nodesNumEdges[firstNode] == geometric::numNodesInhaxagon) &&
+            (mesh2d.m_nodesNumEdges[secondNode] == geometric::numNodesInPentagon || mesh2d.m_nodesNumEdges[secondNode] == geometric::numNodesInhaxagon))
         {
             if (IsEqual(mesh2d.m_nodes[firstNode].y, mesh2d.m_nodes[firstNode].y, tolerance))
             {
