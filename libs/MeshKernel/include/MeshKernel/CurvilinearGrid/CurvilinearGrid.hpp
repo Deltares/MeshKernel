@@ -68,9 +68,6 @@ namespace meshkernel
             Up
         };
 
-        /// @brief Default constructor
-        CurvilinearGrid() = default;
-
         /// @brief Default destructor
         ~CurvilinearGrid() override = default;
 
