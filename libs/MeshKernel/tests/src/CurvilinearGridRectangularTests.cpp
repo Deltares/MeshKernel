@@ -35,7 +35,7 @@ TEST(CurvilinearGridUniform, CurvilinearGridRectangular_WithPolygon_ShouldComput
                                                                     0);
 
     // Assert, also invalid nodes and edges are included in the curvilinear grid
-    auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
+    auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
     ASSERT_EQ(9, numValidNodes);
 }
 
@@ -64,7 +64,7 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInPolygonSpherical)
                                                                0);
 
     // Assert
-    auto const numValidNodes = CurvilinearGridCountValidNodes(grid);
+    auto const numValidNodes = CurvilinearGridCountValidNodes(*grid);
     ASSERT_EQ(0, numValidNodes);
 }
 
@@ -88,7 +88,7 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
                                                                                       angle,
                                                                                       blockSizeX,
                                                                                       blockSizeY)
-                                                 .ConvertCurvilinearToNodesAndEdges();
+                                                 ->ConvertCurvilinearToNodesAndEdges();
 
     Mesh2D mesh(edges, nodes, Projection::spherical);
 
@@ -122,124 +122,124 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
 TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_ShouldInsertFace)
 {
     // Set-up
-    auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid.InsertFace({80009.0, 366937.0});
+    curvilinearGrid->InsertFace({80009.0, 366937.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(79913.595823791460, curvilinearGrid.m_gridNodes(0, 0).x, tolerance);
-    ASSERT_NEAR(79985.899758176762, curvilinearGrid.m_gridNodes(0, 1).x, tolerance);
-    ASSERT_NEAR(-999.00000000000000, curvilinearGrid.m_gridNodes(0, 2).x, tolerance);
+    ASSERT_NEAR(79913.595823791460, curvilinearGrid->m_gridNodes(0, 0).x, tolerance);
+    ASSERT_NEAR(79985.899758176762, curvilinearGrid->m_gridNodes(0, 1).x, tolerance);
+    ASSERT_NEAR(-999.00000000000000, curvilinearGrid->m_gridNodes(0, 2).x, tolerance);
 
-    ASSERT_NEAR(367046.61206756550, curvilinearGrid.m_gridNodes(0, 0).y, tolerance);
-    ASSERT_NEAR(367110.19327267300, curvilinearGrid.m_gridNodes(0, 1).y, tolerance);
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(0, 2).y, tolerance);
+    ASSERT_NEAR(367046.61206756550, curvilinearGrid->m_gridNodes(0, 0).y, tolerance);
+    ASSERT_NEAR(367110.19327267300, curvilinearGrid->m_gridNodes(0, 1).y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(0, 2).y, tolerance);
 }
 
 TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
 {
     // Set-up
-    auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid.InsertFace({80166.0, 366544.0});
+    curvilinearGrid->InsertFace({80166.0, 366544.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(80176.237835892549, curvilinearGrid.m_gridNodes(5, 0).x, tolerance);
-    ASSERT_NEAR(80259.193944680519, curvilinearGrid.m_gridNodes(5, 1).x, tolerance);
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(5, 2).x, tolerance);
+    ASSERT_NEAR(80176.237835892549, curvilinearGrid->m_gridNodes(5, 0).x, tolerance);
+    ASSERT_NEAR(80259.193944680519, curvilinearGrid->m_gridNodes(5, 1).x, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 2).x, tolerance);
 
-    ASSERT_NEAR(366433.98982542212, curvilinearGrid.m_gridNodes(5, 0).y, tolerance);
-    ASSERT_NEAR(366433.75796857959, curvilinearGrid.m_gridNodes(5, 1).y, tolerance);
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(5, 2).y, tolerance);
+    ASSERT_NEAR(366433.98982542212, curvilinearGrid->m_gridNodes(5, 0).y, tolerance);
+    ASSERT_NEAR(366433.75796857959, curvilinearGrid->m_gridNodes(5, 1).y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 2).y, tolerance);
 }
 
 TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
 {
     // Set-up
-    auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid.InsertFace({80612.0, 367407.0});
+    curvilinearGrid->InsertFace({80612.0, 367407.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(0, 6).x, tolerance);
-    ASSERT_NEAR(80385.178875081983, curvilinearGrid.m_gridNodes(0, 7).x, tolerance);
-    ASSERT_NEAR(80449.954021552709, curvilinearGrid.m_gridNodes(0, 8).x, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(0, 6).x, tolerance);
+    ASSERT_NEAR(80385.178875081983, curvilinearGrid->m_gridNodes(0, 7).x, tolerance);
+    ASSERT_NEAR(80449.954021552709, curvilinearGrid->m_gridNodes(0, 8).x, tolerance);
 
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(0, 6).y, tolerance);
-    ASSERT_NEAR(367549.55640742677, curvilinearGrid.m_gridNodes(0, 7).y, tolerance);
-    ASSERT_NEAR(367626.58734840894, curvilinearGrid.m_gridNodes(0, 8).y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(0, 6).y, tolerance);
+    ASSERT_NEAR(367549.55640742677, curvilinearGrid->m_gridNodes(0, 7).y, tolerance);
+    ASSERT_NEAR(367626.58734840894, curvilinearGrid->m_gridNodes(0, 8).y, tolerance);
 }
 
 TEST(CurvilinearGridUniform, InsertFace_OnTopRight_ShouldInsertFace)
 {
     // Set-up
-    auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid.InsertFace({80870.0, 366541.0});
+    curvilinearGrid->InsertFace({80870.0, 366541.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(5, 6).x, tolerance);
-    ASSERT_NEAR(80846.719054016474, curvilinearGrid.m_gridNodes(5, 7).x, tolerance);
-    ASSERT_NEAR(80959.766315635425, curvilinearGrid.m_gridNodes(5, 8).x, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 6).x, tolerance);
+    ASSERT_NEAR(80846.719054016474, curvilinearGrid->m_gridNodes(5, 7).x, tolerance);
+    ASSERT_NEAR(80959.766315635425, curvilinearGrid->m_gridNodes(5, 8).x, tolerance);
 
-    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_gridNodes(5, 6).y, tolerance);
-    ASSERT_NEAR(366346.42989900074, curvilinearGrid.m_gridNodes(5, 7).y, tolerance);
-    ASSERT_NEAR(366327.01674911042, curvilinearGrid.m_gridNodes(5, 8).y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid->m_gridNodes(5, 6).y, tolerance);
+    ASSERT_NEAR(366346.42989900074, curvilinearGrid->m_gridNodes(5, 7).y, tolerance);
+    ASSERT_NEAR(366327.01674911042, curvilinearGrid->m_gridNodes(5, 8).y, tolerance);
 }
 
 TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
 {
     // Set-up
-    auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
+    const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
     // Execution
-    curvilinearGrid.InsertFace({80398.0, 366854.0});
+    curvilinearGrid->InsertFace({80398.0, 366854.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(80133.930743945661, curvilinearGrid.m_gridNodes(3, 0).x, tolerance);
-    ASSERT_NEAR(80226.579454943669, curvilinearGrid.m_gridNodes(3, 1).x, tolerance);
-    ASSERT_NEAR(80320.396380977647, curvilinearGrid.m_gridNodes(3, 2).x, tolerance);
-    ASSERT_NEAR(80447.108241179725, curvilinearGrid.m_gridNodes(3, 3).x, tolerance);
-    ASSERT_NEAR(80545.663179203286, curvilinearGrid.m_gridNodes(3, 4).x, tolerance);
-    ASSERT_NEAR(80623.151266424975, curvilinearGrid.m_gridNodes(3, 5).x, tolerance);
-    ASSERT_NEAR(80735.800935924854, curvilinearGrid.m_gridNodes(3, 6).x, tolerance);
-    ASSERT_NEAR(80848.959456291268, curvilinearGrid.m_gridNodes(3, 7).x, tolerance);
-    ASSERT_NEAR(80962.132385367571, curvilinearGrid.m_gridNodes(3, 8).x, tolerance);
+    ASSERT_NEAR(80133.930743945661, curvilinearGrid->m_gridNodes(3, 0).x, tolerance);
+    ASSERT_NEAR(80226.579454943669, curvilinearGrid->m_gridNodes(3, 1).x, tolerance);
+    ASSERT_NEAR(80320.396380977647, curvilinearGrid->m_gridNodes(3, 2).x, tolerance);
+    ASSERT_NEAR(80447.108241179725, curvilinearGrid->m_gridNodes(3, 3).x, tolerance);
+    ASSERT_NEAR(80545.663179203286, curvilinearGrid->m_gridNodes(3, 4).x, tolerance);
+    ASSERT_NEAR(80623.151266424975, curvilinearGrid->m_gridNodes(3, 5).x, tolerance);
+    ASSERT_NEAR(80735.800935924854, curvilinearGrid->m_gridNodes(3, 6).x, tolerance);
+    ASSERT_NEAR(80848.959456291268, curvilinearGrid->m_gridNodes(3, 7).x, tolerance);
+    ASSERT_NEAR(80962.132385367571, curvilinearGrid->m_gridNodes(3, 8).x, tolerance);
 
-    ASSERT_NEAR(366629.99913221149, curvilinearGrid.m_gridNodes(3, 0).y, tolerance);
-    ASSERT_NEAR(366656.00122676318, curvilinearGrid.m_gridNodes(3, 1).y, tolerance);
-    ASSERT_NEAR(366679.12590409513, curvilinearGrid.m_gridNodes(3, 2).y, tolerance);
-    ASSERT_NEAR(366697.14301043766, curvilinearGrid.m_gridNodes(3, 3).y, tolerance);
-    ASSERT_NEAR(366725.32926280121, curvilinearGrid.m_gridNodes(3, 4).y, tolerance);
-    ASSERT_NEAR(366718.43748113938, curvilinearGrid.m_gridNodes(3, 5).y, tolerance);
-    ASSERT_NEAR(366717.43216295895, curvilinearGrid.m_gridNodes(3, 6).y, tolerance);
-    ASSERT_NEAR(366716.74631036510, curvilinearGrid.m_gridNodes(3, 7).y, tolerance);
-    ASSERT_NEAR(366718.10475241451, curvilinearGrid.m_gridNodes(3, 8).y, tolerance);
+    ASSERT_NEAR(366629.99913221149, curvilinearGrid->m_gridNodes(3, 0).y, tolerance);
+    ASSERT_NEAR(366656.00122676318, curvilinearGrid->m_gridNodes(3, 1).y, tolerance);
+    ASSERT_NEAR(366679.12590409513, curvilinearGrid->m_gridNodes(3, 2).y, tolerance);
+    ASSERT_NEAR(366697.14301043766, curvilinearGrid->m_gridNodes(3, 3).y, tolerance);
+    ASSERT_NEAR(366725.32926280121, curvilinearGrid->m_gridNodes(3, 4).y, tolerance);
+    ASSERT_NEAR(366718.43748113938, curvilinearGrid->m_gridNodes(3, 5).y, tolerance);
+    ASSERT_NEAR(366717.43216295895, curvilinearGrid->m_gridNodes(3, 6).y, tolerance);
+    ASSERT_NEAR(366716.74631036510, curvilinearGrid->m_gridNodes(3, 7).y, tolerance);
+    ASSERT_NEAR(366718.10475241451, curvilinearGrid->m_gridNodes(3, 8).y, tolerance);
 }
 
 TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
 {
     // Prepare
-    auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execute
-    curvilinearGrid.DeleteNode({80398.0, 366854.0});
+    curvilinearGrid->DeleteNode({80398.0, 366854.0});
 
     // The number of nodes was 45 now is 44
-    auto const numValidNodes = CurvilinearGridCountValidNodes(curvilinearGrid);
+    auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
     ASSERT_EQ(numValidNodes, 44);
 }
 
-void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid curvilinearGrid,
+void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
                              const meshkernel::CurvilinearGridNodeIndices first,
                              const meshkernel::CurvilinearGridNodeIndices second)
 {
@@ -296,15 +296,15 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesTest)
     meshkernel::UInt nx = 10;
     meshkernel::UInt ny = 10;
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {1, 1}, {4, 4});
+    TestDeleteInteriorNodes(*curvilinearGrid, {1, 1}, {4, 4});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {2, 1}, {5, 4});
+    TestDeleteInteriorNodes(*curvilinearGrid, {2, 1}, {5, 4});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {4, 3}, {7, 8});
+    TestDeleteInteriorNodes(*curvilinearGrid, {4, 3}, {7, 8});
 }
 
 TEST(CurvilinearGridUniform, DeleteInteriorNodesReverseTest)
@@ -316,11 +316,11 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesReverseTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {5, 6}, {1, 2});
+    TestDeleteInteriorNodes(*curvilinearGrid, {5, 6}, {1, 2});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {5, 6}, {0, 4});
+    TestDeleteInteriorNodes(*curvilinearGrid, {5, 6}, {0, 4});
 }
 
 TEST(CurvilinearGridUniform, DeleteInteriorNodesMixedTest)
@@ -331,11 +331,11 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesMixedTest)
     meshkernel::UInt ny = 100;
 
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {5, 1}, {1, 6});
+    TestDeleteInteriorNodes(*curvilinearGrid, {5, 1}, {1, 6});
 
     // Reset grid
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(curvilinearGrid, {1, 6}, {5, 2});
+    TestDeleteInteriorNodes(*curvilinearGrid, {1, 6}, {5, 2});
 }
 
 TEST(CurvilinearGridUniform, DeleteInteriorNodesFailureTest)
@@ -347,15 +347,15 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesFailureTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
+    CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(*curvilinearGrid);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{10, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{10, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
 }
 
 void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
@@ -414,15 +414,15 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesTest)
     meshkernel::UInt nx = 10;
     meshkernel::UInt ny = 10;
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {1, 1}, {4, 4});
+    TestDeleteExteriorNodes(*curvilinearGrid, {1, 1}, {4, 4});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {2, 1}, {5, 4});
+    TestDeleteExteriorNodes(*curvilinearGrid, {2, 1}, {5, 4});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {4, 3}, {7, 8});
+    TestDeleteExteriorNodes(*curvilinearGrid, {4, 3}, {7, 8});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesReverseTest)
@@ -434,11 +434,11 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesReverseTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {5, 6}, {1, 2});
+    TestDeleteExteriorNodes(*curvilinearGrid, {5, 6}, {1, 2});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {5, 6}, {0, 4});
+    TestDeleteExteriorNodes(*curvilinearGrid, {5, 6}, {0, 4});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesMixedTest)
@@ -449,29 +449,29 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesMixedTest)
     meshkernel::UInt ny = 100;
 
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {5, 1}, {1, 6});
+    TestDeleteExteriorNodes(*curvilinearGrid, {5, 1}, {1, 6});
 
     // Reset grid
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(curvilinearGrid, {1, 6}, {5, 2});
+    TestDeleteExteriorNodes(*curvilinearGrid, {1, 6}, {5, 2});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesFailureTest)
 {
     // testing of setting nodes inside a box to invalid with invalid or out of range indices.
 
-    meshkernel::UInt nx = 10;
-    meshkernel::UInt ny = 10;
+    UInt nx = 10;
+    UInt ny = 10;
 
     // Prepare
-    auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    CurvilinearGridDeleteExterior curvilinearGridDeleteExterior(curvilinearGrid);
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
+    CurvilinearGridDeleteExterior curvilinearGridDeleteExterior(*curvilinearGrid);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, meshkernel::constants::missing::uintValue}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{meshkernel::constants::missing::uintValue, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{1, 1}, CurvilinearGridNodeIndices{nx, ny}), meshkernel::ConstraintError);
 
-    EXPECT_THROW(curvilinearGrid.ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{nx, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
+    EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{nx, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
 }

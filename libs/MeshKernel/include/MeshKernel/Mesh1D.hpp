@@ -39,16 +39,19 @@ namespace meshkernel
     ///
     /// A 1d mesh is composed of a series of connected edges
     /// representing 1d real word features, such as pipes or a sewage network.
-    class Mesh1D : public Mesh
+    class Mesh1D final : public Mesh
     {
 
     public:
+        /// @brief Default destructor
+        ~Mesh1D() override = default;
+
         /// @brief Default constructor
         Mesh1D() = default;
 
         /// @brief Construct a mesh1d using only the projection
         /// @param[in] projection The projection to use
-        Mesh1D(Projection projection);
+        explicit Mesh1D(Projection projection);
 
         /// @brief Construct a mesh1d starting from the edges and nodes
         /// @param[in] edges The input edges

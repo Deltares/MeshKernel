@@ -92,11 +92,6 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
 )
 
-set(
-  UTILITIES_SRC_LIST
-  ${UTILITIES_SRC_DIR}/RTree.cpp
-)
-
 # list of target headers
 set(
   INC_LIST
@@ -184,6 +179,8 @@ set(
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
   ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
+  ${UTILITIES_INC_DIR}/RTreeBase.hpp
+  ${UTILITIES_INC_DIR}/RTreeFactory.hpp
 )
 
 # add sources to target
@@ -193,7 +190,6 @@ target_sources(
     ${SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
-    ${UTILITIES_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
@@ -274,7 +270,6 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
-source_group("Source Files/Utilities" FILES ${UTILITIES_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
@@ -291,3 +286,7 @@ endif()
 if(ENABLE_BENCHMARKING)
   add_subdirectory(benchmark)
 endif()
+
+
+
+

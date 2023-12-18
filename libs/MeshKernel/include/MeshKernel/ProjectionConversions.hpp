@@ -29,11 +29,10 @@
 
 #include <string>
 
-#include <boost/geometry/core/coordinate_system.hpp>
+#define BOOST_ALLOW_DEPRECATED_HEADERS
+#include <boost/geometry.hpp>
 #include <boost/geometry/srs/epsg.hpp>
-
-#include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/Vector.hpp"
+#undef BOOST_ALLOW_DEPRECATED_HEADERS
 
 namespace meshkernel
 {

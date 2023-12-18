@@ -65,8 +65,8 @@ namespace meshkernel
         /// @param[in] mesh         The current 2d mesh.
         /// @param[in] polygons     A polygon for selecting part of the land boundaries.
         LandBoundaries(const std::vector<Point>& landBoundary,
-                       std::shared_ptr<Mesh2D> mesh,
-                       std::shared_ptr<Polygons> polygons);
+                       Mesh2D& mesh,
+                       const Polygons& polygons);
 
         /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
         ///
@@ -81,7 +81,7 @@ namespace meshkernel
         void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
 
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
-        void SnapMeshToLandBoundaries();
+        void SnapMeshToLandBoundaries() const;
 
         /// @brief Gets the number of land boundary nodes.
         /// @return The number of land boundary nodes.
@@ -176,10 +176,10 @@ namespace meshkernel
         /// @param[in] node              The node
         /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary,
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
-        std::tuple<double, Point, UInt, double> NearestLandBoundarySegment(UInt landBoundaryIndex, const Point& node);
+        std::tuple<double, Point, UInt, double> NearestLandBoundarySegment(UInt landBoundaryIndex, const Point& node) const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                           ///< A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;                     ///< A pointer to polygons
+        Mesh2D& m_mesh;                                           ///< A reference to mesh
+        const Polygons m_polygons;                                ///< A copy of the polygons
         LandBoundary m_landBoundary;                              ///< The nodes on the land boundary
         std::vector<Point> m_polygonNodesCache;                   ///< Array of points (e.g. points of a face)
         std::vector<std::pair<UInt, UInt>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)

@@ -2,7 +2,6 @@
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
 
 TEST(BoundingBox, DefaultIntialization_MustIntializeCornersToNumericLimits)
 {

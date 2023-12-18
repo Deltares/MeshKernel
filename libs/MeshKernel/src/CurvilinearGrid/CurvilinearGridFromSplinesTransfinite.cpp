@@ -43,7 +43,7 @@ CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std
     m_numN = curvilinearParameters.n_refinement;
 }
 
-CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
+std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute()
 {
     if (m_numN == 0 || m_numM == 0)
     {
@@ -232,7 +232,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
         }
     }
 
-    return CurvilinearGrid(gridNodes, m_splines->m_projection);
+    return std::make_unique<CurvilinearGrid>(gridNodes, m_splines->m_projection);
 }
 
 void CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(UInt numIntersections,
