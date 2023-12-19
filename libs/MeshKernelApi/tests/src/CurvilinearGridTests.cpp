@@ -831,7 +831,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
 
     for (size_t i = 0; i < smoothness.size(); ++i)
     {
-        EXPECT_NEAR (expectedX[i], smoothness[i], tolerance);
+        EXPECT_NEAR(expectedX[i], smoothness[i], tolerance);
     }
 
     // Now test y direction
@@ -840,6 +840,6 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
 
     for (size_t i = 0; i < smoothness.size(); ++i)
     {
-        EXPECT_NEAR (expectedY[i], smoothness[i], tolerance);
+        EXPECT_NEAR(expectedY[i], smoothness[i], tolerance);
     }
 }
