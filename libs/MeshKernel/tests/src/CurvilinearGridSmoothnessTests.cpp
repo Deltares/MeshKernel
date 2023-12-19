@@ -182,7 +182,6 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
         }
     }
 
-
     // Next test smoothness in y-direction
     mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
 

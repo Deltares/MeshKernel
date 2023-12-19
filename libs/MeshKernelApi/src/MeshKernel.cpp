@@ -2833,8 +2833,8 @@ namespace meshkernelapi
             lin_alg::Matrix<double> smoothnessMatrix;
 
             meshkernel::CurvilinearGridSmoothness::Compute(grid, direction, smoothnessMatrix);
-            size_t valueCount = sizeof (double) * grid.m_numM * grid.m_numN;
-            std::memcpy(smoothness, smoothnessMatrix.data (), valueCount);
+            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
+            std::memcpy(smoothness, smoothnessMatrix.data(), valueCount);
         }
         catch (...)
         {

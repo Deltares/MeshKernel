@@ -829,7 +829,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
 
     constexpr double tolerance = 1.0e-13;
 
-    for (size_t i = 0; i < smoothness.size (); ++i)
+    for (size_t i = 0; i < smoothness.size(); ++i)
     {
         EXPECT_NEAR (expectedX[i], smoothness[i], tolerance);
     }
@@ -838,7 +838,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
     errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 2, smoothness.data());
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    for (size_t i = 0; i < smoothness.size (); ++i)
+    for (size_t i = 0; i < smoothness.size(); ++i)
     {
         EXPECT_NEAR (expectedY[i], smoothness[i], tolerance);
     }
