@@ -46,6 +46,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -2813,7 +2814,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction)
+    MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction, double* smoothness)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -2823,14 +2824,17 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
             }
 
-            std::unique_ptr<meshkernel::CurvilinearGrid> grid = meshKernelState[meshKernelId].m_curvilinearGrid;
-
-            if (grid == nullptr)
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
             {
                 throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
             }
 
-            // meshkernel::CurvilinearGridSmoothness::Compute(*grid, direction, smoothness);
+            const meshkernel::CurvilinearGrid& grid = *meshKernelState[meshKernelId].m_curvilinearGrid;
+            lin_alg::Matrix<double> smoothnessMatrix;
+
+            meshkernel::CurvilinearGridSmoothness::Compute(grid, direction, smoothnessMatrix);
+            size_t valueCount = sizeof (double) * grid.m_numM * grid.m_numN;
+            std::memcpy(smoothness, smoothnessMatrix.data (), valueCount);
         }
         catch (...)
         {
