@@ -144,6 +144,12 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
+        /// @brief Computes the smoothness of a curvilinear grid.
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] direciton  The direction in which to compute the smoothness
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction);
+
         /// @brief Computes a curvilinear grid in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygons      The input polygons

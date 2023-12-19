@@ -2813,6 +2813,32 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
+            }
+
+            std::unique_ptr<meshkernel::CurvilinearGrid> grid = meshKernelState[meshKernelId].m_curvilinearGrid;
+
+            if (grid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
+            }
+
+            // meshkernel::CurvilinearGridSmoothness::Compute(*grid, direction, smoothness);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_curvilinear_initialize_orthogonal_grid_from_splines(int meshKernelId,
                                                                                 const GeometryList& geometryList,
                                                                                 const meshkernel::CurvilinearParameters& curvilinearParameters,
