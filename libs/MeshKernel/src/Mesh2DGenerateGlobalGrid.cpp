@@ -170,7 +170,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
         currentLatitude += deltaLatitude;
     }
 
-    const double mergingDistance = 1e-3;
+    constexpr double mergingDistance = 1e-3;
     const std::vector<Point> polygon;
     Polygons polygons(polygon, projection);
     mesh2d->MergeNodesInPolygon(polygons, mergingDistance);
