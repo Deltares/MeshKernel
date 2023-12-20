@@ -2829,10 +2829,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
             }
 
+            meshkernel::CurvilinearDirection directionEnum = meshkernel::GetCurvilinearDirectionValue(direction);
             const meshkernel::CurvilinearGrid& grid = *meshKernelState[meshKernelId].m_curvilinearGrid;
             lin_alg::Matrix<double> smoothnessMatrix;
 
-            meshkernel::CurvilinearGridSmoothness::Compute(grid, direction, smoothnessMatrix);
+            meshkernel::CurvilinearGridSmoothness::Compute(grid, directionEnum, smoothnessMatrix);
             size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
             std::memcpy(smoothness, smoothnessMatrix.data(), valueCount);
         }

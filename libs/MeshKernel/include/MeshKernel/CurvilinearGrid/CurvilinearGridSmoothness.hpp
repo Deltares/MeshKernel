@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Point.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
@@ -45,7 +46,7 @@ namespace meshkernel
         /// @param grid Grid for which the smoothness is to be calculated.
         /// @param direction Direction of the smoothness required.
         /// @param smoothness Matrix of smoothness values, will be resized to the size of the grid.
-        static void Compute(const CurvilinearGrid& grid, const int direction, lin_alg::Matrix<double>& smoothness);
+        static void Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& smoothness);
 
     private:
         /// @brief Compute the smoothness for the node.

@@ -85,7 +85,7 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeAdditiveStretchedCurvilinearGri
     return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
 }
 
-TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
+TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfRegularGrid_ShouldComputeSmoothness)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -100,9 +100,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
 
     lin_alg::Matrix<double> smoothness;
 
-    // First test smoothness in x-direction
+    // First test smoothness in m-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::M, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -119,9 +119,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
         }
     }
 
-    // Next test smoothness in y-direction
+    // Next test smoothness in n-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::N, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -137,7 +137,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGrid)
     }
 }
 
-TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
+TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfRegularGridWithHole_ShouldComputeSmoothness)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -157,9 +157,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
 
     lin_alg::Matrix<double> smoothness;
 
-    // First test smoothness in x-direction
+    // First test smoothness in m-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::M, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -182,8 +182,8 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
         }
     }
 
-    // Next test smoothness in y-direction
-    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
+    // Next test smoothness in n-direction
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::N, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -205,7 +205,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfRegularGridWithHole)
     }
 }
 
-TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGrid)
+TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfMultiplicativeIncreasingStretchedGrid_ShouldComputeSmoothness)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -223,9 +223,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGri
 
     lin_alg::Matrix<double> smoothness;
 
-    // First test smoothness in x-direction
+    // First test smoothness in m-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::M, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -242,9 +242,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGri
         }
     }
 
-    // Next test smoothness in y-direction
+    // Next test smoothness in n-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::N, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -260,7 +260,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeIncreasingStretchedGri
     }
 }
 
-TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGrid)
+TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfMultiplicativeDecreasingStretchedGrid_ShouldComputeSmoothness)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -278,9 +278,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGri
 
     lin_alg::Matrix<double> smoothness;
 
-    // First test smoothness in x-direction
+    // First test smoothness in m-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::M, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -298,9 +298,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGri
         }
     }
 
-    // Next test smoothness in y-direction
+    // Next test smoothness in n-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::N, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -317,7 +317,7 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfMultiplicativeDecreasingStretchedGri
     }
 }
 
-TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
+TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfAdditiveStretchedGrid_ShouldComputeSmoothness)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -339,9 +339,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
 
     lin_alg::Matrix<double> smoothness;
 
-    // First test smoothness in x-direction
+    // First test smoothness in m-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 1, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::M, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());
@@ -356,9 +356,9 @@ TEST(CurvilinearGridSmoothness, SmoothnessOfAdditiveStretchedGrid)
         }
     }
 
-    // Next test smoothness in y-direction
+    // Next test smoothness in n-direction
 
-    mk::CurvilinearGridSmoothness::Compute(*grid, 2, smoothness);
+    mk::CurvilinearGridSmoothness::Compute(*grid, mk::CurvilinearDirection::N, smoothness);
 
     ASSERT_EQ(nx, smoothness.rows());
     ASSERT_EQ(ny, smoothness.cols());

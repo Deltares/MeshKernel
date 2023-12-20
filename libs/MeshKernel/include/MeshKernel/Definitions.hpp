@@ -79,4 +79,20 @@ namespace meshkernel
         {Location::Edges, "Edges"},
         {Location::Unknown, "Unknown"}};
 
+    /// @brief Direction to use in curvilinear grid algorithms
+    enum class CurvilinearDirection
+    {
+        M, ///< M-direction
+        N  ///< N-direction
+    };
+
+    /// @brief Convert an integer value to the CurvilinearDirection enumeration type
+    ///
+    /// If the integer direction value does not correspond to an enumeration
+    /// value then a ConstraintError will be thrown
+    CurvilinearDirection GetCurvilinearDirectionValue(int direction);
+
+    /// @brief Get the string representation of the CurvilinearDirection enumeration values.
+    const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
+
 } // namespace meshkernel

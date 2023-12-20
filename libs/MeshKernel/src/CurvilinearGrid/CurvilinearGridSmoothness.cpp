@@ -28,16 +28,18 @@
 #include <cmath>
 
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Vector.hpp"
+
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp"
 
-void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid, const int direction, lin_alg::Matrix<double>& smoothness)
+void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& smoothness)
 {
-    smoothness.resize(grid.m_numM, grid.m_numN);
-    smoothness.fill(constants::missing::doubleValue);
+    lin_alg::ResizeAndFillMatrix(smoothness, grid.m_numM, grid.m_numN, false, constants::missing::doubleValue);
 
-    if (direction == 1)
+    if (direction == CurvilinearDirection::M)
     {
         for (UInt i = 1; i < grid.m_numM - 1; ++i)
         {
@@ -47,7 +49,7 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
             }
         }
     }
-    else
+    else if (direction == CurvilinearDirection::N)
     {
         for (UInt i = 0; i < grid.m_numM; ++i)
         {
@@ -56,6 +58,10 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
                 smoothness(i, j) = ComputeNodeSmoothness(grid.m_gridNodes(i, j - 1), grid.m_gridNodes(i, j), grid.m_gridNodes(i, j + 1));
             }
         }
+    }
+    else
+    {
+        throw MeshKernelError("Unknown curvilinear direction values {} with integer value {}", CurvilinearDirectionToString(direction), static_cast<int>(direction));
     }
 }
 

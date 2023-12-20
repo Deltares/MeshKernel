@@ -824,7 +824,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
     std::vector<double> expectedY{-999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0};
 
     // Test x direction
-    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 1, smoothness.data());
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 0, smoothness.data());
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     constexpr double tolerance = 1.0e-13;
@@ -835,7 +835,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
     }
 
     // Now test y direction
-    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 2, smoothness.data());
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 1, smoothness.data());
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (size_t i = 0; i < smoothness.size(); ++i)
