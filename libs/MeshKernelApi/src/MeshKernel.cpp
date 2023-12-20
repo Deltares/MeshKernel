@@ -53,6 +53,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Mesh2DGenerateGlobal.hpp>
 #include <MeshKernel/MeshConversion.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
@@ -74,7 +75,6 @@
 
 #include <Version/Version.hpp>
 
-#include <MeshKernel/Mesh2DGenerateGlobalGrid.hpp>
 #include <cstring>
 #include <unordered_map>
 #include <vector>
@@ -1062,7 +1062,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
             *meshKernelState[meshKernelId].m_mesh2d += *mesh;
         }
         catch (...)

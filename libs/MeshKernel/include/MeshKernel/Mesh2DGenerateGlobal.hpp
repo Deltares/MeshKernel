@@ -36,7 +36,7 @@
 namespace meshkernel
 {
     /// @brief Construct a global grid in spherical coordinates, as a base for later mesh refinements
-    class Mesh2DGenerateGlobalGrid
+    class Mesh2DGenerateGlobal
     {
     public:
         /// @brief Compute the global grid with a given number of points along the longitude and latitude directions.

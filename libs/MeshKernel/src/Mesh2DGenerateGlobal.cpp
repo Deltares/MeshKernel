@@ -1,11 +1,11 @@
-#include "MeshKernel/Mesh2DGenerateGlobalGrid.hpp"
+#include "MeshKernel/Mesh2DGenerateGlobal.hpp"
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <cmath>
 
 using namespace meshkernel::constants;
 
-double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
+double meshkernel::Mesh2DGenerateGlobal::getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
 {
 
     double deltaLatitude = longitudeDiscretization * std::cos(conversion::degToRad * currentLatitude);
@@ -31,7 +31,7 @@ double meshkernel::Mesh2DGenerateGlobalGrid::getDeltaLatitude(const double curre
     return deltaLatitude;
 }
 
-meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(const Mesh& mesh, const Point& x)
+meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::getNodeIndexFromPosition(const Mesh& mesh, const Point& x)
 {
     constexpr double tolerance = 1.0e-6;
     const auto nodeIndex = missing::uintValue;
@@ -46,10 +46,10 @@ meshkernel::UInt meshkernel::Mesh2DGenerateGlobalGrid::getNodeIndexFromPosition(
     return nodeIndex;
 }
 
-void meshkernel::Mesh2DGenerateGlobalGrid::addFace(Mesh& mesh,
-                                                   const std::array<Point, 8>& points,
-                                                   const double latitudeDirection,
-                                                   const UInt numNodes)
+void meshkernel::Mesh2DGenerateGlobal::addFace(Mesh& mesh,
+                                               const std::array<Point, 8>& points,
+                                               const double latitudeDirection,
+                                               const UInt numNodes)
 {
     std::array<UInt, 8> nodeIndices{};
 
@@ -76,9 +76,9 @@ void meshkernel::Mesh2DGenerateGlobalGrid::addFace(Mesh& mesh,
     }
 }
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numLongitudeNodes,
-                                                                                  const UInt numLatitudeNodes,
-                                                                                  const Projection projection)
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNodes,
+                                                                              const UInt numLatitudeNodes,
+                                                                              const Projection projection)
 {
     if (numLongitudeNodes == 0)
     {
