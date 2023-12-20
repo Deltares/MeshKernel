@@ -1,5 +1,6 @@
 #include "MeshKernel/Mesh2DGenerateGlobalGrid.hpp"
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 #include <cmath>
 
 using namespace meshkernel::constants;
@@ -52,46 +53,56 @@ void meshkernel::Mesh2DGenerateGlobalGrid::addFace(Mesh& mesh,
 {
     std::array<UInt, 8> nodeIndices{};
 
-    for (UInt i = 0; i < numNodes; ++i)
+    for (UInt n = 0; n < numNodes; ++n)
     {
-        Point p = {points[i].x, latitudeDirection * points[i].y};
-        nodeIndices[i] = getNodeIndexFromPosition(mesh, p);
+        Point p = {points[n].x, latitudeDirection * points[n].y};
+        nodeIndices[n] = getNodeIndexFromPosition(mesh, p);
 
-        if (nodeIndices[i] == missing::uintValue)
+        if (nodeIndices[n] == missing::uintValue)
         {
-            nodeIndices[i] = mesh.InsertNode(p);
+            nodeIndices[n] = mesh.InsertNode(p);
         }
     }
 
-    for (UInt currentNode = 0; currentNode < numNodes; ++currentNode)
+    for (UInt n = 0; n < numNodes; ++n)
     {
-        UInt nextNode = currentNode + 1;
+        UInt nextNode = n + 1;
 
-        if (currentNode == numNodes - 1)
+        if (n == numNodes - 1)
         {
             nextNode = 0;
         }
-        mesh.ConnectNodes(nodeIndices[currentNode], nodeIndices[nextNode]);
+        mesh.ConnectNodes(nodeIndices[n], nodeIndices[nextNode]);
     }
 }
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numX,
-                                                                                  const UInt numY,
-                                                                                  const Polygons& polygon)
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Compute(const UInt numLongitudeNodes,
+                                                                                  const UInt numLatitudeNodes,
+                                                                                  const Projection projection)
 {
+    if (numLongitudeNodes == 0)
+    {
+        throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
+    }
+    if (numLatitudeNodes == 0)
+    {
+        throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
+    }
+    if (projection != Projection::spherical && projection != Projection::sphericalAccurate)
+    {
+        throw meshkernel::MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
+    }
+
     std::array<Point, 8> points;
-
-    double deltaLongitude = 360.0 / static_cast<double>(numX);
+    double deltaLongitude = 360.0 / static_cast<double>(numLongitudeNodes);
     double currentLatitude = 0.0;
-
     bool pentagonFace = false;
     bool generationCompleted = false;
-    UInt numberOfPoints;
 
-    auto mesh2d = std::make_unique<Mesh2D>(Projection::sphericalAccurate);
+    auto mesh2d = std::make_unique<Mesh2D>(projection);
     constexpr double minDiscretizationLength = 30000.0;
 
-    for (UInt i = 0; i < numY; ++i)
+    for (UInt i = 0; i < numLatitudeNodes; ++i)
     {
         double deltaLatitude = getDeltaLatitude(currentLatitude, deltaLongitude);
 
@@ -121,12 +132,12 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
             }
         }
 
-        for (UInt j = 1; j <= numX; ++j)
+        for (UInt j = 0; j < numLongitudeNodes; ++j)
         {
             double currentLongitude = static_cast<double>(j) * deltaLongitude - 180.0;
 
             points[0] = {currentLongitude, currentLatitude};
-
+            UInt numberOfPoints;
             if (!pentagonFace)
             {
                 points[1] = {currentLongitude + deltaLongitude, currentLatitude};
@@ -145,6 +156,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
 
             if (points[2].x <= 180.0)
             {
+                pentagonFace = false;
                 addFace(*mesh2d, points, 1.0, numberOfPoints);
                 addFace(*mesh2d, points, -1.0, numberOfPoints);
             }
@@ -158,7 +170,10 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
         currentLatitude += deltaLatitude;
     }
 
-    mesh2d->MergeNodesInPolygon(polygon, 1e-3);
+    const double mergingDistance = 1e-3;
+    const std::vector<Point> polygon;
+    Polygons polygons(polygon, projection);
+    mesh2d->MergeNodesInPolygon(polygons, mergingDistance);
 
     constexpr double tolerance = 1.0e-6;
     for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
@@ -175,7 +190,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobalGrid::Comput
         }
     }
 
-    mesh2d->Administrate();
+    mesh2d->AdministrateNodesEdges();
 
     return mesh2d;
 }

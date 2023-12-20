@@ -74,6 +74,7 @@
 
 #include <Version/Version.hpp>
 
+#include <MeshKernel/Mesh2DGenerateGlobalGrid.hpp>
 #include <cstring>
 #include <unordered_map>
 #include <vector>
@@ -1043,6 +1044,26 @@ namespace meshkernelapi
                     index++;
                 }
             }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_make_global_grid(int meshKernelId, int numLongitudeNode, int numLatitudeNodes)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(numLongitudeNode, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d += *mesh;
         }
         catch (...)
         {

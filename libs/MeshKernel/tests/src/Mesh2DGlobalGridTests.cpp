@@ -10,31 +10,26 @@
 
 TEST(GlobalGridTest, GenerateGrid)
 {
-    const std::vector<meshkernel::Point> polygonNodes{};
-
-    const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::sphericalAccurate);
-
-    const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(192, 250, polygon);
+    // generate
+    const meshkernel::UInt numLongitudeNode = 19;
+    const meshkernel::UInt numLatitudeNodes = 25;
+    const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(numLongitudeNode, numLatitudeNodes, meshkernel::Projection::spherical);
 
     // Assert data
     const double tolerance = 1e-6;
-
     const auto numEdges = mesh->GetNumEdges();
     const auto numNodes = mesh->GetNumNodes();
-    const auto numFaces = mesh->GetNumFaces();
-
-    ASSERT_EQ(10, mesh->GetNumEdges());
-    ASSERT_EQ(10, mesh->GetNumNodes());
-    ASSERT_EQ(10, mesh->GetNumFaces());
+    ASSERT_EQ(1200, mesh->GetNumEdges());
+    ASSERT_EQ(629, mesh->GetNumNodes());
 
     // Nodes
-    ASSERT_NEAR(0.0, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(-161.05263157894737, mesh->m_nodes[0].x, tolerance);
+    ASSERT_NEAR(-161.05263157894737, mesh->m_nodes[1].x, tolerance);
+    ASSERT_NEAR(-161.05263157894737, mesh->m_nodes[2].x, tolerance);
+    ASSERT_NEAR(-142.10526315789474, mesh->m_nodes[3].x, tolerance);
 
-    ASSERT_NEAR(0.0, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(0.0, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(0.0000000000000000, mesh->m_nodes[0].y, tolerance);
+    ASSERT_NEAR(18.695753703140564, mesh->m_nodes[1].y, tolerance);
+    ASSERT_NEAR(-18.695753703140564, mesh->m_nodes[2].y, tolerance);
+    ASSERT_NEAR(0.0000000000000000, mesh->m_nodes[3].y, tolerance);
 }

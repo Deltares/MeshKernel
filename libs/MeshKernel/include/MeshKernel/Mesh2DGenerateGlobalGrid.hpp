@@ -39,12 +39,14 @@ namespace meshkernel
     class Mesh2DGenerateGlobalGrid
     {
     public:
-        /// @brief Compute the grid
+        /// @brief Compute the global grid with a given number of points along the longitude and latitude directions.
         ///
-        /// @param [in] numX The Number of x points
-        /// @param [in] numY The Number of y points
-        /// @param [in] polygon The polygon where to generate the mesh
-        static std::unique_ptr<Mesh2D> Compute(const UInt numX, const UInt numY, const Polygons& polygon);
+        /// @param [in] numLongitudeNodes The number of points along the longitude.
+        /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
+        /// @param [in] projection The projection to be used .
+        ///
+        /// @return A unique pointer to the generated Mesh2D representing the global grid.
+        static std::unique_ptr<Mesh2D> Compute(const UInt numLongitudeNodes, const UInt numLatitudeNodes, const Projection projection);
 
     private:
         /// @brief Compute the latitude increment given the current latitude and the longitude discretization

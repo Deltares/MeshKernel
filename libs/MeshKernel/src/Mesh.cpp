@@ -492,18 +492,27 @@ meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    UInt edgeIndex = constants::missing::uintValue;
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[localEdgeIndex], firstNodeIndex);
+        const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[edgeIndex], firstNodeIndex);
         if (firstEdgeOtherNode == secondNodeIndex)
         {
-            edgeIndex = localEdgeIndex;
-            break;
+            return edgeIndex;
         }
     }
-    return edgeIndex;
+
+    for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
+    {
+        const auto& [firstNode, secondNode] = m_edges[edgeIndex];
+        if ((firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
+            (secondNode == firstNodeIndex && firstNode == secondNodeIndex))
+        {
+            return edgeIndex;
+        }
+    }
+
+    return constants::missing::uintValue;
 }
 
 meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)
