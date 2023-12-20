@@ -39,7 +39,7 @@ namespace meshkernel
     class Mesh2DGenerateGlobal
     {
     public:
-        /// @brief Compute the global grid with a given number of points along the longitude and latitude directions.
+        /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         ///
         /// @param [in] numLongitudeNodes The number of points along the longitude.
         /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).

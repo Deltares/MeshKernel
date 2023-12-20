@@ -1052,7 +1052,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_global_grid(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
+    MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try

@@ -8,12 +8,12 @@
 #include "MeshKernel/Polygons.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
-TEST(GlobalGridTest, Mesh2DGenerateGlobalGridCompute_ShouldGenerateMesh)
+TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_ShouldGenerateMesh)
 {
     // Execute
-    const meshkernel::UInt numLongitudeNode = 19;
+    const meshkernel::UInt numLongitudeNodes = 19;
     const meshkernel::UInt numLatitudeNodes = 25;
-    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNode, numLatitudeNodes, meshkernel::Projection::spherical);
+    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
 
     // Assert
     const auto numEdges = mesh->GetNumEdges();
@@ -31,4 +31,12 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalGridCompute_ShouldGenerateMesh)
     ASSERT_NEAR(18.695753703140564, mesh->m_nodes[1].y, tolerance);
     ASSERT_NEAR(-18.695753703140564, mesh->m_nodes[2].y, tolerance);
     ASSERT_NEAR(0.0000000000000000, mesh->m_nodes[3].y, tolerance);
+}
+
+TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_OnInvalidProjection_ShouldThrowAnException)
+{
+    // Assert
+    const meshkernel::UInt numLongitudeNodes = 19;
+    const meshkernel::UInt numLatitudeNodes = 25;
+    EXPECT_THROW(meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::cartesian), meshkernel::MeshKernelError);
 }
