@@ -3444,8 +3444,8 @@ namespace meshkernelapi
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
-            // curvilinear grid must be reset
-            meshKernelState[meshKernelId].m_curvilinearGrid = nullptr;
+            // curvilinear grid must be reset to an empty curvilinear grid
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();
         }
         catch (...)
         {
