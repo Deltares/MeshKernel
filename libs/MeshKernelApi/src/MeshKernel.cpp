@@ -1052,7 +1052,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_global_grid(int meshKernelId, int numLongitudeNode, int numLatitudeNodes)
+    MKERNEL_API int mkernel_mesh2d_make_global_grid(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1062,7 +1062,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(numLongitudeNode, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            const auto mesh = meshkernel::Mesh2DGenerateGlobalGrid::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
             *meshKernelState[meshKernelId].m_mesh2d += *mesh;
         }
         catch (...)
