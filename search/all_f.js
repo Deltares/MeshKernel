@@ -32,5 +32,6 @@ var searchData=
   ['splinestocurvilinearparameters_647',['SplinesToCurvilinearParameters',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html',1,'meshkernel']]],
   ['stdlibexceptioncode_648',['StdLibExceptionCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003',1,'meshkernel']]],
   ['string_649',['String',['../classmeshkernel_1_1_format_string.html#ad10b352a5392cb1e47b723391f75b1e9',1,'meshkernel::FormatString']]],
-  ['success_650',['Success',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5',1,'meshkernel']]]
+  ['success_650',['Success',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5',1,'meshkernel']]],
+  ['swapsplines_651',['SwapSplines',['../classmeshkernel_1_1_splines.html#afcdef791060a2501be77859bad52a9e5',1,'meshkernel::Splines']]]
 ];

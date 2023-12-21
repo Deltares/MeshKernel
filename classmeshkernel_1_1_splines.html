@@ -105,6 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a23fd8c21a71af9fbad421c5373403dee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee">AddSpline</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;splines)</td></tr>
 <tr class="memdesc:a23fd8c21a71af9fbad421c5373403dee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new spline to m_splineCornerPoints.  <a href="classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee">More...</a><br /></td></tr>
 <tr class="separator:a23fd8c21a71af9fbad421c5373403dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcdef791060a2501be77859bad52a9e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#afcdef791060a2501be77859bad52a9e5">SwapSplines</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> firstSpline, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> secondSpline)</td></tr>
+<tr class="memdesc:afcdef791060a2501be77859bad52a9e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap all the data for two splines.  <a href="classmeshkernel_1_1_splines.html#afcdef791060a2501be77859bad52a9e5">More...</a><br /></td></tr>
+<tr class="separator:afcdef791060a2501be77859bad52a9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc8d4728f45976a5a922599f4ccacca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">SnapSpline</a> (const size_t splineIndex, const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;landBoundary, const int numberOfIterations=constants::numeric::defaultSnappingIterations)</td></tr>
 <tr class="memdesc:a4dc8d4728f45976a5a922599f4ccacca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap the spline to the land boundary (snap_spline)  <a href="classmeshkernel_1_1_splines.html#a4dc8d4728f45976a5a922599f4ccacca">More...</a><br /></td></tr>
 <tr class="separator:a4dc8d4728f45976a5a922599f4ccacca"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -588,6 +591,37 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="afcdef791060a2501be77859bad52a9e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcdef791060a2501be77859bad52a9e5">&#9670;&nbsp;</a></span>SwapSplines()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Splines::SwapSplines </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>firstSpline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>secondSpline</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Swap all the data for two splines. </p>
+<p>On exit the contents of the two splines will be swapped </p>
 
 </div>
 </div>
