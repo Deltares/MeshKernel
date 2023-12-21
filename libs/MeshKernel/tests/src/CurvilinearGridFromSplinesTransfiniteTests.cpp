@@ -250,3 +250,86 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     ASSERT_NEAR(71.609593896396262, curvilinearGrid->m_gridNodes(1, 9).y, tolerance);
     ASSERT_NEAR(76.904826220873304, curvilinearGrid->m_gridNodes(1, 10).y, tolerance);
 }
+
+void TestCurvilinearGridFromSplines(const std::vector<meshkernel::Point>& firstSpline,
+                                    const std::vector<meshkernel::Point>& secondSpline,
+                                    const std::vector<meshkernel::Point>& thirdSpline,
+                                    const std::vector<meshkernel::Point>& fourthSpline,
+                                    const std::vector<meshkernel::Point>& expectedPoints)
+{
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+
+    splines->AddSpline(firstSpline);
+    splines->AddSpline(secondSpline);
+    splines->AddSpline(thirdSpline);
+    splines->AddSpline(fourthSpline);
+
+    CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.n_refinement = 4;
+    curvilinearParameters.m_refinement = 4;
+    CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
+
+    const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
+
+    ASSERT_EQ(curvilinearGrid.m_nodes.size(), expectedPoints.size());
+
+    constexpr double tolerance = 1e-4;
+
+    for (size_t i = 0; i < curvilinearGrid.m_nodes.size(); ++i)
+    {
+        EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid.m_nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid.m_nodes[i].y, tolerance);
+    }
+}
+
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongFirstSpline)
+{
+    std::vector<Point> firstSpline{{0.0, 2.0}, {1.0, 2.0}, {2.0, 2.0}, {3.0, 2.0}, {4.0, 2.0}, {5.0, 2.0}};
+    std::vector<Point> secondSpline{{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}, {4.0, 0.0}, {5.0, 0.0}};
+    std::vector<Point> thirdSpline{{2.5, -4.0}, {2.5, 4.0}};
+    std::vector<Point> fourthSpline{{4.5, 4.0}, {4.5, -4.0}};
+
+    std::vector<Point> expectedPoints{{2.5, 0.0}, {2.5, 0.5}, {2.5, 1.0}, {2.5, 1.5}, {2.5, 2.0}, {3.0, 0.0}, {3.0, 0.5}, {3.0, 1.0}, {3.0, 1.5}, {3.0, 2.0}, {3.5, 0.0}, {3.5, 0.5}, {3.5, 1.0}, {3.5, 1.5}, {3.5, 2.0}, {4.0, 0.0}, {4.0, 0.5}, {4.0, 1.0}, {4.0, 1.5}, {4.0, 2.0}, {4.5, 0.0}, {4.5, 0.5}, {4.5, 1.0}, {4.5, 1.5}, {4.5, 2.0}};
+
+    SCOPED_TRACE("FourSplinesSimpleRectangleLongFirstSpline");
+    TestCurvilinearGridFromSplines(firstSpline, secondSpline, thirdSpline, fourthSpline, expectedPoints);
+}
+
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleLongSecondSpline)
+{
+    std::vector<Point> firstSpline{{1.0, 2.0}, {2.0, 2.0}, {3.0, 2.0}, {4.0, 2.0}, {5.0, 2.0}};
+    std::vector<Point> secondSpline{{0.0, 0.0}, {1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}, {4.0, 0.0}, {5.0, 0.0}};
+    std::vector<Point> thirdSpline{{2.5, -4.0}, {2.5, 4.0}};
+    std::vector<Point> fourthSpline{{4.5, 4.0}, {4.5, -4.0}};
+
+    std::vector<Point> expectedPoints{{2.5, 0.0}, {2.5, 0.5}, {2.5, 1.0}, {2.5, 1.5}, {2.5, 2.0}, {3.0, 0.0}, {3.0, 0.5}, {3.0, 1.0}, {3.0, 1.5}, {3.0, 2.0}, {3.5, 0.0}, {3.5, 0.5}, {3.5, 1.0}, {3.5, 1.5}, {3.5, 2.0}, {4.0, 0.0}, {4.0, 0.5}, {4.0, 1.0}, {4.0, 1.5}, {4.0, 2.0}, {4.5, 0.0}, {4.5, 0.5}, {4.5, 1.0}, {4.5, 1.5}, {4.5, 2.0}};
+
+    SCOPED_TRACE("FourSplinesSimpleRectangleLongSecondSpline");
+    TestCurvilinearGridFromSplines(firstSpline, secondSpline, thirdSpline, fourthSpline, expectedPoints);
+}
+
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleShortFirstSpline)
+{
+    std::vector<Point> firstSpline{{0.0, 2.0}, {1.0, 2.0}, {2.0, 2.0}, {3.0, 2.0}, {4.0, 2.0}, {5.0, 2.0}};
+    std::vector<Point> secondSpline{{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}, {4.0, 0.0}, {5.0, 0.0}};
+    std::vector<Point> thirdSpline{{2.5, -4.0}, {2.5, 4.0}};
+    std::vector<Point> fourthSpline{{4.5, 4.0}, {4.5, -4.0}};
+
+    std::vector<Point> expectedPoints{{4.5, 0.0}, {4.0, 0.0}, {3.5, 0.0}, {3.0, 0.0}, {2.5, 0.0}, {4.5, 0.5}, {4.0, 0.5}, {3.5, 0.5}, {3.0, 0.5}, {2.5, 0.5}, {4.5, 1.0}, {4.0, 1.0}, {3.5, 1.0}, {3.0, 1.0}, {2.5, 1.0}, {4.5, 1.5}, {4.0, 1.5}, {3.5, 1.5}, {3.0, 1.5}, {2.5, 1.5}, {4.5, 2.0}, {4.0, 2.0}, {3.5, 2.0}, {3.0, 2.0}, {2.5, 2.0}};
+
+    SCOPED_TRACE("FourSplinesSimpleRectangleShortFirstSpline");
+    TestCurvilinearGridFromSplines(thirdSpline, firstSpline, secondSpline, fourthSpline, expectedPoints);
+}
+
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesSimpleRectangleShortSecondSpline)
+{
+    std::vector<Point> firstSpline{{0.0, 2.0}, {1.0, 2.0}, {2.0, 2.0}, {3.0, 2.0}, {4.0, 2.0}, {5.0, 2.0}};
+    std::vector<Point> secondSpline{{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}, {4.0, 0.0}, {5.0, 0.0}};
+    std::vector<Point> thirdSpline{{2.5, -4.0}, {2.5, 4.0}};
+    std::vector<Point> fourthSpline{{4.5, 4.0}, {4.5, -4.0}};
+
+    std::vector<Point> expectedPoints{{2.5, 2.0}, {3.0, 2.0}, {3.5, 2.0}, {4.0, 2.0}, {4.5, 2.0}, {2.5, 1.5}, {3.0, 1.5}, {3.5, 1.5}, {4.0, 1.5}, {4.5, 1.5}, {2.5, 1.0}, {3.0, 1.0}, {3.5, 1.0}, {4.0, 1.0}, {4.5, 1.0}, {2.5, 0.5}, {3.0, 0.5}, {3.5, 0.5}, {4.0, 0.5}, {4.5, 0.5}, {2.5, 0.0}, {3.0, 0.0}, {3.5, 0.0}, {4.0, 0.0}, {4.5, 0.0}};
+
+    SCOPED_TRACE("FourSplinesSimpleRectangleShortSecondSpline");
+    TestCurvilinearGridFromSplines(fourthSpline, secondSpline, thirdSpline, firstSpline, expectedPoints);
+}
