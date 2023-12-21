@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <algorithm>
 #include <iostream>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -108,6 +109,33 @@ void Splines::DeleteSpline(UInt splineIndex)
     m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_splineDerivatives.erase(m_splineDerivatives.begin() + splineIndex);
     m_splinesLength.erase(m_splinesLength.begin() + splineIndex);
+}
+
+void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
+{
+    if (firstSpline >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid first spline index: {}, not in range 0 .. {}",
+                                          firstSpline,
+                                          GetNumSplines() - 1);
+    }
+
+    if (secondSpline >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid second spline index: {}, not in range 0 .. {}",
+                                          secondSpline,
+                                          GetNumSplines() - 1);
+    }
+
+    if (firstSpline == secondSpline)
+    {
+        // Nothig to do if spline indices are the same.
+        return;
+    }
+
+    m_splineNodes[firstSpline].swap(m_splineNodes[secondSpline]);
+    m_splineDerivatives[firstSpline].swap(m_splineDerivatives[secondSpline]);
+    std::swap(m_splinesLength[firstSpline], m_splinesLength[secondSpline]);
 }
 
 void Splines::AddPointInExistingSpline(UInt splineIndex, const Point& point)
