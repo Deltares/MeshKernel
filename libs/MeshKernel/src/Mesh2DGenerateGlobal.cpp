@@ -12,17 +12,17 @@ double meshkernel::Mesh2DGenerateGlobal::getDeltaLatitude(const double currentLa
     constexpr UInt numIterations = 5;
     constexpr double tolerance = 1.0e-14;
 
-    for (int i = 0; i < numIterations; ++i)
+    for (UInt i = 0; i < numIterations; ++i)
     {
-        double phi = conversion::degToRad * (currentLatitude + 0.5 * deltaLatitude);
-        double c = std::cos(phi);
-        double s = std::sqrt(1.0 - c * c);
-        double f = deltaLatitude - longitudeDiscretization * c;
-        double df = 1.0 + 0.5 * conversion::degToRad * longitudeDiscretization * s;
-        double yd = f / df;
-        deltaLatitude = deltaLatitude - yd;
+        const double phi = conversion::degToRad * (currentLatitude + 0.5 * deltaLatitude);
+        const double cosPhi = std::cos(phi);
+        const double sinPhi = std::sqrt(1.0 - cosPhi * cosPhi);
+        const double f = deltaLatitude - longitudeDiscretization * cosPhi;
+        const double df = 1.0 + 0.5 * conversion::degToRad * longitudeDiscretization * sinPhi;
+        const double latitudeAdjustment = f / df;
+        deltaLatitude = deltaLatitude - latitudeAdjustment;
 
-        if (yd < tolerance)
+        if (latitudeAdjustment < tolerance)
         {
             break;
         }
