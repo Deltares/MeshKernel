@@ -223,11 +223,15 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
         throw ConstraintError("The second node-index has the null value");
     }
 
-    const auto numNodes = GetNumNodes();
+    if (firstNodeIndex >= GetNumNodes())
+    {
+        throw RangeError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
+    }
 
-    range_check::CheckLess(firstNodeIndex, numNodes, "firstNodeIndex");
-
-    range_check::CheckLess(secondNodeIndex, numNodes, "secondNodeIndex");
+    if (secondNodeIndex >= GetNumNodes())
+    {
+        throw RangeError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
+    }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
     if (edgeIndex != constants::missing::uintValue)
