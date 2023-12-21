@@ -51,8 +51,8 @@ namespace meshkernel
         /// @brief Enumeration representing the longitudinal direction of grid expansion
         enum class GridExpansionDirection
         {
-            Northwards,
-            Southwards
+            Northwards = 1,
+            Southwards = -1
         };
 
         /// @brief Compute the latitude increment given the current latitude and the longitude discretization

@@ -53,7 +53,7 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 
     for (UInt n = 0; n < numNodes; ++n)
     {
-        const double expansionMultiplier = (growingDirection == GridExpansionDirection::Northwards) ? 1.0 : -1.0;
+        const double expansionMultiplier = static_cast<double>(growingDirection);
         Point p = {points[n].x, expansionMultiplier * points[n].y};
         nodeIndices[n] = NodeIndexFromPosition(mesh, p);
 
