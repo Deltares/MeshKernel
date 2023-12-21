@@ -33,6 +33,7 @@
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/RangeCheck.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Mesh;
@@ -222,15 +223,11 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
         throw ConstraintError("The second node-index has the null value");
     }
 
-    if (firstNodeIndex >= GetNumNodes())
-    {
-        throw RangeError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
-    }
+    const auto numNodes = GetNumNodes();
 
-    if (secondNodeIndex >= GetNumNodes())
-    {
-        throw RangeError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
-    }
+    range_check::CheckLess(firstNodeIndex, numNodes, "firstNodeIndex");
+
+    range_check::CheckLess(secondNodeIndex, numNodes, "secondNodeIndex");
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
     if (edgeIndex != constants::missing::uintValue)
