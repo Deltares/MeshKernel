@@ -1061,7 +1061,14 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-
+            if (numLongitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
+            }
+            if (numLatitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
+            }
             const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
             *meshKernelState[meshKernelId].m_mesh2d += *mesh;
         }

@@ -3,7 +3,9 @@
 #include <MeshKernel/Polygons.hpp>
 #include <cmath>
 
-double meshkernel::Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
+using namespace meshkernel;
+
+double Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
 {
 
     double deltaLatitude = longitudeDiscretization * std::cos(constants::conversion::degToRad * currentLatitude);
@@ -27,7 +29,7 @@ double meshkernel::Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatit
     return deltaLatitude;
 }
 
-meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& x)
+UInt Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& x)
 {
     constexpr double tolerance = 1.0e-6;
     const auto nodeIndex = constants::missing::uintValue;
@@ -42,10 +44,10 @@ meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::NodeIndexFromPosition(const M
     return nodeIndex;
 }
 
-void meshkernel::Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
-                                               const std::array<Point, 5>& points,
-                                               const GridExpansionDirection growingDirection,
-                                               const UInt numNodes)
+void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
+                                   const std::array<Point, 5>& points,
+                                   const GridExpansionDirection growingDirection,
+                                   const UInt numNodes)
 {
     std::array<UInt, 5> nodeIndices{};
 
@@ -73,21 +75,21 @@ void meshkernel::Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
     }
 }
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNodes,
-                                                                              const UInt numLatitudeNodes,
-                                                                              const Projection projection)
+std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNodes,
+                                                      const UInt numLatitudeNodes,
+                                                      const Projection projection)
 {
     if (numLongitudeNodes == 0)
     {
-        throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
+        throw MeshKernelError("The number of longitude nodes cannot be 0");
     }
     if (numLatitudeNodes == 0)
     {
-        throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
+        throw MeshKernelError("The number of latitude nodes cannot be 0");
     }
     if (projection != Projection::spherical && projection != Projection::sphericalAccurate)
     {
-        throw meshkernel::MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
+        throw MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
 
     std::array<Point, 5> points;
