@@ -28,12 +28,10 @@
 #pragma once
 
 #include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshInterpolation.hpp"
-#include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 namespace meshkernel
 {
@@ -147,7 +145,7 @@ namespace meshkernel
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
                                                     Point const& interpolationPoint) const;
 
-        Mesh2D& m_mesh;                                 ///< Pointer to the mesh
+        Mesh2D& m_mesh;                                 ///< Reference to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
         Location m_interpolationLocation;               ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
@@ -155,7 +153,7 @@ namespace meshkernel
         bool m_transformSamples = false;                ///< Wheher to transform samples
         std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
-        RTree m_samplesRtree;                                     ///< The samples tree
+        std::unique_ptr<RTreeBase> m_samplesRtree;                ///< The samples tree
         std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel

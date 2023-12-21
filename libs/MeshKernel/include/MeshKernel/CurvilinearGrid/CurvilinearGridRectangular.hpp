@@ -56,24 +56,24 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] A curvilinear grid
-        CurvilinearGrid Compute(const int numColumns,
-                                const int numRows,
-                                const double originX,
-                                const double originY,
-                                const double angle,
-                                const double blockSizeX,
-                                const double blockSizeY) const;
+        std::unique_ptr<CurvilinearGrid> Compute(const int numColumns,
+                                                 const int numRows,
+                                                 const double originX,
+                                                 const double originY,
+                                                 const double angle,
+                                                 const double blockSizeX,
+                                                 const double blockSizeY) const;
 
         /// @brief Compute a rectangular curvilinear grid in one polygon, given an angle and the block sizes
         /// @param[in] angle The grid angle
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] A curvilinear grid
-        CurvilinearGrid Compute(const double angle,
-                                const double blockSizeX,
-                                const double blockSizeY,
-                                std::shared_ptr<Polygons> polygons,
-                                UInt polygonIndex) const;
+        std::unique_ptr<CurvilinearGrid> Compute(const double angle,
+                                                 const double blockSizeX,
+                                                 const double blockSizeY,
+                                                 std::shared_ptr<Polygons> polygons,
+                                                 UInt polygonIndex) const;
 
         /// @brief Compute a rectangular curvilinear grid in one polygon, given the block size and the extension. The grid angle is 0
         /// @param[in] originX The x coordinate of the origin, located at the bottom left corner
@@ -83,12 +83,12 @@ namespace meshkernel
         /// @param[in] upperRightX The x coordinate of the upper right corner
         /// @param[in] upperRightY The y coordinate of the upper right corner
         /// @returns[in] A curvilinear grid
-        CurvilinearGrid Compute(const double originX,
-                                const double originY,
-                                const double blockSizeX,
-                                const double blockSizeY,
-                                const double upperRightX,
-                                const double upperRightY) const;
+        std::unique_ptr<CurvilinearGrid> Compute(const double originX,
+                                                 const double originY,
+                                                 const double blockSizeX,
+                                                 const double blockSizeY,
+                                                 const double upperRightX,
+                                                 const double upperRightY) const;
 
     private:
         /// @brief Compute a rectangular curvilinear grid on cartesian coordinates.

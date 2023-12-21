@@ -3,7 +3,7 @@
 #include <random>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include <MeshKernel/Utilities/RTreeFactory.hpp>
 
 TEST(RTree, RTreeRemovePoint)
 {
@@ -21,12 +21,10 @@ TEST(RTree, RTreeRemovePoint)
         }
     }
 
-    meshkernel::RTree rtree;
-    rtree.BuildTree(nodes);
-
-    rtree.DeleteNode(0);
-
-    ASSERT_EQ(rtree.Size(), 15);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
+    rtree->BuildTree(nodes);
+    rtree->DeleteNode(0);
+    ASSERT_EQ(rtree->Size(), 15);
 }
 
 TEST(RTree, PerformanceTestBuildAndSearchRTree)
@@ -45,8 +43,9 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     }
 
     auto start(std::chrono::steady_clock::now());
-    meshkernel::RTree rtree;
-    rtree.BuildTree(nodes);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
+    rtree->BuildTree(nodes);
+
     auto end = std::chrono::steady_clock::now();
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time build " << nodes.size() << " mesh nodes RTree: " << elapsedTime << " s " << std::endl;
@@ -54,8 +53,8 @@ TEST(RTree, PerformanceTestBuildAndSearchRTree)
     start = std::chrono::steady_clock::now();
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        rtree.SearchPoints(nodes[i], 1e-8);
-        ASSERT_EQ(rtree.GetQueryResultSize(), 1);
+        rtree->SearchPoints(nodes[i], 1e-8);
+        ASSERT_EQ(rtree->GetQueryResultSize(), 1);
     }
     end = std::chrono::steady_clock::now();
     elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -78,19 +77,19 @@ TEST(RTree, SearchPoints_MustComputeCorrectQuerySize)
         }
     }
 
-    meshkernel::RTree rtree;
-    rtree.BuildTree(nodes);
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
+    rtree->BuildTree(nodes);
 
     // large search size, node found
     meshkernel::Point const pointToSearch{(n - 1.0) * 0.5, (n - 1.0) * 0.5};
     double squaredDistance = 0.708 * 0.708;
-    rtree.SearchPoints(pointToSearch, squaredDistance);
-    ASSERT_EQ(rtree.GetQueryResultSize(), 4);
+    rtree->SearchPoints(pointToSearch, squaredDistance);
+    ASSERT_EQ(rtree->GetQueryResultSize(), 4);
 
     // smaller search size, node not found
     squaredDistance = 0.700 * 0.700;
-    rtree.SearchPoints(pointToSearch, squaredDistance);
-    ASSERT_EQ(rtree.GetQueryResultSize(), 0);
+    rtree->SearchPoints(pointToSearch, squaredDistance);
+    ASSERT_EQ(rtree->GetQueryResultSize(), 0);
 }
 
 TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
@@ -106,11 +105,11 @@ TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
     points.push_back({20.0, 20.0});
     points.push_back({-20.0, 10.0});
 
-    auto rtree = meshkernel::RTree();
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::cartesian);
 
     // 2 Execute
-    rtree.BuildTree(points, boundingBox);
+    rtree->BuildTree(points, boundingBox);
 
     // 3 Assert
-    ASSERT_EQ(3, rtree.Size());
+    ASSERT_EQ(3, rtree->Size());
 }

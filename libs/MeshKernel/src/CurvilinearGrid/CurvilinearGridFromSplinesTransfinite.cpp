@@ -43,7 +43,7 @@ CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std
     m_numN = curvilinearParameters.n_refinement;
 }
 
-CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
+std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute()
 {
     if (m_numN == 0 || m_numM == 0)
     {
@@ -56,7 +56,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
         throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: The number of splines is less than four.");
     }
 
-    ComputeIntersections();
+    CharacteriseSplines();
 
     const auto numMPoints = m_numM + 1;
     const auto numNPoints = m_numN + 1;
@@ -86,6 +86,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
     const auto TotalNRows = (m_numMSplines - 1) * m_numN;
+
     lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, TotalNRows + 1);
 
     UInt numMSplines = 0;
@@ -232,7 +233,7 @@ CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
         }
     }
 
-    return CurvilinearGrid(gridNodes, m_splines->m_projection);
+    return std::make_unique<CurvilinearGrid>(gridNodes, m_splines->m_projection);
 }
 
 void CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(UInt numIntersections,
@@ -315,7 +316,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double f
     }
 }
 
-void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
+void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
 {
     const auto numSplines = m_splines->GetNumSplines();
 
@@ -371,6 +372,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                         firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
                     }
                 }
+
                 m_splineIntersectionRatios[i][j] = firstSplineRatio;
                 m_splineIntersectionRatios[j][i] = secondSplineRatio;
             }
@@ -384,10 +386,149 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: At least one of the splines could not be classified.");
         }
     }
+}
+
+void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
+{
+    const auto numSplines = m_splines->GetNumSplines();
+
+    // Now determine the start and end spline corner points for each spline
+    ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
+
+    // m_n direction
+    for (UInt i = 0; i < m_numMSplines; i++)
+    {
+        for (auto j = m_numMSplines; j < numSplines; j++)
+        {
+            UInt maxIndex = 0;
+            UInt lastIndex = 0;
+            for (UInt k = 0; k <= i; k++)
+            {
+
+                if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
+                {
+                    maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
+                    lastIndex = k;
+                }
+            }
+
+            m_splineGroupIndexAndFromToIntersections[j][1] = maxIndex;
+        }
+        UInt maxIndex = 0;
+        for (auto j = m_numMSplines; j < numSplines; j++)
+        {
+            if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
+            {
+                maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][1]);
+            }
+        }
+        m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
+    }
+
+    // m_m direction
+    for (auto i = m_numMSplines; i < numSplines; i++)
+    {
+        for (UInt j = 0; j < m_numMSplines; j++)
+        {
+            UInt maxIndex = 0;
+            UInt lastIndex = m_numMSplines;
+            for (auto k = m_numMSplines; k <= i; k++)
+            {
+                if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
+                {
+                    maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
+                    lastIndex = k;
+                }
+            }
+
+            m_splineGroupIndexAndFromToIntersections[j][2] = maxIndex;
+        }
+
+        UInt maxIndex = 0;
+
+        for (UInt j = 0; j < m_numMSplines; j++)
+        {
+            if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
+            {
+                maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][2]);
+            }
+        }
+
+        m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
+    }
+
+    for (UInt i = 0; i < numSplines; i++)
+    {
+        m_splineGroupIndexAndFromToIntersections[i][1] = 0;
+        m_splineGroupIndexAndFromToIntersections[i][2] = 0;
+    }
+
+    // m_n constant, spline start end end
+    for (UInt i = 0; i < m_numMSplines; i++)
+    {
+        for (auto j = m_numMSplines; j < numSplines; j++)
+        {
+            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
+            {
+                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
+                {
+                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
+                }
+
+                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
+            }
+        }
+    }
+
+    // m_m constant, spline start end end
+    for (auto i = m_numMSplines; i < numSplines; i++)
+    {
+        for (UInt j = 0; j < m_numMSplines; j++)
+        {
+            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
+            {
+                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
+                {
+                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
+                }
+
+                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
+            }
+        }
+    }
+}
+
+void CurvilinearGridFromSplinesTransfinite::OrganiseSplines()
+{
+    const auto numSplines = m_splines->GetNumSplines();
+
+    for (UInt i = 0; i < numSplines; ++i)
+    {
+        if (m_splineType[i] == -1)
+        {
+            for (UInt j = i + 1; j < numSplines; ++j)
+            {
+                if (m_splineType[j] == 1)
+                {
+                    // they must be swapped
+                    m_splines->m_splineNodes[i].swap(m_splines->m_splineNodes[j]);
+                    m_splines->m_splineDerivatives[i].swap(m_splines->m_splineDerivatives[j]);
+                    std::swap(m_splines->m_splinesLength[i], m_splines->m_splinesLength[j]);
+                    m_splineIntersectionRatios[i].swap(m_splineIntersectionRatios[j]);
+
+                    SwapColumns(m_splineIntersectionRatios, i, j);
+                    std::swap(m_splineType[i], m_splineType[j]);
+                    break;
+                }
+            }
+        }
+    }
 
     // find the first non m_m spline
     m_numMSplines = FindIndex(m_splineType, -1);
     m_numNSplines = numSplines - m_numMSplines;
+
+    // order splines
 
     const UInt maxExternalIterations = 10;
     for (UInt i = 0; i < maxExternalIterations; i++)
@@ -420,103 +561,6 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             break;
         }
     }
-
-    // Now determine the start and end spline corner points for each spline
-    ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
-
-    // m_n direction
-    for (UInt i = 0; i < m_numMSplines; i++)
-    {
-        for (auto j = m_numMSplines; j < numSplines; j++)
-        {
-            UInt maxIndex = 0;
-            UInt lastIndex = 0;
-            for (UInt k = 0; k <= i; k++)
-            {
-                if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
-                {
-                    maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
-                    lastIndex = k;
-                }
-            }
-            m_splineGroupIndexAndFromToIntersections[j][1] = maxIndex;
-        }
-        UInt maxIndex = 0;
-        for (auto j = m_numMSplines; j < numSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
-            {
-                maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][1]);
-            }
-        }
-        m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
-    }
-
-    // m_m direction
-    for (auto i = m_numMSplines; i < numSplines; i++)
-    {
-        for (UInt j = 0; j < m_numMSplines; j++)
-        {
-            UInt maxIndex = 0;
-            UInt lastIndex = m_numMSplines;
-            for (auto k = m_numMSplines; k <= i; k++)
-            {
-                if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
-                {
-                    maxIndex = m_splineGroupIndexAndFromToIntersections[lastIndex][0] + 1;
-                    lastIndex = k;
-                }
-            }
-            m_splineGroupIndexAndFromToIntersections[j][2] = maxIndex;
-        }
-        UInt maxIndex = 0;
-        for (UInt j = 0; j < m_numMSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
-            {
-                maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][2]);
-            }
-        }
-        m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
-    }
-
-    for (UInt i = 0; i < numSplines; i++)
-    {
-        m_splineGroupIndexAndFromToIntersections[i][1] = 0;
-        m_splineGroupIndexAndFromToIntersections[i][2] = 0;
-    }
-
-    // m_n constant, spline start end end
-    for (UInt i = 0; i < m_numMSplines; i++)
-    {
-        for (auto j = m_numMSplines; j < numSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
-            {
-                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
-                {
-                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
-                }
-                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
-            }
-        }
-    }
-
-    // m_m constant, spline start end end
-    for (auto i = m_numMSplines; i < numSplines; i++)
-    {
-        for (UInt j = 0; j < m_numMSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
-            {
-                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
-                {
-                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
-                }
-                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
-            }
-        }
-    }
 }
 
 bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
@@ -544,11 +588,14 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
                     continue;
                 }
 
-                // Splines must be swapped
-                m_splines->SwapSplines(j, k);
+                // they must be swapped
+                m_splines->m_splineNodes[j].swap(m_splines->m_splineNodes[k]);
+                m_splines->m_splineDerivatives[j].swap(m_splines->m_splineDerivatives[k]);
+                std::swap(m_splines->m_splinesLength[j], m_splines->m_splinesLength[k]);
                 m_splineIntersectionRatios[j].swap(m_splineIntersectionRatios[k]);
 
                 SwapColumns(m_splineIntersectionRatios, j, k);
+                std::swap(m_splineType[j], m_splineType[k]);
 
                 // repeat the entire procedure once more
                 return false;
@@ -557,6 +604,13 @@ bool CurvilinearGridFromSplinesTransfinite::OrderSplines(UInt startFirst,
     }
 
     return true;
+}
+
+void CurvilinearGridFromSplinesTransfinite::CharacteriseSplines()
+{
+    ComputeInteractions();
+    OrganiseSplines();
+    ClassifySplineIntersections();
 }
 
 template <typename T>

@@ -28,22 +28,42 @@
 #include <cmath>
 #include <numeric>
 
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Polygons.hpp>
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Mesh;
 
+Mesh::Mesh() : Mesh(Projection::cartesian)
+{
+}
+
+Mesh::Mesh(Projection projection) : m_projection(projection),
+                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
+                                    m_facesRTree(RTreeFactory::Create(m_projection))
+{
+}
+
 Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
-           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection) {}
+           Projection projection) : m_nodes(nodes),
+                                    m_edges(edges),
+                                    m_projection(projection),
+                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
+                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
+                                    m_facesRTree(RTreeFactory::Create(m_projection))
+
+{
+}
 
 bool Mesh::NodeAdministration()
 {
     // assume no duplicated links
-    for (UInt e = 0; e < static_cast<UInt>(GetNumEdges()); e++)
+    for (UInt e = 0; e < GetNumEdges(); e++)
     {
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
@@ -53,7 +73,7 @@ bool Mesh::NodeAdministration()
             continue;
         }
 
-        if (m_nodesNumEdges[firstNode] >= Mesh::m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= Mesh::m_maximumNumberOfEdgesPerNode)
+        if (m_nodesNumEdges[firstNode] >= m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= m_maximumNumberOfEdgesPerNode)
         {
             continue;
         }
@@ -227,7 +247,7 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
     }
 
     // add all valid edges starting at secondNode
-    std::vector<UInt> secondNodeEdges(Mesh::m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
+    std::vector<UInt> secondNodeEdges(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
@@ -299,25 +319,25 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
     filteredNodes.resize(filteredNodeCount);
 
     // Update the R-Tree of the mesh nodes
-    RTree nodesRtree;
-    nodesRtree.BuildTree(filteredNodes);
+    const auto nodesRtree = RTreeFactory::Create(m_projection);
+    nodesRtree->BuildTree(filteredNodes);
 
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
     for (UInt i = 0; i < filteredNodes.size(); ++i)
     {
-        nodesRtree.SearchPoints(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree->SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
-        const auto resultSize = nodesRtree.GetQueryResultSize();
+        const auto resultSize = nodesRtree->GetQueryResultSize();
         if (resultSize > 1)
         {
-            for (UInt j = 0; j < nodesRtree.GetQueryResultSize(); j++)
+            for (UInt j = 0; j < nodesRtree->GetQueryResultSize(); j++)
             {
-                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
+                const auto nodeIndexInFilteredNodes = nodesRtree->GetQueryResult(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
-                    nodesRtree.DeleteNode(i);
+                    nodesRtree->DeleteNode(i);
                 }
             }
         }
@@ -670,13 +690,13 @@ void Mesh::SearchNearestLocation(Point point, Location meshLocation)
     switch (meshLocation)
     {
     case Location::Nodes:
-        m_nodesRTree.SearchNearestPoint(point);
+        m_nodesRTree->SearchNearestPoint(point);
         break;
     case Location::Edges:
-        m_edgesRTree.SearchNearestPoint(point);
+        m_edgesRTree->SearchNearestPoint(point);
         break;
     case Location::Faces:
-        m_facesRTree.SearchNearestPoint(point);
+        m_facesRTree->SearchNearestPoint(point);
         break;
     case Location::Unknown:
     default:
@@ -689,13 +709,13 @@ void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location mes
     switch (meshLocation)
     {
     case Location::Faces:
-        m_facesRTree.SearchNearestPoint(point, squaredRadius);
+        m_facesRTree->SearchNearestPoint(point, squaredRadius);
         break;
     case Location::Nodes:
-        m_nodesRTree.SearchNearestPoint(point, squaredRadius);
+        m_nodesRTree->SearchNearestPoint(point, squaredRadius);
         break;
     case Location::Edges:
-        m_edgesRTree.SearchNearestPoint(point, squaredRadius);
+        m_edgesRTree->SearchNearestPoint(point, squaredRadius);
         break;
     case Location::Unknown:
     default:
@@ -708,13 +728,13 @@ void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocat
     switch (meshLocation)
     {
     case Location::Faces:
-        m_facesRTree.SearchPoints(point, squaredRadius);
+        m_facesRTree->SearchPoints(point, squaredRadius);
         break;
     case Location::Nodes:
-        m_nodesRTree.SearchPoints(point, squaredRadius);
+        m_nodesRTree->SearchPoints(point, squaredRadius);
         break;
     case Location::Edges:
-        m_edgesRTree.SearchPoints(point, squaredRadius);
+        m_edgesRTree->SearchPoints(point, squaredRadius);
         break;
     case Location::Unknown:
     default:
@@ -729,7 +749,7 @@ void Mesh::BuildTree(Location meshLocation)
     case Location::Faces:
         if (m_facesRTreeRequiresUpdate)
         {
-            m_facesRTree.BuildTree(m_facesCircumcenters);
+            m_facesRTree->BuildTree(m_facesCircumcenters);
             m_facesRTreeRequiresUpdate = false;
         }
         break;
@@ -737,7 +757,7 @@ void Mesh::BuildTree(Location meshLocation)
         if (m_nodesRTreeRequiresUpdate)
         {
 
-            m_nodesRTree.BuildTree(m_nodes);
+            m_nodesRTree->BuildTree(m_nodes);
             m_nodesRTreeRequiresUpdate = false;
         }
         break;
@@ -745,7 +765,7 @@ void Mesh::BuildTree(Location meshLocation)
         if (m_edgesRTreeRequiresUpdate)
         {
             ComputeEdgesCenters();
-            m_edgesRTree.BuildTree(m_edgesCenters);
+            m_edgesRTree->BuildTree(m_edgesCenters);
             m_edgesRTreeRequiresUpdate = false;
         }
         break;
@@ -762,7 +782,7 @@ void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
     case Location::Faces:
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
-            m_facesRTree.BuildTree(m_facesCircumcenters, boundingBox);
+            m_facesRTree->BuildTree(m_facesCircumcenters, boundingBox);
             m_facesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -770,7 +790,7 @@ void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
     case Location::Nodes:
         if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
-            m_nodesRTree.BuildTree(m_nodes, boundingBox);
+            m_nodesRTree->BuildTree(m_nodes, boundingBox);
             m_nodesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -779,7 +799,7 @@ void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
         if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
             ComputeEdgesCenters();
-            m_edgesRTree.BuildTree(m_edgesCenters, boundingBox);
+            m_edgesRTree->BuildTree(m_edgesCenters, boundingBox);
             m_edgesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -795,11 +815,11 @@ meshkernel::UInt Mesh::GetNumLocations(Location meshLocation) const
     switch (meshLocation)
     {
     case Location::Faces:
-        return m_facesRTree.GetQueryResultSize();
+        return m_facesRTree->GetQueryResultSize();
     case Location::Nodes:
-        return m_nodesRTree.GetQueryResultSize();
+        return m_nodesRTree->GetQueryResultSize();
     case Location::Edges:
-        return m_edgesRTree.GetQueryResultSize();
+        return m_edgesRTree->GetQueryResultSize();
     case Location::Unknown:
     default:
         return constants::missing::uintValue;
@@ -811,11 +831,11 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
     switch (meshLocation)
     {
     case Location::Faces:
-        return m_facesRTree.GetQueryResult(index);
+        return m_facesRTree->GetQueryResult(index);
     case Location::Nodes:
-        return m_nodesRTree.GetQueryResult(index);
+        return m_nodesRTree->GetQueryResult(index);
     case Location::Edges:
-        return m_edgesRTree.GetQueryResult(index);
+        return m_edgesRTree->GetQueryResult(index);
     case Location::Unknown:
     default:
         return constants::missing::uintValue;

@@ -39,7 +39,7 @@ namespace meshkernel
 
     public:
         /// @brief Constructor
-        explicit Orthogonalizer(std::shared_ptr<Mesh2D> mesh);
+        explicit Orthogonalizer(Mesh2D& mesh);
 
         /// @brief Computes the smoother weights and the right hans side
         void Compute();
@@ -48,7 +48,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the left hand side, the linear system
-        [[nodiscard]] double GetWeight(UInt node, UInt connectedNode)
+        [[nodiscard]] double GetWeight(UInt node, UInt connectedNode) const
         {
             return m_weights[node][connectedNode];
         }
@@ -57,7 +57,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the right hand size
-        [[nodiscard]] double GetRightHandSide(UInt node, UInt connectedNode)
+        [[nodiscard]] double GetRightHandSide(UInt node, UInt connectedNode) const
         {
             return m_rhs[node][connectedNode];
         }
@@ -68,7 +68,7 @@ namespace meshkernel
         /// @returns If the method succeeded
         bool AspectRatio(const Mesh2D& mesh);
 
-        std::shared_ptr<Mesh2D> m_mesh;             ///< Pointer to mesh
+        Mesh2D& m_mesh;                             ///< A reference to mesh
         std::vector<double> m_aspectRatios;         ///< Aspect ratios
         std::vector<std::vector<double>> m_weights; ///< Weights
         std::vector<std::vector<double>> m_rhs;     ///< Right hand side

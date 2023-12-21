@@ -35,7 +35,8 @@ using meshkernel::CurvilinearGridLineShift;
 using meshkernel::CurvilinearGridNodeIndices;
 using meshkernel::Point;
 
-CurvilinearGridLineShift::CurvilinearGridLineShift(CurvilinearGrid& grid) : CurvilinearGridAlgorithm(grid), m_originalGrid(grid)
+CurvilinearGridLineShift::CurvilinearGridLineShift(CurvilinearGrid& grid) : CurvilinearGridAlgorithm(grid),
+                                                                            m_originalGrid(grid)
 
 {
 }
