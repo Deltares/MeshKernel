@@ -224,12 +224,12 @@ void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
 
     if (firstNodeIndex >= GetNumNodes())
     {
-        throw ConstraintError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
+        throw RangeError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
     }
 
     if (secondNodeIndex >= GetNumNodes())
     {
-        throw ConstraintError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
+        throw RangeError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);

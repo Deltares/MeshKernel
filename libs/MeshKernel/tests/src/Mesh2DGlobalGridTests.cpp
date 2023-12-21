@@ -11,8 +11,8 @@
 TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_ShouldGenerateMesh)
 {
     // Execute
-    const meshkernel::UInt numLongitudeNodes = 19;
-    const meshkernel::UInt numLatitudeNodes = 25;
+    constexpr meshkernel::UInt numLongitudeNodes = 19;
+    constexpr meshkernel::UInt numLatitudeNodes = 25;
     const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
 
     // Assert

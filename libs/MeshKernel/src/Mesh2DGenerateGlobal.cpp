@@ -3,22 +3,18 @@
 #include <MeshKernel/Polygons.hpp>
 #include <cmath>
 
-using namespace meshkernel::constants;
-
-double meshkernel::Mesh2DGenerateGlobal::getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
+double meshkernel::Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatitude, const double longitudeDiscretization)
 {
 
-    double deltaLatitude = longitudeDiscretization * std::cos(conversion::degToRad * currentLatitude);
-    constexpr UInt numIterations = 5;
-    constexpr double tolerance = 1.0e-14;
+    double deltaLatitude = longitudeDiscretization * std::cos(constants::conversion::degToRad * currentLatitude);
 
     for (UInt i = 0; i < numIterations; ++i)
     {
-        const double phi = conversion::degToRad * (currentLatitude + 0.5 * deltaLatitude);
+        const double phi = constants::conversion::degToRad * (currentLatitude + 0.5 * deltaLatitude);
         const double cosPhi = std::cos(phi);
         const double sinPhi = std::sqrt(1.0 - cosPhi * cosPhi);
         const double f = deltaLatitude - longitudeDiscretization * cosPhi;
-        const double df = 1.0 + 0.5 * conversion::degToRad * longitudeDiscretization * sinPhi;
+        const double df = 1.0 + 0.5 * constants::conversion::degToRad * longitudeDiscretization * sinPhi;
         const double latitudeAdjustment = f / df;
         deltaLatitude = deltaLatitude - latitudeAdjustment;
 
@@ -31,10 +27,10 @@ double meshkernel::Mesh2DGenerateGlobal::getDeltaLatitude(const double currentLa
     return deltaLatitude;
 }
 
-meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::getNodeIndexFromPosition(const Mesh& mesh, const Point& x)
+meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& x)
 {
     constexpr double tolerance = 1.0e-6;
-    const auto nodeIndex = missing::uintValue;
+    const auto nodeIndex = constants::missing::uintValue;
 
     for (int i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
     {
@@ -46,19 +42,20 @@ meshkernel::UInt meshkernel::Mesh2DGenerateGlobal::getNodeIndexFromPosition(cons
     return nodeIndex;
 }
 
-void meshkernel::Mesh2DGenerateGlobal::addFace(Mesh& mesh,
-                                               const std::array<Point, 8>& points,
-                                               const double latitudeDirection,
+void meshkernel::Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
+                                               const std::array<Point, 5>& points,
+                                               const GridExpansionDirection growingDirection,
                                                const UInt numNodes)
 {
-    std::array<UInt, 8> nodeIndices{};
+    std::array<UInt, 5> nodeIndices{};
 
     for (UInt n = 0; n < numNodes; ++n)
     {
-        Point p = {points[n].x, latitudeDirection * points[n].y};
-        nodeIndices[n] = getNodeIndexFromPosition(mesh, p);
+        const double expansionMultiplier = (growingDirection == GridExpansionDirection::Northwards) ? 1.0 : -1.0;
+        Point p = {points[n].x, expansionMultiplier * points[n].y};
+        nodeIndices[n] = NodeIndexFromPosition(mesh, p);
 
-        if (nodeIndices[n] == missing::uintValue)
+        if (nodeIndices[n] == constants::missing::uintValue)
         {
             nodeIndices[n] = mesh.InsertNode(p);
         }
@@ -93,7 +90,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(co
         throw meshkernel::MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
 
-    std::array<Point, 8> points;
+    std::array<Point, 5> points;
     double deltaLongitude = 360.0 / static_cast<double>(numLongitudeNodes);
     double currentLatitude = 0.0;
     bool pentagonFace = false;
@@ -104,7 +101,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(co
 
     for (UInt i = 0; i < numLatitudeNodes; ++i)
     {
-        double deltaLatitude = getDeltaLatitude(currentLatitude, deltaLongitude);
+        double deltaLatitude = DeltaLatitude(currentLatitude, deltaLongitude);
 
         if (currentLatitude + 1.5 * deltaLatitude > 90.0)
         {
@@ -114,12 +111,12 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(co
         }
         else
         {
-            if (deltaLatitude * conversion::degToRad * geometric::earth_radius < minDiscretizationLength &&
+            if (deltaLatitude * constants::conversion::degToRad * constants::geometric::earth_radius < minDiscretizationLength &&
                 !pentagonFace)
             {
                 deltaLongitude = 2.0 * deltaLongitude;
                 pentagonFace = true;
-                deltaLatitude = getDeltaLatitude(currentLatitude, deltaLongitude);
+                deltaLatitude = DeltaLatitude(currentLatitude, deltaLongitude);
             }
             else
             {
@@ -157,8 +154,8 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(co
             if (points[2].x <= 180.0)
             {
                 pentagonFace = false;
-                addFace(*mesh2d, points, 1.0, numberOfPoints);
-                addFace(*mesh2d, points, -1.0, numberOfPoints);
+                AddFace(*mesh2d, points, GridExpansionDirection::Northwards, numberOfPoints);
+                AddFace(*mesh2d, points, GridExpansionDirection::Southwards, numberOfPoints);
             }
         }
 
@@ -179,9 +176,12 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::Mesh2DGenerateGlobal::Compute(co
     for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
     {
         const auto& [firstNode, secondNode] = mesh2d->m_edges[e];
-
-        if ((mesh2d->m_nodesNumEdges[firstNode] == geometric::numNodesInPentagon || mesh2d->m_nodesNumEdges[firstNode] == geometric::numNodesInhaxagon) &&
-            (mesh2d->m_nodesNumEdges[secondNode] == geometric::numNodesInPentagon || mesh2d->m_nodesNumEdges[secondNode] == geometric::numNodesInhaxagon))
+        const auto numEdgesFirstNode = mesh2d->m_nodesNumEdges[firstNode];
+        const auto numEdgesSecondNode = mesh2d->m_nodesNumEdges[secondNode];
+        if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
+             numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
+            (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
+             numEdgesSecondNode == constants::geometric::numNodesInhaxagon))
         {
             if (IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
             {

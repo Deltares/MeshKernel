@@ -43,19 +43,28 @@ namespace meshkernel
         ///
         /// @param [in] numLongitudeNodes The number of points along the longitude.
         /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
-        /// @param [in] projection The projection to be used .
-        ///
+        /// @param [in] projection The projection to be used.
         /// @return A unique pointer to the generated Mesh2D representing the global grid.
         static std::unique_ptr<Mesh2D> Compute(const UInt numLongitudeNodes, const UInt numLatitudeNodes, const Projection projection);
 
     private:
+        /// @brief Enumeration representing the longitudinal direction of grid expansion
+        enum class GridExpansionDirection
+        {
+            Northwards,
+            Southwards
+        };
+
         /// @brief Compute the latitude increment given the current latitude and the longitude discretization
-        static double getDeltaLatitude(const double currentLatitude, const double longitudeDiscretization);
+        static double DeltaLatitude(const double currentLatitude, const double longitudeDiscretization);
 
         /// @brief Gets the node index from a give position
-        static UInt getNodeIndexFromPosition(const Mesh& mesh, const Point& position);
+        static UInt NodeIndexFromPosition(const Mesh& mesh, const Point& position);
 
         /// @brief Add a face to an existing mesh towards a specific direction
-        static void addFace(Mesh& mesh, const std::array<Point, 8>& points, const double latitudeDirection, const UInt numNodes);
+        static void AddFace(Mesh& mesh, const std::array<Point, 5>& points, const GridExpansionDirection growingDirection, const UInt numNodes);
+
+        static constexpr UInt numIterations = 5;     ///< The number of iterations in calculating the DeltaLatitude
+        static constexpr double tolerance = 1.0e-14; ///< The tolerance determining when the computation of DeltaLatitude is completed
     };
 } // namespace meshkernel
