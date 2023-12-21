@@ -2969,8 +2969,8 @@ TEST(Mesh2D, mesh2dMakeGlobal_ShouldMakeGlobalMesh)
     auto errorCode = mkernel_allocate_state(1, mk_id);
 
     // Execute
-    const meshkernel::UInt numLongitudeNodes = 19;
-    const meshkernel::UInt numLatitudeNodes = 25;
+    const int numLongitudeNodes = 19;
+    const int numLatitudeNodes = 25;
     errorCode = mkernel_mesh2d_make_global(0, numLongitudeNodes, numLatitudeNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
