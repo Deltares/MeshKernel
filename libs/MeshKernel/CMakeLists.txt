@@ -106,7 +106,6 @@ set(
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
   ${DOMAIN_INC_DIR}/Formatting.hpp
-  ${DOMAIN_INC_DIR}/GenerateGlobalGrid.hpp
   ${DOMAIN_INC_DIR}/Hessian.hpp
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
