@@ -271,14 +271,14 @@ void TestCurvilinearGridFromSplines(const std::vector<meshkernel::Point>& firstS
 
     const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
 
-    ASSERT_EQ(curvilinearGrid.m_nodes.size(), expectedPoints.size());
+    ASSERT_EQ(curvilinearGrid->m_nodes.size(), expectedPoints.size());
 
     constexpr double tolerance = 1e-4;
 
-    for (size_t i = 0; i < curvilinearGrid.m_nodes.size(); ++i)
+    for (size_t i = 0; i < curvilinearGrid->m_nodes.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid.m_nodes[i].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid.m_nodes[i].y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid->m_nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid->m_nodes[i].y, tolerance);
     }
 }
 
