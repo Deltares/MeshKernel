@@ -20,7 +20,7 @@ double Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatitude, const d
         const double latitudeAdjustment = f / df;
         deltaLatitude = deltaLatitude - latitudeAdjustment;
 
-        if (latitudeAdjustment < tolerance)
+        if (latitudeAdjustment < toleranceDeltaLatitude)
         {
             break;
         }
@@ -32,16 +32,15 @@ double Mesh2DGenerateGlobal::DeltaLatitude(const double currentLatitude, const d
 UInt Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& x)
 {
     constexpr double tolerance = 1.0e-6;
-    const auto nodeIndex = constants::missing::uintValue;
 
-    for (int i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
+    for (auto i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
     {
         if (IsEqual(x, mesh.m_nodes[i], tolerance))
         {
             return static_cast<UInt>(i);
         }
     }
-    return nodeIndex;
+    return constants::missing::uintValue;
 }
 
 void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
@@ -53,7 +52,7 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 
     for (UInt n = 0; n < numNodes; ++n)
     {
-        const double expansionMultiplier = static_cast<double>(growingDirection);
+        const auto expansionMultiplier = static_cast<double>(growingDirection);
         Point p = {points[n].x, expansionMultiplier * points[n].y};
         nodeIndices[n] = NodeIndexFromPosition(mesh, p);
 
@@ -183,12 +182,10 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
              numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
-             numEdgesSecondNode == constants::geometric::numNodesInhaxagon))
+             numEdgesSecondNode == constants::geometric::numNodesInhaxagon) &&
+            IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
         {
-            if (IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
-            {
-                mesh2d->DeleteEdge(e);
-            }
+            mesh2d->DeleteEdge(e);
         }
     }
 

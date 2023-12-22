@@ -64,7 +64,7 @@ namespace meshkernel
         /// @brief Add a face to an existing mesh towards a specific direction
         static void AddFace(Mesh& mesh, const std::array<Point, 5>& points, const GridExpansionDirection growingDirection, const UInt numNodes);
 
-        static constexpr UInt numIterations = 5;     ///< The number of iterations in calculating the DeltaLatitude
-        static constexpr double tolerance = 1.0e-14; ///< The tolerance determining when the computation of DeltaLatitude is completed
+        static constexpr UInt numIterations = 5;                  ///< The number of iterations in calculating the DeltaLatitude
+        static constexpr double toleranceDeltaLatitude = 1.0e-14; ///< The tolerance determining when the computation of DeltaLatitude is completed
     };
 } // namespace meshkernel
