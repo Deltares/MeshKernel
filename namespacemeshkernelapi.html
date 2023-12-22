@@ -451,6 +451,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a43a38a425a4c575cd1de377a5ecad354"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a43a38a425a4c575cd1de377a5ecad354">mkernel_mesh2d_intersections_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolygon, int *edgeNodes, int *edgeIndex, double *edgeDistances, double *segmentDistances, int *segmentIndexes, int *faceIndexes, int *faceNumEdges, int *faceEdgeIndex)</td></tr>
 <tr class="memdesc:a43a38a425a4c575cd1de377a5ecad354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges intersected by a polygon, with additional information on the intersections.  <a href="namespacemeshkernelapi.html#a43a38a425a4c575cd1de377a5ecad354">More...</a><br /></td></tr>
 <tr class="separator:a43a38a425a4c575cd1de377a5ecad354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc659490a272d015ea79215b27419243"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afc659490a272d015ea79215b27419243">mkernel_mesh2d_make_global</a> (int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)</td></tr>
+<tr class="memdesc:afc659490a272d015ea79215b27419243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the global mesh with a given number of points along the longitude and latitude directions.  <a href="namespacemeshkernelapi.html#afc659490a272d015ea79215b27419243">More...</a><br /></td></tr>
+<tr class="separator:afc659490a272d015ea79215b27419243"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a705012a0f338272507f22bb5832ad3be"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a705012a0f338272507f22bb5832ad3be">mkernel_mesh2d_make_triangular_mesh_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonPoints)</td></tr>
 <tr class="memdesc:a705012a0f338272507f22bb5832ad3be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.  <a href="namespacemeshkernelapi.html#a705012a0f338272507f22bb5832ad3be">More...</a><br /></td></tr>
 <tr class="separator:a705012a0f338272507f22bb5832ad3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5419,6 +5422,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[out]</td><td class="paramname">faceIndexes</td><td>For each intersection, the face index </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">faceNumEdges</td><td>For each intersection, the number of intersections </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">faceEdgeIndex</td><td>For each intersection, the index of the intersected edge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="afc659490a272d015ea79215b27419243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc659490a272d015ea79215b27419243">&#9670;&nbsp;</a></span>mkernel_mesh2d_make_global()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_make_global </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numLongitudeNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numLatitudeNodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the global mesh with a given number of points along the longitude and latitude directions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numLongitudeNodes</td><td>The number of points along the longitude. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numLatitudeNodes</td><td>The number of points along the latitude (half hemisphere). </td></tr>
   </table>
   </dd>
 </dl>
