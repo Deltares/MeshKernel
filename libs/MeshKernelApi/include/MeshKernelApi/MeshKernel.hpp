@@ -1089,7 +1089,7 @@ namespace meshkernelapi
                                                                   int* faceNumEdges,
                                                                   int* faceEdgeIndex);
 
-        /// @brief Compute the mesh with a given number of points along the longitude and latitude directions.
+        /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param [in] numLongitudeNodes The number of points along the longitude.
         /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
