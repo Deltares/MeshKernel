@@ -33,6 +33,7 @@
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/RangeCheck.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Mesh;
@@ -212,9 +213,24 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
 void Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
 {
-    if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
+    if (firstNodeIndex == constants::missing::uintValue)
     {
-        throw std::invalid_argument("Mesh::MergeTwoNodes: Either the first or the second node-index is invalid.");
+        throw ConstraintError("The first node-index has the null value");
+    }
+
+    if (secondNodeIndex == constants::missing::uintValue)
+    {
+        throw ConstraintError("The second node-index has the null value");
+    }
+
+    if (firstNodeIndex >= GetNumNodes())
+    {
+        throw RangeError("The first node-index is out of range: value = {}, number of nodes = {}", firstNodeIndex, GetNumNodes());
+    }
+
+    if (secondNodeIndex >= GetNumNodes())
+    {
+        throw RangeError("The second node-index is out of range: value = {}, number of nodes = {}", secondNodeIndex, GetNumNodes());
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
@@ -477,18 +493,27 @@ meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    UInt edgeIndex = constants::missing::uintValue;
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[localEdgeIndex], firstNodeIndex);
+        const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[edgeIndex], firstNodeIndex);
         if (firstEdgeOtherNode == secondNodeIndex)
         {
-            edgeIndex = localEdgeIndex;
-            break;
+            return edgeIndex;
         }
     }
-    return edgeIndex;
+
+    for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
+    {
+        const auto& [firstNode, secondNode] = m_edges[edgeIndex];
+        if ((firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
+            (secondNode == firstNodeIndex && firstNode == secondNodeIndex))
+        {
+            return edgeIndex;
+        }
+    }
+
+    return constants::missing::uintValue;
 }
 
 meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRadius)

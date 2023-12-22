@@ -43,7 +43,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -54,6 +53,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Mesh2DGenerateGlobal.hpp>
 #include <MeshKernel/MeshConversion.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
@@ -76,7 +76,6 @@
 #include <Version/Version.hpp>
 
 #include <cstring>
-#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
@@ -1045,6 +1044,33 @@ namespace meshkernelapi
                     index++;
                 }
             }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (numLongitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
+            }
+            if (numLatitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
+            }
+            const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d += *mesh;
         }
         catch (...)
         {

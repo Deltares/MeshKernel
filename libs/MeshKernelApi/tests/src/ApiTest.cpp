@@ -2960,3 +2960,25 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST(Mesh2D, mesh2dMakeGlobal_ShouldMakeGlobalMesh)
+{
+    using namespace meshkernelapi;
+    // Prepare
+    int meshKernelId = 0;
+    auto errorCode = mkernel_allocate_state(1, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    const int numLongitudeNodes = 19;
+    const int numLatitudeNodes = 25;
+    errorCode = mkernel_mesh2d_make_global(meshKernelId, numLongitudeNodes, numLatitudeNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(mesh2d.num_edges, 1200);
+    ASSERT_EQ(mesh2d.num_nodes, 629);
+}
