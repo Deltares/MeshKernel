@@ -1,4 +1,4 @@
-name: Build and test on macos and linux
+name: Build and test on macos
 
 on:
   push:
@@ -72,7 +72,7 @@ jobs:
           fi
 
       # Step: Restore cached user-provided dependencies
-      - if: runner.os == 'Linux'
+      - if: runner.os != 'macOS'
         name: Restore cached user-provided dependencies
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
@@ -83,7 +83,7 @@ jobs:
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
-        if: runner.os == 'Linux' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: runner.os != 'macOS' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
@@ -95,7 +95,7 @@ jobs:
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
-        if: runner.os == 'Linux' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: runner.os != 'macOS' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
           key: ${{ runner.os }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
