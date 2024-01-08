@@ -78,21 +78,22 @@ double meshkernel::CurvilinearGridCurvature::ComputeNodeCurvature(const Point& p
         double diffX21 = p2.x - p1.x;
         double diffY21 = p2.y - p1.y;
 
-        double dxy = diffX10 * diffY21 - diffY10 * diffX21;
+        // Twice the area of the triangle formed by the points {p0, p1, p2}
+        double area2 = diffX10 * diffY21 - diffY10 * diffX21;
         double distance01 = std::sqrt(diffX10 * diffX10 + diffY10 * diffY10);
-        double rmu = 999999.0;
+        double radius = 999999.0;
 
-        if (dxy != 0.0)
+        if (area2 != 0.0)
         {
-            rmu = distance01 * std::abs((diffX21 * diffX20 + diffY21 * diffY20) / dxy);
+            radius = distance01 * std::abs((diffX21 * diffX20 + diffY21 * diffY20) / area2);
         }
 
-        if (rmu == 0.0)
+        if (radius == 0.0)
         {
-            rmu = 999999.0;
+            radius = 999999.0;
         }
 
-        nodeCurvature = 1000.0 * std::abs(1.0 / rmu);
+        nodeCurvature = 1000.0 * std::abs(1.0 / radius);
     }
 
     return nodeCurvature;
