@@ -2,11 +2,6 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Cmake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
-if (APPLE)
-  unset(_CMAKE_APPLE_ARCHS_DEFAULT)
-endif()
-
 # Disable compiler specific extensions
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -18,6 +13,8 @@ if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
+      # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
+      unset(_CMAKE_APPLE_ARCHS_DEFAULT)
       # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
       # Suppress notes related to ABI changes
