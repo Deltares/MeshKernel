@@ -471,10 +471,12 @@ TEST(Polygons, RefinePolygonLongerSquare)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
+    std::cout << std::endl;
+
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
-    ASSERT_EQ(15, refinedPolygon.size());
+    ASSERT_EQ(14, refinedPolygon.size());
     constexpr double tolerance = 1e-5;
 
     ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
@@ -484,14 +486,13 @@ TEST(Polygons, RefinePolygonLongerSquare)
     ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
     ASSERT_NEAR(3.0, refinedPolygon[5].x, tolerance);
     ASSERT_NEAR(3.0, refinedPolygon[6].x, tolerance);
-    ASSERT_NEAR(3.1643989873053573, refinedPolygon[7].x, tolerance);
-    ASSERT_NEAR(3.3287979746107146, refinedPolygon[8].x, tolerance);
-    ASSERT_NEAR(3.4931969619160719, refinedPolygon[9].x, tolerance);
-    ASSERT_NEAR(3.5, refinedPolygon[10].x, tolerance);
-    ASSERT_NEAR(2.5, refinedPolygon[11].x, tolerance);
-    ASSERT_NEAR(1.5, refinedPolygon[12].x, tolerance);
-    ASSERT_NEAR(0.5, refinedPolygon[13].x, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[14].x, tolerance);
+    ASSERT_NEAR(3.16666666666667, refinedPolygon[7].x, tolerance);
+    ASSERT_NEAR(3.33333333333333, refinedPolygon[8].x, tolerance);
+    ASSERT_NEAR(3.5, refinedPolygon[9].x, tolerance);
+    ASSERT_NEAR(2.625, refinedPolygon[10].x, tolerance);
+    ASSERT_NEAR(1.75, refinedPolygon[11].x, tolerance);
+    ASSERT_NEAR(0.875, refinedPolygon[12].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[13].x, tolerance);
 
     ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
@@ -500,14 +501,13 @@ TEST(Polygons, RefinePolygonLongerSquare)
     ASSERT_NEAR(1.0, refinedPolygon[4].y, tolerance);
     ASSERT_NEAR(2.0, refinedPolygon[5].y, tolerance);
     ASSERT_NEAR(3.0, refinedPolygon[6].y, tolerance);
-    ASSERT_NEAR(2.0136060761678563, refinedPolygon[7].y, tolerance);
-    ASSERT_NEAR(1.0272121523357125, refinedPolygon[8].y, tolerance);
-    ASSERT_NEAR(0.040818228503568754, refinedPolygon[9].y, tolerance);
+    ASSERT_NEAR(2.0, refinedPolygon[7].y, tolerance);
+    ASSERT_NEAR(1.0, refinedPolygon[8].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[9].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[10].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[11].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[12].y, tolerance);
     ASSERT_NEAR(0.0, refinedPolygon[13].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[14].y, tolerance);
 }
 
 TEST(Polygons, OffsetCopy)

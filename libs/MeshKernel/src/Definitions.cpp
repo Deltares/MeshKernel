@@ -25,7 +25,7 @@ meshkernel::Projection meshkernel::GetProjectionValue(const int projection)
     }
 }
 
-const std::string& meshkernel::ToString(const Projection projection)
+const std::string& meshkernel::ProjectionToString(const Projection projection)
 {
     static const std::string Cartesian = "Projection::Cartesian";
     static const std::string Spherical = "Projection::Spherical";
@@ -40,6 +40,42 @@ const std::string& meshkernel::ToString(const Projection projection)
         return Spherical;
     case Projection::sphericalAccurate:
         return SphericalAccurate;
+    default:
+        return Unknown;
+    }
+}
+
+meshkernel::CurvilinearDirection meshkernel::GetCurvilinearDirectionValue(int direction)
+{
+    static const int mDirection = static_cast<int>(CurvilinearDirection::M);
+    static const int nDirection = static_cast<int>(CurvilinearDirection::N);
+
+    if (direction == mDirection)
+    {
+        return CurvilinearDirection::M;
+    }
+    else if (direction == nDirection)
+    {
+        return CurvilinearDirection::N;
+    }
+    else
+    {
+        throw ConstraintError("Cannot convert integer value, {}, for direction to curvilinear direction enumeration value", direction);
+    }
+}
+
+const std::string& meshkernel::CurvilinearDirectionToString(CurvilinearDirection direction)
+{
+    static const std::string mDirection = "CurvilinearDirection::M";
+    static const std::string nDirection = "CurvilinearDirection::N";
+    static const std::string Unknown = "UNKNOWN";
+
+    switch (direction)
+    {
+    case CurvilinearDirection::M:
+        return mDirection;
+    case CurvilinearDirection::N:
+        return nDirection;
     default:
         return Unknown;
     }

@@ -27,7 +27,6 @@
 
 #pragma once
 
-#include <cmath>
 #include <vector>
 
 #include "MeshKernel/Constants.hpp"

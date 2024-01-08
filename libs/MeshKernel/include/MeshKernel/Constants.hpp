@@ -83,6 +83,8 @@ namespace meshkernel
             constexpr double refinementTolerance = 1.0e-2;              ///< Relative size of refinement.
             constexpr UInt numNodesInQuadrilateral = 4;                 ///< Number of nodes in a quadrilateral
             constexpr UInt numNodesInTriangle = 3;                      ///< Number of nodes in a triangle
+            constexpr UInt numNodesInPentagon = 5;                      ///< Number of nodes in a pentagon
+            constexpr UInt numNodesInhaxagon = 6;                       ///< Number of nodes in a hexagon
         }                                                               // namespace geometric
 
         namespace physical

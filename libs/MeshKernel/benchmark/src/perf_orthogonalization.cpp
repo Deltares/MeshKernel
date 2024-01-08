@@ -73,21 +73,21 @@ static void BM_Orthogonalization(benchmark::State& state)
         orthogonalization_parameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
         orthogonalization_parameters.areal_to_angle_smoothing_factor = 1.0;
 
-        auto polygon = std::make_shared<Polygons>();
+        auto polygon = std::make_unique<Polygons>();
         std::vector<Point> land_boundary{};
-        auto landboundaries = std::make_shared<LandBoundaries>(land_boundary, mesh, polygon);
+        auto landboundaries = std::make_unique<LandBoundaries>(land_boundary, *mesh, *polygon);
 
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        auto orthogonalizer = std::make_shared<Orthogonalizer>(mesh);
-        auto smoother = std::make_shared<Smoother>(mesh);
+        auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
+        auto smoother = std::make_unique<Smoother>(*mesh);
         OrthogonalizationAndSmoothing orthogonalization(
-            mesh,
-            smoother,
-            orthogonalizer,
-            polygon,
-            landboundaries,
+            *mesh,
+            std::move(smoother),
+            std::move(orthogonalizer),
+            std::move(polygon),
+            std::move(landboundaries),
             project_to_land_Boundary,
             orthogonalization_parameters);
 

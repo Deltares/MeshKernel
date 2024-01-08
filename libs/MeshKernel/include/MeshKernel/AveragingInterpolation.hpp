@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,11 +28,10 @@
 #pragma once
 
 #include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
-#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshInterpolation.hpp"
-#include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 namespace meshkernel
 {
@@ -42,7 +41,7 @@ namespace meshkernel
 
     /// @brief The class used to interpolate based on averaging
     ///
-    /// The averaging interpolation operates on three specific \ref Mesh::Location - Faces
+    /// The averaging interpolation operates on three specific \ref Location - Faces
     /// (m_facesMassCenters), Nodes, and Edges(m_edgesCenters). The idea is to
     /// collect all samples close to the locations and perform a mathematical
     /// operation on their values. The \ref Method enum describes available operations.
@@ -58,7 +57,7 @@ namespace meshkernel
     ///         (relativeSearchRadius > 1 increased, relativeSearchRadius < 1
     ///         decreased).
     ///
-    ///     2.  For \ref Mesh::Location Nodes and \ref Mesh::Location Edges locations, the dual face around the node is
+    ///     2.  For \ref Location Nodes and \ref Location Edges locations, the dual face around the node is
     ///         constructed by connecting the mid-points of all edges connected
     ///         to the node. As above, the resulting polygon can be
     ///         increased/decreased by the relativeSearchRadius parameter.
@@ -71,7 +70,7 @@ namespace meshkernel
     ///
     /// -   The operations described above are executed on the found samples.
     ///
-    /// -   For the \ref Mesh::Location Edges location, the interpolated values at the node are
+    /// -   For the \ref Location Edges location, the interpolated values at the node are
     ///     averaged.
     class AveragingInterpolation : public MeshInterpolation
     {
@@ -99,7 +98,7 @@ namespace meshkernel
         AveragingInterpolation(Mesh2D& mesh,
                                std::vector<Sample>& samples,
                                Method method,
-                               Mesh::Location locationType,
+                               Location locationType,
                                double relativeSearchRadius,
                                bool useClosestSampleIfNoneAvailable,
                                bool subtractSampleValues,
@@ -109,6 +108,9 @@ namespace meshkernel
         void Compute() override;
 
     private:
+        /// @brief Default size for interpolation points and sample caches.
+        static constexpr UInt DefaultMaximumCacheSize = 100;
+
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
@@ -143,17 +145,15 @@ namespace meshkernel
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
                                                     Point const& interpolationPoint) const;
 
-        Mesh2D& m_mesh;                                 ///< Pointer to the mesh
+        Mesh2D& m_mesh;                                 ///< Reference to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
-        Method m_method;                                ///< The method to use for the interpolation
-        Mesh::Location m_interpolationLocation;         ///< Interpolation location
+        Location m_interpolationLocation;               ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
         bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
-        UInt m_minNumSamples = 1;                       ///< The minimum amount of samples for a valid interpolation. Used in some interpolation algorithms.
+        std::vector<Sample> m_interpolationSampleCache; ///< Cache for interpolation samples
 
-        std::vector<bool> m_visitedSamples; ///< The visited samples
-
-        RTree m_samplesRtree; ///< The samples tree
+        std::unique_ptr<RTreeBase> m_samplesRtree;                ///< The samples tree
+        std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
     };
 } // namespace meshkernel

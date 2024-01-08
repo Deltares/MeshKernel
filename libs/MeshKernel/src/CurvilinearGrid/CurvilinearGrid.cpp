@@ -34,6 +34,16 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
+CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.m_nodes, grid.m_projection),
+                                                                m_numM(grid.m_numM),
+                                                                m_numN(grid.m_numN),
+                                                                m_gridNodes(grid.m_gridNodes),
+                                                                m_gridFacesMask(grid.m_gridFacesMask),
+                                                                m_gridNodesTypes(grid.m_gridNodesTypes),
+                                                                m_gridIndices(grid.m_gridIndices)
+{
+}
+
 CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
 
 CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : Mesh(projection)

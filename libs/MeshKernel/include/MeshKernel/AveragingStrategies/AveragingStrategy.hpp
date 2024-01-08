@@ -1,6 +1,6 @@
 ﻿//---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2023.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,13 +36,11 @@ namespace meshkernel::averaging
     public:
         virtual ~AveragingStrategy() = default;
 
-        /// @brief Adds the specified sample point.
-        /// @param[in] samplePoint The sample point to add to this strategy.
-        /// @param[in] sampleValue The value associated with the sample point.
-        virtual void Add(Point const& samplePoint, double sampleValue) = 0;
-
-        /// @brief Calculates the average value based on the values added.
+        /// @brief Calculates the average value based on the sample values.
+        /// @param[in] interpolationPoint The point for which the average should be calculated.
+        /// @param[in] samples The sample points and values used by this strategy.
         /// @return The calculated average
-        [[nodiscard]] virtual double Calculate() const = 0;
+        [[nodiscard]] virtual double Calculate(const Point& interpolationPoint,
+                                               const std::vector<Sample>& samples) const = 0;
     };
 } // namespace meshkernel::averaging

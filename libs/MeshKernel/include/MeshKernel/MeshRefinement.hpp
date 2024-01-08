@@ -30,7 +30,7 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Utilities/RTree.hpp>
+#include <MeshKernel/Utilities/RTreeBase.hpp>
 
 namespace meshkernel
 {
@@ -94,8 +94,8 @@ namespace meshkernel
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
-        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                       std::shared_ptr<MeshInterpolation> interpolant,
+        MeshRefinement(Mesh2D& mesh,
+                       std::unique_ptr<MeshInterpolation> interpolant,
                        const MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief The constructor for refining based on samples
@@ -103,8 +103,8 @@ namespace meshkernel
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement Use nodal refinement
-        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                       std::shared_ptr<MeshInterpolation> interpolant,
+        MeshRefinement(Mesh2D& mesh,
+                       std::unique_ptr<MeshInterpolation> interpolant,
                        const MeshRefinementParameters& meshRefinementParameters,
                        bool useNodalRefinement);
 
@@ -112,7 +112,7 @@ namespace meshkernel
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
         /// @param[in] meshRefinementParameters The mesh refinement parameters
-        MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+        MeshRefinement(Mesh2D& mesh,
                        const Polygons& polygon,
                        const MeshRefinementParameters& meshRefinementParameters);
 
@@ -219,7 +219,7 @@ namespace meshkernel
         /// @brief Compute which edge will be below the minimum size after refinement
         void ComputeEdgeBelowMinSizeAfterRefinement();
 
-        RTree m_samplesRTree; ///< The sample node RTree
+        std::unique_ptr<RTreeBase> m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;                           ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;                           ///< If 0, edge is not split
@@ -239,11 +239,12 @@ namespace meshkernel
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
 
-        std::shared_ptr<Mesh2D> m_mesh;                             ///< Pointer to the mesh
-        std::shared_ptr<MeshInterpolation> m_interpolant = nullptr; ///< Pointer to the AveragingInterpolation instance
-        Polygons m_polygons;                                        ///< Polygons
-        MeshRefinementParameters m_meshRefinementParameters;        ///< The mesh refinement parameters
-        bool m_useNodalRefinement = false;                          ///< Use refinement based on interpolated values at nodes
-        const double m_mergingDistance = 0.001;                     ///< The distance for merging two edges
+        Mesh2D& m_mesh;                                      ///< A reference to the mesh
+        std::unique_ptr<MeshInterpolation> m_interpolant;    ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                 ///< Polygons
+        MeshRefinementParameters m_meshRefinementParameters; ///< The mesh refinement parameters
+        bool m_useNodalRefinement = false;                   ///< Use refinement based on interpolated values at nodes
+        const double m_mergingDistance = 0.001;              ///< The distance for merging two edges
+        bool m_isRefinementBasedOnSamples = false;           ///< If the mesh refinement is based on samples
     };
 } // namespace meshkernel

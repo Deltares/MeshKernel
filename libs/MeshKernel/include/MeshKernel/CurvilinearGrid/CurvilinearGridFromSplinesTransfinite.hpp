@@ -48,18 +48,31 @@ namespace meshkernel
         /// @returns
         CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const CurvilinearParameters& curvilinearParameters);
 
-        /// @brief Computes the adimensional intersections between splines.
-        ///
-        /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
-        void ComputeIntersections();
-
         /// Computes the curvilinear grid from the splines using transfinite interpolation
         /// @param curvilinearGrid
-        CurvilinearGrid Compute();
+        std::unique_ptr<CurvilinearGrid> Compute();
 
         std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
     private:
+        /// @brief Characterise the splines
+        ///
+        /// finds intersections and orders the splines
+        void CharacteriseSplines();
+
+        /// @brief Label each spline and its intersection.
+        ///
+        /// In which group does it lie (m or n), and spline crossing indices.
+        void ClassifySplineIntersections();
+
+        /// @brief Computes the adimensional intersections between splines.
+        ///
+        /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
+        void ComputeInteractions();
+
+        /// @brief Organise the splines by spline type (vertical or horizontal)
+        void OrganiseSplines();
+
         /// @brief Order the splines such that their index increases in m or n direction
         /// @param[in] startFirst
         /// @param[in] endFirst
@@ -70,13 +83,6 @@ namespace meshkernel
                                         UInt endFirst,
                                         UInt startSecond,
                                         UInt endSecond);
-
-        /// @brief Swap the rows of a two dimensional vector
-        /// @param v The input vector
-        /// @param firstRow The first row
-        /// @param secondRow The second row
-        template <typename T>
-        void SwapRows(std::vector<std::vector<T>>& v, UInt firstRow, UInt secondRow) const;
 
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
@@ -112,9 +118,10 @@ namespace meshkernel
         std::vector<std::vector<double>> m_splineIntersectionRatios;             ///< For each spline, stores the intersections in terms of total spline length
         std::vector<std::vector<UInt>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
         UInt m_numMSplines = 0;                                                  ///< The index of the last m spline
-        UInt m_numNSplines = 0;                                                  ///< The index of the last m spline
-        UInt m_numM = 0;                                                         ///< Number of m columns
-        UInt m_numN = 0;                                                         ///< Number of n rows
+        UInt m_numNSplines = 0;                                                  ///< The index of the last n spline
+
+        UInt m_numM = 0; ///< Number of m columns
+        UInt m_numN = 0; ///< Number of n rows
     };
 
 } // namespace meshkernel

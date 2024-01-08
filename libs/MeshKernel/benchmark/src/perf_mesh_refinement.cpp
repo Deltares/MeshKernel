@@ -17,12 +17,11 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         // that are irrelevant to the benchmark and should not be measured)
         state.PauseTiming();
 
-        std::shared_ptr<meshkernel::Mesh2D> mesh =
-            MakeRectangularMeshForTesting(static_cast<UInt>(state.range(0)),
-                                          static_cast<UInt>(state.range(1)),
-                                          10.0,
-                                          15.0,
-                                          Projection::cartesian);
+        auto mesh = MakeRectangularMeshForTesting(static_cast<UInt>(state.range(0)),
+                                                  static_cast<UInt>(state.range(1)),
+                                                  10.0,
+                                                  15.0,
+                                                  Projection::cartesian);
 
         // sample points
         std::vector<Sample> samples;
@@ -34,15 +33,14 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
             }
         }
 
-        auto const interpolator = std::make_shared<AveragingInterpolation>(
-            *mesh,
-            samples,
-            AveragingInterpolation::Method::MinAbsValue,
-            Mesh::Location::Faces,
-            1.0,
-            false,
-            false,
-            1);
+        auto interpolator = std::make_unique<AveragingInterpolation>(*mesh,
+                                                                     samples,
+                                                                     AveragingInterpolation::Method::MinAbsValue,
+                                                                     Location::Faces,
+                                                                     1.0,
+                                                                     false,
+                                                                     false,
+                                                                     1);
 
         MeshRefinementParameters mesh_refinement_parameters;
         mesh_refinement_parameters.max_num_refinement_iterations = 1;
@@ -56,7 +54,9 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        MeshRefinement meshRefinement(mesh, interpolator, mesh_refinement_parameters);
+        MeshRefinement meshRefinement(*mesh,
+                                      std::move(interpolator),
+                                      mesh_refinement_parameters);
 
         meshRefinement.Compute();
     }
@@ -110,7 +110,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        MeshRefinement meshRefinement(mesh, polygon, mesh_refinement_parameters);
+        MeshRefinement meshRefinement(*mesh, polygon, mesh_refinement_parameters);
 
         meshRefinement.Compute();
     }

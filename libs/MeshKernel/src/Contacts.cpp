@@ -1,28 +1,20 @@
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Contacts.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Polygons.hpp>
+#include "MeshKernel/Contacts.hpp"
+
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Contacts;
 
-Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
-                   std::shared_ptr<Mesh2D> mesh2d)
+Contacts::Contacts(Mesh1D& mesh1d, Mesh2D& mesh2d)
     : m_mesh1d(mesh1d),
       m_mesh2d(mesh2d)
 {
-    if (!m_mesh1d)
-    {
-        throw AlgorithmError("m_mesh1d is null");
-    }
-
-    if (!m_mesh2d)
-    {
-        throw AlgorithmError("m_mesh2d is null");
-    }
-
     // assert mesh1d and mesh have the same projection
-    if (m_mesh1d->m_projection != m_mesh2d->m_projection)
+    if (m_mesh1d.m_projection != m_mesh2d.m_projection)
     {
         throw AlgorithmError("meshkernel::Contacts::Contacts: m_mesh1d and m_mesh2d projections are different");
     }
@@ -32,23 +24,26 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
                                      const Polygons& polygons,
                                      double projectionFactor)
 {
+
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
-    if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
+    if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
-                             m_mesh1d->m_nodes.size());
+                             m_mesh1d.m_nodes.size());
     }
 
-    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d.AdministrateNodesEdges();
 
-    const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
-    m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
-    m_mesh2dIndices.reserve(m_mesh1d->m_nodes.size());
+    Validate();
 
-    const auto nodePolygonIndices = polygons.PointsInPolygons(m_mesh1d->m_nodes);
+    const auto node1dFaceIndices = m_mesh2d.PointFaceIndices(m_mesh1d.m_nodes);
+    m_mesh1dIndices.reserve(m_mesh1d.m_nodes.size());
+    m_mesh2dIndices.reserve(m_mesh1d.m_nodes.size());
 
-    for (UInt n = 0; n < m_mesh1d->m_nodes.size(); ++n)
+    const auto nodePolygonIndices = polygons.PointsInPolygons(m_mesh1d.m_nodes);
+
+    for (UInt n = 0; n < m_mesh1d.m_nodes.size(); ++n)
     {
         // connect only nodes included in the polygons
         if (!nodePolygonIndices[n])
@@ -82,9 +77,9 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
                                                double projectionFactor)
 {
-    const auto projectedNode = m_mesh1d->ComputeProjectedNode(node, projectionFactor);
+    const auto projectedNode = m_mesh1d.ComputeProjectedNode(node, projectionFactor);
 
-    const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
+    const auto [intersectedFace, intersectedEdge] = m_mesh2d.IsSegmentCrossingABoundaryEdge(m_mesh1d.m_nodes[node], projectedNode);
     if (intersectedFace != constants::missing::uintValue &&
         intersectedEdge != constants::missing::uintValue &&
         !IsContactIntersectingMesh1d(node, intersectedFace) &&
@@ -98,19 +93,19 @@ void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
 bool Contacts::IsContactIntersectingMesh1d(UInt node,
                                            UInt face) const
 {
-    for (UInt e = 0; e < m_mesh1d->GetNumEdges(); ++e)
+    for (UInt e = 0; e < m_mesh1d.GetNumEdges(); ++e)
     {
 
         const auto [areSegmentCrossing,
                     intersectionPoint,
                     crossProduct,
                     ratioFirstSegment,
-                    ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
-                                                              m_mesh2d->m_facesCircumcenters[face],
-                                                              m_mesh1d->m_nodes[m_mesh1d->m_edges[e].first],
-                                                              m_mesh1d->m_nodes[m_mesh1d->m_edges[e].second],
+                    ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d.m_nodes[node],
+                                                              m_mesh2d.m_facesCircumcenters[face],
+                                                              m_mesh1d.m_nodes[m_mesh1d.m_edges[e].first],
+                                                              m_mesh1d.m_nodes[m_mesh1d.m_edges[e].second],
                                                               false,
-                                                              m_mesh1d->m_projection);
+                                                              m_mesh1d.m_projection);
 
         if (areSegmentCrossing &&
             ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
@@ -130,12 +125,12 @@ bool Contacts::IsContactIntersectingContact(UInt node, UInt face) const
                     intersectionPoint,
                     crossProduct,
                     ratioFirstSegment,
-                    ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
-                                                              m_mesh2d->m_facesCircumcenters[face],
-                                                              m_mesh1d->m_nodes[m_mesh1dIndices[i]],
-                                                              m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
+                    ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d.m_nodes[node],
+                                                              m_mesh2d.m_facesCircumcenters[face],
+                                                              m_mesh1d.m_nodes[m_mesh1dIndices[i]],
+                                                              m_mesh2d.m_facesCircumcenters[m_mesh2dIndices[i]],
                                                               false,
-                                                              m_mesh1d->m_projection);
+                                                              m_mesh1d.m_projection);
         if (areSegmentCrossing &&
             ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
             ratioSecondSegment > 0.0 && ratioSecondSegment < 1.0)
@@ -149,42 +144,45 @@ bool Contacts::IsContactIntersectingContact(UInt node, UInt face) const
 
 void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 {
+
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
-    if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
+    if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
-                             m_mesh1d->m_nodes.size());
+                             m_mesh1d.m_nodes.size());
     }
 
     // perform mesh1d administration
-    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
 
     // compute the indices of the faces including the 1d nodes
-    const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
+    const auto node1dFaceIndices = m_mesh2d.PointFaceIndices(m_mesh1d.m_nodes);
 
     // build mesh2d face circumcenters r-tree
-    std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
-    m_mesh2d->BuildTree(Mesh::Location::Faces);
+    std::vector<bool> isFaceAlreadyConnected(m_mesh2d.GetNumFaces(), false);
+    m_mesh2d.BuildTree(Location::Faces);
 
     // loop over 1d mesh edges
-    for (UInt e = 0; e < m_mesh1d->GetNumEdges(); ++e)
+    for (UInt e = 0; e < m_mesh1d.GetNumEdges(); ++e)
     {
         // get the mesh1d edge nodes
-        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[e].first;
-        const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
+        const auto firstNode1dMeshEdge = m_mesh1d.m_edges[e].first;
+        const auto secondNode1dMeshEdge = m_mesh1d.m_edges[e].second;
 
         // computes the maximum edge length
-        const auto maxEdgeLength = m_mesh1d->ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
+        const auto maxEdgeLength = m_mesh1d.ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
-        m_mesh2d->SearchLocations(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, Mesh::Location::Faces);
+        m_mesh2d.SearchLocations(m_mesh1d.m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, Location::Faces);
 
         // for each face determine if it is crossing the current 1d edge
-        const auto numNeighbours = m_mesh2d->GetNumLocations(Mesh::Location::Faces);
+        const auto numNeighbours = m_mesh2d.GetNumLocations(Location::Faces);
         for (UInt f = 0; f < numNeighbours; ++f)
         {
-            const auto face = m_mesh2d->GetLocationsIndices(f, Mesh::Location::Faces);
+            const auto face = m_mesh2d.GetLocationsIndices(f, Location::Faces);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -193,23 +191,23 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             }
 
             // determine which of the mesh2d edges is crossing the current 1d edge
-            for (UInt ee = 0; ee < m_mesh2d->m_numFacesNodes[face]; ++ee)
+            for (UInt ee = 0; ee < m_mesh2d.m_numFacesNodes[face]; ++ee)
             {
-                const auto edge = m_mesh2d->m_facesEdges[face][ee];
-                const auto firstNode2dMeshEdge = m_mesh2d->m_edges[edge].first;
-                const auto secondNode2dMeshEdge = m_mesh2d->m_edges[edge].second;
+                const auto edge = m_mesh2d.m_facesEdges[face][ee];
+                const auto firstNode2dMeshEdge = m_mesh2d.m_edges[edge].first;
+                const auto secondNode2dMeshEdge = m_mesh2d.m_edges[edge].second;
 
                 const auto [areCrossing,
                             intersectionPoint,
                             crossProduct,
                             ratioFirstSegment,
                             ratioSecondSegment] =
-                    AreSegmentsCrossing(m_mesh1d->m_nodes[firstNode1dMeshEdge],
-                                        m_mesh1d->m_nodes[secondNode1dMeshEdge],
-                                        m_mesh2d->m_nodes[firstNode2dMeshEdge],
-                                        m_mesh2d->m_nodes[secondNode2dMeshEdge],
+                    AreSegmentsCrossing(m_mesh1d.m_nodes[firstNode1dMeshEdge],
+                                        m_mesh1d.m_nodes[secondNode1dMeshEdge],
+                                        m_mesh2d.m_nodes[firstNode2dMeshEdge],
+                                        m_mesh2d.m_nodes[secondNode2dMeshEdge],
                                         false,
-                                        m_mesh1d->m_projection);
+                                        m_mesh1d.m_projection);
 
                 // nothing is crossing, continue
                 if (!areCrossing)
@@ -218,8 +216,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
                 }
 
                 // compute the distance between the face circumcenter and the crossed 1d edge nodes.
-                const auto leftDistance = ComputeDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
-                const auto rightDistance = ComputeDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
+                const auto leftDistance = ComputeDistance(m_mesh1d.m_nodes[firstNode1dMeshEdge], m_mesh2d.m_facesCircumcenters[face], m_mesh1d.m_projection);
+                const auto rightDistance = ComputeDistance(m_mesh1d.m_nodes[secondNode1dMeshEdge], m_mesh2d.m_facesCircumcenters[face], m_mesh1d.m_projection);
                 const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
 
                 // if oneDNodeMask is not empty, connect only if the mask value for the current node is true
@@ -249,11 +247,11 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
                                            const Polygons& polygons)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
-    if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
+    if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
-                             m_mesh1d->m_nodes.size());
+                             m_mesh1d.m_nodes.size());
     }
 
     // no valid polygons provided
@@ -263,14 +261,15 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     }
 
     // perform mesh1d administration
-    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d.AdministrateNodesEdges();
+    Validate();
 
     // for each mesh2d face, store polygon index
-    std::vector<UInt> facePolygonIndex(m_mesh2d->GetNumFaces(), constants::missing::uintValue);
-    std::vector<bool> faceInPolygon(m_mesh2d->GetNumFaces(), false);
-    for (UInt faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    std::vector<UInt> facePolygonIndex(m_mesh2d.GetNumFaces(), constants::missing::uintValue);
+    std::vector<bool> faceInPolygon(m_mesh2d.GetNumFaces(), false);
+    for (UInt faceIndex = 0; faceIndex < m_mesh2d.GetNumFaces(); ++faceIndex)
     {
-        auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_mesh2d->m_facesMassCenters[faceIndex]);
+        auto [isInPolygon, polygonIndex] = polygons.IsPointInPolygons(m_mesh2d.m_facesMassCenters[faceIndex]);
         faceInPolygon[faceIndex] = isInPolygon;
         facePolygonIndex[faceIndex] = polygonIndex;
     }
@@ -279,9 +278,9 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
     std::vector<double> minimalDistance(polygons.GetNumPolygons(), constants::missing::doubleValue);
     std::vector<UInt> closest1dNodeIndices(polygons.GetNumPolygons(), constants::missing::uintValue);
     std::vector<UInt> closest2dNodeIndices(polygons.GetNumPolygons(), constants::missing::uintValue);
-    m_mesh1d->BuildTree(Mesh::Location::Nodes);
+    m_mesh1d.BuildTree(Location::Nodes);
 
-    for (UInt faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    for (UInt faceIndex = 0; faceIndex < m_mesh2d.GetNumFaces(); ++faceIndex)
     {
         // if face is not within a polygon, continue
         if (!faceInPolygon[faceIndex])
@@ -289,11 +288,11 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
             continue;
         }
         const auto polygonIndex = facePolygonIndex[faceIndex];
-        const auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
-        const auto close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
+        const auto faceMassCenter = m_mesh2d.m_facesMassCenters[faceIndex];
+        const auto close1DNodeIndex = m_mesh1d.FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
 
-        const auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
-        const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
+        const auto close1DNode = m_mesh1d.m_nodes[close1DNodeIndex];
+        const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d.m_projection);
         // if it is the first found node of this polygon or
         // there is already a distance stored, but ours is smaller
         // -> store
@@ -319,19 +318,22 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
                                          const std::vector<Point>& points)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
-    if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
+    if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
-                             m_mesh1d->m_nodes.size());
+                             m_mesh1d.m_nodes.size());
     }
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
-    m_mesh1d->AdministrateNodesEdges();
-    m_mesh1d->BuildTree(Mesh::Location::Nodes);
+    m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
+
+    m_mesh1d.BuildTree(Location::Nodes);
 
     // find the face indices containing the 1d points
-    const auto pointsFaceIndices = m_mesh2d->PointFaceIndices(points);
+    const auto pointsFaceIndices = m_mesh2d.PointFaceIndices(points);
 
     // for each 1d node in the 2d mesh, find the closest 1d node.
     for (UInt i = 0; i < points.size(); ++i)
@@ -343,16 +345,16 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         }
 
         // get the closest 1d node
-        m_mesh1d->SearchNearestLocation(points[i], Mesh::Location::Nodes);
+        m_mesh1d.SearchNearestLocation(points[i], Location::Nodes);
 
         // if nothing found continue
-        if (m_mesh1d->GetNumLocations(Mesh::Location::Nodes) == 0)
+        if (m_mesh1d.GetNumLocations(Location::Nodes) == 0)
         {
             continue;
         }
 
         // form the 1d-2d contact
-        m_mesh1dIndices.emplace_back(m_mesh1d->GetLocationsIndices(0, Mesh::Location::Nodes));
+        m_mesh1dIndices.emplace_back(m_mesh1d.GetLocationsIndices(0, Location::Nodes));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
 
@@ -364,22 +366,24 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
                                        double searchRadius)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
-    if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
+    if (oneDNodeMask.size() != m_mesh1d.m_nodes.size())
     {
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
-                             m_mesh1d->m_nodes.size());
+                             m_mesh1d.m_nodes.size());
     }
 
     // perform mesh1d administration
-    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d.AdministrateNodesEdges();
+
+    Validate();
 
     // build mesh2d face circumcenters r-tree
-    RTree faceCircumcentersRTree;
-    faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
+    const auto faceCircumcentersRTree = RTreeFactory::Create(m_mesh2d.m_projection);
+    faceCircumcentersRTree->BuildTree(m_mesh2d.m_facesCircumcenters);
 
     // get the indices
-    const auto facePolygonIndices = polygons.PointsInPolygons(m_mesh2d->m_facesCircumcenters);
+    const auto facePolygonIndices = polygons.PointsInPolygons(m_mesh2d.m_facesCircumcenters);
 
     bool computeLocalSearchRadius = true;
     double localSearchRadius = 0.0;
@@ -390,9 +394,9 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     }
 
     // Loop over 1d edges
-    std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);
-    std::vector<UInt> faceTo1DNode(m_mesh2d->GetNumFaces(), constants::missing::uintValue);
-    for (UInt n = 0; n < m_mesh1d->GetNumNodes(); ++n)
+    std::vector<bool> isValidFace(m_mesh2d.GetNumFaces(), true);
+    std::vector<UInt> faceTo1DNode(m_mesh2d.GetNumFaces(), constants::missing::uintValue);
+    for (UInt n = 0; n < m_mesh1d.GetNumNodes(); ++n)
     {
         // Account for 1d node mask if present
         if (!oneDNodeMask.empty() && !oneDNodeMask[n])
@@ -402,15 +406,15 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
         if (computeLocalSearchRadius)
         {
-            localSearchRadius = m_mesh1d->ComputeMaxLengthSurroundingEdges(n);
+            localSearchRadius = m_mesh1d.ComputeMaxLengthSurroundingEdges(n);
         }
 
         // compute the nearest 2d face indices
-        faceCircumcentersRTree.SearchPoints(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
+        faceCircumcentersRTree->SearchPoints(m_mesh1d.m_nodes[n], localSearchRadius * localSearchRadius);
 
-        for (UInt f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        for (UInt f = 0; f < faceCircumcentersRTree->GetQueryResultSize(); ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryResult(f);
+            const auto face = faceCircumcentersRTree->GetQueryResult(f);
 
             // the face is already marked as invalid, nothing to do
             if (!isValidFace[face])
@@ -419,7 +423,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             // not a boundary face
-            if (!m_mesh2d->IsFaceOnBoundary(face))
+            if (!m_mesh2d.IsFaceOnBoundary(face))
             {
                 isValidFace[face] = false;
                 continue;
@@ -439,12 +443,12 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
                 continue;
             }
 
-            const auto currentSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[n],
-                                                                       m_mesh2d->m_facesCircumcenters[face],
-                                                                       m_mesh2d->m_projection);
-            const auto previousSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[faceTo1DNode[face]],
-                                                                        m_mesh2d->m_facesCircumcenters[face],
-                                                                        m_mesh2d->m_projection);
+            const auto currentSquaredDistance = ComputeSquaredDistance(m_mesh1d.m_nodes[n],
+                                                                       m_mesh2d.m_facesCircumcenters[face],
+                                                                       m_mesh2d.m_projection);
+            const auto previousSquaredDistance = ComputeSquaredDistance(m_mesh1d.m_nodes[faceTo1DNode[face]],
+                                                                        m_mesh2d.m_facesCircumcenters[face],
+                                                                        m_mesh2d.m_projection);
 
             if (currentSquaredDistance < previousSquaredDistance)
             {
@@ -453,7 +457,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
         }
     }
 
-    for (UInt f = 0; f < m_mesh2d->GetNumFaces(); ++f)
+    for (UInt f = 0; f < m_mesh2d.GetNumFaces(); ++f)
     {
         if (faceTo1DNode[f] != constants::missing::uintValue && isValidFace[f])
         {
@@ -489,4 +493,18 @@ void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
     m_mesh1dIndices = mesh1dIndices;
     m_mesh2dIndices = mesh2dIndices;
     m_areComputed = true;
+}
+
+void Contacts::Validate() const
+{
+
+    if (m_mesh1d.GetNumNodes() == 0)
+    {
+        throw AlgorithmError("m_mesh1d has no nodes");
+    }
+
+    if (m_mesh2d.GetNumNodes() == 0)
+    {
+        throw AlgorithmError("m_mesh2d has no nodes");
+    }
 }

@@ -144,6 +144,13 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
+        /// @brief Computes the smoothness of a curvilinear grid.
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] direction  The direction in which to compute the smoothness
+        /// @param[out] smoothness The grid smoothness values in the selected direction
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction, double* smoothness);
+
         /// @brief Computes a curvilinear grid in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygons      The input polygons
@@ -701,7 +708,7 @@ namespace meshkernelapi
         /// \see meshkernel::AveragingInterpolation
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] samples                The samples coordinates and values
-        /// @param[in] locationType           The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in] locationType           The location type (see \ref meshkernel::Location enum)
         /// @param[in] averagingMethodType    The averaging method (see Method enum)
         /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
         /// @param[in] minNumSamples          The minimum number of samples used for some interpolation algorithms to perform a valid interpolation
@@ -1089,6 +1096,13 @@ namespace meshkernelapi
                                                                   int* faceNumEdges,
                                                                   int* faceEdgeIndex);
 
+        /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
+        /// @param[in] meshKernelId           The id of the mesh state
+        /// @param [in] numLongitudeNodes The number of points along the longitude.
+        /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
+        /// @return Error code
+        MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes);
+
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
@@ -1232,7 +1246,7 @@ namespace meshkernelapi
         /// \see meshkernel::TriangulationInterpolation
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[in]  samples            The samples coordinates and values
-        /// @param[in]  locationType       The location type (see \ref meshkernel::Mesh::Location enum)
+        /// @param[in]  locationType       The location type (see \ref meshkernel::Location enum)
         /// @param[in]  results            The interpolation results with x and y coordinates
         /// @return Error code
         MKERNEL_API int mkernel_mesh2d_triangulation_interpolation(int meshKernelId,

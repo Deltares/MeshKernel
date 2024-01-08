@@ -41,6 +41,7 @@ set(
   ${SRC_DIR}/Mesh.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
+  ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
@@ -88,12 +89,8 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
-)
-
-set(
-  UTILITIES_SRC_LIST
-  ${UTILITIES_SRC_DIR}/RTree.cpp
 )
 
 # list of target headers
@@ -116,6 +113,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
@@ -173,6 +171,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
 )
 
@@ -181,6 +180,8 @@ set(
   ${UTILITIES_INC_DIR}/LinearAlgebra.hpp
   ${UTILITIES_INC_DIR}/NumericFunctions.hpp
   ${UTILITIES_INC_DIR}/RTree.hpp
+  ${UTILITIES_INC_DIR}/RTreeBase.hpp
+  ${UTILITIES_INC_DIR}/RTreeFactory.hpp
 )
 
 # add sources to target
@@ -190,7 +191,6 @@ target_sources(
     ${SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
-    ${UTILITIES_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
@@ -271,7 +271,6 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
-source_group("Source Files/Utilities" FILES ${UTILITIES_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
@@ -288,3 +287,7 @@ endif()
 if(ENABLE_BENCHMARKING)
   add_subdirectory(benchmark)
 endif()
+
+
+
+

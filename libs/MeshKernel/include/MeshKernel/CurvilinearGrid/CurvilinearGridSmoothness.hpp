@@ -1,4 +1,4 @@
-﻿//---- GPL ---------------------------------------------------------------------
+//---- GPL ---------------------------------------------------------------------
 //
 // Copyright (C)  Stichting Deltares, 2011-2023.
 //
@@ -26,20 +26,31 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
-#include <MeshKernel/Entities.hpp>
 
-namespace meshkernel::averaging
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
+
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Point.hpp"
+
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+
+namespace meshkernel
 {
-    /// @brief MinAbsAveragingStrategy implements the AveragingStrategy which takes the minimum value of the added points.
-    class MinAveragingStrategy final : public AveragingStrategy
+
+    /// @brief Compute the smoothness of a grid.
+    class CurvilinearGridSmoothness
     {
     public:
-        /// @brief Calculates the average value based on the sample values.
-        /// @param[in] interpolationPoint The point for which the average should be calculated.
-        /// @param[in] samples The sample points and values used by this strategy.
-        /// @return The calculated average
-        [[nodiscard]] double Calculate(const Point& interpolationPoint,
-                                       const std::vector<Sample>& samples) const override;
+        /// @brief Compute the smoothness of the grid in the direction specified.
+        ///
+        /// @param grid Grid for which the smoothness is to be calculated.
+        /// @param direction Direction of the smoothness required.
+        /// @param smoothness Matrix of smoothness values, will be resized to the size of the grid.
+        static void Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& smoothness);
+
+    private:
+        /// @brief Compute the smoothness for the node.
+        static double ComputeNodeSmoothness(const Point& p0, const Point& p1, const Point& p2);
     };
-} // namespace meshkernel::averaging
+
+} // namespace meshkernel

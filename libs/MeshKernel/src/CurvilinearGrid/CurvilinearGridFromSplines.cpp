@@ -85,7 +85,7 @@ namespace meshkernel
         std::fill(m_rightGridLineIndex.begin(), m_rightGridLineIndex.end(), constants::missing::uintValue);
     }
 
-    CurvilinearGrid CurvilinearGridFromSplines::Compute()
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplines::Compute()
     {
         Initialize();
 
@@ -430,10 +430,13 @@ namespace meshkernel
             }
         }
 
-        assert(m_timeStep > 1e-8 && "time step is smaller than 1e-8!");
+        if (m_timeStep <= 1e-8)
+        {
+            throw AlgorithmError("time step is smaller than 1e-8 !");
+        }
     }
 
-    CurvilinearGrid CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints()
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints()
     {
         std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints.cols(),
                                                              std::vector<Point>(m_gridPoints.rows(),
@@ -554,7 +557,7 @@ namespace meshkernel
             startGridLine = endGridlineIndex + 2;
         }
 
-        return CurvilinearGrid(lin_alg::STLVectorOfVectorsToMatrix(curvilinearMeshPoints), m_splines->m_projection);
+        return std::make_unique<CurvilinearGrid>(lin_alg::STLVectorOfVectorsToMatrix(curvilinearMeshPoints), m_splines->m_projection);
     }
 
     std::tuple<UInt, UInt>

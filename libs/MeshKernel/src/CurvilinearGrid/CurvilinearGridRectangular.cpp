@@ -45,13 +45,13 @@ namespace meshkernel
         }
     }
 
-    CurvilinearGrid CurvilinearGridRectangular::Compute(const int numColumns,
-                                                        const int numRows,
-                                                        const double originX,
-                                                        const double originY,
-                                                        const double angle,
-                                                        const double blockSizeX,
-                                                        const double blockSizeY) const
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridRectangular::Compute(const int numColumns,
+                                                                         const int numRows,
+                                                                         const double originX,
+                                                                         const double originY,
+                                                                         const double angle,
+                                                                         const double blockSizeX,
+                                                                         const double blockSizeY) const
     {
         range_check::CheckGreater(numColumns, 0, "Number of columns");
         range_check::CheckGreater(numRows, 0, "Number of rows");
@@ -61,25 +61,25 @@ namespace meshkernel
 
         if (m_projection == Projection::spherical)
         {
-            return CurvilinearGrid{ComputeSpherical(numColumns,
-                                                    numRows,
-                                                    originX,
-                                                    originY,
-                                                    angle,
-                                                    blockSizeX,
-                                                    blockSizeY),
-                                   m_projection};
+            return std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
+                                                                      numRows,
+                                                                      originX,
+                                                                      originY,
+                                                                      angle,
+                                                                      blockSizeX,
+                                                                      blockSizeY),
+                                                     m_projection);
         }
         if (m_projection == Projection::cartesian)
         {
-            return CurvilinearGrid{ComputeCartesian(numColumns,
-                                                    numRows,
-                                                    originX,
-                                                    originY,
-                                                    angle,
-                                                    blockSizeX,
-                                                    blockSizeY),
-                                   m_projection};
+            return std::make_unique<CurvilinearGrid>(ComputeCartesian(numColumns,
+                                                                      numRows,
+                                                                      originX,
+                                                                      originY,
+                                                                      angle,
+                                                                      blockSizeX,
+                                                                      blockSizeY),
+                                                     m_projection);
         }
         throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
     }
@@ -219,11 +219,11 @@ namespace meshkernel
         return result;
     }
 
-    CurvilinearGrid CurvilinearGridRectangular::Compute(const double angle,
-                                                        const double blockSizeX,
-                                                        const double blockSizeY,
-                                                        std::shared_ptr<Polygons> polygons,
-                                                        UInt polygonIndex) const
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridRectangular::Compute(const double angle,
+                                                                         const double blockSizeX,
+                                                                         const double blockSizeY,
+                                                                         std::shared_ptr<Polygons> polygons,
+                                                                         UInt polygonIndex) const
     {
 
         range_check::CheckInOpenInterval(angle, {-90.0, 90.0}, "Grid angle");
@@ -238,8 +238,8 @@ namespace meshkernel
         if (polygons->GetProjection() != m_projection)
         {
             throw AlgorithmError("Polygon projection ({}) is not equal to curvilinear grid projection ({})",
-                                 ToString(polygons->GetProjection()),
-                                 ToString(m_projection));
+                                 ProjectionToString(polygons->GetProjection()),
+                                 ProjectionToString(m_projection));
         }
 
         // Compute the bounding box
@@ -264,45 +264,42 @@ namespace meshkernel
         const double originX = lowerLeftMergedRotated.x;
         const double originY = lowerLeftMergedRotated.y;
 
-        CurvilinearGrid curvilinearGrid;
-        switch (m_projection)
+        if (m_projection == Projection::spherical)
         {
-        case Projection::spherical:
-            curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
-                                                               numRows,
-                                                               originX,
-                                                               originY,
-                                                               angle,
-                                                               blockSizeX,
-                                                               blockSizeY),
-                                              m_projection};
-            break;
-        case Projection::cartesian:
-            curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
-                                                               numRows,
-                                                               originX,
-                                                               originY,
-                                                               angle,
-                                                               blockSizeX,
-                                                               blockSizeY),
-                                              m_projection};
-            break;
-        default:
-            throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           angle,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+            grid->Delete(polygons, polygonIndex);
+            return grid;
+        }
+        if (m_projection == Projection::cartesian)
+        {
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeCartesian(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           angle,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+            grid->Delete(polygons, polygonIndex);
+            return grid;
         }
 
-        // remove nodes outside the polygon
-        curvilinearGrid.Delete(polygons, polygonIndex);
-
-        return curvilinearGrid;
+        throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
-    CurvilinearGrid CurvilinearGridRectangular::Compute(const double originX,
-                                                        const double originY,
-                                                        const double blockSizeX,
-                                                        const double blockSizeY,
-                                                        const double upperRightX,
-                                                        const double upperRightY) const
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridRectangular::Compute(const double originX,
+                                                                         const double originY,
+                                                                         const double blockSizeX,
+                                                                         const double blockSizeY,
+                                                                         const double upperRightX,
+                                                                         const double upperRightY) const
     {
         range_check::CheckGreater(blockSizeX, 0.0, "X block size");
         range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
@@ -313,39 +310,34 @@ namespace meshkernel
             throw AlgorithmError("Number of columns cannot be <= 0");
         }
 
-        const double angle = 0.0;
         const int numRows = ComputeNumRows(originY, upperRightY, blockSizeY, m_projection);
 
-        CurvilinearGrid curvilinearGrid;
-        switch (m_projection)
+        if (m_projection == Projection::spherical)
         {
-        case Projection::spherical:
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           0.0,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
 
-            curvilinearGrid = CurvilinearGrid{ComputeSpherical(numColumns,
-                                                               numRows,
-                                                               originX,
-                                                               originY,
-                                                               angle,
-                                                               blockSizeX,
-                                                               blockSizeY),
-                                              m_projection};
-            break;
-        case Projection::cartesian:
-            curvilinearGrid = CurvilinearGrid{ComputeCartesian(numColumns,
-                                                               numRows,
-                                                               originX,
-                                                               originY,
-                                                               angle,
-                                                               blockSizeX,
-                                                               blockSizeY),
-                                              m_projection};
-            break;
-        case Projection::sphericalAccurate:
-        default:
-            throw meshkernel::NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
+            return grid;
         }
-
-        return curvilinearGrid;
+        if (m_projection == Projection::cartesian)
+        {
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeCartesian(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           0.0,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+            return grid;
+        }
+        throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
 } // namespace meshkernel
