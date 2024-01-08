@@ -38,10 +38,10 @@ using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
-                               std::shared_ptr<MeshInterpolation> interpolant,
+                               std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                                                            m_mesh(mesh),
-                                                                                           m_interpolant(interpolant)
+                                                                                           m_interpolant(std::move(interpolant))
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_isRefinementBasedOnSamples = true;
@@ -50,11 +50,11 @@ MeshRefinement::MeshRefinement(Mesh2D& mesh,
 }
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
-                               std::shared_ptr<MeshInterpolation> interpolant,
+                               std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters,
                                bool useNodalRefinement) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                           m_mesh(mesh),
-                                                          m_interpolant(interpolant),
+                                                          m_interpolant(std::move(interpolant)),
                                                           m_useNodalRefinement(useNodalRefinement)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);

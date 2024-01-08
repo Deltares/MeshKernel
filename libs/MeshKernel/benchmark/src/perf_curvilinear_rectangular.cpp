@@ -51,12 +51,11 @@ static void BM_CurvilinearRectangular(benchmark::State& state)
         state.ResumeTiming();
 
         CurvilinearGridRectangular const curvilinearGridRecatngular(Projection::cartesian);
-        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
-            curvilinearGridRecatngular.Compute(makeGridParameters.angle,
-                                               makeGridParameters.block_size_x,
-                                               makeGridParameters.block_size_y,
-                                               polygons,
-                                               0));
+        const auto curvilinearGrid = curvilinearGridRecatngular.Compute(makeGridParameters.angle,
+                                                                        makeGridParameters.block_size_x,
+                                                                        makeGridParameters.block_size_y,
+                                                                        polygons,
+                                                                        0);
     }
 }
 BENCHMARK(BM_CurvilinearRectangular)
@@ -86,14 +85,13 @@ static void BM_CurvilinearRectangular_add_faces_to_left_boundary(benchmark::Stat
         const double blockSizeY = block_size;
 
         CurvilinearGridRectangular const curvilinearGridRecatngular(Projection::cartesian);
-        const auto curvilinearGrid = std::make_shared<CurvilinearGrid>(
-            curvilinearGridRecatngular.Compute(numColumns,
-                                               numRows,
-                                               origin_x,
-                                               origin_y,
-                                               angle,
-                                               blockSizeX,
-                                               blockSizeY));
+        const auto curvilinearGrid = curvilinearGridRecatngular.Compute(numColumns,
+                                                                        numRows,
+                                                                        origin_x,
+                                                                        origin_y,
+                                                                        angle,
+                                                                        blockSizeX,
+                                                                        blockSizeY);
 
         int const faces_to_add = static_cast<int>(state.range(2));
 

@@ -43,7 +43,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
@@ -55,6 +54,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/Mesh2DGenerateGlobal.hpp>
 #include <MeshKernel/MeshConversion.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
@@ -77,7 +77,6 @@
 #include <Version/Version.hpp>
 
 #include <cstring>
-#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
@@ -1054,6 +1053,33 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (numLongitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
+            }
+            if (numLatitudeNodes == 0)
+            {
+                throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
+            }
+            const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d += *mesh;
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -1712,16 +1738,18 @@ namespace meshkernelapi
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
             const bool transformSamples = meshRefinementParameters.refinement_type == 2 ? true : false;
 
-            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                        samplesVector,
-                                                                                        averagingMethod,
-                                                                                        meshkernel::Location::Faces,
-                                                                                        relativeSearchRadius,
-                                                                                        refineOutsideFace,
-                                                                                        transformSamples,
-                                                                                        static_cast<meshkernel::UInt>(minimumNumSamples));
+            auto averaging = std::make_unique<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                  samplesVector,
+                                                                                  averagingMethod,
+                                                                                  meshkernel::Location::Faces,
+                                                                                  relativeSearchRadius,
+                                                                                  refineOutsideFace,
+                                                                                  transformSamples,
+                                                                                  static_cast<meshkernel::UInt>(minimumNumSamples));
 
-            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d, averaging, meshRefinementParameters);
+            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      std::move(averaging),
+                                                      meshRefinementParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1754,11 +1782,11 @@ namespace meshkernelapi
                 values[i] = griddedSamples.values[i];
             }
 
-            std::shared_ptr<meshkernel::MeshInterpolation> interpolant;
+            std::unique_ptr<meshkernel::MeshInterpolation> interpolant;
             if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
             {
                 meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
+                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                   griddedSamples.num_x,
                                                                                                   griddedSamples.num_y,
                                                                                                   origin,
@@ -1788,13 +1816,16 @@ namespace meshkernelapi
                     yCoordinates[i] = griddedSamples.y_coordinates[i];
                 }
 
-                interpolant = std::make_shared<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
+                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                   xCoordinates,
                                                                                                   yCoordinates,
                                                                                                   values);
             }
 
-            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d, interpolant, meshRefinementParameters, useNodalRefinement);
+            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      std::move(interpolant),
+                                                      meshRefinementParameters,
+                                                      useNodalRefinement);
             meshRefinement.Compute();
         }
         catch (...)
@@ -3470,8 +3501,8 @@ namespace meshkernelapi
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
 
-            // curvilinear grid must be reset
-            meshKernelState[meshKernelId].m_curvilinearGrid = nullptr;
+            // curvilinear grid must be reset to an empty curvilinear grid
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();
         }
         catch (...)
         {
