@@ -493,23 +493,31 @@ meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    const auto nunEdgesFirstNode = m_nodesNumEdges[firstNodeIndex];
+
+    if (nunEdgesFirstNode > 0)
     {
-        const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[edgeIndex], firstNodeIndex);
-        if (firstEdgeOtherNode == secondNodeIndex)
+        for (UInt n = 0; n < nunEdgesFirstNode; n++)
         {
-            return edgeIndex;
+            const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[edgeIndex], firstNodeIndex);
+            if (firstEdgeOtherNode == secondNodeIndex)
+            {
+                return edgeIndex;
+            }
         }
     }
-
-    for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
+    else
     {
-        const auto& [firstNode, secondNode] = m_edges[edgeIndex];
-        if ((firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
-            (secondNode == firstNodeIndex && firstNode == secondNodeIndex))
+        for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
         {
-            return edgeIndex;
+            const auto& [firstNode, secondNode] = m_edges[edgeIndex];
+            const auto edgeFound = firstNode == firstNodeIndex && secondNode == secondNodeIndex ||
+                                   secondNode == firstNodeIndex && firstNode == secondNodeIndex;
+            if (edgeFound)
+            {
+                return edgeIndex;
+            }
         }
     }
 
