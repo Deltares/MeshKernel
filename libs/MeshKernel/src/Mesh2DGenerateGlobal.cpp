@@ -70,7 +70,13 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         {
             nextNode = 0;
         }
-        mesh.ConnectNodes(nodeIndices[n], nodeIndices[nextNode]);
+        const auto& firstNodeIndex = nodeIndices[n];
+        const auto& secondNodeIndex = nodeIndices[nextNode];
+
+        if (mesh.FindEdgeWithLinearSearch(firstNodeIndex, secondNodeIndex) == constants::missing::uintValue)
+        {
+            mesh.ConnectNodes(firstNodeIndex, secondNodeIndex);
+        }
     }
 }
 
