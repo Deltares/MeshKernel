@@ -517,8 +517,8 @@ meshkernel::UInt Mesh::FindEdgeWithLinearSearch(UInt firstNodeIndex, UInt second
     for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
     {
         const auto& [firstNode, secondNode] = m_edges[edgeIndex];
-        const auto edgeFound = firstNode == firstNodeIndex && secondNode == secondNodeIndex ||
-                               secondNode == firstNodeIndex && firstNode == secondNodeIndex;
+        const auto edgeFound = (firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
+                               (secondNode == firstNodeIndex && firstNode == secondNodeIndex);
         if (edgeFound)
         {
             return edgeIndex;
