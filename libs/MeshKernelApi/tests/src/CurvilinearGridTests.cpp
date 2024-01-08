@@ -795,3 +795,51 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteInterior_OnCurvilinearGrid_Shou
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, curvilinearGrid.node_x[72], tolerance);
     ASSERT_NEAR(meshkernel::constants::missing::doubleValue, curvilinearGrid.node_y[72], tolerance);
 }
+
+TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
+{
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 4;
+    makeGridParameters.num_rows = 5;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> smoothness(curvilinearGridResults.num_m * curvilinearGridResults.num_n);
+    std::vector<double> expectedX{-999.0, -999.0, -999.0, -999.0, -999.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -999.0, -999.0, -999.0, -999.0, -999.0};
+    std::vector<double> expectedY{-999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0};
+
+    // Test x direction
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 0, smoothness.data());
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    constexpr double tolerance = 1.0e-13;
+
+    for (size_t i = 0; i < smoothness.size(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], smoothness[i], tolerance);
+    }
+
+    // Now test y direction
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 1, smoothness.data());
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (size_t i = 0; i < smoothness.size(); ++i)
+    {
+        EXPECT_NEAR(expectedY[i], smoothness[i], tolerance);
+    }
+}

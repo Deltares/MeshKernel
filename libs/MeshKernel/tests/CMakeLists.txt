@@ -26,6 +26,7 @@ set(
   ${SRC_DIR}/CurvilinearGridRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridSmoothingTests.cpp
   ${SRC_DIR}/CurvilinearGridSnappingTests.cpp
+  ${SRC_DIR}/CurvilinearGridSmoothnessTests.cpp
   ${SRC_DIR}/FlipEdgesTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
   ${SRC_DIR}/FormattingTests.cpp
