@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['exitcode_1407',['ExitCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb',1,'meshkernel']]]
+  ['deletemeshoptions_1416',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e',1,'meshkernel::Mesh2D']]]
 ];

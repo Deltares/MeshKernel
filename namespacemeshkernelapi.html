@@ -136,6 +136,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2f2656f8f1ebfbbc3d8086e17310b924">mkernel_curvilinear_compute_orthogonal_grid_from_splines</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernel_1_1_curvilinear_parameters.html">meshkernel::CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernel_1_1_splines_to_curvilinear_parameters.html">meshkernel::SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
 <tr class="memdesc:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with the advancing front method.  <a href="namespacemeshkernelapi.html#a2f2656f8f1ebfbbc3d8086e17310b924">More...</a><br /></td></tr>
 <tr class="separator:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55ac58ccc4d78dd7073399ea61e777e9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a55ac58ccc4d78dd7073399ea61e777e9">mkernel_curvilinear_compute_smoothness</a> (int meshKernelId, int direction, double *smoothness)</td></tr>
+<tr class="memdesc:a55ac58ccc4d78dd7073399ea61e777e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the smoothness of a curvilinear grid.  <a href="namespacemeshkernelapi.html#a55ac58ccc4d78dd7073399ea61e777e9">More...</a><br /></td></tr>
+<tr class="separator:a55ac58ccc4d78dd7073399ea61e777e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf779508dd21bfb7f0d261af7ddffa27"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf779508dd21bfb7f0d261af7ddffa27">mkernel_curvilinear_compute_transfinite_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, int firstNode, int secondNode, int thirdNode, int useFourthSide)</td></tr>
 <tr class="memdesc:acf779508dd21bfb7f0d261af7ddffa27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear grid in a polygon. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#acf779508dd21bfb7f0d261af7ddffa27">More...</a><br /></td></tr>
 <tr class="separator:acf779508dd21bfb7f0d261af7ddffa27"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1100,6 +1103,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a55ac58ccc4d78dd7073399ea61e777e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55ac58ccc4d78dd7073399ea61e777e9">&#9670;&nbsp;</a></span>mkernel_curvilinear_compute_smoothness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_compute_smoothness </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>smoothness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the smoothness of a curvilinear grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>The direction in which to compute the smoothness </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">smoothness</td><td>The grid smoothness values in the selected direction </td></tr>
   </table>
   </dd>
 </dl>

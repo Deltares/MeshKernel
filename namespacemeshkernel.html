@@ -311,6 +311,11 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a50aa377deae5c143c4fc0ba767f051d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mesh locations enumeration.  <a href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">More...</a><br /></td></tr>
 <tr class="separator:a50aa377deae5c143c4fc0ba767f051d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada45df7d9a6b761430af4dbf350f67cc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">CurvilinearDirection</a> { <a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cca69691c7bdcc3ce6d5d8a1361f22d04ac">CurvilinearDirection::M</a>, 
+<a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cca8d9c307cb7f3c4a32822a51922d1ceaa">CurvilinearDirection::N</a>
+ }</td></tr>
+<tr class="memdesc:ada45df7d9a6b761430af4dbf350f67cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direction to use in curvilinear grid algorithms.  <a href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">More...</a><br /></td></tr>
+<tr class="separator:ada45df7d9a6b761430af4dbf350f67cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
 <a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
@@ -347,6 +352,13 @@ Functions</h2></td></tr>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a103d3801f3c0a6f8e46d70e9739b3b76">ProjectionToString</a> (<a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:a103d3801f3c0a6f8e46d70e9739b3b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the string representation of the Projection enumeration values. <br /></td></tr>
 <tr class="separator:a103d3801f3c0a6f8e46d70e9739b3b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add359ef80e24b577060034dfaee4230d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">CurvilinearDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#add359ef80e24b577060034dfaee4230d">GetCurvilinearDirectionValue</a> (int direction)</td></tr>
+<tr class="memdesc:add359ef80e24b577060034dfaee4230d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an integer value to the CurvilinearDirection enumeration type.  <a href="namespacemeshkernel.html#add359ef80e24b577060034dfaee4230d">More...</a><br /></td></tr>
+<tr class="separator:add359ef80e24b577060034dfaee4230d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca6e05dec0589bb9b38e7b1f59d8f423"><td class="memItemLeft" align="right" valign="top"><a id="aca6e05dec0589bb9b38e7b1f59d8f423"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423">CurvilinearDirectionToString</a> (<a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">CurvilinearDirection</a> direction)</td></tr>
+<tr class="memdesc:aca6e05dec0589bb9b38e7b1f59d8f423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the string representation of the CurvilinearDirection enumeration values. <br /></td></tr>
+<tr class="separator:aca6e05dec0589bb9b38e7b1f59d8f423"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">ResizeAndFill2DVector</a> (std::vector&lt; std::vector&lt; T &gt;&gt; &amp;v, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;firstDimension, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> const &amp;secondDimension, bool fill=false, const T &amp;fillValue={})</td></tr>
 <tr class="memdesc:a5891a427c5f35ab64ac2ceff6956f5c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes and fills a two dimensional vector.  <a href="namespacemeshkernel.html#a5891a427c5f35ab64ac2ceff6956f5c1">More...</a><br /></td></tr>
@@ -685,6 +697,36 @@ template&lt;typename Function &gt; </td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the logic of the C++ static library. </p>
 </div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ada45df7d9a6b761430af4dbf350f67cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada45df7d9a6b761430af4dbf350f67cc">&#9670;&nbsp;</a></span>CurvilinearDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">meshkernel::CurvilinearDirection</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Direction to use in curvilinear grid algorithms. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ada45df7d9a6b761430af4dbf350f67cca69691c7bdcc3ce6d5d8a1361f22d04ac"></a>M&#160;</td><td class="fielddoc"><p>M-direction. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ada45df7d9a6b761430af4dbf350f67cca8d9c307cb7f3c4a32822a51922d1ceaa"></a>N&#160;</td><td class="fielddoc"><p>N-direction. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="a25feb926a55573977c6c4f410ece8fbb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a25feb926a55573977c6c4f410ece8fbb">&#9670;&nbsp;</a></span>ExitCode</h2>
 
@@ -2043,6 +2085,27 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Indices of elements </dd></dl>
+
+</div>
+</div>
+<a id="add359ef80e24b577060034dfaee4230d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add359ef80e24b577060034dfaee4230d">&#9670;&nbsp;</a></span>GetCurvilinearDirectionValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">CurvilinearDirection</a> meshkernel::GetCurvilinearDirectionValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert an integer value to the CurvilinearDirection enumeration type. </p>
+<p>If the integer direction value does not correspond to an enumeration value then a <a class="el" href="classmeshkernel_1_1_constraint_error.html" title="An exception class thrown when an attempt is made that violates a range constraint.">ConstraintError</a> will be thrown </p>
 
 </div>
 </div>

@@ -79,6 +79,8 @@ var searchData=
   ['createboundingbox_104',['CreateBoundingBox',['../classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24',1,'meshkernel::BoundingBox']]],
   ['crossproduct_105',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
   ['curvature_5fadapted_5fgrid_5fspacing_106',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
-  ['curvilineargrid_107',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_108',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
+  ['curvilineardirection_107',['CurvilinearDirection',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc',1,'meshkernel']]],
+  ['curvilineardirectiontostring_108',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]],
+  ['curvilineargrid_109',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_110',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];

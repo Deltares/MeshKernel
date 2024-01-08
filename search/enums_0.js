@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deletemeshoptions_1406',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e',1,'meshkernel::Mesh2D']]]
+  ['curvilineardirection_1415',['CurvilinearDirection',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc',1,'meshkernel']]]
 ];

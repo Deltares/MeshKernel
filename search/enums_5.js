@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nodetypes_1411',['NodeTypes',['../classmeshkernel_1_1_mesh2_d.html#a17db40a7b9ea9151e51231c4af416d47',1,'meshkernel::Mesh2D']]]
+  ['method_1420',['Method',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0',1,'meshkernel::AveragingInterpolation']]]
 ];
