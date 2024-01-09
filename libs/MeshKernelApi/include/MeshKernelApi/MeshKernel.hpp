@@ -136,7 +136,7 @@ namespace meshkernelapi
         /// @brief Computes the curvature of a curvilinear grid.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] direction  The direction in which to compute the curvature
-        /// @param[out] smoothness The grid curvature values in the selected direction
+        /// @param[out] curvature The grid curvature values in the selected direction
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature);
 
