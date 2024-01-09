@@ -170,7 +170,8 @@ namespace meshkernel
         /// @param[in] mergingDistance The distance below which two nodes will be merged
         void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
-        /// @brief Connect two existing nodes, forming a new edge (connectdbn)
+        /// @brief Connect two existing nodes, checking if the nodes are already connected.
+        /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge
@@ -181,6 +182,12 @@ namespace meshkernel
         /// @return The index of the new node
         UInt InsertNode(const Point& newPoint);
 
+        /// @brief Insert a new edge, assuming two nodes are not already connected
+        /// @param[in] startNode The start node index
+        /// @param[in] endNode The end node index
+        /// @return The index of the new edge
+        UInt InsertEdge(UInt startNode, UInt endNode);
+
         /// @brief Delete a node
         /// @param[in] node The index of the node to delete
         void DeleteNode(UInt node);
@@ -190,6 +197,12 @@ namespace meshkernel
         /// @param[in] secondNodeIndex The index of the second node
         /// @return The edge index
         [[nodiscard]] UInt FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const;
+
+        /// @brief Find the edge using a linear search, without connectivity information (much slower than FindEdge)
+        /// @param[in] firstNodeIndex The index of the first node
+        /// @param[in] secondNodeIndex The index of the second node
+        /// @return The edge index
+        [[nodiscard]] UInt FindEdgeWithLinearSearch(UInt firstNodeIndex, UInt secondNodeIndex) const;
 
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location

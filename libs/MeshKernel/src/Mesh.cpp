@@ -370,6 +370,11 @@ meshkernel::UInt Mesh::ConnectNodes(UInt startNode, UInt endNode)
     if (edgeIndex != constants::missing::uintValue)
         return constants::missing::uintValue;
 
+    return InsertEdge(startNode, endNode);
+}
+
+meshkernel::UInt Mesh::InsertEdge(UInt startNode, UInt endNode)
+{
     // increment the edges container
     const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
@@ -497,17 +502,24 @@ meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
     {
         const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[edgeIndex], firstNodeIndex);
-        if (firstEdgeOtherNode == secondNodeIndex)
+        const auto edgeFound = firstEdgeOtherNode == secondNodeIndex;
+        if (edgeFound)
         {
             return edgeIndex;
         }
     }
 
+    return constants::missing::uintValue;
+}
+
+meshkernel::UInt Mesh::FindEdgeWithLinearSearch(UInt firstNodeIndex, UInt secondNodeIndex) const
+{
     for (UInt edgeIndex = 0; edgeIndex < GetNumEdges(); edgeIndex++)
     {
         const auto& [firstNode, secondNode] = m_edges[edgeIndex];
-        if ((firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
-            (secondNode == firstNodeIndex && firstNode == secondNodeIndex))
+        const auto edgeFound = (firstNode == firstNodeIndex && secondNode == secondNodeIndex) ||
+                               (secondNode == firstNodeIndex && firstNode == secondNodeIndex);
+        if (edgeFound)
         {
             return edgeIndex;
         }
