@@ -133,6 +133,13 @@ namespace meshkernelapi
         /// @returns                           Error code
         MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts);
 
+        /// @brief Computes the curvature of a curvilinear grid.
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] direction  The direction in which to compute the curvature
+        /// @param[out] smoothness The grid curvature values in the selected direction
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature);
+
         /// @brief Generates curvilinear grid from splines with the advancing front method.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners
