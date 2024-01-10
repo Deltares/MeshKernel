@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <MeshKernel/CasulliRefinement.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Parameters.hpp>
@@ -1063,3 +1064,24 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
 INSTANTIATE_TEST_SUITE_P(RidgeRefinementTestCases,
                          RidgeRefinementTestCases,
                          ::testing::ValuesIn(RidgeRefinementTestCases::GetData()));
+
+TEST(MeshRefinement, CasulliRefinement)
+{
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 1.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    std::cout << "number of nodes: " << mesh->GetNumNodes () << std::endl;
+
+    CasulliRefinement meshRefinement;
+
+    meshRefinement.Compute(*mesh, meshRefinementParameters);
+}
