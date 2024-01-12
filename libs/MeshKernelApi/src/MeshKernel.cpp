@@ -1776,51 +1776,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
-            std::vector values(griddedSamples.num_x * griddedSamples.num_y, 0.0);
-            for (size_t i = 0; i < values.size(); ++i)
-            {
-                values[i] = griddedSamples.values[i];
-            }
-
-            std::unique_ptr<meshkernel::MeshInterpolation> interpolant;
-            if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
-            {
-                meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  griddedSamples.num_x,
-                                                                                                  griddedSamples.num_y,
-                                                                                                  origin,
-                                                                                                  griddedSamples.cell_size,
-                                                                                                  values);
-            }
-            else
-            {
-                if (griddedSamples.x_coordinates == nullptr)
-                {
-                    throw meshkernel::MeshKernelError("griddedSamples.x_coordinates is nullptr");
-                }
-
-                if (griddedSamples.y_coordinates == nullptr)
-                {
-                    throw meshkernel::MeshKernelError("griddedSamples.y_coordinates is nullptr");
-                }
-
-                std::vector<double> xCoordinates(griddedSamples.num_x);
-                for (size_t i = 0; i < xCoordinates.size(); ++i)
-                {
-                    xCoordinates[i] = griddedSamples.x_coordinates[i];
-                }
-                std::vector<double> yCoordinates(griddedSamples.num_y);
-                for (size_t i = 0; i < yCoordinates.size(); ++i)
-                {
-                    yCoordinates[i] = griddedSamples.y_coordinates[i];
-                }
-
-                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  xCoordinates,
-                                                                                                  yCoordinates,
-                                                                                                  values);
-            }
+            auto interpolant = CreateBilinearInterpolatorBasedOnType(griddedSamples, *meshKernelState[meshKernelId].m_mesh2d);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(interpolant),

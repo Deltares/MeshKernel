@@ -54,7 +54,10 @@ namespace meshkernelapi
         double* y_coordinates = nullptr;
 
         /// @brief Sample values
-        double* values = nullptr;
+        void* values = nullptr;
+
+        /// @brief the numeric representation of the values (0 = short, 1 = int, 2 = float and 3 =double)
+        int value_type = 3;
 
         /// @brief X coordinate of the upper right
         double x_upper_right = 0.0;
