@@ -431,19 +431,19 @@ namespace meshkernelapi
                                                                                                 const meshkernel::Mesh2D& mesh2d)
     {
 
-        if (griddedSamples.value_type == 0)
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::shortType))
         {
             return CreateBilinearInterpolator<short>(mesh2d, griddedSamples);
         }
-        if (griddedSamples.value_type == 1)
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::intType))
         {
             return CreateBilinearInterpolator<int>(mesh2d, griddedSamples);
         }
-        if (griddedSamples.value_type == 2)
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::floatType))
         {
             return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
         }
-        if (griddedSamples.value_type == 3)
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::doubleType))
         {
             return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
         }
