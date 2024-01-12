@@ -520,7 +520,7 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(3361, mesh2d.num_edges);
 }
 
-class MeshRefinementValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValuesTypes>
+class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValuesTypes>
 {
 public:
     [[nodiscard]] static std::vector<meshkernel::InterpolationValuesTypes> GetData()
@@ -532,7 +532,7 @@ public:
     }
 };
 
-TEST_P(MeshRefinementValueTypes, parameters)
+TEST_P(MeshRefinementSampleValueTypes, parameters)
 {
     // Get the test parameters
     auto const interpolationValueType = GetParam();
@@ -648,4 +648,4 @@ TEST_P(MeshRefinementValueTypes, parameters)
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementValueTypes, ::testing::ValuesIn(MeshRefinementValueTypes::GetData()));
+INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementValueTypes::GetData()));
