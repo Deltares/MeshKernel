@@ -86,6 +86,16 @@ namespace meshkernel
         N  ///< N-direction
     };
 
+    /// @enum InterpolationValuesTypes
+    /// @brief The possible types of the values to be interpolated in the gridded sample 
+    enum class InterpolationValuesTypes
+    {
+        shortType = 0, ///< short type
+        intType = 1,   ///< int type
+        floatType = 2, ///< float type
+        doubleType = 3 ///< double type
+    };
+
     /// @brief Convert an integer value to the CurvilinearDirection enumeration type
     ///
     /// If the integer direction value does not correspond to an enumeration

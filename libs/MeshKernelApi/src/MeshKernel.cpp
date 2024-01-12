@@ -3877,4 +3877,32 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_get_interpolation_type_short(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValuesTypes::shortType);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_int(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValuesTypes::intType);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_float(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValuesTypes::floatType);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_double(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValuesTypes::doubleType);
+        return lastExitCode;
+    }
+
 } // namespace meshkernelapi
