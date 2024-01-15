@@ -91,9 +91,7 @@ namespace meshkernel
     enum class InterpolationValues
     {
         shortType = 0, ///< short type
-        intType = 1,   ///< int type
-        floatType = 2, ///< float type
-        doubleType = 3 ///< double type
+        floatType = 1, ///< float type
     };
 
     /// @brief Convert an integer value to the CurvilinearDirection enumeration type
