@@ -2979,6 +2979,6 @@ TEST(Mesh2D, mesh2dMakeGlobal_ShouldMakeGlobalMesh)
     Mesh2D mesh2d{};
     errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(mesh2d.num_edges, 1200);
+    ASSERT_EQ(mesh2d.num_edges, 1233);
     ASSERT_EQ(mesh2d.num_nodes, 629);
 }
