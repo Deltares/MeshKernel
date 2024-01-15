@@ -2851,6 +2851,11 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
+            if (curvature == nullptr)
+            {
+                throw meshkernel::ConstraintError("The curvautre array is null");
+            }
+
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
@@ -2866,8 +2871,7 @@ namespace meshkernelapi
             lin_alg::Matrix<double> curvatureMatrix;
 
             meshkernel::CurvilinearGridCurvature::Compute(grid, directionEnum, curvatureMatrix);
-            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
-            std::memcpy(curvature, curvatureMatrix.data(), valueCount);
+            Eigen::Map<lin_alg::Matrix<double>>(curvature, curvatureMatrix.rows(), curvatureMatrix.cols()) = curvatureMatrix;
         }
         catch (...)
         {
@@ -2881,6 +2885,11 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
+            if (smoothness == nullptr)
+            {
+                throw meshkernel::ConstraintError("The smoothness array is null");
+            }
+
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
@@ -2896,8 +2905,7 @@ namespace meshkernelapi
             lin_alg::Matrix<double> smoothnessMatrix;
 
             meshkernel::CurvilinearGridSmoothness::Compute(grid, directionEnum, smoothnessMatrix);
-            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
-            std::memcpy(smoothness, smoothnessMatrix.data(), valueCount);
+            Eigen::Map<lin_alg::Matrix<double>>(smoothness, smoothnessMatrix.rows(), smoothnessMatrix.cols()) = smoothnessMatrix;
         }
         catch (...)
         {
