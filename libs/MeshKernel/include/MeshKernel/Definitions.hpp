@@ -86,9 +86,9 @@ namespace meshkernel
         N  ///< N-direction
     };
 
-    /// @enum InterpolationValuesTypes
-    /// @brief The possible types of the values to be interpolated in the gridded sample 
-    enum class InterpolationValuesTypes
+    /// @enum InterpolationValues
+    /// @brief The possible types of the values to be interpolated in the gridded sample
+    enum class InterpolationValues
     {
         shortType = 0, ///< short type
         intType = 1,   ///< int type

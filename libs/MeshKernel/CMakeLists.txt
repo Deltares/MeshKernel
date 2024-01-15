@@ -29,6 +29,7 @@ set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/Definitions.cpp

@@ -397,19 +397,19 @@ namespace meshkernelapi
                             makeGridParameters.upper_right_y);
     }
 
-    template <typename values_type>
+    template <typename ValueType>
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolator(const meshkernel::Mesh2D& mesh2d,
                                                                                      const GriddedSamples& griddedSamples)
     {
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
         if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
         {
-            return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<values_type>>(mesh2d,
-                                                                                                    griddedSamples.num_x,
-                                                                                                    griddedSamples.num_y,
-                                                                                                    origin,
-                                                                                                    griddedSamples.cell_size,
-                                                                                                    griddedSamples.values);
+            return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<ValueType>>(mesh2d,
+                                                                                                  griddedSamples.num_x,
+                                                                                                  griddedSamples.num_y,
+                                                                                                  origin,
+                                                                                                  griddedSamples.cell_size,
+                                                                                                  griddedSamples.values);
         }
         std::vector<double> xCoordinates(griddedSamples.num_x);
         for (size_t i = 0; i < xCoordinates.size(); ++i)
@@ -421,29 +421,25 @@ namespace meshkernelapi
         {
             yCoordinates[i] = griddedSamples.y_coordinates[i];
         }
-        return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<values_type>>(mesh2d,
-                                                                                                xCoordinates,
-                                                                                                yCoordinates,
-                                                                                                griddedSamples.values);
+        return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<ValueType>>(mesh2d,
+                                                                                              xCoordinates,
+                                                                                              yCoordinates,
+                                                                                              griddedSamples.values);
     }
 
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolatorBasedOnType(const GriddedSamples& griddedSamples,
                                                                                                 const meshkernel::Mesh2D& mesh2d)
     {
 
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::shortType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
         {
             return CreateBilinearInterpolator<short>(mesh2d, griddedSamples);
         }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::intType))
-        {
-            return CreateBilinearInterpolator<int>(mesh2d, griddedSamples);
-        }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::floatType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
         {
             return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
         }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValuesTypes::doubleType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::doubleType))
         {
             return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
         }

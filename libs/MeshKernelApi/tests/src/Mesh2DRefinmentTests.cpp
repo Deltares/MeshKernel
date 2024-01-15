@@ -520,15 +520,14 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(3361, mesh2d.num_edges);
 }
 
-class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValuesTypes>
+class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValues>
 {
 public:
-    [[nodiscard]] static std::vector<meshkernel::InterpolationValuesTypes> GetData()
+    [[nodiscard]] static std::vector<meshkernel::InterpolationValues> GetData()
     {
-        return {meshkernel::InterpolationValuesTypes::shortType,
-                meshkernel::InterpolationValuesTypes::intType,
-                meshkernel::InterpolationValuesTypes::floatType,
-                meshkernel::InterpolationValuesTypes::doubleType};
+        return {meshkernel::InterpolationValues::shortType,
+                meshkernel::InterpolationValues::floatType,
+                meshkernel::InterpolationValues::doubleType};
     }
 };
 
@@ -550,12 +549,11 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     meshkernelapi::GriddedSamples griddedSamples;
 
     std::vector<short> valuesShort;
-    std::vector<int> valuesInt;
     std::vector<float> valuesFloat;
     std::vector<double> valuesDouble;
 
     int interpolationType;
-    if (interpolationValueType == meshkernel::InterpolationValuesTypes::shortType)
+    if (interpolationValueType == meshkernel::InterpolationValues::shortType)
     {
 
         errorCode = meshkernelapi::mkernel_get_interpolation_type_short(interpolationType);
@@ -572,23 +570,7 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
         griddedSamples.x_coordinates = nullptr;
         griddedSamples.y_coordinates = nullptr;
     }
-    else if (interpolationValueType == meshkernel::InterpolationValuesTypes::intType)
-    {
-        errorCode = meshkernelapi::mkernel_get_interpolation_type_int(interpolationType);
-        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<int>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");
-        valuesInt = values;
-        griddedSamples.num_x = ncols;
-        griddedSamples.num_y = nrows;
-        griddedSamples.x_origin = xllcenter;
-        griddedSamples.y_origin = yllcenter;
-        griddedSamples.cell_size = cellsize;
-        griddedSamples.value_type = interpolationType;
-        griddedSamples.values = valuesInt.data();
-        griddedSamples.x_coordinates = nullptr;
-        griddedSamples.y_coordinates = nullptr;
-    }
-    else if (interpolationValueType == meshkernel::InterpolationValuesTypes::floatType)
+    else if (interpolationValueType == meshkernel::InterpolationValues::floatType)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -604,7 +586,7 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
         griddedSamples.x_coordinates = nullptr;
         griddedSamples.y_coordinates = nullptr;
     }
-    else if (interpolationValueType == meshkernel::InterpolationValuesTypes::doubleType)
+    else if (interpolationValueType == meshkernel::InterpolationValues::doubleType)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_double(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -648,4 +630,4 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementValueTypes::GetData()));
+INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementSampleValueTypes::GetData()));

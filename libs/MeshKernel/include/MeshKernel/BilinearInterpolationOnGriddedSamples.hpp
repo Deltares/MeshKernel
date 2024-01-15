@@ -33,7 +33,7 @@
 namespace meshkernel
 {
     /// @brief A class for performing bilinear interpolation on gridded samples
-    template <typename values_type>
+    template <typename ValueType>
     class BilinearInterpolationOnGriddedSamples : public MeshInterpolation
     {
     public:
@@ -82,10 +82,10 @@ namespace meshkernel
 
         /// @brief Gets the sample value at specific row and column
         /// @return The sample value
-        [[nodiscard]] values_type getGriddedValue(UInt columnIndex, UInt rowIndex) const
+        [[nodiscard]] double GetGriddedValue(UInt columnIndex, UInt rowIndex) const
         {
             const auto index = rowIndex * m_numXCoord + columnIndex;
-            return static_cast<values_type>(m_values[index]);
+            return static_cast<double>(m_values[index]);
         }
 
         const Mesh2D& m_mesh;    ///< Reference to the mesh
@@ -96,150 +96,8 @@ namespace meshkernel
 
         std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
         std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
-        const values_type* m_values;        ///< The gridded sample values
+        const ValueType* m_values;          ///< The gridded sample values
         bool m_isCellSizeConstant;          ///< If the grid coordinates are specified using vectors of coordinates
     };
-
-    template <typename values_type>
-    BilinearInterpolationOnGriddedSamples<values_type>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                                              UInt numXCoord,
-                                                                                              UInt numYCoord,
-                                                                                              const Point& origin,
-                                                                                              double cellSize,
-                                                                                              const void* values) : m_mesh(mesh),
-                                                                                                                    m_numXCoord(numXCoord),
-                                                                                                                    m_numYCoord(numYCoord),
-                                                                                                                    m_origin(origin),
-                                                                                                                    m_cellSize(cellSize),
-                                                                                                                    m_isCellSizeConstant(true)
-    {
-        m_values = static_cast<const values_type*>(values);
-    }
-
-    template <typename values_type>
-    BilinearInterpolationOnGriddedSamples<values_type>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                                              const std::vector<double>& xCoordinates,
-                                                                                              const std::vector<double>& yCoordinates,
-                                                                                              const void* values) : m_mesh(mesh),
-                                                                                                                    m_numXCoord(static_cast<UInt>(xCoordinates.size())),
-                                                                                                                    m_numYCoord(static_cast<UInt>(yCoordinates.size())),
-                                                                                                                    m_xCoordinates(xCoordinates),
-                                                                                                                    m_yCoordinates(yCoordinates),
-                                                                                                                    m_isCellSizeConstant(false)
-    {
-        m_values = static_cast<const values_type*>(values);
-    }
-
-    template <typename values_type>
-    void BilinearInterpolationOnGriddedSamples<values_type>::Compute()
-    {
-        m_nodeResults.resize(m_mesh.GetNumNodes());
-        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
-        for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
-        {
-            const auto node = m_mesh.m_nodes[n];
-            m_nodeResults[n] = Interpolation(node);
-        }
-
-        m_edgeResults.resize(m_mesh.GetNumEdges());
-        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
-        for (UInt e = 0; e < m_mesh.GetNumEdges(); ++e)
-        {
-            const auto& [first, second] = m_mesh.m_edges[e];
-            m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
-        }
-
-        m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
-        std::ranges::fill(m_faceResults, constants::missing::doubleValue);
-        for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
-        {
-            m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);
-        }
-    }
-
-    template <typename values_type>
-    double BilinearInterpolationOnGriddedSamples<values_type>::Interpolation(const Point& point) const
-    {
-
-        double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
-        double fractionalRowIndex = GetFractionalNumberOfRows(point);
-
-        double columnIndexTmp;
-        fractionalColumnIndex = std::modf(fractionalColumnIndex, &columnIndexTmp);
-
-        double rowIndexTmp;
-        fractionalRowIndex = std::modf(fractionalRowIndex, &rowIndexTmp);
-
-        if (columnIndexTmp < 0 || rowIndexTmp < 0)
-        {
-            return constants::missing::doubleValue;
-        }
-
-        UInt const columnIndex = static_cast<UInt>(columnIndexTmp);
-        UInt const rowIndex = static_cast<UInt>(rowIndexTmp);
-
-        if (columnIndex + 1 >= m_numXCoord || rowIndex + 1 >= m_numYCoord)
-        {
-            return constants::missing::doubleValue;
-        }
-
-        const auto result = fractionalColumnIndex * fractionalRowIndex * getGriddedValue(columnIndex + 1, rowIndex + 1) +
-                            (1.0 - fractionalColumnIndex) * fractionalRowIndex * getGriddedValue(columnIndex, rowIndex + 1) +
-                            (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex, rowIndex) +
-                            fractionalColumnIndex * (1.0 - fractionalRowIndex) * getGriddedValue(columnIndex + 1, rowIndex);
-        return result;
-    }
-
-    template <typename values_type>
-    [[nodiscard]] double BilinearInterpolationOnGriddedSamples<values_type>::GetFractionalNumberOfColumns(const Point& point) const
-    {
-        if (m_isCellSizeConstant)
-        {
-            return (point.x - m_origin.x) / m_cellSize;
-        }
-        double result = constants::missing::doubleValue;
-        if (m_xCoordinates.size() < 2)
-        {
-            return result;
-        }
-        for (UInt i = 0; i < m_xCoordinates.size() - 1; ++i)
-        {
-
-            if (point.x >= m_xCoordinates[i] && point.x < m_xCoordinates[i + 1])
-            {
-                const double dx = m_xCoordinates[i + 1] - m_xCoordinates[i];
-                result = static_cast<double>(i) + (point.x - m_xCoordinates[i]) / dx;
-                break;
-            }
-        }
-        return result;
-    }
-
-    template <typename values_type>
-    double BilinearInterpolationOnGriddedSamples<values_type>::GetFractionalNumberOfRows(const Point& point) const
-    {
-        if (m_isCellSizeConstant)
-        {
-            return (point.y - m_origin.y) / m_cellSize;
-        }
-
-        double result = constants::missing::doubleValue;
-        if (m_yCoordinates.size() < 2)
-        {
-            return result;
-        }
-
-        for (UInt i = 0; i < m_yCoordinates.size() - 1; ++i)
-        {
-
-            if (point.y >= m_yCoordinates[i] && point.y < m_yCoordinates[i + 1])
-            {
-                const double dy = m_yCoordinates[i + 1] - m_yCoordinates[i];
-                result = static_cast<double>(i) + (point.y - m_yCoordinates[i]) / dy;
-                break;
-            }
-        }
-        return result;
-    }
 
 } // namespace meshkernel
