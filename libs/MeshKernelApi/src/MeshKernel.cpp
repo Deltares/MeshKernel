@@ -36,6 +36,7 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -2837,6 +2838,36 @@ namespace meshkernelapi
 
             // set the curvilinear state
             meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridFromSplines.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
+            }
+
+            meshkernel::CurvilinearDirection directionEnum = meshkernel::GetCurvilinearDirectionValue(direction);
+            const meshkernel::CurvilinearGrid& grid = *meshKernelState[meshKernelId].m_curvilinearGrid;
+            lin_alg::Matrix<double> curvatureMatrix;
+
+            meshkernel::CurvilinearGridCurvature::Compute(grid, directionEnum, curvatureMatrix);
+            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
+            std::memcpy(curvature, curvatureMatrix.data(), valueCount);
         }
         catch (...)
         {
