@@ -3929,28 +3929,28 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_interpolation_type_short(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValuesTypes::shortType);
+        type = static_cast<int>(meshkernel::InterpolationValues::shortType);
         return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_interpolation_type_int(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValuesTypes::intType);
+        type = static_cast<int>(meshkernel::InterpolationValues::intType);
         return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_interpolation_type_float(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValuesTypes::floatType);
+        type = static_cast<int>(meshkernel::InterpolationValues::floatType);
         return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_interpolation_type_double(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValuesTypes::doubleType);
+        type = static_cast<int>(meshkernel::InterpolationValues::doubleType);
         return lastExitCode;
     }
 

@@ -56,8 +56,8 @@ namespace meshkernelapi
         /// @brief Sample values
         void* values = nullptr;
 
-        /// @brief the numeric representation of the values (0 = short, 1 = int, 2 = float and 3 =double)
-        int value_type = 3;
+        /// @brief the numeric representation of the values (0 = short, 1 = float)
+        int value_type = 1;
 
         /// @brief X coordinate of the upper right
         double x_upper_right = 0.0;
