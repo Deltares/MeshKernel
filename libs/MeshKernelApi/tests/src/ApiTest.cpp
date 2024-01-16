@@ -21,7 +21,7 @@
 
 #include "CartesianApiTestFixture.hpp"
 
-TEST(State, FailToAllocateDueToInvalidProjection)
+TEST(State, AllocateState)
 {
     int errorCode;
     int meshKernelId = 0;
