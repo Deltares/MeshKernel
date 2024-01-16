@@ -133,12 +133,6 @@ namespace meshkernelapi
         try
         {
             meshKernelId = meshKernelStateCounter++;
-            /*    std::cout << "projectionType = " << projectionType << '\n';
-                std::vector vec = meshkernel::GetValidProjections();
-                for (auto const& x : vec)
-                {
-                    std::cout << x << '\n';
-                }*/
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
             meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
