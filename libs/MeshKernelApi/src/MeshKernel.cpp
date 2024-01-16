@@ -47,6 +47,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -64,6 +65,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/ProjectionConversions.hpp>
+#include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
@@ -128,9 +130,23 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        meshKernelId = meshKernelStateCounter++;
-        auto const projection = static_cast<meshkernel::Projection>(projectionType);
-        meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
+        try
+        {
+            meshKernelId = meshKernelStateCounter++;
+            /*    std::cout << "projectionType = " << projectionType << '\n';
+                std::vector vec = meshkernel::GetValidProjections();
+                for (auto const& x : vec)
+                {
+                    std::cout << x << '\n';
+                }*/
+            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
+            auto const projection = static_cast<meshkernel::Projection>(projectionType);
+            meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
         return lastExitCode;
     }
 
