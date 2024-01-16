@@ -949,6 +949,24 @@ std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
     return result;
 }
 
+meshkernel::UInt Mesh::GetLocalFaceNodeIndex(const UInt faceIndex, const UInt nodeIndex) const
+{
+    UInt faceNodeIndex = constants::missing::uintValue;
+
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+
+    for (UInt n = 0; n < numFaceNodes; ++n)
+    {
+        if (m_facesNodes[faceIndex][n] == nodeIndex)
+        {
+            faceNodeIndex = n;
+            break;
+        }
+    }
+
+    return faceNodeIndex;
+}
+
 std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
 {
     const auto locations = ComputeLocations(location);

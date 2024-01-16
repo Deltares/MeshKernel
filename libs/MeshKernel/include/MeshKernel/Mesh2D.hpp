@@ -327,6 +327,26 @@ namespace meshkernel
         /// @return The mesh edges bounding boxes
         [[nodiscard]] std::vector<BoundingBox> GetEdgesBoundingBoxes() const;
 
+        /// @brief Find all faces that have the given node as a vertex.
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [out] sharedFaces On exit will contain only indices of faces that contain nodeIndex as a node.
+        void FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedFaces) const;
+
+        /// @brief Get indices of all nodes that are connected directly to a give node along connected edges
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [out] connectedNodes
+        void GetConnectingNodes(UInt nodeIndex, std::vector<UInt>& connectedNodes) const;
+
+        /// @brief Find all unique nodes.
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [in] sharedFaces List of faces that share the nodeIndex as a common node
+        /// @param [in/out] connectedNodes List of nodes that are in the patch of shared faces
+        /// @param [out] faceNodeMapping Mapping from node index to the position in connectedNodes list.
+        void FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const;
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length

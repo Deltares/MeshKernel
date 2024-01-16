@@ -2126,3 +2126,136 @@ std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
 
     return result;
 }
+
+void Mesh2D::FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedFaces) const
+{
+    sharedFaces.clear();
+
+    UInt newFaceIndex = constants::missing::uintValue;
+    for (UInt e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    {
+        const auto firstEdge = m_nodesEdges[nodeIndex][e];
+
+        UInt secondEdgeIndex = e + 1;
+        if (secondEdgeIndex >= m_nodesNumEdges[nodeIndex])
+        {
+            secondEdgeIndex = 0;
+        }
+
+        const auto secondEdge = m_nodesEdges[nodeIndex][secondEdgeIndex];
+        if (m_edgesNumFaces[firstEdge] == 0 || m_edgesNumFaces[secondEdge] == 0)
+        {
+            continue;
+        }
+
+        // find the face shared by the two edges
+        const auto firstFace = std::max(std::min(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
+        const auto secondFace = std::max(std::min(m_edgesNumFaces[secondEdge], static_cast<UInt>(2)), static_cast<UInt>(1)) - 1;
+
+        if (m_edgesFaces[firstEdge][0] != newFaceIndex &&
+            (m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][0] ||
+             m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][secondFace]))
+        {
+            newFaceIndex = m_edgesFaces[firstEdge][0];
+        }
+        else if (m_edgesFaces[firstEdge][firstFace] != newFaceIndex &&
+                 (m_edgesFaces[firstEdge][firstFace] == m_edgesFaces[secondEdge][0] ||
+                  m_edgesFaces[firstEdge][firstFace] == m_edgesFaces[secondEdge][secondFace]))
+        {
+            newFaceIndex = m_edgesFaces[firstEdge][firstFace];
+        }
+        else
+        {
+            newFaceIndex = constants::missing::uintValue;
+        }
+
+        // corner face (already found in the first iteration)
+        if (m_nodesNumEdges[nodeIndex] == 2 &&
+            e == 1 &&
+            m_nodesTypes[nodeIndex] == 3 &&
+            !sharedFaces.empty() &&
+            sharedFaces[0] == newFaceIndex)
+        {
+            newFaceIndex = constants::missing::uintValue;
+        }
+        sharedFaces.emplace_back(newFaceIndex);
+    }
+}
+
+void Mesh2D::GetConnectingNodes(UInt nodeIndex, std::vector<UInt>& connectedNodes) const
+{
+    connectedNodes.clear();
+    connectedNodes.emplace_back(nodeIndex);
+
+    // edge connected nodes
+    for (UInt e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    {
+        const auto edgeIndex = m_nodesEdges[nodeIndex][e];
+        const auto node = OtherNodeOfEdge(m_edges[edgeIndex], nodeIndex);
+        connectedNodes.emplace_back(node);
+    }
+}
+
+void Mesh2D::FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const
+{
+
+    // for each face store the positions of the its nodes in the connectedNodes (compressed array)
+    if (faceNodeMapping.size() < sharedFaces.size())
+    {
+        ResizeAndFill2DVector(faceNodeMapping, static_cast<UInt>(sharedFaces.size()), Mesh::m_maximumNumberOfNodesPerFace);
+    }
+
+    // Find all nodes shared by faces
+    for (UInt f = 0; f < sharedFaces.size(); f++)
+    {
+        const auto faceIndex = sharedFaces[f];
+
+        if (faceIndex == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        // find the stencil node position in the current face
+        UInt faceNodeIndex = GetLocalFaceNodeIndex(faceIndex, nodeIndex);
+        const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+
+        if (faceNodeIndex == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        for (UInt n = 0; n < numFaceNodes; n++)
+        {
+
+            if (faceNodeIndex >= numFaceNodes)
+            {
+                faceNodeIndex -= numFaceNodes;
+            }
+
+            const auto node = m_facesNodes[faceIndex][faceNodeIndex];
+
+            bool isNewNode = true;
+
+            // Find if node of face is already in connectedNodes list
+            for (UInt i = 0; i < connectedNodes.size(); i++)
+            {
+                if (node == connectedNodes[i])
+                {
+                    isNewNode = false;
+                    faceNodeMapping[f][faceNodeIndex] = static_cast<UInt>(i);
+                    break;
+                }
+            }
+
+            // If node is not already contained in connectedNodes list, then add it to the list.
+            if (isNewNode)
+            {
+                connectedNodes.emplace_back(node);
+                faceNodeMapping[f][faceNodeIndex] = static_cast<UInt>(connectedNodes.size() - 1);
+            }
+
+            // update node index
+            faceNodeIndex += 1;
+        }
+    }
+}

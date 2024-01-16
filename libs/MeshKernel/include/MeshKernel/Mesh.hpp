@@ -160,6 +160,11 @@ namespace meshkernel
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(UInt face) const;
 
+        /// @brief Get the local index of the node belong to a face.
+        ///
+        /// If the node cannot be found the null value will be returned.
+        UInt GetLocalFaceNodeIndex(const UInt faceIndex, const UInt nodeIndex) const;
+
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
