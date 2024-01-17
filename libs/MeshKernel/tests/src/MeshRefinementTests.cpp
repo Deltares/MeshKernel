@@ -821,7 +821,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
 
     std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values.data());
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -848,7 +848,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
 
     std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 3, 3, origin, 10.0, values.data());
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 3, 3, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -875,7 +875,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
 
     std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values.data());
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
