@@ -2987,3 +2987,4 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+    ASSERT_EQ(mesh2d.num_edges, 1233);
