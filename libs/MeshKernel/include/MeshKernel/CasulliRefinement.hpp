@@ -36,23 +36,37 @@ namespace meshkernel
 {
     class CasulliRefinement
     {
-    public :
-        static void Compute (Mesh2D& mesh, const MeshRefinementParameters& meshRefinementParameters);
+    public:
+        static void Compute(Mesh2D& mesh, const MeshRefinementParameters& meshRefinementParameters);
 
-    private :
-
+    private:
         using LinkNodes = std::array<UInt, 4>;
 
-        static void ComputeNewNodes (Mesh2D& mesh, std::vector<LinkNodes>& newNodes);
+        static void Initialise(const Mesh2D& mesh, std::vector<int>& kc);
 
-        static void StoreNewNode (const Mesh2D& mesh, const UInt knode, const UInt link1, const UInt link2, const UInt knew, std::vector<LinkNodes>& newNodes);
+        static void ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<int>& kc);
 
-        static UInt IsStartEnd (const Mesh2D& mesh, const UInt nodeId, const UInt edgeId);
+        static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<int>& kc);
 
-        static UInt IsLeftRight (const Mesh2D& mesh, const UInt elementId, const UInt edgeId);
+        static void StoreNewNode(const Mesh2D& mesh, const UInt knode, const UInt link1, const UInt link2, const UInt knew, std::vector<LinkNodes>& newNodes);
 
-        static UInt FindCommon (const Mesh2D& mesh, const UInt l1, const UInt l2);
+        static UInt IsStartEnd(const Mesh2D& mesh, const UInt nodeId, const UInt edgeId);
 
+        static UInt IsLeftRight(const Mesh2D& mesh, const UInt elementId, const UInt edgeId);
+
+        static UInt FindCommon(const Mesh2D& mesh, const UInt l1, const UInt l2);
+
+        struct Tadm
+        {
+            UInt ncell;
+            std::vector<UInt> icell;
+            UInt nmk;
+            UInt nmk2;
+            std::vector<UInt> kk2;
+            std::vector<std::vector<UInt>>& kkc;
+        };
+
+        static void OrthonetAdmin(const Mesh2D& mesh, const UInt currentNode, std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping);
     };
 
 } // namespace meshkernel

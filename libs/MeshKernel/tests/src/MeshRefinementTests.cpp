@@ -12,6 +12,10 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
+#include <MeshKernel/Operations.hpp>
+
+#include <TestUtils/MakeCurvilinearGrids.hpp>
+
 using namespace meshkernel;
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
@@ -1067,7 +1071,9 @@ INSTANTIATE_TEST_SUITE_P(RidgeRefinementTestCases,
 
 TEST(MeshRefinement, CasulliRefinement)
 {
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+    // auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -1079,9 +1085,10 @@ TEST(MeshRefinement, CasulliRefinement)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    std::cout << "number of nodes: " << mesh->GetNumNodes () << std::endl;
-
     CasulliRefinement meshRefinement;
+    Print(mesh.m_nodes, mesh.m_edges);
 
-    meshRefinement.Compute(*mesh, meshRefinementParameters);
+    meshRefinement.Compute(mesh, meshRefinementParameters);
+
+    Print(mesh.m_nodes, mesh.m_edges);
 }
