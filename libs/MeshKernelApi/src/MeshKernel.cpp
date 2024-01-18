@@ -36,7 +36,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -47,7 +46,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
-#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -65,7 +63,6 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/ProjectionConversions.hpp>
-#include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
@@ -130,17 +127,9 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            meshKernelId = meshKernelStateCounter++;
-            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
-            auto const projection = static_cast<meshkernel::Projection>(projectionType);
-            meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
+        meshKernelId = meshKernelStateCounter++;
+        auto const projection = static_cast<meshkernel::Projection>(projectionType);
+        meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
         return lastExitCode;
     }
 
@@ -2812,50 +2801,11 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (curvature == nullptr)
-            {
-                throw meshkernel::ConstraintError("The curvautre array is null");
-            }
-
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
-            }
-
-            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
-            }
-
-            meshkernel::CurvilinearDirection directionEnum = meshkernel::GetCurvilinearDirectionValue(direction);
-            const meshkernel::CurvilinearGrid& grid = *meshKernelState[meshKernelId].m_curvilinearGrid;
-            lin_alg::Matrix<double> curvatureMatrix;
-
-            meshkernel::CurvilinearGridCurvature::Compute(grid, directionEnum, curvatureMatrix);
-            Eigen::Map<lin_alg::Matrix<double>>(curvature, curvatureMatrix.rows(), curvatureMatrix.cols()) = curvatureMatrix;
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
     MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction, double* smoothness)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (smoothness == nullptr)
-            {
-                throw meshkernel::ConstraintError("The smoothness array is null");
-            }
-
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
@@ -2871,7 +2821,8 @@ namespace meshkernelapi
             lin_alg::Matrix<double> smoothnessMatrix;
 
             meshkernel::CurvilinearGridSmoothness::Compute(grid, directionEnum, smoothnessMatrix);
-            Eigen::Map<lin_alg::Matrix<double>>(smoothness, smoothnessMatrix.rows(), smoothnessMatrix.cols()) = smoothnessMatrix;
+            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
+            std::memcpy(smoothness, smoothnessMatrix.data(), valueCount);
         }
         catch (...)
         {

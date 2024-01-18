@@ -30,7 +30,6 @@
 #include <cstdint>
 #include <map>
 #include <string>
-#include <vector>
 
 namespace meshkernel
 {
@@ -44,9 +43,6 @@ namespace meshkernel
         spherical = 1,        // jsferic  = 1
         sphericalAccurate = 2 // jasfer3D = 1
     };
-
-    /// @brief Gets the valid projectionbs as vector of integers
-    const std::vector<int>& GetValidProjections();
 
     /// @brief Convert an integer value to the Projection enumeration type
     ///

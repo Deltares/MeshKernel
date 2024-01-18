@@ -334,8 +334,6 @@ void Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 
     filteredNodes.resize(filteredNodeCount);
 
-    AdministrateNodesEdges();
-
     // Update the R-Tree of the mesh nodes
     const auto nodesRtree = RTreeFactory::Create(m_projection);
     nodesRtree->BuildTree(filteredNodes);

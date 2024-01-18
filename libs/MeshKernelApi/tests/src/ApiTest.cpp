@@ -21,33 +21,6 @@
 
 #include "CartesianApiTestFixture.hpp"
 
-TEST(State, AllocateState)
-{
-    int errorCode;
-    int meshKernelId = 0;
-    // cartesian
-    errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    // spherical
-    errorCode = meshkernelapi::mkernel_allocate_state(1, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    // spherical accurate
-    errorCode = meshkernelapi::mkernel_allocate_state(2, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    // invalid
-    errorCode = meshkernelapi::mkernel_allocate_state(3, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
-    // invalid
-    errorCode = meshkernelapi::mkernel_allocate_state(-1, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
-}
-
 TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
 {
     // Prepare
@@ -2987,4 +2960,3 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
-    ASSERT_EQ(mesh2d.num_edges, 1233);
