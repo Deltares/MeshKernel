@@ -36,13 +36,16 @@
 namespace meshkernel
 {
 
+    /// @brief Defines the iterpolatable data types.
     template <typename T>
     concept InterpolatableType =
         std::same_as<T, short> ||
-        std::same_as<T, float>;
+        std::same_as<T, int> ||
+        std::same_as<T, float> ||
+        std::same_as<T, double>;
 
     /// @brief A class for performing bilinear interpolation on gridded samples
-    template <typename InterpolatableType>
+    template <InterpolatableType T>
     class BilinearInterpolationOnGriddedSamples : public MeshInterpolation
     {
     public:
@@ -58,7 +61,7 @@ namespace meshkernel
                                               UInt numYCoord,
                                               const Point& origin,
                                               double cellSize,
-                                              std::span<InterpolatableType> values);
+                                              std::span<T> values);
 
         /// @brief Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
@@ -68,7 +71,7 @@ namespace meshkernel
         BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                               const std::vector<double>& xCoordinates,
                                               const std::vector<double>& yCoordinates,
-                                              std::span<InterpolatableType> values);
+                                              std::span<T> values);
 
         /// @brief Compute interpolation
         void Compute() override;
@@ -99,19 +102,19 @@ namespace meshkernel
         Point m_origin;          ///< The coordinate of the origin
         double m_cellSize = 0.0; ///< The grid cell size
 
-        std::vector<double> m_xCoordinates;     ///< The x coordinates of the grid
-        std::vector<double> m_yCoordinates;     ///< The y coordinates of the grid
-        std::span<InterpolatableType> m_values; ///< The gridded sample values
-        bool m_isCellSizeConstant;              ///< If the grid coordinates are specified using vectors of coordinates
+        std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
+        std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
+        std::span<T> m_values;              ///< The gridded sample values
+        bool m_isCellSizeConstant;          ///< If the grid coordinates are specified using vectors of coordinates
     };
 
-    template <typename InterpolatableType>
-    BilinearInterpolationOnGriddedSamples<InterpolatableType>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                                                     UInt numXCoord,
-                                                                                                     UInt numYCoord,
-                                                                                                     const Point& origin,
-                                                                                                     double cellSize,
-                                                                                                     std::span<InterpolatableType> values)
+    template <InterpolatableType T>
+    BilinearInterpolationOnGriddedSamples<T>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
+                                                                                    UInt numXCoord,
+                                                                                    UInt numYCoord,
+                                                                                    const Point& origin,
+                                                                                    double cellSize,
+                                                                                    std::span<T> values)
         : m_mesh(mesh),
           m_numXCoord(numXCoord),
           m_numYCoord(numYCoord),
@@ -122,11 +125,11 @@ namespace meshkernel
     {
     }
 
-    template <typename InterpolatableType>
-    BilinearInterpolationOnGriddedSamples<InterpolatableType>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                                                     const std::vector<double>& xCoordinates,
-                                                                                                     const std::vector<double>& yCoordinates,
-                                                                                                     std::span<InterpolatableType> values)
+    template <InterpolatableType T>
+    BilinearInterpolationOnGriddedSamples<T>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
+                                                                                    const std::vector<double>& xCoordinates,
+                                                                                    const std::vector<double>& yCoordinates,
+                                                                                    std::span<T> values)
         : m_mesh(mesh),
           m_numXCoord(static_cast<UInt>(xCoordinates.size())),
           m_numYCoord(static_cast<UInt>(yCoordinates.size())),
@@ -137,8 +140,8 @@ namespace meshkernel
     {
     }
 
-    template <typename InterpolatableType>
-    void BilinearInterpolationOnGriddedSamples<InterpolatableType>::Compute()
+    template <InterpolatableType T>
+    void BilinearInterpolationOnGriddedSamples<T>::Compute()
     {
         const auto numNodes = m_mesh.GetNumNodes();
         const auto numEdges = m_mesh.GetNumEdges();
@@ -168,8 +171,8 @@ namespace meshkernel
         }
     }
 
-    template <typename InterpolatableType>
-    double BilinearInterpolationOnGriddedSamples<InterpolatableType>::Interpolation(const Point& point) const
+    template <InterpolatableType T>
+    double BilinearInterpolationOnGriddedSamples<T>::Interpolation(const Point& point) const
     {
 
         double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
@@ -201,8 +204,8 @@ namespace meshkernel
         return result;
     }
 
-    template <typename InterpolatableType>
-    [[nodiscard]] double BilinearInterpolationOnGriddedSamples<InterpolatableType>::GetFractionalNumberOfColumns(const Point& point) const
+    template <InterpolatableType T>
+    [[nodiscard]] double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfColumns(const Point& point) const
     {
         if (m_isCellSizeConstant)
         {
@@ -226,8 +229,8 @@ namespace meshkernel
         return result;
     }
 
-    template <typename InterpolatableType>
-    double BilinearInterpolationOnGriddedSamples<InterpolatableType>::GetFractionalNumberOfRows(const Point& point) const
+    template <InterpolatableType T>
+    double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfRows(const Point& point) const
     {
         if (m_isCellSizeConstant)
         {
@@ -253,8 +256,8 @@ namespace meshkernel
         return result;
     }
 
-    template <typename InterpolatableType>
-    inline double BilinearInterpolationOnGriddedSamples<InterpolatableType>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
+    template <InterpolatableType T>
+    inline double BilinearInterpolationOnGriddedSamples<T>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
     {
         const auto index = rowIndex * m_numXCoord + columnIndex;
         return static_cast<double>(m_values[index]);

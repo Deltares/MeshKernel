@@ -400,20 +400,20 @@ namespace meshkernelapi
                             makeGridParameters.upper_right_y);
     }
 
-    template <typename InterpolatableType>
+    template <meshkernel::InterpolatableType T>
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolator(const meshkernel::Mesh2D& mesh2d,
                                                                                      const GriddedSamples& griddedSamples)
     {
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
         if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
         {
-            return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<InterpolatableType>>(mesh2d,
-                                                                                                           griddedSamples.num_x,
-                                                                                                           griddedSamples.num_y,
-                                                                                                           origin,
-                                                                                                           griddedSamples.cell_size,
-                                                                                                           std::span<InterpolatableType>{reinterpret_cast<InterpolatableType*>(griddedSamples.values),
-                                                                                                                                         static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
+            return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<T>>(mesh2d,
+                                                                                          griddedSamples.num_x,
+                                                                                          griddedSamples.num_y,
+                                                                                          origin,
+                                                                                          griddedSamples.cell_size,
+                                                                                          std::span<T>{reinterpret_cast<T*>(griddedSamples.values),
+                                                                                                       static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
         }
         std::vector<double> xCoordinates(griddedSamples.num_x);
         for (size_t i = 0; i < xCoordinates.size(); ++i)
@@ -425,11 +425,11 @@ namespace meshkernelapi
         {
             yCoordinates[i] = griddedSamples.y_coordinates[i];
         }
-        return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<InterpolatableType>>(mesh2d,
-                                                                                                       xCoordinates,
-                                                                                                       yCoordinates,
-                                                                                                       std::span<InterpolatableType>{reinterpret_cast<InterpolatableType*>(griddedSamples.values),
-                                                                                                                                     static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
+        return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<T>>(mesh2d,
+                                                                                      xCoordinates,
+                                                                                      yCoordinates,
+                                                                                      std::span<T>{reinterpret_cast<T*>(griddedSamples.values),
+                                                                                                   static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
     }
 
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolatorBasedOnType(const GriddedSamples& griddedSamples,
