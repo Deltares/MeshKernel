@@ -1073,22 +1073,26 @@ TEST(MeshRefinement, CasulliRefinement)
 {
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
     Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
-    // auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
-
-    MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 1;
-    meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_edge_size = 1.0;
-    meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.connect_hanging_nodes = 1;
-    meshRefinementParameters.refinement_type = 2;
-    meshRefinementParameters.smoothing_iterations = 0;
 
     CasulliRefinement meshRefinement;
     Print(mesh.m_nodes, mesh.m_edges);
 
-    meshRefinement.Compute(mesh, meshRefinementParameters);
+    meshRefinement.Compute(mesh);
+
+    Print(mesh.m_nodes, mesh.m_edges);
+}
+
+TEST(MeshRefinement, CasulliPatchRefinement)
+{
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 21, 21);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+
+    std::vector<Point> patch{{45.0, 45.0}, {105.0, 45.0}, {155.0, 155.0}, {45.0, 155.0}, {45.0, 45.0}};
+    Polygons polygon(patch, Projection::cartesian);
+
+    CasulliRefinement meshRefinement;
+
+    meshRefinement.Compute(mesh, polygon);
 
     Print(mesh.m_nodes, mesh.m_edges);
 }
