@@ -82,21 +82,21 @@ namespace meshkernel
         /// @brief Performs bi-linear interpolation
         /// @param[in] point The input point
         /// @return The result of bilinear interpolation at the point
-        [[nodiscard]] inline double Interpolation(const Point& point) const;
+        [[nodiscard]] double Interpolation(const Point& point) const;
 
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional column index
-        [[nodiscard]] inline double GetFractionalNumberOfColumns(const Point& point) const;
+        [[nodiscard]] double GetFractionalNumberOfColumns(const Point& point) const;
 
         /// @brief For a specific point, gets the fractional number of columns
         /// @param[in] point The input point
         /// @return The fractional row index
-        [[nodiscard]] inline double GetFractionalNumberOfRows(const Point& point) const;
+        [[nodiscard]] double GetFractionalNumberOfRows(const Point& point) const;
 
         /// @brief Gets the sample value at specific row and column
         /// @return The sample value
-        [[nodiscard]] inline double GetGriddedValue(UInt columnIndex, UInt rowIndex) const;
+        [[nodiscard]] double GetGriddedValue(UInt columnIndex, UInt rowIndex) const;
 
         const Mesh2D& m_mesh;    ///< Reference to the mesh
         UInt m_numXCoord;        ///< The number of x coordinates of the gridded data
@@ -174,7 +174,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    [[nodiscard]] inline double BilinearInterpolationOnGriddedSamples<T>::Interpolation(const Point& point) const
+    double BilinearInterpolationOnGriddedSamples<T>::Interpolation(const Point& point) const
     {
 
         double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
@@ -207,7 +207,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    [[nodiscard]] double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfColumns(const Point& point) const
+    double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfColumns(const Point& point) const
     {
         if (m_isCellSizeConstant)
         {
@@ -232,7 +232,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    [[nodiscard]] inline double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfRows(const Point& point) const
+    double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfRows(const Point& point) const
     {
         if (m_isCellSizeConstant)
         {
@@ -259,7 +259,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    inline double BilinearInterpolationOnGriddedSamples<T>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
+    double BilinearInterpolationOnGriddedSamples<T>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
     {
         const auto index = rowIndex * m_numXCoord + columnIndex;
         return static_cast<double>(m_values[index]);
