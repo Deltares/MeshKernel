@@ -61,7 +61,7 @@ namespace meshkernel
                                               UInt numYCoord,
                                               const Point& origin,
                                               double cellSize,
-                                              std::span<T> values);
+                                              std::span<T const> values);
 
         /// @brief Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)
         /// @param[in] mesh The input mesh
@@ -69,9 +69,11 @@ namespace meshkernel
         /// @param[in] yCoordinates The y coordinates of the grid
         /// @param[in] values The values of the gridded samples
         BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                              const std::vector<double>& xCoordinates,
-                                              const std::vector<double>& yCoordinates,
-                                              std::span<T> values);
+                                              std::span<double const> xCoordinates,
+                                              std::span<double const> yCoordinates,
+                                              // const std::vector<double>& xCoordinates,
+                                              // const std::vector<double>& yCoordinates,
+                                              std::span<T const> values);
 
         /// @brief Compute interpolation
         void Compute() override;
@@ -102,10 +104,10 @@ namespace meshkernel
         Point m_origin;          ///< The coordinate of the origin
         double m_cellSize = 0.0; ///< The grid cell size
 
-        std::vector<double> m_xCoordinates; ///< The x coordinates of the grid
-        std::vector<double> m_yCoordinates; ///< The y coordinates of the grid
-        std::span<T> m_values;              ///< The gridded sample values
-        bool m_isCellSizeConstant;          ///< If the grid coordinates are specified using vectors of coordinates
+        std::span<double const> m_xCoordinates; ///< The x coordinates of the grid
+        std::span<double const> m_yCoordinates; ///< The y coordinates of the grid
+        std::span<T const> m_values;            ///< The gridded sample values
+        bool m_isCellSizeConstant;              ///< If the grid coordinates are specified using vectors of coordinates
     };
 
     template <InterpolatableType T>
@@ -114,28 +116,28 @@ namespace meshkernel
                                                                                     UInt numYCoord,
                                                                                     const Point& origin,
                                                                                     double cellSize,
-                                                                                    std::span<T> values)
+                                                                                    std::span<T const> values)
         : m_mesh(mesh),
           m_numXCoord(numXCoord),
           m_numYCoord(numYCoord),
           m_origin(origin),
           m_cellSize(cellSize),
           m_values(values),
-          m_isCellSizeConstant(true)
+          m_isCellSizeConstant{true}
     {
     }
 
     template <InterpolatableType T>
     BilinearInterpolationOnGriddedSamples<T>::BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
-                                                                                    const std::vector<double>& xCoordinates,
-                                                                                    const std::vector<double>& yCoordinates,
-                                                                                    std::span<T> values)
+                                                                                    std::span<double const> xCoordinates,
+                                                                                    std::span<double const> yCoordinates,
+                                                                                    std::span<T const> values)
         : m_mesh(mesh),
           m_numXCoord(static_cast<UInt>(xCoordinates.size())),
           m_numYCoord(static_cast<UInt>(yCoordinates.size())),
           m_xCoordinates(xCoordinates),
           m_yCoordinates(yCoordinates),
-          m_values(values),
+          m_values{values},
           m_isCellSizeConstant(false)
     {
     }
@@ -172,7 +174,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    double BilinearInterpolationOnGriddedSamples<T>::Interpolation(const Point& point) const
+    [[nodiscard]] inline double BilinearInterpolationOnGriddedSamples<T>::Interpolation(const Point& point) const
     {
 
         double fractionalColumnIndex = GetFractionalNumberOfColumns(point);
@@ -230,7 +232,7 @@ namespace meshkernel
     }
 
     template <InterpolatableType T>
-    double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfRows(const Point& point) const
+    [[nodiscard]] inline double BilinearInterpolationOnGriddedSamples<T>::GetFractionalNumberOfRows(const Point& point) const
     {
         if (m_isCellSizeConstant)
         {
