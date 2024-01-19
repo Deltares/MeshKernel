@@ -58,11 +58,5 @@ namespace meshkernelapi
 
         /// @brief the numeric representation of the values (0 = short, 1 = float)
         int value_type = 1;
-
-        /// @brief X coordinate of the upper right
-        double x_upper_right = 0.0;
-
-        /// @brief Y coordinate of the upper right
-        double y_upper_right = 0.0;
     };
 } // namespace meshkernelapi
