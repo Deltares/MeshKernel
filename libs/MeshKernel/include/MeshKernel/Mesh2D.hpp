@@ -343,7 +343,7 @@ namespace meshkernel
         ///
         /// @param [in] nodeIndex Index of the node
         /// @param [in] sharedFaces List of faces that share the nodeIndex as a common node
-        /// @param [in/out] connectedNodes List of nodes that are in the patch of shared faces
+        /// @param [in, out] connectedNodes List of nodes that are in the patch of shared faces
         /// @param [out] faceNodeMapping Mapping from node index to the position in connectedNodes list.
         void FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const;
 
