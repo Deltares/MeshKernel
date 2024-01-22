@@ -36,7 +36,6 @@
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -47,7 +46,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
-#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -65,7 +63,6 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/ProjectionConversions.hpp>
-#include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
@@ -130,17 +127,9 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            meshKernelId = meshKernelStateCounter++;
-            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
-            auto const projection = static_cast<meshkernel::Projection>(projectionType);
-            meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
+        meshKernelId = meshKernelStateCounter++;
+        auto const projection = static_cast<meshkernel::Projection>(projectionType);
+        meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
         return lastExitCode;
     }
 
@@ -1787,51 +1776,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
 
-            std::vector values(griddedSamples.num_x * griddedSamples.num_y, 0.0);
-            for (size_t i = 0; i < values.size(); ++i)
-            {
-                values[i] = griddedSamples.values[i];
-            }
-
-            std::unique_ptr<meshkernel::MeshInterpolation> interpolant;
-            if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
-            {
-                meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  griddedSamples.num_x,
-                                                                                                  griddedSamples.num_y,
-                                                                                                  origin,
-                                                                                                  griddedSamples.cell_size,
-                                                                                                  values);
-            }
-            else
-            {
-                if (griddedSamples.x_coordinates == nullptr)
-                {
-                    throw meshkernel::MeshKernelError("griddedSamples.x_coordinates is nullptr");
-                }
-
-                if (griddedSamples.y_coordinates == nullptr)
-                {
-                    throw meshkernel::MeshKernelError("griddedSamples.y_coordinates is nullptr");
-                }
-
-                std::vector<double> xCoordinates(griddedSamples.num_x);
-                for (size_t i = 0; i < xCoordinates.size(); ++i)
-                {
-                    xCoordinates[i] = griddedSamples.x_coordinates[i];
-                }
-                std::vector<double> yCoordinates(griddedSamples.num_y);
-                for (size_t i = 0; i < yCoordinates.size(); ++i)
-                {
-                    yCoordinates[i] = griddedSamples.y_coordinates[i];
-                }
-
-                interpolant = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                  xCoordinates,
-                                                                                                  yCoordinates,
-                                                                                                  values);
-            }
+            auto interpolant = CreateBilinearInterpolatorBasedOnType(griddedSamples, *meshKernelState[meshKernelId].m_mesh2d);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(interpolant),
@@ -2856,50 +2801,11 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (curvature == nullptr)
-            {
-                throw meshkernel::ConstraintError("The curvautre array is null");
-            }
-
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
-            }
-
-            if (meshKernelState[meshKernelId].m_curvilinearGrid == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The curvilinear grid id, {}, does not exist.", meshKernelId);
-            }
-
-            meshkernel::CurvilinearDirection directionEnum = meshkernel::GetCurvilinearDirectionValue(direction);
-            const meshkernel::CurvilinearGrid& grid = *meshKernelState[meshKernelId].m_curvilinearGrid;
-            lin_alg::Matrix<double> curvatureMatrix;
-
-            meshkernel::CurvilinearGridCurvature::Compute(grid, directionEnum, curvatureMatrix);
-            Eigen::Map<lin_alg::Matrix<double>>(curvature, curvatureMatrix.rows(), curvatureMatrix.cols()) = curvatureMatrix;
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
     MKERNEL_API int mkernel_curvilinear_compute_smoothness(int meshKernelId, int direction, double* smoothness)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (smoothness == nullptr)
-            {
-                throw meshkernel::ConstraintError("The smoothness array is null");
-            }
-
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
@@ -2915,7 +2821,8 @@ namespace meshkernelapi
             lin_alg::Matrix<double> smoothnessMatrix;
 
             meshkernel::CurvilinearGridSmoothness::Compute(grid, directionEnum, smoothnessMatrix);
-            Eigen::Map<lin_alg::Matrix<double>>(smoothness, smoothnessMatrix.rows(), smoothnessMatrix.cols()) = smoothnessMatrix;
+            size_t valueCount = sizeof(double) * grid.m_numM * grid.m_numN;
+            std::memcpy(smoothness, smoothnessMatrix.data(), valueCount);
         }
         catch (...)
         {
@@ -3967,6 +3874,20 @@ namespace meshkernelapi
     {
         lastExitCode = meshkernel::ExitCode::Success;
         projection = static_cast<int>(meshKernelState[meshKernelId].m_projection);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_short(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValues::shortType);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_float(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValues::floatType);
         return lastExitCode;
     }
 

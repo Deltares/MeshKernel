@@ -14,7 +14,6 @@ set(
   ${SRC_DIR}/AveragingTests.cpp
   ${SRC_DIR}/BoundingBoxTests.cpp
   ${SRC_DIR}/ContactsTests.cpp
-  ${SRC_DIR}/CurvilinearGridCurvatureTests.cpp
   ${SRC_DIR}/CurvilinearGridDeRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridFromPolygonTests.cpp
   ${SRC_DIR}/CurvilinearGridFromSplinesTests.cpp
@@ -26,11 +25,11 @@ set(
   ${SRC_DIR}/CurvilinearGridRectangularTests.cpp
   ${SRC_DIR}/CurvilinearGridRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridSmoothingTests.cpp
-  ${SRC_DIR}/CurvilinearGridSmoothnessTests.cpp
   ${SRC_DIR}/CurvilinearGridSnappingTests.cpp
+  ${SRC_DIR}/CurvilinearGridSmoothnessTests.cpp
   ${SRC_DIR}/FlipEdgesTests.cpp
-  ${SRC_DIR}/FormattingTests.cpp
   ${SRC_DIR}/FunctionsTests.cpp
+  ${SRC_DIR}/FormattingTests.cpp
   ${SRC_DIR}/LandBoundaryTests.cpp
   ${SRC_DIR}/LinearAlgebraTests.cpp
   ${SRC_DIR}/Mesh1DTest.cpp
@@ -38,15 +37,15 @@ set(
   ${SRC_DIR}/Mesh2DGlobalGridTests.cpp
   ${SRC_DIR}/Mesh2DTest.cpp
   ${SRC_DIR}/MeshConversionTests.cpp
-  ${SRC_DIR}/MeshConversionTests.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
+  ${SRC_DIR}/MeshConversionTests.cpp
   ${SRC_DIR}/MeshTransformationTest.cpp
   ${SRC_DIR}/OrthogonalizationTests.cpp
   ${SRC_DIR}/ParametersTests.cpp
   ${SRC_DIR}/PointTests.cpp
-  ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/PolygonalEnclosureTests.cpp
+  ${SRC_DIR}/PolygonTests.cpp
   ${SRC_DIR}/PolygonsTests.cpp
   ${SRC_DIR}/RangeCheckTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
