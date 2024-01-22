@@ -46,7 +46,7 @@ namespace meshkernel
         static void Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
-        // @brief Initial size of the edge array
+        /// @brief Initial size of the edge array
         static constexpr UInt InitialEdgeArraySize = 100;
 
         /// @brief The maximum number of nodes that a newly created element can have.
