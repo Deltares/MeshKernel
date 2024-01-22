@@ -52,9 +52,10 @@ var searchData=
   ['getrighthandside_231',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a3e160b0c42e3eba7126b6d83b0cb976e',1,'meshkernel::Orthogonalizer']]],
   ['getsmoothness_232',['GetSmoothness',['../classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162',1,'meshkernel::Mesh2D']]],
   ['getsplinesintersection_233',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a82d896101f08ad12837ba4cecc9fed57',1,'meshkernel::Splines']]],
-  ['getweight_234',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#ae77d72743bc1056379fe32c5781a5a91',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a94aadd2c4146ba35c6b46c8647e1368f',1,'meshkernel::Smoother::GetWeight()']]],
-  ['getxcoord_235',['GetXCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2',1,'meshkernel::TriangulationWrapper']]],
-  ['getycoord_236',['GetYCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918',1,'meshkernel::TriangulationWrapper']]],
-  ['griddedsamples_237',['GriddedSamples',['../structmeshkernelapi_1_1_gridded_samples.html',1,'meshkernelapi']]],
-  ['grow_5fgrid_5foutside_238',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
+  ['getvalidprojections_234',['GetValidProjections',['../namespacemeshkernel.html#a8b725595f175deab58e454d124375869',1,'meshkernel']]],
+  ['getweight_235',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#ae77d72743bc1056379fe32c5781a5a91',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a94aadd2c4146ba35c6b46c8647e1368f',1,'meshkernel::Smoother::GetWeight()']]],
+  ['getxcoord_236',['GetXCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2',1,'meshkernel::TriangulationWrapper']]],
+  ['getycoord_237',['GetYCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918',1,'meshkernel::TriangulationWrapper']]],
+  ['griddedsamples_238',['GriddedSamples',['../structmeshkernelapi_1_1_gridded_samples.html',1,'meshkernelapi']]],
+  ['grow_5fgrid_5foutside_239',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
 ];
