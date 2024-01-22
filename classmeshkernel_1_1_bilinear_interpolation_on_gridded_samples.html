@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MeshKernel: meshkernel::BilinearInterpolationOnGriddedSamples Class Reference</title>
+<title>MeshKernel: meshkernel::BilinearInterpolationOnGriddedSamples&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,7 +77,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">meshkernel::BilinearInterpolationOnGriddedSamples Class Reference</div>  </div>
+<div class="title">meshkernel::BilinearInterpolationOnGriddedSamples&lt; T &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -86,27 +86,27 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="_bilinear_interpolation_on_gridded_samples_8hpp_source.html">BilinearInterpolationOnGriddedSamples.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for meshkernel::BilinearInterpolationOnGriddedSamples:</div>
+Inheritance diagram for meshkernel::BilinearInterpolationOnGriddedSamples&lt; T &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.png" usemap="#meshkernel::BilinearInterpolationOnGriddedSamples_map" alt=""/>
-  <map id="meshkernel::BilinearInterpolationOnGriddedSamples_map" name="meshkernel::BilinearInterpolationOnGriddedSamples_map">
-<area href="classmeshkernel_1_1_mesh_interpolation.html" title="Interface for interpolation methods." alt="meshkernel::MeshInterpolation" shape="rect" coords="0,0,303,24"/>
+  <img src="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.png" usemap="#meshkernel::BilinearInterpolationOnGriddedSamples_3C_20T_20_3E_map" alt=""/>
+  <map id="meshkernel::BilinearInterpolationOnGriddedSamples_3C_20T_20_3E_map" name="meshkernel::BilinearInterpolationOnGriddedSamples_3C_20T_20_3E_map">
+<area href="classmeshkernel_1_1_mesh_interpolation.html" title="Interface for interpolation methods." alt="meshkernel::MeshInterpolation" shape="rect" coords="0,0,334,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9fe1250442d34f13d1a998a1cb68eca7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a9fe1250442d34f13d1a998a1cb68eca7">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, const std::vector&lt; double &gt; &amp;values)</td></tr>
-<tr class="memdesc:a9fe1250442d34f13d1a998a1cb68eca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a9fe1250442d34f13d1a998a1cb68eca7">More...</a><br /></td></tr>
-<tr class="separator:a9fe1250442d34f13d1a998a1cb68eca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebd319fa66fdb540e952069d268f35f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const std::vector&lt; double &gt; &amp;xCoordinates, const std::vector&lt; double &gt; &amp;yCoordinates, const std::vector&lt; double &gt; &amp;values)</td></tr>
-<tr class="memdesc:aebd319fa66fdb540e952069d268f35f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#aebd319fa66fdb540e952069d268f35f9">More...</a><br /></td></tr>
-<tr class="separator:aebd319fa66fdb540e952069d268f35f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd13a476edb64e7305a0517d4ceeff49"><td class="memItemLeft" align="right" valign="top"><a id="afd13a476edb64e7305a0517d4ceeff49"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#afd13a476edb64e7305a0517d4ceeff49">Compute</a> () override</td></tr>
-<tr class="memdesc:afd13a476edb64e7305a0517d4ceeff49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute interpolation. <br /></td></tr>
-<tr class="separator:afd13a476edb64e7305a0517d4ceeff49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5958e602c1c89a2f6f1da5fb50974d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;origin, double cellSize, std::span&lt; T const &gt; values)</td></tr>
+<tr class="memdesc:ab5958e602c1c89a2f6f1da5fb50974d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with constant cell size (faster because no linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">More...</a><br /></td></tr>
+<tr class="separator:ab5958e602c1c89a2f6f1da5fb50974d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6390bd596e2c2bf9199d930adc5006b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae6390bd596e2c2bf9199d930adc5006b">BilinearInterpolationOnGriddedSamples</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, std::span&lt; double const &gt; xCoordinates, std::span&lt; double const &gt; yCoordinates, std::span&lt; T const &gt; values)</td></tr>
+<tr class="memdesc:ae6390bd596e2c2bf9199d930adc5006b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear interpolation with non constant cell size (slower because linear search is performed for each mesh node)  <a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae6390bd596e2c2bf9199d930adc5006b">More...</a><br /></td></tr>
+<tr class="separator:ae6390bd596e2c2bf9199d930adc5006b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64c8292a50093296143ac688e2162496"><td class="memItemLeft" align="right" valign="top"><a id="a64c8292a50093296143ac688e2162496"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">Compute</a> () override</td></tr>
+<tr class="memdesc:a64c8292a50093296143ac688e2162496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute interpolation. <br /></td></tr>
+<tr class="separator:a64c8292a50093296143ac688e2162496"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmeshkernel_1_1_mesh_interpolation"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmeshkernel_1_1_mesh_interpolation')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh_interpolation.html">meshkernel::MeshInterpolation</a></td></tr>
 <tr class="memitem:a98d8740c58b7f73d0ec869f4032d2267 inherit pub_methods_classmeshkernel_1_1_mesh_interpolation"><td class="memItemLeft" align="right" valign="top"><a id="a98d8740c58b7f73d0ec869f4032d2267"></a>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_interpolation.html#a98d8740c58b7f73d0ec869f4032d2267">~MeshInterpolation</a> ()=default</td></tr>
@@ -148,16 +148,21 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="separator:a9ab7b4ca3fe6df5c15c217203ec10740 inherit pro_attribs_classmeshkernel_1_1_mesh_interpolation"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class for performing bilinear interpolation on gridded samples. </p>
+<div class="textblock"><h3>template&lt;InterpolatableType T&gt;<br />
+class meshkernel::BilinearInterpolationOnGriddedSamples&lt; T &gt;</h3>
+
+<p>A class for performing bilinear interpolation on gridded samples. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a9fe1250442d34f13d1a998a1cb68eca7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9fe1250442d34f13d1a998a1cb68eca7">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
+<a id="ab5958e602c1c89a2f6f1da5fb50974d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5958e602c1c89a2f6f1da5fb50974d0">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;InterpolatableType T&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples </td>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">meshkernel::BilinearInterpolationOnGriddedSamples</a>&lt; T &gt;::<a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples</a> </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -189,7 +194,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramtype">std::span&lt; T const &gt;&#160;</td>
           <td class="paramname"><em>values</em>&#160;</td>
         </tr>
         <tr>
@@ -215,14 +220,16 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 </div>
 </div>
-<a id="aebd319fa66fdb540e952069d268f35f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aebd319fa66fdb540e952069d268f35f9">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[2/2]</span></h2>
+<a id="ae6390bd596e2c2bf9199d930adc5006b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6390bd596e2c2bf9199d930adc5006b">&#9670;&nbsp;</a></span>BilinearInterpolationOnGriddedSamples() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;InterpolatableType T&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples </td>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">meshkernel::BilinearInterpolationOnGriddedSamples</a>&lt; T &gt;::<a class="el" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples</a> </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -230,19 +237,19 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramtype">std::span&lt; double const &gt;&#160;</td>
           <td class="paramname"><em>xCoordinates</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramtype">std::span&lt; double const &gt;&#160;</td>
           <td class="paramname"><em>yCoordinates</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramtype">std::span&lt; T const &gt;&#160;</td>
           <td class="paramname"><em>values</em>&#160;</td>
         </tr>
         <tr>

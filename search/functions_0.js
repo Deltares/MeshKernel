@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['absolutedifference_785',['AbsoluteDifference',['../namespacemeshkernel.html#a714f199ef8f1050bba09d5862fa4938d',1,'meshkernel']]],
-  ['addincrementtopoint_786',['AddIncrementToPoint',['../namespacemeshkernel.html#a15cda98460fdb79b658f83825236bcb4',1,'meshkernel']]],
-  ['addsegment_787',['AddSegment',['../classmeshkernel_1_1_land_boundary.html#a51d66581fb7b0485b83dea4985bb82ad',1,'meshkernel::LandBoundary']]],
-  ['addspline_788',['AddSpline',['../classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines, UInt start, UInt size)'],['../classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines)']]],
-  ['administrate_789',['Administrate',['../classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73',1,'meshkernel::LandBoundaries::Administrate()'],['../classmeshkernel_1_1_mesh.html#a6086621c1275f2f98a5a84125ff4d405',1,'meshkernel::Mesh::Administrate()'],['../classmeshkernel_1_1_mesh2_d.html#af19223d2ef844428f5858291f588ad47',1,'meshkernel::Mesh2D::Administrate()']]],
-  ['administratenodesedges_790',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],
-  ['angle_791',['angle',['../classmeshkernel_1_1_rotation.html#a3a227d8d9b657f8bc0989dee2b483864',1,'meshkernel::Rotation']]],
-  ['anglebetween_792',['angleBetween',['../namespacemeshkernel.html#afcf694c3695d9a1dbcbf31f8ef544e7a',1,'meshkernel']]],
-  ['arecomputed_793',['AreComputed',['../classmeshkernel_1_1_contacts.html#a0114f4c40a92aff503117d84bf795d70',1,'meshkernel::Contacts']]],
-  ['aresegmentscrossing_794',['AreSegmentsCrossing',['../namespacemeshkernel.html#a25c24792eb7e1bc1bb3393f33a1a374e',1,'meshkernel']]],
-  ['averaginginterpolation_795',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae',1,'meshkernel::AveragingInterpolation']]]
+  ['absolutedifference_788',['AbsoluteDifference',['../namespacemeshkernel.html#a714f199ef8f1050bba09d5862fa4938d',1,'meshkernel']]],
+  ['addincrementtopoint_789',['AddIncrementToPoint',['../namespacemeshkernel.html#a15cda98460fdb79b658f83825236bcb4',1,'meshkernel']]],
+  ['addsegment_790',['AddSegment',['../classmeshkernel_1_1_land_boundary.html#a51d66581fb7b0485b83dea4985bb82ad',1,'meshkernel::LandBoundary']]],
+  ['addspline_791',['AddSpline',['../classmeshkernel_1_1_splines.html#a7bef4e9529986fdc6ecccebea3a9bd00',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines, UInt start, UInt size)'],['../classmeshkernel_1_1_splines.html#a23fd8c21a71af9fbad421c5373403dee',1,'meshkernel::Splines::AddSpline(const std::vector&lt; Point &gt; &amp;splines)']]],
+  ['administrate_792',['Administrate',['../classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73',1,'meshkernel::LandBoundaries::Administrate()'],['../classmeshkernel_1_1_mesh.html#a6086621c1275f2f98a5a84125ff4d405',1,'meshkernel::Mesh::Administrate()'],['../classmeshkernel_1_1_mesh2_d.html#af19223d2ef844428f5858291f588ad47',1,'meshkernel::Mesh2D::Administrate()']]],
+  ['administratenodesedges_793',['AdministrateNodesEdges',['../classmeshkernel_1_1_mesh.html#a4f2c7373bafa1d4429c330876f445993',1,'meshkernel::Mesh']]],
+  ['angle_794',['angle',['../classmeshkernel_1_1_rotation.html#a3a227d8d9b657f8bc0989dee2b483864',1,'meshkernel::Rotation']]],
+  ['anglebetween_795',['angleBetween',['../namespacemeshkernel.html#afcf694c3695d9a1dbcbf31f8ef544e7a',1,'meshkernel']]],
+  ['arecomputed_796',['AreComputed',['../classmeshkernel_1_1_contacts.html#a0114f4c40a92aff503117d84bf795d70',1,'meshkernel::Contacts']]],
+  ['aresegmentscrossing_797',['AreSegmentsCrossing',['../namespacemeshkernel.html#a25c24792eb7e1bc1bb3393f33a1a374e',1,'meshkernel']]],
+  ['averaginginterpolation_798',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae',1,'meshkernel::AveragingInterpolation']]]
 ];

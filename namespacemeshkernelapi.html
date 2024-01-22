@@ -133,9 +133,6 @@ Functions</h2></td></tr>
 <tr class="memitem:abf0c92956bf8370a1fb79f3d07ca711e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abf0c92956bf8370a1fb79f3d07ca711e">mkernel_contacts_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
 <tr class="memdesc:abf0c92956bf8370a1fb79f3d07ca711e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the 1d-2d contacts.  <a href="namespacemeshkernelapi.html#abf0c92956bf8370a1fb79f3d07ca711e">More...</a><br /></td></tr>
 <tr class="separator:abf0c92956bf8370a1fb79f3d07ca711e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addf56f8ac784e53c26207dcc7c450b36"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#addf56f8ac784e53c26207dcc7c450b36">mkernel_curvilinear_compute_curvature</a> (int meshKernelId, int direction, double *curvature)</td></tr>
-<tr class="memdesc:addf56f8ac784e53c26207dcc7c450b36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the curvature of a curvilinear grid.  <a href="namespacemeshkernelapi.html#addf56f8ac784e53c26207dcc7c450b36">More...</a><br /></td></tr>
-<tr class="separator:addf56f8ac784e53c26207dcc7c450b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2f2656f8f1ebfbbc3d8086e17310b924">mkernel_curvilinear_compute_orthogonal_grid_from_splines</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernel_1_1_curvilinear_parameters.html">meshkernel::CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernel_1_1_splines_to_curvilinear_parameters.html">meshkernel::SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
 <tr class="memdesc:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with the advancing front method.  <a href="namespacemeshkernelapi.html#a2f2656f8f1ebfbbc3d8086e17310b924">More...</a><br /></td></tr>
 <tr class="separator:a2f2656f8f1ebfbbc3d8086e17310b924"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -314,6 +311,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a60110d717bc03445222a06bc765ef4f4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a60110d717bc03445222a06bc765ef4f4">mkernel_get_geometry_error</a> (int &amp;invalidIndex, int &amp;type)</td></tr>
 <tr class="memdesc:a60110d717bc03445222a06bc765ef4f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the erroneous entity.  <a href="namespacemeshkernelapi.html#a60110d717bc03445222a06bc765ef4f4">More...</a><br /></td></tr>
 <tr class="separator:a60110d717bc03445222a06bc765ef4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0acc9b103eee667d7c83b375be9d664d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0acc9b103eee667d7c83b375be9d664d">mkernel_get_interpolation_type_short</a> (int &amp;type)</td></tr>
+<tr class="memdesc:a0acc9b103eee667d7c83b375be9d664d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the integer indicating the interpolation type short.  <a href="namespacemeshkernelapi.html#a0acc9b103eee667d7c83b375be9d664d">More...</a><br /></td></tr>
+<tr class="separator:a0acc9b103eee667d7c83b375be9d664d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34bcbba1436c83eb69275f056bb9504c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a34bcbba1436c83eb69275f056bb9504c">mkernel_get_interpolation_type_float</a> (int &amp;type)</td></tr>
+<tr class="memdesc:a34bcbba1436c83eb69275f056bb9504c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the integer indicating the interpolation type float.  <a href="namespacemeshkernelapi.html#a34bcbba1436c83eb69275f056bb9504c">More...</a><br /></td></tr>
+<tr class="separator:a34bcbba1436c83eb69275f056bb9504c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78fc6f05ef419a0e88293a93e6c9f266"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a78fc6f05ef419a0e88293a93e6c9f266">mkernel_get_nodes_location_type</a> (int &amp;type)</td></tr>
 <tr class="memdesc:a78fc6f05ef419a0e88293a93e6c9f266"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the node location type.  <a href="namespacemeshkernelapi.html#a78fc6f05ef419a0e88293a93e6c9f266">More...</a><br /></td></tr>
 <tr class="separator:a78fc6f05ef419a0e88293a93e6c9f266"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -933,51 +936,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">contacts</td><td><a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">Contacts</a> data </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
-<a id="addf56f8ac784e53c26207dcc7c450b36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#addf56f8ac784e53c26207dcc7c450b36">&#9670;&nbsp;</a></span>mkernel_curvilinear_compute_curvature()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_compute_curvature </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>direction</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double *&#160;</td>
-          <td class="paramname"><em>curvature</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes the curvature of a curvilinear grid. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">direction</td><td>The direction in which to compute the curvature </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">curvature</td><td>The grid curvature values in the selected direction </td></tr>
   </table>
   </dd>
 </dl>
@@ -3406,6 +3364,60 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Gets the double value used to separate the inner part of a polygon from its outer part. </p>
 <dl class="section return"><dt>Returns</dt><dd>The double missing value used in mesh kernel </dd></dl>
+
+</div>
+</div>
+<a id="a34bcbba1436c83eb69275f056bb9504c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34bcbba1436c83eb69275f056bb9504c">&#9670;&nbsp;</a></span>mkernel_get_interpolation_type_float()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_interpolation_type_float </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the integer indicating the interpolation type float. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The integer indicating the interpolation type float </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a0acc9b103eee667d7c83b375be9d664d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0acc9b103eee667d7c83b375be9d664d">&#9670;&nbsp;</a></span>mkernel_get_interpolation_type_short()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_interpolation_type_short </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the integer indicating the interpolation type short. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The integer indicating the interpolation type short </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
 
 </div>
 </div>
