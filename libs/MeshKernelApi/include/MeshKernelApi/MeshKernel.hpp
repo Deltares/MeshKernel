@@ -632,6 +632,16 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type);
 
+        /// @brief Get the integer indicating the interpolation type short
+        /// @param[out] type The integer indicating the interpolation type short
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_interpolation_type_short(int& type);
+
+        /// @brief Get the integer indicating the interpolation type float
+        /// @param[out] type The integer indicating the interpolation type float
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_interpolation_type_float(int& type);
+
         /// @brief Gets an int indicating the node location type
         /// @param[out] type The int indicating the node location type
         /// @returns Error code
