@@ -35,6 +35,7 @@
 
 namespace meshkernel
 {
+    /// @brief Compute the Casulli refinement for a mesh.
     class CasulliRefinement
     {
     public:
@@ -63,18 +64,18 @@ namespace meshkernel
 
         /// @brief Connect newly generated nodes
         ///
-        /// @param [in/out] mesh The mesh being refined
+        /// @param [in, out] mesh The mesh being refined
         /// @param [in] newNodes List of new nodes and connectivity
         /// @param [in] numNodes Number of nodes in original mesh, before refinement.
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
-        /// @param [in/out] nodeMask Node mask information
+        /// @param [in, out] nodeMask Node mask information
         static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<int>& nodeMask);
 
         /// @brief Add newly generated nodes to the newNodes list.
         static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1Index, const UInt link2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes);
 
-        /// @brief Find elements and nodes that form the patch of elements dirctly connected to the node.
+        /// @brief Find elements and nodes that form the patch of elements directly connected to the node.
         static void FindPatchIds(const Mesh2D& mesh,
                                  const UInt currentNode,
                                  std::vector<UInt>& sharedFaces,
