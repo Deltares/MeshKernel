@@ -46,6 +46,20 @@ namespace meshkernel
         static void Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
+        ///@brief Indicates status of a node.
+        ///
+        /// \note the order of the enum values is very important to the working of the refinement algorithm
+        enum class NodeMask : char
+        {
+            NewAssignedNode, //< a new node has been added, current node mask value is any value strictly greater than Unassigned.
+            NewGeneralNode,  //< a new node has been added, current node mask value is any assigned value
+            Unassigned,      //< Indicates a new
+            RegisteredNode,  //< Node is to be considered as part of the Casulli refinement
+            BoundaryNode,    //< Node lies on the boundary
+            CornerNode       //< Node lies at corner of element on the boundary.
+
+        };
+
         /// @brief Initial size of the edge array
         static constexpr UInt InitialEdgeArraySize = 100;
 
@@ -57,10 +71,10 @@ namespace meshkernel
         using LinkNodes = std::array<UInt, 4>;
 
         /// @brief Initialise the node mask array.
-        static std::vector<int> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
+        static std::vector<NodeMask> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Create any new nodes that need to be generated.
-        static void ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<int>& nodeMask);
+        static void ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Connect newly generated nodes
         ///
@@ -70,10 +84,10 @@ namespace meshkernel
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
         /// @param [in, out] nodeMask Node mask information
-        static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<int>& nodeMask);
+        static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask);
 
         /// @brief Add newly generated nodes to the newNodes list.
-        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1Index, const UInt link2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes);
+        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes);
 
         /// @brief Find elements and nodes that form the patch of elements directly connected to the node.
         static void FindPatchIds(const Mesh2D& mesh,
@@ -83,7 +97,7 @@ namespace meshkernel
                                  std::vector<std::vector<UInt>>& faceNodeMapping);
 
         /// @brief Delete any unused nodes and performan mesh administration.
-        static void Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<int>& nodeMask);
+        static void Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<NodeMask>& nodeMask);
     };
 
 } // namespace meshkernel
