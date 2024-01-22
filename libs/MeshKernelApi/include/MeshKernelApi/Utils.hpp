@@ -39,10 +39,7 @@
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
-#include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
-
-#include <span>
 #include <stdexcept>
 #include <vector>
 
@@ -398,44 +395,6 @@ namespace meshkernelapi
                             makeGridParameters.block_size_y,
                             makeGridParameters.upper_right_x,
                             makeGridParameters.upper_right_y);
-    }
-
-    template <meshkernel::InterpolatableType T>
-    static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolator(const meshkernel::Mesh2D& mesh2d,
-                                                                                     const GriddedSamples& griddedSamples)
-    {
-        meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-        if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
-        {
-            return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<T>>(mesh2d,
-                                                                                          griddedSamples.num_x,
-                                                                                          griddedSamples.num_y,
-                                                                                          origin,
-                                                                                          griddedSamples.cell_size,
-                                                                                          std::span<T const>{reinterpret_cast<T const* const>(griddedSamples.values),
-                                                                                                             static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
-        }
-        return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<T>>(mesh2d,
-                                                                                      std::span<double const>{griddedSamples.x_coordinates,
-                                                                                                              static_cast<size_t>(griddedSamples.num_x)},
-                                                                                      std::span<double const>{griddedSamples.y_coordinates,
-                                                                                                              static_cast<size_t>(griddedSamples.num_y)},
-                                                                                      std::span<T const>{reinterpret_cast<T const* const>(griddedSamples.values),
-                                                                                                         static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y)});
-    }
-
-    static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolatorBasedOnType(const GriddedSamples& griddedSamples,
-                                                                                                const meshkernel::Mesh2D& mesh2d)
-    {
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
-        {
-            return CreateBilinearInterpolator<short>(mesh2d, griddedSamples);
-        }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
-        {
-            return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
-        }
-        throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
     }
 
 } // namespace meshkernelapi

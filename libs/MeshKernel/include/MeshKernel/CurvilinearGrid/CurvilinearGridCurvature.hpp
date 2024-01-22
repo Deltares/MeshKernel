@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,12 +27,30 @@
 
 #pragma once
 
-#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
-#include <string>
-#include <tuple>
-#include <vector>
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Point.hpp"
 
-std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 
-std::tuple<int, int, double, double, double, double, std::vector<double>> ReadAscFile(const std::string& filePath);
+namespace meshkernel
+{
+
+    /// @brief Compute the curvature of a grid.
+    class CurvilinearGridCurvature
+    {
+    public:
+        /// @brief Compute the curvature of the grid in the direction specified.
+        ///
+        /// @param grid Grid for which the curvature is to be calculated.
+        /// @param direction Direction of the curvature required.
+        /// @param curvature Matrix of curvature values, will be resized to the size of the grid.
+        static void Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& curvature);
+
+    private:
+        /// @brief Compute the curvature for the node.
+        static double ComputeNodeCurvature(const Point& p0, const Point& p1, const Point& p2);
+    };
+
+} // namespace meshkernel

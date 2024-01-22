@@ -133,6 +133,13 @@ namespace meshkernelapi
         /// @returns                           Error code
         MKERNEL_API int mkernel_contacts_set(int meshKernelId, const Contacts& contacts);
 
+        /// @brief Computes the curvature of a curvilinear grid.
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] direction  The direction in which to compute the curvature
+        /// @param[out] curvature The grid curvature values in the selected direction
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_curvature(int meshKernelId, int direction, double* curvature);
+
         /// @brief Generates curvilinear grid from splines with the advancing front method.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners
@@ -631,16 +638,6 @@ namespace meshkernelapi
         /// @param[out] type         The entity type (node, edge or face, see MeshLocations)
         /// @returns Error code
         MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type);
-
-        /// @brief Get the integer indicating the interpolation type short
-        /// @param[out] type The integer indicating the interpolation type short
-        /// @returns Error code
-        MKERNEL_API int mkernel_get_interpolation_type_short(int& type);
-
-        /// @brief Get the integer indicating the interpolation type float
-        /// @param[out] type The integer indicating the interpolation type float
-        /// @returns Error code
-        MKERNEL_API int mkernel_get_interpolation_type_float(int& type);
 
         /// @brief Gets an int indicating the node location type
         /// @param[out] type The int indicating the node location type
