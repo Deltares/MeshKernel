@@ -347,6 +347,23 @@ namespace meshkernel
         /// @param [out] faceNodeMapping Mapping from node index to the position in connectedNodes list.
         void FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const;
 
+        /// @brief Determine if the node is at the start or end of the edge.
+        ///
+        /// Returns 0 when the node is at the start of the edge, 1 when it is at the end
+        /// and the null value when the edge is not connected to the node.
+        UInt IsStartOrEnd(const UInt edgeId, const UInt nodeId) const;
+
+        /// @brief Determine if the element lies on the left or right side of the edge
+        ///
+        /// Returns 0 when the element is on the left and 1 when it is on the right.
+        /// If one or other edge is not connected to the element then a null value will be returned.
+        UInt IsLeftOrRight(const UInt elementId, const UInt edgeId) const;
+
+        /// @brief Find the id of the element that is common to both edges.
+        ///
+        /// If no such element can be found then the null value will be returned.
+        UInt FindCommonElement(const UInt edge1, const UInt edge2) const;
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length

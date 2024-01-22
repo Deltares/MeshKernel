@@ -81,7 +81,7 @@ std::vector<int> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D&
 
             // Check the loop termination, especially the faceEdgeIndex < nodeCount - 1
             // Perhaps change to for loop checking the condition then break.
-            while (((mesh.m_edges[edge2].first != i && mesh.m_edges[edge2].second) || edge2 == edge1) && faceEdgeIndex < nodeCount - 1)
+            while (((mesh.m_edges[edge2].first != i && mesh.m_edges[edge2].second != i) || edge2 == edge1) && faceEdgeIndex < nodeCount - 1)
             {
                 ++faceEdgeIndex;
                 edge2 = mesh.m_facesEdges[elementId][faceEdgeIndex];
@@ -496,7 +496,7 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
 
             UInt firstEdgeId = constants::missing::uintValue;
             UInt secondEdgeId = constants::missing::uintValue;
-            UInt newPointIndex = constants::missing::uintValue;
+            UInt newNodeId = constants::missing::uintValue;
 
             for (UInt k = 0; k < mesh.m_facesEdges[i].size(); ++k)
             {
@@ -526,21 +526,21 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
             {
                 Point newNode = 0.5 * (elementCentre + mesh.m_nodes[elementNode]);
 
-                newPointIndex = mesh.InsertNode(newNode);
-                nodeMask[newPointIndex] = -2;
+                newNodeId = mesh.InsertNode(newNode);
+                nodeMask[newNodeId] = -2;
             }
             else
             {
-                newPointIndex = elementNode;
+                newNodeId = elementNode;
             }
 
-            StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newPointIndex, newNodes);
+            StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newNodeId, newNodes);
         }
     }
 
     for (UInt i = 0; i < numEdges; ++i)
     {
-        UInt newPointIndex = constants::missing::uintValue;
+        UInt newNodeId = constants::missing::uintValue;
 
         if (mesh.m_edgesNumFaces[i] != 1)
         {
@@ -561,33 +561,33 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
         {
             Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node1]);
 
-            newPointIndex = mesh.InsertNode(newNode);
-            nodeMask[newPointIndex] = -1;
+            newNodeId = mesh.InsertNode(newNode);
+            nodeMask[newNodeId] = -1;
         }
         else
         {
-            newPointIndex = node1;
+            newNodeId = node1;
         }
 
-        StoreNewNode(mesh, node1, i, i, newPointIndex, newNodes);
+        StoreNewNode(mesh, node1, i, i, newNodeId, newNodes);
 
         if (nodeMask[node2] != 0)
         {
             Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node2]);
 
-            newPointIndex = mesh.InsertNode(newNode);
-            nodeMask[newPointIndex] = -1;
+            newNodeId = mesh.InsertNode(newNode);
+            nodeMask[newNodeId] = -1;
         }
         else
         {
-            newPointIndex = node2;
+            newNodeId = node2;
         }
 
-        StoreNewNode(mesh, node2, i, i, newPointIndex, newNodes);
+        StoreNewNode(mesh, node2, i, i, newNodeId, newNodes);
     }
 }
 
-void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1Index, const UInt link2Index, const UInt newPointIndex, std::vector<LinkNodes>& newNodes)
+void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1Index, const UInt link2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes)
 {
     UInt edgeId1 = link1Index;
     UInt edgeId2 = link2Index;
@@ -611,18 +611,18 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
         }
     }
 
-    UInt elementId = FindCommon(mesh, edgeId1, edgeId2);
+    UInt elementId = mesh.FindCommonElement(edgeId1, edgeId2);
 
     if (elementId == constants::missing::uintValue)
     {
         throw AlgorithmError("No element found that shares edge: {} and {}", edgeId1, edgeId2);
     }
 
-    UInt lr1 = IsLeftRight(mesh, elementId, edgeId1);
-    UInt lr2 = IsLeftRight(mesh, elementId, edgeId2);
+    UInt lr1 = mesh.IsLeftOrRight(elementId, edgeId1);
+    UInt lr2 = mesh.IsLeftOrRight(elementId, edgeId2);
 
-    UInt se1 = IsStartEnd(mesh, nodeId, edgeId1);
-    UInt se2 = IsStartEnd(mesh, nodeId, edgeId2);
+    UInt se1 = mesh.IsStartOrEnd(edgeId1, nodeId);
+    UInt se2 = mesh.IsStartOrEnd(edgeId2, nodeId);
 
     if (edgeId1 == edgeId2)
     {
@@ -635,90 +635,11 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
 
     if (newNodes[edgeId1][iPoint1] == constants::missing::uintValue)
     {
-        newNodes[edgeId1][iPoint1] = newPointIndex;
+        newNodes[edgeId1][iPoint1] = newNodeId;
     }
 
     if (newNodes[edgeId2][iPoint2] == constants::missing::uintValue)
     {
-        newNodes[edgeId2][iPoint2] = newPointIndex;
+        newNodes[edgeId2][iPoint2] = newNodeId;
     }
-}
-
-meshkernel::UInt meshkernel::CasulliRefinement::IsStartEnd(const Mesh2D& mesh, const UInt nodeId, const UInt edgeId)
-{
-    UInt isStartEnd = constants::missing::uintValue;
-
-    if (mesh.m_edges[edgeId].first == nodeId)
-    {
-        isStartEnd = 0;
-    }
-    else if (mesh.m_edges[edgeId].second == nodeId)
-    {
-        isStartEnd = 1;
-    }
-
-    return isStartEnd;
-}
-
-meshkernel::UInt meshkernel::CasulliRefinement::IsLeftRight(const Mesh2D& mesh, const UInt elementId, const UInt edgeId)
-{
-    UInt isLeftRight = constants::missing::uintValue;
-    UInt edgeIndex = constants::missing::uintValue;
-    UInt nextEdgeIndex = constants::missing::uintValue;
-    UInt endNodeIndex = mesh.m_edges[edgeId].second;
-
-    for (UInt i = 0; i < mesh.m_facesEdges[elementId].size(); ++i)
-    {
-        UInt faceEdgeId = mesh.m_facesEdges[elementId][i];
-
-        if (faceEdgeId == edgeId)
-        {
-            edgeIndex = i;
-        }
-        else if (mesh.m_edges[faceEdgeId].first == endNodeIndex || mesh.m_edges[faceEdgeId].second == endNodeIndex)
-        {
-            nextEdgeIndex = i;
-        }
-    }
-
-    if (edgeIndex == constants::missing::uintValue || nextEdgeIndex == constants::missing::uintValue)
-    {
-        // EdgeId was not found
-        return isLeftRight;
-    }
-
-    if (nextEdgeIndex == edgeIndex + 1 || nextEdgeIndex + mesh.m_numFacesNodes[elementId] == edgeIndex + 1)
-    {
-        isLeftRight = 0;
-    }
-    else if (edgeIndex == nextEdgeIndex + 1 || edgeIndex + mesh.m_numFacesNodes[elementId] == nextEdgeIndex + 1)
-    {
-        isLeftRight = 1;
-    }
-
-    return isLeftRight;
-}
-
-meshkernel::UInt meshkernel::CasulliRefinement::FindCommon(const Mesh2D& mesh, const UInt edge1, const UInt edge2)
-{
-    UInt commonElement = constants::missing::uintValue;
-
-    for (UInt i = 0; i < mesh.m_edgesNumFaces[edge1]; ++i)
-    {
-        for (UInt j = 0; j < mesh.m_edgesNumFaces[edge2]; ++j)
-        {
-            if (mesh.m_edgesFaces[edge1][i] == mesh.m_edgesFaces[edge2][j])
-            {
-                commonElement = mesh.m_edgesFaces[edge1][i];
-                break;
-            }
-        }
-
-        if (commonElement != constants::missing::uintValue)
-        {
-            break;
-        }
-    }
-
-    return commonElement;
 }

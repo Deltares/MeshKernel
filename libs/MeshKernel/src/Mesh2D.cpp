@@ -2259,3 +2259,75 @@ void Mesh2D::FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sha
         }
     }
 }
+
+meshkernel::UInt Mesh2D::IsStartOrEnd(const UInt edgeId, const UInt nodeId) const
+{
+    UInt isStartEnd = constants::missing::uintValue;
+
+    if (m_edges[edgeId].first == nodeId)
+    {
+        isStartEnd = 0;
+    }
+    else if (m_edges[edgeId].second == nodeId)
+    {
+        isStartEnd = 1;
+    }
+
+    return isStartEnd;
+}
+
+meshkernel::UInt Mesh2D::IsLeftOrRight(const UInt elementId, const UInt edgeId) const
+{
+    UInt edgeIndex = constants::missing::uintValue;
+    UInt nextEdgeIndex = constants::missing::uintValue;
+    UInt endNodeIndex = m_edges[edgeId].second;
+
+    for (UInt i = 0; i < m_facesEdges[elementId].size(); ++i)
+    {
+        UInt faceEdgeId = m_facesEdges[elementId][i];
+
+        if (faceEdgeId == edgeId)
+        {
+            edgeIndex = i;
+        }
+        else if (m_edges[faceEdgeId].first == endNodeIndex || m_edges[faceEdgeId].second == endNodeIndex)
+        {
+            nextEdgeIndex = i;
+        }
+    }
+
+    if (edgeIndex == constants::missing::uintValue || nextEdgeIndex == constants::missing::uintValue)
+    {
+        // EdgeId was not found
+        return constants::missing::uintValue;
+    }
+
+    UInt isLeftRight = constants::missing::uintValue;
+
+    if (nextEdgeIndex == edgeIndex + 1 || nextEdgeIndex + m_numFacesNodes[elementId] == edgeIndex + 1)
+    {
+        isLeftRight = 0;
+    }
+    else if (edgeIndex == nextEdgeIndex + 1 || edgeIndex + m_numFacesNodes[elementId] == nextEdgeIndex + 1)
+    {
+        isLeftRight = 1;
+    }
+
+    return isLeftRight;
+}
+
+meshkernel::UInt Mesh2D::FindCommonElement(const UInt edge1, const UInt edge2) const
+{
+    for (UInt i = 0; i < m_edgesNumFaces[edge1]; ++i)
+    {
+        for (UInt j = 0; j < m_edgesNumFaces[edge2]; ++j)
+        {
+            if (m_edgesFaces[edge1][i] == m_edgesFaces[edge2][j])
+            {
+                return m_edgesFaces[edge1][i];
+            }
+        }
+    }
+
+    return constants::missing::uintValue;
+}

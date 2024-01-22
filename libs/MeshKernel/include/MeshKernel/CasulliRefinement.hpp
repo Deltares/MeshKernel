@@ -71,20 +71,8 @@ namespace meshkernel
         /// @param [in/out] nodeMask Node mask information
         static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<int>& nodeMask);
 
-        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1, const UInt link2, const UInt knew, std::vector<LinkNodes>& newNodes);
-
-        /// @brief Determine if the node is at the start or end of the edge.
-        static UInt IsStartEnd(const Mesh2D& mesh, const UInt nodeId, const UInt edgeId);
-
-        /// @brief Determine if the element lies on the left or right side of the edge
-        ///
-        /// Since edges have a direction (first->second) left and right can be determined.
-        static UInt IsLeftRight(const Mesh2D& mesh, const UInt elementId, const UInt edgeId);
-
-        /// @brief Find the id of the element that is common to both edges.
-        ///
-        /// If no such element can be found then the null value will be returned.
-        static UInt FindCommon(const Mesh2D& mesh, const UInt edge1, const UInt edge2);
+        /// @brief Add newly generated nodes to the newNodes list.
+        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt link1Index, const UInt link2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes);
 
         /// @brief Find elements and nodes that form the patch of elements dirctly connected to the node.
         static void FindPatchIds(const Mesh2D& mesh,
