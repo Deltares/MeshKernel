@@ -53,11 +53,10 @@ namespace meshkernel
         {
             NewAssignedNode, //< a new node has been added, current node mask value is any value strictly greater than Unassigned.
             NewGeneralNode,  //< a new node has been added, current node mask value is any assigned value
-            Unassigned,      //< Indicates a new
+            Unassigned,      //< Uninitialised state for node mask
             RegisteredNode,  //< Node is to be considered as part of the Casulli refinement
             BoundaryNode,    //< Node lies on the boundary
             CornerNode       //< Node lies at corner of element on the boundary.
-
         };
 
         /// @brief Initial size of the edge array

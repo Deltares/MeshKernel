@@ -14,9 +14,9 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygo
     std::vector<LinkNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
     std::vector<NodeMask> nodeMask(InitialiseNodeMask(mesh, polygon));
 
-    UInt numNodes = mesh.GetNumNodes();
-    UInt numEdges = mesh.GetNumEdges();
-    UInt numFaces = mesh.GetNumFaces();
+    const UInt numNodes = mesh.GetNumNodes();
+    const UInt numEdges = mesh.GetNumEdges();
+    const UInt numFaces = mesh.GetNumFaces();
 
     ComputeNewNodes(mesh, newNodes, nodeMask);
     LinkNewNodes(mesh, newNodes, numNodes, numEdges, numFaces, nodeMask);
@@ -25,7 +25,6 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygo
 
 std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon)
 {
-    // Need a better initial size
     std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
 
     // Find nodes that are inside the polygon.
@@ -208,10 +207,10 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
     //  make the original-link based new links
     for (UInt i = 0; i < numEdges; ++i)
     {
-        UInt node1 = newNodes[i][0];
-        UInt node2 = newNodes[i][1];
-        UInt node3 = newNodes[i][2];
-        UInt node4 = newNodes[i][3];
+        const UInt node1 = newNodes[i][0];
+        const UInt node2 = newNodes[i][1];
+        const UInt node3 = newNodes[i][2];
+        const UInt node4 = newNodes[i][3];
 
         // Parallel edges, these are the start-end connections
         if (node1 != constants::missing::uintValue && node2 != constants::missing::uintValue && node1 != node2)
@@ -272,10 +271,10 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
         // Could replace mesh.m_numFacesNodes[i] with 4
         for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
         {
-            UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
+            const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
 
-            UInt edgeId = mesh.m_facesEdges[i][j];
-            UInt previousEdgeId = mesh.m_facesEdges[i][previousIndex];
+            const UInt edgeId = mesh.m_facesEdges[i][j];
+            const UInt previousEdgeId = mesh.m_facesEdges[i][previousIndex];
 
             oldIndex[j] = mesh.m_edges[edgeId].first;
             newIndex[j] = newNodes[edgeId][2];
@@ -289,8 +288,8 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
 
         for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
         {
-            UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
-            UInt nextIndex = (j == mesh.m_numFacesNodes[i] - 1 ? 0 : (j + 1));
+            const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
+            const UInt nextIndex = (j == mesh.m_numFacesNodes[i] - 1 ? 0 : (j + 1));
             UInt nextNextIndex;
 
             if (j == mesh.m_numFacesNodes[i] - 2)
@@ -306,10 +305,10 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
                 nextNextIndex = j + 2;
             }
 
-            UInt node1 = newIndex[j];
-            UInt node2 = oldIndex[previousIndex];
-            UInt node3 = oldIndex[nextIndex];
-            UInt node4 = oldIndex[nextNextIndex];
+            const UInt node1 = newIndex[j];
+            const UInt node2 = oldIndex[previousIndex];
+            const UInt node3 = oldIndex[nextIndex];
+            const UInt node4 = oldIndex[nextNextIndex];
 
             // only one new node: new diagonal link connects new node with one old node
             if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
@@ -443,7 +442,7 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
 
         for (UInt j = 0; j < mesh.m_nodesNumEdges[i]; ++j)
         {
-            UInt edgeId = mesh.m_nodesEdges[i][j];
+            const UInt edgeId = mesh.m_nodesEdges[i][j];
 
             if (mesh.m_edges[edgeId].first == i)
             {
@@ -462,15 +461,15 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
 void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
     // Keep copy of number of edges in mesh before any nodes are added.
-    UInt numEdges = mesh.GetNumEdges();
+    const UInt numEdges = mesh.GetNumEdges();
 
     for (UInt i = 0; i < mesh.GetNumFaces(); ++i)
     {
-        Point elementCentre = mesh.m_facesCircumcenters[i];
+        const Point elementCentre = mesh.m_facesCircumcenters[i];
 
         for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
         {
-            UInt elementNode = mesh.m_facesNodes[i][j];
+            const UInt elementNode = mesh.m_facesNodes[i][j];
 
             UInt firstEdgeId = constants::missing::uintValue;
             UInt secondEdgeId = constants::missing::uintValue;
@@ -525,19 +524,19 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
             continue;
         }
 
-        UInt node1 = mesh.m_edges[i].first;
-        UInt node2 = mesh.m_edges[i].second;
+        const UInt node1 = mesh.m_edges[i].first;
+        const UInt node2 = mesh.m_edges[i].second;
 
         if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
         {
             continue;
         }
 
-        Point edgeCentre = 0.5 * (mesh.m_nodes[node1] + mesh.m_nodes[node2]);
+        const Point edgeCentre = 0.5 * (mesh.m_nodes[node1] + mesh.m_nodes[node2]);
 
         if (nodeMask[node1] != NodeMask::Unassigned)
         {
-            Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node1]);
+            const Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node1]);
 
             newNodeId = mesh.InsertNode(newNode);
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
@@ -551,7 +550,7 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
 
         if (nodeMask[node2] != NodeMask::Unassigned)
         {
-            Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node2]);
+            const Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node2]);
 
             newNodeId = mesh.InsertNode(newNode);
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
@@ -599,8 +598,8 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
     UInt lr1 = mesh.IsLeftOrRight(elementId, edgeId1);
     UInt lr2 = mesh.IsLeftOrRight(elementId, edgeId2);
 
-    UInt se1 = mesh.IsStartOrEnd(edgeId1, nodeId);
-    UInt se2 = mesh.IsStartOrEnd(edgeId2, nodeId);
+    const UInt se1 = mesh.IsStartOrEnd(edgeId1, nodeId);
+    const UInt se2 = mesh.IsStartOrEnd(edgeId2, nodeId);
 
     if (edgeId1 == edgeId2)
     {
@@ -608,8 +607,8 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
         lr2 = 1 - lr2;
     }
 
-    UInt iPoint1 = se1 + 2 * (1 - lr1);
-    UInt iPoint2 = se2 + 2 * (1 - lr2);
+    const UInt iPoint1 = se1 + 2 * (1 - lr1);
+    const UInt iPoint2 = se2 + 2 * (1 - lr2);
 
     if (newNodes[edgeId1][iPoint1] == constants::missing::uintValue)
     {
