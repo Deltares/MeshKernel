@@ -268,7 +268,6 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
         std::array<UInt, constants::geometric::numNodesInQuadrilateral> newIndex{constants::missing::uintValue, constants::missing::uintValue,
                                                                                  constants::missing::uintValue, constants::missing::uintValue};
         // find the old and new nodes
-        // Could replace mesh.m_numFacesNodes[i] with 4
         for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
         {
             const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));

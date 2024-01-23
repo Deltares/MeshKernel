@@ -777,6 +777,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
+        /// @brief Refine mesh using the Casulli refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId);
+
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
         /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernel::OrthogonalizationParameters::orthogonalization_to_smoothing_factor
