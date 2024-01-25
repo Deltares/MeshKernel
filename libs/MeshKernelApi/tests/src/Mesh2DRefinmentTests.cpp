@@ -13,6 +13,11 @@
 #include <TestUtils/SampleFileReader.hpp>
 
 #include "CartesianApiTestFixture.hpp"
+#include "MeshKernel/AveragingInterpolation.hpp"
+#include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
+#include "SampleFileWriter.hpp"
+#include "SampleGenerator.hpp"
 
 TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
 {
@@ -56,7 +61,7 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
-TEST_F(CartesianApiTestFixture, RefineBasedOnSamples_OnAUniformMesh_shouldRefineMesh)
+TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_shouldRefineMesh)
 {
     // Prepare
     MakeMesh(10, 10, 25);
@@ -180,7 +185,7 @@ TEST_F(CartesianApiTestFixture, RefineAGridBasedOnPolygonThroughApi)
     ASSERT_EQ(595, mesh2d.num_edges);
 }
 
-TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_ShouldRefineMesh)
+TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSamples_ShouldRefineMesh)
 {
     // Prepare
     int meshKernelId;
@@ -236,7 +241,7 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamples_WithGriddedSamples_Should
     ASSERT_EQ(1936, mesh2dResults.num_face_nodes);
 }
 
-TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamples_WithNotUniformlySpacedSamples_ShouldRefineMesh)
+TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithNotUniformlySpacedSamples_ShouldRefineMesh)
 {
     // Prepare
     meshkernel::UInt nRows{5};
@@ -301,7 +306,7 @@ TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamples_WithNotUniform
     ASSERT_EQ(76, mesh2dResults.num_faces);
 }
 
-TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAndSphericalCoordinates_ShouldRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -354,7 +359,7 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalC
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-TEST(MeshRefinement, RefineBasedOnGriddedSamples_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
+TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
 {
     // Prepare
     int meshKernelId;
@@ -613,3 +618,68 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
 }
 
 INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementSampleValueTypes::GetData()));
+
+TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh_shouldRefineMesh)
+{
+    // Prepare
+    meshkernel::UInt nRows{21};
+    meshkernel::UInt nCols{41};
+    const double meshDelta = 10.0;
+    MakeMesh(nRows, nCols, 10.0);
+
+    // Generate gridded samples, from a gaussian distribution
+    const int numSamplesXCoordinates = (nCols - 1) * 2 + 1;
+    const int numSamplesYCoordinates = (nRows * 1) * 2 + 1;
+    const double deltaX = 5.0;
+    const double deltaY = 5.0;
+    const auto sampleData = generateSampleData(FunctionTestCase::GaussianBump, numSamplesXCoordinates, numSamplesYCoordinates, deltaX, deltaY);
+
+    // Create an instance of gridded samples,
+    meshkernelapi::GriddedSamples griddedSamples;
+    griddedSamples.num_x = numSamplesXCoordinates;
+    griddedSamples.num_y = numSamplesYCoordinates;
+    griddedSamples.x_origin = 0.0;
+    griddedSamples.y_origin = 0.0;
+    griddedSamples.cell_size = meshDelta * 0.1;
+
+    // Flatten the values before passing them to Mesh Kernel
+    meshkernel::UInt index = 0;
+    std::vector<float> values(numSamplesXCoordinates * numSamplesYCoordinates, 0.0);
+    for (int j = 0; j < numSamplesYCoordinates; ++j)
+    {
+        for (int i = 0; i < numSamplesXCoordinates; ++i)
+        {
+            const auto griddedIndex = griddedSamples.num_y * i + j;
+            values[index] = static_cast<float>(sampleData[griddedIndex].value);
+            index++;
+        }
+    }
+    int interpolationType;
+    auto errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    griddedSamples.values = values.data();
+    griddedSamples.value_type = interpolationType;
+
+    // Create meshrefinement parameters
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 2.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.smoothing_iterations = 0;
+    meshRefinementParameters.refinement_type = 3;
+
+    // Execute
+    const auto meshKernelId = GetMeshKernelId();
+    mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert on the mesh values
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(956, mesh2d.num_nodes);
+    ASSERT_EQ(1872, mesh2d.num_edges);
+}

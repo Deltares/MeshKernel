@@ -3,17 +3,18 @@
 
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Parameters.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
-#include <TestUtils/SampleFileReader.hpp>
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/Parameters.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/SampleFileReader.hpp"
+#include "TestUtils/SampleGenerator.hpp"
 
 using namespace meshkernel;
 
-TEST(MeshRefinement, FourByFourWithFourSamples)
+TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_ShouldRefinemesh)
 {
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
 
@@ -211,7 +212,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     ASSERT_EQ(10, mesh->m_edges[20].second);
 }
 
-TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
+TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples_ShouldRefinemesh)
 {
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
@@ -478,7 +479,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     ASSERT_EQ(326, mesh->m_edges[915].second);
 }
 
-TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
+TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_ShouldRefinemesh)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
@@ -700,7 +701,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     ASSERT_EQ(6, mesh->m_edges[47].second);
 }
 
-TEST(MeshRefinement, Refine_SphericalMesh_ShouldRefine)
+TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, Projection::spherical, {41.1, 41.1});
@@ -819,9 +820,9 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
 
-    std::vector values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    std::vector<float> values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values);
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<float>>(*mesh, 2, 2, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -846,9 +847,9 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
 
-    std::vector values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
+    std::vector<float> values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 3, 3, origin, 10.0, values);
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<float>>(*mesh, 3, 3, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -873,9 +874,9 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
 
-    std::vector values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
+    std::vector<float> values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
     Point origin{-5.0, -5.0};
-    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<double>>(*mesh, 2, 2, origin, 10.0, values);
+    auto interpolator = std::make_unique<BilinearInterpolationOnGriddedSamples<float>>(*mesh, 2, 2, origin, 10.0, values);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -897,107 +898,16 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     ASSERT_EQ(4, mesh->GetNumEdges());
 }
 
-enum class RidgeRefinementTestCase
-{
-    GaussianBump = 1,
-    GaussianWave = 2,
-    RidgeXDirection = 3,
-    ArctanFunction = 4,
-};
-
-std::vector<Sample> generateSampleData(RidgeRefinementTestCase testcase,
-                                       UInt nx = 10,
-                                       UInt ny = 10,
-                                       double deltaX = 10.0,
-                                       double deltaY = 10.0)
-{
-    UInt start = 0;
-    UInt size = (nx - start) * (ny - start);
-    std::vector<Sample> sampleData(size);
-
-    std::vector sampleDataMatrix(ny, std::vector<double>(nx));
-
-    const double centreX = static_cast<double>((nx - 1) / 2) * deltaX;
-    const double centreY = static_cast<double>((ny - 1) / 2) * deltaY;
-
-    const double scale = ny / 4.0 * deltaY;
-
-    const double r = nx / 5 * deltaX;
-    const double maxx = (nx - 1) * deltaX;
-
-    std::function<double(double, double)> generateSample;
-    switch (testcase)
-    {
-    case RidgeRefinementTestCase::GaussianBump:
-        generateSample = [&](double x, double y)
-        {
-            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            return 100.0 * std::exp(-0.025 * centre);
-        };
-        break;
-    case RidgeRefinementTestCase::GaussianWave:
-        generateSample = [&](double x, double y)
-        {
-            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            const double factor = std::max(1e-6, std::exp(-0.00025 * centre));
-            return 100.0 * factor;
-        };
-        break;
-    case RidgeRefinementTestCase::RidgeXDirection:
-        generateSample = [&](double x, double y)
-        {
-            const double sinx = std::sin(x / maxx * M_PI * 4.0);
-            const double xxx = scale * sinx + centreY;
-            return 10 * (std::atan(20.0 * (xxx - y)) + M_PI / 2.0);
-        };
-        break;
-    case RidgeRefinementTestCase::ArctanFunction:
-        generateSample = [&](double x, double y)
-        {
-            const double centre = (x - centreX) * (x - centreX) + (y - centreY) * (y - centreY);
-            return 10 * (std::atan(20.0 * (r * r - centre)) + M_PI / 2.0);
-        };
-        break;
-    default:
-        throw std::invalid_argument("invalid ridge refinement test case");
-    }
-
-    for (int i = ny - 1; i >= 0; --i)
-    {
-
-        for (UInt j = start; j < nx; ++j)
-        {
-            const double y = deltaY * i;
-            const double x = deltaX * j;
-            sampleDataMatrix[ny - 1 - i][j] = generateSample(x, y);
-        }
-    }
-
-    UInt count = 0;
-    for (UInt j = start; j < nx; ++j)
-    {
-        for (int i = ny - 1; i >= 0; --i)
-        {
-            const double y = deltaY * i;
-            const double x = deltaX * j;
-            sampleData[count] = {x, y, sampleDataMatrix[ny - 1 - i][j]};
-            count++;
-        }
-    }
-
-    return sampleData;
-}
-
-class RidgeRefinementTestCases : public testing::TestWithParam<std::tuple<RidgeRefinementTestCase, UInt, UInt>>
+class RidgeRefinementTestCases : public testing::TestWithParam<std::tuple<FunctionTestCase, UInt, UInt>>
 {
 public:
-    [[nodiscard]] static std::vector<std::tuple<RidgeRefinementTestCase, UInt, UInt>> GetData()
+    [[nodiscard]] static std::vector<std::tuple<FunctionTestCase, UInt, UInt>> GetData()
     {
         return std::vector{
-            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::GaussianBump, 1165, 2344),
-            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::GaussianWave, 5297, 10784),
-            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::RidgeXDirection, 2618, 5694),
-            std::make_tuple<RidgeRefinementTestCase, UInt, UInt>(RidgeRefinementTestCase::ArctanFunction, 2309, 5028)};
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianBump, 1165, 2344),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianWave, 5297, 10784),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2618, 5694),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2309, 5028)};
     }
 };
 
@@ -1015,10 +925,9 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     double dimX = (nx - 1) * deltaX;
     double dimY = (ny - 1) * deltaY;
 
-    std::shared_ptr<Mesh2D> mesh = MakeRectangularMeshForTesting(nx, ny, dimX, dimY, Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(nx, ny, dimX, dimY, Projection::cartesian);
 
     UInt superSample = 2;
-
     UInt sampleNx = (nx - 1) * superSample + 1;
     UInt sampleNy = (ny - 1) * superSample + 1;
 
@@ -1027,10 +936,10 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
 
     const auto sampleData = generateSampleData(testCase, sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
 
-    auto samples = SamplesHessianCalculator::ComputeSamplesHessian(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
+    auto samplesHessian = SamplesHessianCalculator::ComputeSamplesHessian(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
 
     auto interpolator = std::make_unique<AveragingInterpolation>(*mesh,
-                                                                 samples,
+                                                                 samplesHessian,
                                                                  AveragingInterpolation::Method::Max,
                                                                  Location::Faces,
                                                                  1.0,

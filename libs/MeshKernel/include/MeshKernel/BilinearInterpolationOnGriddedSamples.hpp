@@ -38,11 +38,7 @@ namespace meshkernel
 
     /// @brief Defines the iterpolatable data types.
     template <typename T>
-    concept InterpolatableType =
-        std::same_as<T, short> ||
-        std::same_as<T, int> ||
-        std::same_as<T, float> ||
-        std::same_as<T, double>;
+    concept InterpolatableType = std::same_as<T, short> || std::same_as<T, float>;
 
     /// @brief A class for performing bilinear interpolation on gridded samples
     template <InterpolatableType T>
@@ -261,7 +257,7 @@ namespace meshkernel
     template <InterpolatableType T>
     double BilinearInterpolationOnGriddedSamples<T>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
     {
-        const auto index = rowIndex * m_numXCoord + columnIndex;
+        const auto index = (m_numYCoord - rowIndex - 1) * m_numXCoord + columnIndex;
         return static_cast<double>(m_values[index]);
     }
 
