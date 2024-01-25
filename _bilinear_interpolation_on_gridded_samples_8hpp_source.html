@@ -116,209 +116,205 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">   41</a></span>&#160;    concept <a class="code" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a> =</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        std::same_as&lt;T, short&gt; ||</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        std::same_as&lt;T, int&gt; ||</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        std::same_as&lt;T, float&gt; ||</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        std::same_as&lt;T, double&gt;;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">   49</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples</a> : <span class="keyword">public</span> <a class="code" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                              <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                              <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                              <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; origin,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                              <span class="keywordtype">double</span> cellSize,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                              std::span&lt;T const&gt; values);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                                              std::span&lt;double const&gt; xCoordinates,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                              std::span&lt;double const&gt; yCoordinates,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                              <span class="comment">// const std::vector&lt;double&gt;&amp; xCoordinates,</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                              <span class="comment">// const std::vector&lt;double&gt;&amp; yCoordinates,</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                              std::span&lt;T const&gt; values);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">Compute</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> Interpolation(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetFractionalNumberOfColumns(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetFractionalNumberOfRows(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">   41</a></span>&#160;    concept <a class="code" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a> = std::same_as&lt;T, short&gt; || std::same_as&lt;T, float&gt;;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">   45</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples</a> : <span class="keyword">public</span> <a class="code" href="classmeshkernel_1_1_mesh_interpolation.html">MeshInterpolation</a></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                              <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                              <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                              <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; origin,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                              <span class="keywordtype">double</span> cellSize,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                              std::span&lt;T const&gt; values);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                              std::span&lt;double const&gt; xCoordinates,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                              std::span&lt;double const&gt; yCoordinates,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                              <span class="comment">// const std::vector&lt;double&gt;&amp; xCoordinates,</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                              <span class="comment">// const std::vector&lt;double&gt;&amp; yCoordinates,</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                                              std::span&lt;T const&gt; values);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">Compute</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> Interpolation(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetFractionalNumberOfColumns(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetFractionalNumberOfRows(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetGriddedValue(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> columnIndex, <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> rowIndex) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> GetGriddedValue(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> columnIndex, <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> rowIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;    </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_numXCoord;        </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_numYCoord;        </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <a class="code" href="classmeshkernel_1_1_point.html">Point</a> m_origin;          </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordtype">double</span> m_cellSize = 0.0; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        std::span&lt;double const&gt; m_xCoordinates; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        std::span&lt;double const&gt; m_yCoordinates; </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        std::span&lt;T const&gt; m_values;            </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        <span class="keywordtype">bool</span> m_isCellSizeConstant;              </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    };</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">  114</a></span>&#160;    <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples&lt;T&gt;::BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                                                                                    <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord,</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                                                                                    <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                                                                                    <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; origin,</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                                                                                    <span class="keywordtype">double</span> cellSize,</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                                                                                    std::span&lt;T const&gt; values)</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        : m_mesh(mesh),</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          m_numXCoord(numXCoord),</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;          m_numYCoord(numYCoord),</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;          m_origin(origin),</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;          m_cellSize(cellSize),</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;          m_values(values),</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;          m_isCellSizeConstant{<span class="keyword">true</span>}</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    {</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae6390bd596e2c2bf9199d930adc5006b">  131</a></span>&#160;    <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples&lt;T&gt;::BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                                                                                    std::span&lt;double const&gt; xCoordinates,</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                                                                                    std::span&lt;double const&gt; yCoordinates,</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                                                                                    std::span&lt;T const&gt; values)</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        : m_mesh(mesh),</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;          m_numXCoord(static_cast&lt;<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt;(xCoordinates.size())),</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;          m_numYCoord(static_cast&lt;<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt;(yCoordinates.size())),</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;          m_xCoordinates(xCoordinates),</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;          m_yCoordinates(yCoordinates),</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;          m_values{values},</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;          m_isCellSizeConstant(<span class="keyword">false</span>)</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    }</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">  146</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">BilinearInterpolationOnGriddedSamples&lt;T&gt;::Compute</a>()</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numNodes = m_mesh.GetNumNodes();</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numEdges = m_mesh.GetNumEdges();</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numFaces = m_mesh.GetNumFaces();</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        m_nodeResults.resize(numNodes);</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> n = 0; n &lt; numNodes; ++n)</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        {</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> node = m_mesh.m_nodes[n];</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            m_nodeResults[n] = Interpolation(node);</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        m_edgeResults.resize(numEdges);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> e = 0; e &lt; numEdges; ++e)</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; [first, second] = m_mesh.m_edges[e];</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        }</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        m_faceResults.resize(numFaces, constants::missing::doubleValue);</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        std::ranges::fill(m_faceResults, constants::missing::doubleValue);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> f = 0; f &lt; numFaces; ++f)</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        {</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        }</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;    </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_numXCoord;        </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_numYCoord;        </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        <a class="code" href="classmeshkernel_1_1_point.html">Point</a> m_origin;          </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="keywordtype">double</span> m_cellSize = 0.0; </div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        std::span&lt;double const&gt; m_xCoordinates; </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        std::span&lt;double const&gt; m_yCoordinates; </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        std::span&lt;T const&gt; m_values;            </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <span class="keywordtype">bool</span> m_isCellSizeConstant;              </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    };</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">  110</a></span>&#160;    <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples&lt;T&gt;::BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                                                                                    <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numXCoord,</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                                                                    <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numYCoord,</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                                                                                    <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; origin,</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                                                                                    <span class="keywordtype">double</span> cellSize,</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                                                                                    std::span&lt;T const&gt; values)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        : m_mesh(mesh),</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;          m_numXCoord(numXCoord),</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;          m_numYCoord(numYCoord),</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;          m_origin(origin),</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          m_cellSize(cellSize),</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          m_values(values),</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;          m_isCellSizeConstant{<span class="keyword">true</span>}</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ae6390bd596e2c2bf9199d930adc5006b">  127</a></span>&#160;    <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">BilinearInterpolationOnGriddedSamples&lt;T&gt;::BilinearInterpolationOnGriddedSamples</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh,</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                                                                                    std::span&lt;double const&gt; xCoordinates,</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                                                                                    std::span&lt;double const&gt; yCoordinates,</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                                                                                    std::span&lt;T const&gt; values)</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        : m_mesh(mesh),</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;          m_numXCoord(static_cast&lt;<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt;(xCoordinates.size())),</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;          m_numYCoord(static_cast&lt;<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&gt;(yCoordinates.size())),</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;          m_xCoordinates(xCoordinates),</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;          m_yCoordinates(yCoordinates),</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;          m_values{values},</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;          m_isCellSizeConstant(<span class="keyword">false</span>)</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    {</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160; </div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00142"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">  142</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">BilinearInterpolationOnGriddedSamples&lt;T&gt;::Compute</a>()</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    {</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numNodes = m_mesh.GetNumNodes();</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numEdges = m_mesh.GetNumEdges();</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> numFaces = m_mesh.GetNumFaces();</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        m_nodeResults.resize(numNodes);</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        std::ranges::fill(m_nodeResults, constants::missing::doubleValue);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> n = 0; n &lt; numNodes; ++n)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> node = m_mesh.m_nodes[n];</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            m_nodeResults[n] = Interpolation(node);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        m_edgeResults.resize(numEdges);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        std::ranges::fill(m_edgeResults, constants::missing::doubleValue);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> e = 0; e &lt; numEdges; ++e)</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        {</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; [first, second] = m_mesh.m_edges[e];</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        m_faceResults.resize(numFaces, constants::missing::doubleValue);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        std::ranges::fill(m_faceResults, constants::missing::doubleValue);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> f = 0; f &lt; numFaces; ++f)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;            m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        }</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples&lt;T&gt;::Interpolation</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="keyword">    </span>{</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; </div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">BilinearInterpolationOnGriddedSamples&lt;T&gt;::Interpolation</a>(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_point.html">Point</a>&amp; point)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        <span class="keywordtype">double</span> fractionalColumnIndex = GetFractionalNumberOfColumns(point);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <span class="keywordtype">double</span> fractionalRowIndex = GetFractionalNumberOfRows(point);</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keywordtype">double</span> columnIndexTmp;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        fractionalColumnIndex = std::modf(fractionalColumnIndex, &amp;columnIndexTmp);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keywordtype">double</span> rowIndexTmp;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        fractionalRowIndex = std::modf(fractionalRowIndex, &amp;rowIndexTmp);</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160; </div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        <span class="keywordflow">if</span> (columnIndexTmp &lt; 0 || rowIndexTmp &lt; 0)</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        {</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;            <span class="keywordflow">return</span> constants::missing::doubleValue;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> <span class="keyword">const</span> columnIndex = <span class="keyword">static_cast&lt;</span><a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a><span class="keyword">&gt;</span>(columnIndexTmp);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> <span class="keyword">const</span> rowIndex = <span class="keyword">static_cast&lt;</span><a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a><span class="keyword">&gt;</span>(rowIndexTmp);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keywordflow">if</span> (columnIndex + 1 &gt;= m_numXCoord || rowIndex + 1 &gt;= m_numYCoord)</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        {</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            <span class="keywordflow">return</span> constants::missing::doubleValue;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        }</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> result = fractionalColumnIndex * fractionalRowIndex * GetGriddedValue(columnIndex + 1, rowIndex + 1) +</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                            (1.0 - fractionalColumnIndex) * fractionalRowIndex * GetGriddedValue(columnIndex, rowIndex + 1) +</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                            (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * GetGriddedValue(columnIndex, rowIndex) +</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                            fractionalColumnIndex * (1.0 - fractionalRowIndex) * GetGriddedValue(columnIndex + 1, rowIndex);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; </div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetFractionalNumberOfColumns(<span class="keyword">const</span> Point&amp; point)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        <span class="keywordflow">if</span> (m_isCellSizeConstant)</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        {</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;            <span class="keywordflow">return</span> (point.x - m_origin.x) / m_cellSize;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        }</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        <span class="keywordtype">double</span> result = constants::missing::doubleValue;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <span class="keywordflow">if</span> (m_xCoordinates.size() &lt; 2)</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        <span class="keywordtype">double</span> fractionalColumnIndex = GetFractionalNumberOfColumns(point);</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        <span class="keywordtype">double</span> fractionalRowIndex = GetFractionalNumberOfRows(point);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        <span class="keywordtype">double</span> columnIndexTmp;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        fractionalColumnIndex = std::modf(fractionalColumnIndex, &amp;columnIndexTmp);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <span class="keywordtype">double</span> rowIndexTmp;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        fractionalRowIndex = std::modf(fractionalRowIndex, &amp;rowIndexTmp);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        <span class="keywordflow">if</span> (columnIndexTmp &lt; 0 || rowIndexTmp &lt; 0)</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;            <span class="keywordflow">return</span> constants::missing::doubleValue;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;        }</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> <span class="keyword">const</span> columnIndex = <span class="keyword">static_cast&lt;</span><a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a><span class="keyword">&gt;</span>(columnIndexTmp);</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> <span class="keyword">const</span> rowIndex = <span class="keyword">static_cast&lt;</span><a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a><span class="keyword">&gt;</span>(rowIndexTmp);</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160; </div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordflow">if</span> (columnIndex + 1 &gt;= m_numXCoord || rowIndex + 1 &gt;= m_numYCoord)</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;            <span class="keywordflow">return</span> constants::missing::doubleValue;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        }</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> result = fractionalColumnIndex * fractionalRowIndex * GetGriddedValue(columnIndex + 1, rowIndex + 1) +</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                            (1.0 - fractionalColumnIndex) * fractionalRowIndex * GetGriddedValue(columnIndex, rowIndex + 1) +</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                            (1.0 - fractionalColumnIndex) * (1.0 - fractionalRowIndex) * GetGriddedValue(columnIndex, rowIndex) +</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;                            fractionalColumnIndex * (1.0 - fractionalRowIndex) * GetGriddedValue(columnIndex + 1, rowIndex);</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    }</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; </div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetFractionalNumberOfColumns(<span class="keyword">const</span> Point&amp; point)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">if</span> (m_isCellSizeConstant)</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        {</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;            <span class="keywordflow">return</span> (point.x - m_origin.x) / m_cellSize;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        }</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        <span class="keywordtype">double</span> result = constants::missing::doubleValue;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="keywordflow">if</span> (m_xCoordinates.size() &lt; 2)</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        {</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        }</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i = 0; i &lt; m_xCoordinates.size() - 1; ++i)</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        {</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;            <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        }</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i = 0; i &lt; m_xCoordinates.size() - 1; ++i)</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        {</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; </div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;            <span class="keywordflow">if</span> (point.x &gt;= m_xCoordinates[i] &amp;&amp; point.x &lt; m_xCoordinates[i + 1])</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;            {</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">double</span> dx = m_xCoordinates[i + 1] - m_xCoordinates[i];</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                result = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) + (point.x - m_xCoordinates[i]) / dx;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;            }</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        }</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    }</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetFractionalNumberOfRows(<span class="keyword">const</span> Point&amp; point)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        <span class="keywordflow">if</span> (m_isCellSizeConstant)</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;            <span class="keywordflow">return</span> (point.y - m_origin.y) / m_cellSize;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        }</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        <span class="keywordtype">double</span> result = constants::missing::doubleValue;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        <span class="keywordflow">if</span> (m_yCoordinates.size() &lt; 2)</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i = 0; i &lt; m_yCoordinates.size() - 1; ++i)</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        {</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160; </div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            <span class="keywordflow">if</span> (point.y &gt;= m_yCoordinates[i] &amp;&amp; point.y &lt; m_yCoordinates[i + 1])</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">double</span> dy = m_yCoordinates[i + 1] - m_yCoordinates[i];</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                result = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) + (point.y - m_yCoordinates[i]) / dy;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;            }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160; </div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetGriddedValue(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> columnIndex, <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> rowIndex)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> index = rowIndex * m_numXCoord + columnIndex;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(m_values[index]);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;            <span class="keywordflow">if</span> (point.x &gt;= m_xCoordinates[i] &amp;&amp; point.x &lt; m_xCoordinates[i + 1])</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">double</span> dx = m_xCoordinates[i + 1] - m_xCoordinates[i];</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                result = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) + (point.x - m_xCoordinates[i]) / dx;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;            }</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        }</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    }</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetFractionalNumberOfRows(<span class="keyword">const</span> Point&amp; point)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="keywordflow">if</span> (m_isCellSizeConstant)</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        {</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            <span class="keywordflow">return</span> (point.y - m_origin.y) / m_cellSize;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        }</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        <span class="keywordtype">double</span> result = constants::missing::doubleValue;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <span class="keywordflow">if</span> (m_yCoordinates.size() &lt; 2)</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        {</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        }</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> i = 0; i &lt; m_yCoordinates.size() - 1; ++i)</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            <span class="keywordflow">if</span> (point.y &gt;= m_yCoordinates[i] &amp;&amp; point.y &lt; m_yCoordinates[i + 1])</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                <span class="keyword">const</span> <span class="keywordtype">double</span> dy = m_yCoordinates[i + 1] - m_yCoordinates[i];</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                result = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) + (point.y - m_yCoordinates[i]) / dy;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        }</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160; </div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keyword">template</span> &lt;InterpolatableType T&gt;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordtype">double</span> BilinearInterpolationOnGriddedSamples&lt;T&gt;::GetGriddedValue(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> columnIndex, <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> rowIndex)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> index = (m_numYCoord - rowIndex - 1) * m_numXCoord + columnIndex;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(m_values[index]);</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_interpolation_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh_interpolation.html">meshkernel::MeshInterpolation</a></div><div class="ttdoc">Interface for interpolation methods.</div><div class="ttdef"><b>Definition:</b> MeshInterpolation.hpp:42</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:52</div></div>
@@ -326,9 +322,9 @@ $(function() {
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a3194577122b88038daf159e0b96c9bfb"><div class="ttname"><a href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">meshkernel::InterpolatableType</a></div><div class="ttdeci">concept InterpolatableType</div><div class="ttdoc">Defines the iterpolatable data types.</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:41</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:38</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">meshkernel::BilinearInterpolationOnGriddedSamples</a></div><div class="ttdoc">A class for performing bilinear interpolation on gridded samples.</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:49</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html_a64c8292a50093296143ac688e2162496"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">meshkernel::BilinearInterpolationOnGriddedSamples::Compute</a></div><div class="ttdeci">void Compute() override</div><div class="ttdoc">Compute interpolation.</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:146</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html_ab5958e602c1c89a2f6f1da5fb50974d0"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples</a></div><div class="ttdeci">BilinearInterpolationOnGriddedSamples(const Mesh2D &amp;mesh, UInt numXCoord, UInt numYCoord, const Point &amp;origin, double cellSize, std::span&lt; T const &gt; values)</div><div class="ttdoc">Bilinear interpolation with constant cell size (faster because no linear search is performed for each...</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:114</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html">meshkernel::BilinearInterpolationOnGriddedSamples</a></div><div class="ttdoc">A class for performing bilinear interpolation on gridded samples.</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:45</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html_a64c8292a50093296143ac688e2162496"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#a64c8292a50093296143ac688e2162496">meshkernel::BilinearInterpolationOnGriddedSamples::Compute</a></div><div class="ttdeci">void Compute() override</div><div class="ttdoc">Compute interpolation.</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:142</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_bilinear_interpolation_on_gridded_samples_html_ab5958e602c1c89a2f6f1da5fb50974d0"><div class="ttname"><a href="classmeshkernel_1_1_bilinear_interpolation_on_gridded_samples.html#ab5958e602c1c89a2f6f1da5fb50974d0">meshkernel::BilinearInterpolationOnGriddedSamples::BilinearInterpolationOnGriddedSamples</a></div><div class="ttdeci">BilinearInterpolationOnGriddedSamples(const Mesh2D &amp;mesh, UInt numXCoord, UInt numYCoord, const Point &amp;origin, double cellSize, std::span&lt; T const &gt; values)</div><div class="ttdoc">Bilinear interpolation with constant cell size (faster because no linear search is performed for each...</div><div class="ttdef"><b>Definition:</b> BilinearInterpolationOnGriddedSamples.hpp:110</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

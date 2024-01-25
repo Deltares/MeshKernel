@@ -673,9 +673,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a></td></tr>
-<tr class="memdesc:a3194577122b88038daf159e0b96c9bfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the iterpolatable data types.  <a href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">More...</a><br /></td></tr>
+<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplParams" colspan="2"><a id="a3194577122b88038daf159e0b96c9bfb"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a> = std::same_as&lt;T, short&gt; || std::same_as&lt;T, float&gt;</td></tr>
+<tr class="memdesc:a3194577122b88038daf159e0b96c9bfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the iterpolatable data types. <br /></td></tr>
 <tr class="separator:a3194577122b88038daf159e0b96c9bfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ad8c7b77cd35cbe911710b6c4d3571e"><td class="memTemplParams" colspan="2"><a id="a7ad8c7b77cd35cbe911710b6c4d3571e"></a>
 template&lt;typename Operation &gt; </td></tr>
@@ -4296,29 +4297,6 @@ template&lt;typename Operation &gt; </div>
 <div class="line">                                                              { op.TargetProjection()} -&gt; std::same_as&lt;Projection&gt;; }</div>
 </div><!-- fragment -->
 <p>Ensure any instantiation of the <a class="el" href="classmeshkernel_1_1_mesh_conversion.html" title="Apply a conversion to nodes of a mesh.">MeshConversion</a> Compute function is able to determine source and target projection types. </p>
-
-</div>
-</div>
-<a id="a3194577122b88038daf159e0b96c9bfb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3194577122b88038daf159e0b96c9bfb">&#9670;&nbsp;</a></span>InterpolatableType</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">concept meshkernel::InterpolatableType</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        std::same_as&lt;T, short&gt; ||</div>
-<div class="line">        std::same_as&lt;T, int&gt; ||</div>
-<div class="line">        std::same_as&lt;T, float&gt; ||</div>
-<div class="line">        std::same_as&lt;T, double&gt;</div>
-</div><!-- fragment -->
-<p>Defines the iterpolatable data types. </p>
 
 </div>
 </div>
