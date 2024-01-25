@@ -226,7 +226,7 @@ namespace meshkernelapi
     {
         std::vector<meshkernel::Sample> result;
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-        const size_t numSamples = static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y);
+        const auto numSamples = static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y);
         result.resize(numSamples);
         const T* valuePtr = static_cast<T*>(griddedSamples.values);
         if (griddedSamples.x_coordinates == nullptr || griddedSamples.y_coordinates == nullptr)
@@ -272,7 +272,6 @@ namespace meshkernelapi
         {
             return result;
         }
-        result = ComputeGriddedDataSamples<float>(griddedSamples);
 
         if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
         {
