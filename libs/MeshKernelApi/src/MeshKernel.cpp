@@ -1798,7 +1798,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The mesh refinement type in MeshRefinementParameters must be set equal to ridge refinement.");
             }
 
-            const auto samplesVector = ConvertGriddedDataToSamples<float>(samples);
+            const auto samplesVector = ConvertGriddedData(samples);
 
             auto samplesHessian = meshkernel::SamplesHessianCalculator::ComputeSamplesHessian(samplesVector,
                                                                                               meshKernelState[meshKernelId].m_projection,

@@ -218,20 +218,13 @@ namespace meshkernelapi
         }
     }
 
-
-
-    /// @brief Converts the samples represented in gridded data in a vector of samples
+    /// @brief Computes the samples represented in gridded data in a vector of samples
     /// @param[in] griddedSamples The gridded data to convert
     /// @returns The converted vector of samples
     template <meshkernel::InterpolatableType T>
-    static std::vector<meshkernel::Sample> ConvertGriddedDataToSamples(const GriddedSamples& griddedSamples)
+    static std::vector<meshkernel::Sample> ComputeGriddedDataSamples(const GriddedSamples& griddedSamples)
     {
         std::vector<meshkernel::Sample> result;
-        if (griddedSamples.num_x <= 0 || griddedSamples.num_y <= 0)
-        {
-            return result;
-        }
-
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
         const size_t numSamples = static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y);
         result.resize(numSamples);
@@ -267,6 +260,29 @@ namespace meshkernelapi
             }
         }
         return result;
+    }
+
+    /// @brief Converts the samples represented in gridded data in a vector of samples
+    /// @param[in] griddedSamples The gridded data to convert
+    /// @returns The converted vector of samples
+    static std::vector<meshkernel::Sample> ConvertGriddedData(const GriddedSamples& griddedSamples)
+    {
+        std::vector<meshkernel::Sample> result;
+        if (griddedSamples.num_x <= 0 || griddedSamples.num_y <= 0)
+        {
+            return result;
+        }
+        result = ComputeGriddedDataSamples<float>(griddedSamples);
+
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
+        {
+            return ComputeGriddedDataSamples<short>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
+        {
+            return ComputeGriddedDataSamples<float>(griddedSamples);
+        }
+        throw meshkernel::MeshKernelError("The value type for the gridded data samples is invalid.");
     }
 
     /// @brief Sets splines from a geometry list
