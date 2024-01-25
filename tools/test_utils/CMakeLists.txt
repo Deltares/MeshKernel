@@ -28,22 +28,22 @@ configure_file(
 # list of target sources
 set(
   SRC_LIST
-  ${SRC_DIR}/SampleGenerator.cpp  
-  ${SRC_DIR}/SampleFileWriter.cpp
-  ${SRC_DIR}/SampleFileReader.cpp
-  ${SRC_DIR}/MakeMeshes.cpp
   ${SRC_DIR}/MakeCurvilinearGrids.cpp
+  ${SRC_DIR}/MakeMeshes.cpp
+  ${SRC_DIR}/SampleFileReader.cpp
+  ${SRC_DIR}/SampleFileWriter.cpp
+  ${SRC_DIR}/SampleGenerator.cpp  
 )
 
 # list of target headers
 set(
   INC_LIST
-    ${DOMAIN_INC_DIR}/SampleGenerator.hpp  
-    ${DOMAIN_INC_DIR}/SampleFileWriter.hpp
-    ${DOMAIN_INC_DIR}/SampleFileReader.hpp
-    ${DOMAIN_INC_DIR}/MakeMeshes.hpp
-    ${DOMAIN_INC_DIR}/MakeCurvilinearGrids.hpp  
-    ${DOMAIN_INC_DIR}/Definitions.hpp
+  ${DOMAIN_INC_DIR}/Definitions.hpp
+  ${DOMAIN_INC_DIR}/MakeCurvilinearGrids.hpp  
+  ${DOMAIN_INC_DIR}/MakeMeshes.hpp
+  ${DOMAIN_INC_DIR}/SampleFileReader.hpp
+  ${DOMAIN_INC_DIR}/SampleFileWriter.hpp
+  ${DOMAIN_INC_DIR}/SampleGenerator.hpp 
 )
 
 # add sources to target

@@ -1738,11 +1738,11 @@ namespace meshkernelapi
             // averagingMethod may be used uninitialised;
             meshkernel::AveragingInterpolation::Method averagingMethod;
 
-            if (meshRefinementParameters.refinement_type == 1)
+            if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            else if (meshRefinementParameters.refinement_type == 2)
+            else if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::RefinementLevels))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
             }
@@ -1793,7 +1793,7 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
-            if (meshRefinementParameters.refinement_type != 3)
+            if (meshRefinementParameters.refinement_type != static_cast<int>(meshkernel::MeshRefinement::RefinementType::RidgeDetection))
             {
                 throw meshkernel::MeshKernelError("The mesh refinement type in MeshRefinementParameters must be set equal to ridge refinement.");
             }
