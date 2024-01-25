@@ -39,8 +39,9 @@ enum class FunctionTestCase
     ArctanFunction = 4,
 };
 
-std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(FunctionTestCase testcase,
-                                                   meshkernel::UInt nx = 10,
-                                                   meshkernel::UInt ny = 10,
-                                                   double deltaX = 10.0,
-                                                   double deltaY = 10.0);
+std::vector<meshkernel::Sample>
+generateSampleData(FunctionTestCase testcase,
+                   meshkernel::UInt nx = 10,
+                   meshkernel::UInt ny = 10,
+                   double deltaX = 10.0,
+                   double deltaY = 10.0);

@@ -632,10 +632,7 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     const int numSamplesYCoordinates = (nRows * 1) * 2 + 1;
     const double deltaX = 5.0;
     const double deltaY = 5.0;
-    const auto [sampleData, sampleDataMatrix] = generateSampleData(FunctionTestCase::GaussianWave, numSamplesXCoordinates, numSamplesYCoordinates, deltaX, deltaY);
-
-    std::string filePath(TEST_FOLDER + "/data/MeshRefinementTests/GaussianBump.asc");
-    WriteSampleFileToAsc(sampleDataMatrix, deltaX, filePath);
+    const auto sampleData = generateSampleData(FunctionTestCase::GaussianBump, numSamplesXCoordinates, numSamplesYCoordinates, deltaX, deltaY);
 
     // Create an instance of gridded samples,
     meshkernelapi::GriddedSamples griddedSamples;
@@ -648,11 +645,12 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     // Flatten the values before passing them to Mesh Kernel
     meshkernel::UInt index = 0;
     std::vector<float> values(numSamplesXCoordinates * numSamplesYCoordinates, 0.0);
-    for (int i = 0; i < numSamplesYCoordinates; ++i)
+    for (int j = 0; j < numSamplesYCoordinates; ++j)
     {
-        for (int j = 0; j < numSamplesXCoordinates; ++j)
+        for (int i = 0; i < numSamplesXCoordinates; ++i)
         {
-            values[index] = static_cast<float>(sampleData[index].value);
+            const auto griddedIndex = griddedSamples.num_y * i + j;
+            values[index] = static_cast<float>(sampleData[griddedIndex].value);
             index++;
         }
     }
@@ -671,6 +669,7 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.smoothing_iterations = 0;
+    meshRefinementParameters.refinement_type = 3;
 
     // Execute
     const auto meshKernelId = GetMeshKernelId();
@@ -681,6 +680,6 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(943, mesh2d.num_nodes);
-    ASSERT_EQ(1928, mesh2d.num_edges);
+    ASSERT_EQ(956, mesh2d.num_nodes);
+    ASSERT_EQ(1872, mesh2d.num_edges);
 }

@@ -934,7 +934,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     const double sampleDeltaX = deltaX / static_cast<double>(superSample);
     const double sampleDeltaY = deltaY / static_cast<double>(superSample);
 
-    const auto [sampleData, sampleDataMatrix] = generateSampleData(testCase, sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
+    const auto sampleData = generateSampleData(testCase, sampleNx, sampleNy, sampleDeltaX, sampleDeltaY);
 
     auto samplesHessian = SamplesHessianCalculator::ComputeSamplesHessian(sampleData, mesh->m_projection, 0, sampleNx, sampleNy);
 

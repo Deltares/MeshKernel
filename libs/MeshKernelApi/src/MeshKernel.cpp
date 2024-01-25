@@ -1793,8 +1793,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
+            if (meshRefinementParameters.refinement_type != 3)
+            {
+                throw meshkernel::MeshKernelError("The mesh refinement type in MeshRefinementParameters must be set equal to ridge refinement.");
+            }
 
-            const auto samplesVector = ConvertGriddedDataToSamples(samples);
+            const auto samplesVector = ConvertGriddedDataToSamples<float>(samples);
 
             auto samplesHessian = meshkernel::SamplesHessianCalculator::ComputeSamplesHessian(samplesVector,
                                                                                               meshKernelState[meshKernelId].m_projection,

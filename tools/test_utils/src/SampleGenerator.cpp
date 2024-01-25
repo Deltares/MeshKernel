@@ -1,10 +1,11 @@
 #include "SampleGenerator.hpp"
 
-std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> generateSampleData(FunctionTestCase testcase,
-                                                                                                 meshkernel::UInt nx,
-                                                                                                 meshkernel::UInt ny,
-                                                                                                 double deltaX,
-                                                                                                 double deltaY)
+std::vector<meshkernel::Sample>
+generateSampleData(FunctionTestCase testcase,
+                   meshkernel::UInt nx,
+                   meshkernel::UInt ny,
+                   double deltaX,
+                   double deltaY)
 {
     meshkernel::UInt start = 0;
     meshkernel::UInt size = (nx - start) * (ny - start);
@@ -80,5 +81,5 @@ std::tuple<std::vector<meshkernel::Sample>, std::vector<std::vector<double>>> ge
         }
     }
 
-    return {sampleData, sampleDataMatrix};
+    return sampleData;
 }

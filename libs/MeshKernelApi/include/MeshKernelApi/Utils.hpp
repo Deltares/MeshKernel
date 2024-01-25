@@ -217,32 +217,37 @@ namespace meshkernelapi
             result.values[i] = values[i];
         }
     }
+
+
+
     /// @brief Converts the samples represented in gridded data in a vector of samples
     /// @param[in] griddedSamples The gridded data to convert
     /// @returns The converted vector of samples
+    template <meshkernel::InterpolatableType T>
     static std::vector<meshkernel::Sample> ConvertGriddedDataToSamples(const GriddedSamples& griddedSamples)
     {
         std::vector<meshkernel::Sample> result;
-        if (griddedSamples.num_x == 0 || griddedSamples.num_y == 0)
+        if (griddedSamples.num_x <= 0 || griddedSamples.num_y <= 0)
         {
             return result;
         }
 
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-        const auto numSamples = griddedSamples.num_x * griddedSamples.num_y;
+        const size_t numSamples = static_cast<size_t>(griddedSamples.num_x * griddedSamples.num_y);
         result.resize(numSamples);
-        std::span values(reinterpret_cast<double const* const>(griddedSamples.values), griddedSamples.num_x * griddedSamples.num_y);
-
+        const T* valuePtr = static_cast<T*>(griddedSamples.values);
         if (griddedSamples.x_coordinates == nullptr || griddedSamples.y_coordinates == nullptr)
         {
             meshkernel::UInt index = 0;
-            for (int i = 0; i < griddedSamples.num_y; ++i)
+
+            for (int j = 0; j < griddedSamples.num_x; ++j)
             {
-                for (int j = 0; j < griddedSamples.num_x; ++j)
+                for (int i = griddedSamples.num_y - 1; i >= 0; --i)
                 {
+                    const auto griddedIndex = griddedSamples.num_x * i + j;
                     result[index].x = origin.x + j * griddedSamples.cell_size;
                     result[index].y = origin.y + i * griddedSamples.cell_size;
-                    result[index].value = values[index];
+                    result[index].value = static_cast<double>(valuePtr[griddedIndex]);
                     index++;
                 }
             }
@@ -250,13 +255,14 @@ namespace meshkernelapi
         }
 
         meshkernel::UInt index = 0;
-        for (int i = 0; i < griddedSamples.num_y; ++i)
+        for (int j = 0; j < griddedSamples.num_x; ++j)
         {
-            for (int j = 0; j < griddedSamples.num_x; ++j)
+            for (int i = griddedSamples.num_y - 1; i >= 0; --i)
             {
-                result[index].x = origin.x + griddedSamples.x_coordinates[index];
-                result[index].y = origin.y + griddedSamples.y_coordinates[index];
-                result[index].value = values[index];
+                const auto griddedIndex = griddedSamples.num_x * i + j;
+                result[index].x = origin.x + griddedSamples.x_coordinates[griddedIndex];
+                result[index].y = origin.y + griddedSamples.y_coordinates[griddedIndex];
+                result[index].value = static_cast<double>(valuePtr[griddedIndex]);
                 index++;
             }
         }
