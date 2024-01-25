@@ -272,7 +272,6 @@ namespace meshkernelapi
         {
             return result;
         }
-        result = ComputeGriddedDataSamples<float>(griddedSamples);
 
         if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
         {
