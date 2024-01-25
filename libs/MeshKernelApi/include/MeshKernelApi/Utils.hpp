@@ -36,6 +36,7 @@
 #include <MeshKernel/Splines.hpp>
 
 #include <MeshKernelApi/GeometryList.hpp>
+#include <MeshKernelApi/GriddedSamples.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
@@ -215,6 +216,51 @@ namespace meshkernelapi
             result.coordinates_y[i] = valuesCoordinates[i].y;
             result.values[i] = values[i];
         }
+    }
+    /// @brief Converts the samples represented in gridded data in a vector of samples
+    /// @param[in] griddedSamples The gridded data to convert
+    /// @returns The converted vector of samples
+    static std::vector<meshkernel::Sample> ConvertGriddedDataToSamples(const GriddedSamples& griddedSamples)
+    {
+        std::vector<meshkernel::Sample> result;
+        if (griddedSamples.num_x == 0 || griddedSamples.num_y == 0)
+        {
+            return result;
+        }
+
+        meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
+        const auto numSamples = griddedSamples.num_x * griddedSamples.num_y;
+        result.resize(numSamples);
+        std::span values(reinterpret_cast<double const* const>(griddedSamples.values), griddedSamples.num_x * griddedSamples.num_y);
+
+        if (griddedSamples.x_coordinates == nullptr || griddedSamples.y_coordinates == nullptr)
+        {
+            meshkernel::UInt index = 0;
+            for (int i = 0; i < griddedSamples.num_y; ++i)
+            {
+                for (int j = 0; j < griddedSamples.num_x; ++j)
+                {
+                    result[index].x = origin.x + j * griddedSamples.cell_size;
+                    result[index].y = origin.y + i * griddedSamples.cell_size;
+                    result[index].value = values[index];
+                    index++;
+                }
+            }
+            return result;
+        }
+
+        meshkernel::UInt index = 0;
+        for (int i = 0; i < griddedSamples.num_y; ++i)
+        {
+            for (int j = 0; j < griddedSamples.num_x; ++j)
+            {
+                result[index].x = origin.x + griddedSamples.x_coordinates[index];
+                result[index].y = origin.y + griddedSamples.y_coordinates[index];
+                result[index].value = values[index];
+                index++;
+            }
+        }
+        return result;
     }
 
     /// @brief Sets splines from a geometry list
@@ -405,7 +451,7 @@ namespace meshkernelapi
                                                                                      const GriddedSamples& griddedSamples)
     {
         meshkernel::Point origin{griddedSamples.x_origin, griddedSamples.y_origin};
-        if (griddedSamples.x_coordinates == nullptr && griddedSamples.y_coordinates == nullptr)
+        if (griddedSamples.x_coordinates == nullptr || griddedSamples.y_coordinates == nullptr)
         {
             return std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<T>>(mesh2d,
                                                                                           griddedSamples.num_x,
