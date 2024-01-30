@@ -34,11 +34,11 @@ const std::vector<size_t>& SimpleMesh::getNodeConnectivity(const size_t id) cons
     return nodeEdges_[id];
 }
 
-std::tuple<size_t, TransactionPtr> SimpleMesh::addNode(const Point& p)
+std::tuple<size_t, std::unique_ptr<AddNodeTransaction>> SimpleMesh::addNode(const Point& p)
 {
     nodes_.resize(nodes_.size() + 1);
 
-    TransactionPtr transaction = std::make_unique<AddNodeTransaction>(*this, nodes_.size() - 1, p);
+    std::unique_ptr<AddNodeTransaction> transaction = std::make_unique<AddNodeTransaction>(*this, nodes_.size() - 1, p);
 
     resetNode(nodes_.size() - 1, p);
     return {nodes_.size() - 1, std::move(transaction)};
@@ -73,7 +73,7 @@ void SimpleMesh::restore(AddEdgeTransaction& transaction)
     resetEdge(transaction.edgeId(), core::nullValueId, core::nullValueId);
 }
 
-TransactionPtr SimpleMesh::deleteNode(const size_t id)
+std::unique_ptr<DeleteNodeTransaction> SimpleMesh::deleteNode(const size_t id)
 {
     std::unique_ptr<DeleteNodeTransaction> transaction = std::make_unique<DeleteNodeTransaction>(*this, id, nodes_[id]);
 
@@ -91,7 +91,7 @@ TransactionPtr SimpleMesh::deleteNode(const size_t id)
 
 void SimpleMesh::commit(DeleteNodeTransaction& transaction)
 {
-    // SHould the commiting of the edge deletions also be done here?
+    // Should the committing of the edge deletions also be done here?
     resetNode(transaction.nodeId(), Point());
 }
 
@@ -101,12 +101,12 @@ void SimpleMesh::restore(DeleteNodeTransaction& transaction)
     resetNode(transaction.nodeId(), transaction.point());
 }
 
-std::tuple<size_t, TransactionPtr> SimpleMesh::addEdge(const size_t start, const size_t end)
+std::tuple<size_t, std::unique_ptr<AddEdgeTransaction>> SimpleMesh::addEdge(const size_t start, const size_t end)
 {
     size_t index = edges_.size();
     edges_.resize(edges_.size() + 1);
 
-    TransactionPtr transaction = std::make_unique<AddEdgeTransaction>(*this, index, start, end);
+    std::unique_ptr<AddEdgeTransaction> transaction = std::make_unique<AddEdgeTransaction>(*this, index, start, end);
 
     resetEdge(index, start, end);
 
@@ -123,7 +123,7 @@ void SimpleMesh::resetEdge(const size_t id, const size_t start, const size_t end
     edges_[id].end() = end;
 }
 
-TransactionPtr SimpleMesh::deleteEdge(const size_t id)
+std::unique_ptr<DeleteEdgeTransaction> SimpleMesh::deleteEdge(const size_t id)
 {
     std::unique_ptr<DeleteEdgeTransaction> transaction = std::make_unique<DeleteEdgeTransaction>(*this, id, edges_[id].start(), edges_[id].end());
 

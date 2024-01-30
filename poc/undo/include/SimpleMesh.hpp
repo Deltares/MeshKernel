@@ -24,8 +24,7 @@ public:
 
     const std::vector<size_t>& getNodeConnectivity(const size_t id) const;
 
-    // Could return pointer to AddNodeTransaction instead of the base class.
-    std::tuple<size_t, TransactionPtr> addNode(const Point& p);
+    std::tuple<size_t, std::unique_ptr<AddNodeTransaction>> addNode(const Point& p);
 
     void commit(AddNodeTransaction& transaction);
 
@@ -33,13 +32,13 @@ public:
 
     void resetNode(const size_t id, const Point& p);
 
-    TransactionPtr deleteNode(const size_t id);
+    std::unique_ptr<DeleteNodeTransaction> deleteNode(const size_t id);
 
     void commit(DeleteNodeTransaction& transaction);
 
     void restore(DeleteNodeTransaction& transaction);
 
-    std::tuple<size_t, TransactionPtr> addEdge(const size_t start, const size_t end);
+    std::tuple<size_t, std::unique_ptr<AddEdgeTransaction>> addEdge(const size_t start, const size_t end);
 
     void resetEdge(const size_t id, const size_t start, const size_t end);
 
@@ -47,7 +46,8 @@ public:
 
     void restore(AddEdgeTransaction& transaction);
 
-    TransactionPtr deleteEdge(const size_t id);
+    // Return pointer to DeleteEdgeTransaction
+    std::unique_ptr<DeleteEdgeTransaction> deleteEdge(const size_t id);
 
     void commit(DeleteEdgeTransaction& transaction);
 
