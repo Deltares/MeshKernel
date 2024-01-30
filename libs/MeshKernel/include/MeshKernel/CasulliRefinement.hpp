@@ -91,7 +91,7 @@ namespace meshkernel
         ///
         /// @param [in, out] mesh The mesh being refined
         /// @param [in] newNodes List of new nodes and connectivity
-        /// @param [in] numNodes Number of nodes in original mesh, before refinement.
+xs        /// @param [in] numNodes Number of nodes in original mesh, before refinement.
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
         /// @param [in, out] nodeMask Node mask information
@@ -99,7 +99,7 @@ namespace meshkernel
 
         /// @brief Add newly generated nodes to the newNodes list.
         ///
-        /// @param [in, out] mesh The Mesh
+        /// @param [in] mesh The Mesh
         /// @param [in] nodeId Node shared by edge1Index and edge2Index
         /// @param [in] edge1Index First of two edges used to determine face
         /// @param [in] edge2Index Second of two edges used to determine face
@@ -109,7 +109,7 @@ namespace meshkernel
 
         /// @brief Find elements and nodes that form the patch of elements directly connected to the node.
         ///
-        /// @param [in, out] mesh The mesh
+        /// @param [in] mesh The mesh
         /// @param [in] currentNode Node identifier
         /// @param [out] sharedFaces Identifiers of all faces directly connected to the node
         /// @param [out] connectedNodes Identifiers of the nodes of all faces connected to the node
