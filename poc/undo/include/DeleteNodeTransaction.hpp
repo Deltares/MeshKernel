@@ -20,11 +20,6 @@ public:
 
     DeleteNodeTransaction(SimpleMesh& mesh, const size_t id, const Point& p) : BaseMeshTransaction<DeleteNodeTransaction, SimpleMesh>(mesh), nodeId_(id), point_(p) {}
 
-    void add(TransactionPtr& transaction)
-    {
-        deletedEdges.emplace_back(std::move(transaction));
-    }
-
     void emplace_back(TransactionPtr&& transaction)
     {
         deletedEdges.emplace_back(std::move(transaction));
@@ -43,6 +38,8 @@ public:
 private:
     void doCommit()
     {
+        // Where is better to commit the edge deletions?
+        // Here or in the mesh? Same for restoring edge deletions.
         for (auto& transaction : deletedEdges)
         {
             transaction->commit();

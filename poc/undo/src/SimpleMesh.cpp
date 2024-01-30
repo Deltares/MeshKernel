@@ -91,11 +91,13 @@ TransactionPtr SimpleMesh::deleteNode(const size_t id)
 
 void SimpleMesh::commit(DeleteNodeTransaction& transaction)
 {
+    // SHould the commiting of the edge deletions also be done here?
     resetNode(transaction.nodeId(), Point());
 }
 
 void SimpleMesh::restore(DeleteNodeTransaction& transaction)
 {
+    // SHould the restoring of the edge deletions also be done here?
     resetNode(transaction.nodeId(), transaction.point());
 }
 

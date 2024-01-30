@@ -8,7 +8,6 @@
 class CompoundTransaction : public Transaction
 {
 public:
-    // Probably should remove this function if using unique_ptr
     void push_back(TransactionPtr& transaction)
     {
         transactions.push_back(std::move(transaction));
