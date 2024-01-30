@@ -11,14 +11,14 @@ class SimpleMesh;
 class AddNodeTransaction : public BaseMeshTransaction<AddNodeTransaction, SimpleMesh>
 {
 public:
-    static TransactionPtr create(SimpleMesh& mesh, const int id, const Point& point)
+    static TransactionPtr create(SimpleMesh& mesh, const size_t id, const Point& point)
     {
         return std::make_unique<AddNodeTransaction>(mesh, id, point);
     }
 
-    AddNodeTransaction(SimpleMesh& mesh, const int id, const Point& p) : BaseMeshTransaction<AddNodeTransaction, SimpleMesh>(mesh), nodeId_(id), node_(p) {}
+    AddNodeTransaction(SimpleMesh& mesh, const size_t id, const Point& p) : BaseMeshTransaction<AddNodeTransaction, SimpleMesh>(mesh), nodeId_(id), node_(p) {}
 
-    int nodeId() const
+    size_t nodeId() const
     {
         return nodeId_;
     }
@@ -29,7 +29,7 @@ public:
     }
 
 private:
-    int nodeId_;
+    size_t nodeId_;
     Point node_;
 };
 

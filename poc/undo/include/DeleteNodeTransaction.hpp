@@ -13,12 +13,12 @@ class SimpleMesh;
 class DeleteNodeTransaction : public BaseMeshTransaction<DeleteNodeTransaction, SimpleMesh>
 {
 public:
-    static TransactionPtr create(SimpleMesh& mesh, const int id, const Point& point)
+    static TransactionPtr create(SimpleMesh& mesh, const size_t id, const Point& point)
     {
         return std::make_unique<DeleteNodeTransaction>(mesh, id, point);
     }
 
-    DeleteNodeTransaction(SimpleMesh& mesh, const int id, const Point& p) : BaseMeshTransaction<DeleteNodeTransaction, SimpleMesh>(mesh), nodeId_(id), point_(p) {}
+    DeleteNodeTransaction(SimpleMesh& mesh, const size_t id, const Point& p) : BaseMeshTransaction<DeleteNodeTransaction, SimpleMesh>(mesh), nodeId_(id), point_(p) {}
 
     void add(TransactionPtr& transaction)
     {
@@ -30,7 +30,7 @@ public:
         deletedEdges.emplace_back(std::move(transaction));
     }
 
-    int nodeId() const
+    size_t nodeId() const
     {
         return nodeId_;
     }
@@ -65,7 +65,7 @@ private:
     std::vector<TransactionPtr> deletedEdges;
     // std::vector<DeleteEdgeTransaction> deletedEdges;
 
-    int nodeId_;
+    size_t nodeId_;
     Point point_;
 };
 

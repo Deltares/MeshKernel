@@ -3,7 +3,7 @@
 
 namespace core
 {
-    constexpr int nullValueId = -999;
+    constexpr size_t nullValueId = -999;
 
     constexpr double nullValueLoc = 1.0e20;
 
@@ -42,24 +42,24 @@ public:
         Unknown
     };
 
-    Edge(const int start, const int end) : start_(start), end_(end) {}
+    Edge(const size_t start, const size_t end) : start_(start), end_(end) {}
     Edge() = default;
 
-    int start() const;
+    size_t start() const;
 
-    int& start();
+    size_t& start();
 
-    int end() const;
+    size_t end() const;
 
-    int& end();
+    size_t& end();
 
     bool isValid() const;
 
-    Location location(const int id) const;
+    Location location(const size_t id) const;
 
 private:
-    int start_ = -1;
-    int end_ = -1;
+    size_t start_ = -1;
+    size_t end_ = -1;
 };
 
 //--------------------------------
@@ -95,22 +95,22 @@ inline void Point::setInvalid()
     y_ = core::nullValueLoc;
 }
 
-inline int Edge::start() const
+inline size_t Edge::start() const
 {
     return start_;
 }
 
-inline int& Edge::start()
+inline size_t& Edge::start()
 {
     return start_;
 }
 
-inline int Edge::end() const
+inline size_t Edge::end() const
 {
     return end_;
 }
 
-inline int& Edge::end()
+inline size_t& Edge::end()
 {
     return end_;
 }
@@ -120,7 +120,7 @@ inline bool Edge::isValid() const
     return start_ != core::nullValueId or end_ != core::nullValueId;
 }
 
-inline Edge::Location Edge::location(const int id) const
+inline Edge::Location Edge::location(const size_t id) const
 {
     if (id == start_)
     {

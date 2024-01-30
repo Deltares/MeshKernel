@@ -9,32 +9,32 @@ SimpleMesh::SimpleMesh(const std::vector<Point>& nodes,
     administrate();
 }
 
-int SimpleMesh::getNumberOfNodes() const
+size_t SimpleMesh::getNumberOfNodes() const
 {
     return nodes_.size();
 }
 
-int SimpleMesh::getNumberOfEdges() const
+size_t SimpleMesh::getNumberOfEdges() const
 {
     return edges_.size();
 }
 
-const Point& SimpleMesh::getNode(const int id) const
+const Point& SimpleMesh::getNode(const size_t id) const
 {
     return nodes_[id];
 }
 
-const Edge& SimpleMesh::getEdge(const int id) const
+const Edge& SimpleMesh::getEdge(const size_t id) const
 {
     return edges_[id];
 }
 
-const std::vector<int>& SimpleMesh::getNodeConnectivity(const int id) const
+const std::vector<size_t>& SimpleMesh::getNodeConnectivity(const size_t id) const
 {
     return nodeEdges_[id];
 }
 
-std::tuple<int, TransactionPtr> SimpleMesh::addNode(const Point& p)
+std::tuple<size_t, TransactionPtr> SimpleMesh::addNode(const Point& p)
 {
     nodes_.resize(nodes_.size() + 1);
 
@@ -48,7 +48,7 @@ std::tuple<int, TransactionPtr> SimpleMesh::addNode(const Point& p)
     return {nodes_.size() - 1, std::move(transaction)};
 }
 
-void SimpleMesh::resetNode(const int id, const Point& p)
+void SimpleMesh::resetNode(const size_t id, const Point& p)
 {
 #ifdef ADD_LOGGING
     std::cout << "% reset node " << id << "  " << p.x() << "  " << p.y() << std::endl;
@@ -77,7 +77,7 @@ void SimpleMesh::restore(AddEdgeTransaction& transaction)
     resetEdge(transaction.edgeId(), core::nullValueId, core::nullValueId);
 }
 
-TransactionPtr SimpleMesh::deleteNode(const int id)
+TransactionPtr SimpleMesh::deleteNode(const size_t id)
 {
 #ifdef NULL_TRANSACTION
     TransactionPtr transaction;
@@ -107,9 +107,9 @@ void SimpleMesh::restore(DeleteNodeTransaction& transaction)
     resetNode(transaction.nodeId(), transaction.point());
 }
 
-std::tuple<int, TransactionPtr> SimpleMesh::addEdge(const int start, const int end)
+std::tuple<size_t, TransactionPtr> SimpleMesh::addEdge(const size_t start, const size_t end)
 {
-    int index = edges_.size();
+    size_t index = edges_.size();
     edges_.resize(edges_.size() + 1);
 
 #ifdef NULL_TRANSACTION
@@ -123,7 +123,7 @@ std::tuple<int, TransactionPtr> SimpleMesh::addEdge(const int start, const int e
     return {index, std::move(transaction)};
 }
 
-void SimpleMesh::resetEdge(const int id, const int start, const int end)
+void SimpleMesh::resetEdge(const size_t id, const size_t start, const size_t end)
 {
 #ifdef ADD_LOGGING
     std::cout << "% reset edge " << id << "  " << start << "  " << end << std::endl;
@@ -133,7 +133,7 @@ void SimpleMesh::resetEdge(const int id, const int start, const int end)
     edges_[id].end() = end;
 }
 
-TransactionPtr SimpleMesh::deleteEdge(const int id)
+TransactionPtr SimpleMesh::deleteEdge(const size_t id)
 {
 #ifdef NULL_TRANSACTION
     TransactionPtr transaction;
@@ -158,9 +158,9 @@ void SimpleMesh::restore(DeleteEdgeTransaction& transaction)
     resetEdge(transaction.edgeId(), transaction.start(), transaction.end());
 }
 
-int SimpleMesh::getNumberOfValidNodes() const
+size_t SimpleMesh::getNumberOfValidNodes() const
 {
-    int count = 0;
+    size_t count = 0;
 
     for (size_t i = 0; i < nodes_.size(); ++i)
     {
@@ -173,9 +173,9 @@ int SimpleMesh::getNumberOfValidNodes() const
     return count;
 }
 
-int SimpleMesh::getNumberOfValidEdges() const
+size_t SimpleMesh::getNumberOfValidEdges() const
 {
-    int count = 0;
+    size_t count = 0;
 
     for (size_t i = 0; i < edges_.size(); ++i)
     {
@@ -227,8 +227,8 @@ void SimpleMesh::administrate()
 
     for (size_t i = 0; i < edges_.size(); ++i)
     {
-        int start = edges_[i].start();
-        int end = edges_[i].end();
+        size_t start = edges_[i].start();
+        size_t end = edges_[i].end();
 
         if (!edges_[i].isValid())
         {

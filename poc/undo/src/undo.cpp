@@ -7,9 +7,9 @@
 #include "Transaction.hpp"
 #include "TransactionStack.hpp"
 
-std::vector<Point> getPoints(const int count)
+std::vector<Point> getPoints(const size_t count)
 {
-    int pointCount = count * count;
+    size_t pointCount = count * count;
 
     std::vector<Point> points(pointCount);
 
@@ -20,13 +20,13 @@ std::vector<Point> getPoints(const int count)
     double deltaY = 1.0;
 
     double y = originY;
-    int pos = 0;
+    size_t pos = 0;
 
-    for (int i = 1; i <= count; ++i)
+    for (size_t i = 1; i <= count; ++i)
     {
         double x = originX;
 
-        for (int j = 1; j <= count; ++j)
+        for (size_t j = 1; j <= count; ++j)
         {
             points[pos] = Point(x, y);
             x += deltaX;
@@ -39,16 +39,16 @@ std::vector<Point> getPoints(const int count)
     return points;
 }
 
-std::vector<Edge> getEdges(const int count)
+std::vector<Edge> getEdges(const size_t count)
 {
     std::vector<Edge> edges;
 
-    for (int i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
-        for (int j = 0; j < count; ++j)
+        for (size_t j = 0; j < count; ++j)
         {
-            int start;
-            int end;
+            size_t start;
+            size_t end;
 
             // Horizontal
             if (j < count - 1)
@@ -71,7 +71,7 @@ std::vector<Edge> getEdges(const int count)
     return edges;
 }
 
-void addCentreNodes(SimpleMesh& mesh, TransactionStack& transactionStack, int count)
+void addCentreNodes(SimpleMesh& mesh, TransactionStack& transactionStack, size_t count)
 {
 
     std::unique_ptr<CompoundTransaction> transactions = std::make_unique<CompoundTransaction>();
@@ -84,16 +84,16 @@ void addCentreNodes(SimpleMesh& mesh, TransactionStack& transactionStack, int co
 
     double y = originY;
 
-    for (int i = 0; i < count - 1; ++i)
+    for (size_t i = 0; i < count - 1; ++i)
     {
         double x = originX;
 
-        for (int j = 0; j < count - 1; ++j)
+        for (size_t j = 0; j < count - 1; ++j)
         {
-            int node1 = i * count + j;
-            int node2 = i * count + j + 1;
-            int node3 = (i + 1) * count + j + 1;
-            int node4 = (i + 1) * count + j;
+            size_t node1 = i * count + j;
+            size_t node2 = i * count + j + 1;
+            size_t node3 = (i + 1) * count + j + 1;
+            size_t node4 = (i + 1) * count + j;
 
             auto [newNodeId, transaction] = mesh.addNode(Point(x, y));
 #ifndef NULL_TRANSACTION
@@ -132,15 +132,15 @@ void addCentreNodes(SimpleMesh& mesh, TransactionStack& transactionStack, int co
     transactionStack.emplace_back(std::move(transactions));
 }
 
-void addNodeDeletion(SimpleMesh& mesh, TransactionStack& transactionStack, int count)
+void addNodeDeletion(SimpleMesh& mesh, TransactionStack& transactionStack, size_t count)
 {
-    int nodeToDelete = count * count;
+    size_t nodeToDelete = count * count;
 
     std::unique_ptr<CompoundTransaction> transactions = std::make_unique<CompoundTransaction>();
 
-    for (int i = 0; i < count - 1; ++i)
+    for (size_t i = 0; i < count - 1; ++i)
     {
-        for (int j = 0; j < count - 1; ++j)
+        for (size_t j = 0; j < count - 1; ++j)
         {
             TransactionPtr transaction = mesh.deleteNode(nodeToDelete);
 #ifndef NULL_TRANSACTION
@@ -156,7 +156,7 @@ void addNodeDeletion(SimpleMesh& mesh, TransactionStack& transactionStack, int c
 
 int main()
 {
-    int count = 10; // 3164;
+    size_t count = 10; // 3164;
     std::vector<Point> points(getPoints(count));
     std::vector<Edge> edges(getEdges(count));
 

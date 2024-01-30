@@ -18,48 +18,48 @@ public:
     SimpleMesh(const std::vector<Point>& nodes,
                const std::vector<Edge>& edges);
 
-    const Point& getNode(const int id) const;
+    const Point& getNode(const size_t id) const;
 
-    const Edge& getEdge(const int id) const;
+    const Edge& getEdge(const size_t id) const;
 
-    const std::vector<int>& getNodeConnectivity(const int id) const;
+    const std::vector<size_t>& getNodeConnectivity(const size_t id) const;
 
     // Could return pointer to AddNodeTransaction instead of the base class.
-    std::tuple<int, TransactionPtr> addNode(const Point& p);
+    std::tuple<size_t, TransactionPtr> addNode(const Point& p);
 
     void commit(AddNodeTransaction& transaction);
 
     void restore(AddNodeTransaction& transaction);
 
-    void resetNode(const int id, const Point& p);
+    void resetNode(const size_t id, const Point& p);
 
-    TransactionPtr deleteNode(const int id);
+    TransactionPtr deleteNode(const size_t id);
 
     void commit(DeleteNodeTransaction& transaction);
 
     void restore(DeleteNodeTransaction& transaction);
 
-    std::tuple<int, TransactionPtr> addEdge(const int start, const int end);
+    std::tuple<size_t, TransactionPtr> addEdge(const size_t start, const size_t end);
 
-    void resetEdge(const int id, const int start, const int end);
+    void resetEdge(const size_t id, const size_t start, const size_t end);
 
     void commit(AddEdgeTransaction& transaction);
 
     void restore(AddEdgeTransaction& transaction);
 
-    TransactionPtr deleteEdge(const int id);
+    TransactionPtr deleteEdge(const size_t id);
 
     void commit(DeleteEdgeTransaction& transaction);
 
     void restore(DeleteEdgeTransaction& transaction);
 
-    int getNumberOfNodes() const;
+    size_t getNumberOfNodes() const;
 
-    int getNumberOfEdges() const;
+    size_t getNumberOfEdges() const;
 
-    int getNumberOfValidNodes() const;
+    size_t getNumberOfValidNodes() const;
 
-    int getNumberOfValidEdges() const;
+    size_t getNumberOfValidEdges() const;
 
     void administrate();
 
@@ -68,7 +68,7 @@ public:
 private:
     std::vector<Point> nodes_;
     std::vector<Edge> edges_;
-    std::vector<std::vector<int>> nodeEdges_;
+    std::vector<std::vector<size_t>> nodeEdges_;
 };
 
 //--------------------------------
