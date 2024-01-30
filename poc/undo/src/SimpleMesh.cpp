@@ -38,11 +38,7 @@ std::tuple<size_t, TransactionPtr> SimpleMesh::addNode(const Point& p)
 {
     nodes_.resize(nodes_.size() + 1);
 
-#ifdef NULL_TRANSACTION
-    TransactionPtr transaction;
-#else
     TransactionPtr transaction = std::make_unique<AddNodeTransaction>(*this, nodes_.size() - 1, p);
-#endif
 
     resetNode(nodes_.size() - 1, p);
     return {nodes_.size() - 1, std::move(transaction)};
@@ -79,16 +75,12 @@ void SimpleMesh::restore(AddEdgeTransaction& transaction)
 
 TransactionPtr SimpleMesh::deleteNode(const size_t id)
 {
-#ifdef NULL_TRANSACTION
-    TransactionPtr transaction;
-#else
     std::unique_ptr<DeleteNodeTransaction> transaction = std::make_unique<DeleteNodeTransaction>(*this, id, nodes_[id]);
 
     for (size_t i = 0; i < nodeEdges_[id].size(); ++i)
     {
         transaction->emplace_back(deleteEdge(nodeEdges_[id][i]));
     }
-#endif
 
 #ifdef ADD_LOGGING
     std::cout << "% deleting node " << id << "  " << nodes_[id].x() << "  " << nodes_[id].y() << std::endl;
@@ -112,11 +104,7 @@ std::tuple<size_t, TransactionPtr> SimpleMesh::addEdge(const size_t start, const
     size_t index = edges_.size();
     edges_.resize(edges_.size() + 1);
 
-#ifdef NULL_TRANSACTION
-    TransactionPtr transaction;
-#else
     TransactionPtr transaction = std::make_unique<AddEdgeTransaction>(*this, index, start, end);
-#endif
 
     resetEdge(index, start, end);
 
@@ -135,11 +123,7 @@ void SimpleMesh::resetEdge(const size_t id, const size_t start, const size_t end
 
 TransactionPtr SimpleMesh::deleteEdge(const size_t id)
 {
-#ifdef NULL_TRANSACTION
-    TransactionPtr transaction;
-#else
     std::unique_ptr<DeleteEdgeTransaction> transaction = std::make_unique<DeleteEdgeTransaction>(*this, id, edges_[id].start(), edges_[id].end());
-#endif
 
 #ifdef ADD_LOGGING
     std::cout << "% deleting edge " << id << "  " << edges_[id].start() << "  " << edges_[id].end() << std::endl;

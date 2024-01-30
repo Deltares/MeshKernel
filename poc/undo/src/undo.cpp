@@ -96,32 +96,19 @@ void addCentreNodes(SimpleMesh& mesh, TransactionStack& transactionStack, size_t
             size_t node4 = (i + 1) * count + j;
 
             auto [newNodeId, transaction] = mesh.addNode(Point(x, y));
-#ifndef NULL_TRANSACTION
             transactions->emplace_back(std::move(transaction));
-#endif
-            auto [edgeId1, transaction1] = mesh.addEdge(node1, newNodeId);
 
-#ifndef NULL_TRANSACTION
+            auto [edgeId1, transaction1] = mesh.addEdge(node1, newNodeId);
             transactions->emplace_back(std::move(transaction1));
-#endif
 
             auto [edgeId2, transaction2] = mesh.addEdge(node2, newNodeId);
-
-#ifndef NULL_TRANSACTION
             transactions->emplace_back(std::move(transaction2));
-#endif
 
             auto [edgeId3, transaction3] = mesh.addEdge(node3, newNodeId);
-
-#ifndef NULL_TRANSACTION
             transactions->emplace_back(std::move(transaction3));
-#endif
 
             auto [edgeId4, transaction4] = mesh.addEdge(node4, newNodeId);
-#ifndef NULL_TRANSACTION
-
             transactions->emplace_back(std::move(transaction4));
-#endif
 
             x += deltaX;
         }
@@ -143,9 +130,7 @@ void addNodeDeletion(SimpleMesh& mesh, TransactionStack& transactionStack, size_
         for (size_t j = 0; j < count - 1; ++j)
         {
             TransactionPtr transaction = mesh.deleteNode(nodeToDelete);
-#ifndef NULL_TRANSACTION
             transactions->emplace_back(std::move(transaction));
-#endif
             ++nodeToDelete;
         }
     }

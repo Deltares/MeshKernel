@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-// #define NULL_TRANSACTION 1
-
 // All transactions must be created in the committed state
 class Transaction
 {
