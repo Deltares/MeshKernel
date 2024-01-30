@@ -1,7 +1,6 @@
 #ifndef SIMPLE_MESH__HPP
 #define SIMPLE_MESH__HPP
 
-#include <iostream>
 #include <tuple>
 #include <vector>
 

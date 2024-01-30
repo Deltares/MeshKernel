@@ -1,6 +1,8 @@
 #ifndef DELETE_NODE_TRANSACTION__HPP
 #define DELETE_NODE_TRANSACTION__HPP
 
+#include <memory>
+
 #include "BaseMeshTransaction.hpp"
 #include "MeshTypes.hpp"
 

@@ -1,5 +1,8 @@
 #include "SimpleMesh.hpp"
 
+#include <memory>
+#include <iostream>
+
 SimpleMesh::SimpleMesh(const std::vector<Point>& nodes,
                        const std::vector<Edge>& edges) : nodes_(nodes), edges_(edges)
 {

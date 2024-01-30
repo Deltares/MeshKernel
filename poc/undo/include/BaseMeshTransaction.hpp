@@ -13,7 +13,7 @@ protected:
     void doCommit();
 
     void doRestore();
-
+private:
     SimpleMesh& mesh_;
 };
 

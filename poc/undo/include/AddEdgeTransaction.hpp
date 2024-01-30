@@ -1,6 +1,8 @@
 #ifndef ADD_EDGE_TRANSACTION__HPP
 #define ADD_EDGE_TRANSACTION__HPP
 
+#include <memory>
+
 #include "BaseMeshTransaction.hpp"
 #include "MeshTypes.hpp"
 
