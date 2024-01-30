@@ -91,7 +91,7 @@ namespace meshkernel
         ///
         /// @param [in, out] mesh The mesh being refined
         /// @param [in] newNodes List of new nodes and connectivity
-xs        /// @param [in] numNodes Number of nodes in original mesh, before refinement.
+        /// @param [in] numNodes Number of nodes in original mesh, before refinement.
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
         /// @param [in, out] nodeMask Node mask information
