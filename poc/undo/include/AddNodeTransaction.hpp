@@ -1,0 +1,34 @@
+#ifndef ADD_NODE_TRANSACTION__HPP
+#define ADD_NODE_TRANSACTION__HPP
+
+#include "BaseMeshTransaction.hpp"
+#include "MeshTypes.hpp"
+
+class SimpleMesh;
+
+class AddNodeTransaction : public BaseMeshTransaction<AddNodeTransaction, SimpleMesh>
+{
+public:
+    static TransactionPtr create(SimpleMesh& mesh, const int id, const Point& point)
+    {
+        return std::make_unique<AddNodeTransaction>(mesh, id, point);
+    }
+
+    AddNodeTransaction(SimpleMesh& mesh, const int id, const Point& p) : BaseMeshTransaction<AddNodeTransaction, SimpleMesh>(mesh), nodeId_(id), node_(p) {}
+
+    int nodeId() const
+    {
+        return nodeId_;
+    }
+
+    const Point& point() const
+    {
+        return node_;
+    }
+
+private:
+    int nodeId_;
+    Point node_;
+};
+
+#endif // ADD_NODE_TRANSACTION__HPP
