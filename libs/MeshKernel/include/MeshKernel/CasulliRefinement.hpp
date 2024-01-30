@@ -66,14 +66,14 @@ namespace meshkernel
         static constexpr UInt MaximumNumberOfNodesInNewlyCreatedElements = 4;
 
         /// @brief Simple bounded array of 4 UInt values
-        /// @typedef LinkNodes
-        using LinkNodes = std::array<UInt, 4>;
+        /// @typedef EdgeNodes
+        using EdgeNodes = std::array<UInt, 4>;
 
         /// @brief Initialise the node mask array.
         static std::vector<NodeMask> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Create any new nodes that need to be generated.
-        static void ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<NodeMask>& nodeMask);
+        static void ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Connect newly generated nodes
         ///
@@ -83,10 +83,10 @@ namespace meshkernel
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
         /// @param [in, out] nodeMask Node mask information
-        static void LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask);
+        static void ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask);
 
         /// @brief Add newly generated nodes to the newNodes list.
-        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes);
+        static void StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes);
 
         /// @brief Find elements and nodes that form the patch of elements directly connected to the node.
         static void FindPatchIds(const Mesh2D& mesh,

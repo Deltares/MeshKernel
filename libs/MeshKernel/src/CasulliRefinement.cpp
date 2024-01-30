@@ -11,7 +11,7 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh)
 
 void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygon)
 {
-    std::vector<LinkNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
+    std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
     std::vector<NodeMask> nodeMask(InitialiseNodeMask(mesh, polygon));
 
     const UInt numNodes = mesh.GetNumNodes();
@@ -19,7 +19,7 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygo
     const UInt numFaces = mesh.GetNumFaces();
 
     ComputeNewNodes(mesh, newNodes, nodeMask);
-    LinkNewNodes(mesh, newNodes, numNodes, numEdges, numFaces, nodeMask);
+    ConnectNewNodes(mesh, newNodes, numNodes, numEdges, numFaces, nodeMask);
     Administrate(mesh, numNodes, nodeMask);
 }
 
@@ -202,7 +202,7 @@ void meshkernel::CasulliRefinement::FindPatchIds(const Mesh2D& mesh,
     mesh.FindNodesSharedByFaces(currentNode, sharedFaces, connectedNodes, faceNodeMapping);
 }
 
-void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector<LinkNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
 {
     //  make the original-link based new links
     for (UInt i = 0; i < numEdges; ++i)
@@ -457,7 +457,7 @@ void meshkernel::CasulliRefinement::LinkNewNodes(Mesh2D& mesh, const std::vector
     }
 }
 
-void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<LinkNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
     // Keep copy of number of edges in mesh before any nodes are added.
     const UInt numEdges = mesh.GetNumEdges();
@@ -563,7 +563,7 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Li
     }
 }
 
-void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<LinkNodes>& newNodes)
+void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes)
 {
     UInt edgeId1 = edge1Index;
     UInt edgeId2 = edge2Index;
@@ -587,7 +587,7 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
         }
     }
 
-    UInt elementId = mesh.FindCommonElement(edgeId1, edgeId2);
+    UInt elementId = mesh.FindCommonFace(edgeId1, edgeId2);
 
     if (elementId == constants::missing::uintValue)
     {

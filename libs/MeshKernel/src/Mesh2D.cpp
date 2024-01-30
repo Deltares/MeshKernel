@@ -2316,7 +2316,7 @@ meshkernel::UInt Mesh2D::IsLeftOrRight(const UInt elementId, const UInt edgeId) 
     return isLeftRight;
 }
 
-meshkernel::UInt Mesh2D::FindCommonElement(const UInt edge1, const UInt edge2) const
+meshkernel::UInt Mesh2D::FindCommonFace(const UInt edge1, const UInt edge2) const
 {
     for (UInt i = 0; i < m_edgesNumFaces[edge1]; ++i)
     {

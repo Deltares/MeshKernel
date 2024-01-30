@@ -988,7 +988,42 @@ TEST(MeshRefinement, CasulliRefinement)
     Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
 
     // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
-    std::vector<meshkernel::Point> expectedPoints{{0.0, 0.0}, {0.0, 20.0}, {20.0, 0.0}, {20.0, 20.0}, {2.5, 2.5}, {7.5, 2.5}, {7.5, 7.5}, {2.5, 7.5}, {2.5, 12.5}, {7.5, 12.5}, {7.5, 17.5}, {2.5, 17.5}, {12.5, 2.5}, {17.5, 2.5}, {17.5, 7.5}, {12.5, 7.5}, {12.5, 12.5}, {17.5, 12.5}, {17.5, 17.5}, {12.5, 17.5}, {2.5, 0.0}, {7.5, 0.0}, {2.5, 20.0}, {7.5, 20.0}, {12.5, 0.0}, {17.5, 0.0}, {12.5, 20.0}, {17.5, 20.0}, {0.0, 2.5}, {0.0, 7.5}, {0.0, 12.5}, {0.0, 17.5}, {20.0, 2.5}, {20.0, 7.5}, {20.0, 12.5}, {20.0, 17.5}};
+    std::vector<meshkernel::Point> expectedPoints{{0.0, 0.0},
+                                                  {0.0, 20.0},
+                                                  {20.0, 0.0},
+                                                  {20.0, 20.0},
+                                                  {2.5, 2.5},
+                                                  {7.5, 2.5},
+                                                  {7.5, 7.5},
+                                                  {2.5, 7.5},
+                                                  {2.5, 12.5},
+                                                  {7.5, 12.5},
+                                                  {7.5, 17.5},
+                                                  {2.5, 17.5},
+                                                  {12.5, 2.5},
+                                                  {17.5, 2.5},
+                                                  {17.5, 7.5},
+                                                  {12.5, 7.5},
+                                                  {12.5, 12.5},
+                                                  {17.5, 12.5},
+                                                  {17.5, 17.5},
+                                                  {12.5, 17.5},
+                                                  {2.5, 0.0},
+                                                  {7.5, 0.0},
+                                                  {2.5, 20.0},
+                                                  {7.5, 20.0},
+                                                  {12.5, 0.0},
+                                                  {17.5, 0.0},
+                                                  {12.5, 20.0},
+                                                  {17.5, 20.0},
+                                                  {0.0, 2.5},
+                                                  {0.0, 7.5},
+                                                  {0.0, 12.5},
+                                                  {0.0, 17.5},
+                                                  {20.0, 2.5},
+                                                  {20.0, 7.5},
+                                                  {20.0, 12.5},
+                                                  {20.0, 17.5}};
     std::vector<meshkernel::UInt> expectedEdgesStart{20, 4, 20, 21, 7, 8, 7, 6, 11, 22,
                                                      11, 10, 24, 12, 24, 25, 15, 16, 15, 14,
                                                      19, 26, 19, 18, 4, 28, 4, 7, 8, 30,
@@ -1064,7 +1099,17 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
     Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
 
-    std::vector<Point> patch{{45.0, 45.0}, {155.0, 45.0}, {155.0, 155.0}, {45.0, 155.0}, {45.0, 45.0}, {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator}, {65.0, 65.0}, {115.0, 65.0}, {115.0, 115.0}, {65.0, 115.0}, {65.0, 65.0}};
+    std::vector<Point> patch{{45.0, 45.0},
+                             {155.0, 45.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 45.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
 
     std::vector<Point> expectedPoints(ExpectedNumberOfPoints);
     std::vector<meshkernel::UInt> expectedEdgeStart(ExpectedNumberOfEdges);
