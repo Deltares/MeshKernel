@@ -27,6 +27,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
@@ -1738,13 +1739,17 @@ namespace meshkernelapi
             // averagingMethod may be used uninitialised;
             meshkernel::AveragingInterpolation::Method averagingMethod;
 
-            if (meshRefinementParameters.refinement_type == 1)
+            if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            if (meshRefinementParameters.refinement_type == 2)
+            else if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::RefinementLevels))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
+            }
+            else
+            {
+                throw meshkernel::MeshKernelError("Invalid mesh refinement type.");
             }
 
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
@@ -1757,6 +1762,58 @@ namespace meshkernelapi
                                                                                   relativeSearchRadius,
                                                                                   refineOutsideFace,
                                                                                   transformSamples,
+                                                                                  static_cast<meshkernel::UInt>(minimumNumSamples));
+
+            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      std::move(averaging),
+                                                      meshRefinementParameters);
+            meshRefinement.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                          const GriddedSamples& samples,
+                                                                          double relativeSearchRadius,
+                                                                          int minimumNumSamples,
+                                                                          int numberOfSmoothingIterations,
+                                                                          const meshkernel::MeshRefinementParameters& meshRefinementParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
+            }
+            if (meshRefinementParameters.refinement_type != static_cast<int>(meshkernel::MeshRefinement::RefinementType::RidgeDetection))
+            {
+                throw meshkernel::MeshKernelError("The mesh refinement type in MeshRefinementParameters must be set equal to ridge refinement.");
+            }
+
+            const auto samplesVector = ConvertGriddedData(samples);
+
+            auto samplesHessian = meshkernel::SamplesHessianCalculator::ComputeSamplesHessian(samplesVector,
+                                                                                              meshKernelState[meshKernelId].m_projection,
+                                                                                              numberOfSmoothingIterations,
+                                                                                              samples.num_x,
+                                                                                              samples.num_y);
+
+            auto averaging = std::make_unique<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                  samplesHessian,
+                                                                                  meshkernel::AveragingInterpolation::Method::Max,
+                                                                                  meshkernel::Location::Faces,
+                                                                                  relativeSearchRadius,
+                                                                                  false,
+                                                                                  false,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
