@@ -1,5 +1,5 @@
-#ifndef DELETE_NODE_TRANSACTION__HPP
-#define DELETE_NODE_TRANSACTION__HPP
+#ifndef DELETE_EDGE_TRANSACTION__HPP
+#define DELETE_EDGE_TRANSACTION__HPP
 
 #include <memory>
 
@@ -39,4 +39,4 @@ private:
     size_t end_;
 };
 
-#endif // DELETE_NODE_TRANSACTION__HPP
+#endif // DELETE_EDGE_TRANSACTION__HPP

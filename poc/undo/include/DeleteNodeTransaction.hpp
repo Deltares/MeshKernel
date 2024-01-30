@@ -20,6 +20,10 @@ public:
 
     DeleteNodeTransaction(SimpleMesh& mesh, const size_t id, const Point& p) : BaseMeshTransaction<DeleteNodeTransaction, SimpleMesh>(mesh), nodeId_(id), point_(p) {}
 
+    // Should we have a pointer to the base class here
+    // or a pointer to the DeleteNodeTransaction?
+    // If the latter, then perhaps better way of handling
+    // edge deletion is available
     void emplace_back(TransactionPtr&& transaction)
     {
         deletedEdges.emplace_back(std::move(transaction));
