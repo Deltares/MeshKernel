@@ -245,9 +245,9 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
 {
 
     // Check first, that all nodes are valid
-    for (meshkernel::UInt i = 0; i < curvilinearGrid.m_numN; ++i)
+    for (meshkernel::UInt i = 0; i < curvilinearGrid.NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < curvilinearGrid.m_numM; ++j)
+        for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
             EXPECT_TRUE(curvilinearGrid.GetNode(i, j).IsValid());
         }
@@ -274,9 +274,9 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     EXPECT_EQ(initialSize - expectedInvalidated, CurvilinearGridCountValidNodes(curvilinearGrid));
 
     // Check that these nodes have been set to invalid.
-    for (meshkernel::UInt i = 0; i < curvilinearGrid.m_numN; ++i)
+    for (meshkernel::UInt i = 0; i < curvilinearGrid.NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < curvilinearGrid.m_numM; ++j)
+        for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
             if (inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ))
             {
@@ -363,9 +363,9 @@ void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
                              const meshkernel::CurvilinearGridNodeIndices second)
 {
     // Check first, that all nodes are valid
-    for (meshkernel::UInt i = 0; i < curvilinearGrid.m_numN; ++i)
+    for (meshkernel::UInt i = 0; i < curvilinearGrid.NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < curvilinearGrid.m_numM; ++j)
+        for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
             EXPECT_TRUE(curvilinearGrid.GetNode(i, j).IsValid());
         }
@@ -392,9 +392,9 @@ void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     EXPECT_EQ(expectedValid, CurvilinearGridCountValidNodes(curvilinearGrid));
 
     // Check that these exterior nodes have been set to invalid.
-    for (meshkernel::UInt i = 0; i < curvilinearGrid.m_numN; ++i)
+    for (meshkernel::UInt i = 0; i < curvilinearGrid.NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < curvilinearGrid.m_numM; ++j)
+        for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
             if (inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ))
             {

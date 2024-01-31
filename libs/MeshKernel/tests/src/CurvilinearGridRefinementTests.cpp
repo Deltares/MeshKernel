@@ -23,8 +23,8 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     curvilinearGridRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(13, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(13, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 
     constexpr double tolerance = 1e-12;
     ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 0).x, tolerance);
@@ -69,8 +69,8 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     curvilinearGridRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(15, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(15, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 
     constexpr double tolerance = 1e-12;
 

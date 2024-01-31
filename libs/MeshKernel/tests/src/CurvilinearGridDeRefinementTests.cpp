@@ -24,8 +24,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
     curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(4, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldDeRefineVerticalGridLines)
@@ -50,8 +50,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
     curvilinearGridDeRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(6, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(6, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizontalGridLines)
@@ -71,6 +71,6 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(4, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 }

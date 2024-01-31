@@ -39,8 +39,8 @@ using meshkernel::CurvilinearGridOrthogonalization;
 CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(CurvilinearGrid& grid,
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
-      m_orthoEqTerms(m_grid.m_numM, m_grid.m_numN),
-      m_isGridNodeFrozen(m_grid.m_numM, m_grid.m_numN),
+      m_orthoEqTerms(m_grid.NumM(), m_grid.NumN()),
+      m_isGridNodeFrozen(m_grid.NumM(), m_grid.NumN()),
       m_splines(Splines(m_grid))
 {
     CheckOrthogonalizationParameters(orthogonalizationParameters);
@@ -91,11 +91,11 @@ void CurvilinearGridOrthogonalization::Compute()
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
-    for (UInt n = 0; n < m_grid.m_numN; ++n)
+    for (UInt n = 0; n < m_grid.NumN(); ++n)
     {
         UInt startM = constants::missing::uintValue;
         int nextVertical = 0;
-        for (UInt m = 0; m < m_grid.m_numM; ++m)
+        for (UInt m = 0; m < m_grid.NumM(); ++m)
         {
             const auto nodeType = m_grid.m_gridNodesTypes(m, n);
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)
@@ -170,11 +170,11 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
     // m gridlines (vertical)
-    for (UInt m = 0; m < m_grid.m_numM; ++m)
+    for (UInt m = 0; m < m_grid.NumM(); ++m)
     {
         UInt startN = constants::missing::uintValue;
         int nextHorizontal = 0;
-        for (UInt n = 0; n < m_grid.m_numN; ++n)
+        for (UInt n = 0; n < m_grid.NumN(); ++n)
         {
             const auto nodeType = m_grid.m_gridNodesTypes(m, n);
             if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::BottomRight)
@@ -236,7 +236,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                     }
 
                     // Vertical spline index
-                    const auto splineIndex = m_grid.m_numN + m;
+                    const auto splineIndex = m_grid.NumN() + m;
                     m_grid.m_gridNodes(m, nn) = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
                                                                                              static_cast<double>(startN),
                                                                                              static_cast<double>(n),
@@ -257,8 +257,8 @@ void CurvilinearGridOrthogonalization::Solve()
     const auto minMInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_m);
     const auto minNInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_n);
 
-    const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.m_numM - 1);
-    const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.m_numN - 1);
+    const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.NumM() - 1);
+    const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.NumN() - 1);
 
     for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.inner_iterations; ++innerIterations)
     {
@@ -399,7 +399,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidVerticalBoundaryNodes();
     // Store the counter
-    lin_alg::Matrix<UInt> counter(m_grid.m_numM, m_grid.m_numN);
+    lin_alg::Matrix<UInt> counter(m_grid.NumM(), m_grid.NumN());
     counter.fill(0);
 
     // Perform left sum
@@ -454,7 +454,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidHorizontalBoundaryNodes();
-    lin_alg::Matrix<UInt> counter(m_grid.m_numM, m_grid.m_numN);
+    lin_alg::Matrix<UInt> counter(m_grid.NumM(), m_grid.NumN());
     counter.fill(0);
 
     // Perform bottom sum
@@ -508,7 +508,7 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 
 lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
 {
-    lin_alg::Matrix<bool> invalidBoundaryNodes(m_grid.m_numM, m_grid.m_numN);
+    lin_alg::Matrix<bool> invalidBoundaryNodes(m_grid.NumM(), m_grid.NumN());
     invalidBoundaryNodes.fill(false);
 
     for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
@@ -539,7 +539,7 @@ lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidHorizontal
 
             auto lastValidM = m + step;
             while (lastValidM > 0 &&
-                   lastValidM < m_grid.m_numM &&
+                   lastValidM < m_grid.NumM() &&
                    m_grid.m_gridNodesTypes(lastValidM, n) == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidM += step;
@@ -558,7 +558,7 @@ lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidHorizontal
 
 lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
 {
-    lin_alg::Matrix<bool> invalidBoundaryNodes(m_grid.m_numM, m_grid.m_numN);
+    lin_alg::Matrix<bool> invalidBoundaryNodes(m_grid.NumM(), m_grid.NumN());
     invalidBoundaryNodes.fill(false);
 
     for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
@@ -588,7 +588,7 @@ lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidVerticalBo
             }
             auto lastValidN = n + step;
             while (lastValidN > 0 &&
-                   lastValidN < m_grid.m_numN &&
+                   lastValidN < m_grid.NumN() &&
                    m_grid.m_gridNodesTypes(m, lastValidN) == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidN += step;
