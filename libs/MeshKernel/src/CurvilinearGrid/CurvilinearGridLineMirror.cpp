@@ -68,25 +68,25 @@ void CurvilinearGridLineMirror::Compute()
     {
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Left)
         {
-            m_grid.m_gridNodes.row(0)[i] = m_grid.m_gridNodes(1, i) * a +
-                                           m_grid.m_gridNodes(2, i) * b;
+            m_grid.GetNode(0, i) = m_grid.GetNode(1, i) * a +
+                                   m_grid.GetNode(2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
-            auto const last_row = m_grid.m_gridNodes.rows() - 1;
-            m_grid.m_gridNodes.row(last_row)[i] = m_grid.m_gridNodes(m_grid.NumM() - 1, i) * a -
-                                                  m_grid.m_gridNodes(m_grid.NumM() - 2, i) * b;
+            auto const last_row = (UInt)m_grid.m_gridNodes.rows() - 1;
+            m_grid.GetNode(last_row, i) = m_grid.GetNode(m_grid.NumM() - 1, i) * a -
+                                          m_grid.GetNode(m_grid.NumM() - 2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)
         {
-            auto const last_col = m_grid.m_gridNodes.cols() - 1;
-            m_grid.m_gridNodes.col(last_col)[i] = m_grid.m_gridNodes(i, m_grid.NumN() - 1) * a +
-                                                  m_grid.m_gridNodes(i, m_grid.NumN() - 2) * b;
+            auto const last_col = (UInt)m_grid.m_gridNodes.cols() - 1;
+            m_grid.GetNode(i, last_col) = m_grid.GetNode(i, m_grid.NumN() - 1) * a +
+                                          m_grid.GetNode(i, m_grid.NumN() - 2) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Bottom)
         {
-            m_grid.m_gridNodes.col(0)[i] = m_grid.m_gridNodes(i, 1) * a +
-                                           m_grid.m_gridNodes(i, 2) * b;
+            m_grid.GetNode(i, 0) = m_grid.GetNode(i, 1) * a +
+                                   m_grid.GetNode(i, 2) * b;
         }
     }
 

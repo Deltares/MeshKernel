@@ -149,15 +149,15 @@ void CurvilinearGridSmoothing::SolveDirectional()
             {
                 // smooth along vertical
                 const auto a = maxlength < 1e-8 ? 0.5 : nSmoothing * smoothingFactor * characteristicLength / maxlength;
-                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(m - 1, n) - m_grid.m_gridNodes(m, n) : m_gridNodesCache(m + 1, n) - m_grid.m_gridNodes(m, n);
-                m_grid.m_gridNodes(m, n) = m_gridNodesCache(m, n) + maxDelta * a;
+                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(m - 1, n) - m_grid.GetNode(m, n) : m_gridNodesCache(m + 1, n) - m_grid.GetNode(m, n);
+                m_grid.GetNode(m, n) = m_gridNodesCache(m, n) + maxDelta * a;
             }
             else
             {
                 // smooth along horizontal
                 const auto a = maxlength < 1e-8 ? 0.5 : mSmoothing * smoothingFactor * characteristicLength / maxlength;
-                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(m, n - 1) - m_grid.m_gridNodes(m, n) : m_gridNodesCache(m, n + 1) - m_grid.m_gridNodes(m, n);
-                m_grid.m_gridNodes(m, n) = m_gridNodesCache(m, n) + maxDelta * a;
+                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(m, n - 1) - m_grid.GetNode(m, n) : m_gridNodesCache(m, n + 1) - m_grid.GetNode(m, n);
+                m_grid.GetNode(m, n) = m_gridNodesCache(m, n) + maxDelta * a;
             }
         }
     }
@@ -190,8 +190,8 @@ void CurvilinearGridSmoothing::Solve()
             // Compute new position based on a smoothing operator
             if (m_grid.m_gridNodesTypes(m, n) == CurvilinearGrid::NodeType::InternalValid)
             {
-                m_grid.m_gridNodes(m, n) = m_gridNodesCache(m, n) * a + (m_gridNodesCache(m - 1, n) + m_gridNodesCache(m + 1, n)) * 0.25 * b +
-                                           (m_gridNodesCache(m, n - 1) + m_gridNodesCache(m, n + 1)) * 0.25 * b;
+                m_grid.GetNode(m, n) = m_gridNodesCache(m, n) * a + (m_gridNodesCache(m - 1, n) + m_gridNodesCache(m + 1, n)) * 0.25 * b +
+                                       (m_gridNodesCache(m, n - 1) + m_gridNodesCache(m, n + 1)) * 0.25 * b;
                 continue;
             }
 
@@ -240,24 +240,24 @@ void CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& po
 
     if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio > firstRatio)
     {
-        m_grid.m_gridNodes(m, n) = secondProjectedPoint;
+        m_grid.GetNode(m, n) = secondProjectedPoint;
         return;
     }
     if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio <= firstRatio)
     {
-        m_grid.m_gridNodes(m, n) = firstProjectedPoint;
+        m_grid.GetNode(m, n) = firstProjectedPoint;
         return;
     }
     if (firstProjectedPointOnSegment)
     {
-        m_grid.m_gridNodes(m, n) = firstProjectedPoint;
+        m_grid.GetNode(m, n) = firstProjectedPoint;
         return;
     }
     if (secondProjectedPointOnSegment)
     {
-        m_grid.m_gridNodes(m, n) = secondProjectedPoint;
+        m_grid.GetNode(m, n) = secondProjectedPoint;
         return;
     }
 
-    m_grid.m_gridNodes(m, n) = (firstProjectedPoint + secondProjectedPoint) * 0.5;
+    m_grid.GetNode(m, n) = (firstProjectedPoint + secondProjectedPoint) * 0.5;
 }

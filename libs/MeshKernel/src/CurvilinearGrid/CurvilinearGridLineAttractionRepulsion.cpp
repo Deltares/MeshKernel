@@ -44,7 +44,7 @@ CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(C
 
 void CurvilinearGridLineAttractionRepulsion::Compute()
 {
-    if (lin_alg::MatrixIsEmpty(m_grid.m_gridNodes))
+    if (m_grid.IsEmpty())
     {
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute Empty grid");
     }
@@ -71,7 +71,7 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
         for (auto n = startN; n <= endN; ++n)
         {
             // Not a valid grid node
-            if (!m_originalGrid.m_gridNodes(m, n).IsValid())
+            if (!m_originalGrid.GetNode(m, n).IsValid())
             {
                 continue;
             }
@@ -104,7 +104,7 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
             displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
 
             // adjust nodes
-            m_grid.m_gridNodes(m, n) += displacement;
+            m_grid.GetNode(m, n) += displacement;
         }
     }
 }
