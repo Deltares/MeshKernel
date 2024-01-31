@@ -277,7 +277,7 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
     return {m_gridIndices[firstNode], m_gridIndices[secondNode]};
 }
 
-bool CurvilinearGrid::IsValidFace(UInt m, UInt n) const
+bool CurvilinearGrid::AreFaceNodesValid(UInt m, UInt n) const
 {
     return m_gridNodes(m, n).IsValid() &&
            m_gridNodes(m + 1, n).IsValid() &&
@@ -328,7 +328,7 @@ void CurvilinearGrid::ComputeGridFacesMask()
         for (UInt n = 0; n < NumN() - 1; ++n)
         {
             // Only if all grid nodes of the face are valid, the face is valid
-            if (!IsValidFace(m, n))
+            if (!AreFaceNodesValid(m, n))
             {
                 continue;
             }
