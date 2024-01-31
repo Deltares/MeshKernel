@@ -23,7 +23,7 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygo
     Administrate(mesh, numNodes, nodeMask);
 }
 
-void meshkernel::CasulliRefinement::InitialiseBoundaryNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::InitialiseBoundaryNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
 {
 
     // Find nodes that lie on the boundary of the domain.
@@ -48,7 +48,7 @@ void meshkernel::CasulliRefinement::InitialiseBoundaryNodes (const Mesh2D& mesh,
     }
 }
 
-void meshkernel::CasulliRefinement::InitialiseCornerNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::InitialiseCornerNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
 {
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
@@ -97,7 +97,7 @@ void meshkernel::CasulliRefinement::InitialiseCornerNodes (const Mesh2D& mesh, s
     }
 }
 
-void meshkernel::CasulliRefinement::InitialiseFaceNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
 {
 
     std::vector<UInt> sharedFaces;
@@ -165,9 +165,9 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
         }
     }
 
-    InitialiseBoundaryNodes (mesh, nodeMask);
-    InitialiseCornerNodes (mesh, nodeMask);
-    InitialiseFaceNodes (mesh, nodeMask);
+    InitialiseBoundaryNodes(mesh, nodeMask);
+    InitialiseCornerNodes(mesh, nodeMask);
+    InitialiseFaceNodes(mesh, nodeMask);
 
     return nodeMask;
 }

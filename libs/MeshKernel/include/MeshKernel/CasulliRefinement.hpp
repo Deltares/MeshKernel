@@ -78,19 +78,19 @@ namespace meshkernel
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseBoundaryNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseBoundaryNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise node mask for corner nodes
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseCornerNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseCornerNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise node mask for face nodes
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseFaceNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise the node mask array.
         ///
