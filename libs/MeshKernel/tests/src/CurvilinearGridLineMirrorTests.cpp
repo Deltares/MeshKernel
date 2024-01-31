@@ -50,7 +50,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
 
     // Asserts
     constexpr double tolerance = 1e-6;
-    Eigen::Index const last = curvilinearGrid->m_gridNodes.cols() - 1;
+    const auto last = (meshkernel::UInt)curvilinearGrid->NumN() - 1;
     ASSERT_NEAR(80703.065731618568, curvilinearGrid->GetNode(0, last).x, tolerance);
     ASSERT_NEAR(80878.447265919545, curvilinearGrid->GetNode(1, last).x, tolerance);
     ASSERT_NEAR(81010.674000571220, curvilinearGrid->GetNode(2, last).x, tolerance);
@@ -109,7 +109,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
 
     // Asserts
     constexpr double tolerance = 1e-6;
-    Eigen::Index const last = curvilinearGrid->m_gridNodes.rows() - 1;
+    const auto last = curvilinearGrid->NumM() - 1;
     ASSERT_NEAR(272501.90233055683, curvilinearGrid->GetNode(last, 0).x, tolerance);
     ASSERT_NEAR(272806.24608551903, curvilinearGrid->GetNode(last, 1).x, tolerance);
     ASSERT_NEAR(273113.11689828755, curvilinearGrid->GetNode(last, 2).x, tolerance);
