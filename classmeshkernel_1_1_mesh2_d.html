@@ -261,6 +261,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a4c99b947455c2b4361988bf44711467d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a4c99b947455c2b4361988bf44711467d">GetEdgesBoundingBoxes</a> () const</td></tr>
 <tr class="memdesc:a4c99b947455c2b4361988bf44711467d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the bounding boxes of the mesh edges.  <a href="classmeshkernel_1_1_mesh2_d.html#a4c99b947455c2b4361988bf44711467d">More...</a><br /></td></tr>
 <tr class="separator:a4c99b947455c2b4361988bf44711467d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0e240cdd3977c295abfc2e3eda5d698"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#af0e240cdd3977c295abfc2e3eda5d698">FindFacesConnectedToNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;sharedFaces) const</td></tr>
+<tr class="memdesc:af0e240cdd3977c295abfc2e3eda5d698"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all faces that have the given node as a vertex.  <a href="classmeshkernel_1_1_mesh2_d.html#af0e240cdd3977c295abfc2e3eda5d698">More...</a><br /></td></tr>
+<tr class="separator:af0e240cdd3977c295abfc2e3eda5d698"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac474f70f97d938d102081b5ac387ae8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ac474f70f97d938d102081b5ac387ae8f">GetConnectingNodes</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;connectedNodes) const</td></tr>
+<tr class="memdesc:ac474f70f97d938d102081b5ac387ae8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get indices of all nodes that are connected directly to a give node along connected edges.  <a href="classmeshkernel_1_1_mesh2_d.html#ac474f70f97d938d102081b5ac387ae8f">More...</a><br /></td></tr>
+<tr class="separator:ac474f70f97d938d102081b5ac387ae8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d64d42054dcb3624423848632036662"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a0d64d42054dcb3624423848632036662">FindNodesSharedByFaces</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;sharedFaces, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;connectedNodes, std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&gt; &amp;faceNodeMapping) const</td></tr>
+<tr class="memdesc:a0d64d42054dcb3624423848632036662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all unique nodes.  <a href="classmeshkernel_1_1_mesh2_d.html#a0d64d42054dcb3624423848632036662">More...</a><br /></td></tr>
+<tr class="separator:a0d64d42054dcb3624423848632036662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90b1578496d5fe255e70c968ba07b410"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a90b1578496d5fe255e70c968ba07b410">IsStartOrEnd</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeId, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeId) const</td></tr>
+<tr class="memdesc:a90b1578496d5fe255e70c968ba07b410"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the node is at the start or end of the edge.  <a href="classmeshkernel_1_1_mesh2_d.html#a90b1578496d5fe255e70c968ba07b410">More...</a><br /></td></tr>
+<tr class="separator:a90b1578496d5fe255e70c968ba07b410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7f92829aacb6bf1ecc27a1219ea304"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#acd7f92829aacb6bf1ecc27a1219ea304">IsLeftOrRight</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> elementId, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeId) const</td></tr>
+<tr class="memdesc:acd7f92829aacb6bf1ecc27a1219ea304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the element lies on the left or right side of the edge.  <a href="classmeshkernel_1_1_mesh2_d.html#acd7f92829aacb6bf1ecc27a1219ea304">More...</a><br /></td></tr>
+<tr class="separator:acd7f92829aacb6bf1ecc27a1219ea304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2b9e4b8632901a3d5774a6a4afeea4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a6f2b9e4b8632901a3d5774a6a4afeea4">FindCommonFace</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge1, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge2) const</td></tr>
+<tr class="memdesc:a6f2b9e4b8632901a3d5774a6a4afeea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the id of the element that is common to both edges.  <a href="classmeshkernel_1_1_mesh2_d.html#a6f2b9e4b8632901a3d5774a6a4afeea4">More...</a><br /></td></tr>
+<tr class="separator:a6f2b9e4b8632901a3d5774a6a4afeea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:aa6e629107d83c68b952351d071140059 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="aa6e629107d83c68b952351d071140059"></a>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aa6e629107d83c68b952351d071140059">~Mesh</a> ()=default</td></tr>
@@ -316,6 +334,9 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a59544d3cee42126f27bed0da80518051 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a59544d3cee42126f27bed0da80518051">IsFaceOnBoundary</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> face) const</td></tr>
 <tr class="memdesc:a59544d3cee42126f27bed0da80518051 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a face is on boundary.  <a href="classmeshkernel_1_1_mesh.html#a59544d3cee42126f27bed0da80518051">More...</a><br /></td></tr>
 <tr class="separator:a59544d3cee42126f27bed0da80518051 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67a9e12803a1fbfb043d5edd0f71d79 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ac67a9e12803a1fbfb043d5edd0f71d79">GetLocalFaceNodeIndex</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
+<tr class="memdesc:ac67a9e12803a1fbfb043d5edd0f71d79 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the local index of the node belong to a face.  <a href="classmeshkernel_1_1_mesh.html#ac67a9e12803a1fbfb043d5edd0f71d79">More...</a><br /></td></tr>
+<tr class="separator:ac67a9e12803a1fbfb043d5edd0f71d79 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b046d2ada644ab4b7109d756bbc14be inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3b046d2ada644ab4b7109d756bbc14be">MergeTwoNodes</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode)</td></tr>
 <tr class="memdesc:a3b046d2ada644ab4b7109d756bbc14be inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges two mesh nodes.  <a href="classmeshkernel_1_1_mesh.html#a3b046d2ada644ab4b7109d756bbc14be">More...</a><br /></td></tr>
 <tr class="separator:a3b046d2ada644ab4b7109d756bbc14be inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -997,6 +1018,74 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
+<a id="a6f2b9e4b8632901a3d5774a6a4afeea4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2b9e4b8632901a3d5774a6a4afeea4">&#9670;&nbsp;</a></span>FindCommonFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh2D::FindCommonFace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edge1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edge2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the id of the element that is common to both edges. </p>
+<p>If no such element can be found then the null value will be returned. </p>
+
+</div>
+</div>
+<a id="af0e240cdd3977c295abfc2e3eda5d698"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e240cdd3977c295abfc2e3eda5d698">&#9670;&nbsp;</a></span>FindFacesConnectedToNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh2D::FindFacesConnectedToNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>sharedFaces</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find all faces that have the given node as a vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodeIndex</td><td>Index of the node </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sharedFaces</td><td>On exit will contain only indices of faces that contain nodeIndex as a node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a0e9b754cf034505cda1ff0f96da4e6f9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0e9b754cf034505cda1ff0f96da4e6f9">&#9670;&nbsp;</a></span>FindFacesGivenFaceNodesMapping()</h2>
 
@@ -1028,6 +1117,57 @@ Coincide circumcenter</div></div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">faceNodes</td><td>The input face nodes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numFaceNodes</td><td>For each face, the number of nodes </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0d64d42054dcb3624423848632036662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d64d42054dcb3624423848632036662">&#9670;&nbsp;</a></span>FindNodesSharedByFaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh2D::FindNodesSharedByFaces </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>sharedFaces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>connectedNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>faceNodeMapping</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find all unique nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodeIndex</td><td>Index of the node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sharedFaces</td><td>List of faces that share the nodeIndex as a common node </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">connectedNodes</td><td>List of nodes that are in the patch of shared faces </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faceNodeMapping</td><td>Mapping from node index to the position in connectedNodes list. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1082,6 +1222,43 @@ Coincide circumcenter</div></div>
 
 <p>Get the mesh bounding box. </p>
 <dl class="section return"><dt>Returns</dt><dd>The mesh bounding box </dd></dl>
+
+</div>
+</div>
+<a id="ac474f70f97d938d102081b5ac387ae8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac474f70f97d938d102081b5ac387ae8f">&#9670;&nbsp;</a></span>GetConnectingNodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh2D::GetConnectingNodes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>connectedNodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get indices of all nodes that are connected directly to a give node along connected edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodeIndex</td><td>Index of the node </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">connectedNodes</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1239,6 +1416,37 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
+<a id="acd7f92829aacb6bf1ecc27a1219ea304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7f92829aacb6bf1ecc27a1219ea304">&#9670;&nbsp;</a></span>IsLeftOrRight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh2D::IsLeftOrRight </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>elementId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edgeId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if the element lies on the left or right side of the edge. </p>
+<p>Returns 0 when the element is on the left and 1 when it is on the right. If one or other edge is not connected to the element then a null value will be returned. </p>
+
+</div>
+</div>
 <a id="a8e7e8009c8aebe6d3d8420be59d7b882"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8e7e8009c8aebe6d3d8420be59d7b882">&#9670;&nbsp;</a></span>IsSegmentCrossingABoundaryEdge()</h2>
 
@@ -1274,6 +1482,37 @@ Coincide circumcenter</div></div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A tuple with the intersectedFace face index and intersected edge index </dd></dl>
+
+</div>
+</div>
+<a id="a90b1578496d5fe255e70c968ba07b410"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b1578496d5fe255e70c968ba07b410">&#9670;&nbsp;</a></span>IsStartOrEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh2D::IsStartOrEnd </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>edgeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if the node is at the start or end of the edge. </p>
+<p>Returns 0 when the node is at the start of the edge, 1 when it is at the end and the null value when the edge is not connected to the node. </p>
 
 </div>
 </div>

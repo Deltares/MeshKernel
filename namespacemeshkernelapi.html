@@ -368,6 +368,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a85b25c255f1bf9207093b9d98ca1011d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a85b25c255f1bf9207093b9d98ca1011d">mkernel_mesh2d_translate</a> (int meshKernelId, double translationX, double translationY)</td></tr>
 <tr class="memdesc:a85b25c255f1bf9207093b9d98ca1011d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translate a mesh2d.  <a href="namespacemeshkernelapi.html#a85b25c255f1bf9207093b9d98ca1011d">More...</a><br /></td></tr>
 <tr class="separator:a85b25c255f1bf9207093b9d98ca1011d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a862cbc79bab0e03153797c1e1292de88"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a862cbc79bab0e03153797c1e1292de88">mkernel_mesh2d_casulli_refinement</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a862cbc79bab0e03153797c1e1292de88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine mesh using the Casulli refinement algorithm.  <a href="namespacemeshkernelapi.html#a862cbc79bab0e03153797c1e1292de88">More...</a><br /></td></tr>
+<tr class="separator:a862cbc79bab0e03153797c1e1292de88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156192886c65dcffa89cad36a5c78045"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045">mkernel_mesh2d_compute_orthogonalization</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">meshkernel::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="separator:a156192886c65dcffa89cad36a5c78045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf9d548882516ac652fd0f01a08c88bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction)</td></tr>
@@ -3967,6 +3970,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchSize</td><td>The relative search size around the location (larger increases the number of samples considered) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minNumSamples</td><td>The minimum number of samples used for some interpolation algorithms to perform a valid interpolation </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">results</td><td>The interpolation results with x and y coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a862cbc79bab0e03153797c1e1292de88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a862cbc79bab0e03153797c1e1292de88">&#9670;&nbsp;</a></span>mkernel_mesh2d_casulli_refinement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_casulli_refinement </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine mesh using the Casulli refinement algorithm. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
   </table>
   </dd>
 </dl>

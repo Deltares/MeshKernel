@@ -163,6 +163,9 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a59544d3cee42126f27bed0da80518051"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a59544d3cee42126f27bed0da80518051">IsFaceOnBoundary</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> face) const</td></tr>
 <tr class="memdesc:a59544d3cee42126f27bed0da80518051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a face is on boundary.  <a href="classmeshkernel_1_1_mesh.html#a59544d3cee42126f27bed0da80518051">More...</a><br /></td></tr>
 <tr class="separator:a59544d3cee42126f27bed0da80518051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67a9e12803a1fbfb043d5edd0f71d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ac67a9e12803a1fbfb043d5edd0f71d79">GetLocalFaceNodeIndex</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
+<tr class="memdesc:ac67a9e12803a1fbfb043d5edd0f71d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the local index of the node belong to a face.  <a href="classmeshkernel_1_1_mesh.html#ac67a9e12803a1fbfb043d5edd0f71d79">More...</a><br /></td></tr>
+<tr class="separator:ac67a9e12803a1fbfb043d5edd0f71d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b046d2ada644ab4b7109d756bbc14be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3b046d2ada644ab4b7109d756bbc14be">MergeTwoNodes</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode)</td></tr>
 <tr class="memdesc:a3b046d2ada644ab4b7109d756bbc14be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges two mesh nodes.  <a href="classmeshkernel_1_1_mesh.html#a3b046d2ada644ab4b7109d756bbc14be">More...</a><br /></td></tr>
 <tr class="separator:a3b046d2ada644ab4b7109d756bbc14be"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -962,6 +965,37 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The index of the closest node </dd></dl>
+
+</div>
+</div>
+<a id="ac67a9e12803a1fbfb043d5edd0f71d79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67a9e12803a1fbfb043d5edd0f71d79">&#9670;&nbsp;</a></span>GetLocalFaceNodeIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> meshkernel::Mesh::GetLocalFaceNodeIndex </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>faceIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the local index of the node belong to a face. </p>
+<p>If the node cannot be found the null value will be returned. </p>
 
 </div>
 </div>
