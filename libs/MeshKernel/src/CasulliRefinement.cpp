@@ -202,9 +202,9 @@ void meshkernel::CasulliRefinement::FindPatchIds(const Mesh2D& mesh,
     mesh.FindNodesSharedByFaces(currentNode, sharedFaces, connectedNodes, faceNodeMapping);
 }
 
-void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges)
 {
-    //  make the original-link based new links
+    // make the original-edge based new edges
     for (UInt i = 0; i < numEdges; ++i)
     {
         const UInt node1 = newNodes[i][0];
@@ -234,8 +234,196 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
             mesh.ConnectNodes(node2, node4);
         }
     }
+}
 
-    // create the diagonal links in quads that connect the new mesh with the old mesh
+void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt currentFace, const std::vector<EdgeNodes>& newNodes,
+                                                     std::vector<NodeMask>& nodeMask)
+{
+
+    // Perhaps change quads to maximum number of edges for any shape
+    std::array<UInt, constants::geometric::numNodesInQuadrilateral> oldIndex{constants::missing::uintValue, constants::missing::uintValue,
+                                                                             constants::missing::uintValue, constants::missing::uintValue};
+
+    std::array<UInt, constants::geometric::numNodesInQuadrilateral> newIndex{constants::missing::uintValue, constants::missing::uintValue,
+                                                                             constants::missing::uintValue, constants::missing::uintValue};
+    // find the old and new nodes
+    for (UInt j = 0; j < mesh.m_numFacesNodes[currentFace]; ++j)
+    {
+        const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[currentFace] - 1) : (j - 1));
+
+        const UInt edgeId = mesh.m_facesEdges[currentFace][j];
+        const UInt previousEdgeId = mesh.m_facesEdges[currentFace][previousIndex];
+
+        oldIndex[j] = mesh.m_edges[edgeId].first;
+        newIndex[j] = newNodes[edgeId][2];
+
+        if (oldIndex[j] != mesh.m_edges[previousEdgeId].first && oldIndex[j] != mesh.m_edges[previousEdgeId].second)
+        {
+            oldIndex[j] = mesh.m_edges[edgeId].second;
+            newIndex[j] = newNodes[edgeId][1];
+        }
+    }
+
+    for (UInt j = 0; j < mesh.m_numFacesNodes[currentFace]; ++j)
+    {
+        const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[currentFace] - 1) : (j - 1));
+        const UInt nextIndex = (j == mesh.m_numFacesNodes[currentFace] - 1 ? 0 : (j + 1));
+        UInt nextNextIndex;
+
+        if (j == mesh.m_numFacesNodes[currentFace] - 2)
+        {
+            nextNextIndex = 0;
+        }
+        else if (j == mesh.m_numFacesNodes[currentFace] - 1)
+        {
+            nextNextIndex = 1;
+        }
+        else
+        {
+            nextNextIndex = j + 2;
+        }
+
+        const UInt node1 = newIndex[j];
+        const UInt node2 = oldIndex[previousIndex];
+        const UInt node3 = oldIndex[nextIndex];
+        const UInt node4 = oldIndex[nextNextIndex];
+
+        // only one new node: new diagonal edge connects new node with one old node
+        if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
+        {
+            mesh.ConnectNodes(node1, node4);
+            break;
+        }
+
+        // only one old node: new diagonal edge connects new nodes only (i.e. perpendicular to previous one)
+        if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] > NodeMask::Unassigned && nodeMask[node3] > NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
+        {
+            mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex]);
+            break;
+        }
+
+        // two new and opposing nodes: new diagonal edge connects the new nodes
+        if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::RegisteredNode)
+        {
+            mesh.ConnectNodes(node1, newIndex[nextNextIndex]);
+            break;
+        }
+    }
+}
+
+void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt currentNode, const std::vector<EdgeNodes>& newNodes, UInt& edgeCount, std::vector<UInt>& newEdges)
+{
+    std::fill(newEdges.begin(), newEdges.end(), constants::missing::uintValue);
+    edgeCount = 0;
+
+    for (UInt j = 0; j < mesh.m_nodesNumEdges[currentNode]; ++j)
+    {
+        UInt edgeId = mesh.m_nodesEdges[currentNode][j];
+
+        if (mesh.m_edgesNumFaces[edgeId] == 1)
+        {
+            if (edgeCount >= newEdges.size())
+            {
+                newEdges.resize(2 * edgeCount + 1);
+            }
+
+            newEdges[edgeCount] = edgeId;
+            ++edgeCount;
+        }
+        else
+        {
+            if (mesh.m_edges[edgeId].first == currentNode)
+            {
+                mesh.ConnectNodes(currentNode, newNodes[edgeId][0]);
+                mesh.ConnectNodes(currentNode, newNodes[edgeId][2]);
+            }
+            else
+            {
+                mesh.ConnectNodes(currentNode, newNodes[edgeId][1]);
+                mesh.ConnectNodes(currentNode, newNodes[edgeId][3]);
+            }
+        }
+    }
+}
+
+void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+{
+    std::vector<UInt> newEdges(InitialEdgeArraySize);
+
+    // make the missing boundary edges
+    for (UInt i = 0; i < numNodes; ++i)
+    {
+        if (nodeMask[i] < NodeMask::BoundaryNode)
+        {
+            // boundary and kept nodes only
+            continue;
+        }
+
+        UInt edgeCount = 0;
+        ConnectEdges(mesh, i, newNodes, edgeCount, newEdges);
+
+        if (edgeCount == 0)
+        {
+            continue;
+        }
+
+        std::vector<UInt> nodesToConnect(edgeCount, constants::missing::uintValue);
+
+        for (UInt j = 0; j < edgeCount; ++j)
+        {
+            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
+            {
+                nodesToConnect[j] = newNodes[newEdges[j]][0];
+            }
+
+            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
+            {
+                nodesToConnect[j] = newNodes[newEdges[j]][2];
+            }
+
+            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
+            {
+                nodesToConnect[j] = newNodes[newEdges[j]][1];
+            }
+
+            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
+            {
+                nodesToConnect[j] = newNodes[newEdges[j]][3];
+            }
+        }
+
+        if (nodeMask[i] != NodeMask::CornerNode)
+        {
+            if (edgeCount != 2)
+            {
+                throw AlgorithmError("Incorrect number of edges found: {}", edgeCount);
+            }
+            else
+            {
+                if (nodesToConnect[0] != constants::missing::uintValue && nodesToConnect[1] != constants::missing::uintValue && nodesToConnect[0] != nodesToConnect[1])
+                {
+                    mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1]);
+                }
+            }
+        }
+        else
+        {
+            for (UInt j = 0; j < edgeCount; ++j)
+            {
+                if (nodesToConnect[j] != constants::missing::uintValue && nodesToConnect[j] != i)
+                {
+                    mesh.ConnectNodes(i, nodesToConnect[j]);
+                }
+            }
+        }
+    }
+}
+
+void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
+{
+    ConnectNodes(mesh, newNodes, numEdges);
+
+    // create the diagonal edges in quads that connect the new mesh with the old mesh
     for (UInt i = 0; i < numFaces; ++i)
     {
 
@@ -256,181 +444,13 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
         }
 
         // Check for active nodes
-        if (!faceIsActive)
+        if (faceIsActive)
         {
-            continue;
-        }
-
-        // Perhaps change quads to maximum number of edges for any shape
-        std::array<UInt, constants::geometric::numNodesInQuadrilateral> oldIndex{constants::missing::uintValue, constants::missing::uintValue,
-                                                                                 constants::missing::uintValue, constants::missing::uintValue};
-
-        std::array<UInt, constants::geometric::numNodesInQuadrilateral> newIndex{constants::missing::uintValue, constants::missing::uintValue,
-                                                                                 constants::missing::uintValue, constants::missing::uintValue};
-        // find the old and new nodes
-        for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
-        {
-            const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
-
-            const UInt edgeId = mesh.m_facesEdges[i][j];
-            const UInt previousEdgeId = mesh.m_facesEdges[i][previousIndex];
-
-            oldIndex[j] = mesh.m_edges[edgeId].first;
-            newIndex[j] = newNodes[edgeId][2];
-
-            if (oldIndex[j] != mesh.m_edges[previousEdgeId].first && oldIndex[j] != mesh.m_edges[previousEdgeId].second)
-            {
-                oldIndex[j] = mesh.m_edges[edgeId].second;
-                newIndex[j] = newNodes[edgeId][1];
-            }
-        }
-
-        for (UInt j = 0; j < mesh.m_numFacesNodes[i]; ++j)
-        {
-            const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[i] - 1) : (j - 1));
-            const UInt nextIndex = (j == mesh.m_numFacesNodes[i] - 1 ? 0 : (j + 1));
-            UInt nextNextIndex;
-
-            if (j == mesh.m_numFacesNodes[i] - 2)
-            {
-                nextNextIndex = 0;
-            }
-            else if (j == mesh.m_numFacesNodes[i] - 1)
-            {
-                nextNextIndex = 1;
-            }
-            else
-            {
-                nextNextIndex = j + 2;
-            }
-
-            const UInt node1 = newIndex[j];
-            const UInt node2 = oldIndex[previousIndex];
-            const UInt node3 = oldIndex[nextIndex];
-            const UInt node4 = oldIndex[nextNextIndex];
-
-            // only one new node: new diagonal link connects new node with one old node
-            if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
-            {
-                mesh.ConnectNodes(node1, node4);
-                break;
-            }
-
-            // only one old node: new diagonal link connects new nodes only (i.e. perpendicular to previous one)
-            if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] > NodeMask::Unassigned && nodeMask[node3] > NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
-            {
-                mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex]);
-                break;
-            }
-
-            // two new and opposing nodes: new diagonal link connects the new nodes
-            if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::RegisteredNode)
-            {
-                mesh.ConnectNodes(node1, newIndex[nextNextIndex]);
-                break;
-            }
+            ConnectFaceNodes(mesh, i, newNodes, nodeMask);
         }
     }
 
-    std::vector<UInt> newEdges(InitialEdgeArraySize);
-
-    // make the missing boundary links
-    for (UInt i = 0; i < numNodes; ++i)
-    {
-        if (nodeMask[i] < NodeMask::BoundaryNode)
-        {
-            // boundary and kept nodes only
-            continue;
-        }
-
-        UInt edgeCount = 0;
-        std::fill(newEdges.begin(), newEdges.end(), constants::missing::uintValue);
-
-        for (UInt j = 0; j < mesh.m_nodesNumEdges[i]; ++j)
-        {
-            UInt edgeId = mesh.m_nodesEdges[i][j];
-
-            if (mesh.m_edgesNumFaces[edgeId] == 1)
-            {
-                if (edgeCount >= newEdges.size())
-                {
-                    newEdges.resize(2 * edgeCount + 1);
-                }
-
-                newEdges[edgeCount] = edgeId;
-                ++edgeCount;
-            }
-            else
-            {
-
-                if (mesh.m_edges[edgeId].first == i)
-                {
-                    mesh.ConnectNodes(i, newNodes[edgeId][0]);
-                    mesh.ConnectNodes(i, newNodes[edgeId][2]);
-                }
-                else
-                {
-                    mesh.ConnectNodes(i, newNodes[edgeId][1]);
-                    mesh.ConnectNodes(i, newNodes[edgeId][3]);
-                }
-            }
-        }
-
-        if (edgeCount == 0)
-        {
-            continue;
-        }
-
-        std::vector<UInt> node(edgeCount, constants::missing::uintValue);
-
-        for (UInt j = 0; j < edgeCount; ++j)
-        {
-            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
-            {
-                node[j] = newNodes[newEdges[j]][0];
-            }
-
-            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
-            {
-                node[j] = newNodes[newEdges[j]][2];
-            }
-
-            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
-            {
-                node[j] = newNodes[newEdges[j]][1];
-            }
-
-            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
-            {
-                node[j] = newNodes[newEdges[j]][3];
-            }
-        }
-
-        if (nodeMask[i] != NodeMask::CornerNode)
-        {
-            if (edgeCount != 2)
-            {
-                throw AlgorithmError("Incorrect number of edges found: {}", edgeCount);
-            }
-            else
-            {
-                if (node[0] != constants::missing::uintValue && node[1] != constants::missing::uintValue && node[0] != node[1])
-                {
-                    mesh.ConnectNodes(node[0], node[1]);
-                }
-            }
-        }
-        else
-        {
-            for (UInt j = 0; j < edgeCount; ++j)
-            {
-                if (node[j] != constants::missing::uintValue && node[j] != i)
-                {
-                    mesh.ConnectNodes(i, node[j]);
-                }
-            }
-        }
-    }
+    CreateMissingBoundaryEdges(mesh, numNodes, newNodes, nodeMask);
 
     for (UInt i = 0; i < numNodes; ++i)
     {
@@ -457,11 +477,8 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
     }
 }
 
-void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    // Keep copy of number of edges in mesh before any nodes are added.
-    const UInt numEdges = mesh.GetNumEdges();
-
     for (UInt i = 0; i < mesh.GetNumFaces(); ++i)
     {
         const Point elementCentre = mesh.m_facesCircumcenters[i];
@@ -513,7 +530,10 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Ed
             StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newNodeId, newNodes);
         }
     }
+}
 
+void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt numEdges, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+{
     for (UInt i = 0; i < numEdges; ++i)
     {
         UInt newNodeId = constants::missing::uintValue;
@@ -561,6 +581,15 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Ed
 
         StoreNewNode(mesh, node2, i, i, newNodeId, newNodes);
     }
+}
+
+void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+{
+    // Keep copy of number of edges in mesh before any nodes are added.
+    const UInt numEdges = mesh.GetNumEdges();
+
+    ComputeNewFaceNodes(mesh, newNodes, nodeMask);
+    ComputeNewEdgeNodes(mesh, numEdges, newNodes, nodeMask);
 }
 
 void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes)
