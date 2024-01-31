@@ -2126,3 +2126,208 @@ std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
 
     return result;
 }
+
+void Mesh2D::FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedFaces) const
+{
+    sharedFaces.clear();
+
+    UInt newFaceIndex = constants::missing::uintValue;
+    for (UInt e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    {
+        const auto firstEdge = m_nodesEdges[nodeIndex][e];
+
+        UInt secondEdgeIndex = e + 1;
+        if (secondEdgeIndex >= m_nodesNumEdges[nodeIndex])
+        {
+            secondEdgeIndex = 0;
+        }
+
+        const auto secondEdge = m_nodesEdges[nodeIndex][secondEdgeIndex];
+        if (m_edgesNumFaces[firstEdge] == 0 || m_edgesNumFaces[secondEdge] == 0)
+        {
+            continue;
+        }
+
+        // find the face shared by the two edges
+        const auto firstFace = std::max(std::min(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
+        const auto secondFace = std::max(std::min(m_edgesNumFaces[secondEdge], static_cast<UInt>(2)), static_cast<UInt>(1)) - 1;
+
+        if (m_edgesFaces[firstEdge][0] != newFaceIndex &&
+            (m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][0] ||
+             m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][secondFace]))
+        {
+            newFaceIndex = m_edgesFaces[firstEdge][0];
+        }
+        else if (m_edgesFaces[firstEdge][firstFace] != newFaceIndex &&
+                 (m_edgesFaces[firstEdge][firstFace] == m_edgesFaces[secondEdge][0] ||
+                  m_edgesFaces[firstEdge][firstFace] == m_edgesFaces[secondEdge][secondFace]))
+        {
+            newFaceIndex = m_edgesFaces[firstEdge][firstFace];
+        }
+        else
+        {
+            newFaceIndex = constants::missing::uintValue;
+        }
+
+        // corner face (already found in the first iteration)
+        if (m_nodesNumEdges[nodeIndex] == 2 &&
+            e == 1 &&
+            m_nodesTypes[nodeIndex] == 3 &&
+            !sharedFaces.empty() &&
+            sharedFaces[0] == newFaceIndex)
+        {
+            newFaceIndex = constants::missing::uintValue;
+        }
+        sharedFaces.emplace_back(newFaceIndex);
+    }
+}
+
+void Mesh2D::GetConnectingNodes(UInt nodeIndex, std::vector<UInt>& connectedNodes) const
+{
+    connectedNodes.clear();
+    connectedNodes.emplace_back(nodeIndex);
+
+    // edge connected nodes
+    for (UInt e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    {
+        const auto edgeIndex = m_nodesEdges[nodeIndex][e];
+        const auto node = OtherNodeOfEdge(m_edges[edgeIndex], nodeIndex);
+        connectedNodes.emplace_back(node);
+    }
+}
+
+void Mesh2D::FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const
+{
+
+    // for each face store the positions of the its nodes in the connectedNodes (compressed array)
+    if (faceNodeMapping.size() < sharedFaces.size())
+    {
+        ResizeAndFill2DVector(faceNodeMapping, static_cast<UInt>(sharedFaces.size()), Mesh::m_maximumNumberOfNodesPerFace);
+    }
+
+    // Find all nodes shared by faces
+    for (UInt f = 0; f < sharedFaces.size(); f++)
+    {
+        const auto faceIndex = sharedFaces[f];
+
+        if (faceIndex == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        // find the stencil node position in the current face
+        UInt faceNodeIndex = GetLocalFaceNodeIndex(faceIndex, nodeIndex);
+        const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+
+        if (faceNodeIndex == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        for (UInt n = 0; n < numFaceNodes; n++)
+        {
+
+            if (faceNodeIndex >= numFaceNodes)
+            {
+                faceNodeIndex -= numFaceNodes;
+            }
+
+            const auto node = m_facesNodes[faceIndex][faceNodeIndex];
+
+            bool isNewNode = true;
+
+            // Find if node of face is already in connectedNodes list
+            for (UInt i = 0; i < connectedNodes.size(); i++)
+            {
+                if (node == connectedNodes[i])
+                {
+                    isNewNode = false;
+                    faceNodeMapping[f][faceNodeIndex] = static_cast<UInt>(i);
+                    break;
+                }
+            }
+
+            // If node is not already contained in connectedNodes list, then add it to the list.
+            if (isNewNode)
+            {
+                connectedNodes.emplace_back(node);
+                faceNodeMapping[f][faceNodeIndex] = static_cast<UInt>(connectedNodes.size() - 1);
+            }
+
+            // update node index
+            faceNodeIndex += 1;
+        }
+    }
+}
+
+meshkernel::UInt Mesh2D::IsStartOrEnd(const UInt edgeId, const UInt nodeId) const
+{
+    UInt isStartEnd = constants::missing::uintValue;
+
+    if (m_edges[edgeId].first == nodeId)
+    {
+        isStartEnd = 0;
+    }
+    else if (m_edges[edgeId].second == nodeId)
+    {
+        isStartEnd = 1;
+    }
+
+    return isStartEnd;
+}
+
+meshkernel::UInt Mesh2D::IsLeftOrRight(const UInt elementId, const UInt edgeId) const
+{
+    UInt edgeIndex = constants::missing::uintValue;
+    UInt nextEdgeIndex = constants::missing::uintValue;
+    UInt endNodeIndex = m_edges[edgeId].second;
+
+    for (UInt i = 0; i < m_facesEdges[elementId].size(); ++i)
+    {
+        UInt faceEdgeId = m_facesEdges[elementId][i];
+
+        if (faceEdgeId == edgeId)
+        {
+            edgeIndex = i;
+        }
+        else if (m_edges[faceEdgeId].first == endNodeIndex || m_edges[faceEdgeId].second == endNodeIndex)
+        {
+            nextEdgeIndex = i;
+        }
+    }
+
+    if (edgeIndex == constants::missing::uintValue || nextEdgeIndex == constants::missing::uintValue)
+    {
+        // EdgeId was not found
+        return constants::missing::uintValue;
+    }
+
+    UInt isLeftRight = constants::missing::uintValue;
+
+    if (nextEdgeIndex == edgeIndex + 1 || nextEdgeIndex + m_numFacesNodes[elementId] == edgeIndex + 1)
+    {
+        isLeftRight = 0;
+    }
+    else if (edgeIndex == nextEdgeIndex + 1 || edgeIndex + m_numFacesNodes[elementId] == nextEdgeIndex + 1)
+    {
+        isLeftRight = 1;
+    }
+
+    return isLeftRight;
+}
+
+meshkernel::UInt Mesh2D::FindCommonFace(const UInt edge1, const UInt edge2) const
+{
+    for (UInt i = 0; i < m_edgesNumFaces[edge1]; ++i)
+    {
+        for (UInt j = 0; j < m_edgesNumFaces[edge2]; ++j)
+        {
+            if (m_edgesFaces[edge1][i] == m_edgesFaces[edge2][j])
+            {
+                return m_edgesFaces[edge1][i];
+            }
+        }
+    }
+
+    return constants::missing::uintValue;
+}

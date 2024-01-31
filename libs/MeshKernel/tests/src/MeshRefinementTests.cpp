@@ -1,5 +1,8 @@
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+#include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
+
+#include <fstream>
 
 #include <gtest/gtest.h>
 
@@ -11,6 +14,10 @@
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 #include "TestUtils/SampleGenerator.hpp"
+
+#include <MeshKernel/Operations.hpp>
+
+#include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
 
@@ -972,3 +979,164 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
 INSTANTIATE_TEST_SUITE_P(RidgeRefinementTestCases,
                          RidgeRefinementTestCases,
                          ::testing::ValuesIn(RidgeRefinementTestCases::GetData()));
+
+TEST(MeshRefinement, CasulliRefinement)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+
+    // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
+    std::vector<meshkernel::Point> expectedPoints{{0.0, 0.0},
+                                                  {0.0, 20.0},
+                                                  {20.0, 0.0},
+                                                  {20.0, 20.0},
+                                                  {2.5, 2.5},
+                                                  {7.5, 2.5},
+                                                  {7.5, 7.5},
+                                                  {2.5, 7.5},
+                                                  {2.5, 12.5},
+                                                  {7.5, 12.5},
+                                                  {7.5, 17.5},
+                                                  {2.5, 17.5},
+                                                  {12.5, 2.5},
+                                                  {17.5, 2.5},
+                                                  {17.5, 7.5},
+                                                  {12.5, 7.5},
+                                                  {12.5, 12.5},
+                                                  {17.5, 12.5},
+                                                  {17.5, 17.5},
+                                                  {12.5, 17.5},
+                                                  {2.5, 0.0},
+                                                  {7.5, 0.0},
+                                                  {2.5, 20.0},
+                                                  {7.5, 20.0},
+                                                  {12.5, 0.0},
+                                                  {17.5, 0.0},
+                                                  {12.5, 20.0},
+                                                  {17.5, 20.0},
+                                                  {0.0, 2.5},
+                                                  {0.0, 7.5},
+                                                  {0.0, 12.5},
+                                                  {0.0, 17.5},
+                                                  {20.0, 2.5},
+                                                  {20.0, 7.5},
+                                                  {20.0, 12.5},
+                                                  {20.0, 17.5}};
+    std::vector<meshkernel::UInt> expectedEdgesStart{20, 4, 20, 21, 7, 8, 7, 6, 11, 22,
+                                                     11, 10, 24, 12, 24, 25, 15, 16, 15, 14,
+                                                     19, 26, 19, 18, 4, 28, 4, 7, 8, 30,
+                                                     8, 11, 12, 5, 12, 15, 16, 9, 16, 19,
+                                                     32, 13, 32, 33, 34, 17, 34, 35, 0, 0,
+                                                     30, 1, 1, 21, 23, 2, 2, 33, 3, 3};
+    std::vector<meshkernel::UInt> expectedEdgesEnd{21, 5, 4, 5, 6, 9, 8, 9, 10, 23,
+                                                   22, 23, 25, 13, 12, 13, 14, 17, 16, 17,
+                                                   18, 27, 26, 27, 7, 29, 28, 29, 11, 31,
+                                                   30, 31, 15, 6, 5, 6, 19, 10, 9, 10,
+                                                   33, 14, 13, 14, 35, 18, 17, 18, 20, 28,
+                                                   29, 22, 31, 24, 26, 25, 32, 34, 27, 35};
+
+    CasulliRefinement meshRefinement;
+
+    meshRefinement.Compute(mesh);
+
+    ASSERT_EQ(expectedPoints.size(), mesh.m_nodes.size());
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    {
+        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+    }
+
+    ASSERT_EQ(expectedEdgesStart.size(), mesh.m_edges.size());
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    {
+        EXPECT_EQ(expectedEdgesStart[i], mesh.m_edges[i].first);
+        EXPECT_EQ(expectedEdgesEnd[i], mesh.m_edges[i].second);
+    }
+}
+
+void loadCasulliRefinedMeshData(std::vector<Point>& expectedPoints,
+                                std::vector<meshkernel::UInt>& expectedEdgeStart,
+                                std::vector<meshkernel::UInt>& expectedEdgeEnd)
+{
+
+    const std::string fileName = TEST_FOLDER + "/data/CasulliRefinement/casulli_refinement_patch_with_hole.txt";
+
+    std::ifstream asciiFile;
+    asciiFile.open(fileName.c_str());
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    {
+        asciiFile >> expectedPoints[i].x;
+    }
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    {
+        asciiFile >> expectedPoints[i].y;
+    }
+
+    for (size_t i = 0; i < expectedEdgeStart.size(); ++i)
+    {
+        asciiFile >> expectedEdgeStart[i];
+    }
+
+    for (size_t i = 0; i < expectedEdgeEnd.size(); ++i)
+    {
+        asciiFile >> expectedEdgeEnd[i];
+    }
+
+    asciiFile.close();
+}
+
+TEST(MeshRefinement, CasulliPatchRefinement)
+{
+    const size_t ExpectedNumberOfPoints = 184;
+    const size_t ExpectedNumberOfEdges = 360;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+
+    std::vector<Point> patch{{45.0, 45.0},
+                             {155.0, 45.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 45.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    std::vector<Point> expectedPoints(ExpectedNumberOfPoints);
+    std::vector<meshkernel::UInt> expectedEdgeStart(ExpectedNumberOfEdges);
+    std::vector<meshkernel::UInt> expectedEdgeEnd(ExpectedNumberOfEdges);
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    CasulliRefinement meshRefinement;
+
+    meshRefinement.Compute(mesh, polygon);
+
+    constexpr double tolerance = 1.0e-12;
+
+    loadCasulliRefinedMeshData(expectedPoints, expectedEdgeStart, expectedEdgeEnd);
+
+    ASSERT_EQ(ExpectedNumberOfPoints, mesh.m_nodes.size());
+    ASSERT_EQ(ExpectedNumberOfEdges, mesh.m_edges.size());
+
+    for (size_t i = 0; i < ExpectedNumberOfPoints; ++i)
+    {
+        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+    }
+
+    for (size_t i = 0; i < ExpectedNumberOfEdges; ++i)
+    {
+        EXPECT_EQ(expectedEdgeStart[i], mesh.m_edges[i].first);
+        EXPECT_EQ(expectedEdgeEnd[i], mesh.m_edges[i].second);
+    }
+}
