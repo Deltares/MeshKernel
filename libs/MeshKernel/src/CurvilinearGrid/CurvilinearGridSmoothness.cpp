@@ -45,7 +45,7 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
         {
             for (UInt j = 0; j < grid.NumN(); ++j)
             {
-                smoothness(i, j) = ComputeNodeSmoothness(grid.m_gridNodes(i - 1, j), grid.m_gridNodes(i, j), grid.m_gridNodes(i + 1, j));
+                smoothness(i, j) = ComputeNodeSmoothness(grid.GetNode(i - 1, j), grid.GetNode(i, j), grid.GetNode(i + 1, j));
             }
         }
     }
@@ -55,7 +55,7 @@ void meshkernel::CurvilinearGridSmoothness::Compute(const CurvilinearGrid& grid,
         {
             for (UInt j = 1; j < grid.NumN() - 1; ++j)
             {
-                smoothness(i, j) = ComputeNodeSmoothness(grid.m_gridNodes(i, j - 1), grid.m_gridNodes(i, j), grid.m_gridNodes(i, j + 1));
+                smoothness(i, j) = ComputeNodeSmoothness(grid.GetNode(i, j - 1), grid.GetNode(i, j), grid.GetNode(i, j + 1));
             }
         }
     }

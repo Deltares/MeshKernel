@@ -132,9 +132,9 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                         continue;
                     }
 
-                    const auto leftNode = m_grid.m_gridNodes(mm - 1, n);
-                    const auto verticalNode = m_grid.m_gridNodes(mm, n + nextVertical);
-                    const auto rightNode = m_grid.m_gridNodes(mm + 1, n);
+                    const auto leftNode = m_grid.GetNode(mm - 1, n);
+                    const auto verticalNode = m_grid.GetNode(mm, n + nextVertical);
+                    const auto rightNode = m_grid.GetNode(mm + 1, n);
 
                     Point boundaryNode;
                     if (nextVertical == 1)
@@ -157,10 +157,10 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                         boundaryNode.y = (leftNode.y * qb + verticalNode.y * qbc + rightNode.y * qc + rightNode.x - leftNode.x) / rn;
                     }
 
-                    m_grid.m_gridNodes(mm, n) = m_splines.ComputeClosestPointOnSplineSegment(n,
-                                                                                             static_cast<double>(startM),
-                                                                                             static_cast<double>(m),
-                                                                                             boundaryNode);
+                    m_grid.GetNode(mm, n) = m_splines.ComputeClosestPointOnSplineSegment(n,
+                                                                                         static_cast<double>(startM),
+                                                                                         static_cast<double>(m),
+                                                                                         boundaryNode);
                 }
             }
         }
@@ -210,9 +210,9 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                     {
                         continue;
                     }
-                    const auto bottomNode = m_grid.m_gridNodes(m, nn - 1);
-                    const auto horizontalNode = m_grid.m_gridNodes(m + nextHorizontal, nn);
-                    const auto upperNode = m_grid.m_gridNodes(m, nn + 1);
+                    const auto bottomNode = m_grid.GetNode(m, nn - 1);
+                    const auto horizontalNode = m_grid.GetNode(m + nextHorizontal, nn);
+                    const auto upperNode = m_grid.GetNode(m, nn + 1);
 
                     Point boundaryNode;
                     if (nextHorizontal == 1)
@@ -237,10 +237,10 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 
                     // Vertical spline index
                     const auto splineIndex = m_grid.NumN() + m;
-                    m_grid.m_gridNodes(m, nn) = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
-                                                                                             static_cast<double>(startN),
-                                                                                             static_cast<double>(n),
-                                                                                             boundaryNode);
+                    m_grid.GetNode(m, nn) = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
+                                                                                         static_cast<double>(startN),
+                                                                                         static_cast<double>(n),
+                                                                                         boundaryNode);
                 }
             }
         }
@@ -277,13 +277,13 @@ void CurvilinearGridOrthogonalization::Solve()
                 }
 
                 const auto residual =
-                    m_grid.m_gridNodes(m + 1, n) * m_orthoEqTerms.a(m, n) +
-                    m_grid.m_gridNodes(m - 1, n) * m_orthoEqTerms.b(m, n) +
-                    m_grid.m_gridNodes(m, n + 1) * m_orthoEqTerms.c(m, n) +
-                    m_grid.m_gridNodes(m, n - 1) * m_orthoEqTerms.d(m, n) +
-                    m_grid.m_gridNodes(m, n) * m_orthoEqTerms.e(m, n);
+                    m_grid.GetNode(m + 1, n) * m_orthoEqTerms.a(m, n) +
+                    m_grid.GetNode(m - 1, n) * m_orthoEqTerms.b(m, n) +
+                    m_grid.GetNode(m, n + 1) * m_orthoEqTerms.c(m, n) +
+                    m_grid.GetNode(m, n - 1) * m_orthoEqTerms.d(m, n) +
+                    m_grid.GetNode(m, n) * m_orthoEqTerms.e(m, n);
 
-                m_grid.m_gridNodes(m, n) = m_grid.m_gridNodes(m, n) - residual / m_orthoEqTerms.e(m, n) * omega;
+                m_grid.GetNode(m, n) = m_grid.GetNode(m, n) - residual / m_orthoEqTerms.e(m, n) * omega;
             }
         }
 
@@ -317,10 +317,10 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
                 continue;
             }
 
-            const auto bottom = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m + 1, n), Projection::cartesian);
-            const auto upper = ComputeDistance(m_grid.m_gridNodes(m, n + 1), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
-            const auto left = ComputeDistance(m_grid.m_gridNodes(m, n), m_grid.m_gridNodes(m, n + 1), Projection::cartesian);
-            const auto right = ComputeDistance(m_grid.m_gridNodes(m + 1, n), m_grid.m_gridNodes(m + 1, n + 1), Projection::cartesian);
+            const auto bottom = ComputeDistance(m_grid.GetNode(m, n), m_grid.GetNode(m + 1, n), Projection::cartesian);
+            const auto upper = ComputeDistance(m_grid.GetNode(m, n + 1), m_grid.GetNode(m + 1, n + 1), Projection::cartesian);
+            const auto left = ComputeDistance(m_grid.GetNode(m, n), m_grid.GetNode(m, n + 1), Projection::cartesian);
+            const auto right = ComputeDistance(m_grid.GetNode(m + 1, n), m_grid.GetNode(m + 1, n + 1), Projection::cartesian);
 
             m_orthoEqTerms.a(m, n) = (bottom + upper) * 0.5;
             m_orthoEqTerms.b(m, n) = (left + right) * 0.5;

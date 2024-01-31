@@ -70,7 +70,7 @@ void CurvilinearGridDeRefinement::Compute()
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes(mIndexOriginalGrid, nIndexOriginalGrid));
+            deRefinedGrid.back().emplace_back(m_grid.GetNode(mIndexOriginalGrid, nIndexOriginalGrid));
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;

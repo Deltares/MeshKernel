@@ -48,7 +48,7 @@ Splines::Splines(CurvilinearGrid const& grid)
     {
         for (UInt m = 0; m < grid.NumM(); ++m)
         {
-            mGridLines(n, m) = grid.m_gridNodes(m, n);
+            mGridLines(n, m) = grid.GetNode(m, n);
         }
         AddSpline(lin_alg::MatrixRowToSTLVector(mGridLines, n));
     }
