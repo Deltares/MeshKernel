@@ -35,13 +35,13 @@
 
 void meshkernel::CurvilinearGridCurvature::Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& curvature)
 {
-    lin_alg::ResizeAndFillMatrix(curvature, grid.m_numM, grid.m_numN, false, constants::missing::doubleValue);
+    lin_alg::ResizeAndFillMatrix(curvature, grid.NumM(), grid.NumN(), false, constants::missing::doubleValue);
 
     if (direction == CurvilinearDirection::M)
     {
-        for (UInt i = 1; i < grid.m_numM - 1; ++i)
+        for (UInt i = 1; i < grid.NumM() - 1; ++i)
         {
-            for (UInt j = 0; j < grid.m_numN; ++j)
+            for (UInt j = 0; j < grid.NumN(); ++j)
             {
                 curvature(i, j) = ComputeNodeCurvature(grid.m_gridNodes(i - 1, j), grid.m_gridNodes(i, j), grid.m_gridNodes(i + 1, j));
             }
@@ -49,9 +49,9 @@ void meshkernel::CurvilinearGridCurvature::Compute(const CurvilinearGrid& grid, 
     }
     else if (direction == CurvilinearDirection::N)
     {
-        for (UInt i = 0; i < grid.m_numM; ++i)
+        for (UInt i = 0; i < grid.NumM(); ++i)
         {
-            for (UInt j = 1; j < grid.m_numN - 1; ++j)
+            for (UInt j = 1; j < grid.NumN() - 1; ++j)
             {
                 curvature(i, j) = ComputeNodeCurvature(grid.m_gridNodes(i, j - 1), grid.m_gridNodes(i, j), grid.m_gridNodes(i, j + 1));
             }

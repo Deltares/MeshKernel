@@ -219,12 +219,18 @@ namespace meshkernel
         /// @brief Get the mesh bounding box.
         BoundingBox GetBoundingBox() const;
 
-        UInt m_numM = 0;                                       ///< The number of m coordinates (vertical lines)
-        UInt m_numN = 0;                                       ///< The number of n coordinates (horizontal lines)
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
         lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
+
+        /// @brief The number of columns of nodes
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt NumM() const { return m_numM; }
+
+        /// @brief The number of rows of nodes
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt NumN() const { return m_numN; }
 
     private:
         /// @brief Remove invalid nodes.
@@ -243,5 +249,8 @@ namespace meshkernel
         /// @param[in] secondNode The indices of the second new node in the modified grid.
         void AddEdge(CurvilinearGridNodeIndices const& firstNode,
                      CurvilinearGridNodeIndices const& secondNode);
+
+        UInt m_numM = 0; ///< The number of m coordinates (columns, or vertical lines)
+        UInt m_numN = 0; ///< The number of n coordinates (rows, or horizontal lines)
     };
 } // namespace meshkernel
