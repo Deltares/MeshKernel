@@ -153,12 +153,12 @@ namespace meshkernel
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
 
-        /// @brief Determines if a face is valid.
+        /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
         /// @param[in] m The m coordinate
         /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
-        [[nodiscard]] bool IsValidFace(UInt m, UInt n) const;
+        [[nodiscard]] bool AreFaceNodesValid(UInt m, UInt n) const;
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.

@@ -408,7 +408,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
         for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
         {
 
-            if (m_grid.IsValidFace(m, n) &&
+            if (m_grid.AreFaceNodesValid(m, n) &&
                 !IsEqual(m_orthoEqTerms.a(m, n), constants::missing::doubleValue) &&
                 !IsEqual(m_orthoEqTerms.a(m - 1, n), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes(m, n))
@@ -425,7 +425,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     {
         for (auto m = int(m_upperRight.m_m) - 1; m >= int(m_lowerLeft.m_m); --m)
         {
-            if (m_grid.IsValidFace(m, n) &&
+            if (m_grid.AreFaceNodesValid(m, n) &&
                 !IsEqual(m_orthoEqTerms.a(m, n), constants::missing::doubleValue) &&
                 !IsEqual(m_orthoEqTerms.a(m + 1, n), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes(m + 1, n))
@@ -441,7 +441,7 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (m_grid.IsValidFace(m, n))
+            if (m_grid.AreFaceNodesValid(m, n))
             {
                 double const inv = 1.0 / static_cast<double>(counter(m, n) + 1);
                 m_orthoEqTerms.a(m, n) *= inv;
@@ -462,7 +462,7 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     {
         for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
-            if (m_grid.IsValidFace(m, n) &&
+            if (m_grid.AreFaceNodesValid(m, n) &&
                 !IsEqual(m_orthoEqTerms.b(m, n), constants::missing::doubleValue) &&
                 !IsEqual(m_orthoEqTerms.b(m, n - 1), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes(m, n))
@@ -479,7 +479,7 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     {
         for (auto n = static_cast<int>(m_upperRight.m_n) - 1; n >= static_cast<int>(m_lowerLeft.m_n); --n)
         {
-            if (m_grid.IsValidFace(m, n) &&
+            if (m_grid.AreFaceNodesValid(m, n) &&
                 !IsEqual(m_orthoEqTerms.b(m, n), constants::missing::doubleValue) &&
                 !IsEqual(m_orthoEqTerms.b(m, n + 1), constants::missing::doubleValue) &&
                 !invalidBoundaryNodes(m, n + 1))
@@ -496,7 +496,7 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (m_grid.IsValidFace(m, n))
+            if (m_grid.AreFaceNodesValid(m, n))
             {
                 double const inv = 1.0 / static_cast<double>(counter(m, n) + 1);
                 m_orthoEqTerms.b(m, n) *= inv;
