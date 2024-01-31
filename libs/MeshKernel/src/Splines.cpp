@@ -43,20 +43,15 @@ Splines::Splines(Projection projection) : m_projection(projection) {}
 Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
-    lin_alg::Matrix<Point> mGridLines(grid.NumN(), grid.NumM());
     for (UInt n = 0; n < grid.NumN(); ++n)
     {
-        for (UInt m = 0; m < grid.NumM(); ++m)
-        {
-            mGridLines(n, m) = grid.GetNode(m, n);
-        }
-        AddSpline(lin_alg::MatrixRowToSTLVector(mGridLines, n));
+        AddSpline(grid.GetNodeRowVector(n));
     }
 
     // then the m_m m_n-gridlines
     for (UInt m = 0; m < grid.NumM(); ++m)
     {
-        AddSpline(lin_alg::MatrixRowToSTLVector(grid.m_gridNodes, m));
+        AddSpline(grid.GetNodeColumnVector(m));
     }
 
     m_projection = grid.m_projection;
