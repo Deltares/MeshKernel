@@ -160,6 +160,11 @@ namespace meshkernel
         /// @return True if the face is valid, false otherwise
         [[nodiscard]] bool AreFaceNodesValid(UInt m, UInt n) const;
 
+        /// @brief Determines if the face mask is true (valid face) or false (invalid face)
+        /// @note the face mask values are determined by the result of the valid face-nodes test
+        /// @return the face mask value (true/false)
+        [[nodiscard]] bool IsFaceMaskValid(UInt m, UInt n) const { return m_gridFacesMask(m, n); }
+
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
         void InsertFace(Point const& point);
