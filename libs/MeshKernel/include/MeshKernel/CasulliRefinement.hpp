@@ -74,6 +74,24 @@ namespace meshkernel
         /// @typedef EdgeNodes
         using EdgeNodes = std::array<UInt, 4>;
 
+        /// @brief Initialise node mask for boundary nodes
+        ///
+        /// @param [in] mesh The Mesh
+        /// @param [in, out] nodeMask Node mask information
+        static void InitialiseBoundaryNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+
+        /// @brief Initialise node mask for corner nodes
+        ///
+        /// @param [in] mesh The Mesh
+        /// @param [in, out] nodeMask Node mask information
+        static void InitialiseCornerNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+
+        /// @brief Initialise node mask for face nodes
+        ///
+        /// @param [in] mesh The Mesh
+        /// @param [in, out] nodeMask Node mask information
+        static void InitialiseFaceNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+
         /// @brief Initialise the node mask array.
         ///
         /// @param [in] mesh Mesh used to initialise the node mask

@@ -23,21 +23,8 @@ void meshkernel::CasulliRefinement::Compute(Mesh2D& mesh, const Polygons& polygo
     Administrate(mesh, numNodes, nodeMask);
 }
 
-std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon)
+void meshkernel::CasulliRefinement::InitialiseBoundaryNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
 {
-    std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
-
-    // Find nodes that are inside the polygon.
-    // If the polygon is empty then all nodes will be taken into account.
-    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
-    {
-        auto [containsPoint, pointIndex] = polygon.IsPointInPolygons(mesh.m_nodes[i]);
-
-        if (containsPoint)
-        {
-            nodeMask[i] = NodeMask::RegisteredNode;
-        }
-    }
 
     // Find nodes that lie on the boundary of the domain.
     for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
@@ -59,7 +46,10 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
             }
         }
     }
+}
 
+void meshkernel::CasulliRefinement::InitialiseCornerNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
+{
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
 
@@ -105,6 +95,10 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
             nodeMask[i] = NodeMask::CornerNode;
         }
     }
+}
+
+void meshkernel::CasulliRefinement::InitialiseFaceNodes (const Mesh2D& mesh, std::vector<NodeMask>& nodeMask)
+{
 
     std::vector<UInt> sharedFaces;
     std::vector<UInt> connectedNodes;
@@ -152,6 +146,28 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
             nodeMask[i] = NodeMask::CornerNode;
         }
     }
+}
+
+std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon)
+{
+    std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
+
+    // Find nodes that are inside the polygon.
+    // If the polygon is empty then all nodes will be taken into account.
+
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        auto [containsPoint, pointIndex] = polygon.IsPointInPolygons(mesh.m_nodes[i]);
+
+        if (containsPoint)
+        {
+            nodeMask[i] = NodeMask::RegisteredNode;
+        }
+    }
+
+    InitialiseBoundaryNodes (mesh, nodeMask);
+    InitialiseCornerNodes (mesh, nodeMask);
+    InitialiseFaceNodes (mesh, nodeMask);
 
     return nodeMask;
 }
