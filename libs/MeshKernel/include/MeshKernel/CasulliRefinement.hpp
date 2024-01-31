@@ -97,7 +97,7 @@ namespace meshkernel
         /// @brief Compute new edges required for refinement
         ///
         /// @param [in, out] mesh The mesh being refined
-        /// @param [in] numNdes Number of nodes in original mesh, before refinement.
+        /// @param [in] numNodes Number of nodes in original mesh, before refinement.
         /// @param [in] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
         static void CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
