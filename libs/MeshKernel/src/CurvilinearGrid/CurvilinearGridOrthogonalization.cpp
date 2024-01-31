@@ -312,7 +312,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask(m, n))
+            if (!m_grid.IsFaceMaskValid(m, n))
             {
                 continue;
             }
@@ -342,7 +342,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask(m, n))
+            if (!m_grid.IsFaceMaskValid(m, n))
             {
                 continue;
             }
@@ -361,7 +361,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
-            if (!m_grid.m_gridFacesMask(m, n))
+            if (!m_grid.IsFaceMaskValid(m, n))
             {
                 m_orthoEqTerms.atp(m, n) = constants::missing::doubleValue;
                 continue;
