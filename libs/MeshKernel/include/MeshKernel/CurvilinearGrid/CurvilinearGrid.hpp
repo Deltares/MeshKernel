@@ -153,6 +153,12 @@ namespace meshkernel
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
 
+        /// @brief Determines the grid node type
+        /// @param[in] m The m coordinate
+        /// @param[in] n The n coordinate
+        /// @return the node type
+        NodeType GetNodeType(UInt m, UInt n) const { return m_gridNodesTypes(m, n); }
+
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
         /// @param[in] m The m coordinate
@@ -232,7 +238,7 @@ namespace meshkernel
 
         lin_alg::Matrix<Point> m_gridNodes; ///< Member variable storing the grid
 
-        lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
+    public:
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
 
         /// @brief The number of columns of nodes
@@ -282,8 +288,9 @@ namespace meshkernel
         void AddEdge(CurvilinearGridNodeIndices const& firstNode,
                      CurvilinearGridNodeIndices const& secondNode);
 
-        UInt m_numM = 0;                       ///< The number of m coordinates (columns, or vertical lines)
-        UInt m_numN = 0;                       ///< The number of n coordinates (rows, or horizontal lines)
-        lin_alg::Matrix<bool> m_gridFacesMask; ///< The mask of the grid faces (true/false)
+        UInt m_numM = 0;                            ///< The number of m coordinates (columns, or vertical lines)
+        UInt m_numN = 0;                            ///< The number of n coordinates (rows, or horizontal lines)
+        lin_alg::Matrix<bool> m_gridFacesMask;      ///< The mask of the grid faces (true/false)
+        lin_alg::Matrix<NodeType> m_gridNodesTypes; ///< The grid node types
     };
 } // namespace meshkernel
