@@ -475,3 +475,42 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesFailureTest)
 
     EXPECT_THROW(curvilinearGrid->ComputeBlockFromCornerPoints(CurvilinearGridNodeIndices{nx, 1}, CurvilinearGridNodeIndices{4, 4}), meshkernel::ConstraintError);
 }
+
+TEST(CurvilinearGridUniform, NumM_ReturnsNumberOfNodeColumns)
+{
+    const int numM = 7;
+    const int numN = 5;
+    const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., numM, numN);
+    EXPECT_EQ(7, subject->NumM());
+}
+
+TEST(CurvilinearGridUniform, NumM_ReturnsNumberOfRowColumns)
+{
+    const int numM = 7;
+    const int numN = 5;
+    const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., numM, numN);
+    EXPECT_EQ(5, subject->NumN());
+}
+
+TEST(CurvilinearGridUniform, GetNodes_ReturnsCopyOfNodeMatrix)
+{
+    // NOTE: the storage is transposed, i.e. nodes.rows() corresponds with the number of node columns as indicated by numM and v.v.
+    const int numM = 7;
+    const int numN = 5;
+    const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., numM, numN);
+    const auto nodes = subject->GetNodes();
+    EXPECT_EQ(numM, nodes.rows());
+    EXPECT_EQ(numN, nodes.cols());
+}
+
+TEST(CurvilinearGridUniform, GetRowVector_ReturnsVectorOfLengthNumM)
+{
+    const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
+    EXPECT_EQ(subject->NumM(), subject->GetNodeRowVector(1).size());
+}
+
+TEST(CurvilinearGridUniform, GetColumnVector_ReturnsVectorOfLengthNumN)
+{
+    const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
+    EXPECT_EQ(subject->NumN(), subject->GetNodeColumnVector(1).size());
+}

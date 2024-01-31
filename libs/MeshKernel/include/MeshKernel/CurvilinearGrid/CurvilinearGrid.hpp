@@ -238,6 +238,27 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt NumN() const { return m_numN; }
 
+        /// @brief Is the node matrix empty
+        /// @return true iff the node matrix is empty
+        bool IsEmpty() const { return lin_alg::MatrixIsEmpty(m_gridNodes); }
+
+        /// @brief Get a copy of the nodes matrix
+        /// @note:rows are stored as columns and vice versa
+        /// @return a copy of the matrix
+        lin_alg::Matrix<Point> GetNodes() const { return m_gridNodes; }
+
+        /// @brief Get a column of nodes as STL vector
+        /// @note:rows are stored as columns and vice versa
+        /// @param [in] m the column index
+        /// @return a vector of NumN nodes
+        std::vector<Point> GetNodeColumnVector(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m); }
+
+        /// @brief Get a row of nodes as STL vector
+        /// @note:rows are stored as columns and vice versa
+        /// @param [in] n the row index
+        /// @return a vector of NumM nodes
+        std::vector<Point> GetNodeRowVector(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n); }
+
     private:
         /// @brief Remove invalid nodes.
         /// This function is recursive
