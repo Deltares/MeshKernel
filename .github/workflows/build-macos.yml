@@ -23,13 +23,13 @@ jobs:
     strategy:
       matrix:
         platform:
-          - ubuntu-latest
-          - macos-latest
-          - macos-13-xlarge
+          - 'ubuntu-latest'
+          - 'macos-latest'
+          - 'macos-13-xlarge'
         build_type:
-          - Release
-          - Debug
-          #- DebugWithRelInfo
+          - 'Release'
+          - 'Debug'
+          #- 'DebugWithRelInfo'
 
     runs-on: ${{ matrix.platform }}
 
