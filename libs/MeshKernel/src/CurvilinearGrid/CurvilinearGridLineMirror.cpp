@@ -73,13 +73,13 @@ void CurvilinearGridLineMirror::Compute()
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
-            auto const last_row = (UInt)m_grid.m_gridNodes.rows() - 1;
+            auto const last_row = (UInt)m_grid.NumM() - 1;
             m_grid.GetNode(last_row, i) = m_grid.GetNode(last_row - 1, i) * a -
                                           m_grid.GetNode(last_row - 2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)
         {
-            auto const last_col = (UInt)m_grid.m_gridNodes.cols() - 1;
+            auto const last_col = (UInt)m_grid.NumN() - 1;
             m_grid.GetNode(i, last_col) = m_grid.GetNode(i, last_col - 1) * a +
                                           m_grid.GetNode(i, last_col - 2) * b;
         }
