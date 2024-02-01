@@ -42,7 +42,7 @@ jobs:
       - id: condition
         run: |
           if [ "${{ runner.os }}" == "macOS" ]; then
-            if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.ref }} != 'refs/heads/feature/*' ]]; then
+            if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.head_ref }} != 'feature/*' ]]; then
               echo "condition=true" >> $GITHUB_OUTPUT
             else
               echo "condition=false" >> $GITHUB_OUTPUT
