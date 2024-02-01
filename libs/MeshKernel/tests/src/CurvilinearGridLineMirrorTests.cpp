@@ -96,6 +96,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    ASSERT_EQ(9, curvilinearGrid->NumN());
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
     curvilinearLineMirror.SetLine({80960.2, 366520.7}, {80609.8, 367406.0});
 
@@ -103,6 +104,8 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     curvilinearLineMirror.Compute();
 
     // Asserts
+    ASSERT_EQ(10, curvilinearGrid->NumN());
+
     constexpr double tolerance = 1e-6;
     const auto last = (meshkernel::UInt)curvilinearGrid->NumN() - 1;
     ASSERT_NEAR(80703.065731618568, curvilinearGrid->GetNode(0, last).x, tolerance);
@@ -155,6 +158,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+    ASSERT_EQ(5, curvilinearGrid->NumM());
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
     curvilinearLineMirror.SetLine({80155.8, 366529.5}, {80960.2, 366520.72});
 
@@ -162,6 +166,8 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     curvilinearLineMirror.Compute();
 
     // Asserts
+    ASSERT_EQ(6, curvilinearGrid->NumM());
+
     constexpr double tolerance = 1e-6;
     const std::vector<meshkernel::Point> expected{
         {80180.468545087249, 366414.38889474329},
