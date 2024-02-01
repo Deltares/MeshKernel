@@ -39,7 +39,7 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt s
 {
     // Allocate cache for storing grid nodes values
     // ResizeAndFill2DVector(m_gridNodesCache, static_cast<UInt>(m_grid.m_gridNodes.size()), static_cast<UInt>(m_grid.m_gridNodes[0].size()));
-    lin_alg::ResizeAndFillMatrix(m_gridNodesCache, m_grid.m_gridNodes.rows(), m_grid.m_gridNodes.cols(), true);
+    lin_alg::ResizeAndFillMatrix(m_gridNodesCache, m_grid.NumM(), m_grid.NumN(), true);
 
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
