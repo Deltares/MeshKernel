@@ -36,8 +36,6 @@ using meshkernel::CurvilinearGridNodeIndices;
 
 CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.m_nodes, grid.m_projection),
                                                                 m_gridNodes(grid.m_gridNodes),
-                                                                m_numM(grid.NumM()),
-                                                                m_numN(grid.NumN()),
                                                                 m_gridFacesMask(grid.m_gridFacesMask),
                                                                 m_gridNodesTypes(grid.m_gridNodesTypes),
                                                                 m_gridIndices(grid.m_gridIndices)
@@ -59,9 +57,6 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
     {
         throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
-
-    m_numM = static_cast<UInt>(m_gridNodes.rows());
-    m_numN = static_cast<UInt>(m_gridNodes.cols());
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
@@ -158,8 +153,6 @@ void CurvilinearGrid::SetFlatCopies()
         return;
     }
 
-    m_numM = static_cast<UInt>(m_gridNodes.rows());
-    m_numN = static_cast<UInt>(m_gridNodes.cols());
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
     m_edges = edges;
