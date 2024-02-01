@@ -97,7 +97,7 @@ void CurvilinearGridSmoothing::SolveDirectional()
 {
 
     // assign current nodal values to the m_gridNodesCache
-    m_gridNodesCache = m_grid.m_gridNodes;
+    m_gridNodesCache = m_grid.GetNodes();
 
     auto isInvalidValidNode = [this](auto const& m, auto const& n)
     {
@@ -169,7 +169,7 @@ void CurvilinearGridSmoothing::Solve()
     double const b = 1.0 - a;
 
     // assign current nodal values to the m_gridNodesCache
-    m_gridNodesCache = m_grid.m_gridNodes;
+    m_gridNodesCache = m_grid.GetNodes();
 
     // Apply smoothing
     for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
