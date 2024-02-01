@@ -96,18 +96,18 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
     // First snap the east boundary of the domain
     snappingEast.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
@@ -144,18 +144,18 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                        {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 6.997894028534e+01, 7.997860717722e+01, 8.997827406910e+01, 9.777374826707e+01},
                                                        {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
@@ -192,18 +192,18 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                         {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 7.049505766060e+01, 8.263723768445e+01, 9.487399319961e+01, 1.033370952633e+02},
                                                         {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 7.047785003180e+01, 8.230233592963e+01, 9.410634025831e+01, 1.017586980000e+02}};
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid3.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.GetNode(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid3.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.GetNode(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
@@ -253,18 +253,18 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
 
     snappingNorth.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
         }
     }
 
@@ -292,19 +292,19 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
     snappingWest.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 }
@@ -350,18 +350,18 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
 
     snapping.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
@@ -413,19 +413,19 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
     snapping.Compute();
 
     // Check results
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -480,19 +480,19 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
     // Compute snapping to land boundary
     snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -547,19 +547,19 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
     // Compute snapping to land boundary
     snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
@@ -615,19 +615,19 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
     // Compute snapping to land boundary
     snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }
@@ -684,19 +684,19 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
     // Compute snapping to land boundary
     snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.m_gridNodes.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.m_gridNodes.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }

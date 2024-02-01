@@ -50,7 +50,7 @@ void meshkernel::CurvilinearGridDeleteInterior::Compute()
     {
         for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 }

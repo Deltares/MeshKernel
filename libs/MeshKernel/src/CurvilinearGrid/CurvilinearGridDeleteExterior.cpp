@@ -54,7 +54,7 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     {
         for (UInt m = 0; m < lowerLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
@@ -63,7 +63,7 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     {
         for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
@@ -72,7 +72,7 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     {
         for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
@@ -81,7 +81,7 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     {
         for (UInt m = upperLimitJ + 1; m < m_grid.NumM(); ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 }
