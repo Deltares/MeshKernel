@@ -17,12 +17,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  
-  build:
-    
-    # Build strategy
+
+  setup:
     strategy:
-      fail-fast: false
       matrix:
         platform:
           # - ubuntu-latest
@@ -31,12 +28,33 @@ jobs:
         build_type:
           - 'Release'
           #- 'Debug'
-          #- 'DebugWithRelInfo '
+          #- 'DebugWithRelInfo'
 
-    # Build platform
     runs-on: ${{ matrix.platform }}
 
-    name: ${{ matrix.platform }}-${{ matrix.build_type }}
+    outputs:
+      platform: ${{ matrix.platform }}
+      build_type: ${{ matrix.build_type }}
+      condition: ${{ steps.condition.outputs.condition }}
+
+    steps:
+      - id: condition
+        run: |
+          if [[ ${{ matrix.platform }} == "macos-13-xlarge" && ${{ github.ref }} == ''refs/heads/master']]; then
+             echo "condition=true" >> $GITHUB_OUTPUT
+          else
+             echo "condition=false" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+
+    needs: [setup]
+
+    runs-on: ${{needs.setup.outputs.platform}}
+
+    if: ${{ needs.setup.outputs.condition }} == 'true'
+
+    name: ${{needs.setup.outputs.platform}}-${{needs.setup.outputs.build_type}}
 
     # The default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
@@ -89,7 +107,7 @@ jobs:
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
           -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work
           -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
-          -BuildType '${{ matrix.build_type }}'
+          -BuildType '${{ needs.setup.outputs.build_type }}'
           -ParallelJobs 10
 
       # Step: Cache user-provided dependencies, executes only if no cache restored
@@ -106,13 +124,13 @@ jobs:
           cmake
           -S ${{ github.workspace }}
           -B ${{ steps.paths.outputs.build_dir }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_BUILD_TYPE=${{ needs.setup.outputs.build_type }}
           -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
       
       # Step: CMake build
       - name: Build
-        run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ matrix.build_type }} -j
+        run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ needs.setup.outputs.build_type }} -j
 
       # Step: Test
       #       Works if runner.os == 'Linux' or runner.os == 'macOS'
@@ -133,6 +151,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
+          name: meshkernel-${{ needs.setup.outputs.platform }}-${{ needs.setup.outputs.build_type }}
           path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error
