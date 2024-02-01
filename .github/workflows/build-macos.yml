@@ -27,9 +27,9 @@ jobs:
           - macos-latest
           - macos-13-xlarge
         build_type:
-          - 'Release'
-          - 'Debug'
-          #- 'DebugWithRelInfo'
+          - Release
+          - Debug
+          #- DebugWithRelInfo
 
     runs-on: ${{ matrix.platform }}
 
@@ -41,11 +41,22 @@ jobs:
     steps:
       - id: condition
         run: |
-          if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.ref }} != 'refs/heads/feature/*' ]]; then
-             echo "condition=true" >> $GITHUB_OUTPUT
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.ref }} != 'refs/heads/feature/*' ]]; then
+              echo "condition=true" >> $GITHUB_OUTPUT
+            else
+              echo "condition=false" >> $GITHUB_OUTPUT
+            fi
           else
-             echo "condition=false" >> $GITHUB_OUTPUT
+            echo "condition=true" >> $GITHUB_OUTPUT
           fi
+
+        # run: |
+        #   if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.ref }} != 'refs/heads/feature/*' ]]; then
+        #      echo "condition=true" >> $GITHUB_OUTPUT
+        #   else
+        #      echo "condition=false" >> $GITHUB_OUTPUT
+        #   fi
 
   build:
 
