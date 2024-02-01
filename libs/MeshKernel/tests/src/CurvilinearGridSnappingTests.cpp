@@ -113,7 +113,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     //--------------------------------
 
-    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
 
@@ -161,7 +161,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     //--------------------------------
 
-    CurvilinearGrid grid3(grid2.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid3(grid2.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point({0.0e+00, 1.0e+02}), Point({1.043040e+02, 9.715260e+01})};
     CurvilinearGridSnapping snappingNorth(grid3, northLandBoundary, snappingLine);
 
@@ -287,7 +287,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0.0, 90.0), Point(0.0, 0.0)};
     CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
     snappingWest.Compute();
