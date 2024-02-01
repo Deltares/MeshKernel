@@ -79,8 +79,8 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
         return;
     }
 
-    const auto numN = static_cast<UInt>(m_gridNodes.rows());
-    const auto numM = static_cast<UInt>(m_gridNodes.cols());
+    const auto numN = static_cast<UInt>(NumM());
+    const auto numM = static_cast<UInt>(NumN());
 
     lin_alg::Matrix<bool> nodeBasedMask(numN, numM);
     nodeBasedMask.fill(false);
@@ -169,19 +169,19 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
         throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: Invalid curvilinear grid ");
     }
 
-    std::vector<Point> nodes(m_gridNodes.rows() * m_gridNodes.cols());
-    std::vector<Edge> edges(m_gridNodes.rows() * (m_gridNodes.cols() - 1) +
-                            (m_gridNodes.rows() - 1) * m_gridNodes.cols());
-    lin_alg::Matrix<UInt> nodeIndices(m_gridNodes.rows(), m_gridNodes.cols());
+    std::vector<Point> nodes(NumM() * NumN());
+    std::vector<Edge> edges(NumM() * (NumN() - 1) +
+                            (NumM() - 1) * NumN());
+    lin_alg::Matrix<UInt> nodeIndices(NumM(), NumN());
     nodeIndices.setConstant(constants::missing::uintValue);
     std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size(),
                                                         CurvilinearGridNodeIndices{constants::missing::uintValue,
                                                                                    constants::missing::uintValue});
 
     UInt ind = 0;
-    for (UInt m = 0; m < m_gridNodes.rows(); m++)
+    for (UInt m = 0; m < NumM(); m++)
     {
-        for (UInt n = 0; n < m_gridNodes.cols(); n++)
+        for (UInt n = 0; n < NumN(); n++)
         {
             nodes[ind] = m_gridNodes(m, n);
             nodeIndices(m, n) = ind;
@@ -191,9 +191,9 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
     }
 
     ind = 0;
-    for (UInt m = 0; m < m_gridNodes.rows() - 1; m++)
+    for (UInt m = 0; m < NumM() - 1; m++)
     {
-        for (UInt n = 0; n < m_gridNodes.cols(); n++)
+        for (UInt n = 0; n < NumN(); n++)
         {
             if (nodeIndices(m, n) != constants::missing::uintValue &&
                 nodeIndices(m + 1, n) != constants::missing::uintValue)
@@ -205,9 +205,9 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
         }
     }
 
-    for (UInt m = 0; m < m_gridNodes.rows(); m++)
+    for (UInt m = 0; m < NumM(); m++)
     {
-        for (UInt n = 0; n < m_gridNodes.cols() - 1; n++)
+        for (UInt n = 0; n < NumN() - 1; n++)
         {
             if (nodeIndices(m, n) != constants::missing::uintValue &&
                 nodeIndices(m, n + 1) != constants::missing::uintValue)
@@ -229,11 +229,11 @@ bool CurvilinearGrid::IsValid() const
     {
         return false;
     }
-    if (m_gridNodes.rows() < 2)
+    if (NumM() < 2)
     {
         return false;
     }
-    if (m_gridNodes.cols() < 2)
+    if (NumN() < 2)
     {
         return false;
     }
@@ -650,28 +650,28 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
         if (gridLineType == BoundaryGridLineType::Left)
         {
             lin_alg::InsertRow(m_gridNodes,
-                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
+                               lin_alg::RowVector<Point>(NumN()),
                                0);
             gridSizeChanged = true;
         }
         if (gridLineType == BoundaryGridLineType::Right)
         {
             lin_alg::InsertRow(m_gridNodes,
-                               lin_alg::RowVector<Point>(m_gridNodes.cols()),
-                               m_gridNodes.rows());
+                               lin_alg::RowVector<Point>(NumN()),
+                               NumM());
             gridSizeChanged = true;
         }
         if (gridLineType == BoundaryGridLineType::Up)
         {
             lin_alg::InsertCol(m_gridNodes,
-                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
-                               m_gridNodes.cols());
+                               lin_alg::ColVector<Point>(NumM()),
+                               NumN());
             gridSizeChanged = true;
         }
         if (gridLineType == BoundaryGridLineType::Bottom)
         {
             lin_alg::InsertCol(m_gridNodes,
-                               lin_alg::ColVector<Point>(m_gridNodes.rows()),
+                               lin_alg::ColVector<Point>(NumM()),
                                0);
             gridSizeChanged = true;
         }
@@ -805,7 +805,7 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
 
 double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)
 {
-    if (index.m_m > m_gridNodes.rows() || index.m_n > m_gridNodes.cols())
+    if (index.m_m > NumM() || index.m_n > NumN())
     {
         throw std::invalid_argument("CurvilinearGrid::ComputeAverageNodalDistance: invalid index coordinates");
     }
@@ -824,7 +824,7 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
             leftDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m - 1, index.m_n), m_projection);
             numEdges += 1;
         }
-        if (index.m_m + 1 < m_gridNodes.rows() && m_gridNodes(index.m_m + 1, index.m_n).IsValid())
+        if (index.m_m + 1 < NumM() && m_gridNodes(index.m_m + 1, index.m_n).IsValid())
         {
             rightDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m + 1, index.m_n), m_projection);
             numEdges += 1;
@@ -841,7 +841,7 @@ double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices c
             bottomDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m, index.m_n - 1), m_projection);
             numEdges += 1;
         }
-        if (index.m_n + 1 < m_gridNodes.cols() && m_gridNodes(index.m_m, index.m_n + 1).IsValid())
+        if (index.m_n + 1 < NumN() && m_gridNodes(index.m_m, index.m_n + 1).IsValid())
         {
             upDistance = ComputeDistance(m_gridNodes(index.m_m, index.m_n), m_gridNodes(index.m_m, index.m_n + 1), m_projection);
             numEdges += 1;
@@ -917,12 +917,12 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
 
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
-    size_t last = m_gridNodes.rows() - 1;
+    size_t last = NumM() - 1;
 
     // Only need to loop over boundary nodes
 
     // First loop over lower boundary (i,0)
-    for (Eigen::Index i = 0; i < m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < NumM(); ++i)
     {
         lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, 0).x);
         lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, 0).y);
@@ -931,7 +931,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     // First loop over right boundary (last,i)
-    for (Eigen::Index i = 0; i < m_gridNodes.cols(); ++i)
+    for (Eigen::Index i = 0; i < NumN(); ++i)
     {
         lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(last, i).x);
         lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(last, i).y);
@@ -940,10 +940,10 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     // This assumes that each column has the same number of points
-    last = m_gridNodes.cols() - 1;
+    last = NumN() - 1;
 
     // First loop over upper boundary (i,last)
-    for (Eigen::Index i = 0; i < m_gridNodes.rows(); ++i)
+    for (Eigen::Index i = 0; i < NumM(); ++i)
     {
         lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, last).x);
         lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, last).y);
@@ -952,7 +952,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     // First loop over left boundary (0,i)
-    for (Eigen::Index i = 0; i < m_gridNodes.cols(); ++i)
+    for (Eigen::Index i = 0; i < NumN(); ++i)
     {
         lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(0, i).x);
         lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(0, i).y);
