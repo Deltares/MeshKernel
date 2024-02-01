@@ -40,19 +40,8 @@ jobs:
 
     steps:
       - id: condition
-        # run: |
-          # if [ "${{ runner.os }}" == "macOS" ]; then
-          #   if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.head_ref }} != 'feature/*' ]]; then
-          #     echo "condition=true" >> $GITHUB_OUTPUT
-          #   else
-          #     echo "condition=false" >> $GITHUB_OUTPUT
-          #   fi
-          # else
-          #   echo "condition=true" >> $GITHUB_OUTPUT
-          # fi
-
         run: |
-          if [[ ${{ matrix.platform }} == 'macos-13-xlarge' && ${{ github.head_ref }} == 'feature/*' ]]; then
+          if [ "${{ matrix.platform }}" == "macos-13-xlarge" ] && [ "${{ github.head_ref }}" == "feature/*" ]; then
              echo "condition=false" >> $GITHUB_OUTPUT
           else
              echo "condition=true" >> $GITHUB_OUTPUT
@@ -62,9 +51,9 @@ jobs:
 
     needs: [setup]
 
-    if: ${{ needs.setup.outputs.condition }} == 'true'
-
     runs-on: ${{needs.setup.outputs.platform}}
+
+    if: ${{ needs.setup.outputs.condition }} == 'true'
 
     name: ${{needs.setup.outputs.platform}}-${{needs.setup.outputs.build_type}}
 
