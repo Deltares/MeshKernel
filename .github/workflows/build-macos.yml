@@ -23,12 +23,12 @@ jobs:
     strategy:
       matrix:
         platform:
-          - 'ubuntu-latest'
-          - 'macos-latest'
-          - 'macos-13-xlarge'
+          - ubuntu-latest
+          - macos-latest
+          - macos-13-xlarge
         build_type:
-          - 'Release'
-          - 'Debug'
+          - Release
+          - Debug
           #- 'DebugWithRelInfo'
 
     runs-on: ${{ matrix.platform }}
@@ -41,7 +41,7 @@ jobs:
     steps:
       - id: condition
         run: |
-          if [ "${{ matrix.platform }}" == "macos-13-xlarge" ] && [ "${{ github.head_ref }}" == "feature/*" ]; then
+          if [ "${{ matrix.platform }}" == "macos-13-xlarge" ] && [ "${{ github.head_ref }}" == "feature/"* ]; then
              echo "condition=false" >> $GITHUB_OUTPUT
           else
              echo "condition=true" >> $GITHUB_OUTPUT
