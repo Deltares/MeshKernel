@@ -101,10 +101,15 @@ namespace meshkernel
         [[nodiscard]] bool IsValid() const;
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
+        /// @details Nodes and grid indices from the matrix are serialized in row-major order (n runs fastest).
+        /// Edges are serialized as follows: first all m-oriented edges ((m,n)-(m+1,n)) in row-major order, then all
+        /// n-oriented edges ((m,n)-(m,n+1)), in row-major order.
+        /// @note Also invalid nodes are serialized to points, edges and grid indices
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
         [[nodiscard]] std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<CurvilinearGridNodeIndices>> ConvertCurvilinearToNodesAndEdges() const;
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        /// @details The Mesh nodes and edges arrays, and the grid node indices array are populated by the result of ConvertCurvilinearToNodesAndEdges.
         void SetFlatCopies();
 
         /// @brief Get the m and n indices of the node closest to the point
