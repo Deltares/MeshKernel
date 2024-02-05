@@ -109,17 +109,15 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
 
-        /// @brief Gets a reference to the grid node at the (i,j) location
-        /// @note:rows of nodes are stored in matrix columns and vice versa
-        /// @param [in] i column index of node
-        /// @param [in] j row index of node
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt i, const UInt j) { return m_gridNodes(i, j); }
+        /// @brief Gets a reference to the grid node at the (m,n) location
+        /// @param[in] m The m-dimension index
+        /// @param[in] n The n-dimension index
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt m, const UInt n) { return m_gridNodes(m, n); }
 
-        /// @brief Gets a constant reference to the grid node at the (i,j) location
-        /// @note:rows of nodes are stored in matrix columns and vice versa
-        /// @param [in] i column index of node
-        /// @param [in] j row index of node
-        [[nodiscard]] meshkernel::Point const& GetNode(const UInt i, const UInt j) const { return m_gridNodes(i, j); }
+        /// @brief Gets a constant reference to the grid node at the (m,n) location
+        /// @param[in] m The m-dimension index
+        /// @param[in] n The n-dimension index
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt m, const UInt n) const { return m_gridNodes(m, n); }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
