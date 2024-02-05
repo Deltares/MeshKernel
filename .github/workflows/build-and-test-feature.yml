@@ -32,7 +32,7 @@ jobs:
           - Debug
           #- DebugWithRelInfo
 
-    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@${GITHUB_REF##*/}
+    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml
     with:
       platform: ${{ matrix.platform }}
       build_type: ${{ matrix.build_type }}
