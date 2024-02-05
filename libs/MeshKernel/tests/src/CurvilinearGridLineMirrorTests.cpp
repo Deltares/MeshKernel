@@ -4,6 +4,60 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumContributionsFromSubsequentColumns)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 2.0, 3, 2);
+    EXPECT_EQ(3, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    constexpr double f = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    curvilinearLineMirror.SetLine({0, 0}, {0, 2});
+
+    const auto p0 = curvilinearGrid->m_gridNodes(0, 1);
+    const auto p1 = curvilinearGrid->m_gridNodes(1, 1);
+
+    // Execute
+    curvilinearLineMirror.Compute();
+
+    EXPECT_EQ(4, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    // Asserts
+    constexpr double tolerance = 1e-6;
+    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_actual = curvilinearGrid->m_gridNodes(0, 1);
+    ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
+}
+
+TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySumContributionsFromPrecedingColumns)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 2.0, 3, 2);
+    EXPECT_EQ(3, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    constexpr double f = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    curvilinearLineMirror.SetLine({2, 0}, {2, 2});
+
+    const auto p0 = curvilinearGrid->m_gridNodes(2, 1);
+    const auto p1 = curvilinearGrid->m_gridNodes(1, 1);
+
+    // Execute
+    curvilinearLineMirror.Compute();
+
+    EXPECT_EQ(4, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    // Asserts
+    constexpr double tolerance = 1e-6;
+    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_actual = curvilinearGrid->m_gridNodes(3, 1);
+    ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
+}
+
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnBottomBoundary)
 {
     // Set-up
