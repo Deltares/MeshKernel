@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          # - ubuntu-latest
+          - ubuntu-latest
           - macos-latest
           #- macos-13-xlarge
         build_type:
@@ -32,7 +32,7 @@ jobs:
           - Debug
           #- DebugWithRelInfo
 
-    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml
+    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@${GITHUB_REF}
     with:
-      platform: ${{ matrix.platform }}
-      build_type: ${{ matrix.build_type }}
+       platform: ${{ matrix.platform }}
+       build_type: ${{ matrix.build_type }}

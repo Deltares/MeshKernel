@@ -16,8 +16,8 @@ jobs:
   build:
     
     # Build strategy
-    strategy:
-      fail-fast: false
+    #strategy:
+    #  fail-fast: false
 
     # Build platform
     runs-on: ${{ inputs.platform }}
