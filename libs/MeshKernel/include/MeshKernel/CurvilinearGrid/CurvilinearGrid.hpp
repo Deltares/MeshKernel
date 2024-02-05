@@ -236,11 +236,11 @@ namespace meshkernel
         /// @brief Get the mesh bounding box.
         BoundingBox GetBoundingBox() const;
 
-        /// @brief The number of columns of nodes
+        /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
         UInt NumM() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
-        /// @brief The number of rows of nodes
+        /// @brief The number of nodes N in the n dimension
         /// @return A number >= 2 for a valid curvilinear grid
         UInt NumN() const { return static_cast<UInt>(m_gridNodes.cols()); }
 
