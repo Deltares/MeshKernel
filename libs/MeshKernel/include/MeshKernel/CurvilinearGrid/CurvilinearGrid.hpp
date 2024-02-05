@@ -152,20 +152,21 @@ namespace meshkernel
         void ComputeGridNodeTypes();
 
         /// @brief Determines the grid node type
-        /// @param[in] m The m coordinate
-        /// @param[in] n The n coordinate
+        /// @param[in] m The m-dimension index
+        /// @param[in] n The n-dimension index
         /// @return the node type
         NodeType GetNodeType(UInt m, UInt n) const { return m_gridNodesTypes(m, n); }
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
-        /// @param[in] m The m coordinate
-        /// @param[in] n The n coordinate
+        /// @param[in] m The m-dimension index
+        /// @param[in] n The n-dimension index
         /// @return True if the face is valid, false otherwise
         [[nodiscard]] bool AreFaceNodesValid(UInt m, UInt n) const;
 
         /// @brief Determines if the face mask is true (valid face) or false (invalid face)
-        /// @note the face mask values are determined by the result of the valid face-nodes test
+        /// @param[in] m The m-dimension index
+        /// @param[in] n The n-dimension index
         /// @return the face mask value (true/false)
         [[nodiscard]] bool IsFaceMaskValid(UInt m, UInt n) const { return m_gridFacesMask(m, n); }
 
