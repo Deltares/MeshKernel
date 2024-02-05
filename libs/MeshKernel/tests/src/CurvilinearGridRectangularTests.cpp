@@ -564,3 +564,27 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
             << "(" << nodes[i].x << "," << nodes[i].y << ")";
     }
 }
+
+TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerializedEdges)
+{
+    // note: this is a characterization test to document the current behavior of MakeCurvilinearGrid,
+    // the constructor of CurvilinearGrid taking a matrix of points, and
+    // CurvilinearGrid::ConvertCurvilinearToNodesAndEdges
+    // A grid of nx=3 and ny=2 returns node coordinates with 3 y-coordinates and 2 x-coordinates!!!
+    const auto grid = MakeCurvilinearGrid(2.0, 1.0, 2.0, 1.0, 3, 2);
+
+    EXPECT_EQ(3, grid->NumM());
+    EXPECT_EQ(2, grid->NumN());
+
+    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const std::vector<Edge> expected_edges = {{{0u, 2u}, {1u, 3u}, {2u, 4u}, {3u, 5u}, {0u, 1u}, {2u, 3u}, {4u, 5u}}};
+
+    EXPECT_EQ(expected_edges.size(), edges.size());
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(expected_edges[i], edges[i])
+            << "#" << i << ": "
+            << "[" << expected_edges[i].first << "," << expected_edges[i].second << "] != "
+            << "[" << edges[i].first << "," << edges[i].second << "]";
+    }
+}
