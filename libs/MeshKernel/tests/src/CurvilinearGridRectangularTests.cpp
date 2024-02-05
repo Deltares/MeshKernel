@@ -514,3 +514,27 @@ TEST(CurvilinearGridUniform, GetColumnVector_ReturnsVectorOfLengthNumN)
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
     EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtM(1).size());
 }
+
+TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerializedNodes)
+{
+    // note: this is a characterization test to document the current behavior of MakeCurvilinearGrid,
+    // the constructor of CurvilinearGrid taking a matrix of points, and
+    // CurvilinearGrid::ConvertCurvilinearToNodesAndEdges
+    // A grid of nx=3 and ny=2 returns node coordinates with 3 y-coordinates and 2 x-coordinates!!!
+    const auto grid = MakeCurvilinearGrid(2.0, 1.0, 2.0, 1.0, 3, 2);
+
+    EXPECT_EQ(3, grid->NumM());
+    EXPECT_EQ(2, grid->NumN());
+
+    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const std::vector<Point> expected_nodes = {{2., 1.}, {2., 2.}, {4., 1.}, {4., 2.}, {6., 1.}, {6., 2.}};
+
+    EXPECT_EQ(expected_nodes.size(), nodes.size());
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_TRUE(meshkernel::IsEqual(expected_nodes[i], nodes[i], 1e-4))
+            << "#" << i << ": "
+            << "(" << expected_nodes[i].x << "," << expected_nodes[i].y << ") != "
+            << "(" << nodes[i].x << "," << nodes[i].y << ")";
+    }
+}
