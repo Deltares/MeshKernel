@@ -257,7 +257,7 @@ namespace meshkernel
     template <InterpolatableType T>
     double BilinearInterpolationOnGriddedSamples<T>::GetGriddedValue(UInt columnIndex, UInt rowIndex) const
     {
-        const auto index = (m_numYCoord - rowIndex - 1) * m_numXCoord + columnIndex;
+        const auto index = rowIndex * m_numXCoord + columnIndex;
         return static_cast<double>(m_values[index]);
     }
 

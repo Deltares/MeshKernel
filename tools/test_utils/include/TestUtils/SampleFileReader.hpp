@@ -108,7 +108,7 @@ std::tuple<int, int, double, double, double, double, std::vector<values_type>> R
         }
         numlines++;
     }
-
+    std::reverse(rows.begin(), rows.end());
     std::vector<values_type> values;
     for (size_t i = 0; i < rows.size(); ++i)
     {
