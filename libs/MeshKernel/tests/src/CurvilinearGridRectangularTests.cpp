@@ -506,11 +506,11 @@ TEST(CurvilinearGridUniform, GetNodes_ReturnsCopyOfNodeMatrix)
 TEST(CurvilinearGridUniform, GetRowVector_ReturnsVectorOfLengthNumM)
 {
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
-    EXPECT_EQ(subject->NumM(), subject->GetNodeRowVector(1).size());
+    EXPECT_EQ(subject->NumM(), subject->GetNodeVectorAtN(1).size());
 }
 
 TEST(CurvilinearGridUniform, GetColumnVector_ReturnsVectorOfLengthNumN)
 {
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
-    EXPECT_EQ(subject->NumN(), subject->GetNodeColumnVector(1).size());
+    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtM(1).size());
 }

@@ -45,13 +45,13 @@ Splines::Splines(CurvilinearGrid const& grid)
     // first the m_n m_m-gridlines
     for (UInt n = 0; n < grid.NumN(); ++n)
     {
-        AddSpline(grid.GetNodeRowVector(n));
+        AddSpline(grid.GetNodeVectorAtN(n));
     }
 
     // then the m_m m_n-gridlines
     for (UInt m = 0; m < grid.NumM(); ++m)
     {
-        AddSpline(grid.GetNodeColumnVector(m));
+        AddSpline(grid.GetNodeVectorAtM(m));
     }
 
     m_projection = grid.m_projection;
