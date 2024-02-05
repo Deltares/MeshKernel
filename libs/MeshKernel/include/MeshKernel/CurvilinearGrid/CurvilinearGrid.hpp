@@ -249,7 +249,7 @@ namespace meshkernel
         bool IsEmpty() const { return lin_alg::MatrixIsEmpty(m_gridNodes); }
 
         /// @brief Get a copy of the nodes matrix
-        /// @note:rows are stored as columns and vice versa
+        /// @note:the m dimension is the first (or row) index, the n dimension is the second (or column) index
         /// @return a copy of the matrix
         lin_alg::Matrix<Point> GetNodes() const { return m_gridNodes; }
 
