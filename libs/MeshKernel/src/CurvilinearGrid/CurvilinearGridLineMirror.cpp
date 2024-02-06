@@ -74,7 +74,7 @@ void CurvilinearGridLineMirror::Compute()
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Right)
         {
             auto const last_row = m_grid.m_gridNodes.rows() - 1;
-            m_grid.m_gridNodes.row(last_row)[i] = m_grid.m_gridNodes(m_grid.m_numM - 1, i) * a -
+            m_grid.m_gridNodes.row(last_row)[i] = m_grid.m_gridNodes(m_grid.m_numM - 1, i) * a +
                                                   m_grid.m_gridNodes(m_grid.m_numM - 2, i) * b;
         }
         if (gridLineType == CurvilinearGrid::BoundaryGridLineType::Up)

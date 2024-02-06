@@ -4,6 +4,60 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumContributionsFromSubsequentColumns)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 2.0, 3, 2);
+    EXPECT_EQ(3, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    constexpr double f = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    curvilinearLineMirror.SetLine({0, 0}, {0, 2});
+
+    const auto p0 = curvilinearGrid->m_gridNodes(0, 1);
+    const auto p1 = curvilinearGrid->m_gridNodes(1, 1);
+
+    // Execute
+    curvilinearLineMirror.Compute();
+
+    EXPECT_EQ(4, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    // Asserts
+    constexpr double tolerance = 1e-6;
+    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_actual = curvilinearGrid->m_gridNodes(0, 1);
+    ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
+}
+
+TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySumContributionsFromPrecedingColumns)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 2.0, 3, 2);
+    EXPECT_EQ(3, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    constexpr double f = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    curvilinearLineMirror.SetLine({2, 0}, {2, 2});
+
+    const auto p0 = curvilinearGrid->m_gridNodes(2, 1);
+    const auto p1 = curvilinearGrid->m_gridNodes(1, 1);
+
+    // Execute
+    curvilinearLineMirror.Compute();
+
+    EXPECT_EQ(4, curvilinearGrid->m_gridNodes.rows());
+    EXPECT_EQ(2, curvilinearGrid->m_gridNodes.cols());
+
+    // Asserts
+    constexpr double tolerance = 1e-6;
+    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_actual = curvilinearGrid->m_gridNodes(3, 1);
+    ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
+}
+
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnBottomBoundary)
 {
     // Set-up
@@ -109,24 +163,19 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
 
     // Asserts
     constexpr double tolerance = 1e-6;
+    const std::vector<meshkernel::Point> expected{
+        {80180.468545087249, 366414.38889474329},
+        {80262.455393654236, 366411.53364276129},
+        {80344.165583941241, 366400.34976007964},
+        {80425.29492251901, 366381.16727329313},
+        {80505.648164048485, 366354.53710556292},
+        {80619.791294589813, 366341.94004566048},
+        {80733.43286732884, 366326.7255580065},
+        {80846.495013789012, 366309.39825786441},
+        {80959.52970866223, 366287.90794878011}};
     Eigen::Index const last = curvilinearGrid->m_gridNodes.rows() - 1;
-    ASSERT_NEAR(272501.90233055683, curvilinearGrid->m_gridNodes(last, 0).x, tolerance);
-    ASSERT_NEAR(272806.24608551903, curvilinearGrid->m_gridNodes(last, 1).x, tolerance);
-    ASSERT_NEAR(273113.11689828755, curvilinearGrid->m_gridNodes(last, 2).x, tolerance);
-    ASSERT_NEAR(273421.82178223983, curvilinearGrid->m_gridNodes(last, 3).x, tolerance);
-    ASSERT_NEAR(273731.95226017234, curvilinearGrid->m_gridNodes(last, 4).x, tolerance);
-    ASSERT_NEAR(274115.35433400975, curvilinearGrid->m_gridNodes(last, 5).x, tolerance);
-    ASSERT_NEAR(274499.35511354846, curvilinearGrid->m_gridNodes(last, 6).x, tolerance);
-    ASSERT_NEAR(274883.99770888803, curvilinearGrid->m_gridNodes(last, 7).x, tolerance);
-    ASSERT_NEAR(275268.64743354439, curvilinearGrid->m_gridNodes(last, 8).x, tolerance);
-
-    ASSERT_NEAR(1246326.3868120508, curvilinearGrid->m_gridNodes(last, 0).y, tolerance);
-    ASSERT_NEAR(1246385.9365869928, curvilinearGrid->m_gridNodes(last, 1).y, tolerance);
-    ASSERT_NEAR(1246430.2519299081, curvilinearGrid->m_gridNodes(last, 2).y, tolerance);
-    ASSERT_NEAR(1246461.7442429555, curvilinearGrid->m_gridNodes(last, 3).y, tolerance);
-    ASSERT_NEAR(1246482.6999190229, curvilinearGrid->m_gridNodes(last, 4).y, tolerance);
-    ASSERT_NEAR(1246466.1900003948, curvilinearGrid->m_gridNodes(last, 5).y, tolerance);
-    ASSERT_NEAR(1246448.5627491081, curvilinearGrid->m_gridNodes(last, 6).y, tolerance);
-    ASSERT_NEAR(1246429.5894027406, curvilinearGrid->m_gridNodes(last, 7).y, tolerance);
-    ASSERT_NEAR(1246411.3593545749, curvilinearGrid->m_gridNodes(last, 8).y, tolerance);
+    for (int i = 0; i < 9; ++i)
+    {
+        EXPECT_TRUE(meshkernel::IsEqual(expected[i], curvilinearGrid->m_gridNodes(last, i), tolerance));
+    }
 }
