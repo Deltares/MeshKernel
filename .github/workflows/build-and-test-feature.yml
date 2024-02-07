@@ -1,6 +1,9 @@
 name: Build and test
 
 on:
+  push:
+    branches:
+    - "feature/**"
   pull_request:
     types:
       - opened # triggers build when opened
@@ -24,10 +27,7 @@ jobs:
           - Release
           - Debug
 
-    runs-on: ${{ matrix.platform }}
-
-    steps:
-      - uses: ./.github/workflows/build-and-test-workflow.yml
-        with:
-          platform: ${{ matrix.platform }}
-          build_type: ${{ matrix.build_type }}
+    uses: ./.github/workflows/build-and-test-workflow.yml
+    with:
+      platform: ${{ matrix.platform }}
+      build_type: ${{ matrix.build_type }}
