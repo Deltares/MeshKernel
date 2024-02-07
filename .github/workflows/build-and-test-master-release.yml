@@ -1,0 +1,34 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - master
+      - "release/v[0-9].[0-9].[0-9]"
+  pull_request:
+    types:
+      - opened # triggers build when opened
+      - synchronize # triggers build when commits are pushed to HEAD
+    branches:
+      - master
+      - "release/v[0-9].[0-9].[0-9]"
+  # Manual trigger
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - macos-12
+          - macos-13-xlarge
+        build_type:
+          - Release
+
+    uses: ./.github/workflows/build-and-test-workflow.yml
+    with:
+      platform: ${{ matrix.platform }}
+      build_type: ${{ matrix.build_type }}
