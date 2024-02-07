@@ -32,7 +32,7 @@ jobs:
           - Debug
           #- DebugWithRelInfo
 
-    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@${GITHUB_REF}
+    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@feature/GRIDEDIT-892_reusable_build_and_test_workflow
     with:
        platform: ${{ matrix.platform }}
        build_type: ${{ matrix.build_type }}
