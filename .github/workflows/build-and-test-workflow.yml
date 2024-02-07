@@ -64,8 +64,8 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-ext-deps-cache-key
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-ext-deps-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
@@ -84,7 +84,7 @@ jobs:
         uses: actions/cache/save@v3
         if: runner.os != 'macOS' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-ext-deps-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
@@ -101,6 +101,13 @@ jobs:
       - name: Build
         run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ inputs.build_type }} -j
 
+      # Step: Cache the build directory for testing and deployment
+      - name: Cache build
+        uses: actions/cache/save@v3
+        with:
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+          path: ${{ steps.paths.outputs.build_dir }}
+
   test:
 
     name: test-${{ inputs.platform }}-${{ inputs.build_type }}
@@ -110,24 +117,42 @@ jobs:
     runs-on: ${{ inputs.platform }}
 
     steps:
-      # Step: Test
+
+      # Step: Restore the build directory for testing
+      - name: Restore build
+        uses: actions/cache/restore@v3
+        with:
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+          path: ${{ needs.build.outputs.build_dir }}
+
+      # Step: Test backend
       #       Works if runner.os == 'Linux' or runner.os == 'macOS'
       #       if runner.os == 'Windows',  /inputs.build_type needs to be inserted before /tests
       - name: Test backend
         run: ${{ needs.build.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
 
+      # Step: Test API
       - name: Test API
         run: ${{ needs.build.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
 
   artifact:
 
-    name: artifact-${{ inputs.platform }}-${{ inputs.build_type }}
+    name: deploy-${{ inputs.platform }}-${{ inputs.build_type }}
 
     needs: build
 
     runs-on: ${{ inputs.platform }}
 
     steps:
+
+      # Step: Restore the build directory for testing
+      - name: Restore build
+        uses: actions/cache/restore@v3
+        with:
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+          path: ${{ needs.build.outputs.build_dir }}
 
       # Step: CMake install
       - name: Install
@@ -141,3 +166,15 @@ jobs:
           name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
           path: ${{ needs.build.outputs.install_dir }}
           if-no-files-found: error
+
+  clean:
+    name: clean-${{ inputs.platform }}-${{ inputs.build_type }}
+
+    needs: build
+
+    runs-on: ${{ inputs.platform }}
+
+    steps:
+
+      - run: gh cache delete ${{ inputs.platform }}-${{ inputs.build_type }}-build-cache-key
+
