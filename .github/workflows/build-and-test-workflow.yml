@@ -16,9 +16,10 @@ jobs:
   
   build:
     
-    name: build-${{ inputs.platform }}-${{ inputs.build_type }}
-
+    # Build platform
     runs-on: ${{ inputs.platform }}
+
+    name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
     # The default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
@@ -26,11 +27,6 @@ jobs:
     env:
       CC: gcc-11
       CXX: g++-11
-
-    outputs:
-      build_dir: ${{ steps.paths.outputs.build_dir }}
-      deps_dir: ${{ steps.paths.outputs.ext_deps_dir }}
-      install_dir: ${{ steps.paths.outputs.install_dir }}
 
     # Build steps
     steps:
@@ -101,37 +97,19 @@ jobs:
       - name: Build
         run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ inputs.build_type }} -j
 
-  test:
-
-    name: test-${{ inputs.platform }}-${{ inputs.build_type }}
-
-    needs: build
-
-    runs-on: ${{ inputs.platform }}
-
-    steps:
       # Step: Test
       #       Works if runner.os == 'Linux' or runner.os == 'macOS'
       #       if runner.os == 'Windows',  /inputs.build_type needs to be inserted before /tests
-      - name: Test backend
-        run: ${{ needs.build.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
-
-      - name: Test API
-        run: ${{ needs.build.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
-
-  artifact:
-
-    name: artifact-${{ inputs.platform }}-${{ inputs.build_type }}
-
-    needs: build
-
-    runs-on: ${{ inputs.platform }}
-
-    steps:
+      - name: Test
+        run: |
+          echo -e "\n***************   MeshKernel Tests   ***************\n"
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
+          echo -e "\n\n*************** MeshKernel API Tests ***************\n"
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
 
       # Step: CMake install
       - name: Install
-        run: cmake --install ${{ needs.build.outputs.build_dir }}
+        run: cmake --install ${{ steps.paths.outputs.build_dir }}
       
       # Step: Upload artifacts
       - name: Upload artifacts
@@ -139,5 +117,5 @@ jobs:
         if: always()
         with:
           name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
-          path: ${{ needs.build.outputs.install_dir }}
+          path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error
