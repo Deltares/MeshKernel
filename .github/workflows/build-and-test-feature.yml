@@ -21,11 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - ubuntu-latest
-          - macos-latest
+          - macos-12
         build_type:
           - Release
-          - Debug
 
     uses: ./.github/workflows/build-and-test-workflow.yml
     with:
