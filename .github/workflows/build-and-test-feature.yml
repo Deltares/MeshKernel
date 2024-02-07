@@ -18,13 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         target_platform:
-          - ubuntu-latest
-          - macos-latest
+          - 'ubuntu-latest'
+          - 'macos-latest'
         build_type:
-          - Release
-          - Debug
+          - 'Release'
+          - 'Debug'
 
-    #uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@13b53c2b5f6c25c277d753dbca553fabf4d31bbe
     uses: ./.github/workflows/build-and-test-workflow.yml
     with:
       target_platform: ${{ matrix.target_platform }}
