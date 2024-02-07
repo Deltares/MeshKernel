@@ -3,8 +3,8 @@ name: Build and test workflow
 on:
   workflow_call:
     inputs:
-      target_platform:
-        description: "Target platform"
+      platform:
+        description: "Platform"
         required: true
         type: string
       build_type:
@@ -17,9 +17,9 @@ jobs:
   build:
     
     # Build platform
-    runs-on: ${{ inputs.target_platform }}
+    runs-on: ${{ inputs.platform }}
 
-    name: ${{ inputs.target_platform }}-${{ inputs.build_type }}
+    name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
     # The default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
@@ -116,6 +116,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: meshkernel-${{ inputs.target_platform }}-${{ inputs.build_type }}
+          name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
           path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error

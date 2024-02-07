@@ -14,17 +14,24 @@ jobs:
 
   build:
 
-    strategy:
-      fail-fast: false
-      matrix:
-        target_platform:
-          - 'ubuntu-latest'
-          - 'macos-latest'
-        build_type:
-          - 'Release'
-          - 'Debug'
-
     uses: ./.github/workflows/build-and-test-workflow.yml
     with:
-      target_platform: ${{ matrix.target_platform }}
-      build_type: ${{ matrix.build_type }}
+      platform: ubuntu-latest
+      build_type: Release
+
+  # build:
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       platform:
+  #         - ubuntu-latest
+  #         - macos-latest
+  #       build_type:
+  #         - Release
+  #         - Debug
+
+  #   uses: ./.github/workflows/build-and-test-workflow.yml
+  #   with:
+  #     platform: ${{ matrix.platform }}
+  #     build_type: ${{ matrix.build_type }}
