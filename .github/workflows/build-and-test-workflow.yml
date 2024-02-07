@@ -28,7 +28,7 @@ jobs:
       CC: gcc-11
       CXX: g++-11
 
-      # Build steps
+    # Build steps
     steps:
 
       # Step: Checkout
