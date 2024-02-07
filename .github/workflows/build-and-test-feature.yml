@@ -1,17 +1,11 @@
 name: Build and test
 
 on:
-  # push:
-  #   branches:
-  #     - master
-  #     - "release/v[0-9].[0-9].[0-9]"
   pull_request:
     types:
       - opened # triggers build when opened
       - synchronize # triggers build when commits are pushed to HEAD
     branches:
-      #- master
-      #- "release/v[0-9].[0-9].[0-9]"
       - "feature/**"
   # Manual trigger
   workflow_dispatch:
@@ -23,16 +17,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
+        target_platform:
           - ubuntu-latest
           - macos-latest
-          #- macos-13-xlarge
         build_type:
           - Release
           - Debug
-          #- DebugWithRelInfo
 
-    uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@13b53c2b5f6c25c277d753dbca553fabf4d31bbe
+    #uses: Deltares/MeshKernel/.github/workflows/build-and-test-workflow.yml@13b53c2b5f6c25c277d753dbca553fabf4d31bbe
+    uses: ./build-and-test-workflow.yml
     with:
-       platform: ${{ matrix.platform }}
-       build_type: ${{ matrix.build_type }}
+      target_platform: ${{ matrix.target_platform }}
+      build_type: ${{ matrix.build_type }}
