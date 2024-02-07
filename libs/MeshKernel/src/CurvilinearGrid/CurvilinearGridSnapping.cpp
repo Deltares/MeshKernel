@@ -141,9 +141,9 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
     if (m_points.size() == 2)
     {
         const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.m_numM, snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.NumM(), snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
         const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
-        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.m_numN, snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.NumN(), snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(m1, n1), CurvilinearGridNodeIndices(m2, n2)};
     }
 

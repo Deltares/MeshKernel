@@ -49,10 +49,10 @@ void CurvilinearGridDeRefinement::Compute()
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
-    deRefinedGrid.reserve(m_grid.m_numM);
+    deRefinedGrid.reserve(m_grid.NumM());
 
     UInt mIndexOriginalGrid = 0;
-    while (mIndexOriginalGrid < m_grid.m_numM)
+    while (mIndexOriginalGrid < m_grid.NumM())
     {
         UInt localMDeRefinement = 1;
         if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
@@ -60,17 +60,17 @@ void CurvilinearGridDeRefinement::Compute()
             localMDeRefinement = numMToDeRefine;
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
-        deRefinedGrid.back().reserve(m_grid.m_numN);
+        deRefinedGrid.back().reserve(m_grid.NumN());
 
         UInt nIndexOriginalGrid = 0;
-        while (nIndexOriginalGrid < m_grid.m_numN)
+        while (nIndexOriginalGrid < m_grid.NumN())
         {
             UInt localNDeRefinement = 1;
             if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
             {
                 localNDeRefinement = numNToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid.m_gridNodes(mIndexOriginalGrid, nIndexOriginalGrid));
+            deRefinedGrid.back().emplace_back(m_grid.GetNode(mIndexOriginalGrid, nIndexOriginalGrid));
             nIndexOriginalGrid += localNDeRefinement;
         }
         mIndexOriginalGrid += localMDeRefinement;
