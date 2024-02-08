@@ -150,10 +150,10 @@ TEST(CurvilinearGridSmoothness, Compute_SmoothnessOfRegularGridWithHole_ShouldCo
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
-    grid->m_gridNodes(4, 4).SetInvalid();
-    grid->m_gridNodes(4, 5).SetInvalid();
-    grid->m_gridNodes(5, 4).SetInvalid();
-    grid->m_gridNodes(5, 5).SetInvalid();
+    grid->GetNode(4, 4).SetInvalid();
+    grid->GetNode(4, 5).SetInvalid();
+    grid->GetNode(5, 4).SetInvalid();
+    grid->GetNode(5, 5).SetInvalid();
 
     lin_alg::Matrix<double> smoothness;
 

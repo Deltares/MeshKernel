@@ -32,6 +32,7 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
+#include <MeshKernel/CasulliRefinement.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
@@ -524,8 +525,8 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numN);
-            curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numM);
+            curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumN());
+            curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumM());
         }
         catch (...)
         {
@@ -564,11 +565,6 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
-            {
-                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
-            }
-
             contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
@@ -586,11 +582,6 @@ namespace meshkernelapi
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
-            {
-                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
             }
 
             auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();
@@ -2054,6 +2045,26 @@ namespace meshkernelapi
 
             meshkernel::Translation translation(meshkernel::Vector(translationX, translationY));
             meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {

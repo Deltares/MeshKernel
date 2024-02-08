@@ -525,6 +525,41 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(3361, mesh2d.num_edges);
 }
 
+TEST(MeshRefinement, RefineGridUsingApi_CasulliRefinement_ShouldRefine)
+{
+    // Prepare
+    int meshKernelId = -1;
+    const int projectionType = 1;
+
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 11;
+    makeGridParameters.num_rows = 11;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Refine using Casulli algorithm
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    // Check number of nodes and edges is correct.
+    EXPECT_EQ(576, mesh2d.num_nodes);
+    EXPECT_EQ(1104, mesh2d.num_edges);
+}
+
 class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValues>
 {
 public:
@@ -558,7 +593,6 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     int interpolationType;
     if (interpolationValueType == meshkernel::InterpolationValues::shortType)
     {
-
         errorCode = meshkernelapi::mkernel_get_interpolation_type_short(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
         auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<short>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");

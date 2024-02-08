@@ -23,30 +23,30 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     curvilinearGridRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(13, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(13, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 
     constexpr double tolerance = 1e-12;
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 0).x, tolerance);
-    ASSERT_NEAR(10.0, curvilinearGrid.m_gridNodes(1, 0).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 0).x, tolerance);
 
-    ASSERT_NEAR(11.0, curvilinearGrid.m_gridNodes(2, 0).x, tolerance);
-    ASSERT_NEAR(12.0, curvilinearGrid.m_gridNodes(3, 0).x, tolerance);
-    ASSERT_NEAR(13.0, curvilinearGrid.m_gridNodes(4, 0).x, tolerance);
-    ASSERT_NEAR(14.0, curvilinearGrid.m_gridNodes(5, 0).x, tolerance);
-    ASSERT_NEAR(15.0, curvilinearGrid.m_gridNodes(6, 0).x, tolerance);
-    ASSERT_NEAR(16.0, curvilinearGrid.m_gridNodes(7, 0).x, tolerance);
-    ASSERT_NEAR(17.0, curvilinearGrid.m_gridNodes(8, 0).x, tolerance);
-    ASSERT_NEAR(18.0, curvilinearGrid.m_gridNodes(9, 0).x, tolerance);
-    ASSERT_NEAR(19.0, curvilinearGrid.m_gridNodes(10, 0).x, tolerance);
+    ASSERT_NEAR(11.0, curvilinearGrid.GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(12.0, curvilinearGrid.GetNode(3, 0).x, tolerance);
+    ASSERT_NEAR(13.0, curvilinearGrid.GetNode(4, 0).x, tolerance);
+    ASSERT_NEAR(14.0, curvilinearGrid.GetNode(5, 0).x, tolerance);
+    ASSERT_NEAR(15.0, curvilinearGrid.GetNode(6, 0).x, tolerance);
+    ASSERT_NEAR(16.0, curvilinearGrid.GetNode(7, 0).x, tolerance);
+    ASSERT_NEAR(17.0, curvilinearGrid.GetNode(8, 0).x, tolerance);
+    ASSERT_NEAR(18.0, curvilinearGrid.GetNode(9, 0).x, tolerance);
+    ASSERT_NEAR(19.0, curvilinearGrid.GetNode(10, 0).x, tolerance);
 
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(11, 0).x, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(12, 0).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 0).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(12, 0).x, tolerance);
 
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 0).y, tolerance);
-    ASSERT_NEAR(10.0, curvilinearGrid.m_gridNodes(0, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(0, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(0, 3).y, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).y, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(0, 1).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 3).y, tolerance);
 }
 
 TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldRefine)
@@ -69,52 +69,52 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     curvilinearGridRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(15, curvilinearGrid.m_numM);
-    ASSERT_EQ(4, curvilinearGrid.m_numN);
+    ASSERT_EQ(15, curvilinearGrid.NumM());
+    ASSERT_EQ(4, curvilinearGrid.NumN());
 
     constexpr double tolerance = 1e-12;
 
     // vertical gridline 0
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 0).x, tolerance);
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 1).x, tolerance);
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 2).x, tolerance);
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 3).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 3).x, tolerance);
 
-    ASSERT_NEAR(0.0, curvilinearGrid.m_gridNodes(0, 0).y, tolerance);
-    ASSERT_NEAR(10.0, curvilinearGrid.m_gridNodes(0, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(0, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(0, 3).y, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).y, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(0, 1).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 3).y, tolerance);
 
     // vertical gridline 2
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(2, 0).x, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(2, 1).x, tolerance);
-    ASSERT_NEAR(11.0, curvilinearGrid.m_gridNodes(2, 2).x, tolerance);
-    ASSERT_NEAR(11.0, curvilinearGrid.m_gridNodes(2, 3).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(2, 1).x, tolerance);
+    ASSERT_NEAR(11.0, curvilinearGrid.GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(11.0, curvilinearGrid.GetNode(2, 3).x, tolerance);
 
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(3, 0).y, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(3, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(3, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(3, 3).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(3, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(3, 1).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(3, 2).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 3).y, tolerance);
 
     // vertical gridline 10
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(10, 0).x, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(10, 1).x, tolerance);
-    ASSERT_NEAR(19.0, curvilinearGrid.m_gridNodes(10, 2).x, tolerance);
-    ASSERT_NEAR(19.0, curvilinearGrid.m_gridNodes(10, 3).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(10, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(10, 1).x, tolerance);
+    ASSERT_NEAR(19.0, curvilinearGrid.GetNode(10, 2).x, tolerance);
+    ASSERT_NEAR(19.0, curvilinearGrid.GetNode(10, 3).x, tolerance);
 
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(10, 0).y, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(10, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(10, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(10, 3).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(10, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(10, 1).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(10, 2).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(10, 3).y, tolerance);
 
     // vertical gridline 11
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(11, 0).x, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(11, 1).x, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(11, 2).x, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(11, 3).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(11, 0).x, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(11, 1).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 2).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 3).x, tolerance);
 
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(11, 0).y, tolerance);
-    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.m_gridNodes(11, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.m_gridNodes(11, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.m_gridNodes(11, 3).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(11, 0).y, tolerance);
+    ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(11, 1).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 2).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(11, 3).y, tolerance);
 }

@@ -50,11 +50,11 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     // Split into 4 regions, setting the nodes in each region to invalid
     //
     // First region: all nodes "south" the designated box
-    for (UInt n = 0; n < m_grid.m_numN; ++n)
+    for (UInt n = 0; n < m_grid.NumN(); ++n)
     {
         for (UInt m = 0; m < lowerLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
@@ -63,25 +63,25 @@ void meshkernel::CurvilinearGridDeleteExterior::Compute()
     {
         for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
     // Third region: all nodes "directly east of" the designated box
-    for (UInt n = upperLimitI + 1; n < m_grid.m_numN; ++n)
+    for (UInt n = upperLimitI + 1; n < m_grid.NumN(); ++n)
     {
         for (UInt m = lowerLimitJ; m <= upperLimitJ; ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 
     // Fourth region: all nodes "north" the designated box
-    for (UInt n = 0; n < m_grid.m_numN; ++n)
+    for (UInt n = 0; n < m_grid.NumN(); ++n)
     {
-        for (UInt m = upperLimitJ + 1; m < m_grid.m_numM; ++m)
+        for (UInt m = upperLimitJ + 1; m < m_grid.NumM(); ++m)
         {
-            m_grid.m_gridNodes(n, m).SetInvalid();
+            m_grid.GetNode(n, m).SetInvalid();
         }
     }
 }

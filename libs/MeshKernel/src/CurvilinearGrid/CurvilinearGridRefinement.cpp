@@ -58,8 +58,8 @@ void CurvilinearGridRefinement::Compute()
     // Estimate the dimension of the refined grid
     const auto numMToRefine = m_upperRight.m_m - m_lowerLeft.m_m;
     const auto numNToRefine = m_upperRight.m_n - m_lowerLeft.m_n;
-    const UInt maxM = m_grid.m_numM + numMToRefine * (m_refinement - 1);
-    const UInt maxN = m_grid.m_numN + numNToRefine * (m_refinement - 1);
+    const UInt maxM = m_grid.NumM() + numMToRefine * (m_refinement - 1);
+    const UInt maxN = m_grid.NumN() + numNToRefine * (m_refinement - 1);
 
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
@@ -71,7 +71,7 @@ void CurvilinearGridRefinement::Compute()
     lin_alg::Matrix<Point> refinedGrid(maxM, maxN);
 
     UInt refinedM = 0;
-    for (UInt currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
+    for (UInt currentM = 0; currentM < m_grid.NumM() - 1; ++currentM)
     {
         UInt localMRefinement = 1;
         if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
@@ -80,7 +80,7 @@ void CurvilinearGridRefinement::Compute()
         }
 
         UInt refinedN = 0;
-        for (UInt currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
+        for (UInt currentN = 0; currentN < m_grid.NumN() - 1; ++currentN)
         {
 
             UInt localNRefinement = 1;
@@ -90,10 +90,10 @@ void CurvilinearGridRefinement::Compute()
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid.m_gridNodes(currentM, currentN).IsValid() &&
-                m_grid.m_gridNodes(currentM + 1, currentN).IsValid() &&
-                m_grid.m_gridNodes(currentM, currentN + 1).IsValid() &&
-                m_grid.m_gridNodes(currentM + 1, currentN + 1).IsValid())
+            if (m_grid.GetNode(currentM, currentN).IsValid() &&
+                m_grid.GetNode(currentM + 1, currentN).IsValid() &&
+                m_grid.GetNode(currentM, currentN + 1).IsValid() &&
+                m_grid.GetNode(currentM + 1, currentN + 1).IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
@@ -111,7 +111,7 @@ void CurvilinearGridRefinement::Compute()
                 rightRefinement.clear();
                 for (UInt n = 0; n < localNRefinement + 1; ++n)
                 {
-                    const auto splineIndex = m_grid.m_numN + currentM;
+                    const auto splineIndex = m_grid.NumN() + currentM;
                     const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
                     leftRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
                     rightRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
