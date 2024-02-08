@@ -54,7 +54,7 @@ Splines::Splines(CurvilinearGrid const& grid)
         AddSpline(grid.GetNodeVectorAtM(m));
     }
 
-    m_projection = grid.m_projection;
+    m_projection = grid.GetProjection();
 }
 
 /// add a new spline, return the index

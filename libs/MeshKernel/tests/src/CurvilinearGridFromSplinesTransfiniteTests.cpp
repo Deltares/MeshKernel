@@ -34,10 +34,11 @@ namespace testmk
 
         constexpr double tolerance = 1e-4;
 
-        for (meshkernel::UInt i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
+        const auto nodes = curvilinearGrid->GetNodeVector();
+        for (size_t i = 0; i < nodes.size(); ++i)
         {
-            EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid->Node(i).x, tolerance);
-            EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid->Node(i).y, tolerance);
+            EXPECT_NEAR(expectedPoints[i].x, nodes[i].x, tolerance);
+            EXPECT_NEAR(expectedPoints[i].y, nodes[i].y, tolerance);
         }
     }
 } // namespace testmk
@@ -308,11 +309,12 @@ void TestCurvilinearGridFromSplines(const std::vector<meshkernel::Point>& firstS
     ASSERT_EQ(curvilinearGrid->GetNumNodes(), expectedPoints.size());
 
     constexpr double tolerance = 1e-4;
+    auto const nodes = curvilinearGrid->GetNodeVector();
 
-    for (meshkernel::UInt i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid->Node(i).x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid->Node(i).y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, nodes[i].y, tolerance);
     }
 }
 

@@ -89,6 +89,4 @@ void CurvilinearGridLineMirror::Compute()
                                    m_grid.GetNode(i, 2) * b;
         }
     }
-
-    m_grid.SetFlatCopies();
 }

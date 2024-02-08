@@ -34,7 +34,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
-CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.Nodes(), grid.m_projection),
+CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : m_projection(grid.m_projection),
                                                                 m_gridNodes(grid.m_gridNodes),
                                                                 m_gridFacesMask(grid.m_gridFacesMask),
                                                                 m_gridNodesTypes(grid.m_gridNodesTypes),
@@ -42,11 +42,21 @@ CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edge
 {
 }
 
-CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
-
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : Mesh(projection)
+CurvilinearGrid::CurvilinearGrid(Projection projection) : m_projection(projection)
 {
-    SetGridNodes(grid);
+}
+
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_projection(projection),
+                                                                                              m_gridNodes(grid)
+{
+}
+
+void CurvilinearGrid::ClearMesh()
+{
+    m_mesh = nullptr;
+    m_nodeTreeBuilt = false;
+    m_edgeTreeBuilt = false;
+    m_gridIndices.clear();
 }
 
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
@@ -57,12 +67,7 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
     {
         throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
     }
-
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-    m_facesRTreeRequiresUpdate = true;
-
-    SetFlatCopies();
+    ClearMesh();
 }
 
 void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonIndex)
@@ -132,6 +137,8 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
         }
     }
 
+    bool changed = false;
+
     // mark points inside a polygonIndex
     for (UInt n = 0; n < numN; ++n)
     {
@@ -141,22 +148,52 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
             {
                 m_gridNodes(n, m).x = constants::missing::doubleValue;
                 m_gridNodes(n, m).y = constants::missing::doubleValue;
+                changed = true;
             }
         }
     }
+    if (changed)
+    {
+        ClearMesh();
+    }
 }
 
-void CurvilinearGrid::SetFlatCopies()
+void CurvilinearGrid::BuildMesh() const
 {
-    if (lin_alg::MatrixIsEmpty(m_gridNodes))
+    if (m_mesh)
     {
         return;
     }
 
-    const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
-    m_nodes = nodes;
-    m_edges = edges;
-    m_gridIndices = gridIndices;
+    auto [nodes, edges, indices] = ConvertCurvilinearToNodesAndEdges();
+    m_mesh = std::make_unique<Mesh>(edges, nodes, m_projection);
+    m_gridIndices = indices;
+}
+
+void CurvilinearGrid::BuildNodesTree() const
+{
+    if (m_nodeTreeBuilt)
+        return;
+
+    BuildMesh();
+    m_mesh->BuildTree(Location::Nodes);
+    m_nodeTreeBuilt = true;
+}
+
+void CurvilinearGrid::BuildEdgesTree() const
+{
+    if (m_edgeTreeBuilt)
+        return;
+
+    BuildMesh();
+    m_mesh->BuildTree(Location::Edges);
+    m_edgeTreeBuilt = true;
+}
+
+CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(UInt index) const
+{
+    BuildMesh();
+    return m_gridIndices[index];
 }
 
 std::tuple<std::vector<meshkernel::Point>,
@@ -237,31 +274,31 @@ bool CurvilinearGrid::IsValid() const
 
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
-    BuildTree(Location::Nodes);
-    SearchNearestLocation(point, Location::Nodes);
-    if (GetNumLocations(Location::Nodes) == 0)
+    BuildNodesTree();
+    m_mesh->SearchNearestLocation(point, Location::Nodes);
+    if (m_mesh->GetNumLocations(Location::Nodes) == 0)
     {
         return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
-    return m_gridIndices[nodeIndex];
+    const auto nodeIndex = m_mesh->GetLocationsIndices(0, Location::Nodes);
+    return GetNodeIndices(nodeIndex);
 }
 
-std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
+std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point) const
 {
-    BuildTree(Location::Edges);
-    SearchNearestLocation(point, Location::Edges);
-    if (GetNumLocations(Location::Edges) == 0)
+    BuildEdgesTree();
+    m_mesh->SearchNearestLocation(point, Location::Edges);
+    if (m_mesh->GetNumLocations(Location::Edges) == 0)
     {
         return {{}, {}};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Edges);
-    auto const firstNode = m_edges[nodeIndex].first;
-    auto const secondNode = m_edges[nodeIndex].second;
+    const auto nodeIndex = m_mesh->GetLocationsIndices(0, Location::Edges);
+    auto const firstNode = m_mesh->m_edges[nodeIndex].first;
+    auto const secondNode = m_mesh->m_edges[nodeIndex].second;
 
-    return {m_gridIndices[firstNode], m_gridIndices[secondNode]};
+    return {GetNodeIndices(firstNode), GetNodeIndices(secondNode)};
 }
 
 bool CurvilinearGrid::AreFaceNodesValid(UInt n, UInt m) const
@@ -624,7 +661,7 @@ void CurvilinearGrid::InsertFace(Point const& point)
 
     // Re-compute quantities
     ComputeGridNodeTypes();
-    SetFlatCopies();
+    ClearMesh();
 }
 
 bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
@@ -669,8 +706,8 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
                                0);
             gridSizeChanged = true;
         }
+        ClearMesh();
     }
-
     return gridSizeChanged;
 }
 
@@ -715,6 +752,7 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
 
 void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
 {
+    ClearMesh();
 
     // Allocate new grid line if needed
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
@@ -797,7 +835,7 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(CurvilinearGridNodeIndices c
     return {mSmoothingFactor, nSmoothingFactor, mixedSmoothingFactor};
 }
 
-double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction)
+double CurvilinearGrid::ComputeAverageNodalDistance(CurvilinearGridNodeIndices const& index, CurvilinearGridLine::GridLineDirection direction) const
 {
     if (index.m_m > NumM() || index.m_n > NumN())
     {
@@ -887,7 +925,7 @@ void CurvilinearGrid::DeleteNode(Point const& point)
         m_gridNodes(nodeToDelete.m_n, nodeToDelete.m_m) = {constants::missing::doubleValue, constants::missing::doubleValue};
         // Re-compute quantities
         ComputeGridNodeTypes();
-        SetFlatCopies();
+        ClearMesh();
     }
 }
 
@@ -904,6 +942,7 @@ void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
 
     // move fromPoint to toPoint
     m_gridNodes(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
+    ClearMesh();
 }
 
 meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const

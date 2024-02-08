@@ -1596,8 +1596,8 @@ TEST(MeshRefinement, CasulliRefinement)
 {
     constexpr double tolerance = 1.0e-12;
 
-    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
-    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
+    Mesh2D mesh(curvilinearGrid->GetEdgeVector(), curvilinearGrid->GetNodeVector(), Projection::cartesian);
 
     const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
@@ -1759,8 +1759,8 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     const size_t ExpectedNumberOfPoints = 184;
     const size_t ExpectedNumberOfEdges = 360;
 
-    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
-    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    Mesh2D mesh(curvilinearGrid->GetEdgeVector(), curvilinearGrid->GetNodeVector(), Projection::cartesian);
 
     const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());

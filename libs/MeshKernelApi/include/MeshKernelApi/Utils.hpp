@@ -374,13 +374,14 @@ namespace meshkernelapi
     /// @brief Sets the meshkernelapi::CurvilinearGrid data
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetCurvilinearGridApiData(const meshkernel::CurvilinearGrid& curvilinearGrid,
+    static void SetCurvilinearGridApiData(const meshkernel::CurvilinearGrid& grid,
                                           CurvilinearGrid& curvilinearGridApi)
     {
-        for (meshkernel::UInt n = 0; n < curvilinearGrid.GetNumNodes(); n++)
+        const auto& nodes = grid.GetNodeVector();
+        for (size_t n = 0; n < nodes.size(); n++)
         {
-            curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
-            curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
+            curvilinearGridApi.node_x[n] = nodes[n].x;
+            curvilinearGridApi.node_y[n] = nodes[n].y;
         }
     }
 
