@@ -9,15 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
-
     strategy:
       fail-fast: false
       matrix:
         platform:
           - macos-12
-          - macos-13-xlarge
+          - macos-14
         build_type:
           - Release
 

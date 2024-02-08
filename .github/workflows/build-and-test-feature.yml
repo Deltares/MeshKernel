@@ -3,7 +3,7 @@ name: Build and test
 on:
   push:
     branches:
-    - "feature/**"
+      - "feature/**"
   pull_request:
     types:
       - opened # triggers build when opened
@@ -14,14 +14,13 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
-
     strategy:
       fail-fast: false
       matrix:
         platform:
           - macos-12
+          - macos-14
         build_type:
           - Release
 
