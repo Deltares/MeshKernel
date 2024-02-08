@@ -46,8 +46,8 @@ CurvilinearGrid::CurvilinearGrid(Projection projection) : m_projection(projectio
 {
 }
 
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_projection(projection),
-                                                                                              m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> grid, Projection projection) : m_projection(projection),
+                                                                                       m_gridNodes(std::move(grid))
 {
 }
 

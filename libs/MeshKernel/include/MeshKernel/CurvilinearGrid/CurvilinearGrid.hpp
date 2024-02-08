@@ -84,7 +84,7 @@ namespace meshkernel
         /// @details The matrix row index corresponds to the CurvilinearGrid m index, the matrix column index corresponds to the CurvilinearGrid n index
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection);
+        CurvilinearGrid(lin_alg::Matrix<Point> grid, Projection projection);
 
         /// @brief Set the grid nodes of a curvilinear grid instance
         /// @details The matrix row index corresponds to the CurvilinearGrid m index, the matrix column index corresponds to the CurvilinearGrid n index
