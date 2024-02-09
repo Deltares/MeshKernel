@@ -777,6 +777,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
+        /// @brief Refine mesh using the Casulli refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId);
+
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
         /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernel::OrthogonalizationParameters::orthogonalization_to_smoothing_factor
@@ -1230,6 +1235,25 @@ namespace meshkernelapi
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
                                                                const meshkernel::MeshRefinementParameters& meshRefinementParameters);
+
+        /// @brief Refines a mesh2d based on samples with ridge refinement. This method automatically detects the ridges in a sample set.
+        ///
+        /// The number of successive splits is indicated on the sample value.
+        /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
+        /// a value of 2 two splits (a quadrilateral face generates 16 faces).
+        /// @param[in] meshKernelId                The id of the mesh state
+        /// @param[in] griddedSamples              The gridded samples
+        /// @param[in] relativeSearchRadius        The relative search radius relative to the face size, used for some interpolation algorithms
+        /// @param[in] minimumNumSamples           The minimum number of samples used for some averaging algorithms
+        /// @param[in] numberOfSmoothingIterations The number of smoothing iterations to apply to the input sample set
+        /// @param[in] meshRefinementParameters The mesh refinement parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                              const GriddedSamples& griddedSamples,
+                                                                              double relativeSearchRadius,
+                                                                              int minimumNumSamples,
+                                                                              int numberOfSmoothingIterations,
+                                                                              const meshkernel::MeshRefinementParameters& meshRefinementParameters);
 
         /// @brief Remove any disconnected regions from a mesh2d.
         ///

@@ -1,42 +1,23 @@
-name: Build and test on macos
+name: Build and test workflow
 
 on:
-  push:
-    branches:
-      - master
-      - "release/v[0-9].[0-9].[0-9]"
-  pull_request:
-    types:
-      - opened # triggers build when opened
-      - synchronize # triggers build when commits are pushed to HEAD
-    branches:
-      - master
-      - "release/v[0-9].[0-9].[0-9]"
-      - "feature/**"
-  # Manual trigger
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      platform:
+        description: "Platform"
+        required: true
+        type: string
+      build_type:
+        description: "Build type"
+        required: true
+        type: string
 
 jobs:
-  
   build:
-    
-    # Build strategy
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          # - ubuntu-latest
-          - macos-latest
-          - macos-13-xlarge
-        build_type:
-          - 'Release'
-          #- 'Debug'
-          #- 'DebugWithRelInfo '
-
     # Build platform
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ inputs.platform }}
 
-    name: ${{ matrix.platform }}-${{ matrix.build_type }}
+    name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
     # The default compiler on macos is clang, switch to gcc 11. Specifying the version is necessary.
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
@@ -45,9 +26,8 @@ jobs:
       CC: gcc-11
       CXX: g++-11
 
-      # Build steps
+    # Build steps
     steps:
-
       # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,7 +38,7 @@ jobs:
       # Step: Set paths
       - name: Set paths
         id: paths
-        run : |
+        run: |
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
@@ -77,8 +57,8 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ runner.os }}-cache-key
-          restore-keys: ${{ runner.os }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
@@ -89,7 +69,7 @@ jobs:
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
           -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work
           -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
-          -BuildType '${{ matrix.build_type }}'
+          -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
       # Step: Cache user-provided dependencies, executes only if no cache restored
@@ -97,7 +77,7 @@ jobs:
         uses: actions/cache/save@v3
         if: runner.os != 'macOS' && steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
-          key: ${{ runner.os }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
@@ -106,17 +86,17 @@ jobs:
           cmake
           -S ${{ github.workspace }}
           -B ${{ steps.paths.outputs.build_dir }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
           -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
-      
+
       # Step: CMake build
       - name: Build
-        run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ matrix.build_type }} -j
+        run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ inputs.build_type }} -j
 
       # Step: Test
       #       Works if runner.os == 'Linux' or runner.os == 'macOS'
-      #       if runner.os == 'Windows',  /matrix.build_type needs to be inserted before /tests
+      #       if runner.os == 'Windows',  /inputs.build_type needs to be inserted before /tests
       - name: Test
         run: |
           echo -e "\n***************   MeshKernel Tests   ***************\n"
@@ -127,12 +107,12 @@ jobs:
       # Step: CMake install
       - name: Install
         run: cmake --install ${{ steps.paths.outputs.build_dir }}
-      
+
       # Step: Upload artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: meshkernel-${{ matrix.platform }}-${{ matrix.build_type }}
+          name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
           path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error

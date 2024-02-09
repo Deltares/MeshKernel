@@ -81,6 +81,7 @@ namespace meshkernel
             LandWater = 3
         };
 
+    public:
         /// @brief Enumerator describing the different refinement types
         enum class RefinementType
         {
@@ -89,7 +90,6 @@ namespace meshkernel
             RidgeDetection = 3
         };
 
-    public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use

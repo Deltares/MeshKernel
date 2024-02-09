@@ -25,32 +25,23 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#pragma once
 
-using meshkernel::CurvilinearGrid;
-using meshkernel::CurvilinearGridLine;
-using meshkernel::CurvilinearGridNodeIndices;
+#include <vector>
 
-meshkernel::CurvilinearGridDeleteInterior::CurvilinearGridDeleteInterior(CurvilinearGrid& grid)
-    : CurvilinearGridAlgorithm(grid)
+#include "MeshKernel/Entities.hpp"
+
+enum class FunctionTestCase
 {
-}
+    GaussianBump = 1,
+    GaussianWave = 2,
+    RidgeXDirection = 3,
+    ArctanFunction = 4,
+};
 
-void meshkernel::CurvilinearGridDeleteInterior::Compute()
-{
-    const UInt lowerLimitI = m_lowerLeft.m_n;
-    const UInt upperLimitI = m_upperRight.m_n;
-
-    const UInt lowerLimitJ = m_lowerLeft.m_m;
-    const UInt upperLimitJ = m_upperRight.m_m;
-
-    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
-    {
-        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
-        {
-            m_grid.GetNode(n, m).SetInvalid();
-        }
-    }
-}
+std::vector<meshkernel::Sample>
+generateSampleData(FunctionTestCase testcase,
+                   meshkernel::UInt nx = 10,
+                   meshkernel::UInt ny = 10,
+                   double deltaX = 10.0,
+                   double deltaY = 10.0);

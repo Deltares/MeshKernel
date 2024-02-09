@@ -29,6 +29,7 @@ set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/CasulliRefinement.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/Definitions.cpp
@@ -99,6 +100,7 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp

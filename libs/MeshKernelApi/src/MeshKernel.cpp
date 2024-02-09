@@ -27,10 +27,12 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
+#include <MeshKernel/CasulliRefinement.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
@@ -523,8 +525,8 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numN);
-            curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->m_numM);
+            curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumN());
+            curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumM());
         }
         catch (...)
         {
@@ -563,11 +565,6 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
-            {
-                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
-            }
-
             contacts.num_contacts = static_cast<int>(meshKernelState[meshKernelId].m_contacts->Mesh2dIndices().size());
         }
         catch (...)
@@ -585,11 +582,6 @@ namespace meshkernelapi
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (!meshKernelState[meshKernelId].m_contacts->AreComputed())
-            {
-                throw meshkernel::MeshKernelError("The The contacts have not been computed.");
             }
 
             auto const& mesh1dIndices = meshKernelState[meshKernelId].m_contacts->Mesh1dIndices();
@@ -1737,13 +1729,17 @@ namespace meshkernelapi
             // averagingMethod may be used uninitialised;
             meshkernel::AveragingInterpolation::Method averagingMethod;
 
-            if (meshRefinementParameters.refinement_type == 1)
+            if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
             }
-            if (meshRefinementParameters.refinement_type == 2)
+            else if (meshRefinementParameters.refinement_type == static_cast<int>(meshkernel::MeshRefinement::RefinementType::RefinementLevels))
             {
                 averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
+            }
+            else
+            {
+                throw meshkernel::MeshKernelError("Invalid mesh refinement type.");
             }
 
             const bool refineOutsideFace = meshRefinementParameters.account_for_samples_outside == 1 ? true : false;
@@ -1756,6 +1752,58 @@ namespace meshkernelapi
                                                                                   relativeSearchRadius,
                                                                                   refineOutsideFace,
                                                                                   transformSamples,
+                                                                                  static_cast<meshkernel::UInt>(minimumNumSamples));
+
+            meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      std::move(averaging),
+                                                      meshRefinementParameters);
+            meshRefinement.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                          const GriddedSamples& samples,
+                                                                          double relativeSearchRadius,
+                                                                          int minimumNumSamples,
+                                                                          int numberOfSmoothingIterations,
+                                                                          const meshkernel::MeshRefinementParameters& meshRefinementParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
+            }
+            if (meshRefinementParameters.refinement_type != static_cast<int>(meshkernel::MeshRefinement::RefinementType::RidgeDetection))
+            {
+                throw meshkernel::MeshKernelError("The mesh refinement type in MeshRefinementParameters must be set equal to ridge refinement.");
+            }
+
+            const auto samplesVector = ConvertGriddedData(samples);
+
+            auto samplesHessian = meshkernel::SamplesHessianCalculator::ComputeSamplesHessian(samplesVector,
+                                                                                              meshKernelState[meshKernelId].m_projection,
+                                                                                              numberOfSmoothingIterations,
+                                                                                              samples.num_x,
+                                                                                              samples.num_y);
+
+            auto averaging = std::make_unique<meshkernel::AveragingInterpolation>(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                  samplesHessian,
+                                                                                  meshkernel::AveragingInterpolation::Method::Max,
+                                                                                  meshkernel::Location::Faces,
+                                                                                  relativeSearchRadius,
+                                                                                  false,
+                                                                                  false,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
@@ -1997,6 +2045,26 @@ namespace meshkernelapi
 
             meshkernel::Translation translation(meshkernel::Vector(translationX, translationY));
             meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {
