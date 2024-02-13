@@ -166,10 +166,10 @@ namespace meshkernel
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
-        /// @param[in] m The m-dimension index
         /// @param[in] n The n-dimension index
+        /// @param[in] m The m-dimension index
         /// @return True if the face is valid, false otherwise
-        [[nodiscard]] bool AreFaceNodesValid(UInt m, UInt n) const;
+        [[nodiscard]] bool AreFaceNodesValid(UInt n, UInt m) const;
 
         /// @brief Determines if the face mask is true (valid face) or false (invalid face)
         /// @param[in] m The m-dimension index
@@ -244,11 +244,11 @@ namespace meshkernel
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumM() const { return static_cast<UInt>(m_gridNodes.rows()); }
+        UInt NumM() const { return static_cast<UInt>(m_gridNodes.cols()); }
 
         /// @brief The number of nodes N in the n dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumN() const { return static_cast<UInt>(m_gridNodes.cols()); }
+        UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
         /// @brief Is the node matrix empty
         /// @return true iff the node matrix is empty
