@@ -178,11 +178,16 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
+            meshkernel::range_check::CheckOneOf<int>(deletionOption, meshkernel::GetValidDeletionOptions(), "Deletion");
+
             const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const bool invertDeletionBool = invertDeletion == 1 ? true : false;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletionBool);
+
+            const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
+
+            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
         }
         catch (...)
         {

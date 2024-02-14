@@ -1597,8 +1597,15 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
     return result;
 }
 
-void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion)
+void Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
 {
+
+    if (deletionOption == FacesWithIncludedCircumcenters)
+    {
+        DeleteMeshFaces(polygon, invertDeletion);
+        return;
+    }
+
     // Find crossed faces
     Mesh2DIntersections mesh2DIntersections(*this);
     mesh2DIntersections.Compute(polygon);
@@ -1672,6 +1679,65 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
+    Administrate();
+}
+
+void Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
+{
+
+    Administrate();
+
+    for (UInt e = 0u; e < GetNumEdges(); ++e)
+    {
+        bool allFaceCircumcentersInPolygon = true;
+
+        for (UInt f = 0u; f < GetNumEdgesFaces(e); ++f)
+        {
+            const auto faceIndex = m_edgesFaces[e][f];
+            if (faceIndex == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_facesCircumcenters[faceIndex]);
+            if (invertDeletion)
+            {
+                isInPolygon = !isInPolygon;
+            }
+            if (!isInPolygon)
+            {
+                allFaceCircumcentersInPolygon = false;
+                break;
+            }
+        }
+
+        // 2D edge without surrounding faces.
+        if (GetNumEdgesFaces(e) == 0)
+        {
+            const auto firstNodeIndex = m_edges[e].first;
+            const auto secondNodeIndex = m_edges[e].second;
+
+            if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
+
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(edgeCenter);
+            allFaceCircumcentersInPolygon = isInPolygon;
+            if (invertDeletion)
+            {
+                allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
+            }
+        }
+
+        if (allFaceCircumcentersInPolygon)
+        {
+            m_edges[e].first = constants::missing::uintValue;
+            m_edges[e].second = constants::missing::uintValue;
+        }
+    }
     Administrate();
 }
 
