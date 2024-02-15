@@ -145,6 +145,8 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     m_edges = edges;
     m_nodes = inputNodes;
     m_projection = projection;
+
+    DeleteInvalidNodesAndEdges();
     DoAdministration();
 }
 
@@ -1606,12 +1608,16 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
     // Find faces with all nodes inside the polygon
     std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
+    std::vector<bool> deleteNode(GetNumNodes(), invertDeletion);
+    std::vector<UInt> nodeEdgeCount(m_nodesNumEdges);
+
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
         auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
         if (isInPolygon)
         {
             isNodeInsidePolygon[n] = true;
+            deleteNode[n] = !invertDeletion;
         }
     }
 
@@ -1630,6 +1636,7 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
     }
 
     std::function<bool(UInt)> excludedFace;
+
     if (deletionOption == InsideNotIntersected && !invertDeletion)
     {
         excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
@@ -1658,15 +1665,36 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, int deletionOption, bool invert
 
         if (numEdgeFaces == 1 && excludedFace(m_edgesFaces[e][0]))
         {
+            deleteNode[m_edges[e].first] = false;
+            deleteNode[m_edges[e].second] = false;
             continue;
         }
         if (numEdgeFaces == 2 && (excludedFace(m_edgesFaces[e][0]) || excludedFace(m_edgesFaces[e][1])))
         {
+            deleteNode[m_edges[e].first] = false;
+            deleteNode[m_edges[e].second] = false;
             continue;
         }
 
-        m_edges[e].first = constants::missing::uintValue;
-        m_edges[e].second = constants::missing::uintValue;
+        if (m_edges[e].first != constants::missing::uintValue && nodeEdgeCount[m_edges[e].first] > 0)
+        {
+            --nodeEdgeCount[m_edges[e].first];
+        }
+
+        if (m_edges[e].second != constants::missing::uintValue && nodeEdgeCount[m_edges[e].second] > 0)
+        {
+            --nodeEdgeCount[m_edges[e].second];
+        }
+
+        DeleteEdge(e);
+    }
+
+    for (UInt i = 0; i < m_nodes.size(); ++i)
+    {
+        if ((deleteNode[i] || nodeEdgeCount[i] == 0) && m_nodes[i].IsValid())
+        {
+            DeleteNode(i);
+        }
     }
 
     m_nodesRTreeRequiresUpdate = true;

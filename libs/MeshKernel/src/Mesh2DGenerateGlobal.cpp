@@ -183,6 +183,12 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
     {
         const auto& [firstNode, secondNode] = mesh2d->m_edges[e];
+
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         const auto numEdgesFirstNode = mesh2d->m_nodesNumEdges[firstNode];
         const auto numEdgesSecondNode = mesh2d->m_nodesNumEdges[secondNode];
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
@@ -195,6 +201,9 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         }
     }
 
+    // A newly created grid should have no invalid nodes nor edges.
+    // Delete any invalid node and edges that have been generated during calculation of the grid.
+    mesh2d->DeleteInvalidNodesAndEdges();
     mesh2d->AdministrateNodesEdges();
 
     return mesh2d;

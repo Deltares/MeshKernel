@@ -1041,20 +1041,23 @@ TEST(MeshRefinement, CasulliRefinement)
 
     meshRefinement.Compute(mesh);
 
-    ASSERT_EQ(expectedPoints.size(), mesh.m_nodes.size());
+    std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
+    std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
+
+    ASSERT_EQ(expectedPoints.size(), mesh.GetNumActiveNodes());
 
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[validNodeMap[i]].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[validNodeMap[i]].y, tolerance);
     }
 
-    ASSERT_EQ(expectedEdgesStart.size(), mesh.m_edges.size());
+    ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumActiveEdges());
 
-    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    for (size_t i = 0; i < expectedEdgesStart.size(); ++i)
     {
-        EXPECT_EQ(expectedEdgesStart[i], mesh.m_edges[i].first);
-        EXPECT_EQ(expectedEdgesEnd[i], mesh.m_edges[i].second);
+        EXPECT_EQ(mesh.m_edges[validEdgeMap[i]].first, validNodeMap[expectedEdgesStart[i]]);
+        EXPECT_EQ(mesh.m_edges[validEdgeMap[i]].second, validNodeMap[expectedEdgesEnd[i]]);
     }
 }
 
@@ -1125,18 +1128,23 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     loadCasulliRefinedMeshData(expectedPoints, expectedEdgeStart, expectedEdgeEnd);
 
-    ASSERT_EQ(ExpectedNumberOfPoints, mesh.m_nodes.size());
-    ASSERT_EQ(ExpectedNumberOfEdges, mesh.m_edges.size());
+    std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
+    std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
 
-    for (size_t i = 0; i < ExpectedNumberOfPoints; ++i)
+    ASSERT_EQ(ExpectedNumberOfPoints, mesh.GetNumActiveNodes());
+    ASSERT_EQ(ExpectedNumberOfEdges, mesh.GetNumActiveEdges());
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+        // Map the index i from the nodes array containing only valid points to an array with that may contain in-valid points
+        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[validNodeMap[i]].x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[validNodeMap[i]].y, tolerance);
     }
 
-    for (size_t i = 0; i < ExpectedNumberOfEdges; ++i)
+    for (size_t i = 0; i < expectedEdgeStart.size(); ++i)
     {
-        EXPECT_EQ(expectedEdgeStart[i], mesh.m_edges[i].first);
-        EXPECT_EQ(expectedEdgeEnd[i], mesh.m_edges[i].second);
+        // Map the index i from the edges array containing only valid edges to an array with that may contain in-valid edges
+        EXPECT_EQ(mesh.m_edges[validEdgeMap[i]].first, validNodeMap[expectedEdgeStart[i]]);
+        EXPECT_EQ(mesh.m_edges[validEdgeMap[i]].second, validNodeMap[expectedEdgeEnd[i]]);
     }
 }

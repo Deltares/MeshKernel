@@ -1609,9 +1609,11 @@ namespace meshkernel
 
     void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
     {
+        out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
+        out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
         out << "nodex = zeros ( " << nodes.size() << ", 1);" << std::endl;
         out << "nodey = zeros ( " << nodes.size() << ", 1);" << std::endl;
-        out << "edges = zeros ( " << edges.size() << ", 2);" << std::endl;
+        out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size() << ", 2);" << std::endl;
 
         for (UInt i = 0; i < nodes.size(); ++i)
         {
@@ -1623,12 +1625,15 @@ namespace meshkernel
             out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
         }
 
-        out << "edges = zeros ( " << edges.size() << ", 2 );" << std::endl;
-
         for (UInt i = 0; i < edges.size(); ++i)
         {
-            out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
-            out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+            if (edges[i].first != constants::missing::uintValue &&
+                edges[i].second != constants::missing::uintValue &&
+                nodes[edges[i].first].IsValid() && nodes[edges[i].second].IsValid())
+            {
+                out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
+                out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+            }
         }
     }
 

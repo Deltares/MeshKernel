@@ -295,8 +295,8 @@ TEST(Mesh, NodeMerging)
     mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumActiveNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumActiveEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)
@@ -385,6 +385,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate
+    mesh->DeleteInvalidNodesAndEdges();
     mesh->Administrate();
 
     // building a tree based on nodes
@@ -554,14 +555,16 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
 
     const double tolerance = 1e-8;
     ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->m_nodes[1].x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[2].x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[4].x, tolerance);
 
     ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
-    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
-    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->m_nodes[1].y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[2].y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[3].y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[4].y, tolerance);
 }
 
 TEST(Mesh, DeleteHangingEdge)
@@ -636,7 +639,7 @@ TEST_P(MeshDeletion, expected_results)
     mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumActiveNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
@@ -699,7 +702,7 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
 
     // Assert
     const auto nodes = mesh->m_nodes;
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumActiveNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));

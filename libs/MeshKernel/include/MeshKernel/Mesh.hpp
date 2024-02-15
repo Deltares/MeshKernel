@@ -140,6 +140,14 @@ namespace meshkernel
         /// @return The number of valid faces
         [[nodiscard]] auto GetNumFaces() const { return static_cast<UInt>(m_facesNodes.size()); }
 
+        /// @brief Get the number of valid nodes
+        /// @return The number of valid nodes
+        [[nodiscard]] UInt GetNumActiveNodes() const;
+
+        /// @brief Get the number of valid edges
+        /// @return The number of valid edges
+        [[nodiscard]] UInt GetNumActiveEdges() const;
+
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
@@ -333,6 +341,24 @@ namespace meshkernel
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
+
+        /// @brief Get the mapping/indexing from the node array mapped to valid nodes
+        ///
+        /// @param [in] computeInverse Indicate which mapping is required.
+        std::vector<UInt> GetValidNodeMapping(const bool computeInverse = false) const;
+
+        /// @brief Get the mapping/indexing from the edge array mapped to valid edges
+        ///
+        /// @param [in] computeInverse Indicate which mapping is required.
+        std::vector<UInt> GetValidEdgeMapping(const bool computeInverse = false) const;
+
+        /// @brief Indicate if the edge-id is a valid edge
+        ///
+        /// A valid edge satisfies four conditions:
+        /// The start and end indices are not the null value, if both are not, then
+        /// also the nodes indexed by the edge are valid nodes. If any of these conditions
+        /// is false then the edge is in-valid.
+        bool IsValidEdge(const UInt edgeId) const;
 
         // nodes
         std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
