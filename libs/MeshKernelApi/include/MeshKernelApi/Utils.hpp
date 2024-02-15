@@ -326,7 +326,9 @@ namespace meshkernelapi
         mesh2dApi.num_face_nodes = static_cast<int>(num_face_nodes);
         mesh2dApi.num_faces = static_cast<int>(mesh2d.GetNumFaces());
         mesh2dApi.num_nodes = static_cast<int>(mesh2d.GetNumNodes());
+        mesh2dApi.num_valid_nodes = static_cast<int>(mesh2d.GetNumValidNodes());
         mesh2dApi.num_edges = static_cast<int>(mesh2d.GetNumEdges());
+        mesh2dApi.num_valid_edges = static_cast<int>(mesh2d.GetNumValidEdges());
     }
 
     /// @brief Sets the meshkernelapi::Mesh2D data

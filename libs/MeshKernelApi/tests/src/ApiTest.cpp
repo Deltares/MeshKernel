@@ -64,8 +64,8 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert dimensions
-    ASSERT_EQ(11, mesh2d.num_nodes);
-    ASSERT_EQ(15, mesh2d.num_edges);
+    ASSERT_EQ(11, mesh2d.num_valid_nodes);
+    ASSERT_EQ(15, mesh2d.num_valid_edges);
 
     // Allocate memory and get data
     std::vector<int> edge_faces(mesh2d.num_edges * 2);
@@ -103,32 +103,33 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
     // Assert data
     const double tolerance = 1e-6;
     // Nodes
-    ASSERT_NEAR(0.0, mesh2d.node_x[0], tolerance);
-    ASSERT_NEAR(1.0, mesh2d.node_y[0], tolerance);
+    ASSERT_NEAR(0.0, mesh2d.node_x[1], tolerance);
+    ASSERT_NEAR(1.0, mesh2d.node_y[1], tolerance);
     // Edges
-    ASSERT_EQ(0, mesh2d.edge_nodes[0]);
-    ASSERT_EQ(3, mesh2d.edge_nodes[1]);
+    ASSERT_EQ(1, mesh2d.edge_nodes[2]);
+    ASSERT_EQ(4, mesh2d.edge_nodes[3]);
+    // TODO should the edge_x/y have the same number of values as there are edges
     ASSERT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
     ASSERT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
     // First face
-    ASSERT_EQ(0, mesh2d.edge_faces[0]);
-    ASSERT_EQ(-1, mesh2d.edge_faces[1]);
     ASSERT_EQ(0, mesh2d.edge_faces[2]);
     ASSERT_EQ(-1, mesh2d.edge_faces[3]);
+    ASSERT_EQ(0, mesh2d.edge_faces[4]);
+    ASSERT_EQ(-1, mesh2d.edge_faces[5]);
 
-    ASSERT_EQ(0, mesh2d.face_edges[0]);
-    ASSERT_EQ(10, mesh2d.face_edges[1]);
-    ASSERT_EQ(1, mesh2d.face_edges[2]);
-    ASSERT_EQ(8, mesh2d.face_edges[3]);
+    ASSERT_EQ(1, mesh2d.face_edges[0]);
+    ASSERT_EQ(12, mesh2d.face_edges[1]);
+    ASSERT_EQ(2, mesh2d.face_edges[2]);
+    ASSERT_EQ(10, mesh2d.face_edges[3]);
 
     ASSERT_EQ(4, mesh2d.nodes_per_face[0]);
     ASSERT_NEAR(0.5, mesh2d.face_x[0], tolerance);
     ASSERT_NEAR(1.5, mesh2d.face_y[0], tolerance);
     // Second Face
-    ASSERT_EQ(2, mesh2d.face_nodes[4]);
-    ASSERT_EQ(5, mesh2d.face_nodes[5]);
-    ASSERT_EQ(6, mesh2d.face_nodes[6]);
-    ASSERT_EQ(3, mesh2d.face_nodes[7]);
+    ASSERT_EQ(3, mesh2d.face_nodes[4]);
+    ASSERT_EQ(6, mesh2d.face_nodes[5]);
+    ASSERT_EQ(7, mesh2d.face_nodes[6]);
+    ASSERT_EQ(4, mesh2d.face_nodes[7]);
     ASSERT_EQ(4, mesh2d.nodes_per_face[1]);
 
     ASSERT_NEAR(1.5, mesh2d.face_x[1], tolerance);
@@ -238,8 +239,8 @@ TEST_F(CartesianApiTestFixture, MergeTwoNodesThroughApi)
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(11, mesh2d.num_nodes);
-    ASSERT_EQ(15, mesh2d.num_edges);
+    ASSERT_EQ(11, mesh2d.num_valid_nodes);
+    ASSERT_EQ(15, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
@@ -267,8 +268,8 @@ TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
@@ -287,8 +288,8 @@ TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
@@ -1166,8 +1167,8 @@ TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
-    ASSERT_EQ(0, mesh2d.num_nodes);
-    ASSERT_EQ(0, mesh2d.num_edges);
+    ASSERT_EQ(0, mesh2d.num_valid_nodes);
+    ASSERT_EQ(0, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
@@ -1311,7 +1312,7 @@ TEST_F(CartesianApiTestFixture, GetHangingEdgesMesh2D_WithOneHangingEdges_Should
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(hangingEdges[0], 8);
+    ASSERT_EQ(hangingEdges[0], 9);
 }
 
 TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
@@ -1327,7 +1328,7 @@ TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_Sho
     // Before deletion
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(mesh2d.num_edges, 16);
+    ASSERT_EQ(mesh2d.num_valid_edges, 16);
 
     // Execute
     errorCode = meshkernelapi::mkernel_mesh2d_delete_hanging_edges(meshKernelId);
@@ -1335,7 +1336,7 @@ TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_Sho
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
-    ASSERT_EQ(mesh2d.num_edges, 15);
+    ASSERT_EQ(mesh2d.num_valid_edges, 15);
 }
 
 TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
@@ -1730,7 +1731,7 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMe
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // One edge is removed
-    ASSERT_EQ(4, newMesh2d.num_edges);
+    ASSERT_EQ(4, newMesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
@@ -1925,8 +1926,8 @@ TEST_F(CartesianApiTestFixture, Network1DToMesh1d_FromPolylines_ShouldGenerateMe
     // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
-    ASSERT_EQ(41, mesh1dResults.num_nodes);
-    ASSERT_EQ(40, mesh1dResults.num_edges);
+    ASSERT_EQ(41, mesh1dResults.num_valid_nodes);
+    ASSERT_EQ(40, mesh1dResults.num_valid_edges);
 }
 
 TEST(Mesh2D, Mesh2DInitializeOrthogonalization_WithHexagon_ShouldOrthogonalize)
