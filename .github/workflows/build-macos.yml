@@ -26,8 +26,8 @@ jobs:
       matrix:
         platform:
           # - ubuntu-latest
-          - macos-latest
-          - macos-13-xlarge
+          - macos-12
+          - macos-14
         build_type:
           - 'Release'
           #- 'Debug'
