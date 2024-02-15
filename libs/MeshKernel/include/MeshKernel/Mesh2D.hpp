@@ -56,7 +56,8 @@ namespace meshkernel
         enum DeleteMeshOptions
         {
             InsideNotIntersected = 0,
-            InsideAndIntersected = 1
+            InsideAndIntersected = 1,
+            FacesWithIncludedCircumcenters = 2
         };
 
         /// Enumerator describing the different node types
@@ -271,7 +272,7 @@ namespace meshkernel
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        void DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion);
+        void DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
         /// @param[in] firstPoint The first point of the segment
@@ -374,6 +375,12 @@ namespace meshkernel
 
         /// @brief Bounded array for storing hanging node indices.
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
+
+        /// @brief Deletes the mesh faces inside a polygon
+        /// @param[in] polygon        The polygon where to perform the operation
+        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
+        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
+        void DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node

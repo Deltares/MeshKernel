@@ -973,9 +973,10 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
         {1.87622950819672, -0.299180327868853}};
 
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::cartesian);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
@@ -999,9 +1000,10 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
         {1.87622950819672, -0.299180327868853}};
 
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
@@ -1026,10 +1028,38 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
         {-2.29490103397341, 50.0126381093058}};
 
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 7);
+}
+
+TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFaces)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(5,
+                                                    5,
+                                                    8.0,
+                                                    8.0,
+                                                    meshkernel::Projection::cartesian);
+
+    // a large polygon
+    std::vector<meshkernel::Point> polygonNodes{
+        {2, 2},
+        {6, 2},
+        {6, 6},
+        {2, 6},
+        {2, 2}};
+
+    auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::cartesian);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters;
+
+    // Execute
+    mesh->DeleteMesh(polygon, deletion_option, false);
+
+    // Assert
+    EXPECT_EQ(mesh->GetNumFaces(), 12);
 }
