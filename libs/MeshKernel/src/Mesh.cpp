@@ -1037,8 +1037,8 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
 
 meshkernel::UInt Mesh::GetNumValidNodes() const
 {
-    return std::ranges::count_if(m_nodes, [](const Point& p)
-                                 { return p.IsValid(); });
+    return static_cast<UInt>(std::ranges::count_if(m_nodes, [](const Point& p)
+                                                   { return p.IsValid(); }));
 }
 
 meshkernel::UInt Mesh::GetNumValidEdges() const
