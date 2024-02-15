@@ -54,10 +54,11 @@ var searchData=
   ['getrighthandside_237',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a3e160b0c42e3eba7126b6d83b0cb976e',1,'meshkernel::Orthogonalizer']]],
   ['getsmoothness_238',['GetSmoothness',['../classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162',1,'meshkernel::Mesh2D']]],
   ['getsplinesintersection_239',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a82d896101f08ad12837ba4cecc9fed57',1,'meshkernel::Splines']]],
-  ['getvalidprojections_240',['GetValidProjections',['../namespacemeshkernel.html#a8b725595f175deab58e454d124375869',1,'meshkernel']]],
-  ['getweight_241',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#ae77d72743bc1056379fe32c5781a5a91',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a94aadd2c4146ba35c6b46c8647e1368f',1,'meshkernel::Smoother::GetWeight()']]],
-  ['getxcoord_242',['GetXCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2',1,'meshkernel::TriangulationWrapper']]],
-  ['getycoord_243',['GetYCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918',1,'meshkernel::TriangulationWrapper']]],
-  ['griddedsamples_244',['GriddedSamples',['../structmeshkernelapi_1_1_gridded_samples.html',1,'meshkernelapi']]],
-  ['grow_5fgrid_5foutside_245',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
+  ['getvaliddeletionoptions_240',['GetValidDeletionOptions',['../namespacemeshkernel.html#aafe87ce80ede15c8d4f35675e88e4a53',1,'meshkernel']]],
+  ['getvalidprojections_241',['GetValidProjections',['../namespacemeshkernel.html#a8b725595f175deab58e454d124375869',1,'meshkernel']]],
+  ['getweight_242',['GetWeight',['../classmeshkernel_1_1_orthogonalizer.html#ae77d72743bc1056379fe32c5781a5a91',1,'meshkernel::Orthogonalizer::GetWeight()'],['../classmeshkernel_1_1_smoother.html#a94aadd2c4146ba35c6b46c8647e1368f',1,'meshkernel::Smoother::GetWeight()']]],
+  ['getxcoord_243',['GetXCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2',1,'meshkernel::TriangulationWrapper']]],
+  ['getycoord_244',['GetYCoord',['../structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918',1,'meshkernel::TriangulationWrapper']]],
+  ['griddedsamples_245',['GriddedSamples',['../structmeshkernelapi_1_1_gridded_samples.html',1,'meshkernelapi']]],
+  ['grow_5fgrid_5foutside_246',['grow_grid_outside',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#a17acaf34aba303be8e253df38d69f089',1,'meshkernel::SplinesToCurvilinearParameters']]]
 ];

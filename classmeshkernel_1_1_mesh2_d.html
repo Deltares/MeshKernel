@@ -101,7 +101,8 @@ Inheritance diagram for meshkernel::Mesh2D:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memItemLeft" align="right" valign="top"><a id="a41e7c8bf5e92fec3f46ba18204e8cc6e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> { <b>InsideNotIntersected</b> = 0, 
-<b>InsideAndIntersected</b> = 1
+<b>InsideAndIntersected</b> = 1, 
+<b>FacesWithIncludedCircumcenters</b> = 2
  }</td></tr>
 <tr class="memdesc:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different options to delete a mesh. <br /></td></tr>
 <tr class="separator:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -234,9 +235,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a9ad446a7de6ca7ea10fa864ef35e02c3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a9ad446a7de6ca7ea10fa864ef35e02c3">PointFaceIndices</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;points)</td></tr>
 <tr class="memdesc:a9ad446a7de6ca7ea10fa864ef35e02c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a collection of points, compute the face indices including them.  <a href="classmeshkernel_1_1_mesh2_d.html#a9ad446a7de6ca7ea10fa864ef35e02c3">More...</a><br /></td></tr>
 <tr class="separator:a9ad446a7de6ca7ea10fa864ef35e02c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cce62a059fa51a0c94b52f33a456eed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a6cce62a059fa51a0c94b52f33a456eed">DeleteMesh</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, int deletionOption, bool invertDeletion)</td></tr>
-<tr class="memdesc:a6cce62a059fa51a0c94b52f33a456eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon, using several options (delnet)  <a href="classmeshkernel_1_1_mesh2_d.html#a6cce62a059fa51a0c94b52f33a456eed">More...</a><br /></td></tr>
-<tr class="separator:a6cce62a059fa51a0c94b52f33a456eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5a2f4ee693fb717b77a7f5053dcb2a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ac5a2f4ee693fb717b77a7f5053dcb2a9">DeleteMesh</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> deletionOption, bool invertDeletion)</td></tr>
+<tr class="memdesc:ac5a2f4ee693fb717b77a7f5053dcb2a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon, using several options (delnet)  <a href="classmeshkernel_1_1_mesh2_d.html#ac5a2f4ee693fb717b77a7f5053dcb2a9">More...</a><br /></td></tr>
+<tr class="separator:ac5a2f4ee693fb717b77a7f5053dcb2a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">IsSegmentCrossingABoundaryEdge</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint) const</td></tr>
 <tr class="memdesc:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a segment is crossing a face.  <a href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">More...</a><br /></td></tr>
 <tr class="separator:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -904,8 +905,8 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
 
 </div>
 </div>
-<a id="a6cce62a059fa51a0c94b52f33a456eed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6cce62a059fa51a0c94b52f33a456eed">&#9670;&nbsp;</a></span>DeleteMesh()</h2>
+<a id="ac5a2f4ee693fb717b77a7f5053dcb2a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a2f4ee693fb717b77a7f5053dcb2a9">&#9670;&nbsp;</a></span>DeleteMesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -919,7 +920,7 @@ static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e41
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a>&#160;</td>
           <td class="paramname"><em>deletionOption</em>, </td>
         </tr>
         <tr>

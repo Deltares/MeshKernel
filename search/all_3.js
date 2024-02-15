@@ -5,7 +5,7 @@ var searchData=
   ['deleteedge_114',['DeleteEdge',['../classmeshkernel_1_1_mesh.html#a10d2841a4812be93a2ce538358875e84',1,'meshkernel::Mesh']]],
   ['deletehangingedges_115',['DeleteHangingEdges',['../classmeshkernel_1_1_mesh2_d.html#a61f04f13e20376dd7fccb5eb6c2c82ef',1,'meshkernel::Mesh2D']]],
   ['deleteinvalidnodesandedges_116',['DeleteInvalidNodesAndEdges',['../classmeshkernel_1_1_mesh.html#adadf16bf95337fec05384a2dc07798fe',1,'meshkernel::Mesh']]],
-  ['deletemesh_117',['DeleteMesh',['../classmeshkernel_1_1_mesh2_d.html#a6cce62a059fa51a0c94b52f33a456eed',1,'meshkernel::Mesh2D']]],
+  ['deletemesh_117',['DeleteMesh',['../classmeshkernel_1_1_mesh2_d.html#ac5a2f4ee693fb717b77a7f5053dcb2a9',1,'meshkernel::Mesh2D']]],
   ['deletemeshoptions_118',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e',1,'meshkernel::Mesh2D']]],
   ['deletenode_119',['DeleteNode',['../classmeshkernel_1_1_mesh.html#a4ed1d0180239dc2037cd07fe85902aef',1,'meshkernel::Mesh']]],
   ['deletesmallflowedges_120',['DeleteSmallFlowEdges',['../classmeshkernel_1_1_mesh2_d.html#a6855534ffcff0ca5ac4ce4e1bc4ca229',1,'meshkernel::Mesh2D']]],
