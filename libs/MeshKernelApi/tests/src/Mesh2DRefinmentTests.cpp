@@ -683,3 +683,158 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     ASSERT_EQ(956, mesh2d.num_nodes);
     ASSERT_EQ(1872, mesh2d.num_edges);
 }
+
+TEST(MeshRefinement, RefineAGridBasedOnSamplesThroughApi_OnSpericalCoordinateWithRealSamples_ShouldRefine)
+{
+    // Prepare
+    int isGeographic = 1;
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+    makeGridParameters.angle = 0;
+    makeGridParameters.origin_x = -68.55;
+    makeGridParameters.origin_y = 11.8;
+    makeGridParameters.upper_right_x = -67.9;
+    makeGridParameters.upper_right_y = 12.6;
+    makeGridParameters.block_size_x = 0.05;
+    makeGridParameters.block_size_y = 0.05;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid_on_extension(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> lon{
+        -68.54791667,
+        -68.46458333,
+        -68.38125,
+        -68.29791667,
+        -68.21458333,
+        -68.13125,
+        -68.04791667,
+        -67.96458333,
+    };
+
+    std::vector<double> lat{
+        11.80208333,
+        11.88541667,
+        11.96875,
+        12.05208333,
+        12.13541667,
+        12.21875,
+        12.30208333,
+        12.38541667,
+        12.46875,
+        12.55208333,
+    };
+
+    std::vector<float> values{
+        -1700.0,
+        -1769.0,
+        -1688.0,
+        -1641.0,
+        -1526.0,
+        -1291.0,
+        -1121.0,
+        -1537.0,
+        -1561.0,
+        -1674.0,
+        -1354.0,
+        -757.0,
+        -837.0,
+        -838.0,
+        -1080.0,
+        -1466.0,
+        -1630.0,
+        -1390.0,
+        -710.0,
+        -562.0,
+        -479.0,
+        -753.0,
+        -1246.0,
+        -1703.0,
+        -1553.0,
+        -1446.0,
+        -1147.0,
+        -248.0,
+        -175.0,
+        -712.0,
+        -1621.0,
+        -1920.0,
+        -1503.0,
+        -1380.0,
+        -1080.0,
+        -305.0,
+        18.0,
+        -543.0,
+        -1563.0,
+        -2241.0,
+        -1477.0,
+        -1571.0,
+        -3.0,
+        100.0,
+        11.0,
+        -891.0,
+        -1521.0,
+        -2446.0,
+        -1892.0,
+        -1808.0,
+        16.0,
+        -3102.0,
+        -2015.0,
+        -1302.0,
+        -1484.0,
+        -2581.0,
+        -2516.0,
+        -2091.0,
+        -1957.0,
+        -2647.0,
+        -1422.0,
+        -1486.0,
+        -2340.0,
+        -2702.0,
+        -2689.0,
+        -2353.0,
+        -2614.0,
+        -3612.0,
+        -3058.0,
+        -3017.0,
+        -3181.0,
+        -2848.0,
+        -3110.0,
+        -3025.0,
+        -3861.0,
+        -3927.0,
+        -3818.0,
+        -4162.0,
+        -4386.0,
+        -4504.0,
+    };
+
+    meshkernelapi::GriddedSamples griddedSamples;
+
+    griddedSamples.x_coordinates = lon.data();
+    griddedSamples.y_coordinates = lat.data();
+    griddedSamples.values = values.data();
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.min_edge_size = 300;
+    meshRefinementParameters.refinement_type = static_cast<int>(meshkernel::MeshRefinement::RefinementType::WaveCourant);
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.smoothing_iterations = 2;
+    meshRefinementParameters.max_courant_time = 120;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Get the new state
+
+    // Assert
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(252, mesh2d.num_nodes);
+    ASSERT_EQ(472, mesh2d.num_edges);
+}
