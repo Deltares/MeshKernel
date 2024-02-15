@@ -25,8 +25,8 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
 
     // Check mesh (active) entity counts are the same
-    ASSERT_EQ(unconnectedGrid->GetNumActiveNodes(), connectedGrid->GetNumNodes());
-    ASSERT_EQ(unconnectedGrid->GetNumActiveEdges(), connectedGrid->GetNumEdges());
+    ASSERT_EQ(unconnectedGrid->GetNumValidNodes(), connectedGrid->GetNumNodes());
+    ASSERT_EQ(unconnectedGrid->GetNumValidEdges(), connectedGrid->GetNumEdges());
     ASSERT_EQ(unconnectedGrid->GetNumFaces(), connectedGrid->GetNumFaces());
 
     constexpr double tolerance = 1.0e-10;
@@ -65,7 +65,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     }
 
     std::vector<meshkernel::UInt> edgeMap(unconnectedGrid->GetNumEdges(), meshkernel::constants::missing::uintValue);
-    std::vector<meshkernel::UInt> edgeMapInv(unconnectedGrid->GetNumActiveEdges());
+    std::vector<meshkernel::UInt> edgeMapInv(unconnectedGrid->GetNumValidEdges());
 
     count = 0;
 
@@ -195,7 +195,7 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
 }
 
 TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
@@ -219,7 +219,7 @@ TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
     const auto anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, *mesh1);
 
     EXPECT_EQ(anotherMergedMesh->GetNumFaces(), mesh1->GetNumFaces());
-    EXPECT_EQ(anotherMergedMesh->GetNumActiveNodes(), mesh1->GetNumNodes());
+    EXPECT_EQ(anotherMergedMesh->GetNumValidNodes(), mesh1->GetNumNodes());
 }
 
 TEST(Mesh2DConnectDD, MergeTwoEmptyMeshes)
@@ -269,9 +269,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
-    EXPECT_EQ(mergedMesh->GetNumActiveEdges(), 22);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
 
     const double tolerance = 1.0e-8;
 
@@ -309,8 +309,8 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), 15);
-    EXPECT_EQ(mergedMesh->GetNumActiveEdges(), 22);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
 
     const double tolerance = 1.0e-10;
@@ -349,8 +349,8 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), 15);
-    EXPECT_EQ(mergedMesh->GetNumActiveEdges(), 22);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
 
     const double tolerance = 1.0e-8;
@@ -391,8 +391,8 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), 31);
-    EXPECT_EQ(mergedMesh->GetNumActiveEdges(), 54);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 31);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 54);
 
     const double tolerance = 1.0e-10;
 
@@ -560,8 +560,8 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
-    EXPECT_EQ(mergedMesh->GetNumActiveNodes(), 31);
-    EXPECT_EQ(mergedMesh->GetNumActiveEdges(), 54);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 31);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 54);
 
     const double tolerance = 1.0e-8;
 

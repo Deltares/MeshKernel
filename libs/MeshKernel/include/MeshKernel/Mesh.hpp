@@ -142,11 +142,11 @@ namespace meshkernel
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid nodes
-        [[nodiscard]] UInt GetNumActiveNodes() const;
+        [[nodiscard]] UInt GetNumValidNodes() const;
 
         /// @brief Get the number of valid edges
         /// @return The number of valid edges
-        [[nodiscard]] UInt GetNumActiveEdges() const;
+        [[nodiscard]] UInt GetNumValidEdges() const;
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
@@ -343,14 +343,10 @@ namespace meshkernel
         Mesh& operator+=(Mesh const& rhs);
 
         /// @brief Get the mapping/indexing from the node array mapped to valid nodes
-        ///
-        /// @param [in] computeInverse Indicate which mapping is required.
-        std::vector<UInt> GetValidNodeMapping(const bool computeInverse = false) const;
+        std::vector<UInt> GetValidNodeMapping() const;
 
         /// @brief Get the mapping/indexing from the edge array mapped to valid edges
-        ///
-        /// @param [in] computeInverse Indicate which mapping is required.
-        std::vector<UInt> GetValidEdgeMapping(const bool computeInverse = false) const;
+        std::vector<UInt> GetValidEdgeMapping() const;
 
         /// @brief Indicate if the edge-id is a valid edge
         ///

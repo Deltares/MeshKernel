@@ -295,8 +295,8 @@ TEST(Mesh, NodeMerging)
     mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumActiveNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumActiveEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumValidEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)
@@ -639,7 +639,7 @@ TEST_P(MeshDeletion, expected_results)
     mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumActiveNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
@@ -702,7 +702,7 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
 
     // Assert
     const auto nodes = mesh->m_nodes;
-    ASSERT_EQ(numNodes, mesh->GetNumActiveNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));

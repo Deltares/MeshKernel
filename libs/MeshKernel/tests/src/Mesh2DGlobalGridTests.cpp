@@ -16,8 +16,8 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_ShouldGenerateMesh)
     const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
 
     // Assert
-    ASSERT_EQ(1233, mesh->GetNumActiveEdges());
-    ASSERT_EQ(629, mesh->GetNumActiveNodes());
+    ASSERT_EQ(1233, mesh->GetNumValidEdges());
+    ASSERT_EQ(629, mesh->GetNumValidNodes());
 
     const double tolerance = 1e-6;
 

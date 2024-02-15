@@ -1035,29 +1035,17 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     return *this;
 }
 
-meshkernel::UInt Mesh::GetNumActiveNodes() const
+meshkernel::UInt Mesh::GetNumValidNodes() const
 {
-    // The number if invalid nodes (and edges) should be stored, but since the m_nodes and m_edges
-    // arrays are public we cannot do this
-    UInt count = 0;
-
-    for (size_t i = 0; i < m_nodes.size(); ++i)
-    {
-        // if (m_nodes[i].IsValid() && m_nodesNumEdges[i] > 0)
-        if (m_nodes[i].IsValid())
-        {
-            ++count;
-        }
-    }
-
-    return count;
+    return std::ranges::count_if(m_nodes, [](const Point& p)
+                                 { return p.IsValid(); });
 }
 
-meshkernel::UInt Mesh::GetNumActiveEdges() const
+meshkernel::UInt Mesh::GetNumValidEdges() const
 {
     UInt count = 0;
 
-    for (size_t i = 0; i < m_edges.size(); ++i)
+    for (UInt i = 0; i < m_edges.size(); ++i)
     {
         if (IsValidEdge(i))
         {
@@ -1068,110 +1056,49 @@ meshkernel::UInt Mesh::GetNumActiveEdges() const
     return count;
 }
 
-std::vector<meshkernel::UInt> Mesh::GetValidNodeMapping(const bool computeInverse) const
+std::vector<meshkernel::UInt> Mesh::GetValidNodeMapping() const
 {
-    if (computeInverse)
+    std::vector<meshkernel::UInt> nodeMap(GetNumNodes());
+    UInt count = 0;
+
+    for (UInt i = 0; i < m_nodes.size(); ++i)
     {
-        // TODO can this if branch be removed?
-        std::vector<meshkernel::UInt> nodeMap(GetNumNodes(), constants::missing::uintValue);
-        UInt count = 0;
-
-        for (UInt i = 0; i < m_nodes.size(); ++i)
+        if (m_nodes[i].IsValid())
         {
-            if (m_nodes[i].IsValid())
-            {
-                nodeMap[i] = count;
-                ++count;
-            }
+            nodeMap[count] = i;
+            ++count;
         }
-
-        return nodeMap;
     }
-    else
-    {
-        std::vector<meshkernel::UInt> nodeMap(GetNumNodes());
-        UInt count = 0;
 
-        for (UInt i = 0; i < m_nodes.size(); ++i)
-        {
-            if (m_nodes[i].IsValid())
-            {
-                nodeMap[count] = i;
-                ++count;
-            }
-        }
-
-        nodeMap.resize(count);
-
-        // std::vector<meshkernel::UInt> nodeMap(GetNumActiveNodes());
-        // UInt count = 0;
-
-        // for (UInt i = 0; i < m_nodes.size(); ++i)
-        // {
-        //     if (m_nodes[i].IsValid())
-        //     {
-        //         nodeMap[count] = i;
-        //         ++count;
-        //     }
-        // }
-
-        return nodeMap;
-    }
+    nodeMap.resize(count);
+    return nodeMap;
 }
 
-std::vector<meshkernel::UInt> Mesh::GetValidEdgeMapping(const bool computeInverse) const
+std::vector<meshkernel::UInt> Mesh::GetValidEdgeMapping() const
 {
-    if (computeInverse)
+    std::vector<meshkernel::UInt> edgeMap(GetNumEdges());
+    UInt count = 0;
+
+    for (UInt i = 0; i < m_edges.size(); ++i)
     {
-        // TODO can this if branch be removed?
-        std::vector<meshkernel::UInt> edgeMap(GetNumEdges(), constants::missing::uintValue);
-        UInt count = 0;
-
-        for (UInt i = 0; i < m_edges.size(); ++i)
+        if (IsValidEdge(i))
         {
-            if (IsValidEdge(i))
-            {
-                edgeMap[i] = count;
-                ++count;
-            }
+            edgeMap[count] = i;
+            ++count;
         }
-
-        return edgeMap;
     }
-    else
-    {
-        std::vector<meshkernel::UInt> edgeMap(GetNumEdges());
-        UInt count = 0;
 
-        for (UInt i = 0; i < m_edges.size(); ++i)
-        {
-            if (IsValidEdge(i))
-            {
-                edgeMap[count] = i;
-                ++count;
-            }
-        }
-
-        edgeMap.resize(count);
-
-        // std::vector<meshkernel::UInt> edgeMap(GetNumActiveEdges());
-        // UInt count = 0;
-
-        // for (UInt i = 0; i < m_edges.size(); ++i)
-        // {
-        //     if (m_edges[i].IsValid())
-        //     {
-        //         edgeMap[count] = i;
-        //         ++count;
-        //     }
-        // }
-
-        return edgeMap;
-    }
+    edgeMap.resize(count);
+    return edgeMap;
 }
 
-bool Mesh::IsValidEdge(const UInt edge) const
+bool Mesh::IsValidEdge(const UInt edgeId) const
 {
-    return m_edges[edge].first != constants::missing::uintValue && m_edges[edge].second != constants::missing::uintValue &&
-           m_nodes[m_edges[edge].first].IsValid() && m_nodes[m_edges[edge].second].IsValid();
+    if (edgeId >= m_edges.size())
+    {
+        throw ConstraintError("The edge index is out of bounds. {} >= {}.", edgeId, m_edges.size());
+    }
+
+    return m_edges[edgeId].first != constants::missing::uintValue && m_edges[edgeId].second != constants::missing::uintValue &&
+           m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
 }

@@ -312,8 +312,8 @@ TEST(Mesh2D, NodeMerging)
     mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumActiveNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumActiveEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumValidEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh2D, MillionQuads)

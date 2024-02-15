@@ -1044,7 +1044,7 @@ TEST(MeshRefinement, CasulliRefinement)
     std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
     std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
 
-    ASSERT_EQ(expectedPoints.size(), mesh.GetNumActiveNodes());
+    ASSERT_EQ(expectedPoints.size(), mesh.GetNumValidNodes());
 
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
@@ -1052,7 +1052,7 @@ TEST(MeshRefinement, CasulliRefinement)
         EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[validNodeMap[i]].y, tolerance);
     }
 
-    ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumActiveEdges());
+    ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumValidEdges());
 
     for (size_t i = 0; i < expectedEdgesStart.size(); ++i)
     {
@@ -1131,8 +1131,8 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
     std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
 
-    ASSERT_EQ(ExpectedNumberOfPoints, mesh.GetNumActiveNodes());
-    ASSERT_EQ(ExpectedNumberOfEdges, mesh.GetNumActiveEdges());
+    ASSERT_EQ(ExpectedNumberOfPoints, mesh.GetNumValidNodes());
+    ASSERT_EQ(ExpectedNumberOfEdges, mesh.GetNumValidEdges());
 
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
