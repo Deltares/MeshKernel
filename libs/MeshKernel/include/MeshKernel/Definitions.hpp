@@ -48,6 +48,9 @@ namespace meshkernel
     /// @brief Gets the valid projectionbs as vector of integers
     const std::vector<int>& GetValidProjections();
 
+    /// @brief Gets the valid deletion options as vector of integers
+    const std::vector<int>& GetValidDeletionOptions();
+
     /// @brief Convert an integer value to the Projection enumeration type
     ///
     /// If the integer projection value does not correspond to an enumeration
