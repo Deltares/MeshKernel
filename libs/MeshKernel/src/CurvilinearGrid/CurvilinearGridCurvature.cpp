@@ -28,30 +28,28 @@
 #include <cmath>
 
 #include "MeshKernel/Constants.hpp"
-#include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/Vector.hpp"
-
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp"
+#include "MeshKernel/Exceptions.hpp"
 
 void meshkernel::CurvilinearGridCurvature::Compute(const CurvilinearGrid& grid, const CurvilinearDirection direction, lin_alg::Matrix<double>& curvature)
 {
-    lin_alg::ResizeAndFillMatrix(curvature, grid.NumM(), grid.NumN(), false, constants::missing::doubleValue);
+    lin_alg::ResizeAndFillMatrix(curvature, grid.NumN(), grid.NumM(), false, constants::missing::doubleValue);
 
-    if (direction == CurvilinearDirection::M)
+    if (direction == CurvilinearDirection::N)
     {
-        for (UInt i = 1; i < grid.NumM() - 1; ++i)
+        for (UInt i = 1; i < grid.NumN() - 1; ++i)
         {
-            for (UInt j = 0; j < grid.NumN(); ++j)
+            for (UInt j = 0; j < grid.NumM(); ++j)
             {
                 curvature(i, j) = ComputeNodeCurvature(grid.GetNode(i - 1, j), grid.GetNode(i, j), grid.GetNode(i + 1, j));
             }
         }
     }
-    else if (direction == CurvilinearDirection::N)
+    else if (direction == CurvilinearDirection::M)
     {
-        for (UInt i = 0; i < grid.NumM(); ++i)
+        for (UInt i = 0; i < grid.NumN(); ++i)
         {
-            for (UInt j = 1; j < grid.NumN() - 1; ++j)
+            for (UInt j = 1; j < grid.NumM() - 1; ++j)
             {
                 curvature(i, j) = ComputeNodeCurvature(grid.GetNode(i, j - 1), grid.GetNode(i, j), grid.GetNode(i, j + 1));
             }
