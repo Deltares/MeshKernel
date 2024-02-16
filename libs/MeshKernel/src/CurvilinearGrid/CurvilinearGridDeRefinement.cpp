@@ -49,31 +49,31 @@ void CurvilinearGridDeRefinement::Compute()
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
-    deRefinedGrid.reserve(m_grid.NumM());
+    deRefinedGrid.reserve(m_grid.NumN());
 
-    UInt mIndexOriginalGrid = 0;
-    while (mIndexOriginalGrid < m_grid.NumM())
+    UInt nIndexOriginalGrid = 0;
+    while (nIndexOriginalGrid < m_grid.NumN())
     {
-        UInt localMDeRefinement = 1;
-        if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
+        UInt localNDeRefinement = 1;
+        if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
         {
-            localMDeRefinement = numMToDeRefine;
+            localNDeRefinement = numNToDeRefine;
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
-        deRefinedGrid.back().reserve(m_grid.NumN());
+        deRefinedGrid.back().reserve(m_grid.NumM());
 
-        UInt nIndexOriginalGrid = 0;
-        while (nIndexOriginalGrid < m_grid.NumN())
+        UInt mIndexOriginalGrid = 0;
+        while (mIndexOriginalGrid < m_grid.NumM())
         {
-            UInt localNDeRefinement = 1;
-            if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
+            UInt localMDeRefinement = 1;
+            if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
             {
-                localNDeRefinement = numNToDeRefine;
+                localMDeRefinement = numMToDeRefine;
             }
-            deRefinedGrid.back().emplace_back(m_grid.GetNode(mIndexOriginalGrid, nIndexOriginalGrid));
-            nIndexOriginalGrid += localNDeRefinement;
+            deRefinedGrid.back().emplace_back(m_grid.GetNode(nIndexOriginalGrid, mIndexOriginalGrid));
+            mIndexOriginalGrid += localMDeRefinement;
         }
-        mIndexOriginalGrid += localMDeRefinement;
+        nIndexOriginalGrid += localNDeRefinement;
     }
 
     // substitute original grid with the derefined one
