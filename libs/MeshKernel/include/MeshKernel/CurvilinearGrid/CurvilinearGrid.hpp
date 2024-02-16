@@ -117,14 +117,14 @@ namespace meshkernel
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
 
         /// @brief Gets a reference to the grid node at the (m,n) location
-        /// @param[in] m The m-dimension index
         /// @param[in] n The n-dimension index
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt m, const UInt n) { return m_gridNodes(m, n); }
+        /// @param[in] m The m-dimension index
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n, m); }
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
-        /// @param[in] m The m-dimension index
         /// @param[in] n The n-dimension index
-        [[nodiscard]] meshkernel::Point const& GetNode(const UInt m, const UInt n) const { return m_gridNodes(m, n); }
+        /// @param[in] m The m-dimension index
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n, m); }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
@@ -135,7 +135,7 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_m, index.m_n);
+            return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief Get a constant reference to the grid node at the location specified by the index.
@@ -147,7 +147,7 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_m, index.m_n);
+            return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief From a point gets the node indices of the closest edges
@@ -159,10 +159,10 @@ namespace meshkernel
         void ComputeGridNodeTypes();
 
         /// @brief Determines the grid node type
-        /// @param[in] m The m-dimension index
         /// @param[in] n The n-dimension index
+        /// @param[in] m The m-dimension index
         /// @return the node type
-        NodeType GetNodeType(UInt m, UInt n) const { return m_gridNodesTypes(m, n); }
+        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n, m); }
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
@@ -172,10 +172,10 @@ namespace meshkernel
         [[nodiscard]] bool AreFaceNodesValid(UInt n, UInt m) const;
 
         /// @brief Determines if the face mask is true (valid face) or false (invalid face)
-        /// @param[in] m The m-dimension index
         /// @param[in] n The n-dimension index
+        /// @param[in] m The m-dimension index
         /// @return the face mask value (true/false)
-        [[nodiscard]] bool IsFaceMaskValid(UInt m, UInt n) const { return m_gridFacesMask(m, n); }
+        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n, m); }
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
@@ -262,12 +262,12 @@ namespace meshkernel
         /// @brief Get the array of nodes at an m-dimension index
         /// @param [in] m the m-dimension index
         /// @return a vector of N nodes
-        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m); }
+        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, m); }
 
         /// @brief Get the array of nodes at an n-dimension index
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
-        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n); }
+        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, n); }
 
     private:
         /// @brief Remove invalid nodes.
