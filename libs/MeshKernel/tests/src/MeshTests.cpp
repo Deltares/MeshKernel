@@ -436,6 +436,74 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     ASSERT_EQ(3, mesh->m_edgesRTree->Size());
 }
 
+TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
+    meshkernel::Point newPoint{10.0, 10.0};
+
+    mesh->InsertNode(newPoint);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building a tree based on edges
+    mesh->BuildTree(meshkernel::Location::Edges);
+
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
+    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+}
+
+TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    meshkernel::Point newPoint{meshkernel::constants::missing::doubleValue,
+                               meshkernel::constants::missing::doubleValue};
+    meshkernel::UInt nodeIndex = mesh->InsertNode(newPoint);
+    meshkernel::UInt edgeIndex = mesh->ConnectNodes(0, nodeIndex);
+
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).first, 0);
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).second, nodeIndex);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building a tree based on edges
+    mesh->BuildTree(meshkernel::Location::Edges);
+
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+
+    EXPECT_EQ(5, mesh->GetNumEdges());
+    EXPECT_EQ(4, mesh->GetNumValidEdges());
+
+    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
+    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+
+    // Administrate should set the edge connecting an invalid node to be invalid.
+    EXPECT_EQ(mesh->GetEdge(4).first, meshkernel::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(4).second, meshkernel::constants::missing::uintValue);
+}
+
 TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
 {
     // 1 Setup

@@ -433,6 +433,9 @@ namespace meshkernel
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        /// @brief Set nodes and edges that are not connected to be invalid.
+        void SetUnconnectedNodesAndEdgesToInvalid();
     };
 } // namespace meshkernel
 
