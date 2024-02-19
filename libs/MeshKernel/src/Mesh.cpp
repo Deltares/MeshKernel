@@ -271,14 +271,13 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
     }
 
     // Flag invalid edges
-    for (auto& [firstNode, secondNode] : m_edges)
+    for (Edge& edge : m_edges)
     {
-        if (firstNode == constants::missing::uintValue ||
-            secondNode == constants::missing::uintValue ||
-            !nodeIsValid[firstNode] || !nodeIsValid[secondNode])
+        if (edge.first == constants::missing::uintValue ||
+            edge.second == constants::missing::uintValue ||
+            !nodeIsValid[edge.first] || !nodeIsValid[edge.second])
         {
-            firstNode = constants::missing::uintValue;
-            secondNode = constants::missing::uintValue;
+            edge = {constants::missing::uintValue, constants::missing::uintValue};
         }
     }
 }
