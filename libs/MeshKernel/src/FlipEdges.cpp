@@ -112,10 +112,10 @@ void FlipEdges::Compute() const
                         intersection,
                         crossProduct,
                         firstRatio,
-                        secondRatio] = AreSegmentsCrossing(m_mesh.m_nodes[firstNode],
-                                                           m_mesh.m_nodes[secondNode],
-                                                           m_mesh.m_nodes[nodeLeft],
-                                                           m_mesh.m_nodes[nodeRight],
+                        secondRatio] = AreSegmentsCrossing(m_mesh.Node(firstNode),
+                                                           m_mesh.Node(secondNode),
+                                                           m_mesh.Node(nodeLeft),
+                                                           m_mesh.Node(nodeRight),
                                                            false,
                                                            m_mesh.m_projection);
 
@@ -389,7 +389,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     }
 
     // Connected edges needs to be counterclockwise
-    const auto sign = sgn(crossProduct(m_mesh.m_nodes[nodeIndex], m_mesh.m_nodes[firstNode], m_mesh.m_nodes[firstNode], m_mesh.m_nodes[secondNode], m_mesh.m_projection));
+    const auto sign = sgn(crossProduct(m_mesh.Node(nodeIndex), m_mesh.Node(firstNode), m_mesh.Node(firstNode), m_mesh.Node(secondNode), m_mesh.m_projection));
     const auto isClockWise = sign < 0 ? true : false;
     if (isClockWise)
     {

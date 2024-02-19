@@ -13,10 +13,10 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
                                                  UInt& startNode,
                                                  UInt& endNode)
 {
-    const Point edge1Start = mesh.m_nodes[mesh.m_edges[edge1].first];
-    const Point edge1End = mesh.m_nodes[mesh.m_edges[edge1].second];
-    const Point edge2Start = mesh.m_nodes[mesh.m_edges[edge2].first];
-    const Point edge2End = mesh.m_nodes[mesh.m_edges[edge2].second];
+    const Point edge1Start = mesh.Node(mesh.m_edges[edge1].first);
+    const Point edge1End = mesh.Node(mesh.m_edges[edge1].second);
+    const Point edge2Start = mesh.Node(mesh.m_edges[edge2].first);
+    const Point edge2End = mesh.Node(mesh.m_edges[edge2].second);
 
     areAdjacent = false;
     startNode = constants::missing::uintValue;
@@ -259,7 +259,7 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFra
         }
 
         const UInt boundaryFaceId = elementsOnDomainBoundary[i];
-        const Point boundaryNode = mesh.m_nodes[boundaryEdge.first];
+        const Point boundaryNode = mesh.Node(boundaryEdge.first);
         FreeHangingNodes(mesh, numberOfHangingNodes, hangingNodesOnEdge, boundaryFaceId, boundaryEdge, boundaryNode, boundaryEdgeId);
     }
 
@@ -298,7 +298,7 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
     // Compute distances of nodes in list from the base point
     for (UInt j = 0; j < numberOfNodes; ++j)
     {
-        distance[j] = ComputeDistance(point, mesh.m_nodes[nodeIndices[j]], mesh.m_projection);
+        distance[j] = ComputeDistance(point, mesh.Node(nodeIndices[j]), mesh.m_projection);
     }
 
     std::iota(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, 0);
@@ -346,7 +346,7 @@ void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
     //
 
     // Compute point labeled with 'o' in ASCII diagram above
-    const Point midPoint = PointAlongLine(mesh.m_nodes[startNode], mesh.m_nodes[endNode], 0.5);
+    const Point midPoint = PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5);
     const UInt newNodeIndex = mesh.InsertNode(midPoint);
 
     // Connect node marked with 'x' to nodes labeled 3 and 'o'
@@ -394,7 +394,7 @@ void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
     //
 
     // Compute point labeled with 'o' in ASCII diagram above
-    const Point midPoint = PointAlongLine(mesh.m_nodes[startNode], mesh.m_nodes[endNode], 0.5);
+    const Point midPoint = PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5);
     const UInt newNodeIndex = mesh.InsertNode(midPoint);
 
     mesh.ConnectNodes(hangingNodes[1], newNodeIndex);
@@ -450,9 +450,9 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     UInt firstNextFace = mesh.NextFace(faceId, edgeId);
 
     // Compute points labeled 1, 2 or 3 in ASCII diagram above
-    const UInt node1 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[startNode], mesh.m_nodes[endNode], 0.25));
-    const UInt node2 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[startNode], mesh.m_nodes[endNode], 0.5));
-    const UInt node3 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[startNode], mesh.m_nodes[endNode], 0.75));
+    const UInt node1 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.25));
+    const UInt node2 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5));
+    const UInt node3 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.75));
 
     // Connect nodes across the face
     mesh.ConnectNodes(hangingNodes[1], node2);
@@ -488,8 +488,8 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     // Connect newly created nodes to (newly created) hanging nodes (1, 2 and 3)
 
     // Compute points labeled with 4 or 5 in ASCII diagram above
-    UInt node4 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[firstNextOppositeStartNode], mesh.m_nodes[firstNextOppositeEndNode], 0.34));
-    UInt node5 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[firstNextOppositeStartNode], mesh.m_nodes[firstNextOppositeEndNode], 0.66));
+    UInt node4 = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.34));
+    UInt node5 = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.66));
 
     // Connect nodes across the face
     mesh.ConnectNodes(node1, node4);
@@ -518,7 +518,7 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     const UInt secondNextOppositeEndNode = mesh.m_edges[secondNextOppositeEdge].second;
 
     // Compute point labeled with 6 in ASCII diagram above
-    const UInt node6 = mesh.InsertNode(PointAlongLine(mesh.m_nodes[secondNextOppositeStartNode], mesh.m_nodes[secondNextOppositeEndNode], 0.5));
+    const UInt node6 = mesh.InsertNode(PointAlongLine(mesh.Node(secondNextOppositeStartNode), mesh.Node(secondNextOppositeEndNode), 0.5));
 
     // Connect nodes across the face1
     mesh.ConnectNodes(node4, node6);
@@ -578,10 +578,10 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
                 intersectionPoint,
                 crossProduct,
                 normalisedPolylineSegmentDistance,
-                normalisedEdgeDistance] = AreSegmentsCrossing(mesh.m_nodes[boundaryEdge.first],
-                                                              mesh.m_nodes[startNode],
-                                                              mesh.m_nodes[boundaryEdge.second],
-                                                              mesh.m_nodes[endNode],
+                normalisedEdgeDistance] = AreSegmentsCrossing(mesh.Node(boundaryEdge.first),
+                                                              mesh.Node(startNode),
+                                                              mesh.Node(boundaryEdge.second),
+                                                              mesh.Node(endNode),
                                                               false,
                                                               mesh.m_projection);
     if (segmentsCross)

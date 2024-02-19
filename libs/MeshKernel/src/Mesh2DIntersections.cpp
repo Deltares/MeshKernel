@@ -68,8 +68,8 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                         adimensionalPolylineSegmentDistance,
                         adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
                                                                         polyLine[segmentIndex + 1],
-                                                                        mesh.m_nodes[mesh.m_edges[edgeIndex].first],
-                                                                        mesh.m_nodes[mesh.m_edges[edgeIndex].second],
+                                                                        mesh.Node(mesh.m_edges[edgeIndex].first),
+                                                                        mesh.Node(mesh.m_edges[edgeIndex].second),
                                                                         false,
                                                                         mesh.m_projection);
             if (!isEdgeCrossed)
@@ -151,8 +151,8 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
 
         auto intersection = AreSegmentsCrossing(polyLine[firstIndex],
                                                 polyLine[secondIndex],
-                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
-                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].second],
+                                                m_mesh.Node(m_mesh.m_edges[edgeIndex].first),
+                                                m_mesh.Node(m_mesh.m_edges[edgeIndex].second),
                                                 false,
                                                 m_mesh.m_projection);
 
@@ -190,8 +190,8 @@ void Mesh2DIntersections::IntersectFaceEdges(const std::vector<Point>& polyLine,
 
         auto intersection = AreSegmentsCrossing(polyLine[firstIndex],
                                                 polyLine[secondIndex],
-                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].first],
-                                                m_mesh.m_nodes[m_mesh.m_edges[edgeIndex].second],
+                                                m_mesh.Node(m_mesh.m_edges[edgeIndex].first),
+                                                m_mesh.Node(m_mesh.m_edges[edgeIndex].second),
                                                 false,
                                                 m_mesh.m_projection);
 

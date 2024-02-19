@@ -44,7 +44,7 @@ static void BM_Orthogonalization(benchmark::State& state)
             // only move inetrnal nodes
             if (!mesh->IsNodeOnBoundary(i))
             {
-                Point& node = mesh->m_nodes[i];
+                Point& node = mesh->Node(i);
                 double trans_x;
                 double trans_y;
                 if (i % 2 == 0)

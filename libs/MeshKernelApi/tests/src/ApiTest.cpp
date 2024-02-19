@@ -100,6 +100,18 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
             |   |   |
             2---5---8
     */
+
+    /*  2---5---8---11
+        |   |   |   |
+        1---4---7---10
+            |   |   |
+            3---6---9
+
+      Node 0 is invalid
+      Edges 0 and 9 are invalid
+
+    */
+
     // Assert data
     const double tolerance = 1e-6;
     // Nodes

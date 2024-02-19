@@ -731,17 +731,17 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     ASSERT_EQ(121, mesh->GetNumNodes());
 
     constexpr double tolerance = 1e-6;
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(41.103300000000004, mesh->m_nodes[6].x, tolerance);
-    ASSERT_NEAR(41.106600000000000, mesh->m_nodes[12].x, tolerance);
-    ASSERT_NEAR(41.109900000000003, mesh->m_nodes[18].x, tolerance);
-    ASSERT_NEAR(41.113199999999999, mesh->m_nodes[24].x, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(41.103300000000004, mesh->Node(6).x, tolerance);
+    ASSERT_NEAR(41.106600000000000, mesh->Node(12).x, tolerance);
+    ASSERT_NEAR(41.109900000000003, mesh->Node(18).x, tolerance);
+    ASSERT_NEAR(41.113199999999999, mesh->Node(24).x, tolerance);
 
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[6].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[12].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[18].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[24].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(6).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(12).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(18).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(24).y, tolerance);
 }
 
 TEST(MeshRefinement, RefineCurvilinearGrid)
@@ -985,7 +985,7 @@ TEST(MeshRefinement, CasulliRefinement)
     constexpr double tolerance = 1.0e-12;
 
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
-    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->Nodes(), Projection::cartesian);
 
     // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
     std::vector<meshkernel::Point> expectedPoints{{0.0, 0.0},
@@ -1048,8 +1048,8 @@ TEST(MeshRefinement, CasulliRefinement)
 
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[validNodeMap[i]].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[validNodeMap[i]].y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
     }
 
     ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumValidEdges());
@@ -1100,7 +1100,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     const size_t ExpectedNumberOfEdges = 360;
 
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
-    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+    Mesh2D mesh(curviMesh->m_edges, curviMesh->Nodes(), Projection::cartesian);
 
     std::vector<Point> patch{{45.0, 45.0},
                              {155.0, 45.0},
@@ -1137,8 +1137,8 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
         // Map the index i from the nodes array containing only valid points to an array with that may contain in-valid points
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[validNodeMap[i]].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[validNodeMap[i]].y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
     }
 
     for (size_t i = 0; i < expectedEdgeStart.size(); ++i)

@@ -157,7 +157,7 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
 
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        auto [containsPoint, pointIndex] = polygon.IsPointInPolygons(mesh.m_nodes[i]);
+        auto [containsPoint, pointIndex] = polygon.IsPointInPolygons(mesh.Node(i));
 
         if (containsPoint)
         {
@@ -533,7 +533,7 @@ void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vecto
 
             if (nodeMask[elementNode] > NodeMask::Unassigned)
             {
-                Point newNode = 0.5 * (elementCentre + mesh.m_nodes[elementNode]);
+                Point newNode = 0.5 * (elementCentre + mesh.Node(elementNode));
 
                 newNodeId = mesh.InsertNode(newNode);
                 nodeMask[newNodeId] = NodeMask::NewAssignedNode;
@@ -567,11 +567,11 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             continue;
         }
 
-        const Point edgeCentre = 0.5 * (mesh.m_nodes[node1] + mesh.m_nodes[node2]);
+        const Point edgeCentre = 0.5 * (mesh.Node(node1) + mesh.Node(node2));
 
         if (nodeMask[node1] != NodeMask::Unassigned)
         {
-            const Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node1]);
+            const Point newNode = 0.5 * (edgeCentre + mesh.Node(node1));
 
             newNodeId = mesh.InsertNode(newNode);
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
@@ -585,7 +585,7 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
 
         if (nodeMask[node2] != NodeMask::Unassigned)
         {
-            const Point newNode = 0.5 * (edgeCentre + mesh.m_nodes[node2]);
+            const Point newNode = 0.5 * (edgeCentre + mesh.Node(node2));
 
             newNodeId = mesh.InsertNode(newNode);
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;

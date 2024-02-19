@@ -36,10 +36,10 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     // Check nodes
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumNodes(); ++i)
     {
-        if (unconnectedGrid->m_nodes[i].IsValid())
+        if (unconnectedGrid->Node(i).IsValid())
         {
-            EXPECT_NEAR(unconnectedGrid->m_nodes[i].x, connectedGrid->m_nodes[count].x, tolerance);
-            EXPECT_NEAR(unconnectedGrid->m_nodes[i].y, connectedGrid->m_nodes[count].y, tolerance);
+            EXPECT_NEAR(unconnectedGrid->Node(i).x, connectedGrid->Node(count).x, tolerance);
+            EXPECT_NEAR(unconnectedGrid->Node(i).y, connectedGrid->Node(count).y, tolerance);
             ++count;
         }
     }
@@ -50,13 +50,13 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     {
         if (unconnectedGrid->m_edges[i].first != meshkernel::constants::missing::uintValue)
         {
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->m_nodes[connectedGrid->m_edges[count].first],
-                                            unconnectedGrid->m_nodes[unconnectedGrid->m_edges[i].first],
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->m_edges[count].first),
+                                            unconnectedGrid->Node(unconnectedGrid->m_edges[i].first),
                                             tolerance))
                 << "edge.first indexes incorrect node";
 
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->m_nodes[connectedGrid->m_edges[count].second],
-                                            unconnectedGrid->m_nodes[unconnectedGrid->m_edges[i].second],
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->m_edges[count].second),
+                                            unconnectedGrid->Node(unconnectedGrid->m_edges[i].second),
                                             tolerance))
                 << "edge.second indexes incorrect node";
 
@@ -276,13 +276,13 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
     const double tolerance = 1.0e-8;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 19.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].x, 19.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 19.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
@@ -316,13 +316,13 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     const double tolerance = 1.0e-10;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
@@ -356,13 +356,13 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
     const double tolerance = 1.0e-8;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 21.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].x, 21.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 21.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[10].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[11].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
@@ -398,21 +398,21 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     // Only comparing the nodes that were along the irregular edge and the
     // edge where the node was created in order to free the hanging nodes
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[18].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[19].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[32].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].y, 3.1, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[18].y, 6.2, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[19].y, 9.3, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[32].y, 5.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).y, 3.1, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).y, 6.2, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).y, 9.3, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).y, 5.0, tolerance);
 
     const meshkernel::UInt nullValue = meshkernel::constants::missing::uintValue;
 
@@ -567,21 +567,21 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     // Only comparing the nodes that were along the irregular edge and the
     // edge where the node was created in order to free the hanging nodes
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[18].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[19].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[32].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].y, 3.1, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[18].y, 6.2, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[19].y, 9.3, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[32].y, 5.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).y, 3.1, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).y, 6.2, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).y, 9.3, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).y, 5.0, tolerance);
 
     const meshkernel::UInt nullValue = meshkernel::constants::missing::uintValue;
 

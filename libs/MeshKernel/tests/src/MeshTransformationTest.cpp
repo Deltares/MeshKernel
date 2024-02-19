@@ -190,8 +190,8 @@ TEST(MeshTransformationTest, MeshTranslationTest)
 
     for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
-        EXPECT_EQ(originalMesh->m_nodes[i].x + vec.x(), mesh->m_nodes[i].x);
-        EXPECT_EQ(originalMesh->m_nodes[i].y + vec.y(), mesh->m_nodes[i].y);
+        EXPECT_EQ(originalMesh->Node(i).x + vec.x(), mesh->Node(i).x);
+        EXPECT_EQ(originalMesh->Node(i).y + vec.y(), mesh->Node(i).y);
     }
 }
 
@@ -218,10 +218,10 @@ TEST(MeshTransformationTest, MeshRotationTest)
 
     for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
-        mk::Point expected{originalMesh->m_nodes[i].x * cosTheta - originalMesh->m_nodes[i].y * sinTheta,
-                           originalMesh->m_nodes[i].x * sinTheta + originalMesh->m_nodes[i].y * cosTheta};
-        EXPECT_EQ(expected.x, mesh->m_nodes[i].x);
-        EXPECT_EQ(expected.y, mesh->m_nodes[i].y);
+        mk::Point expected{originalMesh->Node(i).x * cosTheta - originalMesh->Node(i).y * sinTheta,
+                           originalMesh->Node(i).x * sinTheta + originalMesh->Node(i).y * cosTheta};
+        EXPECT_EQ(expected.x, mesh->Node(i).x);
+        EXPECT_EQ(expected.y, mesh->Node(i).y);
     }
 }
 

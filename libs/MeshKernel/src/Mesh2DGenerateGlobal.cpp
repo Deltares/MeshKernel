@@ -33,9 +33,9 @@ UInt Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& 
 {
     constexpr double tolerance = 1.0e-6;
 
-    for (auto i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
+    for (auto i = static_cast<int>(mesh.GetNumNodes() - 1); i >= 0; --i)
     {
-        if (IsEqual(x, mesh.m_nodes[i], tolerance))
+        if (IsEqual(x, mesh.Node(i), tolerance))
         {
             return static_cast<UInt>(i);
         }
@@ -195,7 +195,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
              numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
              numEdgesSecondNode == constants::geometric::numNodesInhaxagon) &&
-            IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
+            IsEqual(mesh2d->Node(firstNode).y, mesh2d->Node(secondNode).y, tolerance))
         {
             mesh2d->DeleteEdge(e);
         }

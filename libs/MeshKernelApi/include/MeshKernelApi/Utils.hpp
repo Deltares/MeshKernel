@@ -339,8 +339,8 @@ namespace meshkernelapi
         mesh2d.ComputeEdgesCenters();
         for (size_t n = 0; n < mesh2d.GetNumNodes(); n++)
         {
-            mesh2dApi.node_x[n] = mesh2d.m_nodes[n].x;
-            mesh2dApi.node_y[n] = mesh2d.m_nodes[n].y;
+            mesh2dApi.node_x[n] = mesh2d.Node(n).x;
+            mesh2dApi.node_y[n] = mesh2d.Node(n).y;
         }
 
         for (size_t edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); edgeIndex++)
@@ -380,8 +380,8 @@ namespace meshkernelapi
         curvilinearGrid.ComputeEdgesCenters();
         for (size_t n = 0; n < curvilinearGrid.GetNumNodes(); n++)
         {
-            curvilinearGridApi.node_x[n] = curvilinearGrid.m_nodes[n].x;
-            curvilinearGridApi.node_y[n] = curvilinearGrid.m_nodes[n].y;
+            curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
+            curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
         }
     }
 
@@ -393,8 +393,8 @@ namespace meshkernelapi
     {
         for (size_t n = 0; n < mesh1d.GetNumNodes(); n++)
         {
-            mesh1dApi.node_x[n] = mesh1d.m_nodes[n].x;
-            mesh1dApi.node_y[n] = mesh1d.m_nodes[n].y;
+            mesh1dApi.node_x[n] = mesh1d.Node(n).x;
+            mesh1dApi.node_y[n] = mesh1d.Node(n).y;
         }
 
         size_t edgeIndex = 0;

@@ -554,17 +554,17 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(1, mesh->GetNumFaces());
 
     const double tolerance = 1e-8;
-    ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[3].x, tolerance);
-    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[4].x, tolerance);
+    ASSERT_NEAR(364.17013549804688, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->Node(4).x, tolerance);
 
-    ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->m_nodes[1].y, tolerance);
-    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[2].y, tolerance);
-    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[3].y, tolerance);
-    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[4].y, tolerance);
+    ASSERT_NEAR(374.00662231445313, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
 }
 
 TEST(Mesh, DeleteHangingEdge)
@@ -701,7 +701,7 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    const auto nodes = mesh->m_nodes;
+    const auto nodes = mesh->Nodes();
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
 }
 

@@ -1966,7 +1966,7 @@ namespace meshkernelapi
                                                                                            nodeIndex));
 
             // Set the node coordinate
-            const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
+            const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->Node(nodeIndex);
             xCoordinateOut = foundNode.x;
             yCoordinateOut = foundNode.y;
         }
@@ -2658,7 +2658,7 @@ namespace meshkernelapi
 
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
             meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
-            meshKernelState[meshKernelId].m_mesh2d->m_nodes = mergedMeshes->m_nodes;
+            meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->m_edges = mergedMeshes->m_edges;
             meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;
             meshKernelState[meshKernelId].m_mesh2d->Administrate();

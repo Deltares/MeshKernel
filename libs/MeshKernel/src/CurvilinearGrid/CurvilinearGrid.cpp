@@ -34,7 +34,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
-CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.m_nodes, grid.m_projection),
+CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.Nodes(), grid.m_projection),
                                                                 m_numM(grid.m_numM),
                                                                 m_numN(grid.m_numN),
                                                                 m_gridNodes(grid.m_gridNodes),

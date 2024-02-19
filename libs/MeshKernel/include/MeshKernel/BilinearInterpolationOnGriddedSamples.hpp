@@ -149,7 +149,7 @@ namespace meshkernel
         std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
         for (UInt n = 0; n < numNodes; ++n)
         {
-            const auto node = m_mesh.m_nodes[n];
+            const auto node = m_mesh.Node(n);
             m_nodeResults[n] = Interpolation(node);
         }
 

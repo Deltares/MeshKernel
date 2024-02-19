@@ -168,6 +168,19 @@ namespace meshkernel
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(UInt face) const;
 
+        /// @brief Get vector of all nodes
+        // TODO Can this be removed?
+        const std::vector<Point>& Nodes() const;
+
+        /// @brief Get the node at the position
+        const Point& Node(const UInt index) const;
+
+        /// @brief Set all nodes to a new set of values.
+        void SetNodes(const std::vector<Point>& newValues);
+
+        /// @brief Set the node to a new value, this value may be the in-valid value.
+        void SetNode(const UInt index, const Point& newValue);
+
         /// @brief Get the local index of the node belong to a face.
         ///
         /// If the node cannot be found the null value will be returned.
@@ -351,13 +364,13 @@ namespace meshkernel
         /// @brief Indicate if the edge-id is a valid edge
         ///
         /// A valid edge satisfies four conditions:
-        /// The start and end indices are not the null value, if both are not, then
+        /// The start and end indices are not the null value, if neither is, then
         /// also the nodes indexed by the edge are valid nodes. If any of these conditions
         /// is false then the edge is in-valid.
         bool IsValidEdge(const UInt edgeId) const;
 
         // nodes
-        std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
+        // std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
@@ -395,7 +408,44 @@ namespace meshkernel
         static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
 
+    protected:
+        // Make private
+        std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
+
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
     };
 } // namespace meshkernel
+
+inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const
+{
+    return m_nodes;
+}
+
+inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
+{
+    if (index >= GetNumNodes())
+    {
+        throw ConstraintError("The index, {}, of the node to be deleted does not exist.", index);
+    }
+
+    return m_nodes[index];
+}
+
+inline void meshkernel::Mesh::SetNode(const UInt index, const Point& newValue)
+{
+    if (index >= GetNumNodes())
+    {
+        throw ConstraintError("The index, {}, of the node to be deleted does not exist.", index);
+    }
+
+    m_nodes[index] = newValue;
+}
+
+inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
+{
+    m_nodes = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+}
