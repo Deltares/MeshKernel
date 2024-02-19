@@ -48,15 +48,15 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
 
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
     {
-        if (unconnectedGrid->m_edges[i].first != meshkernel::constants::missing::uintValue)
+        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue)
         {
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->m_edges[count].first),
-                                            unconnectedGrid->Node(unconnectedGrid->m_edges[i].first),
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).first),
+                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).first),
                                             tolerance))
                 << "edge.first indexes incorrect node";
 
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->m_edges[count].second),
-                                            unconnectedGrid->Node(unconnectedGrid->m_edges[i].second),
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).second),
+                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).second),
                                             tolerance))
                 << "edge.second indexes incorrect node";
 
@@ -71,7 +71,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
 
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
     {
-        if (unconnectedGrid->m_edges[i].first != meshkernel::constants::missing::uintValue && unconnectedGrid->m_edges[i].second != meshkernel::constants::missing::uintValue)
+        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue && unconnectedGrid->GetEdge(i).second != meshkernel::constants::missing::uintValue)
         {
             edgeMap[i] = count;
             edgeMapInv[count] = i;
@@ -532,8 +532,8 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
     {
         if (expectedEdges[i].first != nullValue)
         {
-            EXPECT_EQ(expectedEdges[i].first, mergedMesh->m_edges[i].first);
-            EXPECT_EQ(expectedEdges[i].second, mergedMesh->m_edges[i].second);
+            EXPECT_EQ(expectedEdges[i].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
         }
     }
 }
@@ -701,8 +701,8 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
     {
         if (expectedEdges[i].first != nullValue)
         {
-            EXPECT_EQ(expectedEdges[i].first, mergedMesh->m_edges[i].first);
-            EXPECT_EQ(expectedEdges[i].second, mergedMesh->m_edges[i].second);
+            EXPECT_EQ(expectedEdges[i].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
         }
     }
 }

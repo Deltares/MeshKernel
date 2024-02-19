@@ -182,7 +182,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     constexpr double tolerance = 1.0e-6;
     for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
     {
-        const auto& [firstNode, secondNode] = mesh2d->m_edges[e];
+        const auto& [firstNode, secondNode] = mesh2d->GetEdge(e);
 
         if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
         {

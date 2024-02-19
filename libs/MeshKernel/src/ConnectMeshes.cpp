@@ -13,10 +13,10 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
                                                  UInt& startNode,
                                                  UInt& endNode)
 {
-    const Point edge1Start = mesh.Node(mesh.m_edges[edge1].first);
-    const Point edge1End = mesh.Node(mesh.m_edges[edge1].second);
-    const Point edge2Start = mesh.Node(mesh.m_edges[edge2].first);
-    const Point edge2End = mesh.Node(mesh.m_edges[edge2].second);
+    const Point edge1Start = mesh.Node(mesh.GetEdge(edge1).first);
+    const Point edge1End = mesh.Node(mesh.GetEdge(edge1).second);
+    const Point edge2Start = mesh.Node(mesh.GetEdge(edge2).first);
+    const Point edge2End = mesh.Node(mesh.GetEdge(edge2).second);
 
     areAdjacent = false;
     startNode = constants::missing::uintValue;
@@ -50,20 +50,20 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
     {
         if (ComputeDistance(edge1Start, edge2Start, mesh.m_projection) < minimumLength)
         {
-            startNode = mesh.m_edges[edge2].first;
+            startNode = mesh.GetEdge(edge2).first;
         }
         else if (ComputeDistance(edge1Start, edge2End, mesh.m_projection) < minimumLength)
         {
-            startNode = mesh.m_edges[edge2].second;
+            startNode = mesh.GetEdge(edge2).second;
         }
 
         if (ComputeDistance(edge1End, edge2Start, mesh.m_projection) < minimumLength)
         {
-            endNode = mesh.m_edges[edge2].first;
+            endNode = mesh.GetEdge(edge2).first;
         }
         else if (ComputeDistance(edge1End, edge2End, mesh.m_projection) < minimumLength)
         {
-            endNode = mesh.m_edges[edge2].second;
+            endNode = mesh.GetEdge(edge2).second;
         }
 
         double absCosPhi = std::abs(NormalizedInnerProductTwoSegments(edge1Start, edge1End, edge2Start, edge2End, mesh.m_projection));
@@ -75,7 +75,7 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
                                                                          std::vector<UInt>& elementsOnDomainBoundary,
                                                                          std::vector<UInt>& edgesOnDomainBoundary)
 {
-    for (UInt i = 0; i < mesh.m_edges.size(); ++i)
+    for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
         if (mesh.m_edgesNumFaces[i] == 1)
         {
@@ -224,7 +224,7 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFra
         }
 
         const UInt boundaryEdgeId = edgesOnDomainBoundary[i];
-        const Edge boundaryEdge = mesh.m_edges[boundaryEdgeId];
+        const Edge boundaryEdge = mesh.GetEdge(boundaryEdgeId);
 
         const UInt primaryStartNode = irregularEdge.startNode;
         const UInt primaryEndNode = irregularEdge.endNode;
@@ -246,14 +246,13 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFra
 
                 if (irregularEdge.edgeCount > otherIrregularEdge.edgeCount)
                 {
-                    GatherHangingNodes(primaryStartNode, primaryEndNode, mesh.m_edges[irregularEdgeId], hangingNodesOnEdge, numberOfHangingNodes, mergeIndicator);
+                    GatherHangingNodes(primaryStartNode, primaryEndNode, mesh.GetEdge(irregularEdgeId), hangingNodesOnEdge, numberOfHangingNodes, mergeIndicator);
                 }
 
                 if (adjacentEdgeIndicator[boundaryEdgeId] && adjacentEdgeIndicator[irregularEdgeId])
                 {
                     adjacentEdgeIndicator[boundaryEdgeId] = false;
-                    mesh.m_edges[boundaryEdgeId].first = missingValue;
-                    mesh.m_edges[boundaryEdgeId].second = missingValue;
+                    mesh.SetEdge(boundaryEdgeId, {missingValue, missingValue});
                 }
             }
         }
@@ -369,8 +368,8 @@ void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
     {
         const UInt nextOppositeEdge = mesh.FindOppositeEdge(adjacentFaceId, edgeId);
         // Connect node marked with 'o' to nodes labeled 1 and 2
-        mesh.ConnectNodes(newNodeIndex, mesh.m_edges[nextOppositeEdge].first);
-        mesh.ConnectNodes(newNodeIndex, mesh.m_edges[nextOppositeEdge].second);
+        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
+        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
     }
 }
 
@@ -414,8 +413,8 @@ void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
     if (adjacentFaceId != constants::missing::uintValue)
     {
         const UInt nextOppositeEdge = mesh.FindOppositeEdge(adjacentFaceId, edgeId);
-        mesh.ConnectNodes(newNodeIndex, mesh.m_edges[nextOppositeEdge].first);
-        mesh.ConnectNodes(newNodeIndex, mesh.m_edges[nextOppositeEdge].second);
+        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
+        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
     }
 }
 
@@ -480,8 +479,8 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     }
 
     const UInt firstNextOppositeEdge = mesh.FindOppositeEdge(firstNextFace, edgeId);
-    const UInt firstNextOppositeStartNode = mesh.m_edges[firstNextOppositeEdge].first;
-    const UInt firstNextOppositeEndNode = mesh.m_edges[firstNextOppositeEdge].second;
+    const UInt firstNextOppositeStartNode = mesh.GetEdge(firstNextOppositeEdge).first;
+    const UInt firstNextOppositeEndNode = mesh.GetEdge(firstNextOppositeEdge).second;
 
     //--------------------------------
     // Create 2 new nodes (labelled 4 and 5 in ASCII diagram)
@@ -514,8 +513,8 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     }
 
     const UInt secondNextOppositeEdge = mesh.FindOppositeEdge(secondNextFaceId, firstNextOppositeEdge);
-    const UInt secondNextOppositeStartNode = mesh.m_edges[secondNextOppositeEdge].first;
-    const UInt secondNextOppositeEndNode = mesh.m_edges[secondNextOppositeEdge].second;
+    const UInt secondNextOppositeStartNode = mesh.GetEdge(secondNextOppositeEdge).first;
+    const UInt secondNextOppositeEndNode = mesh.GetEdge(secondNextOppositeEdge).second;
 
     // Compute point labeled with 6 in ASCII diagram above
     const UInt node6 = mesh.InsertNode(PointAlongLine(mesh.Node(secondNextOppositeStartNode), mesh.Node(secondNextOppositeEndNode), 0.5));
@@ -544,8 +543,8 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     }
 
     const UInt thirdNextOppositeEdge = mesh.FindOppositeEdge(thirdNextFaceId, secondNextOppositeEdge);
-    mesh.ConnectNodes(node6, mesh.m_edges[thirdNextOppositeEdge].second);
-    mesh.ConnectNodes(node6, mesh.m_edges[thirdNextOppositeEdge].first);
+    mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).second);
+    mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).first);
 }
 
 void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
@@ -571,8 +570,8 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
         throw ConstraintError("Opposite edge not found for element {} and edge {}.", faceId, edgeId);
     }
 
-    UInt startNode = mesh.m_edges[oppositeEdgeId].first;
-    UInt endNode = mesh.m_edges[oppositeEdgeId].second;
+    UInt startNode = mesh.GetEdge(oppositeEdgeId).first;
+    UInt endNode = mesh.GetEdge(oppositeEdgeId).second;
 
     const auto [segmentsCross,
                 intersectionPoint,

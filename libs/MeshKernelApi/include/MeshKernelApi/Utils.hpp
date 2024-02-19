@@ -347,8 +347,8 @@ namespace meshkernelapi
         {
             mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].x;
             mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].y;
-            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.m_edges[edgeIndex].first);
-            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.m_edges[edgeIndex].second);
+            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
+            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
 
             const auto& firstEdgeFace = mesh2d.m_edgesFaces[edgeIndex][0];
             mesh2dApi.edge_faces[edgeIndex * 2] = firstEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(firstEdgeFace);
@@ -400,9 +400,9 @@ namespace meshkernelapi
         size_t edgeIndex = 0;
         for (size_t e = 0; e < mesh1d.GetNumEdges(); e++)
         {
-            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.m_edges[e].first);
+            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.GetEdge(e).first);
             edgeIndex++;
-            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.m_edges[e].second);
+            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.GetEdge(e).second);
             edgeIndex++;
         }
     }

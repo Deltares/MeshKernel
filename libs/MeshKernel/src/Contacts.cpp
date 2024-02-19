@@ -102,8 +102,8 @@ bool Contacts::IsContactIntersectingMesh1d(UInt node,
                     ratioFirstSegment,
                     ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d.Node(node),
                                                               m_mesh2d.m_facesCircumcenters[face],
-                                                              m_mesh1d.Node(m_mesh1d.m_edges[e].first),
-                                                              m_mesh1d.Node(m_mesh1d.m_edges[e].second),
+                                                              m_mesh1d.Node(m_mesh1d.GetEdge(e).first),
+                                                              m_mesh1d.Node(m_mesh1d.GetEdge(e).second),
                                                               false,
                                                               m_mesh1d.m_projection);
 
@@ -169,8 +169,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
     for (UInt e = 0; e < m_mesh1d.GetNumEdges(); ++e)
     {
         // get the mesh1d edge nodes
-        const auto firstNode1dMeshEdge = m_mesh1d.m_edges[e].first;
-        const auto secondNode1dMeshEdge = m_mesh1d.m_edges[e].second;
+        const auto firstNode1dMeshEdge = m_mesh1d.GetEdge(e).first;
+        const auto secondNode1dMeshEdge = m_mesh1d.GetEdge(e).second;
 
         // computes the maximum edge length
         const auto maxEdgeLength = m_mesh1d.ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
@@ -194,8 +194,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             for (UInt ee = 0; ee < m_mesh2d.m_numFacesNodes[face]; ++ee)
             {
                 const auto edge = m_mesh2d.m_facesEdges[face][ee];
-                const auto firstNode2dMeshEdge = m_mesh2d.m_edges[edge].first;
-                const auto secondNode2dMeshEdge = m_mesh2d.m_edges[edge].second;
+                const auto firstNode2dMeshEdge = m_mesh2d.GetEdge(edge).first;
+                const auto secondNode2dMeshEdge = m_mesh2d.GetEdge(edge).second;
 
                 const auto [areCrossing,
                             intersectionPoint,

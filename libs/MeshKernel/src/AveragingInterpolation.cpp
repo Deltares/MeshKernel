@@ -91,7 +91,7 @@ void AveragingInterpolation::Compute()
 
         for (UInt e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
-            const auto& [first, second] = m_mesh.m_edges[e];
+            const auto& [first, second] = m_mesh.GetEdge(e);
 
             const auto& firstValue = m_nodeResults[first];
             const auto& secondValue = m_nodeResults[second];

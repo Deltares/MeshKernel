@@ -98,23 +98,23 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(5, mesh.GetNumNodes());
     ASSERT_EQ(6, mesh.GetNumEdges());
 
-    ASSERT_EQ(3, mesh.m_edges[0].first);
-    ASSERT_EQ(0, mesh.m_edges[0].second);
+    ASSERT_EQ(3, mesh.GetEdge(0).first);
+    ASSERT_EQ(0, mesh.GetEdge(0).second);
 
-    ASSERT_EQ(0, mesh.m_edges[1].first);
-    ASSERT_EQ(1, mesh.m_edges[1].second);
+    ASSERT_EQ(0, mesh.GetEdge(1).first);
+    ASSERT_EQ(1, mesh.GetEdge(1).second);
 
-    ASSERT_EQ(1, mesh.m_edges[2].first);
-    ASSERT_EQ(3, mesh.m_edges[2].second);
+    ASSERT_EQ(1, mesh.GetEdge(2).first);
+    ASSERT_EQ(3, mesh.GetEdge(2).second);
 
-    ASSERT_EQ(4, mesh.m_edges[3].first);
-    ASSERT_EQ(1, mesh.m_edges[3].second);
+    ASSERT_EQ(4, mesh.GetEdge(3).first);
+    ASSERT_EQ(1, mesh.GetEdge(3).second);
 
-    ASSERT_EQ(1, mesh.m_edges[4].first);
-    ASSERT_EQ(2, mesh.m_edges[4].second);
+    ASSERT_EQ(1, mesh.GetEdge(4).first);
+    ASSERT_EQ(2, mesh.GetEdge(4).second);
 
-    ASSERT_EQ(2, mesh.m_edges[5].first);
-    ASSERT_EQ(4, mesh.m_edges[5].second);
+    ASSERT_EQ(2, mesh.GetEdge(5).first);
+    ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
 TEST(Mesh, TriangulateSamples)
@@ -271,7 +271,7 @@ TEST(Mesh, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            auto edge = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
+            auto edge = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
             auto otherNode = edge.first + edge.second - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};

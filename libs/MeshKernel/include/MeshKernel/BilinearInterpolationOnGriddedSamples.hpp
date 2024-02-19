@@ -157,7 +157,7 @@ namespace meshkernel
         std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
         for (UInt e = 0; e < numEdges; ++e)
         {
-            const auto& [first, second] = m_mesh.m_edges[e];
+            const auto& [first, second] = m_mesh.GetEdge(e);
             m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
         }
 

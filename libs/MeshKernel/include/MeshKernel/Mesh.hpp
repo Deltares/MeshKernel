@@ -31,6 +31,7 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -180,6 +181,23 @@ namespace meshkernel
 
         /// @brief Set the node to a new value, this value may be the in-valid value.
         void SetNode(const UInt index, const Point& newValue);
+
+        /// @brief Get the edge
+        const Edge& GetEdge(const UInt index) const;
+
+        /// @brief Get the edge
+        // TODO get rid of this function
+        Edge& GetEdge(const UInt index);
+
+        /// @brief Get all edges
+        // TODO get rid of this function
+        const std::vector<Edge>& Edges() const;
+
+        /// @brief Set the edge
+        void SetEdge(const UInt index, const Edge& edge);
+
+        /// @brief Set all edges to a new set of values.
+        void SetEdges(const std::vector<Edge>& newValues);
 
         /// @brief Get the local index of the node belong to a face.
         ///
@@ -377,7 +395,7 @@ namespace meshkernel
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
+        // std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
@@ -411,6 +429,7 @@ namespace meshkernel
     protected:
         // Make private
         std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
+        std::vector<Edge> m_edges;  ///< The edges, defined as first and second node(kn)
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
@@ -426,7 +445,7 @@ inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
 {
     if (index >= GetNumNodes())
     {
-        throw ConstraintError("The index, {}, of the node to be deleted does not exist.", index);
+        throw ConstraintError("The index, {}, of the node to be retrieved does not exist.", index);
     }
 
     return m_nodes[index];
@@ -436,7 +455,7 @@ inline void meshkernel::Mesh::SetNode(const UInt index, const Point& newValue)
 {
     if (index >= GetNumNodes())
     {
-        throw ConstraintError("The index, {}, of the node to be deleted does not exist.", index);
+        throw ConstraintError("The index, {}, of the node to be set does not exist.", index);
     }
 
     m_nodes[index] = newValue;
@@ -448,4 +467,44 @@ inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
+}
+
+inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The index, {}, of the edge to be retrieved does not exist.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The index, {}, of the edge to be retrieved does not exist.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
+{
+    return m_edges;
+}
+
+inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The index, {}, of the edge to be set does not exist.", index);
+    }
+
+    m_edges[index] = edge;
+}
+
+inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
+{
+    m_edges = newValues;
 }

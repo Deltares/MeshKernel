@@ -159,11 +159,11 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
 
     if (initialize)
     {
-        if (!m_mesh.IsEdgeOnBoundary(edgeIndex) || m_mesh.m_edges[edgeIndex].first == constants::missing::uintValue || m_mesh.m_edges[edgeIndex].second == constants::missing::uintValue)
+        if (!m_mesh.IsEdgeOnBoundary(edgeIndex) || m_mesh.GetEdge(edgeIndex).first == constants::missing::uintValue || m_mesh.GetEdge(edgeIndex).second == constants::missing::uintValue)
             throw std::invalid_argument("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: Cannot not assign segment to mesh nodes.");
 
-        const auto firstMeshNode = m_mesh.m_edges[edgeIndex].first;
-        const auto secondMeshNode = m_mesh.m_edges[edgeIndex].second;
+        const auto firstMeshNode = m_mesh.GetEdge(edgeIndex).first;
+        const auto secondMeshNode = m_mesh.GetEdge(edgeIndex).second;
 
         if (m_meshNodesLandBoundarySegments[firstMeshNode] != constants::missing::uintValue &&
             m_meshNodesLandBoundarySegments[secondMeshNode] == constants::missing::uintValue &&
@@ -213,7 +213,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
         if (!m_mesh.IsEdgeOnBoundary(edge))
             continue;
 
-        const auto otherNode = OtherNodeOfEdge(m_mesh.m_edges[edge], lastVisitedNode);
+        const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edge), lastVisitedNode);
 
         // path stopped
         if (m_nodeMask[otherNode] == constants::missing::uintValue)
@@ -441,7 +441,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
             break;
         }
 
-        currentNode = OtherNodeOfEdge(m_mesh.m_edges[nextEdgeIndex], currentNode);
+        currentNode = OtherNodeOfEdge(m_mesh.GetEdge(nextEdgeIndex), currentNode);
 
         if (currentNode == constants::missing::uintValue || currentNode >= m_mesh.GetNumNodes())
         {
@@ -650,13 +650,13 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
     const auto& [startLandBoundaryIndex, endLandBoundaryIndex] = m_validLandBoundaries[landBoundaryIndex];
 
     const auto startNode = std::max(std::min(static_cast<UInt>(0), endLandBoundaryIndex - 1), startLandBoundaryIndex);
-    if (m_mesh.m_edges[edge].first == constants::missing::uintValue || m_mesh.m_edges[edge].second == constants::missing::uintValue)
+    if (m_mesh.GetEdge(edge).first == constants::missing::uintValue || m_mesh.GetEdge(edge).second == constants::missing::uintValue)
     {
         return landBoundaryNode;
     }
 
-    const auto firstMeshNode = m_mesh.Node(m_mesh.m_edges[edge].first);
-    const auto secondMeshNode = m_mesh.Node(m_mesh.m_edges[edge].second);
+    const auto firstMeshNode = m_mesh.Node(m_mesh.GetEdge(edge).first);
+    const auto secondMeshNode = m_mesh.Node(m_mesh.GetEdge(edge).second);
 
     const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh.m_projection);
     const double distanceFactor = m_findOnlyOuterMeshBoundary ? m_closeToLandBoundaryFactor : m_closeWholeMeshFactor;
@@ -755,25 +755,25 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshN
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
         // If the edge has an invalid node, continue
-        if (m_mesh.m_edges[e].first == constants::missing::uintValue || m_mesh.m_edges[e].second == constants::missing::uintValue)
+        if (m_mesh.GetEdge(e).first == constants::missing::uintValue || m_mesh.GetEdge(e).second == constants::missing::uintValue)
         {
             continue;
         }
 
         // Use only edges with both nodes masked
-        if (m_nodeMask[m_mesh.m_edges[e].first] == constants::missing::uintValue || m_nodeMask[m_mesh.m_edges[e].second] == constants::missing::uintValue)
+        if (m_nodeMask[m_mesh.GetEdge(e).first] == constants::missing::uintValue || m_nodeMask[m_mesh.GetEdge(e).second] == constants::missing::uintValue)
         {
             continue;
         }
 
         const auto [distanceFromFirstMeshNode, normalFirstMeshNode, ratioFirstMeshNode] = DistanceFromLine(startPoint,
-                                                                                                           m_mesh.Node(m_mesh.m_edges[e].first),
-                                                                                                           m_mesh.Node(m_mesh.m_edges[e].second),
+                                                                                                           m_mesh.Node(m_mesh.GetEdge(e).first),
+                                                                                                           m_mesh.Node(m_mesh.GetEdge(e).second),
                                                                                                            m_mesh.m_projection);
 
         const auto [distanceFromSecondMeshNode, normalSecondMeshNode, ratioSecondMeshNode] = DistanceFromLine(endPoint,
-                                                                                                              m_mesh.Node(m_mesh.m_edges[e].first),
-                                                                                                              m_mesh.Node(m_mesh.m_edges[e].second),
+                                                                                                              m_mesh.Node(m_mesh.GetEdge(e).first),
+                                                                                                              m_mesh.Node(m_mesh.GetEdge(e).second),
                                                                                                               m_mesh.m_projection);
 
         if (distanceFromFirstMeshNode < minDistStart)
@@ -806,8 +806,8 @@ meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point
         return constants::missing::uintValue;
     }
 
-    const auto firstMeshNodeIndex = m_mesh.m_edges[edge].first;
-    const auto secondMeshNodeIndex = m_mesh.m_edges[edge].second;
+    const auto firstMeshNodeIndex = m_mesh.GetEdge(edge).first;
+    const auto secondMeshNodeIndex = m_mesh.GetEdge(edge).second;
     const auto firstDistance = ComputeSquaredDistance(m_mesh.Node(firstMeshNodeIndex), point, m_mesh.m_projection);
     const auto secondDistance = ComputeSquaredDistance(m_mesh.Node(secondMeshNodeIndex), point, m_mesh.m_projection);
 
@@ -853,12 +853,12 @@ std::vector<meshkernel::UInt> LandBoundaries::ShortestPath(UInt landBoundaryInde
 
         for (const auto& edgeIndex : m_mesh.m_nodesEdges[currentNodeIndex])
         {
-            if (m_mesh.m_edges[edgeIndex].first == constants::missing::uintValue || m_mesh.m_edges[edgeIndex].second == constants::missing::uintValue)
+            if (m_mesh.GetEdge(edgeIndex).first == constants::missing::uintValue || m_mesh.GetEdge(edgeIndex).second == constants::missing::uintValue)
             {
                 continue;
             }
 
-            const auto neighbouringNodeIndex = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], currentNodeIndex);
+            const auto neighbouringNodeIndex = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), currentNodeIndex);
 
             if (isVisited[neighbouringNodeIndex])
             {

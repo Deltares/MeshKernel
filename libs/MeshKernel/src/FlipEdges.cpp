@@ -103,8 +103,8 @@ void FlipEdges::Compute() const
             }
 
             // Check if nodes have been masked
-            auto const firstNode = m_mesh.m_edges[e].first;
-            auto const secondNode = m_mesh.m_edges[e].second;
+            auto const firstNode = m_mesh.GetEdge(e).first;
+            auto const secondNode = m_mesh.GetEdge(e).second;
 
             // Check if the quadrilateral composed by the two adjacent triangles is concave,
             // in which case the diagonals crosses
@@ -125,8 +125,7 @@ void FlipEdges::Compute() const
             }
 
             // Flip the edges
-            m_mesh.m_edges[e].first = nodeLeft;
-            m_mesh.m_edges[e].second = nodeRight;
+            m_mesh.SetEdge(e, {nodeLeft, nodeRight});
             numFlippedEdges++;
 
             // Find the other edges
@@ -141,8 +140,8 @@ void FlipEdges::Compute() const
                 {
                     continue;
                 }
-                const auto first = m_mesh.m_edges[edgeIndex].first;
-                const auto second = m_mesh.m_edges[edgeIndex].second;
+                const auto first = m_mesh.GetEdge(edgeIndex).first;
+                const auto second = m_mesh.GetEdge(edgeIndex).second;
 
                 if (first == firstNode || second == firstNode)
                 {
@@ -161,8 +160,8 @@ void FlipEdges::Compute() const
                 {
                     continue;
                 }
-                const auto first = m_mesh.m_edges[edgeIndex].first;
-                const auto second = m_mesh.m_edges[edgeIndex].second;
+                const auto first = m_mesh.GetEdge(edgeIndex).first;
+                const auto second = m_mesh.GetEdge(edgeIndex).second;
 
                 if (first == firstNode || second == firstNode)
                 {
@@ -278,8 +277,8 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
         return largeTopologyFunctionalValue;
     }
 
-    const auto firstNode = m_mesh.m_edges[edge].first;
-    const auto secondNode = m_mesh.m_edges[edge].second;
+    const auto firstNode = m_mesh.GetEdge(edge).first;
+    const auto secondNode = m_mesh.GetEdge(edge).second;
     const auto faceL = m_mesh.m_edgesFaces[edge][0];
     const auto faceR = m_mesh.m_edgesFaces[edge][1];
     const auto NumEdgesLeftFace = m_mesh.GetNumFaceEdges(faceL);
@@ -404,7 +403,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     {
         const auto edgeIndex = m_mesh.m_nodesEdges[nodeIndex][i];
 
-        if (m_mesh.m_edges[edgeIndex].first == firstNode || m_mesh.m_edges[edgeIndex].second == firstNode)
+        if (m_mesh.GetEdge(edgeIndex).first == firstNode || m_mesh.GetEdge(edgeIndex).second == firstNode)
         {
             edgeIndexConnectingFirstNode = i;
             break;
@@ -422,7 +421,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     {
         const auto edgeIndex = m_mesh.m_nodesEdges[nodeIndex][i];
 
-        if (m_mesh.m_edges[edgeIndex].first == secondNode || m_mesh.m_edges[edgeIndex].second == secondNode)
+        if (m_mesh.GetEdge(edgeIndex).first == secondNode || m_mesh.GetEdge(edgeIndex).second == secondNode)
         {
             edgeIndexConnectingSecondNode = i;
             break;
@@ -438,7 +437,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     // that are not in a land or mesh boundary path
     auto currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
     auto edgeIndex = m_mesh.m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-    auto otherNode = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], nodeIndex);
+    auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
 
     UInt num = 1;
     while (m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
@@ -447,7 +446,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     {
         currentEdgeIndexInNodeEdges = NextCircularBackwardIndex(currentEdgeIndexInNodeEdges, m_mesh.m_nodesNumEdges[nodeIndex]);
         edgeIndex = m_mesh.m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-        otherNode = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], nodeIndex);
+        otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
         num++;
     }
 
@@ -464,7 +463,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
         edgeIndex = m_mesh.m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-        otherNode = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], nodeIndex);
+        otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
         num = num + 1;
         while (m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
                !m_mesh.IsEdgeOnBoundary(edgeIndex) &&
@@ -473,7 +472,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         {
             currentEdgeIndexInNodeEdges = NextCircularForwardIndex(currentEdgeIndexInNodeEdges, m_mesh.m_nodesNumEdges[nodeIndex]);
             edgeIndex = m_mesh.m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-            otherNode = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], nodeIndex);
+            otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
 
             if (currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode && edgeIndex != firstEdgeInPathIndex)
             {

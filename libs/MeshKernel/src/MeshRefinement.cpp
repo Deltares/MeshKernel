@@ -277,16 +277,16 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
                 }
             }
 
-            const auto otherNodeIndex = OtherNodeOfEdge(m_mesh.m_edges[brotherEdgeIndex], commonNode);
+            const auto otherNodeIndex = OtherNodeOfEdge(m_mesh.GetEdge(brotherEdgeIndex), commonNode);
 
             // update lin admin
-            if (m_mesh.m_edges[e].first == commonNode)
+            if (m_mesh.GetEdge(e).first == commonNode)
             {
-                m_mesh.m_edges[e].first = otherNodeIndex;
+                m_mesh.GetEdge(e).first = otherNodeIndex;
             }
             else
             {
-                m_mesh.m_edges[e].second = otherNodeIndex;
+                m_mesh.GetEdge(e).second = otherNodeIndex;
             }
 
             // change nod adm of other node
@@ -493,8 +493,8 @@ void MeshRefinement::RefineFacesBySplittingEdges()
         }
 
         // Compute the center of the edge
-        const auto firstNodeIndex = m_mesh.m_edges[e].first;
-        const auto secondNodeIndex = m_mesh.m_edges[e].second;
+        const auto firstNodeIndex = m_mesh.GetEdge(e).first;
+        const auto secondNodeIndex = m_mesh.GetEdge(e).second;
         const auto firstNode = m_mesh.Node(firstNodeIndex);
         const auto secondNode = m_mesh.Node(secondNodeIndex);
 
@@ -700,8 +700,8 @@ void MeshRefinement::RefineFacesBySplittingEdges()
     {
         if (m_edgeMask[e] > 0)
         {
-            const auto newEdgeIndex = m_mesh.ConnectNodes(m_edgeMask[e], m_mesh.m_edges[e].second);
-            m_mesh.m_edges[e].second = m_edgeMask[e];
+            const auto newEdgeIndex = m_mesh.ConnectNodes(m_edgeMask[e], m_mesh.GetEdge(e).second);
+            m_mesh.GetEdge(e).second = m_edgeMask[e];
             m_brotherEdges.resize(m_mesh.GetNumEdges());
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
@@ -982,7 +982,7 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
     {
 
         const auto& edgeIndex = m_mesh.m_facesEdges[face][i];
-        const auto& [firstNode, secondNode] = m_mesh.m_edges[edgeIndex];
+        const auto& [firstNode, secondNode] = m_mesh.GetEdge(edgeIndex);
         const auto distance = ComputeDistance(m_mesh.Node(firstNode), m_mesh.Node(secondNode), m_mesh.m_projection);
         maxEdgeLength = std::max(maxEdgeLength, distance);
     }
@@ -1372,8 +1372,8 @@ void MeshRefinement::FindBrotherEdges()
             }
 
             // check if node k is in the middle
-            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh.m_edges[firstEdgeIndex], n);
-            const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh.m_edges[secondEdgeIndex], n);
+            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(firstEdgeIndex), n);
+            const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(secondEdgeIndex), n);
             const auto center = ComputeMiddlePointAccountingForPoles(m_mesh.Node(firstEdgeOtherNode), m_mesh.Node(secondEdgeOtherNode), m_mesh.m_projection);
 
             // compute tolerance

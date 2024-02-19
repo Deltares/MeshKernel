@@ -51,18 +51,18 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     ASSERT_EQ(697, mesh->GetNumEdges());
 
     // check the values of flipped edges
-    ASSERT_EQ(183, mesh->m_edges[14].first);
-    ASSERT_EQ(227, mesh->m_edges[14].second);
+    ASSERT_EQ(183, mesh->GetEdge(14).first);
+    ASSERT_EQ(227, mesh->GetEdge(14).second);
 
-    ASSERT_EQ(58, mesh->m_edges[33].first);
-    ASSERT_EQ(141, mesh->m_edges[33].second);
+    ASSERT_EQ(58, mesh->GetEdge(33).first);
+    ASSERT_EQ(141, mesh->GetEdge(33).second);
 
-    ASSERT_EQ(147, mesh->m_edges[46].first);
-    ASSERT_EQ(145, mesh->m_edges[46].second);
+    ASSERT_EQ(147, mesh->GetEdge(46).first);
+    ASSERT_EQ(145, mesh->GetEdge(46).second);
 
-    ASSERT_EQ(147, mesh->m_edges[49].first);
-    ASSERT_EQ(148, mesh->m_edges[49].second);
+    ASSERT_EQ(147, mesh->GetEdge(49).first);
+    ASSERT_EQ(148, mesh->GetEdge(49).second);
 
-    ASSERT_EQ(242, mesh->m_edges[68].first);
-    ASSERT_EQ(148, mesh->m_edges[68].second);
+    ASSERT_EQ(242, mesh->GetEdge(68).first);
+    ASSERT_EQ(148, mesh->GetEdge(68).second);
 }

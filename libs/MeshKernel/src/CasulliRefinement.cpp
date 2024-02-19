@@ -29,8 +29,8 @@ void meshkernel::CasulliRefinement::InitialiseBoundaryNodes(const Mesh2D& mesh, 
     // Find nodes that lie on the boundary of the domain.
     for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
-        UInt node1 = mesh.m_edges[i].first;
-        UInt node2 = mesh.m_edges[i].second;
+        UInt node1 = mesh.GetEdge(i).first;
+        UInt node2 = mesh.GetEdge(i).second;
 
         if (mesh.m_edgesNumFaces[i] == 1)
         {
@@ -70,7 +70,7 @@ void meshkernel::CasulliRefinement::InitialiseCornerNodes(const Mesh2D& mesh, st
 
             // Check the loop termination, especially the faceEdgeIndex < nodeCount - 1
             // Perhaps change to for loop checking the condition then break.
-            while (((mesh.m_edges[edge2].first != i && mesh.m_edges[edge2].second != i) || edge2 == edge1) && faceEdgeIndex < nodeCount - 1)
+            while (((mesh.GetEdge(edge2).first != i && mesh.GetEdge(edge2).second != i) || edge2 == edge1) && faceEdgeIndex < nodeCount - 1)
             {
                 ++faceEdgeIndex;
                 edge2 = mesh.m_facesEdges[elementId][faceEdgeIndex];
@@ -270,12 +270,12 @@ void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt cu
         const UInt edgeId = mesh.m_facesEdges[currentFace][j];
         const UInt previousEdgeId = mesh.m_facesEdges[currentFace][previousIndex];
 
-        oldIndex[j] = mesh.m_edges[edgeId].first;
+        oldIndex[j] = mesh.GetEdge(edgeId).first;
         newIndex[j] = newNodes[edgeId][2];
 
-        if (oldIndex[j] != mesh.m_edges[previousEdgeId].first && oldIndex[j] != mesh.m_edges[previousEdgeId].second)
+        if (oldIndex[j] != mesh.GetEdge(previousEdgeId).first && oldIndex[j] != mesh.GetEdge(previousEdgeId).second)
         {
-            oldIndex[j] = mesh.m_edges[edgeId].second;
+            oldIndex[j] = mesh.GetEdge(edgeId).second;
             newIndex[j] = newNodes[edgeId][1];
         }
     }
@@ -348,7 +348,7 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
         }
         else
         {
-            if (mesh.m_edges[edgeId].first == currentNode)
+            if (mesh.GetEdge(edgeId).first == currentNode)
             {
                 mesh.ConnectNodes(currentNode, newNodes[edgeId][0]);
                 mesh.ConnectNodes(currentNode, newNodes[edgeId][2]);
@@ -387,22 +387,22 @@ void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, con
 
         for (UInt j = 0; j < edgeCount; ++j)
         {
-            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
+            if (mesh.GetEdge(newEdges[j]).first == i && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
             {
                 nodesToConnect[j] = newNodes[newEdges[j]][0];
             }
 
-            if (mesh.m_edges[newEdges[j]].first == i && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
+            if (mesh.GetEdge(newEdges[j]).first == i && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
             {
                 nodesToConnect[j] = newNodes[newEdges[j]][2];
             }
 
-            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
+            if (mesh.GetEdge(newEdges[j]).second == i && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
             {
                 nodesToConnect[j] = newNodes[newEdges[j]][1];
             }
 
-            if (mesh.m_edges[newEdges[j]].second == i && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
+            if (mesh.GetEdge(newEdges[j]).second == i && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
             {
                 nodesToConnect[j] = newNodes[newEdges[j]][3];
             }
@@ -479,7 +479,7 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
         {
             const UInt edgeId = mesh.m_nodesEdges[i][j];
 
-            if (mesh.m_edges[edgeId].first == i)
+            if (mesh.GetEdge(edgeId).first == i)
             {
                 mesh.ConnectNodes(i, newNodes[edgeId][0]);
                 mesh.ConnectNodes(i, newNodes[edgeId][2]);
@@ -511,7 +511,7 @@ void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vecto
             {
                 UInt edgeId = mesh.m_facesEdges[i][k];
 
-                if (mesh.m_edges[edgeId].first == elementNode || mesh.m_edges[edgeId].second == elementNode)
+                if (mesh.GetEdge(edgeId).first == elementNode || mesh.GetEdge(edgeId).second == elementNode)
                 {
                     if (firstEdgeId == constants::missing::uintValue)
                     {
@@ -559,8 +559,8 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             continue;
         }
 
-        const UInt node1 = mesh.m_edges[i].first;
-        const UInt node2 = mesh.m_edges[i].second;
+        const UInt node1 = mesh.GetEdge(i).first;
+        const UInt node2 = mesh.GetEdge(i).second;
 
         if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
         {
