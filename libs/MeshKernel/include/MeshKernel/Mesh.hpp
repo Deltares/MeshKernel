@@ -185,10 +185,6 @@ namespace meshkernel
         /// @brief Get the edge
         const Edge& GetEdge(const UInt index) const;
 
-        /// @brief Get the edge
-        // TODO get rid of this function
-        Edge& GetEdge(const UInt index);
-
         /// @brief Get all edges
         // TODO get rid of this function
         const std::vector<Edge>& Edges() const;
@@ -482,16 +478,6 @@ inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
     return m_edges[index];
 }
 
-inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
-{
-    if (index >= GetNumEdges())
-    {
-        throw ConstraintError("The index, {}, of the edge to be retrieved does not exist.", index);
-    }
-
-    return m_edges[index];
-}
-
 inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
 {
     return m_edges;
@@ -510,4 +496,7 @@ inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
 inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
 {
     m_edges = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
 }

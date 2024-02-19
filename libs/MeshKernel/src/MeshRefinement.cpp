@@ -282,11 +282,11 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
             // update lin admin
             if (m_mesh.GetEdge(e).first == commonNode)
             {
-                m_mesh.GetEdge(e).first = otherNodeIndex;
+                m_mesh.SetEdge(e, {otherNodeIndex, m_mesh.GetEdge(e).second});
             }
             else
             {
-                m_mesh.GetEdge(e).second = otherNodeIndex;
+                m_mesh.SetEdge(e, {m_mesh.GetEdge(e).first, otherNodeIndex});
             }
 
             // change nod adm of other node
@@ -701,7 +701,7 @@ void MeshRefinement::RefineFacesBySplittingEdges()
         if (m_edgeMask[e] > 0)
         {
             const auto newEdgeIndex = m_mesh.ConnectNodes(m_edgeMask[e], m_mesh.GetEdge(e).second);
-            m_mesh.GetEdge(e).second = m_edgeMask[e];
+            m_mesh.SetEdge(e, {m_mesh.GetEdge(e).first, m_edgeMask[e]});
             m_brotherEdges.resize(m_mesh.GetNumEdges());
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
