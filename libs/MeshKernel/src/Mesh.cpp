@@ -263,14 +263,11 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
     }
 
     // Flag invalid nodes
-    std::vector<bool> nodeIsValid(m_nodes.size(), false);
+    std::vector<bool> nodeIsValid(m_nodes.size());
 
     for (UInt n = 0; n < m_nodes.size(); ++n)
     {
-        if (m_nodes[n].IsValid())
-        {
-            nodeIsValid[n] = true;
-        }
+        nodeIsValid[n] = m_nodes[n].IsValid();
     }
 
     // Flag invalid edges
