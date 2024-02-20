@@ -432,6 +432,18 @@ namespace meshkernel
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnconnectedNodesAndEdgesToInvalid();
+
+        /// @brief Find all nodes that are connected to an edge.
+        ///
+        /// Also count the number of edges that have either invalid index values or
+        /// reference invlaid nodes
+        void FindConnectedNodes(std::vector<bool>& connectedNodes,
+                                UInt& numInvalidEdges) const;
+
+        /// @brief Invalidate any not conected to any edge.
+        void InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes,
+                                        UInt& numInvalidNodes);
+
     };
 } // namespace meshkernel
 

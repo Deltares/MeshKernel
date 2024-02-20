@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 
@@ -134,33 +135,40 @@ bool Mesh::NodeAdministration()
     return quadrilateralCount > GetNumNodes() / 2;
 }
 
-void Mesh::DeleteInvalidNodesAndEdges()
+void Mesh::FindConnectedNodes(std::vector<bool>& connectedNodes, UInt& numInvalidEdges) const
 {
+    numInvalidEdges = 0;
 
-    // Mask nodes connected to valid edges
-    std::vector<bool> connectedNodes(m_nodes.size(), false);
-    UInt numInvalidEdges = 0;
+    connectedNodes.resize(m_nodes.size());
+    std::fill(connectedNodes.begin (), connectedNodes.end (), false);
 
     for (const auto& [firstNode, secondNode] : m_edges)
     {
-        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
+        if (firstNode == constants::missing::uintValue ||
+            secondNode == constants::missing::uintValue ||
+            !m_nodes[firstNode].IsValid() ||
+            !m_nodes[secondNode].IsValid())
         {
             numInvalidEdges++;
-            continue;
         }
-
-        connectedNodes[firstNode] = true;
-        connectedNodes[secondNode] = true;
+        else
+        {
+            connectedNodes[firstNode] = true;
+            connectedNodes[secondNode] = true;
+        }
     }
+}
 
-    // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
-    UInt numInvalidNodes = 0;
+void Mesh::InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes, UInt& numInvalidNodes)
+{
+    numInvalidNodes = 0;
+
     for (UInt n = 0; n < m_nodes.size(); ++n)
     {
         // invalidate nodes that are not connected
         if (!connectedNodes[n])
         {
-            m_nodes[n] = {constants::missing::doubleValue, constants::missing::doubleValue};
+            m_nodes[n].SetInvalid();
         }
 
         if (!m_nodes[n].IsValid())
@@ -168,6 +176,19 @@ void Mesh::DeleteInvalidNodesAndEdges()
             numInvalidNodes++;
         }
     }
+}
+
+void Mesh::DeleteInvalidNodesAndEdges()
+{
+
+    // Mask nodes connected to valid edges
+    std::vector<bool> connectedNodes(m_nodes.size(), false);
+    UInt numInvalidEdges = 0;
+    // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
+    UInt numInvalidNodes = 0;
+
+    FindConnectedNodes(connectedNodes, numInvalidEdges);
+    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes);
 
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
@@ -221,39 +242,11 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     UInt numInvalidEdges = 0;
-
-    for (const auto& [firstNode, secondNode] : m_edges)
-    {
-        if (firstNode == constants::missing::uintValue ||
-            secondNode == constants::missing::uintValue ||
-            !m_nodes[firstNode].IsValid() ||
-            !m_nodes[secondNode].IsValid())
-        {
-            numInvalidEdges++;
-        }
-        else
-        {
-            connectedNodes[firstNode] = true;
-            connectedNodes[secondNode] = true;
-        }
-    }
-
     // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
     UInt numInvalidNodes = 0;
 
-    for (UInt n = 0; n < m_nodes.size(); ++n)
-    {
-        // invalidate nodes that are not connected
-        if (!connectedNodes[n])
-        {
-            m_nodes[n].SetInvalid();
-        }
-
-        if (!m_nodes[n].IsValid())
-        {
-            numInvalidNodes++;
-        }
-    }
+    FindConnectedNodes(connectedNodes, numInvalidEdges);
+    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes);
 
     // If there is nothing to invalidate then return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
@@ -515,12 +508,11 @@ void Mesh::ComputeEdgesLengths()
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
 
-        if (first == constants::missing::uintValue || second == constants::missing::uintValue)
+        if (first != constants::missing::uintValue && second != constants::missing::uintValue)
         {
-            continue;
+            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         }
 
-        m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
     }
 }
 
