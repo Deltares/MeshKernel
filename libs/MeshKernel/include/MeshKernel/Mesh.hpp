@@ -384,14 +384,12 @@ namespace meshkernel
         bool IsValidEdge(const UInt edgeId) const;
 
         // nodes
-        // std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
-        // std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
