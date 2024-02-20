@@ -316,7 +316,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
         const auto edgeIndex = m_mesh.m_nodesEdges[currentNode][f];
-        const auto otherNode = OtherNodeOfEdge(m_mesh.m_edges[edgeIndex], currentNode);
+        const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), currentNode);
 
         const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
@@ -360,8 +360,8 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
             {
                 leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
                 leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftXFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
             }
 
             double alpha = leftXi * xiOne + leftEta * etaOne;
@@ -374,8 +374,8 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
             rightXi = 2.0 * xiBoundary - leftXi;
             rightEta = 2.0 * etaBoundary - leftEta;
 
-            const double xBc = (1.0 - alpha) * m_mesh.m_nodes[currentNode].x + alpha * m_mesh.m_nodes[otherNode].x;
-            const double yBc = (1.0 - alpha) * m_mesh.m_nodes[currentNode].y + alpha * m_mesh.m_nodes[otherNode].y;
+            const double xBc = (1.0 - alpha) * m_mesh.Node(currentNode).x + alpha * m_mesh.Node(otherNode).x;
+            const double yBc = (1.0 - alpha) * m_mesh.Node(currentNode).y + alpha * m_mesh.Node(otherNode).y;
             m_leftYFaceCenterCache[f] = 2.0 * xBc - m_leftXFaceCenterCache[f];
             m_rightYFaceCenterCache[f] = 2.0 * yBc - m_leftYFaceCenterCache[f];
         }
@@ -405,10 +405,10 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
                 rightXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
                 rightEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
 
-                m_leftXFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
-                m_rightXFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceRightIndex][i];
-                m_rightYFaceCenterCache[f] += m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceRightIndex][i];
+                m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
+                m_rightXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceRightIndex][i];
+                m_rightYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceRightIndex][i];
             }
         }
 
@@ -974,25 +974,25 @@ void Smoother::ComputeJacobian(UInt currentNode, std::vector<double>& J) const
         J[3] = 0.0;
         for (UInt i = 0; i < numNodes; i++)
         {
-            J[0] += m_Jxi[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
-            J[1] += m_Jxi[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
-            J[2] += m_Jeta[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
-            J[3] += m_Jeta[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[0] += m_Jxi[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x;
+            J[1] += m_Jxi[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y;
+            J[2] += m_Jeta[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x;
+            J[3] += m_Jeta[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y;
         }
     }
     if (m_mesh.m_projection == Projection::spherical || m_mesh.m_projection == Projection::sphericalAccurate)
     {
-        const auto cosFactor = std::cos(m_mesh.m_nodes[currentNode].y * constants::conversion::degToRad);
+        const auto cosFactor = std::cos(m_mesh.Node(currentNode).y * constants::conversion::degToRad);
         J[0] = 0.0;
         J[1] = 0.0;
         J[2] = 0.0;
         J[3] = 0.0;
         for (UInt i = 0; i < numNodes; i++)
         {
-            J[0] += m_Jxi[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
-            J[1] += m_Jxi[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
-            J[2] += m_Jeta[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
-            J[3] += m_Jeta[currentTopology][i] * m_mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[0] += m_Jxi[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * cosFactor;
+            J[1] += m_Jxi[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y;
+            J[2] += m_Jeta[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * cosFactor;
+            J[3] += m_Jeta[currentTopology][i] * m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y;
         }
     }
 }

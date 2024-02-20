@@ -31,6 +31,7 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -140,6 +141,14 @@ namespace meshkernel
         /// @return The number of valid faces
         [[nodiscard]] auto GetNumFaces() const { return static_cast<UInt>(m_facesNodes.size()); }
 
+        /// @brief Get the number of valid nodes
+        /// @return The number of valid nodes
+        [[nodiscard]] UInt GetNumValidNodes() const;
+
+        /// @brief Get the number of valid edges
+        /// @return The number of valid edges
+        [[nodiscard]] UInt GetNumValidEdges() const;
+
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
@@ -159,6 +168,32 @@ namespace meshkernel
         /// @param[in] face The face index
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(UInt face) const;
+
+        /// @brief Get vector of all nodes
+        // TODO Can this be removed?
+        const std::vector<Point>& Nodes() const;
+
+        /// @brief Get the node at the position
+        const Point& Node(const UInt index) const;
+
+        /// @brief Set all nodes to a new set of values.
+        void SetNodes(const std::vector<Point>& newValues);
+
+        /// @brief Set the node to a new value, this value may be the in-valid value.
+        void SetNode(const UInt index, const Point& newValue);
+
+        /// @brief Get the edge
+        const Edge& GetEdge(const UInt index) const;
+
+        /// @brief Get all edges
+        // TODO get rid of this function
+        const std::vector<Edge>& Edges() const;
+
+        /// @brief Set the edge
+        void SetEdge(const UInt index, const Edge& edge);
+
+        /// @brief Set all edges to a new set of values.
+        void SetEdges(const std::vector<Edge>& newValues);
 
         /// @brief Get the local index of the node belong to a face.
         ///
@@ -334,15 +369,27 @@ namespace meshkernel
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
+        /// @brief Get the mapping/indexing from the node array mapped to valid nodes
+        std::vector<UInt> GetValidNodeMapping() const;
+
+        /// @brief Get the mapping/indexing from the edge array mapped to valid edges
+        std::vector<UInt> GetValidEdgeMapping() const;
+
+        /// @brief Indicate if the edge-id is a valid edge
+        ///
+        /// A valid edge satisfies four conditions:
+        /// The start and end indices are not the null value, if neither is, then
+        /// also the nodes indexed by the edge are valid nodes. If any of these conditions
+        /// is false then the edge is in-valid.
+        bool IsValidEdge(const UInt edgeId) const;
+
         // nodes
-        std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
@@ -373,7 +420,92 @@ namespace meshkernel
         static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
 
+    protected:
+        // Make private
+        std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
+        std::vector<Edge> m_edges;  ///< The edges, defined as first and second node(kn)
+
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        /// @brief Set nodes and edges that are not connected to be invalid.
+        void SetUnconnectedNodesAndEdgesToInvalid();
+
+        /// @brief Find all nodes that are connected to an edge.
+        ///
+        /// Also count the number of edges that have either invalid index values or
+        /// reference invalid nodes
+        void FindConnectedNodes(std::vector<bool>& connectedNodes,
+                                UInt& numInvalidEdges) const;
+
+        /// @brief Invalidate any not connected to any edge.
+        void InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes,
+                                        UInt& numInvalidNodes);
     };
 } // namespace meshkernel
+
+inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const
+{
+    return m_nodes;
+}
+
+inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
+{
+    if (index >= GetNumNodes())
+    {
+        throw ConstraintError("The node index, {}, is not in range.", index);
+    }
+
+    return m_nodes[index];
+}
+
+inline void meshkernel::Mesh::SetNode(const UInt index, const Point& newValue)
+{
+    if (index >= GetNumNodes())
+    {
+        throw ConstraintError("The node index, {}, is not in range.", index);
+    }
+
+    m_nodes[index] = newValue;
+}
+
+inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
+{
+    m_nodes = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+}
+
+inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
+{
+    return m_edges;
+}
+
+inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    m_edges[index] = edge;
+}
+
+inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
+{
+    m_edges = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+}

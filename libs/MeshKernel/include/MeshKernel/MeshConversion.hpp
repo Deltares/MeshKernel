@@ -79,13 +79,13 @@ namespace meshkernel
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
             {
-                if (sourceMesh.m_nodes[i].IsValid())
+                if (sourceMesh.Node(i).IsValid())
                 {
-                    targetMesh.m_nodes[i] = conversion(sourceMesh.m_nodes[i]);
+                    targetMesh.SetNode(i, conversion(sourceMesh.Node(i)));
                 }
                 else
                 {
-                    targetMesh.m_nodes[i] = sourceMesh.m_nodes[i];
+                    targetMesh.SetNode(i, sourceMesh.Node(i));
                 }
             }
 
@@ -105,9 +105,9 @@ namespace meshkernel
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
-                if (mesh.m_nodes[i].IsValid())
+                if (mesh.Node(i).IsValid())
                 {
-                    mesh.m_nodes[i] = conversion(mesh.m_nodes[i]);
+                    mesh.SetNode(i, conversion(mesh.Node(i)));
                 }
             }
 

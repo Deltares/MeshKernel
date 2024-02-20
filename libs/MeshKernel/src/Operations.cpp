@@ -1440,18 +1440,22 @@ namespace meshkernel
 
     std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges)
     {
-        std::vector<Point> edgesCenters;
-        edgesCenters.reserve(edges.size());
+        std::vector<Point> edgesCenters(edges.size());
 
-        for (const auto& edge : edges)
+        for (UInt i = 0; i < edges.size(); ++i)
         {
-            auto const first = edge.first;
-            auto const second = edge.second;
+            auto const first = edges[i].first;
+            auto const second = edges[i].second;
+
             if (first == constants::missing::uintValue || second == constants::missing::uintValue)
             {
-                continue;
+                // Initialise with invalid data.
+                edgesCenters[i] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
             }
-            edgesCenters.emplace_back((nodes[first] + nodes[second]) * 0.5);
+            else
+            {
+                edgesCenters[i] = (nodes[first] + nodes[second]) * 0.5;
+            }
         }
         return edgesCenters;
     }
@@ -1609,9 +1613,11 @@ namespace meshkernel
 
     void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
     {
+        out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
+        out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
         out << "nodex = zeros ( " << nodes.size() << ", 1);" << std::endl;
         out << "nodey = zeros ( " << nodes.size() << ", 1);" << std::endl;
-        out << "edges = zeros ( " << edges.size() << ", 2);" << std::endl;
+        out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size() << ", 2);" << std::endl;
 
         for (UInt i = 0; i < nodes.size(); ++i)
         {
@@ -1623,12 +1629,15 @@ namespace meshkernel
             out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
         }
 
-        out << "edges = zeros ( " << edges.size() << ", 2 );" << std::endl;
-
         for (UInt i = 0; i < edges.size(); ++i)
         {
-            out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
-            out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+            if (edges[i].first != constants::missing::uintValue &&
+                edges[i].second != constants::missing::uintValue &&
+                nodes[edges[i].first].IsValid() && nodes[edges[i].second].IsValid())
+            {
+                out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
+                out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
+            }
         }
     }
 

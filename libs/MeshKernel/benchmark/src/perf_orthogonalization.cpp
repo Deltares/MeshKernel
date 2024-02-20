@@ -39,14 +39,21 @@ static void BM_Orthogonalization(benchmark::State& state)
         // move nodes to skew the mesh
         double const delta_x = dim_x / static_cast<double>(n - 1);
         double const delta_y = dim_y / static_cast<double>(m - 1);
-        for (UInt i = 0; i < mesh->m_nodes.size(); ++i)
+        for (UInt i = 0; i < mesh->GetNumNodes(); ++i)
         {
             // only move inetrnal nodes
             if (!mesh->IsNodeOnBoundary(i))
             {
-                Point& node = mesh->m_nodes[i];
+                Point node = mesh->Node(i);
+
+                if (!node.IsValid())
+                {
+                    continue;
+                }
+
                 double trans_x;
                 double trans_y;
+
                 if (i % 2 == 0)
                 {
                     trans_x = delta_x / 3.0;
@@ -57,8 +64,10 @@ static void BM_Orthogonalization(benchmark::State& state)
                     trans_x = -delta_x / 2.0;
                     trans_y = delta_y / 3.0;
                 }
+
                 node.x += trans_x;
                 node.y += trans_y;
+                mesh->SetNode(i, node);
             }
         }
 

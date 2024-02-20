@@ -78,17 +78,17 @@ void Orthogonalizer::Compute()
             m_weights[n][nn] = 0.5 * aspectRatio;
 
             // compute the edge length
-            Point neighbouringNode = m_mesh.m_nodes[m_mesh.m_nodesNodes[n][nn]];
-            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh.m_nodes[n], m_mesh.m_projection);
+            Point neighbouringNode = m_mesh.Node(m_mesh.m_nodesNodes[n][nn]);
+            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh.Node(n), m_mesh.m_projection);
 
             const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];
             bool flippedNormal;
             Point normal;
-            NormalVectorInside(m_mesh.m_nodes[n], neighbouringNode, m_mesh.m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh.m_projection);
+            NormalVectorInside(m_mesh.Node(n), neighbouringNode, m_mesh.m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh.m_projection);
 
             if (m_mesh.m_projection == Projection::spherical && m_mesh.m_projection != Projection::sphericalAccurate)
             {
-                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh.m_nodes[n].y + neighbouringNode.y));
+                normal.x = normal.x * std::cos(constants::conversion::degToRad * 0.5 * (m_mesh.Node(n).y + neighbouringNode.y));
             }
 
             m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;

@@ -76,8 +76,8 @@ void OrthogonalizationAndSmoothing::Initialize()
     m_mu = std::min(1e-2, m_mumax);
 
     // back-up original nodes, for projection on original mesh boundary
-    m_originalNodes = m_mesh.m_nodes;
-    m_orthogonalCoordinates = m_mesh.m_nodes;
+    m_originalNodes = m_mesh.Nodes();
+    m_orthogonalCoordinates = m_mesh.Nodes();
 
     // account for enclosing polygon
     m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
@@ -226,7 +226,7 @@ void OrthogonalizationAndSmoothing::Solve()
     }
 
     // update mesh node coordinates
-    m_mesh.m_nodes = m_orthogonalCoordinates;
+    m_mesh.SetNodes(m_orthogonalCoordinates);
 
     // project on the original net boundary
     SnapMeshToOriginalMeshBoundary();
@@ -249,7 +249,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
         const auto nearestPointIndex = nearestPoints[n];
         if (m_mesh.m_nodesTypes[n] == 2 && m_mesh.m_nodesNumEdges[n] > 0 && m_mesh.m_nodesNumEdges[nearestPointIndex] > 0)
         {
-            Point firstPoint = m_mesh.m_nodes[n];
+            Point firstPoint = m_mesh.Node(n);
             if (!firstPoint.IsValid())
             {
                 continue;
@@ -303,7 +303,8 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             if (distanceSecondPoint < distanceThirdPoint)
             {
-                m_mesh.m_nodes[n] = normalSecondPoint;
+                m_mesh.SetNode(n, normalSecondPoint);
+
                 if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = leftNode;
@@ -311,7 +312,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             }
             else
             {
-                m_mesh.m_nodes[n] = normalThirdPoint;
+                m_mesh.SetNode(n, normalThirdPoint);
                 if (ratioThirdPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = rightNode;
@@ -350,12 +351,12 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
     constexpr double relaxationFactor = 0.75;
     if (m_mesh.m_projection == Projection::cartesian || m_mesh.m_projection == Projection::spherical)
     {
-        const double x0 = m_mesh.m_nodes[nodeIndex].x + dx0;
-        const double y0 = m_mesh.m_nodes[nodeIndex].y + dy0;
+        const double x0 = m_mesh.Node(nodeIndex).x + dx0;
+        const double y0 = m_mesh.Node(nodeIndex).y + dy0;
         static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactor;
 
-        m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh.m_nodes[nodeIndex].x;
-        m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh.m_nodes[nodeIndex].y;
+        m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).x;
+        m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).y;
     }
     if (m_mesh.m_projection == Projection::sphericalAccurate)
     {
@@ -364,7 +365,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
         std::array<double, 3> exxp{0.0, 0.0, 0.0};
         std::array<double, 3> eyyp{0.0, 0.0, 0.0};
         std::array<double, 3> ezzp{0.0, 0.0, 0.0};
-        ComputeThreeBaseComponents(m_mesh.m_nodes[nodeIndex], exxp, eyyp, ezzp);
+        ComputeThreeBaseComponents(m_mesh.Node(nodeIndex), exxp, eyyp, ezzp);
 
         // get 3D-coordinates in rotated frame
         const Cartesian3DPoint cartesianLocalPoint{SphericalToCartesian3D(localPoint)};
@@ -376,7 +377,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
         transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
 
         // transform to spherical coordinates
-        m_orthogonalCoordinates[nodeIndex] = Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh.m_nodes[nodeIndex].x);
+        m_orthogonalCoordinates[nodeIndex] = Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh.Node(nodeIndex).x);
     }
 }
 
@@ -395,8 +396,8 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(UInt nodeIndex, doubl
         {
             const double wwxTransformed = wwx;
             const double wwyTransformed = wwy;
-            dx0 = dx0 + wwxTransformed * (m_mesh.m_nodes[currentNode].x - m_mesh.m_nodes[nodeIndex].x);
-            dy0 = dy0 + wwyTransformed * (m_mesh.m_nodes[currentNode].y - m_mesh.m_nodes[nodeIndex].y);
+            dx0 = dx0 + wwxTransformed * (m_mesh.Node(currentNode).x - m_mesh.Node(nodeIndex).x);
+            dy0 = dy0 + wwyTransformed * (m_mesh.Node(currentNode).y - m_mesh.Node(nodeIndex).y);
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
@@ -404,11 +405,11 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(UInt nodeIndex, doubl
         if (m_mesh.m_projection == Projection::spherical)
         {
             const double wwxTransformed = wwx * constants::geometric::earth_radius * constants::conversion::degToRad *
-                                          std::cos(0.5 * (m_mesh.m_nodes[nodeIndex].y + m_mesh.m_nodes[currentNode].y) * constants::conversion::degToRad);
+                                          std::cos(0.5 * (m_mesh.Node(nodeIndex).y + m_mesh.Node(currentNode).y) * constants::conversion::degToRad);
             const double wwyTransformed = wwy * constants::geometric::earth_radius * constants::conversion::degToRad;
 
-            dx0 = dx0 + wwxTransformed * (m_mesh.m_nodes[currentNode].x - m_mesh.m_nodes[nodeIndex].x);
-            dy0 = dy0 + wwyTransformed * (m_mesh.m_nodes[currentNode].y - m_mesh.m_nodes[nodeIndex].y);
+            dx0 = dx0 + wwxTransformed * (m_mesh.Node(currentNode).x - m_mesh.Node(nodeIndex).x);
+            dy0 = dy0 + wwyTransformed * (m_mesh.Node(currentNode).y - m_mesh.Node(nodeIndex).y);
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
