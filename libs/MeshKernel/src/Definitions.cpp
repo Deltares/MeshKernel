@@ -1,5 +1,6 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 
 namespace meshkernel
 {
@@ -10,6 +11,14 @@ namespace meshkernel
                                                  static_cast<int>(Projection::spherical),
                                                  static_cast<int>(Projection::sphericalAccurate)};
         return validProjections;
+    }
+
+    const std::vector<int>& GetValidDeletionOptions()
+    {
+        static std::vector validMesh2DDeletionOptions{static_cast<int>(Mesh2D::DeleteMeshOptions::InsideNotIntersected),
+                                                      static_cast<int>(Mesh2D::DeleteMeshOptions::InsideAndIntersected),
+                                                      static_cast<int>(Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters)};
+        return validMesh2DDeletionOptions;
     }
 
     Projection GetProjectionValue(const int projection)

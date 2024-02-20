@@ -1163,7 +1163,7 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridFromTriangleThroughApi)
     ASSERT_EQ(40, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
+TEST_F(CartesianApiTestFixture, Delete_WithEmptyPolygon_ShouldDeleteMesh2D)
 {
     // Prepare
     MakeMesh();
@@ -1181,6 +1181,34 @@ TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D
     // Assert
     ASSERT_EQ(0, mesh2d.num_valid_nodes);
     ASSERT_EQ(0, mesh2d.num_valid_edges);
+}
+
+TEST_F(CartesianApiTestFixture, DeleteFaces_WithPolygon_ShouldDeleteMesh2D)
+{
+    // Prepare
+    MakeMesh(4, 4, 2);
+    auto const meshKernelId = GetMeshKernelId();
+
+    // By using an empty list, all nodes will be selected
+    meshkernelapi::GeometryList geometryList{};
+
+    geometryList.num_coordinates = 5;
+    geometryList.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoordinatesOut{2, 6, 6, 2, 2};
+    std::vector<double> yCoordinatesOut{2, 2, 6, 6, 2};
+    geometryList.coordinates_x = xCoordinatesOut.data();
+    geometryList.coordinates_y = yCoordinatesOut.data();
+
+    // Execute
+    int deletionOption = 2;
+    auto errorCode = mkernel_mesh2d_delete(meshKernelId, geometryList, deletionOption, false);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(12, mesh2d.num_faces);
 }
 
 TEST_F(CartesianApiTestFixture, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
