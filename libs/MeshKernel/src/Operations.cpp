@@ -1440,18 +1440,22 @@ namespace meshkernel
 
     std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges)
     {
-        std::vector<Point> edgesCenters;
-        edgesCenters.reserve(edges.size());
+        std::vector<Point> edgesCenters(edges.size());
 
-        for (const auto& edge : edges)
+        for (UInt i = 0; i < edges.size(); ++i)
         {
-            auto const first = edge.first;
-            auto const second = edge.second;
+            auto const first = edges[i].first;
+            auto const second = edges[i].second;
+
             if (first == constants::missing::uintValue || second == constants::missing::uintValue)
             {
-                continue;
+                // Initialise with invalid data.
+                edgesCenters[i] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
             }
-            edgesCenters.emplace_back((nodes[first] + nodes[second]) * 0.5);
+            else
+            {
+                edgesCenters[i] = (nodes[first] + nodes[second]) * 0.5;
+            }
         }
         return edgesCenters;
     }

@@ -121,8 +121,11 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
     EXPECT_EQ(1, mesh2d.edge_nodes[2]);
     EXPECT_EQ(4, mesh2d.edge_nodes[3]);
     // TODO should the edge_x/y have the same number of values as there are edges
-    EXPECT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
-    EXPECT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
+    EXPECT_EQ(meshkernel::constants::missing::doubleValue, mesh2d.edge_x[0]);
+    EXPECT_EQ(meshkernel::constants::missing::doubleValue, mesh2d.edge_y[0]);
+
+    EXPECT_NEAR(0.5, mesh2d.edge_x[1], tolerance);
+    EXPECT_NEAR(1.0, mesh2d.edge_y[1], tolerance);
     // First face
     EXPECT_EQ(0, mesh2d.edge_faces[2]);
     EXPECT_EQ(-1, mesh2d.edge_faces[3]);
