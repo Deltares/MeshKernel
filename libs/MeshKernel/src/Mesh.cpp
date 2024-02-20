@@ -509,10 +509,17 @@ void Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
+
     for (UInt e = 0; e < numEdges; e++)
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
+
+        if (first == constants::missing::uintValue || second == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
     }
 }
