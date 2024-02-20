@@ -140,7 +140,7 @@ void Mesh::FindConnectedNodes(std::vector<bool>& connectedNodes, UInt& numInvali
     numInvalidEdges = 0;
 
     connectedNodes.resize(m_nodes.size());
-    std::fill(connectedNodes.begin (), connectedNodes.end (), false);
+    std::fill(connectedNodes.begin(), connectedNodes.end(), false);
 
     for (const auto& [firstNode, secondNode] : m_edges)
     {
@@ -512,7 +512,6 @@ void Mesh::ComputeEdgesLengths()
         {
             m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         }
-
     }
 }
 
