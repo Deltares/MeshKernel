@@ -115,37 +115,37 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
     // Assert data
     const double tolerance = 1e-6;
     // Nodes
-    ASSERT_NEAR(0.0, mesh2d.node_x[1], tolerance);
-    ASSERT_NEAR(1.0, mesh2d.node_y[1], tolerance);
+    EXPECT_NEAR(0.0, mesh2d.node_x[1], tolerance);
+    EXPECT_NEAR(1.0, mesh2d.node_y[1], tolerance);
     // Edges
-    ASSERT_EQ(1, mesh2d.edge_nodes[2]);
-    ASSERT_EQ(4, mesh2d.edge_nodes[3]);
+    EXPECT_EQ(1, mesh2d.edge_nodes[2]);
+    EXPECT_EQ(4, mesh2d.edge_nodes[3]);
     // TODO should the edge_x/y have the same number of values as there are edges
-    ASSERT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
-    ASSERT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
+    EXPECT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
+    EXPECT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
     // First face
-    ASSERT_EQ(0, mesh2d.edge_faces[2]);
-    ASSERT_EQ(-1, mesh2d.edge_faces[3]);
-    ASSERT_EQ(0, mesh2d.edge_faces[4]);
-    ASSERT_EQ(-1, mesh2d.edge_faces[5]);
+    EXPECT_EQ(0, mesh2d.edge_faces[2]);
+    EXPECT_EQ(-1, mesh2d.edge_faces[3]);
+    EXPECT_EQ(0, mesh2d.edge_faces[4]);
+    EXPECT_EQ(-1, mesh2d.edge_faces[5]);
 
-    ASSERT_EQ(1, mesh2d.face_edges[0]);
-    ASSERT_EQ(12, mesh2d.face_edges[1]);
-    ASSERT_EQ(2, mesh2d.face_edges[2]);
-    ASSERT_EQ(10, mesh2d.face_edges[3]);
+    EXPECT_EQ(1, mesh2d.face_edges[0]);
+    EXPECT_EQ(12, mesh2d.face_edges[1]);
+    EXPECT_EQ(2, mesh2d.face_edges[2]);
+    EXPECT_EQ(10, mesh2d.face_edges[3]);
 
-    ASSERT_EQ(4, mesh2d.nodes_per_face[0]);
-    ASSERT_NEAR(0.5, mesh2d.face_x[0], tolerance);
-    ASSERT_NEAR(1.5, mesh2d.face_y[0], tolerance);
+    EXPECT_EQ(4, mesh2d.nodes_per_face[0]);
+    EXPECT_NEAR(0.5, mesh2d.face_x[0], tolerance);
+    EXPECT_NEAR(1.5, mesh2d.face_y[0], tolerance);
     // Second Face
-    ASSERT_EQ(3, mesh2d.face_nodes[4]);
-    ASSERT_EQ(6, mesh2d.face_nodes[5]);
-    ASSERT_EQ(7, mesh2d.face_nodes[6]);
-    ASSERT_EQ(4, mesh2d.face_nodes[7]);
-    ASSERT_EQ(4, mesh2d.nodes_per_face[1]);
+    EXPECT_EQ(3, mesh2d.face_nodes[4]);
+    EXPECT_EQ(6, mesh2d.face_nodes[5]);
+    EXPECT_EQ(7, mesh2d.face_nodes[6]);
+    EXPECT_EQ(4, mesh2d.face_nodes[7]);
+    EXPECT_EQ(4, mesh2d.nodes_per_face[1]);
 
-    ASSERT_NEAR(1.5, mesh2d.face_x[1], tolerance);
-    ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
+    EXPECT_NEAR(1.5, mesh2d.face_x[1], tolerance);
+    EXPECT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
 
 TEST_F(CartesianApiTestFixture, FlipEdges_ShouldFlipEdges)
