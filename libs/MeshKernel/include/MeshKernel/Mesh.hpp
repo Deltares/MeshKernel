@@ -444,7 +444,7 @@ inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
 {
     if (index >= GetNumNodes())
     {
-        throw ConstraintError("The index, {}, of the node to be retrieved does not exist.", index);
+        throw ConstraintError("The node index, {}, is not in range.", index);
     }
 
     return m_nodes[index];
@@ -454,7 +454,7 @@ inline void meshkernel::Mesh::SetNode(const UInt index, const Point& newValue)
 {
     if (index >= GetNumNodes())
     {
-        throw ConstraintError("The index, {}, of the node to be set does not exist.", index);
+        throw ConstraintError("The node index, {}, is not in range.", index);
     }
 
     m_nodes[index] = newValue;
@@ -472,7 +472,7 @@ inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
 {
     if (index >= GetNumEdges())
     {
-        throw ConstraintError("The index, {}, of the edge to be retrieved does not exist.", index);
+        throw ConstraintError("The edge index, {}, is not in range.", index);
     }
 
     return m_edges[index];
@@ -487,7 +487,7 @@ inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
 {
     if (index >= GetNumEdges())
     {
-        throw ConstraintError("The index, {}, of the edge to be set does not exist.", index);
+        throw ConstraintError("The edge index, {}, is not in range.", index);
     }
 
     m_edges[index] = edge;

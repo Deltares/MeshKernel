@@ -337,13 +337,13 @@ namespace meshkernelapi
     static void SetMesh2dApiData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
     {
         mesh2d.ComputeEdgesCenters();
-        for (size_t n = 0; n < mesh2d.GetNumNodes(); n++)
+        for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); n++)
         {
             mesh2dApi.node_x[n] = mesh2d.Node(n).x;
             mesh2dApi.node_y[n] = mesh2d.Node(n).y;
         }
 
-        for (size_t edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); edgeIndex++)
+        for (meshkernel::UInt edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); edgeIndex++)
         {
             mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].x;
             mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].y;
@@ -378,7 +378,7 @@ namespace meshkernelapi
                                           CurvilinearGrid& curvilinearGridApi)
     {
         curvilinearGrid.ComputeEdgesCenters();
-        for (size_t n = 0; n < curvilinearGrid.GetNumNodes(); n++)
+        for (meshkernel::UInt n = 0; n < curvilinearGrid.GetNumNodes(); n++)
         {
             curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
             curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
@@ -391,14 +391,14 @@ namespace meshkernelapi
     static void SetMesh1dApiData(const meshkernel::Mesh1D& mesh1d,
                                  Mesh1D& mesh1dApi)
     {
-        for (size_t n = 0; n < mesh1d.GetNumNodes(); n++)
+        for (meshkernel::UInt n = 0; n < mesh1d.GetNumNodes(); n++)
         {
             mesh1dApi.node_x[n] = mesh1d.Node(n).x;
             mesh1dApi.node_y[n] = mesh1d.Node(n).y;
         }
 
         size_t edgeIndex = 0;
-        for (size_t e = 0; e < mesh1d.GetNumEdges(); e++)
+        for (meshkernel::UInt e = 0; e < mesh1d.GetNumEdges(); e++)
         {
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.GetEdge(e).first);
             edgeIndex++;

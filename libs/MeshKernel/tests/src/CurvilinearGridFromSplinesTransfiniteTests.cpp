@@ -34,7 +34,7 @@ namespace testmk
 
         constexpr double tolerance = 1e-4;
 
-        for (size_t i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
+        for (meshkernel::UInt i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
         {
             EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid->Node(i).x, tolerance);
             EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid->Node(i).y, tolerance);
@@ -309,7 +309,7 @@ void TestCurvilinearGridFromSplines(const std::vector<meshkernel::Point>& firstS
 
     constexpr double tolerance = 1e-4;
 
-    for (size_t i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
+    for (meshkernel::UInt i = 0; i < curvilinearGrid->GetNumNodes(); ++i)
     {
         EXPECT_NEAR(expectedPoints[i].x, curvilinearGrid->Node(i).x, tolerance);
         EXPECT_NEAR(expectedPoints[i].y, curvilinearGrid->Node(i).y, tolerance);

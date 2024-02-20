@@ -218,7 +218,6 @@ void Mesh::DeleteInvalidNodesAndEdges()
 
 void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
 {
-
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     UInt numInvalidEdges = 0;
@@ -256,7 +255,7 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
         }
     }
 
-    // If nothing to invalidate return
+    // If there is nothing to invalidate then return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
         return;
