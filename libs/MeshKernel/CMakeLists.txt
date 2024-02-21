@@ -58,6 +58,11 @@ set(
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
+  ${SRC_DIR}/UndoAction.cpp
+  ${SRC_DIR}/UndoActionStack.cpp
+  ${SRC_DIR}/CompoundUndoAction.cpp
+  ${SRC_DIR}/AddEdgeAction.cpp
+  ${SRC_DIR}/AddNodeAction.cpp
 )
 
 set(
@@ -140,6 +145,12 @@ set(
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
   ${DOMAIN_INC_DIR}/Vector.hpp
+  ${DOMAIN_INC_DIR}/UndoAction.hpp
+  ${DOMAIN_INC_DIR}/BaseMeshUndoAction.hpp
+  ${DOMAIN_INC_DIR}/UndoActionStack.hpp
+  ${DOMAIN_INC_DIR}/CompoundUndoAction.hpp
+  ${DOMAIN_INC_DIR}/AddEdgeAction.hpp
+  ${DOMAIN_INC_DIR}/AddNodeAction.hpp
 )
 
 set(

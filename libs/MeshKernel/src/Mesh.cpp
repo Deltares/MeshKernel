@@ -468,6 +468,63 @@ meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
     return newNodeIndex;
 }
 
+std::tuple<meshkernel::UInt, std::shared_ptr<meshkernel::AddNodeAction>> Mesh::InsertNode2(const Point& newPoint)
+{
+    const auto newSize = GetNumNodes() + 1;
+    const auto newNodeIndex = GetNumNodes();
+
+    std::shared_ptr<AddNodeAction> action = AddNodeAction::create (*this, newNodeIndex, newPoint);
+
+    m_nodes.resize(newSize);
+    m_nodesNumEdges.resize(newSize);
+    m_nodesEdges.resize(newSize);
+
+    m_nodes[newNodeIndex] = newPoint;
+    m_nodesNumEdges[newNodeIndex] = 0;
+
+    m_nodesRTreeRequiresUpdate = true;
+
+    return {newNodeIndex, action};
+}
+
+void Mesh::commit(AddNodeAction& action)
+{
+    m_nodes [action.NodeId ()] = action.Node ();
+}
+
+void Mesh::restore(AddNodeAction& action)
+{
+    m_nodes [action.NodeId ()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
+}
+
+
+std::tuple<meshkernel::UInt, std::shared_ptr<meshkernel::AddEdgeAction>> Mesh::InsertEdge2(UInt startNode, UInt endNode)
+{
+    // increment the edges container
+    const auto newEdgeIndex = GetNumEdges();
+    m_edges.resize(newEdgeIndex + 1);
+    m_edges[newEdgeIndex].first = startNode;
+    m_edges[newEdgeIndex].second = endNode;
+
+    std::shared_ptr<AddEdgeAction> action = AddEdgeAction::Create (*this, newEdgeIndex, startNode, endNode);
+
+    m_edgesRTreeRequiresUpdate = true;
+
+    return {newEdgeIndex, action};
+
+}
+
+void Mesh::commit (AddEdgeAction& action)
+{
+    m_edges [action.EdgeId ()] = action.GetEdge ();
+}
+
+void Mesh::restore (AddEdgeAction& action)
+{
+    m_edges [action.EdgeId ()] = {constants::missing::uintValue, constants::missing::uintValue};
+}
+
+
 void Mesh::DeleteNode(UInt node)
 {
     if (node >= GetNumNodes())

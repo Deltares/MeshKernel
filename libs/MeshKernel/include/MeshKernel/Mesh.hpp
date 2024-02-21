@@ -32,6 +32,8 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/AddNodeAction.hpp"
+#include "MeshKernel/AddEdgeAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -221,6 +223,18 @@ namespace meshkernel
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node
         UInt InsertNode(const Point& newPoint);
+
+        std::tuple<UInt, std::shared_ptr<AddNodeAction>> InsertNode2(const Point& newPoint);
+
+        void commit (AddNodeAction& action);
+
+        void restore (AddNodeAction& action);
+
+        std::tuple<UInt, std::shared_ptr<AddEdgeAction>> InsertEdge2(UInt startNode, UInt endNode);
+
+        void commit (AddEdgeAction& action);
+
+        void restore (AddEdgeAction& action);
 
         /// @brief Insert a new edge, assuming two nodes are not already connected
         /// @param[in] startNode The start node index
